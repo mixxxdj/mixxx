@@ -83,7 +83,7 @@ tasks:
     completed: "2026-05-05"
   BNG-22:
     title: Remove vendored Bungee source and direct-build wiring
-    status: open
+    status: done
     priority: high
     effort: medium
     group: BNG
@@ -95,8 +95,9 @@ tasks:
     blocked_by:
       - BNG-21
       - BNG-26
-    file: open/BNG-22.md
+    file: done/BNG-22.md
     created: "2026-05-05"
+    completed: "2026-05-06"
   BNG-23:
     title: Update packaging and CI paths for non-vendored Bungee (umbrella)
     status: open

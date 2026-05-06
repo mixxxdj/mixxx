@@ -82,8 +82,8 @@ Before each `analyseGrain()` call (`ensureInputForCurrentChunk`):
 4. Call `analyseGrain(channelBufferPtrs[0] + dataOffset, channelStride,
    muteHead, muteTail)`.  Bungee zero-pads the muted regions internally.
 
-This mirrors the pattern in `lib/bungee/bungee/Stream.h` (Bungee's own
-`Stream` helper class, lines 89–95).
+This mirrors the pattern in Bungee's upstream `bungee/Stream.h` helper
+class (lines 89–95 in the upstream source used by the current Bungee pin).
 
 ### The buffer-window invariant (the post-BNG-13 contract)
 
@@ -185,14 +185,19 @@ A ring-buffer would eliminate the move but is not currently warranted.
 
 ---
 
-## The Windows / MSVC compatibility patch
+## Bungee dependency source-fetch patches
 
-`lib/bungee/0001-MSVC-compatibility.patch` removes `<unistd.h>` (POSIX-only)
-and adds `lib/bungee/src/Platform.h` (MSVC workarounds).  It is applied by
-CMake only when `MSVC` is defined (`if(MSVC)` guard in `CMakeLists.txt`).
+When no packaged Bungee provider is found and `BUNGEE_FETCH_FALLBACK=ON`,
+Mixxx builds the pinned upstream Bungee release with `ExternalProject_Add`.
+The source-fetch path applies Mixxx-owned patches from `cmake/patches/bungee/`
+and the vcpkg overlay port so Bungee uses normal Eigen3 and pffft dependency
+packages instead of bundled submodules. This patching happens in the build tree
+and must not dirty the Mixxx source checkout.
 
-**Do not apply this patch on Linux or macOS** — it is unnecessary and would
-dirty the `lib/bungee` working tree.
+The source-fetch path requires a `patch` executable at configure time. Install
+GNU patch (for example `apt install patch`, `brew install gpatch`, or a Windows
+MSVC-compatible patch executable) or configure with `-DBUNGEE=OFF` / use a
+packaged Bungee provider.
 
 ## Optional Bungee petrification debugging
 
@@ -205,15 +210,12 @@ cmake -DBUNGEE_PETRIFY_DEBUG=ON -DCMAKE_BUILD_TYPE=Debug …
 For multi-configuration generators, build the Debug configuration explicitly
 (e.g. `cmake --build build --config Debug`).
 
-This defines `BUNGEE_PETRIFY` for the vendored `bungee` target only in the
-Debug configuration.  When Bungee catches fatal signals such as `SIGSEGV` or
-`SIGABRT`, it prints the process ID and stops the process so a debugger can be
-attached.
-
-This is intentionally **opt-in** and **non-Windows-only**.  It can hang CI or
-automated tests by design, and Bungee's current petrification implementation
-uses POSIX signal APIs (`sigaction`, `siginfo_t`, `SIGSTOP`) rather than native
-Windows crash-debugging mechanisms.
+The option is preserved for compatibility with older build trees, but it has
+no effect when Bungee is supplied by a package, vcpkg port, or the
+`ExternalProject_Add` source-fetch path. The historical petrification mechanism
+was implemented in the removed vendored target and used POSIX signal APIs
+(`sigaction`, `siginfo_t`, `SIGSTOP`) rather than native Windows
+crash-debugging mechanisms.
 
 ---
 
@@ -221,7 +223,7 @@ Windows crash-debugging mechanisms.
 
 | Boundary | Reason |
 | --- | --- |
-| `lib/bungee/` source files | Treat as a maintained vendor library. The only Mixxx-owned modification is the Windows patch above. |
+| Bungee dependency pins and patches | Keep CMake/vcpkg/Flatpak pins in sync and apply Mixxx-owned patches only in dependency build trees, not to checked-in upstream source. |
 | `muteHead` / `muteTail` computation | Any incorrect value here violates the `analyseGrain()` contract and causes audio corruption. |
 | `appendInputFrames()` call sites | All `ReadAheadManager` reads must be consumed by Bungee. Discarding reads silently advances the reader's position and causes playback drift. |
 | `discardBufferedInputBefore()` full-discard branch | When `framePosition >= m_bufferedInputEndFrame`, both buffer-window pointers must be set to `framePosition`. Any other value reintroduces the BNG-13 high-speed grain-outrun heap-overflow class. Pinned by `EngineBufferScaleBungeeBufferWindowTest`. |

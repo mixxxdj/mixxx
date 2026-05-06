@@ -1,7 +1,7 @@
 ---
 id: BNG-22
 title: "Remove vendored Bungee source and direct-build wiring"
-status: open
+status: done
 priority: high
 effort: medium
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, vendor-removal, cmake]
 blocked_by: [BNG-21, BNG-26]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-22: Remove vendored Bungee source and direct-build wiring
@@ -23,15 +24,15 @@ BNG-22's commit message should also surface the new GNU `patch` build-time requi
 
 ## Scope
 
-- Remove direct `add_library(bungee-pffft ...)` and `add_library(bungee ...)` CMake wiring.
-- Remove vendored include paths for `lib/bungee`, `lib/bungee/bungee`, and `lib/bungee/submodules/eigen`.
-- Remove configure-time `git apply` patching against `lib/bungee` (the MSVC-compatibility patch block).
-- Delete `lib/bungee/` from the repository (`git rm -r lib/bungee/`).
-- Delete the `# 5. Vendored fallback` block in `CMakeLists.txt` (post-BNG-21 file, locate via grep for `Bungee: no package found, using vendored lib/bungee/ as fallback`).
-- Delete the `add_library(Bungee::Bungee ALIAS bungee)` alias line in the vendored branch.
-- Update the discovery-order comment from "5. Vendored lib/bungee/ fallback (temporary — removed in BNG-22)" to drop step 5.
-- Keep Mixxx-owned scaler code, tests, docs, and CI.
-- Update documentation references that still describe vendored Bungee as the intended integration shape.
+- [x] Remove direct `add_library(bungee-pffft ...)` and `add_library(bungee ...)` CMake wiring.
+- [x] Remove vendored include paths for `lib/bungee`, `lib/bungee/bungee`, and `lib/bungee/submodules/eigen`.
+- [x] Remove configure-time `git apply` patching against `lib/bungee` (the MSVC-compatibility patch block).
+- [x] Delete `lib/bungee/` from the repository (`git rm -r lib/bungee/`).
+- [x] Delete the `# 5. Vendored fallback` block in `CMakeLists.txt` (post-BNG-21 file, locate via grep for `Bungee: no package found, using vendored lib/bungee/ as fallback`).
+- [x] Delete the `add_library(Bungee::Bungee ALIAS bungee)` alias line in the vendored branch.
+- [x] Update the discovery-order comment from "5. Vendored lib/bungee/ fallback (temporary — removed in BNG-22)" to drop step 5.
+- [x] Keep Mixxx-owned scaler code, tests, docs, and CI.
+- [x] Update documentation references that still describe vendored Bungee as the intended integration shape.
 
 ## Acceptance criteria
 
@@ -41,3 +42,10 @@ BNG-22's commit message should also surface the new GNU `patch` build-time requi
 - `BUNGEE=OFF` builds cleanly.
 - QML and non-QML builds link consistently.
 - On a host with no system Eigen3 and no system pffft, `cmake -DBUNGEE=ON ..` still configures and builds (proves BNG-23 plumbing is exercised, not just present).
+
+## Completion notes
+
+- Removed tracked `lib/bungee/` vendor sources and cleaned up the leftover nested `.git` directory from the working tree.
+- Deleted the dead vendored CMake fallback branch, including `bungee-pffft`, direct `bungee`, the MSVC `git apply` patch block, vendored include paths, and the `Bungee::Bungee ALIAS bungee` normalization.
+- Dropped discovery-order step 5 and updated `docs/bungee-integration.md` to describe dependency-provider/source-fetch patching instead of a checked-in vendor tree.
+- Validation: source-fetch configure with local Bungee discovery disabled, `bungee_external`, `mixxx-lib`, `BUNGEE=OFF`, and packaged-only `BUNGEE_FETCH_FALLBACK=OFF` configure all passed.
