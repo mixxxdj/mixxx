@@ -4645,11 +4645,6 @@ endif()
 # Bungee
 option(BUNGEE "Enable the Bungee engine for pitch-bending" ON)
 option(
-  BUNGEE_PETRIFY_DEBUG
-  "Freeze Bungee on fatal signals in Debug builds so a debugger can attach (non-Windows only)"
-  OFF
-)
-option(
   BUNGEE_FETCH_FALLBACK
   "Fetch and build Bungee via ExternalProject_Add when no system or vcpkg package is found"
   ON
@@ -5005,17 +5000,6 @@ Or skip the source-fetch path: cmake -DBUNGEE_FETCH_FALLBACK=OFF (requires syste
       "enable the source-fetch fallback with -DBUNGEE_FETCH_FALLBACK=ON, or "
       "disable Bungee with -DBUNGEE=OFF."
     )
-  endif()
-
-  if(Bungee_FOUND)
-    if(BUNGEE_PETRIFY_DEBUG)
-      message(
-        WARNING
-        "BUNGEE_PETRIFY_DEBUG has no effect when Bungee is supplied by a "
-        "package, vcpkg port, or ExternalProject_Add fetch; it required "
-        "the now-removed vendored source-tree target."
-      )
-    endif()
   endif()
 
   # ── Link Bungee into Mixxx ─────────────────────────────────────────────────
