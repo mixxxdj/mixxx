@@ -34,6 +34,11 @@
         <file>images/library/ic_library_traktor.svg</file>
         <file>images/library/ic_library_rekordbox.svg</file>
         <file>images/library/ic_library_serato.svg</file>
+      <!-- icons for the Prep playlist append/remove/confirm splashscreen -->
+        <!-- Use PNG, SVG won't show black, blurred background filter -->
+        <file>images/library/ic_heart_cyan_xxl.png</file>
+        <file>images/library/ic_heart_checked_xxl.png</file>
+        <file>images/library/ic_heart_broken_xxl.png</file>
       <!-- logo and icons for 'About' dialog -->
         <file>images/mixxx_logo.svg</file>
         <file>images/icons/scalable/apps/mixxx.svg</file>

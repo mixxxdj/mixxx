@@ -4,6 +4,8 @@
 #include <QCheckBox>
 #include <QKeyEvent>
 #include <QModelIndex>
+#include <QSplashScreen>
+#include <QTimer>
 #include <QWindow>
 #include <QtDebug>
 
@@ -19,6 +21,7 @@
 #include "moc_librarycontrol.cpp"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#include "util/widgethelper.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -109,6 +112,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
+          m_prepSplashScreen(nullptr),
+          m_prepSplashScreenTimer(nullptr),
           m_numDecks(kAppGroup, QStringLiteral("num_decks"), this),
           m_numSamplers(kAppGroup, QStringLiteral("num_samplers"), this),
           m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks"), this) {
@@ -764,13 +769,98 @@ void LibraryControl::appendTrackToPrepPlaylist(TrackId id) {
                                        ->getPlaylistDAO();
 
     // If the track is not in the Prep playlist, append it.
-    if (!playlistDao.isTrackInPrepPlaylist(id)) {
+    // If it's already in there, show a confirmation (grey heart + blue checkmark)
+    // If it's already in there and the splashscreen is still visible, remove it.
+    bool contains = false;
+    bool appended = false;
+    if (playlistDao.isTrackInPrepPlaylist(id)) {
+        if (m_lastPrepTrack == id && m_prepSplashScreen && m_prepSplashScreen->isVisible()) {
+            // We just added it, or tried to and got the confirmation screen.
+            // Remove immediately.
+            if (playlistDao.removeTrackFromPrepPlaylist(id)) {
+                qInfo() << "Removed track" << id << "from Prep playlist";
+            } else {
+                qWarning() << "Removing track" << id << "from Prep playlist failed!";
+                return;
+            }
+        } else {
+            // Show confirmation
+            contains = true;
+        }
+    } else {
+        // Append
         if (playlistDao.appendTrackToPrepPlaylist(id)) {
             qInfo() << "Appended track" << id << "to Prep playlist";
+            appended = true;
         } else {
             qWarning() << "Appending track" << id << "to Prep playlist failed!";
+            return;
         }
     }
+
+    m_lastPrepTrack = id;
+
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
+        return;
+    }
+
+    // Show floating heart icon for 1.5 s
+    if (!m_prepSplashScreen) {
+        QScreen* pScreen =
+                mixxx::widgethelper::getScreenForWidgetOrApplication(*m_pLibraryWidget);
+        if (!pScreen) {
+            qWarning() << "--no main screen found!";
+            return;
+        }
+        // For some reason the splashscreen won't be shown on top the fullscreen
+        // main window when it's constructed like this:
+        // QSplashScreen(pScreen, heart, flags) // seen with Qt 6.2.3
+        m_prepSplashScreen = std::make_unique<QSplashScreen>();
+        m_prepSplashScreen->setScreen(pScreen);
+        m_prepSplashScreen->setWindowFlags(
+                // This would cover other dialogs raised afterwards.
+                // Apparently, with another popup, this also makes the timeout
+                // event/callback to be ignored so the splashscreen wouldn't disappear.
+                // Qt::WindowStaysOnTopHint |
+                Qt::WindowDoesNotAcceptFocus |
+                // required to make it visible with fullscreen main window
+                Qt::FramelessWindowHint);
+        m_prepSplashScreen->resize(280, 235);
+    }
+    if (!m_prepSplashScreenTimer) {
+        m_prepSplashScreenTimer = std::make_unique<QTimer>();
+        m_prepSplashScreenTimer->setSingleShot(true);
+        m_prepSplashScreenTimer->setInterval(1500);
+        m_prepSplashScreenTimer->callOnTimeout(this, [this]() { m_prepSplashScreen->close(); });
+    }
+
+    // Pick the appropriate pixmap.
+    // Don't set it right away, the splashscreen may still be visible.
+    QPixmap pixmap;
+    if (contains) {
+        pixmap = QPixmap(":/images/library/ic_heart_checked_xxl.png");
+    } else if (appended) {
+        pixmap = QPixmap(":/images/library/ic_heart_cyan_xxl.png");
+    } else { // removed
+        pixmap = QPixmap(":/images/library/ic_heart_broken_xxl.png");
+    }
+
+    // Use start timer for both cases, set interval to 300 ms if the splashscreen is visible
+    int timeout = 5;
+    if (m_prepSplashScreen->isVisible()) {
+        m_prepSplashScreen->close();
+        m_prepSplashScreenTimer->stop();
+        timeout = 300;
+    }
+    QTimer::singleShot(timeout,
+            Qt::CoarseTimer,
+            this,
+            [this, pixmap]() {
+                m_prepSplashScreen->setPixmap(pixmap);
+                m_prepSplashScreen->show();
+                m_prepSplashScreen->raise();
+                m_prepSplashScreenTimer->start();
+            });
 }
 
 void LibraryControl::slotSelectNextTrack(double v) {

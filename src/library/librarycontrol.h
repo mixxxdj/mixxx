@@ -19,6 +19,8 @@ class WLibrary;
 class WLibrarySidebar;
 class WSearchLineEdit;
 class KeyboardEventFilter;
+class QSplashScreen;
+class QTimer;
 
 class LoadToGroupController : public QObject {
     Q_OBJECT
@@ -224,10 +226,16 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pToggleSidebarItem;
     std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
 
+    std::unique_ptr<ControlObject> m_pAppendSelectedTrackToPrepPlaylistControl;
+
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
     WSearchLineEdit* m_pSearchbox;
+
+    std::unique_ptr<QSplashScreen> m_prepSplashScreen;
+    std::unique_ptr<QTimer> m_prepSplashScreenTimer;
+    TrackId m_lastPrepTrack;
 
     // Other variables
     ControlProxy m_numDecks;
