@@ -19,5 +19,10 @@ set_target_properties(pffft PROPERTIES
 
 install(TARGETS pffft EXPORT pffft-targets ARCHIVE DESTINATION lib)
 install(FILES pffft.h fftpack.h DESTINATION include)
+# Bungee's vcpkg dependency patch includes pffft as <pffft/pffft.h>.
+# Keep the flat include install for compatibility with BNG-25's recorded
+# layout, and also provide the namespaced include directory expected by
+# patched Bungee builds.
+install(FILES pffft.h fftpack.h DESTINATION include/pffft)
 install(EXPORT pffft-targets FILE pffftConfig.cmake
         NAMESPACE pffft:: DESTINATION lib/cmake/pffft)

@@ -1,7 +1,7 @@
 ---
 id: BNG-26
 title: "Wire Eigen3 + pffft ExternalProjects into bungee_external; remove vendored fallthrough"
-status: open
+status: done
 priority: high
 effort: medium
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, cmake, externalproject, vendor-removal]
 blocked_by: [BNG-25]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-26: Wire Eigen3 + pffft ExternalProjects into bungee_external
@@ -23,9 +24,9 @@ After BNG-26: a stock Linux dev box (no system Eigen3, no system pffft, with `pa
 
 All changes inside the BNG-21 ExternalProject branch (`CMakeLists.txt:4715-4870`).
 
-- [ ] **Stop computing `_bungee_fetch_missing` from `find_package(Eigen3)` / `find_package(pffft)`**. Both are now provided unconditionally by BNG-25's targets, so the missing-deps detection becomes vestigial. Remove that block.
+- [x] **Stop computing `_bungee_fetch_missing` from `find_package(Eigen3)` / `find_package(pffft)`**. Both are now provided unconditionally by BNG-25's targets, so the missing-deps detection becomes vestigial. Remove that block.
 
-- [ ] **Keep `find_program(BUNGEE_PATCH_EXECUTABLE)` check, but change its failure mode**. Pre-BNG-26 it falls through to vendored when `patch` is missing; post-BNG-26 (and post-BNG-22) there is no vendored fallback. So missing `patch` becomes a hard `message(FATAL_ERROR)` at configure time with install hints:
+- [x] **Keep `find_program(BUNGEE_PATCH_EXECUTABLE)` check, but change its failure mode**. Pre-BNG-26 it falls through to vendored when `patch` is missing; post-BNG-26 (and post-BNG-22) there is no vendored fallback. So missing `patch` becomes a hard `message(FATAL_ERROR)` at configure time with install hints:
 
   ```text
   Bungee build requires GNU patch but none was found.
@@ -37,11 +38,11 @@ All changes inside the BNG-21 ExternalProject branch (`CMakeLists.txt:4715-4870`
   Or skip the source-fetch path: cmake -DBUNGEE_FETCH_FALLBACK=OFF (requires system Bungee install)
   ```
 
-- [ ] **Add dependencies**: `add_dependencies(bungee_external eigen3_external pffft_external)`.
+- [x] **Add dependencies**: `add_dependencies(bungee_external eigen3_external pffft_external)`.
 
-- [ ] **Forward install dirs** into `bungee_external`'s `CMAKE_ARGS` via `CMAKE_PREFIX_PATH=${EIGEN3_INSTALL_DIR};${PFFFT_INSTALL_DIR}` (path-list-separator-aware on Windows where `;` is the list separator inside CMAKE_ARGS — use `${CMAKE_COMMAND} -E env` or escape per CMake docs).
+- [x] **Forward install dirs** into `bungee_external`'s `CMAKE_ARGS` via `CMAKE_PREFIX_PATH=${EIGEN3_INSTALL_DIR};${PFFFT_INSTALL_DIR}` (path-list-separator-aware on Windows where `;` is the list separator inside CMAKE_ARGS — use `${CMAKE_COMMAND} -E env` or escape per CMake docs).
 
-- [ ] **Make Eigen3 + pffft visible to the parent build's link line**. `Bungee::Bungee` already lists `pffft::pffft;Eigen3::Eigen` in `INTERFACE_LINK_LIBRARIES` (CMakeLists.txt:4855). At configure time these targets don't exist yet because the ExternalProjects haven't built. Two clean options:
+- [x] **Make Eigen3 + pffft visible to the parent build's link line**. `Bungee::Bungee` already lists `pffft::pffft;Eigen3::Eigen` in `INTERFACE_LINK_LIBRARIES` (CMakeLists.txt:4855). At configure time these targets don't exist yet because the ExternalProjects haven't built. Two clean options:
 
   **Option 1 (preferred)**: declare imported targets manually pointing at predicted install paths:
 
@@ -64,7 +65,7 @@ All changes inside the BNG-21 ExternalProject branch (`CMakeLists.txt:4715-4870`
 
   Use Option 1.
 
-- [ ] **Remove the entire `else()` fallthrough branch** (CMakeLists.txt:4872 onwards: "# 5. Vendored fallback — build Bungee directly from `lib/bungee/`"). The `bungee-pffft` and vendored `bungee` `add_library` calls plus the MSVC `git apply` block all go away. The discovery comment at the top of the BUNGEE block (CMakeLists.txt:4675–4680) drops step 5.
+- [x] **Remove the entire `else()` fallthrough branch** (CMakeLists.txt:4872 onwards: "# 5. Vendored fallback — build Bungee directly from `lib/bungee/`"). The `bungee-pffft` and vendored `bungee` `add_library` calls plus the MSVC `git apply` block all go away. The discovery comment at the top of the BUNGEE block (CMakeLists.txt:4675–4680) drops step 5.
 
   Actually — *keep* the `else()` branch removal for **BNG-22** (so this commit and BNG-22 stay independently reviewable). BNG-26 wires up the new path; BNG-22 deletes `lib/bungee/` and the dead code together. Confirm with maintainer: would they prefer one combined commit or two?
 
@@ -95,3 +96,11 @@ Separately verify `BUNGEE=OFF` still configures clean and `BUNGEE_FETCH_FALLBACK
 - `BUNGEE=OFF` configures clean.
 - `BUNGEE_FETCH_FALLBACK=OFF` configures clean (still requires system Bungee).
 - The vendored fallthrough block (`add_library(bungee-pffft ...)`, `add_library(bungee ...)`, MSVC `git apply` patching) is **left in place** for BNG-22 to delete — BNG-26 only makes it unreachable.
+
+## Completion notes
+
+- Wired `bungee_external` to depend on `eigen3_external` and `pffft_external`.
+- Replaced configure-time Eigen3/pffft discovery with deterministic imported targets pointing at the BNG-25 install prefixes.
+- Added a compatibility `include/pffft/` install in the pffft ExternalProject recipe because Bungee's vcpkg dependency patch includes `<pffft/pffft.h>`.
+- Converted missing `patch` and missing Bungee provider after discovery/fallback to hard configure-time errors; the vendored block remains present but unreachable for BNG-22 deletion.
+- Validation: source-fetch configure with local Bungee discovery disabled, `bungee_external`, `mixxx-lib`, `BUNGEE=OFF`, and packaged-only `BUNGEE_FETCH_FALLBACK=OFF` configure all passed.

@@ -156,7 +156,7 @@ tasks:
     completed: "2026-05-06"
   BNG-26:
     title: Wire Eigen3 + pffft ExternalProjects into bungee_external; remove vendored fallthrough
-    status: open
+    status: done
     priority: high
     effort: medium
     group: BNG
@@ -168,8 +168,9 @@ tasks:
       - vendor-removal
     blocked_by:
       - BNG-25
-    file: open/BNG-26.md
+    file: done/BNG-26.md
     created: "2026-05-05"
+    completed: "2026-05-06"
   BNG-27:
     title: Add Bungee, Eigen3, pffft as Flatpak modules
     status: open
