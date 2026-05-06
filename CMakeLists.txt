@@ -2879,6 +2879,7 @@ if(BUILD_TESTING)
     #TODO: write useful tests for refactored effects system
     #src/test/effectchainslottest.cpp
     src/test/enginebufferscalelineartest.cpp
+    $<$<BOOL:${BUNGEE}>:src/test/enginebufferscalebungeetest.cpp>
     src/test/enginebuffertest.cpp
     src/test/enginefilterbiquadtest.cpp
     src/test/enginemixertest.cpp
@@ -4636,6 +4637,22 @@ if(RUBBERBAND)
       src/engine/bufferscalers/rubberbandwrapper.cpp
       src/engine/bufferscalers/rubberbandtask.cpp
       src/engine/bufferscalers/rubberbandworkerpool.cpp
+  )
+endif()
+
+# Bungee
+option(BUNGEE "Enable the Bungee engine for pitch-bending" OFF)
+if(BUNGEE)
+  find_package(Bungee REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC Bungee::Bungee)
+  target_compile_definitions(mixxx-lib PUBLIC __BUNGEE__)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE Bungee::Bungee)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __BUNGEE__)
+  endif()
+  target_sources(
+    mixxx-lib
+    PRIVATE src/engine/bufferscalers/enginebufferscalebungee.cpp
   )
 endif()
 

@@ -23,6 +23,10 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #endif
 
+#ifdef __BUNGEE__
+#include "engine/bufferscalers/enginebufferscalebungee.h"
+#endif
+
 //for the writer
 #ifdef __SCALER_DEBUG__
 #include <QFile>
@@ -89,6 +93,9 @@ class EngineBuffer : public EngineObject {
         RubberBandFaster = 1,
         RubberBandFiner = 2,
 #endif
+#ifdef __BUNGEE__
+        Bungee = 3,
+#endif
     };
     Q_ENUM(KeylockEngine);
 
@@ -97,7 +104,10 @@ class EngineBuffer : public EngineObject {
             KeylockEngine::SoundTouch,
 #ifdef __RUBBERBAND__
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner
+            KeylockEngine::RubberBandFiner,
+#endif
+#ifdef __BUNGEE__
+            KeylockEngine::Bungee,
 #endif
     };
 
@@ -185,6 +195,10 @@ class EngineBuffer : public EngineObject {
             }
             [[fallthrough]];
 #endif
+#ifdef __BUNGEE__
+        case KeylockEngine::Bungee:
+            return tr("Bungee (high quality)");
+#endif
         default:
 #ifdef __RUBBERBAND__
             return tr("Unknown, using Rubberband (better)");
@@ -204,13 +218,19 @@ class EngineBuffer : public EngineObject {
         case KeylockEngine::RubberBandFiner:
             return EngineBufferScaleRubberBand::isEngineFinerAvailable();
 #endif
+#ifdef __BUNGEE__
+        case KeylockEngine::Bungee:
+            return true;
+#endif
         default:
             return false;
         }
     }
 
     constexpr static KeylockEngine defaultKeylockEngine() {
-#ifdef __RUBBERBAND__
+#ifdef __BUNGEE__
+        return KeylockEngine::Bungee;
+#elif defined(__RUBBERBAND__)
         return KeylockEngine::RubberBandFaster;
 #else
         return KeylockEngine::SoundTouch;
@@ -464,6 +484,9 @@ class EngineBuffer : public EngineObject {
     EngineBufferScaleST* m_pScaleST;
 #ifdef __RUBBERBAND__
     EngineBufferScaleRubberBand* m_pScaleRB;
+#endif
+#ifdef __BUNGEE__
+    EngineBufferScaleBungee* m_pScaleBungee;
 #endif
 
     // Indicates whether the scaler has changed since the last process()
