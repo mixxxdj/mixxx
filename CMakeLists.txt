@@ -4713,6 +4713,76 @@ if(BUNGEE)
   #    we emit a clear status line and fall through to the vendored
   #    fallback so this branch never breaks configure.
   if(NOT Bungee_FOUND AND BUNGEE_FETCH_FALLBACK)
+    # BNG-25: Define Eigen3 and pffft ExternalProjects so the BUNGEE=ON
+    # fallback can be self-contained on every networked builder (a stock
+    # Linux dev box without libeigen3-dev / libpffft-dev still works).
+    # These targets are EXCLUDE_FROM_ALL — BNG-26 wires them into
+    # bungee_external and removes the find_package() + vendored
+    # fallthrough below.
+    #
+    # Eigen 3.4.0 stable: pinned to release tarball rather than the
+    # c29c8001 commit Bungee v2.4.15's submodule points at — Bungee has
+    # zero Eigen version constraint and Mixxx convention prefers stable
+    # releases.  If a future Bungee bump makes 3.4.0 incompatible the
+    # documented fallback is the c29c8001 commit pin (gitlab.com/
+    # libeigen/eigen archive); see docs/tasks/done/BNG-25.md.
+    ExternalProject_Add(
+      eigen3_external
+      URL "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
+      URL_HASH
+        SHA256=8586084f71f9bde545ee7fa6d00288b264a2b7ac3607b974e54d13e7162c1c72
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+      DOWNLOAD_NAME "eigen-3.4.0.tar.gz"
+      PREFIX "eigen3-3.4.0"
+      INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/eigen3-install"
+      CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DBUILD_TESTING=OFF
+        -DEIGEN_BUILD_DOC=OFF -DEIGEN_BUILD_TESTING=OFF
+        -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+        -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      # Eigen is header-only — no compilation needed.  Skip the build
+      # step; the default INSTALL step (cmake --install) copies headers
+      # and Eigen3Config.cmake.
+      BUILD_COMMAND ""
+      EXCLUDE_FROM_ALL TRUE
+    )
+
+    # pffft commit 02fe7715 (jpommier upstream from bitbucket.org/jpommier/
+    # pffft.git) — exact submodule pin shipped by Bungee v2.4.15.  pffft has
+    # no upstream CMake; PATCH_COMMAND drops in the verbatim recipe Mixxx
+    # already uses for the vendored copy (and which Bungee upstream uses in
+    # its own CMakeLists for the same purpose).  No -march= flags here:
+    # Mixxx's top-level CMake injects -march=native (gcc/clang) or
+    # /arch:SSE2 (MSVC) and pffft.c picks up __SSE__ / __ARM_NEON__
+    # automatically.
+    ExternalProject_Add(
+      pffft_external
+      URL
+        "https://bitbucket.org/jpommier/pffft/get/02fe7715a5bf8bfd914681c53429600f94e0f536.tar.gz"
+      URL_HASH
+        SHA256=9adeb18ac7bb52e9fb921c31c0c6a4e9ae150cc6fcb20a899d4b3a2275176ded
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+      DOWNLOAD_NAME "pffft-02fe7715.tar.gz"
+      PREFIX "pffft-02fe7715"
+      INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/pffft-install"
+      PATCH_COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/pffft/CMakeLists.txt.in
+        <SOURCE_DIR>/CMakeLists.txt
+      CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DCMAKE_INSTALL_LIBDIR:PATH=lib -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+        -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+        -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      BUILD_BYPRODUCTS
+        "${CMAKE_CURRENT_BINARY_DIR}/pffft-install/lib/${CMAKE_STATIC_LIBRARY_PREFIX}pffft${CMAKE_STATIC_LIBRARY_SUFFIX}"
+      EXCLUDE_FROM_ALL TRUE
+    )
+
     find_package(Eigen3 CONFIG QUIET)
     find_package(pffft CONFIG QUIET)
     find_program(BUNGEE_PATCH_EXECUTABLE NAMES patch)

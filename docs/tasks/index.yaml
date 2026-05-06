@@ -138,7 +138,7 @@ tasks:
     created: "2026-05-05"
   BNG-25:
     title: Add Eigen3 + pffft as ExternalProject_Add targets
-    status: open
+    status: done
     priority: high
     effort: medium
     group: BNG
@@ -151,8 +151,9 @@ tasks:
       - pffft
     blocked_by:
       - BNG-21
-    file: open/BNG-25.md
+    file: done/BNG-25.md
     created: "2026-05-05"
+    completed: "2026-05-06"
   BNG-26:
     title: Wire Eigen3 + pffft ExternalProjects into bungee_external; remove vendored fallthrough
     status: open

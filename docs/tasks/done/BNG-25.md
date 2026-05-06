@@ -1,7 +1,7 @@
 ---
 id: BNG-25
 title: "Add Eigen3 + pffft as ExternalProject_Add targets"
-status: open
+status: done
 priority: high
 effort: medium
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, cmake, externalproject, eigen3, pffft]
 blocked_by: [BNG-21]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-25: Add Eigen3 + pffft as ExternalProject_Add targets
@@ -34,14 +35,14 @@ This ticket adds the two ExternalProject targets but does **not** wire them into
 
 ## Scope
 
-- [ ] **B-1: `ExternalProject_Add(eigen3_external)`**
+- [x] **B-1: `ExternalProject_Add(eigen3_external)`**
   - Pinned per the research block above.
   - `INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/eigen3-install`.
   - Use Eigen's own CMake (`buildsystem: cmake`); `cmake --install` produces a working `Eigen3Config.cmake` exposing `Eigen3::Eigen` (header-only INTERFACE target). **No `Eigen3Config.cmake.in` template needed** — Eigen 3.4.0 ships one.
   - Skip the build step (`BUILD_COMMAND ""`) since Eigen is header-only — go straight from CONFIGURE to INSTALL.
   - Place inside the `if(NOT Bungee_FOUND AND BUNGEE_FETCH_FALLBACK)` branch in `CMakeLists.txt` (alongside the existing `bungee_external`).
 
-- [ ] **B-2: `ExternalProject_Add(pffft_external)`**
+- [x] **B-2: `ExternalProject_Add(pffft_external)`**
   - Pinned per the research block above.
   - `INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/pffft-install`.
   - pffft has no upstream CMake. Supply `cmake/patches/pffft/CMakeLists.txt.in` mirroring the verbatim recipe Mixxx already uses for the vendored copy (`CMakeLists.txt:4880-4896`):
