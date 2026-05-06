@@ -50,6 +50,9 @@ inline QScreen* getScreen(
 #endif
 }
 
+/// Get the screen the main window is displayed on
+QScreen* getMainScreen();
+
 /// QSize for stretching a list widget attempting to show entire column
 void growListWidget(QListWidget& listWidget, const QWidget& parent);
 
