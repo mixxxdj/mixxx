@@ -26,18 +26,24 @@ on:
       - "2.6"
       - feature/bungee
     paths:
+      - "cmake/patches/bungee/**"
+      - "cmake/patches/pffft/**"
+      - "cmake/vcpkg-overlay-ports/bungee/**"
+      - "cmake/modules/FindBungee.cmake"
       - "src/engine/bufferscalers/enginebufferscalebungee.*"
-      - "src/test/enginebufferscalebungee*"
-      - "src/test/enginebufferbungee*"
-      - "lib/bungee/**"
+      - "src/test/enginebufferscalebungeetest.cpp"
+      - "src/test/enginebufferbungeetest.cpp"
       - "CMakeLists.txt"
       - ".github/workflows/bungee-asan.yml"
   pull_request:
     paths:
+      - "cmake/patches/bungee/**"
+      - "cmake/patches/pffft/**"
+      - "cmake/vcpkg-overlay-ports/bungee/**"
+      - "cmake/modules/FindBungee.cmake"
       - "src/engine/bufferscalers/enginebufferscalebungee.*"
-      - "src/test/enginebufferscalebungee*"
-      - "src/test/enginebufferbungee*"
-      - "lib/bungee/**"
+      - "src/test/enginebufferscalebungeetest.cpp"
+      - "src/test/enginebufferbungeetest.cpp"
       - "CMakeLists.txt"
       - ".github/workflows/bungee-asan.yml"
   workflow_dispatch:
@@ -62,8 +68,18 @@ jobs:
       # abort_on_error=1: produce a coredump-style backtrace via SIGABRT.
       # strict_string_checks=1: catch off-by-one in string ops too.
       ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1:abort_on_error=1:strict_string_checks=1:print_summary=1"
-      # GCC/Clang put libasan symbols first; this prevents accidental ODR
-      # violations from interceptor ordering.
+      # Keep ExternalProject_Add dependencies (bungee_external/eigen3_external/
+      # pffft_external) instrumented too: their configure/build steps run under
+      # `cmake --build`; child CMake processes inherit the runner environment
+      # and initialize CMAKE_C_FLAGS/CMAKE_CXX_FLAGS from CFLAGS/CXXFLAGS.
+      CFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
+      CXXFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
+      # Harmless for static-only ExternalProject deps; retained as a guard if
+      # a future dependency target links a shared library or test executable.
+      LDFLAGS: "-fsanitize=address"
+      # ASAN_OPTIONS already disables leak detection. Keep exitcode=0 as a
+      # belt-and-suspenders guard so leak noise cannot mask heap-overflow
+      # regressions if LSan is re-enabled later.
       LSAN_OPTIONS: "exitcode=0"
 
     steps:

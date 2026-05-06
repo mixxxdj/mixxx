@@ -11,3 +11,5 @@
 {"ts":"2026-05-06T02:12:34.096Z","id":"BNG-22","from":"in_progress","to":"done","reason":"BNG-22 complete: removed tracked lib/bungee source, deleted vendored CMake fallback wiring, updated live docs, and validated source-fetch bungee_external plus mixxx-lib."}
 {"ts":"2026-05-06T03:41:56.352Z","id":"BNG-27","from":"open","to":"in_progress","reason":"Begin strict-sequence implementation of Flatpak modules for Bungee dependencies."}
 {"ts":"2026-05-06T04:01:31.697Z","id":"BNG-27","from":"in_progress","to":"done","reason":"BNG-27 complete: added Flatpak Eigen3, pffft, and Bungee modules before mixxx with pinned hashes, Bungee patch/config fixup, YAML/pre-commit validation, and documented flatpak-builder defer-to-CI due missing local tool."}
+{"ts":"2026-05-06T04:15:39.305Z","id":"BNG-28","from":"open","to":"in_progress","reason":"Begin BNG-28 CI path/ASan wiring update in strict sequence."}
+{"ts":"2026-05-06T04:23:03.576Z","id":"BNG-28","from":"in_progress","to":"done","reason":"Updated Bungee ASan workflow paths and ASan ExternalProject environment wiring; build.yml verified no changes needed."}

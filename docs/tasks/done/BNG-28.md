@@ -1,7 +1,7 @@
 ---
 id: BNG-28
 title: "Update GitHub Actions workflows for non-vendored Bungee"
-status: open
+status: done
 priority: high
 effort: small
 group: BNG
@@ -9,6 +9,7 @@ package: root
 labels: [bungee, ci, github-actions]
 blocked_by: [BNG-26]
 created: '2026-05-05'
+completed: '2026-05-06'
 ---
 
 ## BNG-28: Update GitHub Actions workflows for non-vendored Bungee
@@ -34,6 +35,7 @@ This is a CI-only commit. No `CMakeLists.txt` changes.
       - cmake/patches/bungee/**
       - cmake/patches/pffft/**
       - cmake/vcpkg-overlay-ports/bungee/**
+      - cmake/modules/FindBungee.cmake
       - src/engine/bufferscalers/enginebufferscalebungee.*
       - src/test/enginebufferscalebungeetest.cpp
       - src/test/enginebufferbungeetest.cpp
