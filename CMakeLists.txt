@@ -4274,7 +4274,7 @@ else()
       # Qt6MultimediaQuick doesn't seem to be included in any defined target but it is required.
       install(
         DIRECTORY
-          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/bin/Qt6MultimediaQuick$<$<CONFIG:Debug>:d>.${CMAKE_SHARED_LIBRARY_SUFFIX}"
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/bin/Qt6MultimediaQuick$<$<CONFIG:Debug>:d>${CMAKE_SHARED_LIBRARY_SUFFIX}"
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal
       )
