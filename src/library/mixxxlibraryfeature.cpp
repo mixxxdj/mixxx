@@ -102,7 +102,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             "WHERE track_locations.id IS NOT NULL OR library.location = '%3'")
                                   .arg(tableName,
                                           qualifiedTableColumns.join(","),
-                                          LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION);
+                                          LIBRARYTABLE_AUTODJ_TRANSITION_LOCATION);
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

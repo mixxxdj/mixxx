@@ -181,6 +181,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Returns the list of selected row indices, or an empty list if none are selected.
     QModelIndexList getSelectedRows() const;
+    /// Returns row indices for tracks only, with any transition marker indices removed.
     static QModelIndexList filterEndMarkers(QModelIndexList indices);
     // Returns the list of selected row numbers, or an empty list if none are selected.
     QList<int> getSelectedRowNumbers() const;

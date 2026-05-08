@@ -25,7 +25,7 @@ class PlaylistDAOEndMarkerTest : public LibraryTest {
     int countEndMarkerRows() {
         QSqlQuery q(dbConnection());
         q.prepare(QStringLiteral("SELECT COUNT(*) FROM library WHERE location = :loc"));
-        q.bindValue(":loc", LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION);
+        q.bindValue(":loc", LIBRARYTABLE_AUTODJ_TRANSITION_LOCATION);
         if (!q.exec() || !q.next()) {
             return -1;
         }

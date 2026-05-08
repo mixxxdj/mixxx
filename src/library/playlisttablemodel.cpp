@@ -172,7 +172,7 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
             // the same value as the cover digest.
             << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
             << QStringLiteral("CASE WHEN library.location = '%1' THEN 1 ELSE 0 END AS %2")
-                       .arg(LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION,
+                       .arg(LIBRARYTABLE_AUTODJ_TRANSITION_LOCATION,
                                LIBRARYTABLE_IS_AUTODJ_END_MARKER);
 
     QString queryString = QString(
@@ -398,6 +398,8 @@ bool PlaylistTableModel::isEndMarker(const QModelIndex& index) const {
     if (col < 0) {
         return false;
     }
+    // Look up is_autodj_end_marker on the same row as `index` (caller may pass any column).
+    // Use Qt::EditRole to get the raw stored integer, not display-formatted text.
     return index.sibling(index.row(), col).data(Qt::EditRole).toInt() == 1;
 }
 

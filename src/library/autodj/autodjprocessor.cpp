@@ -430,9 +430,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
-            // Queue is empty or a end marker is at the head of the queue.
-            // Both cases are treated the same: AutoDJ is disabled.
-            qDebug() << "Queue is empty now, disable Auto DJ";
+            qDebug() << "Queue is empty or end marker is at the head of the queue, disable Auto DJ";
             m_enabledAutoDJ.setAndConfirm(0.0);
             emitAutoDJStateChanged(m_eState);
             emit autoDJError(ADJ_QUEUE_EMPTY);
@@ -905,6 +903,7 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
 
         if (m_pAutoDJTableModel->isEndMarker(topIndex)) {
             m_pAutoDJTableModel->removeTrack(topIndex);
+            // End marker reached. Return null to stop AutoDJ.
             return TrackPointer();
         }
 
