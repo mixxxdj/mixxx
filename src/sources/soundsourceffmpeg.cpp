@@ -548,9 +548,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     // Find the best stream
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(59, 0, 100) // FFmpeg 5.0
     const AVCodec* pDecoder = nullptr;
+    const AVCodec* pFdkAacDecoder = nullptr;
 #else
     // https://github.com/FFmpeg/FFmpeg/blob/dd17c86aa11feae2b86de054dd0679cc5f88ebab/doc/APIchanges#L175
     AVCodec* pDecoder = nullptr;
+    AVCodec* pFdkAacDecoder = nullptr;
 #endif
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
@@ -577,6 +579,20 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return SoundSource::OpenResult::Aborted;
     }
     DEBUG_ASSERT(pDecoder);
+
+    if (pDecoder->id == AV_CODEC_ID_AAC ||
+            pDecoder->id == AV_CODEC_ID_AAC_LATM) {
+        // Prefer Fraunhofer FDK AAC over internal AAC
+        // https://trac.ffmpeg.org/wiki/Encode/AAC
+        if (std::strcmp(pDecoder->name, "aac") == 0) {
+            pFdkAacDecoder = avcodec_find_decoder_by_name("libfdk_aac");
+            if (pFdkAacDecoder) {
+                pDecoder = pFdkAacDecoder;
+            }
+        }
+    }
+
+    kLogger.debug() << "using decoder:" << pDecoder->long_name;
 
     // Select audio stream for decoding
     AVStream* pavStream = m_pavInputFormatContext->streams[av_find_best_stream_result];
