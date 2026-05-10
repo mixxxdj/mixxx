@@ -1,9 +1,11 @@
 #include "library/dlgtrackinfomulti.h"
 
+#include <QCheckBox>
 #include <QLineEdit>
 #include <QListView>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <memory>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -12,6 +14,7 @@
 #include "moc_dlgtrackinfomulti.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
+#include "track/beats.h"
 #include "track/beatutils.h"
 #include "track/track.h"
 #include "util/color/color.h"
@@ -20,6 +23,7 @@
 #include "util/duration.h"
 #include "util/string.h"
 #include "util/stringformat.h"
+#include "util/tapfilter.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"

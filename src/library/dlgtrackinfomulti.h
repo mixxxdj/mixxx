@@ -3,15 +3,12 @@
 #include <QDialog>
 #include <QHash>
 #include <QModelIndex>
-#include <memory>
 
 #include "library/ui_dlgtrackinfomulti.h"
 #include "preferences/usersettings.h"
-#include "track/beats.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
-#include "util/tapfilter.h"
 #include "widget/wcolorpickeraction.h"
 
 class WColorPickerAction;
