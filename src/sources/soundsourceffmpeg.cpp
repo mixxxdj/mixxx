@@ -1058,48 +1058,47 @@ bool SoundSourceFFmpeg::consumeNextAVPacket(
     return true;
 }
 
-const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
+const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame(AVFrame* pavDecodedFrame) {
     if (m_pSwrContext) {
         // Decoded frame must be resampled before reading
+        av_frame_unref(m_pavResampledFrame);
         m_pavResampledFrame->sample_rate = getSignalInfo().getSampleRate();
         m_pavResampledFrame->format = s_avSampleFormat;
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
         av_channel_layout_copy(&m_pavResampledFrame->ch_layout, &m_avResampledChannelLayout);
-        if (m_pavDecodedFrame->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
+        if (pavDecodedFrame->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC) {
             // Sometimes the channel layout is undefined.
-            av_channel_layout_copy(&m_pavDecodedFrame->ch_layout, &m_avStreamChannelLayout);
+            av_channel_layout_copy(&pavDecodedFrame->ch_layout, &m_avStreamChannelLayout);
         }
 #else
         m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
-        if (m_pavDecodedFrame->channel_layout == kavChannelLayoutUndefined) {
+        if (pavDecodedFrame->channel_layout == kavChannelLayoutUndefined) {
             // Sometimes the channel layout is undefined.
-            m_pavDecodedFrame->channel_layout = m_avStreamChannelLayout;
+            pavDecodedFrame->channel_layout = m_avStreamChannelLayout;
         }
 #endif
 #if VERBOSE_DEBUG_LOG
-        avTrace("Resampling decoded frame", *m_pavDecodedFrame);
+        avTrace("Resampling decoded frame", *pavDecodedFrame);
 #endif
         const auto swr_convert_frame_result = swr_convert_frame(
-                m_pSwrContext, m_pavResampledFrame, m_pavDecodedFrame);
+                m_pSwrContext, m_pavResampledFrame, pavDecodedFrame);
         if (swr_convert_frame_result != 0) {
             kLogger.warning().noquote()
                     << "swr_convert_frame() failed:"
                     << formatErrorString(swr_convert_frame_result);
-            // Discard decoded frame and abort after unrecoverable error
-            av_frame_unref(m_pavDecodedFrame);
             return nullptr;
         }
 #if VERBOSE_DEBUG_LOG
         avTrace("Received resampled frame", *m_pavResampledFrame);
 #endif
         DEBUG_ASSERT(m_pavResampledFrame->pts == AV_NOPTS_VALUE ||
-                m_pavResampledFrame->pts == m_pavDecodedFrame->pts);
-        DEBUG_ASSERT(m_pavResampledFrame->nb_samples == m_pavDecodedFrame->nb_samples);
+                m_pavResampledFrame->pts == pavDecodedFrame->pts);
+        DEBUG_ASSERT(m_pavResampledFrame->nb_samples == pavDecodedFrame->nb_samples);
         return reinterpret_cast<const CSAMPLE*>(
                 m_pavResampledFrame->extended_data[0]);
     } else {
         return reinterpret_cast<const CSAMPLE*>(
-                m_pavDecodedFrame->extended_data[0]);
+                pavDecodedFrame->extended_data[0]);
     }
 }
 
@@ -1179,7 +1178,6 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                         (m_pavDecodedFrame->flags &
                                 (AV_FRAME_FLAG_CORRUPT |
                                         AV_FRAME_FLAG_DISCARD)) == 0) {
-                    av_frame_unref(m_pavDecodedFrame);
                     continue;
                 }
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
@@ -1269,12 +1267,10 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     << "decodedFrameRange" << decodedFrameRange;
 #endif
 
-            const CSAMPLE* pDecodedSampleData = resampleDecodedAVFrame();
-            if (!pDecodedSampleData) {
+            const CSAMPLE* pDecodedSamples = resampleDecodedAVFrame(m_pavDecodedFrame);
+            if (!pDecodedSamples) {
                 // Invalidate current position and abort reading after unrecoverable error
                 m_frameBuffer.invalidate();
-                // Housekeeping before aborting to avoid memory leaks
-                av_frame_unref(m_pavDecodedFrame);
                 break;
             }
 
@@ -1294,7 +1290,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                             << "before"
                             << frameIndexRange();
 #endif
-                    pDecodedSampleData += getSignalInfo().frames2samples(leadinRange.length());
+                    pDecodedSamples += getSignalInfo().frames2samples(leadinRange.length());
                     decodedFrameRange.shrinkFront(leadinRange.length());
                 }
             }
@@ -1326,7 +1322,7 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             const auto decodedSampleFrames = ReadableSampleFrames(
                     decodedFrameRange,
                     SampleBuffer::ReadableSlice(
-                            pDecodedSampleData,
+                            pDecodedSamples,
                             getSignalInfo().frames2samples(decodedFrameRange.length())));
             auto outputSampleFrames = WritableSampleFrames(
                     writableFrameRange,
@@ -1346,11 +1342,6 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                     << "m_frameBuffer.bufferedRange()" << m_frameBuffer.bufferedRange()
                     << "writableFrameRange" << writableFrameRange;
 #endif
-
-            // Housekeeping before next decoding iteration
-            av_frame_unref(m_pavDecodedFrame);
-            av_frame_unref(m_pavResampledFrame);
-
             // The first loop condition (see below) should always be true
             // and has only been added to prevent infinite looping in case
             // of unexpected result values.

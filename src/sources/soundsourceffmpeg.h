@@ -31,7 +31,7 @@ class SoundSourceFFmpeg : public SoundSource {
             const OpenParams& params) override;
 
   private:
-    const CSAMPLE* resampleDecodedAVFrame();
+    const CSAMPLE* resampleDecodedAVFrame(AVFrame* pavDecodedFrame);
 
     // Seek to the requested start index (if needed) or return false
     // upon seek errors.
