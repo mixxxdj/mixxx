@@ -1280,43 +1280,6 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
             }
 #endif
 
-            // The decoder may provide some lead-in and lead-out frames
-            // before the start position and after the end of the stream.
-            // Those frames need to be cut-off before consumption.
-            if (decodedFrameRange.start() < frameIndexRange().start()) {
-                const auto leadinRange = IndexRange::between(
-                        decodedFrameRange.start(),
-                        math_min(frameIndexRange().start(), decodedFrameRange.end()));
-                DEBUG_ASSERT(leadinRange.orientation() != IndexRange::Orientation::Backward);
-                if (leadinRange.orientation() == IndexRange::Orientation::Forward) {
-#if VERBOSE_DEBUG_LOG
-                    kLogger.debug()
-                            << "Cutting off lead-in"
-                            << leadinRange
-                            << "before"
-                            << frameIndexRange();
-#endif
-                    pDecodedSamples += getSignalInfo().frames2samples(leadinRange.length());
-                    decodedFrameRange.shrinkFront(leadinRange.length());
-                }
-            }
-            if (decodedFrameRange.end() > frameIndexRange().end()) {
-                const auto leadoutRange = IndexRange::between(
-                        math_max(frameIndexRange().end(), decodedFrameRange.start()),
-                        decodedFrameRange.end());
-                DEBUG_ASSERT(leadoutRange.orientation() != IndexRange::Orientation::Backward);
-                if (leadoutRange.orientation() == IndexRange::Orientation::Forward) {
-#if VERBOSE_DEBUG_LOG
-                    kLogger.debug()
-                            << "Cutting off lead-out"
-                            << leadoutRange
-                            << "beyond"
-                            << frameIndexRange();
-#endif
-                    decodedFrameRange.shrinkBack(leadoutRange.length());
-                }
-            }
-
 #if VERBOSE_DEBUG_LOG
             kLogger.debug()
                     << "Before consuming decoded sample data:"
