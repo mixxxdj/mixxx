@@ -70,6 +70,18 @@ QString validEditText(QComboBox* pBox) {
     return mixxx::removeTrailingWhitespaces(currText);
 }
 
+/// Same for Comments, just with the extra QPlainTextEdit
+QString validCommentText(QComboBox* pBox, QPlainTextEdit* pTextEdit) {
+    const QString origText = pTextEdit->property(kOrigValProp).toString();
+    const QString currText = pTextEdit->toPlainText();
+    if ((pBox->count() > 0 && !pTextEdit->placeholderText().isNull()) ||
+            (pBox->count() == 0 && currText == origText)) {
+        return {};
+    }
+    // Remove trailing whitespaces.
+    return mixxx::removeTrailingWhitespaces(currText);
+}
+
 /// Sets the text of a QLabel, either the only/common value or the 'various' string.
 /// In case of `various`, the text is also set italic.
 /// This is used for bitrate, sample rate and file directories.
@@ -668,7 +680,8 @@ void DlgTrackInfoMulti::saveTracks() {
         commentTextChanged();
     }
 
-    // Check the values so we don't have to do it for every track record
+    // Check the values so we don't have to do it for every track record.
+    // QString::isNull() indicates that the property is unchanged.
     const QString title = validEditText(txtTitle);
     const QString artist = validEditText(txtArtist);
     const QString album = validEditText(txtAlbum);
@@ -679,16 +692,7 @@ void DlgTrackInfoMulti::saveTracks() {
     const QString year = validEditText(txtYear);
     const QString key = validEditText(txtKey);
     const QString num = validEditText(txtTrackNumber);
-    // Check if the Comment has been changed.
-    // (same as in validEditText(), just for the QPlainTextEdit)
-    QString comment;
-    const QString origText = txtComment->property(kOrigValProp).toString();
-    const QString currText = txtComment->toPlainText();
-    if ((txtCommentBox->count() > 0 && txtComment->placeholderText().isNull()) ||
-            (txtCommentBox->count() == 0 && currText != origText)) {
-        // Remove trailing whitespaces.
-        comment = mixxx::removeTrailingWhitespaces(currText);
-    }
+    const QString comment = validCommentText(txtCommentBox, txtComment);
 
     for (auto& rec : m_trackRecords) {
         if (!title.isNull()) {
