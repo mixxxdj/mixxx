@@ -1274,6 +1274,12 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 break;
             }
 
+#if VERBOSE_DEBUG_LOG
+            if (!decodedFrameRange.empty()) {
+                kLogger.debug() << "First decoded sample value:" << pDecodedSamples[0];
+            }
+#endif
+
             // The decoder may provide some lead-in and lead-out frames
             // before the start position and after the end of the stream.
             // Those frames need to be cut-off before consumption.
