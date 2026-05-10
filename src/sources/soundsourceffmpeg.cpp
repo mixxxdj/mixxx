@@ -488,7 +488,8 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
           m_seekPrerollFrameCount(0),
           m_pavPacket(av_packet_alloc()),
           m_pavResampledFrame(nullptr),
-          m_avutilVersion(avutil_version()) {
+          m_avutilVersion(avutil_version()),
+          m_leadin_flush_buffers_fix(false) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
@@ -589,6 +590,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
             if (pFdkAacDecoder) {
                 pDecoder = pFdkAacDecoder;
             }
+        }
+
+        if (std::strcmp(pDecoder->name, "libfdk_aac") == 0) {
+            // Fraunhofer FDK AAC has an issue with flushing memory in the lead-in
+            m_leadin_flush_buffers_fix = true;
         }
     }
 
@@ -977,7 +983,20 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     }
 
     // Flush internal decoder state before seeking
-    avcodec_flush_buffers(m_pavCodecContext);
+    if (!m_leadin_flush_buffers_fix || seekIndex >= 0) {
+        // Fast: 0.6 us (Core Ultra 5 125U)
+        avcodec_flush_buffers(m_pavCodecContext);
+    } else {
+        // In case of libfdk_aac, we can't seek far enough into the lead in
+        // (to -m_seekPrerollFrameCount) to have a settled filter from silence.
+        // In the test SoundSourceProxyTest.seekBoundaries and  FFmpeg 4.4.2 it
+        // was limited to -661 instead of -2111. The workaround here is to reopen
+        // the codec which initializes all buffers with zero.
+        // Slow: 43 us (Core Ultra 5 125U)
+        const AVCodec* pCodec = m_pavCodecContext->codec;
+        avcodec_close(m_pavCodecContext);
+        avcodec_open2(m_pavCodecContext, pCodec, nullptr);
+    }
 
     // Seek to new position
     const int64_t seekTimestamp =
