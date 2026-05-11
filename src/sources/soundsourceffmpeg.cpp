@@ -970,12 +970,6 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     // At the beginning of the stream, this is a negative position.
     auto seekIndex = startIndex - m_seekPrerollFrameCount;
 
-    // Seek to codec frame boundaries if the frame size is fixed and known
-    if (m_pavStream->codecpar->frame_size > 0) {
-        seekIndex -= seekIndex % m_pavCodecContext->frame_size;
-    }
-    DEBUG_ASSERT(seekIndex <= startIndex);
-
     if (m_frameBuffer.tryContinueReadingFrom(seekIndex)) {
         // No need to perform a costly seek operation. Just skip some buffered
         // samples and continue decoding at the current position.
