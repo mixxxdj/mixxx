@@ -289,10 +289,7 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
             }
         } else {
             // Change the sample layout to mix all channels together
-            for (SINT i = 0; i < stemSampleLength / 2; i++) {
-                pBuffer[2 * i] += m_buffer[2 * i];
-                pBuffer[2 * i + 1] += m_buffer[2 * i + 1];
-            }
+            SampleUtil::add(pBuffer, m_buffer.data(), stemSampleLength);
         }
     }
 
