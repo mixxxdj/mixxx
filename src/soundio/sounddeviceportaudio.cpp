@@ -1171,12 +1171,22 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     PaTime soundCardTimeNow = Pa_GetStreamTime(
             m_pStream); // There is a delay & jitter to timeInfo->currentTime
 
+    // The time points reported by PortAudio (timeInfo->currentTime or PaStreamCallbackTimeInfo)
+    // are not reliable (on Windows no backend reported satisfactory values - all had huge jitter).
+    // This is also the reason why the official Ableton Link implementation for PortAudio,
+    // do not work very well.
+    // But the framecount of the buffer to process is reliable for all, as otherwise the processing
+    // would fail.
+    // Some like JACK have not always the same chunk size, but this doesn't matter as we cummulate
+    // the time points.
     m_cummulatedBufferTime += bufferSizeSec;
     auto hostTime = std::chrono::duration_cast<std::chrono::microseconds>(
             ClockT::now().time_since_epoch());
 
     m_hostTimeFilter.insertTimePoint(m_cummulatedBufferTime, hostTime);
 
+    // With the cumulated buffer time an the linear regression in the host time filter we smooth
+    // and host time point for each soundcard callback - with a jitter of some 100us.
     auto filteredHostTimeNow = m_hostTimeFilter.calcHostTime(m_cummulatedBufferTime);
     if (filteredHostTimeNow == HostTimeFilter::kInvalidHostTime) {
         filteredHostTimeNow = hostTime;
@@ -1199,6 +1209,13 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     auto externalSyncLatencyUs = std::chrono::duration_cast<std::chrono::microseconds>(
             std::chrono::duration<double, std::milli>(m_pExternalSyncLatencyCompensation->get()));
 
+    // The quality of the latency information provided by PortAudio depends on the underlying driver
+    // and SoundAPI.
+    // On Windows only Steinberg ASIO provides correct latency information.
+    // If the latency is reasonable and we have a stable callback rate,
+    // we use this latency information.
+    // To make the other SoundAPIs work as well, we add externalSyncLatencyUs
+    // which the user can set in the Sound Preferences.
     if (callbackEntrytoDacSecs > kMinReasonableAudioLatencySecs &&
             timeSinceLastCbSecs < bufferSizeSec * 2) {
         m_meanOutputLatency.insert(timeInfo->outputBufferDacTime - soundCardTimeNow);
