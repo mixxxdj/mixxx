@@ -15,7 +15,11 @@ namespace mixxx {
 
 class SoundSourceFFmpeg : public SoundSource {
   public:
+    explicit SoundSourceFFmpeg(const QUrl& url, int wantedStreamIndex);
+
+    // uses the first audio stream
     explicit SoundSourceFFmpeg(const QUrl& url);
+
     ~SoundSourceFFmpeg() override;
 
     void close() override;
@@ -208,6 +212,8 @@ class SoundSourceFFmpeg : public SoundSource {
     bool adjustCurrentPosition(SINT startIndex);
 
     bool consumeNextAVPacket(AVPacket** ppavNextPacket);
+
+    int m_wantedStreamIndex;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {

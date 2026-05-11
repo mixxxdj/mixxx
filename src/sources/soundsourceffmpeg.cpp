@@ -53,6 +53,8 @@ constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 
 constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
+constexpr int kFirstAudioStream = -1;
+
 const Logger kLogger("SoundSourceFFmpeg");
 
 int64_t getStreamStartTime(const AVStream& avStream) {
@@ -485,19 +487,24 @@ QString SoundSourceProviderFFmpeg::getVersionString() const {
     return QString::fromUtf8(av_version_info());
 }
 
-SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
+SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url, int wantedStreamIndex)
         : SoundSource(url),
           m_pavStream(nullptr),
           m_pavDecodedFrame(nullptr),
           m_seekPrerollFrameCount(0),
           m_pavPacket(av_packet_alloc()),
           m_pavResampledFrame(nullptr),
-          m_avutilVersion(avutil_version()) {
+          m_avutilVersion(avutil_version()),
+          m_wantedStreamIndex(wantedStreamIndex) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
     av_channel_layout_default(&m_avResampledChannelLayout, 0);
 #endif
+}
+
+SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
+        : SoundSourceFFmpeg(url, kFirstAudioStream) {
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
@@ -565,7 +572,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
             AVMEDIA_TYPE_AUDIO,
-            /*wanted_stream_nb*/ -1,
+            m_wantedStreamIndex,
             /*related_stream*/ -1,
             &pDecoder,
             /*flags*/ 0);
