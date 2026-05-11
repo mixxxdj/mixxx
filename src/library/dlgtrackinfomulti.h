@@ -25,6 +25,19 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     explicit DlgTrackInfoMulti(UserSettingsPointer pUserSettings);
     ~DlgTrackInfoMulti() override = default;
 
+    /// enum for editable QString track properties
+    enum class TrackProperty {
+        Invalid = 0,
+        Artist,
+        Title,
+        Album,
+        AlbumArtist,
+        Genre,
+        Grouping,
+        Composer,
+        Comment
+    };
+
     void loadTracks(const QList<TrackPointer>& pTracks);
     void focusField(const QString& property);
 
@@ -64,6 +77,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
+    void slotUpdateFindReplaceGUI();
+
     void slotOpenInFileBrowser();
 
   private:
@@ -100,6 +115,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
         return trackIt.value();
     }
 
+    TrackProperty getSelectedFindReplacePropMaybeInvalid() const;
+
     const UserSettingsPointer m_pUserSettings;
 
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
@@ -116,3 +133,5 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     mixxx::RgbColor::optional_t m_newColor;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 };
+
+Q_DECLARE_METATYPE(DlgTrackInfoMulti::TrackProperty)
