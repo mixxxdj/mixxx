@@ -4,6 +4,7 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QTextDocument>
+#include <utility>
 
 #include "controllers/controllermanager.h"
 #include "mixer/playermanager.h"
@@ -43,10 +44,13 @@ namespace qml {
 
 QmlApplication::QmlApplication(
         QApplication* app,
-        const CmdlineArgs& args)
-        : m_pCoreServices(std::make_unique<mixxx::CoreServices>(args, app)),
+        std::shared_ptr<CoreServices> pCoreServices,
+        const QString& mainQmlFilePath)
+        : m_pCoreServices(std::move(pCoreServices)),
           m_visualsManager(std::make_unique<VisualsManager>()),
-          m_mainFilePath(m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
+          m_mainFilePath(mainQmlFilePath.isEmpty()
+                          ? m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName
+                          : mainQmlFilePath),
           m_pAppEngine(nullptr),
 #if defined(Q_OS_ANDROID)
           m_perfSession(nullptr),

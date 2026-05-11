@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QString>
+#include <memory>
 
 #include "coreservices.h"
 #include "qmlautoreload.h"
@@ -21,7 +23,8 @@ class QmlApplication : public QObject {
   public:
     QmlApplication(
             QApplication* app,
-            const CmdlineArgs& args);
+            std::shared_ptr<CoreServices> pCoreServices,
+            const QString& mainQmlFilePath = QString());
     ~QmlApplication() override;
 
   public slots:
@@ -34,7 +37,7 @@ class QmlApplication : public QObject {
 #endif
 
   private:
-    std::unique_ptr<CoreServices> m_pCoreServices;
+    std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
 
     QString m_mainFilePath;

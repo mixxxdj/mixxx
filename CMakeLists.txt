@@ -3794,6 +3794,8 @@ if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
 endif()
 
 if(QML)
+  target_sources(mixxx-lib PRIVATE src/skin/qml/qmlskin.cpp)
+
   if(QT_KNOWN_POLICY_QTP0004)
     # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
     # OLD (Qt < 6.8) requires to import qml modules with a folder e.g.:
