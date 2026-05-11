@@ -583,6 +583,12 @@ void DlgPrefInterface::slotApply() {
     if (m_pSkin &&
             (m_pSkin->name() != m_skinNameOnUpdate ||
                     m_colorScheme != m_colorSchemeOnUpdate)) {
+        if (m_pSkin->type() == mixxx::skin::SkinType::QML) {
+            notifyRebootNecessary();
+            m_skinNameOnUpdate = m_pSkin->name();
+            m_colorSchemeOnUpdate = m_colorScheme;
+            return;
+        }
         // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
