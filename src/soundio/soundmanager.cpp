@@ -27,8 +27,12 @@
 #include "soundio/soundmanagerios.h"
 #elif defined(Q_OS_ANDROID)
 #include <QtCore/private/qandroidextras_p.h>
+#include <android/api-level.h>
+#include <android/log.h>
 #include <jni.h>
 #include <pa_oboe.h>
+#include <pthread.h>
+#include <sys/syscall.h>
 
 #include <QJniObject>
 #endif
@@ -314,42 +318,56 @@ void SoundManager::queryDevicesPortaudio() {
                             "android/media/AudioManager",
                             "GET_DEVICES_OUTPUTS");
 
-            auto const isSupported = [](int type) {
+            auto const supportedFriendlyName = [](int type) -> std::optional<QString> {
                 switch (type) {
                 case 1:  // AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
+                    return tr("Earpiece");
                 case 2:  // AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                    return tr("Speaker");
+                case 4: // AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                    return tr("Wired headphones");
                 case 3:  // AudioDeviceInfo.TYPE_WIRED_HEADSET
+                    return tr("Wired headset");
+                case 9: // AudioDeviceInfo.TYPE_HDMI
+                    return tr("HDMI");
+                case 10: // AudioDeviceInfo.TYPE_HDMI_ARC
+                    return tr("HDMI audio return channel");
+                case 15: // AudioDeviceInfo.TYPE_BUILTIN_MIC
+                    return tr("Microphone");
+                case 25: // AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
+                    return tr("Mixed");
                 case 8:  // AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
                 case 11: // AudioDeviceInfo.TYPE_USB_DEVICE
                 case 22: // AudioDeviceInfo.TYPE_USB_HEADSET
-                case 9:  // AudioDeviceInfo.TYPE_HDMI
-                case 10: // AudioDeviceInfo.TYPE_HDMI_ARC
                 case 13: // AudioDeviceInfo.TYPE_DOCK
-                case 15: // AudioDeviceInfo.TYPE_BUILTIN_MIC
                 case 12: // AudioDeviceInfo.TYPE_USB_ACCESSORY
                 case 26: // AudioDeviceInfo.TYPE_BLE_HEADSET
                 case 27: // AudioDeviceInfo.TYPE_BLE_SPEAKER
                 case 23: // AudioDeviceInfo.TYPE_HEARING_AID
-                case 25: // AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
-                    // supported
-                    return true;
+                    // supported, but no friendly name
+                    return QStringLiteral();
                 default:
                     // unsupported
                     break;
                 }
-                return false;
+                return std::nullopt;
             };
 
-            auto const parse = [isSupported](PaOboe_Direction direction,
+            auto const parse = [supportedFriendlyName](PaOboe_Direction direction,
                                        QJniArray<QJniObject>& devices) {
                 for (const auto& device : devices) {
                     jint type = device->callMethod<jint>("getType");
-                    if (!isSupported(type)) {
+                    auto maybeName = supportedFriendlyName(type);
+                    if (!maybeName.has_value()) {
                         continue;
                     }
                     QString name = device->callObjectMethod("getProductName",
                                                  "()Ljava/lang/CharSequence;")
                                            .toString();
+                    if (!maybeName.value().isEmpty()) {
+                        name.append(QStringLiteral(": %1").arg(maybeName.value()));
+                    }
+                    int32_t id = device->callMethod<jint>("getId");
                     auto channelCounts = device->callMethod<QJniArray<jint>>("getChannelCounts");
                     int channelCount = *std::max_element(
                             channelCounts.begin(), channelCounts.end());
@@ -361,10 +379,16 @@ void SoundManager::queryDevicesPortaudio() {
                     if (!sampleRates.isEmpty()) {
                         int sampleRate = *sampleRates.cbegin();
                         qDebug() << "audioManager - SampleRates:" << sampleRate;
-                        PaOboe_RegisterDevice(name.toStdString().c_str(),
+                        auto result = PaOboe_RegisterDevice(name.toStdString().c_str(),
+                                id,
                                 direction,
                                 channelCount,
                                 sampleRate);
+                        if (result != paNoError) {
+                            qWarning()
+                                    << "Error registering device to PortAudio:"
+                                    << Pa_GetErrorText(result);
+                        }
                     }
                 }
             };
@@ -397,8 +421,23 @@ void SoundManager::queryDevicesPortaudio() {
             qDebug() << "audioManager outputFramePerBuffer:" << outputFramePerBuffer;
             PaOboe_SetNativeBufferSize(outputFramePerBuffer);
         }).waitForFinished();
-        PaOboe_SetNumberOfBuffers(1);
+        PaOboe_SetNumberOfBuffers(4);
 
+        // The following snippets pins the audio thread to a performance core
+        int32_t thread32 = gettid();
+        uint mask = 0b10000;
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        for (uint32_t i = 0; i < 32; ++i) {
+            if ((mask >> i) & 1) {
+                CPU_SET(i, &cpuset);
+            }
+        }
+        if (sched_setaffinity(thread32, sizeof(cpu_set_t), &cpuset) != 0) {
+            __android_log_print(ANDROID_LOG_WARN, "mixxx", "Error setting CPU affinity: %d", errno);
+        } else {
+            __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "CPU affinity set");
+        }
 #endif
         err = Pa_Initialize();
         m_paInitialized = true;

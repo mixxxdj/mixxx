@@ -17,9 +17,11 @@ constexpr int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB "Traktor Scratch MK2 Vinyl, Side B (beta)"
 #define MIXXX_VINYL_TRAKTORSCRATCHMK2CD "Traktor Scratch MK2 CD (beta)"
 #define MIXXX_VINYL_MIXVIBESDVS "MixVibes DVS V2 Vinyl"
-#define MIXXX_VINYL_MIXVIBES7INCH "MixVibes 7 inch"
+#define MIXXX_VINYL_MIXVIBES7INCH "MixVibes 7\""
 #define MIXXX_VINYL_PIONEERA "Pioneer RekordBox DVS Control Vinyl, Side A"
 #define MIXXX_VINYL_PIONEERB "Pioneer RekordBox DVS Control Vinyl, Side B"
+#define MIXXX_VINYL_ALGORIDDIMA "Algoriddim djay PRO AI 12\", Side A"
+#define MIXXX_VINYL_ALGORIDDIMB "Algoriddim djay PRO AI 12\", Side B (no stem support)"
 
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEA_XWAX_NAME "serato_2a"
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEB_XWAX_NAME "serato_2b"
@@ -33,10 +35,12 @@ constexpr int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_MIXVIBES7INCH_XWAX_NAME "mixvibes_7inch"
 #define MIXXX_VINYL_PIONEERA_XWAX_NAME "pioneer_a"
 #define MIXXX_VINYL_PIONEERB_XWAX_NAME "pioneer_b"
+#define MIXXX_VINYL_ALGORIDDIMA_XWAX_NAME "algoriddim_a"
+#define MIXXX_VINYL_ALGORIDDIMB_XWAX_NAME "algoriddim_b"
 
 #define MIXXX_VINYL_DEFAULT_XWAX_NAME MIXXX_VINYL_SERATOCV02VINYLSIDEA_XWAX_NAME
 
-// Default recommended leadin times for various vinyl types.
+// Default recommended lead-in times for various vinyl types.
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN 28
 #define MIXXX_VINYL_SERATOCV02VINYLSIDEB_LEADIN 28
 #define MIXXX_VINYL_SERATOCD_LEADIN 0
@@ -49,6 +53,8 @@ constexpr int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_MIXVIBES7INCH_LEADIN 0
 #define MIXXX_VINYL_PIONEERA_LEADIN 10
 #define MIXXX_VINYL_PIONEERB_LEADIN 10
+#define MIXXX_VINYL_ALGORIDDIMA_LEADIN 0
+#define MIXXX_VINYL_ALGORIDDIMB_LEADIN 0
 
 #define MIXXX_VINYL_SPEED_33 "33.3 RPM"
 #define MIXXX_VINYL_SPEED_45 "45 RPM"

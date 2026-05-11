@@ -50,6 +50,8 @@ DlgPrefVinyl::DlgPrefVinyl(
         box->addItem(MIXXX_VINYL_MIXVIBES7INCH);
         box->addItem(MIXXX_VINYL_PIONEERA);
         box->addItem(MIXXX_VINYL_PIONEERB);
+        box->addItem(MIXXX_VINYL_ALGORIDDIMA);
+        box->addItem(MIXXX_VINYL_ALGORIDDIMB);
         connect(box,
                 &QComboBox::currentTextChanged,
                 this,
@@ -264,7 +266,12 @@ int DlgPrefVinyl::getDefaultLeadIn(const QString& vinyl_type) const {
         return MIXXX_VINYL_PIONEERA_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_PIONEERB) {
         return MIXXX_VINYL_PIONEERB_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_ALGORIDDIMA) {
+        return MIXXX_VINYL_ALGORIDDIMA_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_ALGORIDDIMB) {
+        return MIXXX_VINYL_ALGORIDDIMB_LEADIN;
     }
+
     qWarning() << "Unknown vinyl type " << vinyl_type;
     return 0;
 }

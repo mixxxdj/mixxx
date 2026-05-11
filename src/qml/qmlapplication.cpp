@@ -1,9 +1,9 @@
 #include "qmlapplication.h"
 
-#include <qtextdocument.h>
-
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
+#include <QQuickWindow>
+#include <QTextDocument>
 
 #include "controllers/controllermanager.h"
 #include "mixer/playermanager.h"
@@ -15,6 +15,12 @@
 #include "util/versionstore.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#if defined(Q_OS_ANDROID)
+#include <android/api-level.h>
+#include <android/log.h>
+#include <android/performance_hint.h>
+#endif
+
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
 Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
 
@@ -42,6 +48,9 @@ QmlApplication::QmlApplication(
           m_visualsManager(std::make_unique<VisualsManager>()),
           m_mainFilePath(m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
+#if defined(Q_OS_ANDROID)
+          m_perfSession(nullptr),
+#endif
           m_autoReload() {
     QQuickStyle::setStyle("Basic");
 
@@ -80,7 +89,9 @@ QmlApplication::QmlApplication(
     if (result != SoundDeviceStatus::Ok) {
         const int reInt = static_cast<int>(result);
         qCritical() << "Error setting up sound devices:" << reInt;
+#ifndef Q_OS_ANDROID
         exit(reInt);
+#endif
     }
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
@@ -122,6 +133,40 @@ QmlApplication::QmlApplication(
             [this]() {
                 loadQml(m_mainFilePath);
             });
+
+#if defined(Q_OS_ANDROID)
+    APerformanceHintManager* manager = APerformanceHint_getManager();
+    VERIFY_OR_DEBUG_ASSERT(manager) {
+        return;
+    }
+    int32_t thread32 = gettid();
+    m_perfSession = APerformanceHint_createSession(manager, &thread32, 1, 1e9 / 60);
+    VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
+        __android_log_print(ANDROID_LOG_WARN, "mixxx", "unable to create a ADPF session!");
+    }
+    else {
+        APerformanceHint_setPreferPowerEfficiency(m_perfSession, false);
+        __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "ADPF session ready");
+    }
+}
+
+void QmlApplication::slotWindowChanged(QQuickWindow* window) {
+    if (window) {
+        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlApplication::slotFrameSwapped);
+    }
+    m_frameTimer.restart();
+}
+
+void QmlApplication::slotFrameSwapped() {
+    VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
+        return;
+    }
+    auto lastFrameDurationNs = m_frameTimer.elapsed().toIntegerNanos();
+    auto t = std::chrono::steady_clock::now() - std::chrono::steady_clock::time_point{};
+    APerformanceHint_reportActualWorkDuration(m_perfSession,
+            lastFrameDurationNs);
+    m_frameTimer.restart();
+#endif
 }
 
 QmlApplication::~QmlApplication() {
@@ -150,6 +195,17 @@ void QmlApplication::loadQml(const QString& path) {
     if (m_pAppEngine->rootObjects().isEmpty()) {
         qCritical() << "Failed to load QML file" << path;
     }
+
+#if defined(Q_OS_ANDROID)
+    for (auto* item : m_pAppEngine->rootObjects()) {
+        auto* pWindow = qobject_cast<QQuickWindow*>(item);
+        if (!pWindow) {
+            continue;
+        }
+        slotWindowChanged(pWindow);
+        break;
+    }
+#endif
 }
 
 } // namespace qml

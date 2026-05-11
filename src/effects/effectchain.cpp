@@ -123,6 +123,17 @@ EffectChain::EffectChain(const QString& group,
             &EffectChain::slotControlChainPresetSelector);
     m_pControlChainPresetSelector->addAlias(ConfigKey(m_group, QStringLiteral("chain_selector")));
 
+    m_pControlShowPresetList =
+            std::make_unique<ControlPushButton>(ConfigKey(m_group, "show_preset_list"));
+    m_pControlShowPresetList->connectValueChangeRequest(
+            this,
+            [this](double value) {
+                emit presetListShowRequest(value > 0);
+            });
+    // All WEffectChainPresetSelector of this chain receive this. If one of them
+    // is visible, it'll return a 'confirm' signal which we handle in
+    // slotPresetListVisibleChanged and set the control accordingly.
+
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
     m_pControlChainShowFocus = std::make_unique<ControlPushButton>(
@@ -408,6 +419,10 @@ void EffectChain::slotPresetListUpdated() {
     m_pControlNumChainPresets->forceSet(numPresets());
 }
 
+void EffectChain::slotPresetListVisibleChanged(bool visible) {
+    m_pControlShowPresetList->setAndConfirm(visible ? 1.0 : 0.0);
+}
+
 void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
     if (m_enabledInputChannels.contains(handleGroup)) {
         return;
@@ -422,7 +437,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     // avoid allocating memory in the realtime audio callback thread.
 
     for (int i = 0; i < m_effectSlots.size(); ++i) {
-        m_effectSlots[i]->initalizeInputChannel(handleGroup.handle());
+        m_effectSlots[i]->initializeInputChannel(handleGroup.handle());
     }
 
     m_pMessenger->writeRequest(request);

@@ -181,6 +181,18 @@ void applyStyleOverride(CmdlineArgs* pArgs) {
 
 } // anonymous namespace
 
+#ifdef Q_OS_ANDROID
+  // Currently, accessibility properties are not set, leading to a warning spam in
+  // the android logcat. Furthermore, there seems to be a few issues with the default setup,
+  // which leads to huge performance loss and occasional random crash.
+extern "C" {
+JNIEXPORT bool JNICALL
+Java_org_qtproject_qt_android_QtNativeAccessibility_accessibilitySupported(JNIEnv*, jobject) {
+    return false;
+}
+}
+#endif
+
 int main(int argc, char * argv[]) {
     Console console;
 

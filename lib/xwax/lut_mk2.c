@@ -47,6 +47,16 @@ int lut_init_mk2(struct lut_mk2 *lut, int nslots)
             " (%d slots per hash, %zuKb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
+    lut->hdr = malloc(sizeof(struct lut_mk2_header));
+    if (lut->hdr == NULL) {
+        perror("malloc");
+        return -1;
+    }
+
+    lut->hdr->magic = MIXXX_LUT_MAGIC;
+    lut->hdr->major = MIXXX_LUT_MAJOR;
+    lut->hdr->minor = MIXXX_LUT_MINOR;
+
     lut->slot = malloc(sizeof(struct slot_mk2) * nslots);
     if (lut->slot == NULL) {
         perror("malloc");
@@ -69,8 +79,17 @@ int lut_init_mk2(struct lut_mk2 *lut, int nslots)
 
 void lut_clear_mk2(struct lut_mk2 *lut)
 {
-    free(lut->table);
-    free(lut->slot);
+    if (!lut)
+        return;
+
+    if (lut->hdr)
+        free(lut->hdr);
+
+    if (lut->table)
+        free(lut->table);
+
+    if (lut->slot)
+        free(lut->slot);
 }
 
 /*
