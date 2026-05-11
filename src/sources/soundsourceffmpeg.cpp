@@ -579,6 +579,17 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     if (av_find_best_stream_result < 0) {
         switch (av_find_best_stream_result) {
         case AVERROR_STREAM_NOT_FOUND:
+            if (m_wantedStreamIndex >= 0) {
+                if (m_pavInputFormatContext->nb_streams <=
+                        static_cast<unsigned int>(m_wantedStreamIndex)) {
+                    kLogger.warning().noquote()
+                            << "cannot find stream" << m_wantedStreamIndex;
+                } else {
+                    kLogger.warning().noquote()
+                            << "stream" << m_wantedStreamIndex << "isn't an audio stream";
+                }
+                return OpenResult::Failed;
+            }
             kLogger.warning()
                     << "av_find_best_stream() failed to find an audio stream";
             break;
