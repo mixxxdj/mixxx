@@ -1,26 +1,11 @@
 #pragma once
 
-#include "sources/soundsourceffmpeg.h"
 #include "sources/soundsourceprovider.h"
 #include "util/samplebuffer.h"
 
 namespace mixxx {
 
-/// @brief Handle a single stem embedded in a stem file
-class SoundSourceSingleSTEM : public SoundSourceFFmpeg {
-  public:
-    // streamIdx is the FFmpeg stream id, which may different than stemIdx + 1
-    // because STEM may contain other non audio stream
-    explicit SoundSourceSingleSTEM(const QUrl& url, unsigned int streamIdx);
-
-  protected:
-    OpenResult tryOpen(
-            OpenMode mode,
-            const OpenParams& params) override;
-
-  private:
-    unsigned int m_streamIdx;
-};
+class SoundSourceFFmpeg;
 
 /// @brief Handle a stem file, composed of multiple audio channel. Can open in
 /// stereo or in stem (4 x stereo). Use OpenParams to request a maximum number of channels.
@@ -34,7 +19,7 @@ class SoundSourceSTEM : public SoundSource {
 
   private:
     // Contains each stem source, or the main mix if opened in stereo mode
-    std::vector<std::unique_ptr<SoundSourceSingleSTEM>> m_pStereoStreams;
+    std::vector<std::unique_ptr<SoundSourceFFmpeg>> m_pStereoStreams;
     SampleBuffer m_buffer;
 
     mixxx::audio::ChannelCount m_requestedChannelCount;
