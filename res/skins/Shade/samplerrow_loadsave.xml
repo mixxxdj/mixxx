@@ -1,0 +1,36 @@
+<Template>
+  <WidgetGroup>
+    <Size>0e,<Variable name="box_height"/>f</Size>
+    <BackPath>style/style_bg_sampler_right.png</BackPath>
+    <ObjectName>SamplersLoadSaveButtons_row<Variable name="row"/></ObjectName>
+    <Children>
+      <PushButton>
+      <ObjectName>SamplersLoadSaveButtons_row<Variable name="row"/></ObjectName>
+        <TooltipId>LoadSamplerBank</TooltipId>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_load.png</Pressed>
+          <Unpressed>skin:/btn/btn_load.png</Unpressed>
+        </State>
+        <Pos>0,6</Pos>
+        <Connection>
+          <ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+        </Connection>
+      </PushButton>
+      <PushButton>
+        <TooltipId>SaveSamplerBank</TooltipId>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_save.png</Pressed>
+          <Unpressed>skin:/btn/btn_save.png</Unpressed>
+        </State>
+        <Pos>0,20</Pos>
+        <Connection>
+          <ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

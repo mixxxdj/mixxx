@@ -1,3 +1,8 @@
+#TEST1 {
+  background-color: red;
+}
+
+
 /* Tango style sheet */
 
 #StemLabelEmpty {
@@ -26,6 +31,7 @@ WPushButton,
 WKey,
 WTime,
 WTrackProperty,
+WLabel #SamplerNumber,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
@@ -2145,6 +2151,7 @@ styled differently because of their importance */
     border-radius: 3px;
   }
 
+WLabel #SamplerNumber,
 WTrackProperty#SamplerTitle {
   font-size: 14px/18px;
   font-weight: bold;
@@ -2153,6 +2160,7 @@ WTrackProperty#SamplerTitle {
   padding: 0 0 0 1px;
 }
 
+WLabel#SamplerNumber_mini,
 WTrackProperty#SamplerTitle_mini {
   font-size: 14px/14px;
   font-weight: bold;

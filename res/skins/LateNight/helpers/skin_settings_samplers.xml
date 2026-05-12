@@ -86,7 +86,29 @@ Description:
                   <SetVariable name="Text">Fx controls</SetVariable>
                   <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
                 </Template>
-
+                <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                  <SetVariable name="Text">Show samplers numbers</SetVariable>
+                  <SetVariable name="Setting">[LateNight],show_samplers_numbers</SetVariable>
+                </Template>
+                <WidgetGroup> <!-- The setting below is useless when 4 samplers are shown, so we hide it when show_4samplers is true -->
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                      <SetVariable name="Text">Alternate samplers order</SetVariable>
+                      <SetVariable name="Setting">[LateNight],alternate_samplers_order</SetVariable>
+                      <SetVariable name="Width">180min</SetVariable>
+                    </Template>
+                    <!-- Expanding spacer to push content left -->
+                    <WidgetGroup><SizePolicy>e,min</SizePolicy></WidgetGroup>
+                  </Children>
+                    <Connection>
+                      <ConfigKey>[LateNight],show_4samplers</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>         <!-- invert: visible when result is 0 -->
+                      </Transform>
+                    </Connection>
+                </WidgetGroup>
                 <WidgetGroup>
                   <ObjectName>SamplerLoadSaveBox</ObjectName>
                   <Layout>horizontal</Layout>

@@ -745,6 +745,12 @@ Description:
               </WidgetGroup><!-- /Sampler row buttons -->
             </Children>
           </WidgetGroup><!-- /Sampler rows -->
+          <!-- Option for showing samplers number -->
+          <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
+            <SetVariable name="text">Show Samplers Number</SetVariable>
+            <SetVariable name="Setting">[Tango],show_samplers_numbers</SetVariable>
+            <SetVariable name="TooltipId"></SetVariable>
+          </Template>
 
           <WidgetGroup><!-- Load/Save Sampler Bank -->
             <ObjectName>AlignLeft</ObjectName>

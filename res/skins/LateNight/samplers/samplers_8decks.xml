@@ -75,7 +75,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <!-- First row 1 2 | 5 6 -->
+              <!-- First row 1 2 | 5 6 (or alternatively 1 2 | 3 4 if using alternate_samplers_order skin setting)-->
               <WidgetGroup>
                 <ObjectName>SamplerRow</ObjectName>
                 <Layout>horizontal</Layout>
@@ -94,31 +94,123 @@
                     <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
                   </SingletonContainer>
 
-                  <Template src="skins:LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">5</SetVariable>
-                  </Template>
+                  <!-- using WidgetStack in order to conditionally switch between the two layouts (3 and 5)-->
+                  <WidgetStack currentpage="[LateNight],alternate_samplers_order" persist="true">
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                    <Template src="skins:LateNight/samplers/sampler.xml">
+                      <SetVariable name="SamplerNum">5</SetVariable>
+                    </Template>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- Page 1 : use_alternate_order = 1 -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                    <Template src="skins:LateNight/samplers/sampler.xml">
+                      <SetVariable name="SamplerNum">3</SetVariable>
+                    </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetStack>
 
-                  <Template src="skins:LateNight/samplers/sampler.xml">
-                    <SetVariable name="SamplerNum">6</SetVariable>
-                  </Template>
+                  <!-- using WidgetStack in order to conditionally switch between the two layouts (4 and 6)-->
+                  <WidgetStack currentpage="[LateNight],alternate_samplers_order" persist="true">
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                    <Template src="skins:LateNight/samplers/sampler.xml">
+                      <SetVariable name="SamplerNum">6</SetVariable>
+                    </Template>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- Page 1 : use_alternate_order = 1 -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                    <Template src="skins:LateNight/samplers/sampler.xml">
+                      <SetVariable name="SamplerNum">4</SetVariable>
+                    </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetStack>
 
                 </Children>
               </WidgetGroup><!-- /First row -->
 
-              <!-- Second row 3 4 | 7 8 -->
+              <!-- Second row 3 4 | 7 8 (or alternatively 5 6 | 7 8 if using alternate_samplers_order skin setting)-->
               <WidgetGroup>
                 <ObjectName>SamplerRow</ObjectName>
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
 
+                  <!-- using WidgetStack in order to conditionally switch between the two layouts (3 and 5)-->
+                  <WidgetStack currentpage="[LateNight],alternate_samplers_order" persist="true">
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
                   <SingletonContainer>
+                    <ObjectName>Sampler3_Singleton</ObjectName>
+                  </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- Page 1 : use_alternate_order = 1 -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                    <Template src="skins:LateNight/samplers/sampler.xml">
+                      <SetVariable name="SamplerNum">5</SetVariable>
+                    </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetStack>
+
+                  <!-- using WidgetStack in order to conditionally switch between the two layouts (4 and 6)-->
+                  <WidgetStack currentpage="[LateNight],alternate_samplers_order" persist="true">
+                    <Children>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                  <SingletonContainer>
+                    <ObjectName>Sampler4_Singleton</ObjectName>
+                  </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                      <!-- Page 1 : use_alternate_order = 1 -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Children>
+                    <Template src="skins:LateNight/samplers/sampler.xml">
+                      <SetVariable name="SamplerNum">6</SetVariable>
+                    </Template>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetStack>
+
+                  <!-- <SingletonContainer>
                     <ObjectName>Sampler3_Singleton</ObjectName>
                   </SingletonContainer>
 
                   <SingletonContainer>
                     <ObjectName>Sampler4_Singleton</ObjectName>
-                  </SingletonContainer>
+                  </SingletonContainer> -->
 
                   <WidgetGroup>
                     <ObjectName>MicAuxRackFiller</ObjectName>

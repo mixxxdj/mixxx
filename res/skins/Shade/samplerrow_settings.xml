@@ -1,0 +1,43 @@
+<Template>
+  <WidgetGroup>
+    <Size>0e,<Variable name="box_height"/>f</Size>
+    <BackPath>style/style_bg_sampler_right.png</BackPath>
+    <ObjectName>SamplersSettingsButtons_row<Variable name="row"/></ObjectName>
+    <Children>
+      <PushButton>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_samplers_numbers_ON.png</Pressed>
+          <Unpressed>skin:/btn/btn_samplers_numbers_ON.png</Unpressed>
+        </State>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_samplers_numbers_OFF.png</Pressed>
+          <Unpressed>skin:/btn/btn_samplers_numbers_OFF.png</Unpressed>
+        </State>
+        <Pos>0,6</Pos>
+        <Connection>
+          <ConfigKey>[Skin],show_samplers_numbers</ConfigKey>
+        </Connection>
+      </PushButton>
+      <PushButton>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_samplers_order_ON.png</Pressed>
+          <Unpressed>skin:/btn/btn_samplers_order_ON.png</Unpressed>
+        </State>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_samplers_order_OFF.png</Pressed>
+          <Unpressed>skin:/btn/btn_samplers_order_OFF.png</Unpressed>
+        </State>
+        <Pos>0,20</Pos>
+        <Connection>
+          <ConfigKey>[Skin],alternate_samplers_order</ConfigKey>
+        </Connection>
+      </PushButton>
+    </Children>
+  </WidgetGroup>
+</Template>

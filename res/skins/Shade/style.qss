@@ -1099,3 +1099,14 @@ WRateRange {
   font-size: 10px;
   qproperty-alignment: 'AlignCenter';
 }
+
+/* Used to hide sampler settings buttons depending on which row they are */
+#SamplersLoadSaveButtons_row2,
+#SamplersSettingsButtons_row1 {
+qproperty-visible: false;
+    max-width: 0px;
+    max-height: 0px;
+    margin: 0px;
+    padding: 0px;
+    border: none;
+}

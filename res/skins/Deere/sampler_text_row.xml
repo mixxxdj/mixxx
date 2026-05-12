@@ -100,7 +100,25 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
+          <!-- Sampler Number (based on skin setting + track loaded)-->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Connection>
+              <ConfigKey>[Deere],show_samplers_numbers</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+              <Label>
+                <SizePolicy>min,e</SizePolicy>
+                <Text><Variable name="i"/>. </Text>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Label>
+            </Children>
+          </WidgetGroup>
           <TrackProperty>
             <TooltipId>track_title</TooltipId>
             <SizePolicy>me,min</SizePolicy>

@@ -74,6 +74,9 @@
       <attribute persist="true" config_key="[Skin],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
+      <attribute persist="true" config_key="[Skin],alternate_samplers_order">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_samplers_numbers">0</attribute>
+
 
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
@@ -418,20 +421,93 @@
             </WidgetGroup>
             <Template src="skin:effectrow.xml"/>
             <Template src="skin:srcrow.xml"/>
-            <Template src="skin:samplerrow.xml">
-              <SetVariable name="row">1</SetVariable>
-              <SetVariable name="samplernum1">1</SetVariable>
-              <SetVariable name="samplernum2">2</SetVariable>
-              <SetVariable name="samplernum3">5</SetVariable>
-              <SetVariable name="samplernum4">6</SetVariable>
-            </Template>
-            <Template src="skin:samplerrow.xml">
-              <SetVariable name="row">2</SetVariable>
-              <SetVariable name="samplernum1">3</SetVariable>
-              <SetVariable name="samplernum2">4</SetVariable>
-              <SetVariable name="samplernum3">7</SetVariable>
-              <SetVariable name="samplernum4">8</SetVariable>
-            </Template>
+            <!-- using WidgetStack in order to conditionally switch between the two layouts -->
+            <WidgetGroup>
+              <SizePolicy>me,f</SizePolicy>
+              <Layout>horizontal</Layout>
+              <!-- I don't now why this works but a WidgetGroup wrapper around a
+              WidgetStack with a 'fixed' size policy makes the group track the
+              minimum size of the current stack widget. -->
+              <Children>
+                <WidgetStack currentpage="[Skin],alternate_samplers_order" persist="true">
+                  <Children>
+                    <WidgetGroup>
+                    <ObjectName>Michel</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>min,f</SizePolicy>
+                      <Children>
+                        <Template src="skin:samplerrow.xml">
+                          <SetVariable name="row">1</SetVariable>
+                          <SetVariable name="samplernum1">1</SetVariable>
+                          <SetVariable name="samplernum2">2</SetVariable>
+                          <SetVariable name="samplernum3">5</SetVariable>
+                          <SetVariable name="samplernum4">6</SetVariable>
+                          <SetVariable name="right_button">loadsave</SetVariable>
+                        </Template>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- Page 1 : use_alternate_order = 1 -->
+                    <WidgetGroup>
+                      <ObjectName>Paul</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>min,min</SizePolicy>
+                      <Children>
+                        <Template src="skin:samplerrow.xml">
+                          <SetVariable name="row">1</SetVariable>
+                          <SetVariable name="samplernum1">1</SetVariable>
+                          <SetVariable name="samplernum2">2</SetVariable>
+                          <SetVariable name="samplernum3">3</SetVariable>
+                          <SetVariable name="samplernum4">4</SetVariable>
+                          <SetVariable name="right_button">loadsave</SetVariable>
+                        </Template>
+                      </Children>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetStack>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>me,f</SizePolicy>
+              <Layout>horizontal</Layout>
+              <!-- I don't now why this works but a WidgetGroup wrapper around a
+              WidgetStack with a 'fixed' size policy makes the group track the
+              minimum size of the current stack widget. -->
+              <Children>
+                <WidgetStack currentpage="[Skin],alternate_samplers_order" persist="true">
+                  <Children>
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>min,min</SizePolicy>
+                      <Children>
+                        <Template src="skin:samplerrow.xml">
+                          <SetVariable name="row">2</SetVariable>
+                          <SetVariable name="samplernum1">3</SetVariable>
+                          <SetVariable name="samplernum2">4</SetVariable>
+                          <SetVariable name="samplernum3">7</SetVariable>
+                          <SetVariable name="samplernum4">8</SetVariable>
+                          <SetVariable name="right_button">settings</SetVariable>
+                        </Template>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- Page 1 : use_alternate_order = 1 -->
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>min,min</SizePolicy>
+                      <Children>
+                        <Template src="skin:samplerrow.xml">
+                          <SetVariable name="row">2</SetVariable>
+                          <SetVariable name="samplernum1">5</SetVariable>
+                          <SetVariable name="samplernum2">6</SetVariable>
+                          <SetVariable name="samplernum3">7</SetVariable>
+                          <SetVariable name="samplernum4">8</SetVariable>
+                          <SetVariable name="right_button">settings</SetVariable>
+                        </Template>
+                      </Children>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetStack>
+              </Children>
+            </WidgetGroup>
 
           </Children>
           <Connection>

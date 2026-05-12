@@ -62,19 +62,45 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><!-- Title + [Sync, CF assign, Volume] -->
+      <WidgetGroup><!-- [Number] + Title + [Sync, CF assign, Volume] -->
         <ObjectName>Spacer33</ObjectName>
         <Layout>vertical</Layout>
         <Size>84me,34f</Size>
         <Children>
-
-          <TrackProperty>
-            <ObjectName>SamplerTitle_mini</ObjectName>
-            <TooltipId>text</TooltipId>
-            <Size>i,14f</Size>
-            <Group><Variable name="group"/></Group>
-            <Property>titleInfo</Property>
-          </TrackProperty>
+          <WidgetGroup><!-- [Number] + Title -->
+            <Layout>horizontal</Layout>
+            <Size>i,34f</Size>
+            <Children>
+              <!-- Sampler Number (based on skin setting + track loaded)-->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <!--<SizePolicy>min,min</SizePolicy>-->
+                <Connection>
+                  <ConfigKey>[Tango],show_samplers_numbers</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <Label>
+                    <ObjectName>SamplerNumber_mini</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Text><Variable name="samNum"/></Text>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+              <TrackProperty>
+                <ObjectName>SamplerTitle_mini</ObjectName>
+                <TooltipId>text</TooltipId>
+                <Size>me,14f</Size>
+                <Group><Variable name="group"/></Group>
+                <Property>titleInfo</Property>
+                <Elide>right</Elide>
+              </TrackProperty>
+            </Children>
+          </WidgetGroup><!-- /[Number] + Title -->
 
           <WidgetGroup><!-- Sync, CF assign, Volume -->
             <Layout>horizontal</Layout>
@@ -166,15 +192,38 @@ Variables:
             <Layout>vertical</Layout>
             <Size>89me,54f</Size>
             <Children>
-
-              <TrackProperty>
-                <ObjectName>SamplerTitle</ObjectName>
-                <TooltipId>text</TooltipId>
-                <Size>i,18f</Size>
-                <Group><Variable name="group"/></Group>
-                <Property>titleInfo</Property>
-                <Elide>right</Elide>
-              </TrackProperty>
+              <WidgetGroup>
+              <Layout>horizontal</Layout>
+              <SizePolicy>i,min</SizePolicy> <!-- use i for evenly sized widgets -->
+              <Children>
+              <WidgetGroup>
+                <SizePolicy>min,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Connection>
+                  <ConfigKey>[Tango],show_samplers_numbers</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <Label>
+                    <ObjectName>SamplerNumber_mini</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Text><Variable name="samNum"/></Text>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,track_loaded</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+                  <TrackProperty>
+                    <ObjectName>SamplerTitle</ObjectName>
+                    <TooltipId>text</TooltipId>
+                    <Size>me,18f</Size>
+                    <Group><Variable name="group"/></Group>
+                    <Property>titleInfo</Property>
+                  </TrackProperty>
+                </Children>
+              </WidgetGroup>
 
               <WidgetGroup><!-- Play / Overview -->
                 <Layout>horizontal</Layout>

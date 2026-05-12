@@ -52,22 +52,43 @@
                 <Pos>0,2</Pos>
                 <Layout>vertical</Layout>
                 <Children>
-                <TrackProperty>
-                  <Size>0e,40f</Size>
-                  <TooltipId>text</TooltipId>
-                  <Style>QLabel {
-                      font-size: 13px;
-                      font-weight: bold;
-                      background-color: transparent;
-                      color: #191F24;
-                      text-align: left;
-                      padding-left: 0px;
-                      padding-top: 2px;}
-                  </Style>
-                  <Group>[Sampler<Variable name="samplernum"/>]</Group>
-                  <Property>titleInfo</Property>
-                  <Elide>right</Elide>
-                </TrackProperty>
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                  <Label> <!-- Sampler number conditionally displayed based on skin setting -->
+                    <Connection>
+                      <ConfigKey>[Skin],show_samplers_numbers</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Style>QLabel {
+                        font-size: 13px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        text-align: left;
+                        padding-left: 0px;
+                        padding-top: 2px;}
+                    </Style>
+                    <Text><Variable name="samplernum"/></Text>
+                  </Label>
+                  <TrackProperty>
+                    <Size>0e,40f</Size>
+                    <TooltipId>text</TooltipId>
+                    <Style>QLabel {
+                        font-size: 13px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        text-align: left;
+                        padding-left: 0px;
+                        padding-top: 2px;}
+                    </Style>
+                    <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                    <Property>titleInfo</Property>
+                    <Elide>right</Elide>
+                  </TrackProperty>
+                  </Children>
+                </WidgetGroup>
                 <!-- Alternative "TITLE ONLY" display
                 <TrackProperty>
                   <TooltipId>track_title</TooltipId>
