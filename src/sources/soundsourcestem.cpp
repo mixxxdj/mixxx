@@ -203,7 +203,7 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
     if (params.getSignalInfo().getChannelCount() ==
                     mixxx::audio::ChannelCount::stereo() ||
             selectedStemMask) {
-        // Requesting a stereo stream (used for samples and preview decks)
+        // Requesting a stereo stream (used for samplers and preview decks)
         m_requestedChannelCount = mixxx::audio::ChannelCount::stereo();
         initChannelCountOnce(mixxx::audio::ChannelCount::stereo());
     } else {
@@ -276,11 +276,9 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
                         stemSampleLength));
         m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
 
-        // TODO(XXX): currently, stem samples are interleaved and packed
-        // next to each other as such:
-        //    1L1R1L1R1L1R...2L2R2L2R2L2R2L2R......3L3R3L3R3L3R3L3R......4L4R4L4R4L4R4L4R....
-        //    Can FFmpeg decode as without having to use a decoder per
-        //    channel? 1LLLLLLLLLLLLLL....1RRRRRRRRR...2LLLLLLL...?
+        // Each m_pStereoStreams[streamIdx] provides a standard stereo signal (L/R).
+        // in stem mode we need to transform the data to an interleaved layout:
+        // 1L1R2L2R3L3R4L4R, 1L1R2L2R3L3R4L4R ...
         if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
             // Change the sample layout to interleave all channels together
             for (SINT i = 0; i < stemSampleLength / 2; i++) {
@@ -292,7 +290,6 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
             SampleUtil::add(pBuffer, m_buffer.data(), stemSampleLength);
         }
     }
-
     return read;
 }
 
