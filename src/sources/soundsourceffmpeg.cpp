@@ -53,6 +53,7 @@ constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 
 constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
+// Note: The fist audio stream can be at any stream index after other stream types
 constexpr int kFirstAudioStream = -1;
 
 const Logger kLogger("SoundSourceFFmpeg");
@@ -580,6 +581,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         switch (av_find_best_stream_result) {
         case AVERROR_STREAM_NOT_FOUND:
             if (m_wantedStreamIndex >= 0) {
+                // This happens if m_wantedStreamIndex is not an audio stream
                 if (m_pavInputFormatContext->nb_streams <=
                         static_cast<unsigned int>(m_wantedStreamIndex)) {
                     kLogger.warning().noquote()
@@ -590,6 +592,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 }
                 return OpenResult::Failed;
             }
+            // called with kFirstAudioStream
             kLogger.warning()
                     << "av_find_best_stream() failed to find an audio stream";
             break;
