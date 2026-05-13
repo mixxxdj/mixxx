@@ -322,11 +322,16 @@ TEST_P(StemControlFixture, Mute) {
     m_pStem3Mute->set(0.0);
     m_pStem4Mute->set(0.0);
 
+    // We need to allow a bigger bigger delta than the 0.0001 default
+    // to cover the difference of different AAC decoder.
+    // aac and libfdk_aac have a difference of 0.00017 in tests with FFmpeg 4.4.2
+    double acceptableDelta = 0.0002; // -74 dB
     // Proceed the buffer a first time to proceed the ramping gain
     m_pEngineMixer->process(kProcessBufferSize);
     m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            QStringLiteral("StemMuteControlFull"));
+            QStringLiteral("StemMuteControlFull"),
+            acceptableDelta);
 }
 
 INSTANTIATE_TEST_SUITE_P(
