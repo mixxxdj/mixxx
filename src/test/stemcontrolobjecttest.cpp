@@ -13,9 +13,7 @@
 
 namespace {
 const std::vector<std::string> supportedCodecs = {
-#if !defined(Q_OS_WIN)
         "AAC_256kbps_VBR",
-#endif
         "ALAC_24bit"};
 } // namespace
 
