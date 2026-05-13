@@ -426,8 +426,6 @@ void LoopingControl::process(const double rate,
             if (savedLoops.loops[i].hotcueIndex != Cue::kNoHotCue) {
                 loopInRangeValue = static_cast<double>(savedLoops.loops[i].hotcueIndex + 1);
                 break;
-            } else {
-                loopInRangeValue = 0.0;
             }
         }
     }
