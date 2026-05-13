@@ -14,6 +14,7 @@ class SoundSourceFFmpeg;
 class SoundSourceSTEM : public SoundSource {
   public:
     explicit SoundSourceSTEM(const QUrl& url);
+    ~SoundSourceSTEM() override;
 
     void close() override;
 

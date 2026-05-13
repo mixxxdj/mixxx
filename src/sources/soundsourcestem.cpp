@@ -63,6 +63,8 @@ SoundSourceSTEM::SoundSourceSTEM(const QUrl& url)
         : SoundSource(url) {
 }
 
+SoundSourceSTEM::~SoundSourceSTEM() = default;
+
 SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& params) {
