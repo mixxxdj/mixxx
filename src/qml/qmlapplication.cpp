@@ -62,8 +62,23 @@ QmlApplication::QmlApplication(
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");
+
+    // The risk check guards against Mixxx 3.0 potentially running different
+    // database upgrade paths that could corrupt 2.x profiles.
+    //
+    // When a QML skin is auto-detected from preferences (--developer, no
+    // --new-ui), the underlying binary and DB schema are identical to a
+    // normal 2.x launch — there is no data corruption risk. Skip the gate.
+    //
+    // When explicitly launched with --new-ui, the full 3.0 application path
+    // is taken and the gate remains in effect as designed.
+    const bool viaNewUiFlag = CmdlineArgs::Instance().isQml();
+
     if (configVersion == VersionStore::FUTURE_UNSTABLE) {
         qDebug() << "Generating a new user profile for safe testing with unstable code";
+    } else if (!viaNewUiFlag) {
+        qDebug() << "QmlApplication: QML skin loaded via preferences, "
+                    "skipping data-corruption risk check (2.x profile is safe)";
     } else if (CmdlineArgs::Instance().isAwareOfRisk()) {
         qCritical() << "Existing user profile detected from" << configVersion
                     << "but you said you wanted to play with fire!";
