@@ -1185,6 +1185,26 @@ void Track::removeCuesOfType(mixxx::CueType type) {
     }
 }
 
+void Track::removeTempLoopCue() {
+    auto locked = lockMutex(&m_qMutex);
+    bool dirty = false;
+    QMutableListIterator<CuePointer> it(m_cuePoints);
+    while (it.hasNext()) {
+        CuePointer pCue = it.next();
+        // FIXME: Why does this only work for the Hotcue Type?
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            disconnect(pCue.get(), nullptr, this, nullptr);
+            it.remove();
+            dirty = true;
+            break;
+        }
+    }
+    if (dirty) {
+        markDirtyAndUnlock(&locked);
+        emit cuesUpdated();
+    }
+}
+
 void Track::swapHotcues(int a, int b) {
     VERIFY_OR_DEBUG_ASSERT(a != b) {
         qWarning() << "Track::swapHotcues rejected," << a << "==" << b;
