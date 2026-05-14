@@ -150,6 +150,10 @@ LibraryScanner::LibraryScanner(
             &TrackDAO::progressCoverArt,
             m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdateCover);
+    connect(&m_trackDao,
+            &TrackDAO::progressLookingForSubstituteTracks,
+            m_pProgressDlg.get(),
+            &LibraryScannerDlg::slotUpdateSubstitute);
 }
 
 LibraryScanner::~LibraryScanner() {
