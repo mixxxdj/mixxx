@@ -299,6 +299,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
         comboBox_dateFormat->setCurrentIndex(0);
     }
 
+    spinBox_sidebar_hover_expand_delay->setValue(kSidebarHoverExpandDelayDefault);
+
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
@@ -453,9 +455,15 @@ void DlgPrefLibrary::slotUpdate() {
 
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
-                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     checkbox_played_track_color->setChecked(applyPlayedTrackColor);
+
+    const auto sidebarHoverExpandDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverExpandDelayConfigKey,
+                    kSidebarHoverExpandDelayDefault);
+    spinBox_sidebar_hover_expand_delay->setValue(sidebarHoverExpandDelay);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -672,8 +680,12 @@ void DlgPrefLibrary::slotApply() {
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
     m_pConfig->set(
-            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+    int sidebarHoverExpandDelay = spinBox_sidebar_hover_expand_delay->value();
+    m_pConfig->setValue(kSidebarHoverExpandDelayConfigKey, sidebarHoverExpandDelay);
+    emit m_pLibrary->setSidebarHoverExpandDelay(sidebarHoverExpandDelay);
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

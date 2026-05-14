@@ -437,6 +437,8 @@ void DlgPrefInterface::slotSetTooltips() {
         m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
         m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
+    } else if (radioButtonTooltipsOnlyKbdShortcuts->isChecked()) {
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyKbdShortcuts;
     }
 }
 
@@ -603,6 +605,9 @@ void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
         break;
     case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+        radioButtonTooltipsOnlyKbdShortcuts->setChecked(true);
         break;
     case mixxx::preferences::Tooltips::On:
     default:

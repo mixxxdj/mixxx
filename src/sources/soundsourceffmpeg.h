@@ -26,7 +26,7 @@ class SoundSourceFFmpeg : public SoundSource {
     ReadableSampleFrames readSampleFramesClamped(
             const WritableSampleFrames& sampleFrames) override;
 
-    virtual OpenResult tryOpen(
+    OpenResult tryOpen(
             OpenMode mode,
             const OpenParams& params) override;
 

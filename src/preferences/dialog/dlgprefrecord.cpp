@@ -2,6 +2,7 @@
 
 #include <QFileDialog>
 #include <QRadioButton>
+#include <QStandardItemModel>
 #include <QStandardPaths>
 
 #include "encoder/encoder.h"
@@ -92,24 +93,26 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
             kDefaultCueFileAnnotationEnabled));
 
     // Setting split
-    comboBoxSplitting->addItem(SPLIT_650MB);
-    comboBoxSplitting->addItem(SPLIT_700MB);
-    comboBoxSplitting->addItem(SPLIT_1024MB);
-    comboBoxSplitting->addItem(SPLIT_2048MB);
-    comboBoxSplitting->addItem(SPLIT_4096MB);
-    comboBoxSplitting->addItem(SPLIT_60MIN);
-    comboBoxSplitting->addItem(SPLIT_74MIN);
-    comboBoxSplitting->addItem(SPLIT_80MIN);
-    comboBoxSplitting->addItem(SPLIT_120MIN);
+    comboBoxSplitting->addItem(tr("650 MB"), SPLIT_650MB);
+    comboBoxSplitting->addItem(tr("700 MB (CD)"), SPLIT_700MB);
+    comboBoxSplitting->addItem(tr("1 GB"), SPLIT_1024MB);
+    comboBoxSplitting->addItem(tr("2 GB"), SPLIT_2048MB);
+    comboBoxSplitting->addItem(tr("4 GB"), SPLIT_4096MB);
+    comboBoxSplitting->addItem(tr("60 Minutes (CD)"), SPLIT_60MIN);
+    comboBoxSplitting->addItem(tr("74 Minutes (CD)"), SPLIT_74MIN);
+    comboBoxSplitting->addItem(tr("80 Minutes (CD)"), SPLIT_80MIN);
+    comboBoxSplitting->addItem(tr("120 Minutes"), SPLIT_120MIN);
+    comboBoxSplitting->addItem(tr("No Splitting"), SPLIT_NONE);
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-    int index = comboBoxSplitting->findText(fileSizeStr);
+    int index = comboBoxSplitting->findData(fileSizeStr);
     if (index >= 0) {
         // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
     } else {
-        // Use max RIFF size (4GB) as default index, since usually people don't want to split.
-        comboBoxSplitting->setCurrentIndex(4);
+        // Use 4 GB as the default since most users do not want to split.
+        comboBoxSplitting->setCurrentIndex(
+                comboBoxSplitting->findData(SPLIT_4096MB));
         saveSplitSize();
     }
 
@@ -221,7 +224,7 @@ void DlgPrefRecord::slotUpdate() {
                        // ui updated if reopening preferences
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-    int index = comboBoxSplitting->findText(fileSizeStr);
+    int index = comboBoxSplitting->findData(fileSizeStr);
     if (index >= 0) {
         comboBoxSplitting->setCurrentIndex(index);
     }
@@ -241,7 +244,7 @@ void DlgPrefRecord::slotResetToDefaults() {
     LineEditAuthor->setText("");
 
     // 4GB splitting is the default
-    comboBoxSplitting->setCurrentIndex(4);
+    comboBoxSplitting->setCurrentIndex(comboBoxSplitting->findData(SPLIT_4096MB));
 
     // Sets 'Create a CUE file' checkbox value
     CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
@@ -347,6 +350,7 @@ void DlgPrefRecord::setupEncoderUI() {
     }
 
     updateTracklistAsComment();
+    updateSplitNoneItem();
 }
 
 // This is to load the recording channel mode (Mono/Stereo) from config
@@ -419,6 +423,30 @@ void DlgPrefRecord::updateTracklistAsComment() {
         CheckBoxTracklistAsComment->setChecked(false);
     }
     CheckBoxTracklistAsComment->blockSignals(true);
+}
+
+void DlgPrefRecord::updateSplitNoneItem() {
+    bool hasFileSizeCap = (m_selFormat.internalName == ENCODING_WAVE ||
+            m_selFormat.internalName == ENCODING_AIFF);
+    QStandardItemModel* pModel =
+            qobject_cast<QStandardItemModel*>(comboBoxSplitting->model());
+    if (!pModel) {
+        return;
+    }
+    int noneIndex = comboBoxSplitting->findData(SPLIT_NONE);
+    if (noneIndex < 0) {
+        return;
+    }
+    QStandardItem* pItem = pModel->item(noneIndex);
+    if (hasFileSizeCap) {
+        pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
+        if (comboBoxSplitting->currentIndex() == noneIndex) {
+            int fallbackIndex = comboBoxSplitting->findData(SPLIT_4096MB);
+            comboBoxSplitting->setCurrentIndex(fallbackIndex >= 0 ? fallbackIndex : 0);
+        }
+    } else {
+        pItem->setFlags(pItem->flags() | Qt::ItemIsEnabled);
+    }
 }
 
 void DlgPrefRecord::slotGroupChanged() {
@@ -529,5 +557,5 @@ void DlgPrefRecord::saveUseCueFileAnnotation() {
 
 void DlgPrefRecord::saveSplitSize() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
-            ConfigValue(comboBoxSplitting->currentText()));
+            ConfigValue(comboBoxSplitting->currentData().toString()));
 }

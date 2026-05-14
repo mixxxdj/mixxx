@@ -217,6 +217,26 @@ static struct timecode_def timecodes[] = {
      .safe = 913000,
      .threshold = (128 << 16),
      },
+    {
+     .name = "algoriddim_a",
+     .desc = "Algoriddim djay PRO AI 12\", side A",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0x1ba77,
+     .taps = 0x1a0f1b,
+     .length = 600000,
+     .safe = 590000,
+     },
+    {
+     .name = "algoriddim_b",
+     .desc = "Algoriddim djay PRO AI 12\", side B",
+     .resolution = 1000,
+     .bits = 20,
+     .seed = 0xe4606,
+     .taps = 0x1f1e7b,
+     .length = 900000,
+     .safe = 890000,
+    }
 };
 
 /*
