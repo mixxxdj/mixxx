@@ -25,10 +25,14 @@ void WaveformRenderMarkBase::onSetTrack() {
         return;
     }
 
+    // IMPORTANT: make this a QueuedConnection so the slot is called AFTER
+    // objects with DirectConnection (eg. CueControl, which updates the position
+    // COs we need when we iterate over the cues and update marks)
     connect(pTrackInfo.get(),
             &Track::cuesUpdated,
             this,
-            &WaveformRenderMarkBase::slotCuesUpdated);
+            &WaveformRenderMarkBase::slotCuesUpdated,
+            Qt::QueuedConnection);
 }
 
 void WaveformRenderMarkBase::onResize() {

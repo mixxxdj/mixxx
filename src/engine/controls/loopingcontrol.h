@@ -166,6 +166,7 @@ class LoopingControl : public EngineControl {
 
     void storeLoopInfo();
     void restoreLoopInfo();
+    void updateLoopCue(const LoopInfo& loopInfo);
 
     void clearActiveBeatLoop();
     void clearLoopInfoAndControls();

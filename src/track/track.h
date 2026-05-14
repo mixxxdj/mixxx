@@ -339,6 +339,7 @@ class Track : public QObject {
     CuePointer findHotcueByIndex(int idx) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
+    void removeTempLoopCue();
     QList<CuePointer> getCuePoints() const {
         const QMutexLocker lock(&m_qMutex);
         // lock thread-unsafe copy constructors of QList
