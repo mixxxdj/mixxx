@@ -456,37 +456,6 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     }
     PlayerInfo::instance().setTrackInfo(getGroup(), TrackPointer());
 
-    // Save the loop that is currently to the loop cue. If no loop cue is
-    // currently on the track, create a new one.
-    // If the loop is invalid and a loop cue exists, remove it.
-    const auto loopStart =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopInPoint->get());
-    const auto loopEnd =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopOutPoint->get());
-    CuePointer pLoopCue;
-    const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
-    for (const auto& pCue : cuePoints) {
-        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
-            pLoopCue = pCue;
-            break;
-        }
-    }
-    if (loopStart.isValid() && loopEnd.isValid() && loopStart <= loopEnd) {
-        if (pLoopCue) {
-            pLoopCue->setStartAndEndPosition(loopStart, loopEnd);
-        } else {
-            pLoopCue = m_pLoadedTrack->createAndAddCue(
-                    mixxx::CueType::Loop,
-                    Cue::kNoHotCue,
-                    loopStart,
-                    loopEnd);
-        }
-    } else if (pLoopCue) {
-        m_pLoadedTrack->removeCue(pLoopCue);
-    }
-
     disconnectLoadedTrack();
 
     // Do not reset m_pReplayGain here, because the track might be still
