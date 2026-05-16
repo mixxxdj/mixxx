@@ -344,53 +344,49 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         return;
     }
 
-    // Clear loop
+    // Maybe adopt loop from channel to clone from.
+    // The loop in and out points must be set here and not in slotTrackLoaded
+    // so LoopingControl::trackLoaded can access them.
+    //
+    // Restore loop from the first loop cue with minimum hotcue number.
+    // For the volatile "most recent loop" the hotcue number will be -1.
+    // If no such loop exists, restore a saved loop cue.
+    double newLoopIn = kNoTrigger;
+    double newLoopOut = kNoTrigger;
+    CuePointer pLoopCue;
+    const QList<CuePointer> trackCues = m_pLoadedTrack->getCuePoints();
+    for (const auto& pCue : trackCues) {
+        if (pCue->getType() != mixxx::CueType::Loop) {
+            continue;
+        }
+        if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
+            continue;
+        }
+        pLoopCue = pCue;
+    }
+
+    if (pLoopCue) {
+        const auto loop = pLoopCue->getStartAndEndPosition();
+        if (loop.startPosition.isValid() && loop.endPosition.isValid() &&
+                loop.startPosition <= loop.endPosition) {
+            // TODO: For all loop cues, both end and start positions should
+            // be valid and the end position should be greater than the
+            // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
+            // check this. To make this possible, we need to ensure that
+            // all invalid cues are discarded when saving cues to the
+            // database first.
+            newLoopIn = loop.startPosition.toEngineSamplePos();
+            newLoopOut = loop.endPosition.toEngineSamplePos();
+        }
+    }
+    // In case no valid loop was found, we need to clear the loop position COs.
     // It seems that the trick is to first clear the loop out point, and then
     // the loop in point. If we first clear the loop in point, the loop out point
     // does not get cleared.
-    m_pLoopOutPoint->set(kNoTrigger);
-    m_pLoopInPoint->set(kNoTrigger);
+    m_pLoopInPoint->set(newLoopIn);
+    m_pLoopOutPoint->set(newLoopOut);
 
-    // The loop in and out points must be set here and not in slotTrackLoaded
-    // so LoopingControl::trackLoaded can access them.
-    if (!m_pChannelToCloneFrom) {
-        // Restore loop from the first loop cue with minimum hotcue number.
-        // For the volatile "most recent loop" the hotcue number will be -1.
-        // If no such loop exists, restore a saved loop cue.
-        CuePointer pLoopCue;
-        const QList<CuePointer> trackCues = m_pLoadedTrack->getCuePoints();
-        for (const auto& pCue : trackCues) {
-            if (pCue->getType() != mixxx::CueType::Loop) {
-                continue;
-            }
-            if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
-                continue;
-            }
-            pLoopCue = pCue;
-        }
-
-        if (pLoopCue) {
-            const auto loop = pLoopCue->getStartAndEndPosition();
-            if (loop.startPosition.isValid() && loop.endPosition.isValid() &&
-                    loop.startPosition <= loop.endPosition) {
-                // TODO: For all loop cues, both end and start positions should
-                // be valid and the end position should be greater than the
-                // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
-                // check this. To make this possible, we need to ensure that
-                // all invalid cues are discarded when saving cues to the
-                // database first.
-                m_pLoopInPoint->set(loop.startPosition.toEngineSamplePos());
-                m_pLoopOutPoint->set(loop.endPosition.toEngineSamplePos());
-            }
-        }
-    } else {
-        // copy loop in and out points from other deck because any new loops
-        // won't be saved yet
-        m_pLoopInPoint->set(ControlObject::get(
-                ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_start_position")));
-        m_pLoopOutPoint->set(ControlObject::get(
-                ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_end_position")));
-
+    if (m_pChannelToCloneFrom) {
 #ifdef __STEM__
         auto* pDeckToClone = qobject_cast<EngineDeck*>(m_pChannelToCloneFrom);
         if (pDeckToClone && m_pLoadedTrack && m_pLoadedTrack->hasStem() && m_pChannel) {
