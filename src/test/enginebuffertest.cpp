@@ -9,6 +9,7 @@
 
 #include "control/controlobject.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/defs_keylock.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
@@ -31,9 +32,9 @@ TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
     // To prevent one-slider users from getting stuck on a key,
     // KeyunlockMode::ResetLockedKey resets the musical pitch.
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-            1.0); // KeylockMode::LockCurrentKey
+            static_cast<double>(KeylockMode::LockCurrentKey));
     ControlObject::set(ConfigKey(m_sGroup1, "keyunlockMode"),
-            0.0); // KeyunlockMode::ResetLockedKey
+            static_cast<double>(KeyunlockMode::ResetLockedKey));
     ControlObject::set(ConfigKey(m_sGroup1, "file_bpm"), 128.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 0.5);
@@ -48,9 +49,9 @@ TEST_F(EngineBufferTest, DisableKeylockResetsPitch) {
 TEST_F(EngineBufferTest, DisableKeylockKeepsPitch) {
     // Pitch must not change when unlocking with KeyunlockMode::KeepLockedKey.
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-            1.0); // KeylockMode::LockCurrentKey
+            static_cast<double>(KeylockMode::LockCurrentKey));
     ControlObject::set(ConfigKey(m_sGroup1, "keyunlockMode"),
-            1.0); // KeyunlockMode::KeepLockedKey
+            static_cast<double>(KeyunlockMode::KeepLockedKey));
     ControlObject::set(ConfigKey(m_sGroup1, "file_bpm"), 128.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 0.5);
@@ -78,9 +79,9 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
 TEST_F(EngineBufferTest, PitchRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-            0.0); // KeylockMode::LockOriginalKey
+            static_cast<double>(KeylockMode::LockOriginalKey));
     ControlObject::set(ConfigKey(m_sGroup1, "keyunlockMode"),
-            0.0); // KeyunlockMode::ResetLockedKey
+            static_cast<double>(KeyunlockMode::ResetLockedKey));
     ProcessBuffer();
     // we are in kPakmOffsetScaleReseting mode
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
@@ -103,7 +104,7 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-            1.0); // KeylockMode::LockCurrentKey
+            static_cast<double>(KeylockMode::LockCurrentKey));
     ProcessBuffer();
     // rate must not change
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
@@ -111,7 +112,7 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
     ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
 
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-            0.0); // KeylockMode::LockOriginalKey
+            static_cast<double>(KeylockMode::LockOriginalKey));
     ProcessBuffer();
     // rate must not change
     ASSERT_DOUBLE_EQ(0.5, ControlObject::get(ConfigKey(m_sGroup1, "rate")));
@@ -370,7 +371,7 @@ TEST_F(EngineBufferE2ETest, DISABLED_KeylockReverseTest) {
     ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
             static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
-                       0.0);
+            static_cast<double>(KeylockMode::LockOriginalKey));
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
