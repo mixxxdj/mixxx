@@ -300,7 +300,7 @@ void KeyControl::updateRate() {
 }
 
 /// This is called when the file key is changed (by analysis or user input),
-/// and when a track with a different key is loaded
+/// or when a track with a different key is loaded
 void KeyControl::slotFileKeyChanged(double value) {
     updateKeyCOs(value,  m_pPitch->get() / 12);
 }
@@ -354,9 +354,9 @@ void KeyControl::setEngineKey(double key, double key_distance) {
     return;
 }
 
-/// This is called when pitch is changed either by user interaction or
-/// when BaseTrackPlayerImpl resets the pitch on track load per configuration
-/// when key is locked with KeylockMode::LockCurrentKey
+/// This is called when pitch is changed either by user interaction,
+/// or when BaseTrackPlayerImpl resets the pitch on track load per configuration
+/// AND key is locked with KeylockMode::LockCurrentKey
 void KeyControl::slotPitchChanged(double pitch) {
     Q_UNUSED(pitch)
     m_updatePitchRequest = 1;
@@ -396,8 +396,9 @@ void KeyControl::updatePitch() {
     }
 }
 
-/// This is called when pitch_adjust is changed either by user interaction or
-/// when BaseTrackPlayerImpl resets the pitch on track load per configuration
+/// This is called when pitch_adjust is changed either by user interaction,
+/// or when BaseTrackPlayerImpl resets the pitch on track load per configuration
+/// AND key is unlocked or locked with LockOriginalKey
 void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
     Q_UNUSED(pitchAdjust);
     m_updatePitchAdjustRequest = 1;
