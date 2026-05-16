@@ -128,7 +128,6 @@ void WTrackTableView::selectionChanged(
         const QItemSelection& selected, const QItemSelection& deselected) {
     m_selectionChangedSinceLastGuiTick = true;
     enableCachedOnly();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     // Workaround for Qt6 bug https://bugreports.qt.io/browse/QTBUG-108595:
     // If 'selectedClick' is enabled Ctrl+click opens the editor instead of
     // toggling the clicked item.
@@ -140,7 +139,6 @@ void WTrackTableView::selectionChanged(
             setSelectedClick(true);
         }
     }
-#endif
     QTableView::selectionChanged(selected, deselected);
 }
 
@@ -810,15 +808,11 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // (the "drop" position in a drag-and-drop)
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint position = event->position().toPoint();
-#else
-    QPoint position = event->pos();
-#endif
+    const QPoint position = event->position().toPoint();
     int dropRow = rowAt(position.y()); // is -1 below last row
     int height = rowHeight(dropRow);   // is 0 below last row
-    QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
-    QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
+    const QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
+    const QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();
 

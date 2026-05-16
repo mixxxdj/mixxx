@@ -4,6 +4,7 @@
 #include <QGuiApplication>
 #include <QScopedPointer>
 #include <QScreen>
+#include <QStyle>
 #include <QThread>
 #include <QtDebug>
 
@@ -11,7 +12,6 @@
 #include "util/assert.h"
 #include "util/compatibility/qmutex.h"
 #include "util/versionstore.h"
-#include "util/widgethelper.h"
 
 namespace {
 // Gross estimated dimensions for the size of the error dialog,
@@ -164,8 +164,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         if (props->m_detailsUseMonospaceFont) {
             // There is no event to respond on the Show Details button of QMessagBox.
             // Therefore we must consider the expanded size for positioning the dialog initially.
-            auto* pScreen =
-                    mixxx::widgethelper::getScreen(*pMsgBox);
+            auto* pScreen = pMsgBox->screen();
             if (!pScreen) {
                 // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
                 // determine the screen. This happens always with Qt <5.14

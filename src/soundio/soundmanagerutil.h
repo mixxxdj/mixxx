@@ -7,7 +7,6 @@
 #include <span>
 
 #include "audio/types.h"
-#include "util/compatibility/qhash.h"
 #include "util/types.h"
 
 /// Describes a group of channels, typically a pair for stereo sound in Mixxx.
@@ -22,9 +21,9 @@ class ChannelGroup {
         return (m_channels.value() << 8) |
                 m_channelBase;
     }
-    friend qhash_seed_t qHash(
+    friend size_t qHash(
             const ChannelGroup& group,
-            qhash_seed_t seed = 0) {
+            size_t seed = 0) {
         return qHash(group.hashValue(), seed);
     }
 
@@ -97,11 +96,11 @@ public:
         return (static_cast<int>(m_type) << 8) |
                 m_index;
   }
-    friend qhash_seed_t qHash(
-            const AudioPath& path,
-            qhash_seed_t seed = 0) {
-        return qHash(path.hashValue(), seed);
-    }
+  friend size_t qHash(
+          const AudioPath& path,
+          size_t seed = 0) {
+      return qHash(path.hashValue(), seed);
+  }
 
     // CppCoreGuidelines C.161: Use non-member functions for symmetric operators
     friend constexpr bool operator<(const AudioPath& lhs,
@@ -295,9 +294,9 @@ inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
 
 Q_DECLARE_METATYPE(SoundDeviceId);
 
-inline qhash_seed_t qHash(
+inline size_t qHash(
         const SoundDeviceId& id,
-        qhash_seed_t seed = 0) {
+        size_t seed = 0) {
     return qHash(id.name, seed) ^
             qHash(id.alsaHwDevice, seed) ^
             qHash(id.portAudioIndex, seed);
