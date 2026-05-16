@@ -723,8 +723,12 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                     m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
 
             // copy the loop state
-            if (ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0) {
+            if (ControlObject::get(
+                        ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0 &&
+                    ControlObject::get(ConfigKey(getGroup(), "loop_enabled")) != 1.0) {
+                // trigger (set 1, then 0) in order to avoid a stuck "reloop_toggle" button
                 ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
+                ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 0.0);
             }
         }
 
