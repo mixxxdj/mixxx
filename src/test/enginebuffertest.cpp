@@ -76,6 +76,36 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     ASSERT_NEAR(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch_adjust")), 1e-10);
 }
 
+TEST_F(EngineBufferTest, TrackLoadResetsPitch_LockCurrentKey) {
+    // The pitch should be reset to 0 when a new track was loaded when
+    // * rate is not 0
+    // * keylock is ON
+    // * keylock mode is LockCurrentKey,
+    // * Reset Pitch on track load option is enabled
+    //
+    // First test case:
+    // * change tempo with key unlocked -> pitch changes
+    // * lock key
+    // // * reset pitch -> is now 0 OPTIONAL
+    // * load another track -> pitch should (still) be 0
+    config()->set(ConfigKey("[Controls]", "SpeedAutoReset"),
+            ConfigValue(BaseTrackPlayer::RESET_PITCH));
+    ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
+            static_cast<double>(KeylockMode::LockCurrentKey));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "reset_key"), 1.0);
+    ProcessBuffer();
+    // Note that pitch_adjust is NOT reset to 0 with KeylockMode::LockCurrentKey
+    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
+    ProcessBuffer();
+
+    m_pMixerDeck1->loadFakeTrack(false, 0.0);
+    ProcessBuffer();
+
+    ASSERT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "pitch")));
+}
+
 TEST_F(EngineBufferTest, PitchRoundtrip) {
     ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
