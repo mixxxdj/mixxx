@@ -801,25 +801,13 @@ void LoopingControl::setLoopInToCurrentPosition() {
     //qDebug() << "set loop_in to " << loopInfo.startPosition;
 }
 
-// Clear the last active loop while saved loop (cue + info) remains untouched
+/// Clear the last active loop while saved loops (cue + info) remain untouched.
+/// This is called either when triggering the `loop_remove` CO or by
+/// Track::loopRemove() signal (relayed via CueControl and EngineBuffer)
 void LoopingControl::slotLoopRemove() {
     setLoopingEnabled(false);
+    // This also calls updateLoopCue() which removes the CuePointer from the track
     clearLoopInfoAndControls();
-    // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
-    // if the loop is valid, else it is removed.
-    // We remove it here right away so the loop is not restored
-    // when the track is loaded to another player in the meantime.
-    auto pLoadedTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pLoadedTrack) {
-        return;
-    }
-    const QList<CuePointer> cuePoints = pLoadedTrack->getCuePoints();
-    for (const auto& pCue : cuePoints) {
-        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
-            pLoadedTrack->removeCue(pCue);
-            return;
-        }
-    }
 }
 
 void LoopingControl::clearLoopInfoAndControls() {
