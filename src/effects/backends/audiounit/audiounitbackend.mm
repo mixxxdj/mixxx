@@ -18,7 +18,7 @@
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
   public:
-    AudioUnitBackend() : m_componentsById([[NSDictionary alloc] init]) {
+    AudioUnitBackend() : m_componentsById([NSDictionary dictionary]) {
         loadAudioUnits();
     }
 
@@ -68,28 +68,36 @@ class AudioUnitBackend : public EffectsBackend {
         // See
         // https://developer.apple.com/documentation/audiotoolbox/audio_unit_v3_plug-ins/incorporating_audio_effects_and_instruments?language=objc
 
-        // Create a query for audio components
-        AudioComponentDescription description = {
-                .componentType = kAudioUnitType_Effect,
-                .componentSubType = 0,
-                .componentManufacturer = 0,
-                .componentFlags = 0,
-                .componentFlagsMask = 0,
-        };
-
-        // Find the audio units
-        // TODO: Should we perform this asynchronously (e.g. using Qt's
-        // threading or GCD)?
+        // Discover all AU components of both types first, then load all
+        // manifests in a single parallel batch. This avoids the performance
+        // penalty of two sequential discovery passes each with their own
+        // blocking wait.
         auto manager =
                 [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
-        auto components = [manager componentsMatchingDescription:description];
+
+        NSMutableArray<AVAudioUnitComponent*>* allComponents =
+                [NSMutableArray array];
+
+        for (OSType componentType :
+                {kAudioUnitType_Effect, kAudioUnitType_MusicEffect}) {
+            AudioComponentDescription description = {
+                    .componentType = componentType,
+                    .componentSubType = 0,
+                    .componentManufacturer = 0,
+                    .componentFlags = 0,
+                    .componentFlagsMask = 0,
+            };
+            auto components =
+                    [manager componentsMatchingDescription:description];
+            [allComponents addObjectsFromArray:components];
+        }
 
         // Assign ids to the components
         NSMutableDictionary<NSString*, AVAudioUnitComponent*>* componentsById =
-                [[NSMutableDictionary alloc] init];
+                [NSMutableDictionary dictionary];
         QHash<QString, EffectManifestPointer> manifestsById;
 
-        for (AVAudioUnitComponent* component in components) {
+        for (AVAudioUnitComponent* component in allComponents) {
             qDebug() << "Found audio unit" << [component name];
 
             QString effectId = QString::fromNSString(
