@@ -20,6 +20,7 @@
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/widgethelper.h"
+#include "waveform/waveformwidgetfactory.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -583,7 +584,7 @@ void DlgPrefInterface::slotApply() {
     if (m_pSkin &&
             (m_pSkin->name() != m_skinNameOnUpdate ||
                     m_colorScheme != m_colorSchemeOnUpdate)) {
-        if (m_pSkin->type() == mixxx::skin::SkinType::QML) {
+        if (m_pSkin->type() == mixxx::skin::SkinType::QML || !WaveformWidgetFactory::isCreated()) {
             notifyRebootNecessary();
             m_skinNameOnUpdate = m_pSkin->name();
             m_colorSchemeOnUpdate = m_colorScheme;
