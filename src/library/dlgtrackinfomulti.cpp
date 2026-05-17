@@ -614,8 +614,17 @@ void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
     txtComment->blockSignals(false);
 }
 
+void DlgTrackInfoMulti::showEvent(QShowEvent* pEvent) {
+    QDialog::showEvent(pEvent);
+    adjustWidgetSizes();
+}
+
 void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
-    Q_UNUSED(pEvent);
+    QDialog::resizeEvent(pEvent);
+    adjustWidgetSizes();
+}
+
+void DlgTrackInfoMulti::adjustWidgetSizes() {
     if (!isVisible()) {
         // Likely one of the resize events before show().
         // Dialog & widgets don't have their final size, yet,
@@ -645,6 +654,10 @@ void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+
+    // Set fixed height on stars widget so it doesn't make the adjacent
+    // txtAlbumArtist expand vertically
+    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
 }
 
 void DlgTrackInfoMulti::saveTracks() {

@@ -34,8 +34,9 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
   protected:
     /// We need this to set the max width of the comment QComboBox which has
     /// issues with long lines / multi-line content. See init() for details.
-    /// Also used to set the maximum size of the cover label
-    void resizeEvent(QResizeEvent* event) override;
+    /// Also used to set the maximum size of the cover label and the star rating.
+    void resizeEvent(QResizeEvent* pEvent) override;
+    void showEvent(QShowEvent* pEvent) override;
     bool eventFilter(QObject* pObj, QEvent* pEvent) override;
 
   private slots:
@@ -71,6 +72,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
   private:
     void init();
+    void adjustWidgetSizes();
+
     void loadTracksInternal(const QList<TrackPointer>& pTracks);
     void saveTracks();
 

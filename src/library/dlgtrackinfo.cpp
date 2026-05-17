@@ -879,10 +879,17 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     }
     m_pDlgTagFetcher->show();
 }
+void DlgTrackInfo::showEvent(QShowEvent* pEvent) {
+    QDialog::showEvent(pEvent);
+    adjustWidgetSizes();
+}
 
 void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     QDialog::resizeEvent(pEvent);
+    adjustWidgetSizes();
+}
 
+void DlgTrackInfo::adjustWidgetSizes() {
     if (!isVisible()) {
         // Likely one of the resize events before show().
         // Widgets don't have their final size, yet, so it
@@ -907,4 +914,8 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+
+    // Set fixed height on stars widget so it doesn't make the adjacent
+    // txtAlbumArtist expand vertically
+    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
 }
