@@ -10,14 +10,17 @@
 #include "effects/backends/effectprocessor.h"
 #include "util/class.h"
 #include "util/types.h"
-#include "engine/filters/simplebandpass.h"
+#include "engine/filters/enginefilterbutterworth4.h"
+
+
 
 class BandpassReverbGroupState : public EffectState {
   public:
     BandpassReverbGroupState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters),
               sampleRate(engineParameters.sampleRate()),
-              sendPrevious(0) {
+              sendPrevious(0),
+               butterworthBP(engineParameters.sampleRate(), 200.0, 2000.0) {
         reverb.init(sampleRate);
     }
     
@@ -26,7 +29,8 @@ class BandpassReverbGroupState : public EffectState {
     float sampleRate;
     float sendPrevious;
     MixxxPlateX2 reverb;
-    SimpleBandPass bandPass;
+
+    EngineFilterButterworth4Band butterworthBP;
 };
 
 class BandpassReverbEffect : public EffectProcessorImpl<BandpassReverbGroupState> {
@@ -59,6 +63,8 @@ class BandpassReverbEffect : public EffectProcessorImpl<BandpassReverbGroupState
     EngineEffectParameterPointer m_pSendParameter;
     EngineEffectParameterPointer m_pBPFreqParameter;
     EngineEffectParameterPointer m_pBPQParameter;
+  
+
 
     DISALLOW_COPY_AND_ASSIGN(BandpassReverbEffect);
 };

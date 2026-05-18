@@ -1,4 +1,4 @@
-// EXPERIMENT: learning Mixxx reverb code flow
+
 #include "effects/backends/builtin/bandpassreverbeffect.h"
 
 #include "effects/backends/effectmanifest.h"
@@ -16,7 +16,7 @@ QString BandpassReverbEffect::getId() {
 EffectManifestPointer BandpassReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setAddDryToWet(false);
-    pManifest->setEffectRampsFromDry(true);
+    pManifest->setEffectRampsFromDry(false);
 
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Bandpass Reverb"));
@@ -80,12 +80,14 @@ EffectManifestPointer BandpassReverbEffect::getManifest() {
 
     EffectManifestParameterPointer bpQ = pManifest->addParameter();
     bpQ->setId("bp_q");
-    bpQ->setName(QObject::tr("BP Q"));
-    bpQ->setShortName(QObject::tr("BPQ"));
-    bpQ->setDescription(QObject::tr("Q factor of band-pass filter"));
+    bpQ->setName(QObject::tr("Bandwidth"));
+    bpQ->setShortName(QObject::tr("Width"));
+    bpQ->setDescription(QObject::tr("Controls width of the band-pass filter"));
     bpQ->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     bpQ->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     bpQ->setRange(0.1, 0.707, 10);
+
+    
 
     return pManifest;
 }
@@ -98,6 +100,7 @@ void BandpassReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
     m_pBPFreqParameter = parameters.value("bp_freq");
     m_pBPQParameter = parameters.value("bp_q");
+    
 }
 
 
@@ -107,7 +110,8 @@ void BandpassReverbEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
+        const GroupFeatureState& groupFeatures){
+    
             
     
     Q_UNUSED(groupFeatures);
@@ -120,7 +124,6 @@ void BandpassReverbEffect::processChannel(
     if (pState->sampleRate != engineParameters.sampleRate()) {
         pState->reverb.setSamplerate(engineParameters.sampleRate());
         pState->sampleRate = engineParameters.sampleRate();
-        pState->bandPass.init(engineParameters.sampleRate());
     }
 
 
@@ -128,20 +131,37 @@ void BandpassReverbEffect::processChannel(
         pState->reverb.activate();
     }
 
-    // --- Bandpass parameters ---
+ 
     sample_t freq = static_cast<sample_t>(m_pBPFreqParameter->value());
     sample_t q = static_cast<sample_t>(m_pBPQParameter->value());
-    pState->bandPass.setParameters(freq, q);
 
-    // --- Temporary buffer for filtered signal ---
-    std::vector<CSAMPLE> filteredBuffer(engineParameters.samplesPerBuffer());
+    sample_t bandwidthHz = freq / q;
 
-    // --- Apply bandpass to input ---
-    for (int i = 0; i < engineParameters.samplesPerBuffer(); ++i) {
-        filteredBuffer[i] = pState->bandPass.process(pInput[i]);
+    sample_t lowFreq = freq - bandwidthHz * 0.5;
+    sample_t highFreq = freq + bandwidthHz * 0.5;
+
+    if (lowFreq < 20.0) {
+        lowFreq = 20.0;
     }
 
-    // --- Send filtered signal into reverb ---
+    if (highFreq > engineParameters.sampleRate() / 2.0 - 100.0) {
+        highFreq = engineParameters.sampleRate() / 2.0 - 100.0;
+    }
+
+    pState->butterworthBP.setFrequencyCorners(
+            engineParameters.sampleRate(),
+            lowFreq,
+            highFreq);
+
+
+    std::vector<CSAMPLE> filteredBuffer(engineParameters.samplesPerBuffer());
+
+
+pState->butterworthBP.process(
+        pInput,
+        filteredBuffer.data(),
+        engineParameters.samplesPerBuffer());
+
     pState->reverb.processBuffer(
             filteredBuffer.data(),
             pOutput,
@@ -152,9 +172,7 @@ void BandpassReverbEffect::processChannel(
             sendCurrent,
             pState->sendPrevious);
 
-    // The ramping of the send parameter handles ramping when enabling, so
-    // this effect must handle ramping to dry when disabling itself (instead
-    // of being handled by EngineEffect::process).
+
     if (enableState == EffectEnableState::Disabling) {
         SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
         pState->sendPrevious = 0;
