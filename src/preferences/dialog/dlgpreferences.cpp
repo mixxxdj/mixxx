@@ -29,6 +29,7 @@
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwaveform.h"
+#include "util/cmdlineargs.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -135,29 +136,34 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
-            pScreensaverManager,
-            pSkinLoader,
-            m_pConfig);
-    connect(pInterfacePage,
-            &DlgPrefInterface::tooltipModeChanged,
-            this,
-            &DlgPreferences::tooltipModeChanged);
-    connect(pInterfacePage,
-            &DlgPrefInterface::reloadUserInterface,
-            this,
-            &DlgPreferences::reloadUserInterface,
-            Qt::DirectConnection);
-    connect(pInterfacePage,
-            &DlgPrefInterface::menuBarAutoHideChanged,
-            this,
-            &DlgPreferences::menuBarAutoHideChanged,
-            Qt::DirectConnection);
-    addPageWidget(PreferencesPage(pInterfacePage,
-                          new QTreeWidgetItem(
-                                  contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Interface"),
-            "ic_preferences_interface.svg");
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+                pScreensaverManager,
+                pSkinLoader,
+                m_pConfig);
+        connect(pInterfacePage,
+                &DlgPrefInterface::tooltipModeChanged,
+                this,
+                &DlgPreferences::tooltipModeChanged);
+        connect(pInterfacePage,
+                &DlgPrefInterface::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+        connect(pInterfacePage,
+                &DlgPrefInterface::menuBarAutoHideChanged,
+                this,
+                &DlgPreferences::menuBarAutoHideChanged,
+                Qt::DirectConnection);
+        addPageWidget(PreferencesPage(pInterfacePage,
+                              new QTreeWidgetItem(
+                                      contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Interface"),
+                "ic_preferences_interface.svg");
+    }
 
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
