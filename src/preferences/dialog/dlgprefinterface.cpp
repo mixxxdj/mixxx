@@ -3,7 +3,6 @@
 #include <QDir>
 #include <QList>
 #include <QLocale>
-#include <QMainWindow>
 #include <QScreen>
 #include <QVariant>
 #include <QtGlobal>
@@ -61,18 +60,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_dDevicePixelRatio(1.0) {
     setupUi(this);
 
-    // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
-    m_dDevicePixelRatio = devicePixelRatioF();
-
-    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
-    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
-    // unusable GUI with visual artefacts
-    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
-    if (initialScaleFactor <= 0) {
-        initialScaleFactor = 1.0;
-    }
-    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
-    m_minScaleFactor = 1 / unscaledDevicePixelRatio;
+    updateScreenMetrics();
 
     // Locale setting
     // Iterate through the available locales and add them to the combobox
@@ -235,26 +223,36 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    QScreen* pScreen = nullptr;
-    const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
-    for (QWidget* pWidget : topLevelWidgets) {
-        // Ignore other popups and hidden track menus
-        QMainWindow* pMainWindow = qobject_cast<QMainWindow*>(pWidget);
-        if (pMainWindow) {
-            pScreen = mixxx::widgethelper::getScreen(*pMainWindow);
-            break;
-        }
-    }
-    VERIFY_OR_DEBUG_ASSERT(pScreen) {
-        pScreen = mixxx::widgethelper::getScreen(*this);
-    }
-    if (!pScreen) {
-        // Obtain the primary screen. This is necessary if no window is
-        // available before the widget is displayed.
-        pScreen = qGuiApp->primaryScreen();
-    }
+    QScreen* pScreen = mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     DEBUG_ASSERT(pScreen);
     return pScreen;
+}
+
+void DlgPrefInterface::updateScreenMetrics() {
+    QScreen* pScreen = getScreen();
+    if (pScreen) {
+        // Use the resolved application screen instead of this page's DPR. In
+        // QML mode the preferences dialog can be constructed before the QML
+        // window exists, and this page might not yet be associated with the
+        // correct monitor.
+        m_dDevicePixelRatio = pScreen->devicePixelRatio();
+    } else {
+        m_dDevicePixelRatio = devicePixelRatioF();
+    }
+
+    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
+    // unusable GUI with visual artefacts
+    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScaleFactor <= 0) {
+        initialScaleFactor = 1.0;
+    }
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
+    if (unscaledDevicePixelRatio > 0) {
+        m_minScaleFactor = 1 / unscaledDevicePixelRatio;
+    } else {
+        m_minScaleFactor = 1.0;
+    }
 }
 
 void DlgPrefInterface::slotUpdateSkins() {
@@ -353,6 +351,8 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
+    updateScreenMetrics();
+
     if (m_pSkinLoader) {
         slotUpdateSkins();
 

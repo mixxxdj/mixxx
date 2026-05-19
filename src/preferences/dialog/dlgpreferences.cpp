@@ -352,7 +352,8 @@ void DlgPreferences::onShow() {
     int newWidth = m_geometry[2].toInt();
     int newHeight = m_geometry[3].toInt();
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
@@ -571,7 +572,8 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 
 QRect DlgPreferences::getDefaultGeometry() {
     adjustSize();
-    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }

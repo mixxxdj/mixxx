@@ -1,13 +1,37 @@
 #include "util/widgethelper.h"
 
+#include <QApplication>
+#include <QGuiApplication>
 #include <QScreen>
 #include <QStyle>
+#include <QWindow>
 
 #include "util/math.h"
 
 namespace mixxx {
 
 namespace widgethelper {
+
+namespace {
+
+QScreen* screenForVisibleWindow(QWindow* pWindow) {
+    if (!pWindow || !pWindow->isVisible()) {
+        return nullptr;
+    }
+
+    switch (pWindow->type()) {
+    case Qt::Popup:
+    case Qt::ToolTip:
+    case Qt::SplashScreen:
+        return nullptr;
+    default:
+        break;
+    }
+
+    return pWindow->screen();
+}
+
+} // namespace
 
 QPoint mapPopupToScreen(
         const QWidget& widget,
@@ -46,6 +70,51 @@ QWindow* getWindow(
         return nativeParent->windowHandle();
     }
     return nullptr;
+}
+
+QScreen* getScreenForWidgetOrApplication(
+        const QWidget& widget) {
+    if (!qGuiApp) {
+        qWarning() << "Unable to detect an application screen without QGuiApplication.";
+        return nullptr;
+    }
+
+    if (QScreen* pScreen = screenForVisibleWindow(qGuiApp->focusWindow())) {
+        return pScreen;
+    }
+
+    if (QWidget* pActiveWindow = QApplication::activeWindow()) {
+        if (QScreen* pScreen = getScreen(*pActiveWindow)) {
+            return pScreen;
+        }
+    }
+
+    if (widget.isVisible()) {
+        if (QScreen* pScreen = getScreen(widget)) {
+            return pScreen;
+        }
+    }
+
+    const QWindowList topLevelWindows = qGuiApp->topLevelWindows();
+    for (QWindow* pWindow : topLevelWindows) {
+        if (QScreen* pScreen = screenForVisibleWindow(pWindow)) {
+            return pScreen;
+        }
+    }
+
+    if (QScreen* pScreen = getScreen(widget)) {
+        return pScreen;
+    }
+
+    QScreen* pScreen = qGuiApp->primaryScreen();
+    if (!pScreen) {
+        qWarning() << "Unable to detect an application screen.";
+    } else {
+        qWarning() << "Unable to detect an application window screen. "
+                      "Using primary screen"
+                   << pScreen->name();
+    }
+    return pScreen;
 }
 
 void growListWidget(QListWidget& listWidget, const QWidget& parent) {
