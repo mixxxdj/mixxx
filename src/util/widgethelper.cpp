@@ -74,8 +74,7 @@ QWindow* getWindow(
 
 QScreen* getScreenForWidgetOrApplication(
         const QWidget& widget) {
-    if (!qGuiApp) {
-        qWarning() << "Unable to detect an application screen without QGuiApplication.";
+    VERIFY_OR_DEBUG_ASSERT(qGuiApp) {
         return nullptr;
     }
 
@@ -107,13 +106,12 @@ QScreen* getScreenForWidgetOrApplication(
     }
 
     QScreen* pScreen = qGuiApp->primaryScreen();
-    if (!pScreen) {
-        qWarning() << "Unable to detect an application screen.";
-    } else {
-        qWarning() << "Unable to detect an application window screen. "
-                      "Using primary screen"
-                   << pScreen->name();
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        return nullptr;
     }
+    qWarning() << "Unable to detect an application window screen. "
+                  "Using primary screen"
+               << pScreen->name();
     return pScreen;
 }
 
