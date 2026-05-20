@@ -28,6 +28,8 @@ QPushButton#LibraryBPMButton:checked {
 }
 
 QPushButton#LibraryBPMButton:!checked {
+  /* TODO
+  icon: url(:/images/library/ic_library_unlocked.svg); */
   image: url(:/images/library/ic_library_unlocked.svg);
 }
 
