@@ -451,6 +451,13 @@ void DlgPrefInterface::notifyRebootNecessary() {
                "settings will take effect."));
 }
 
+void DlgPrefInterface::notifyExperimentalQmlSkinRestartNecessary() {
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted with the --developer command line option "
+               "to use the experimental LateNight QML skin."));
+}
+
 void DlgPrefInterface::slotSetScheme(int) {
     // This slot can be triggered by opening the preferences. If the current
     // skin does not support color schemes, this would treat the string in the
@@ -585,7 +592,7 @@ void DlgPrefInterface::slotApply() {
             (m_pSkin->name() != m_skinNameOnUpdate ||
                     m_colorScheme != m_colorSchemeOnUpdate)) {
         if (m_pSkin->type() == mixxx::skin::SkinType::QML || !WaveformWidgetFactory::isCreated()) {
-            notifyRebootNecessary();
+            notifyExperimentalQmlSkinRestartNecessary();
             m_skinNameOnUpdate = m_pSkin->name();
             m_colorSchemeOnUpdate = m_colorScheme;
             return;
