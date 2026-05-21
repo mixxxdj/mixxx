@@ -14,7 +14,7 @@
 const QString MixxxDb::kDefaultSchemaFile(":/schema.xml");
 
 //static
-const int MixxxDb::kRequiredSchemaVersion = 41;
+const int MixxxDb::kRequiredSchemaVersion = 42;
 
 namespace {
 
