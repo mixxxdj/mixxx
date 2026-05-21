@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QString>
+#include <QTimer>
 #include <memory>
 
 #include "coreservices.h"
@@ -39,6 +40,8 @@ class QmlApplication : public QObject {
   private:
     std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
+    std::unique_ptr<GuiTick> m_pGuiTick;
+    QTimer m_guiTickTimer;
 
     QString m_mainFilePath;
 

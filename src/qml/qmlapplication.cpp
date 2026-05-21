@@ -14,6 +14,7 @@
 #include "qml/qmldlgpreferencesproxy.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
+#include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 #if defined(Q_OS_ANDROID)
@@ -48,6 +49,7 @@ QmlApplication::QmlApplication(
         const QString& mainQmlFilePath)
         : m_pCoreServices(std::move(pCoreServices)),
           m_visualsManager(std::make_unique<VisualsManager>()),
+          m_pGuiTick(std::make_unique<GuiTick>()),
           m_mainFilePath(mainQmlFilePath.isEmpty()
                           ? m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName
                           : mainQmlFilePath),
@@ -142,6 +144,12 @@ QmlApplication::QmlApplication(
                     m_visualsManager->addDeckIfNotExist(group);
                 }
             });
+
+    connect(&m_guiTickTimer, &QTimer::timeout, this, [this]() {
+        m_pGuiTick->process();
+    });
+    m_guiTickTimer.start(std::chrono::milliseconds(16));
+
     loadQml(m_mainFilePath);
 
     m_pCoreServices->getControllerManager()->setUpDevices();
