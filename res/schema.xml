@@ -619,4 +619,19 @@ reapplying those migrations.
       );
     </sql>
   </revision>
+  <revision version="42" min_compatible="3">
+    <description>
+      Add data_text column to track_analysis table for small text payloads
+      such as audio quality metrics and Chromaprint version metadata.
+      Raw fingerprint arrays are never stored in the database.
+    </description>
+    <sql>
+      ALTER TABLE track_analysis ADD COLUMN data_text TEXT;
+
+      CREATE INDEX IF NOT EXISTS idx_track_analysis_lookup ON track_analysis (
+          track_id,
+          type
+      );
+    </sql>
+  </revision>
 </schema>
