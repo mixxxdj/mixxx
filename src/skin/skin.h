@@ -36,6 +36,9 @@ class Skin {
     virtual QPixmap preview(const QString& schemeName) const = 0;
 
     virtual QString name() const = 0;
+    virtual QString displayName() const {
+        return name();
+    }
     virtual QString description() const = 0;
     virtual QList<QString> colorschemes() const = 0;
 

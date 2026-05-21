@@ -282,7 +282,7 @@ void DlgPrefInterface::slotUpdateSkins() {
     const QList<SkinPointer> userSkins = m_pSkinLoader->getUserSkins();
     int index = 0;
     for (const SkinPointer& pSkin : userSkins) {
-        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->name());
+        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->displayName(), pSkin->name());
         m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
@@ -299,7 +299,7 @@ void DlgPrefInterface::slotUpdateSkins() {
     const QList<SkinPointer> systemSkins = m_pSkinLoader->getSystemSkins();
     for (const SkinPointer& pSkin : systemSkins) {
         ComboBoxSkinconf->insertItem(
-                index, systemSkinIcon, pSkin->name());
+                index, systemSkinIcon, pSkin->displayName(), pSkin->name());
         m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
@@ -363,7 +363,7 @@ void DlgPrefInterface::slotUpdate() {
         } else {
             m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
         }
-        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
+        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findData(m_skinNameOnUpdate));
         slotUpdateSchemes();
     }
 
@@ -391,7 +391,7 @@ void DlgPrefInterface::slotUpdate() {
 
 void DlgPrefInterface::slotResetToDefaults() {
     if (m_pSkinLoader) {
-        int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+        int index = ComboBoxSkinconf->findData(m_pSkinLoader->getDefaultSkinName());
         ComboBoxSkinconf->setCurrentIndex(index);
         slotSetSkin(index);
     }
@@ -503,7 +503,7 @@ void DlgPrefInterface::slotSetSkin(int) {
         return;
     }
 
-    QString newSkinName = ComboBoxSkinconf->currentText();
+    QString newSkinName = ComboBoxSkinconf->currentData().toString();
     if (newSkinName == m_pSkin->name()) {
         return;
     }

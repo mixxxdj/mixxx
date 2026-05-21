@@ -28,6 +28,7 @@ class QmlSkin : public mixxx::skin::Skin {
     QPixmap preview(const QString& schemeName) const override;
 
     QString name() const override;
+    QString displayName() const override;
     QString description() const override;
     QList<QString> colorschemes() const override;
 

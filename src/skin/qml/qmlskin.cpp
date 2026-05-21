@@ -9,6 +9,7 @@ namespace {
 const QString kSkinManifestFileName(QStringLiteral("skin.ini"));
 const QString kMainQmlFileName(QStringLiteral("main.qml"));
 const QString kSkinGroup(QStringLiteral("Skin"));
+const QString kNameKey(QStringLiteral("name"));
 const QString kDescriptionKey(QStringLiteral("description"));
 const QString kMinPixelWidthKey(QStringLiteral("min_pixel_width"));
 const QString kMinPixelHeightKey(QStringLiteral("min_pixel_height"));
@@ -56,6 +57,17 @@ QPixmap QmlSkin::preview(const QString&) const {
 QString QmlSkin::name() const {
     DEBUG_ASSERT(isValid());
     return m_path.fileName();
+}
+
+QString QmlSkin::displayName() const {
+    DEBUG_ASSERT(isValid());
+    QSettings skinSettings(skinIniFile().absoluteFilePath(), QSettings::IniFormat);
+    skinSettings.beginGroup(kSkinGroup);
+    const QString iniName = skinSettings.value(kNameKey).toString();
+    if (!iniName.isEmpty()) {
+        return iniName;
+    }
+    return name();
 }
 
 QString QmlSkin::description() const {
