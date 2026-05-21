@@ -132,11 +132,6 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
             continue;
         }
 
-        int from = pHeaders->visualIndex(li);
-        if (from == -1) {
-            continue;
-        }
-
         pHeaders->setSectionHidden(li, header.hidden());
         // If the stored size is 0 or less than the minimum column width,
         // we use the latter. This might happen if  WTTVH_MINIMUM_SECTION_SIZE
@@ -145,7 +140,11 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
         // by QHeaderView internally and is applied once the column is shown.
         int size = math_max(header.size(), WTTVH_MINIMUM_SECTION_SIZE);
         pHeaders->resizeSection(li, size);
-        pHeaders->moveSection(from, vi);
+
+        int from = pHeaders->visualIndex(li);
+        if (from != -1) {
+            pHeaders->moveSection(from, vi);
+        }
     }
     if (m_view_state.sort_indicator_shown()) {
         pHeaders->setSortIndicator(
