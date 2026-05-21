@@ -811,6 +811,7 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
     mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
     mixxx::qml::QmlControllerManagerProxy::registerManager(
             getControllerManager(),
@@ -906,6 +907,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(nullptr);
     mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
     mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 
