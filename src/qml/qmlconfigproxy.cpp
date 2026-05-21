@@ -41,6 +41,7 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
 const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlGroup = QStringLiteral("[Control]");
+const QString kControlsGroup = QStringLiteral("[Controls]");
 const QString kLibraryGroup = QStringLiteral("[Library]");
 const QString kBpmGroup = QStringLiteral("[BPM]");
 
@@ -203,17 +204,17 @@ double QmlConfigProxy::waveformDefaultZoom() {
             kWaveformDefaultZoomDefault);
 }
 
-PROPERTY_IMPL(kLibraryGroup,
+PROPERTY_IMPL(kControlsGroup,
         kTooltipsKey,
         mixxx::preferences::Tooltips,
         libraryTooltips,
         mixxx::preferences::Tooltips::On);
-PROPERTY_IMPL(kLibraryGroup,
+PROPERTY_IMPL(kConfigGroup,
         kInhibitScreensaverKey,
         mixxx::preferences::ScreenSaver,
         libraryInhibitScreensaver,
         mixxx::preferences::ScreenSaver::On);
-PROPERTY_IMPL(kLibraryGroup, kHideMenuBarKey, bool, libraryHideMenuBar, false);
+PROPERTY_IMPL(kConfigGroup, kHideMenuBarKey, bool, libraryHideMenuBar, false);
 PROPERTY_IMPL(kLibraryGroup,
         kEnableSearchCompletionsKey,
         bool,
@@ -303,7 +304,7 @@ PROPERTY_IMPL(kConfigGroup,
         QString,
         configKeyColorPalette,
         PredefinedColorPalettes::kDefaultKeyColorPalette.getName());
-PROPERTY_IMPL(kControlGroup,
+PROPERTY_IMPL(kConfigGroup,
         kKeyColorsEnabledKey,
         bool,
         configKeyColorsEnabled,
