@@ -344,7 +344,9 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     m_pContext->setSkinBasePath(skinPath);
 
     if (m_pParent) {
-        qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
+        qDebug()
+                << "ERROR: Somehow a parent already exists -- you are probably "
+                   "reusing a LegacySkinParser which is not advisable!";
     }
     QDomElement skinDocument = openSkin(skinPath);
 
