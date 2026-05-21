@@ -1261,7 +1261,6 @@ void WTrackMenu::loadTrack(
     }
     m_pTrack = pTrack;
     m_deckGroup = deckGroup;
-    updateMenus();
 }
 
 void WTrackMenu::loadTrackModelIndices(
@@ -1277,7 +1276,6 @@ void WTrackMenu::loadTrackModelIndices(
     clearTrackSelection();
 
     m_trackIndexList = trackIndexList;
-    updateMenus();
 }
 
 TrackIdList WTrackMenu::getTrackIds() const {
