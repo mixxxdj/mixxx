@@ -593,4 +593,30 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
+  <revision version="41" min_compatible="3">
+    <description>
+      Add MusicBrainz and AcoustID metadata columns to the library table
+      to support Chromaprint-based audio fingerprinting and AcoustID lookup.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN musicbrainz_recording_id varchar(64);
+      ALTER TABLE library ADD COLUMN musicbrainz_release_id varchar(64);
+      ALTER TABLE library ADD COLUMN musicbrainz_track_id varchar(64);
+      ALTER TABLE library ADD COLUMN musicbrainz_artist_id varchar(64);
+      ALTER TABLE library ADD COLUMN acoustid_id varchar(64);
+      ALTER TABLE library ADD COLUMN acoustid_lookup_at INTEGER;
+      <!-- acoustid_lookup_status values: 'pending' | 'completed' | 'failed' -->
+      ALTER TABLE library ADD COLUMN acoustid_lookup_status varchar(16);
+
+      CREATE INDEX IF NOT EXISTS idx_library_mbid ON library (
+          musicbrainz_recording_id
+      );
+      CREATE INDEX IF NOT EXISTS idx_library_acoustid ON library (
+          acoustid_id
+      );
+      CREATE INDEX IF NOT EXISTS idx_library_mbid_artist ON library (
+          musicbrainz_artist_id
+      );
+    </sql>
+  </revision>
 </schema>
