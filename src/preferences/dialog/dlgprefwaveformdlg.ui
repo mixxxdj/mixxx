@@ -705,14 +705,14 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
      <item row="16" column="3">
-      <widget class="QLabel" name="downBeatLengthLabel">
+      <widget class="QLabel" name="downbeatDistanceLabel">
        <property name="text">
         <string>Phase size</string>
        </property>
       </widget>
      </item>
      <item row="16" column="4">
-      <widget class="QSpinBox" name="downBeatLengthSpinBox">
+      <widget class="QSpinBox" name="downbeatDistanceSpinBox">
         <property name="toolTip">
         <string/>
         </property>

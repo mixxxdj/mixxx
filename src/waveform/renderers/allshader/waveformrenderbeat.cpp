@@ -13,6 +13,7 @@
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
 using namespace rendergraph;
@@ -57,15 +58,14 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
-    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
-                                         : ::WaveformRendererAbstract::Play;
-
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0.0) {
+        return false;
+    }
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
         return false;
     }
-
-    int downbeatLength = m_waveformRenderer->getDownbeatLength();
 
 #ifndef __SCENEGRAPH__
     int alpha = m_waveformRenderer->getBeatGridAlpha();
@@ -83,11 +83,8 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
-    if (trackSamples <= 0.0) {
-        return false;
-    }
-
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
     const double firstDisplayedPosition =
             m_waveformRenderer->getFirstDisplayedPosition(positionType);
     const double lastDisplayedPosition =
@@ -130,6 +127,10 @@ bool WaveformRenderBeat::preprocessInner() {
           downbeat_alpha = m_downbeatColor.alphaF();
     auto firstBeat = trackBeats->cfirstmarker();
 
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    bool downbeatsEnabled = pWaveformWidgetFactory->getDownbeatsEnabled();
+    int downbeatDistance = pWaveformWidgetFactory->getDownbeatDistance();
+
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
             ++it) {
@@ -143,7 +144,7 @@ bool WaveformRenderBeat::preprocessInner() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        if (downbeatLength && std::distance(firstBeat, it) % downbeatLength == 0) {
+        if (downbeatsEnabled && std::distance(firstBeat, it) % downbeatDistance == 0) {
             vertexUpdater.addRectangleHGradient({x1, 0.f},
                     {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth},
                     {downbeat_r, downbeat_g, downbeat_b, downbeat_alpha},

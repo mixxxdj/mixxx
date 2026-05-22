@@ -141,6 +141,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
+          m_downbeatsEnabled(downbeatsEnabledDefault()),
+          m_downbeatDistance(downbeatDistanceDefault()),
           m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
@@ -476,6 +478,22 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_outline_opacity")),
                     0.15)));
 
+    int downbeatsEnabled =
+            m_config
+                    ->getValueString(ConfigKey(kWaveformGroup,
+                            QStringLiteral("experimental_downbeat_enabled")))
+                    .toInt(&ok);
+    if (ok) {
+        setDownbeatsEnabled(static_cast<bool>(downbeatsEnabled));
+    }
+    int downbeatDistance = m_config->getValue(
+            ConfigKey(kWaveformGroup,
+                    QStringLiteral("experimental_downbeat_length")),
+            downbeatDistanceDefault());
+    setDownbeatDistance(math_clamp(downbeatDistance,
+            downbeatDistanceMin(),
+            downbeatDistanceMax()));
+
     return true;
 }
 
@@ -750,14 +768,25 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     }
 }
 
-void WaveformWidgetFactory::setDownbeatLength(int downbeatLength) {
-    m_downbeatLength = downbeatLength;
-    if (m_waveformWidgetHolders.size() == 0) {
-        return;
+void WaveformWidgetFactory::setDownbeatsEnabled(bool enabled) {
+    m_downbeatsEnabled = enabled;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup,
+                                   QStringLiteral("experimental_downbeat_enabled")),
+                m_downbeatsEnabled);
     }
+}
 
-    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-        holder.m_waveformWidget->setDownbeatLength(m_downbeatLength);
+void WaveformWidgetFactory::setDownbeatDistance(int downbeatDistance) {
+    VERIFY_OR_DEBUG_ASSERT(downbeatDistance >= downbeatDistanceMin() &&
+            downbeatDistance <= downbeatDistanceMax()) {
+        downbeatDistance = downbeatDistanceDefault();
+    }
+    m_downbeatDistance = downbeatDistance;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup,
+                                   QStringLiteral("experimental_downbeat_length")),
+                m_downbeatDistance);
     }
 }
 
