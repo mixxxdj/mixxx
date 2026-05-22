@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 1995 by Sam Rushing <rushing@nightmare.com>
+ * Copyright (C) 2013-2019 by Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  */
 
 /* $Id: avl.h,v 1.7 2003/07/07 01:10:14 brendan Exp $ */

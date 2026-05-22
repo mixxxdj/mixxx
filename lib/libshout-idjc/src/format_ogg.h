@@ -3,6 +3,7 @@
  * $Id$
  *
  *  Copyright (C) 2004 the Icecast team <team@icecast.org>
+ *  Copyright (C) 2015-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -44,7 +45,9 @@ typedef struct _ogg_codec_tag {
 } ogg_codec_t;
 
 /* codec hooks */
+#ifdef HAVE_VORBIS
 int _shout_open_vorbis(ogg_codec_t *codec, ogg_page *page);
+#endif
 
 #ifdef HAVE_THEORA
 int _shout_open_theora(ogg_codec_t *codec, ogg_page *page);

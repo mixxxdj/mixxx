@@ -4,7 +4,8 @@
  *                    Brendan Cully <brendan@xiph.org>,
  *                    Karl Heyes <karl@xiph.org>,
  *                    Jack Moffitt <jack@icecast.org>,
- *                    Ed "oddsock" Zaleski <oddsock@xiph.org>
+ *                    Ed "oddsock" Zaleski <oddsock@xiph.org>,
+ * Copyright (C) 2015-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -50,6 +51,10 @@
 #include <avl/avl.h>
 #ifdef THREAD_DEBUG
 #include <log/log.h>
+#endif
+
+#ifdef _WIN32
+#define __FUNCTION__ __FILE__
 #endif
 
 #ifdef THREAD_DEBUG
@@ -263,8 +268,8 @@ static void _catch_signals(void)
 }
 
 
-thread_type *thread_create_c(char *name, void *(*start_routine)(void *),
-        void *arg, int detached, int line, char *file)
+thread_type *thread_create_c(const char *name, void *(*start_routine)(void *),
+        void *arg, int detached, int line, const char *file)
 {
     thread_type *thread = NULL;
     thread_start_t *start = NULL;
@@ -309,6 +314,14 @@ thread_type *thread_create_c(char *name, void *(*start_routine)(void *),
         if (pthread_create (&thread->sys_thread, &attr, _start_routine, start) == 0)
         {
             pthread_attr_destroy (&attr);
+#ifdef HAVE_PTHREAD_SETNAME_NP
+            if (pthread_setname_np(thread->sys_thread, name) != 0) {
+                /* If the call above did not work it was likely due to name limit restrictions.
+                 * In that case we retry with a fixed name so we do not inherit our parent's name.
+                 */
+                pthread_setname_np(thread->sys_thread, "Worker");
+            }
+#endif
             return thread;
         }
         else
@@ -525,7 +538,7 @@ void thread_cond_timedwait_c(cond_t *cond, int millis, int line, char *file)
     struct timespec time;
 
     time.tv_sec = millis/1000;
-    time.tv_nsec = (long)((millis - time.tv_sec*1000)*1000000);
+    time.tv_nsec = (millis - time.tv_sec*1000)*1000000;
 
     pthread_mutex_lock(&cond->cond_mutex);
     pthread_cond_timedwait(&cond->sys_cond, &cond->cond_mutex, &time);
@@ -602,7 +615,7 @@ void thread_exit_c(long val, int line, char *file)
         _mutex_unlock(&_threadtree_mutex);
     }
 
-    pthread_exit ((void*)(size_t)val);
+    pthread_exit ((void*)val);
 }
 
 /* sleep for a number of microseconds */
@@ -747,7 +760,7 @@ void thread_join(thread_type *thread)
 {
     void *ret;
 
-    (void) pthread_join(thread->sys_thread, &ret);
+    pthread_join(thread->sys_thread, &ret);
     _mutex_lock(&_threadtree_mutex);
     avl_delete(_threadtree, thread, _free_thread);
     _mutex_unlock(&_threadtree_mutex);

@@ -6,7 +6,7 @@
 **                    Ralph Giles <giles@xiph.org>,
 **                    Ed "oddsock" Zaleski <oddsock@xiph.org>,
 **                    Karl Heyes <karl@xiph.org>,
-**                    Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
+** Copyright (C) 2012-2019 by Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
 **
 ** This library is free software; you can redistribute it and/or
 ** modify it under the terms of the GNU Library General Public
@@ -33,9 +33,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifndef _MSC_VER
-#include <strings.h>
-#endif
 #include <ctype.h>
 
 #include <avl/avl.h>
@@ -56,24 +53,97 @@ static char *_lowercase(char *str);
 static int _compare_vars(void *compare_arg, void *a, void *b);
 static int _free_vars(void *key);
 
+/* For avl tree manipulation */
+static void parse_query(avl_tree *tree, const char *query, size_t len);
+static const char *_httpp_get_param(avl_tree *tree, const char *name);
+static void _httpp_set_param_nocopy(avl_tree *tree, char *name, char *value, int replace);
+static void _httpp_set_param(avl_tree *tree, const char *name, const char *value);
+static http_var_t *_httpp_get_param_var(avl_tree *tree, const char *name);
+
+httpp_request_info_t httpp_request_info(httpp_request_type_e req)
+{
+#if 0
+#define HTTPP_REQUEST_IS_SAFE                       ((httpp_request_info_t)0x0001U)
+#define HTTPP_REQUEST_IS_IDEMPOTENT                 ((httpp_request_info_t)0x0002U)
+#define HTTPP_REQUEST_IS_CACHEABLE                  ((httpp_request_info_t)0x0004U)
+#define HTTPP_REQUEST_HAS_RESPONSE_BODY             ((httpp_request_info_t)0x0010U)
+#define HTTPP_REQUEST_HAS_REQUEST_BODY              ((httpp_request_info_t)0x0100U)
+#define HTTPP_REQUEST_HAS_OPTIONAL_REQUEST_BODY     ((httpp_request_info_t)0x0200U)
+#endif
+    switch (req) {
+        /* offical methods */
+        case httpp_req_get:
+            return HTTPP_REQUEST_IS_SAFE|HTTPP_REQUEST_IS_IDEMPOTENT|HTTPP_REQUEST_IS_CACHEABLE|HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_OPTIONAL_REQUEST_BODY;
+        break;
+        case httpp_req_post:
+            return HTTPP_REQUEST_IS_CACHEABLE|HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_REQUEST_BODY;
+        break;
+        case httpp_req_put:
+            return HTTPP_REQUEST_IS_IDEMPOTENT|HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_REQUEST_BODY;
+        break;
+        case httpp_req_head:
+            return HTTPP_REQUEST_IS_SAFE|HTTPP_REQUEST_IS_IDEMPOTENT|HTTPP_REQUEST_IS_CACHEABLE;
+        break;
+        case httpp_req_options:
+            return HTTPP_REQUEST_IS_SAFE|HTTPP_REQUEST_IS_IDEMPOTENT|HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_OPTIONAL_REQUEST_BODY;
+        break;
+        case httpp_req_delete:
+            return HTTPP_REQUEST_IS_IDEMPOTENT|HTTPP_REQUEST_HAS_RESPONSE_BODY;
+        break;
+        case httpp_req_trace:
+            return HTTPP_REQUEST_IS_SAFE|HTTPP_REQUEST_IS_IDEMPOTENT|HTTPP_REQUEST_HAS_RESPONSE_BODY;
+        break;
+        case httpp_req_connect:
+            return HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_REQUEST_BODY;
+        break;
+
+        /* Icecast specific methods */
+        case httpp_req_source:
+            return HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_REQUEST_BODY;
+        break;
+        case httpp_req_play:
+            return HTTPP_REQUEST_IS_SAFE|HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_OPTIONAL_REQUEST_BODY;
+        break;
+        case httpp_req_stats:
+            return HTTPP_REQUEST_IS_SAFE|HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_OPTIONAL_REQUEST_BODY;
+        break;
+
+        /* Virtual and other methods */
+        case httpp_req_none:
+        case httpp_req_unknown:
+        default:
+            return HTTPP_REQUEST_HAS_RESPONSE_BODY|HTTPP_REQUEST_HAS_OPTIONAL_REQUEST_BODY;
+        break;
+    }
+}
+
 http_parser_t *httpp_create_parser(void)
 {
-    return (http_parser_t *)malloc(sizeof(http_parser_t));
+    http_parser_t *parser = calloc(1, sizeof(http_parser_t));
+
+    parser->refc = 1;
+    parser->req_type = httpp_req_none;
+    parser->uri = NULL;
+    parser->vars = avl_tree_new(_compare_vars, NULL);
+    parser->queryvars = avl_tree_new(_compare_vars, NULL);
+    parser->postvars = avl_tree_new(_compare_vars, NULL);
+
+    return parser;
 }
 
 void httpp_initialize(http_parser_t *parser, http_varlist_t *defaults)
 {
     http_varlist_t *list;
 
-    parser->req_type = httpp_req_none;
-    parser->uri = NULL;
-    parser->vars = avl_tree_new(_compare_vars, NULL);
-    parser->queryvars = avl_tree_new(_compare_vars, NULL);
-
     /* now insert the default variables */
     list = defaults;
     while (list != NULL) {
-        httpp_setvar(parser, list->var.name, list->var.value);
+        size_t i;
+
+        for (i = 0; i < list->var.values; i++) {
+            httpp_setvar(parser, list->var.name, list->var.value[i]);
+        }
+
         list = list->next;
     }
 }
@@ -120,7 +190,7 @@ static void parse_headers(http_parser_t *parser, char **line, int lines)
         whitespace = 0;
         name = line[l];
         value = NULL;
-        slen = (int)strlen(line[l]);
+        slen = strlen(line[l]);
         for (i = 0; i < slen; i++) {
             if (line[l][i] == ':') {
                 whitespace = 1;
@@ -168,7 +238,7 @@ int httpp_parse_response(http_parser_t *parser, const char *http_data, unsigned 
     /* In this case, the first line contains:
      * VERSION RESPONSE_CODE MESSAGE, such as HTTP/1.0 200 OK
      */
-    slen = (int)strlen(line[0]);
+    slen = strlen(line[0]);
     version = line[0];
     for(i=0; i < slen; i++) {
         if(line[0][i] == ' ') {
@@ -207,6 +277,22 @@ int httpp_parse_response(http_parser_t *parser, const char *http_data, unsigned 
     return 1;
 }
 
+int httpp_parse_postdata(http_parser_t *parser, const char *body_data, size_t len)
+{
+    const char *header = httpp_getvar(parser, "content-type");
+
+    if (!header)
+        return -1;
+
+    if (strcasecmp(header, "application/x-www-form-urlencoded") != 0) {
+        return -1;
+    }
+
+    parse_query(parser->postvars, body_data, len);
+
+    return 0;
+}
+
 static int hex(char c)
 {
     if(c >= '0' && c <= '9')
@@ -219,11 +305,10 @@ static int hex(char c)
         return -1;
 }
 
-static char *url_escape(const char *src)
+static char *url_unescape(const char *src, size_t len)
 {
-    int len = (int)strlen(src);
     unsigned char *decoded;
-    int i;
+    size_t i;
     char *dst;
     int done = 0;
 
@@ -269,38 +354,58 @@ static char *url_escape(const char *src)
     return (char *)decoded;
 }
 
-/** TODO: This is almost certainly buggy in some cases */
-static void parse_query(http_parser_t *parser, char *query)
+static void parse_query_element(avl_tree *tree, const char *start, const char *mid, const char *end)
 {
-    int len;
-    int i=0;
-    char *key = query;
-    char *val=NULL;
+    size_t keylen;
+    char *key;
+    size_t valuelen;
+    char *value;
 
-    if(!query || !*query)
+    if (start >= end)
         return;
 
-    len = (int)strlen(query);
+    if (!mid)
+        return;
 
-    while(i<len) {
-        switch(query[i]) {
-        case '&':
-            query[i] = 0;
-            if(val && key)
-                httpp_set_query_param(parser, key, val);
-            key = query+i+1;
+    keylen = mid - start;
+    valuelen = end - mid - 1;
+
+    /* REVIEW: We ignore keys with empty values. */
+    if (!keylen || !valuelen)
+        return;
+
+    key = malloc(keylen + 1);
+    memcpy(key, start, keylen);
+    key[keylen] = 0;
+
+    value = url_unescape(mid + 1, valuelen);
+
+    _httpp_set_param_nocopy(tree, key, value, 0);
+}
+
+static void parse_query(avl_tree *tree, const char *query, size_t len)
+{
+    const char *start = query;
+    const char *mid = NULL;
+    size_t i;
+
+    if (!query || !*query)
+        return;
+
+    for (i = 0; i < len; i++) {
+        switch (query[i]) {
+            case '&':
+                parse_query_element(tree, start, mid, &(query[i]));
+                start = &(query[i + 1]);
+                mid = NULL;
             break;
-        case '=':
-            query[i] = 0;
-            val = query+i+1;
+            case '=':
+                mid = &(query[i]);
             break;
         }
-        i++;
     }
 
-    if(val && key) {
-        httpp_set_query_param(parser, key, val);
-    }
+    parse_query_element(tree, start, mid, &(query[i]));
 }
 
 int httpp_parse(http_parser_t *parser, const char *http_data, unsigned long len)
@@ -333,7 +438,7 @@ int httpp_parse(http_parser_t *parser, const char *http_data, unsigned long len)
     */
     where = 0;
     whitespace = 0;
-    slen = (int)strlen(line[0]);
+    slen = strlen(line[0]);
     req_type = line[0];
     for (i = 0; i < slen; i++) {
         if (line[0][i] == ' ') {
@@ -345,11 +450,16 @@ int httpp_parse(http_parser_t *parser, const char *http_data, unsigned long len)
                 whitespace = 0;
                 where++;
                 switch (where) {
-                case 1:
-                    uri = &line[0][i];
+                    case 1:
+                        uri = &line[0][i];
                     break;
-                case 2:
-                    version = &line[0][i];
+                    case 2:
+                        version = &line[0][i];
+                    break;
+                    case 3:
+                        /* There is an extra element in the request line. This is not HTTP. */
+                        free(data);
+                        return 0;
                     break;
                 }
             }
@@ -365,7 +475,7 @@ int httpp_parse(http_parser_t *parser, const char *http_data, unsigned long len)
             httpp_setvar(parser, HTTPP_VAR_QUERYARGS, query);
             *query = 0;
             query++;
-            parse_query(parser, query);
+            parse_query(parser->queryvars, query, strlen(query));
         }
 
         parser->uri = strdup(uri);
@@ -451,8 +561,10 @@ void httpp_deletevar(http_parser_t *parser, const char *name)
 
     if (parser == NULL || name == NULL)
         return;
+    memset(&var, 0, sizeof(var));
+
     var.name = (char*)name;
-    var.value = NULL;
+
     avl_delete(parser->vars, (void *)&var, _free_vars);
 }
 
@@ -463,11 +575,18 @@ void httpp_setvar(http_parser_t *parser, const char *name, const char *value)
     if (name == NULL || value == NULL)
         return;
 
-    var = (http_var_t *)malloc(sizeof(http_var_t));
+    var = (http_var_t *)calloc(1, sizeof(http_var_t));
     if (var == NULL) return;
 
+    var->value = calloc(1, sizeof(*var->value));
+    if (!var->value) {
+        free(var);
+        return;
+    }
+
     var->name = strdup(name);
-    var->value = strdup(value);
+    var->values = 1;
+    var->value[0] = strdup(value);
 
     if (httpp_getvar(parser, name) == NULL) {
         avl_insert(parser->vars, (void *)var);
@@ -487,53 +606,254 @@ const char *httpp_getvar(http_parser_t *parser, const char *name)
         return NULL;
 
     fp = &found;
+    memset(&var, 0, sizeof(var));
     var.name = (char*)name;
-    var.value = NULL;
 
-    if (avl_get_by_key(parser->vars, &var, fp) == 0)
-        return found->value;
-    else
+    if (avl_get_by_key(parser->vars, &var, fp) == 0) {
+        if (!found->values)
+            return NULL;
+        return found->value[0];
+    } else {
         return NULL;
+    }
 }
 
-void httpp_set_query_param(http_parser_t *parser, const char *name, const char *value)
+static void _httpp_set_param_nocopy(avl_tree *tree, char *name, char *value, int replace)
 {
-    http_var_t *var;
+    http_var_t *var, *found;
+    char **n;
 
     if (name == NULL || value == NULL)
         return;
 
-    var = (http_var_t *)malloc(sizeof(http_var_t));
-    if (var == NULL) return;
+    found = _httpp_get_param_var(tree, name);
 
-    var->name = strdup(name);
-    var->value = url_escape(value);
+    if (replace || !found) {
+        var = (http_var_t *)calloc(1, sizeof(http_var_t));
+        if (var == NULL) {
+            free(name);
+            free(value);
+            return;
+        }
 
-    if (httpp_get_query_param(parser, name) == NULL) {
-        avl_insert(parser->queryvars, (void *)var);
+        var->name = name;
     } else {
-        avl_delete(parser->queryvars, (void *)var, _free_vars);
-        avl_insert(parser->queryvars, (void *)var);
+        free(name);
+        var = found;
+    }
+
+    n = realloc(var->value, sizeof(*n)*(var->values + 1));
+    if (!n) {
+        if (replace || !found) {
+            free(name);
+            free(var);
+        }
+        free(value);
+        return;
+    }
+
+    var->value = n;
+    var->value[var->values++] = value;
+
+    if (replace && found) {
+        avl_delete(tree, (void *)found, _free_vars);
+        avl_insert(tree, (void *)var);
+    } else if (!found) {
+        avl_insert(tree, (void *)var);
     }
 }
 
-const char *httpp_get_query_param(http_parser_t *parser, const char *name)
+static void _httpp_set_param(avl_tree *tree, const char *name, const char *value)
+{
+    if (name == NULL || value == NULL)
+        return;
+
+    _httpp_set_param_nocopy(tree, strdup(name), url_unescape(value, strlen(value)), 1);
+}
+
+static http_var_t *_httpp_get_param_var(avl_tree *tree, const char *name)
 {
     http_var_t var;
     http_var_t *found;
     void *fp;
 
     fp = &found;
+    memset(&var, 0, sizeof(var));
     var.name = (char *)name;
-    var.value = NULL;
 
-    if (avl_get_by_key(parser->queryvars, (void *)&var, fp) == 0)
-        return found->value;
+    if (avl_get_by_key(tree, (void *)&var, fp) == 0)
+        return found;
     else
         return NULL;
 }
+static const char *_httpp_get_param(avl_tree *tree, const char *name)
+{
+    http_var_t *res = _httpp_get_param_var(tree, name);
 
-void httpp_clear(http_parser_t *parser)
+    if (!res)
+        return NULL;
+
+    if (!res->values)
+        return NULL;
+
+    return res->value[0];
+}
+
+void httpp_set_query_param(http_parser_t *parser, const char *name, const char *value)
+{
+    return _httpp_set_param(parser->queryvars, name, value);
+}
+
+const char *httpp_get_query_param(http_parser_t *parser, const char *name)
+{
+    return _httpp_get_param(parser->queryvars, name);
+}
+
+void httpp_set_post_param(http_parser_t *parser, const char *name, const char *value)
+{
+    return _httpp_set_param(parser->postvars, name, value);
+}
+
+const char *httpp_get_post_param(http_parser_t *parser, const char *name)
+{
+    return _httpp_get_param(parser->postvars, name);
+}
+
+const http_var_t *httpp_get_param_var(http_parser_t *parser, const char *name)
+{
+    http_var_t *ret = _httpp_get_param_var(parser->postvars, name);
+
+    if (ret)
+        return ret;
+
+    return _httpp_get_param_var(parser->queryvars, name);
+}
+
+const http_var_t *httpp_get_any_var(http_parser_t *parser, httpp_ns_t ns, const char *name)
+{
+    avl_tree *tree = NULL;
+
+    if (!parser || !name)
+        return NULL;
+
+    switch (ns) {
+        case HTTPP_NS_VAR:
+            if (name[0] != '_' || name[1] != '_')
+                return NULL;
+            tree = parser->vars;
+        break;
+        case HTTPP_NS_HEADER:
+            if (name[0] == '_' && name[1] == '_')
+                return NULL;
+            tree = parser->vars;
+        break;
+        case HTTPP_NS_QUERY_STRING:
+            tree = parser->queryvars;
+        break;
+        case HTTPP_NS_POST_BODY:
+            tree = parser->postvars;
+        break;
+    }
+
+    if (!tree)
+        return NULL;
+
+    return _httpp_get_param_var(tree, name);
+}
+
+char ** httpp_get_any_key(http_parser_t *parser, httpp_ns_t ns)
+{
+    avl_tree *tree = NULL;
+    avl_node *avlnode;
+    char **ret;
+    size_t len;
+    size_t pos = 0;
+
+    if (!parser)
+        return NULL;
+
+    switch (ns) {
+        case HTTPP_NS_VAR:
+        case HTTPP_NS_HEADER:
+            tree = parser->vars;
+        break;
+        case HTTPP_NS_QUERY_STRING:
+            tree = parser->queryvars;
+        break;
+        case HTTPP_NS_POST_BODY:
+            tree = parser->postvars;
+        break;
+    }
+
+    if (!tree)
+        return NULL;
+
+    ret = calloc(8, sizeof(*ret));
+    if (!ret)
+        return NULL;
+
+    len = 8;
+
+    for (avlnode = avl_get_first(tree); avlnode; avlnode = avl_get_next(avlnode)) {
+        http_var_t *var = avlnode->key;
+
+        if (ns == HTTPP_NS_VAR) {
+            if (var->name[0] != '_' || var->name[1] != '_') {
+                continue;
+            }
+        } else if (ns == HTTPP_NS_HEADER) {
+            if (var->name[0] == '_' && var->name[1] == '_') {
+                continue;
+            }
+        }
+
+        if (pos == (len-1)) {
+            char **n = realloc(ret, sizeof(*ret)*(len + 8));
+            if (!n) {
+                httpp_free_any_key(ret);
+                return NULL;
+            }
+            memset(n + len, 0, sizeof(*n)*8);
+            ret = n;
+            len += 8;
+        }
+
+        ret[pos] = strdup(var->name);
+        if (!ret[pos]) {
+            httpp_free_any_key(ret);
+            return NULL;
+        }
+
+        pos++;
+    }
+
+    return ret;
+}
+
+void httpp_free_any_key(char **keys)
+{
+    char **p;
+
+    if (!keys)
+        return;
+
+    for (p = keys; *p; p++) {
+        free(*p);
+    }
+    free(keys);
+}
+
+const char *httpp_get_param(http_parser_t *parser, const char *name)
+{
+    const char *ret = _httpp_get_param(parser->postvars, name);
+
+    if (ret)
+        return ret;
+
+    return _httpp_get_param(parser->queryvars, name);
+}
+
+static void httpp_clear(http_parser_t *parser)
 {
     parser->req_type = httpp_req_none;
     if (parser->uri)
@@ -541,13 +861,33 @@ void httpp_clear(http_parser_t *parser)
     parser->uri = NULL;
     avl_tree_free(parser->vars, _free_vars);
     avl_tree_free(parser->queryvars, _free_vars);
+    avl_tree_free(parser->postvars, _free_vars);
     parser->vars = NULL;
 }
 
-void httpp_destroy(http_parser_t *parser)
+int httpp_addref(http_parser_t *parser)
 {
+    if (!parser)
+        return -1;
+
+    parser->refc++;
+
+    return 0;
+}
+
+int httpp_release(http_parser_t *parser)
+{
+    if (!parser)
+        return -1;
+
+    parser->refc--;
+    if (parser->refc)
+        return 0;
+
     httpp_clear(parser);
     free(parser);
+
+    return 0;
 }
 
 static char *_lowercase(char *str)
@@ -571,14 +911,15 @@ static int _compare_vars(void *compare_arg, void *a, void *b)
 
 static int _free_vars(void *key)
 {
-    http_var_t *var;
+    http_var_t *var = (http_var_t *)key;
+    size_t i;
 
-    var = (http_var_t *)key;
+    free(var->name);
 
-    if (var->name)
-        free(var->name);
-    if (var->value)
-        free(var->value);
+    for (i = 0; i < var->values; i++) {
+        free(var->value[i]);
+    }
+    free(var->value);
     free(var);
 
     return 1;

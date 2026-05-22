@@ -5,7 +5,7 @@
  *                    Brendan Cully <brendan@xiph.org>,
  *                    Karl Heyes <karl@xiph.org>,
  *                    Jack Moffitt <jack@icecast.org>,
- *                    Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
+ * Copyright (C) 2014-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public

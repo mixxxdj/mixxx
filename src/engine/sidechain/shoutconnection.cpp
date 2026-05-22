@@ -709,7 +709,7 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
         kLogger.warning() << "writeSingle() SHOUTERR_BUSY, trying again";
         usleep(10000); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted after the next regular shout_send_raw()
-        (void)shout_send_raw(m_pShout, nullptr, 0);
+        (void)!shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);
         kLogger.warning()
@@ -888,7 +888,10 @@ void ShoutConnection::updateMetaData() {
             }
 
             setFunctionCode(13);
-            shout_set_metadata(m_pShout, m_pShoutMetaData);
+            int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
+            if (ret != SHOUTERR_SUCCESS) {
+                kLogger.warning() << "shout_set_metadata fails with error code" << ret;
+            }
             m_firstCall = true;
         }
     }

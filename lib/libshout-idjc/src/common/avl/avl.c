@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 1995-1997 by Sam Rushing <rushing@nightmare.com>
+ * Copyright (C) 2013-2019 by Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  * 
  *                         All Rights Reserved
  * 
@@ -1037,7 +1038,7 @@ avl_verify_rank (avl_node * node)
       num_right = avl_verify_rank (node->right);
     }
     if (AVL_GET_RANK (node) != num_left + 1) {
-      fprintf (stderr, "invalid rank at node %p\n", node->key);
+      fprintf (stderr, "invalid rank at node %ld\n", (long) node->key);
       exit (1);
     }
     return (num_left + num_right + 1);

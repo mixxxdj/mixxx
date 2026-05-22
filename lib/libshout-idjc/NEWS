@@ -1,3 +1,63 @@
+libshout 2.4.6 (20220410)
+
+* Fixed pkg-config file (#2329)
+* Made vorbis an optional codec
+* Do not pass to small headers to libspeex
+  (see also the same mirror-patch in Icecast)
+* Updated documentation, mostly in regard of making it clearer
+  which functions are now obsoleted
+* General code cleanup
+* Added compiler warnings about obsoleted functions and
+  ignored return values
+* Replaced old shout_set_metadata() with new shout_set_metadata_utf8()
+* Added support for plain text streaming
+* Fixed shout_set_metadata*() sometimes returning SHOUTERR_RETRY (#2328)
+* Workaround old clients by emulating SHOUTERR_RETRY with SHOUTERR_BUSY (#2316)
+* Remove our re-implementation of X509_check_host()
+* Allow to disable building tools (#2331)
+
+libshout 2.4.5 (20201219)
+
+* Improved shout.h for reading, and understanding.
+* Marked dumpfile support as obsolete (as SHOUT_PROTOCOL_XAUDIOCAST already is).
+* Added Support for setting the content language.
+* Avoid the use of obsolete functions (#2317).
+* Several small fixes for non-blocking mode (#2321, #2315).
+* Corrected detection of libogg (mostly for windows targets).
+* Now accept TLS mode "auto" when build without TLS support.
+* Added new tool shout(1).
+
+libshout 2.4.4 (20201001)
+
+* Fixed handling of blocking/non-blocking mode
+* Fixed ICY port increment
+* Fixed reusing of handles
+* Fixed error handling of Ogg sync layer
+* Fixed Passing of errors between connection and instance layer
+  Without this fix died connections were not correctly detected.
+* Fixed and improved build scripts
+
+libshout 2.4.3 (20190529)
+* Fixed building with OpenSSL 1.1.0.
+* Fixed static building with OpenSSL.
+* Added support for PUT.
+* Added support for WebM and Matroska with full timing.
+* Added support to inspect the full server's TLS certificate chain.
+* Improved API to set the format used for streaming.
+
+libshout 2.4.2 (20190429)
+
+* Fixed handling of invalid characters in strings:
+  * Correctly escape mountpoint names (#2233),
+  * Correctly escape mountpoint names and passwords in deprecated metadata API (#2304),
+  * Do not allow ICE headers with invalid characters (#2302).
+* Fixed and updated build system.
+* Allow building libshout on Android.
+* Rewrote TLS handling code and statemachine (#2244, #2298, #2301, #2303).
+* Support OPTIONS for RFC 2817 TLS mode.
+* Allow manual inspection of server's TLS certificate.
+* Updated documentation.
+
 libshout 2.4.1 (20151120)
 
 * Fixed issue with missing file in distribution
