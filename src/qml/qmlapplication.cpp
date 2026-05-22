@@ -1,5 +1,6 @@
 #include "qmlapplication.h"
 
+#include <QCoreApplication>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
@@ -54,6 +55,7 @@ QmlApplication::QmlApplication(
                           ? m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName
                           : mainQmlFilePath),
           m_pAppEngine(nullptr),
+          m_loadSucceeded(false),
 #if defined(Q_OS_ANDROID)
           m_perfSession(nullptr),
 #endif
@@ -150,7 +152,10 @@ QmlApplication::QmlApplication(
     });
     m_guiTickTimer.start(std::chrono::milliseconds(16));
 
-    loadQml(m_mainFilePath);
+    m_loadSucceeded = loadQml(m_mainFilePath);
+    if (!m_loadSucceeded) {
+        return;
+    }
 
     m_pCoreServices->getControllerManager()->setUpDevices();
 
@@ -158,7 +163,10 @@ QmlApplication::QmlApplication(
             &QmlAutoReload::triggered,
             this,
             [this]() {
-                loadQml(m_mainFilePath);
+                if (!loadQml(m_mainFilePath)) {
+                    qWarning() << "Auto-reload failed to load QML. Exiting.";
+                    QCoreApplication::exit(-1);
+                }
             });
 
 #if defined(Q_OS_ANDROID)
@@ -204,7 +212,7 @@ QmlApplication::~QmlApplication() {
     m_pCoreServices.reset();
 }
 
-void QmlApplication::loadQml(const QString& path) {
+bool QmlApplication::loadQml(const QString& path) {
     // QQmlApplicationEngine::load creates a new window but also leaves the old one,
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
@@ -220,7 +228,9 @@ void QmlApplication::loadQml(const QString& path) {
 
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
-        qCritical() << "Failed to load QML file" << path;
+        qWarning() << "Failed to load QML file" << path;
+        m_pAppEngine.reset();
+        return false;
     }
 
 #if defined(Q_OS_ANDROID)
@@ -233,6 +243,7 @@ void QmlApplication::loadQml(const QString& path) {
         break;
     }
 #endif
+    return true;
 }
 
 } // namespace qml

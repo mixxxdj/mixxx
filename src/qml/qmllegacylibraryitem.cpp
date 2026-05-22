@@ -557,7 +557,11 @@ bool QmlLegacyLibraryItem::sendHoverToWidget(QHoverEvent* event) {
     QHoverEvent mappedEvent(
             event->type(),
             targetPos,
+#if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
+            event->position(),
+#else
             event->globalPosition(),
+#endif
             oldTargetPos,
             event->modifiers());
 
@@ -569,7 +573,11 @@ bool QmlLegacyLibraryItem::sendHoverToWidget(QHoverEvent* event) {
     // real QPushButton editor, is driven by mouse tracking rather than
     // QHoverEvent delivery. Mirror QQuick hover as a no-button mouse move so
     // item-view delegates see the same path they get in a native QWidget skin.
+#if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
+    sendSyntheticMouseMoveToWidget(target, rootPos, event->position(), event->modifiers());
+#else
     sendSyntheticMouseMoveToWidget(target, rootPos, event->globalPosition(), event->modifiers());
+#endif
 
     scheduleToolTip(target, rootPos);
     syncCursorFromWidget(target, rootPos);

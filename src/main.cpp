@@ -81,7 +81,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         // for further details
         qputenv("QT_QUICK_TABLEVIEW_COMPAT_VERSION", "6.4");
         mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices, mainQmlFilePath);
-        exitCode = pApp->exec();
+        if (!qmlApplication.isReady()) {
+            exitCode = kFatalErrorOnStartupExitCode;
+        } else {
+            exitCode = pApp->exec();
+        }
     } else
 #endif
     {
