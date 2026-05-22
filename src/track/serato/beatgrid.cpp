@@ -374,7 +374,7 @@ QByteArray SeratoBeatGrid::dump(taglib::FileType fileType) const {
     case taglib::FileType::FLAC:
         return dumpBase64Encoded();
     default:
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
         return {};
     }
 }

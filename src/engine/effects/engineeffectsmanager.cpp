@@ -38,7 +38,7 @@ void EngineEffectsManager::onCallbackStart() {
                 }
             }
 
-            VERIFY_OR_DEBUG_ASSERT(chainExists) {
+            RUNTIME_VERIFY_OR_DEBUG_ASSERT(chainExists) {
                 response.success = false;
                 response.status = EffectsResponse::NO_SUCH_CHAIN;
                 break;

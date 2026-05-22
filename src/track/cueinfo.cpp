@@ -26,7 +26,7 @@ void assertEndPosition(
         break;
     case CueType::Beat: // unused
     default:
-        DEBUG_ASSERT(!"Unknown Loop Type");
+        DEBUG_ASSERT_UNREACHABLE(!"Unknown Loop Type");
     }
 }
 

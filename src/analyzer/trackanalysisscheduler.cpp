@@ -231,7 +231,7 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         DEBUG_ASSERT(!worker);
         break;
     default:
-        DEBUG_ASSERT(!"Unhandled signal from worker thread");
+        DEBUG_ASSERT_UNREACHABLE(!"Unhandled signal from worker thread");
     }
     emitProgressOrFinished();
 }

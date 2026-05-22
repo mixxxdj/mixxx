@@ -56,7 +56,7 @@ void markTrackLocationsAsDeleted(const QSqlDatabase& database, const QString& di
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directory << "as deleted.";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 }
 
@@ -164,7 +164,7 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
     query.bindValue(":location", location);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return {};
     }
     if (!query.next()) {
@@ -215,7 +215,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
             "(location varchar (512))");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return trackIds;
     }
 
@@ -225,7 +225,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
             "VALUES " + pathList.join(','));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 
     if (flags & ResolveTrackIdFlag::AddMissing) {
@@ -239,7 +239,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
                 "WHERE playlist_import.location = track_locations.location)");
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
-            DEBUG_ASSERT(!"Failed query");
+            DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         }
         const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
         while (query.next()) {
@@ -287,7 +287,7 @@ QList<TrackId> TrackDAO::resolveTrackIds(
     query.prepare("DROP TABLE IF EXISTS playlist_import");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 
     return trackIds;
@@ -342,7 +342,7 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
     query.bindValue(":id", trackId.toVariant());
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return "";
     }
     const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
@@ -723,7 +723,7 @@ bool insertTrackLibrary(
         LOG_FAILED_QUERY(*pTrackLibraryInsert)
                 << "Failed to insert new track into library:"
                 << fileInfo;
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return false;
     }
     return true;
@@ -1044,7 +1044,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     query.bindValue(":locationPathPrefix", locationPathPrefix);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << locationPathPrefix;
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 
     QList<TrackRef> trackRefs;
@@ -1476,7 +1476,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         if (!query.exec()) {
             LOG_FAILED_QUERY(query)
                     << QString("getTrack(%1)").arg(trackId.toString());
-            DEBUG_ASSERT(!"Failed query");
+            DEBUG_ASSERT_UNREACHABLE(!"Failed query");
             return nullptr;
         }
 
@@ -1560,7 +1560,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         int recordCount = queryRecord.count();
         if (recordCount != columnsCount) {
             recordCount = math_min(recordCount, columnsCount);
-            DEBUG_ASSERT(!"Failed query");
+            DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         }
         for (int i = 0; i < recordCount; ++i) {
             TrackPopulatorFn populator = columns[i].populator;
@@ -1753,7 +1753,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return false;
     }
 
@@ -1812,7 +1812,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary() const {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in library as needing verification.";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 }
 
@@ -1828,7 +1828,7 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark track locations as verified.";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 }
 
@@ -1845,7 +1845,7 @@ void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories)
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 }
 
@@ -1859,7 +1859,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     QSet<TrackId> trackIds;
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Couldn't find unverified tracks";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
     while (query.next()) {
         trackIds.insert(TrackId(query.value(query.record().indexOf(LIBRARYTABLE_MIXXXDELETED))));
@@ -1871,7 +1871,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark unverified tracks as deleted.";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 }
 
@@ -1941,7 +1941,7 @@ bool TrackDAO::detectMovedTracks(
                     .arg(TRACK_ID, LOCATION_ID));
     if (!oldTrackQuery.exec()) {
         LOG_FAILED_QUERY(oldTrackQuery);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return false;
     }
     QSqlRecord oldTrackQueryRecord = oldTrackQuery.record();
@@ -1970,7 +1970,7 @@ bool TrackDAO::detectMovedTracks(
         newTrackQuery.bindValue(":duration", duration);
         if (!newTrackQuery.exec()) {
             LOG_FAILED_QUERY(newTrackQuery);
-            DEBUG_ASSERT(!"Failed query");
+            DEBUG_ASSERT_UNREACHABLE(!"Failed query");
             continue;
         }
         const auto newTrackIdColumn = newTrackQuery.record().indexOf(TRACK_ID);
@@ -2049,7 +2049,7 @@ bool TrackDAO::detectMovedTracks(
                 LOG_FAILED_QUERY(query);
                 // Last chance to skip this entry, i.e. nothing has been
                 // deleted or updated yet!
-                DEBUG_ASSERT(!"Failed query");
+                DEBUG_ASSERT_UNREACHABLE(!"Failed query");
                 continue;
             }
         }
@@ -2064,7 +2064,7 @@ bool TrackDAO::detectMovedTracks(
             query.bindValue(":oldid", relocatedTrack.updatedTrackRef().getId().toVariant());
             if (!query.exec()) {
                 LOG_FAILED_QUERY(query);
-                DEBUG_ASSERT(!"Failed query");
+                DEBUG_ASSERT_UNREACHABLE(!"Failed query");
             }
         }
 
@@ -2075,7 +2075,7 @@ bool TrackDAO::detectMovedTracks(
             query.bindValue(":id", oldTrackLocationId.toVariant());
             if (!query.exec()) {
                 LOG_FAILED_QUERY(query);
-                DEBUG_ASSERT(!"Failed query");
+                DEBUG_ASSERT_UNREACHABLE(!"Failed query");
             }
         }
 
@@ -2098,7 +2098,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
     query.bindValue(":locationPathPrefix", locationPathPrefix);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 
     QStringList trackIds;
@@ -2111,7 +2111,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
                           "WHERE id in (%1)").arg(trackIds.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
     }
 }
 
@@ -2134,7 +2134,7 @@ bool TrackDAO::verifyRemainingTracks(
             "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return false;
     }
 
@@ -2223,7 +2223,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "failed looking for tracks with unknown cover art";
-        DEBUG_ASSERT(!"Failed query");
+        DEBUG_ASSERT_UNREACHABLE(!"Failed query");
         return;
     }
 
@@ -2246,7 +2246,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         if (source == CoverInfo::USER_SELECTED) {
             kLogger.warning() << "PROGRAMMING ERROR! detectCoverArtForTracksWithoutCover()"
                               << "got a USER_SELECTED track. Skipping.";
-            DEBUG_ASSERT(!"Failed query");
+            DEBUG_ASSERT_UNREACHABLE(!"Failed query");
             continue;
         }
         tracksWithoutCover.append(track);

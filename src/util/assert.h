@@ -2,20 +2,29 @@
 
 #include <QtDebug>
 
+#ifdef __OPTIMIZE__
+#ifdef __has_builtin
+#if __has_builtin(__builtin_constant_p)
+#define MIXXX_LINK_ASSERTIONS_ENABLED
+#endif
+#elif __GNUC__ < 10
+#define MIXXX_LINK_ASSERTIONS_ENABLED
+#endif
+#endif
+
 static constexpr const char* kDebugAssertPrefix = "DEBUG ASSERT";
 
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-inline void mixxx_debug_assert(const char* assertion, const char* file, int line, const char* function) {
-    qCritical("%s: \"%s\" in function %s at %s:%d", kDebugAssertPrefix, assertion, function, file, line);
-}
-#endif
-
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-inline bool mixxx_debug_assert_return_true(const char* assertion,
+inline bool mixxx_debug_assert(const char* assertion,
         const char* file,
         int line,
         const char* function) {
-    mixxx_debug_assert(assertion, file, line, function);
+    qCritical("%s: \"%s\" in function %s at %s:%d",
+            kDebugAssertPrefix,
+            assertion,
+            function,
+            file,
+            line);
     return true;
 }
 #endif
@@ -23,6 +32,16 @@ inline bool mixxx_debug_assert_return_true(const char* assertion,
 inline void mixxx_release_assert(const char* assertion, const char* file, int line, const char* function) {
     qFatal("ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
 }
+
+#ifdef MIXXX_LINK_ASSERTIONS_ENABLED
+/// This function is intentionally not defined to produce a linker error
+/// when the invocation is not dead code and optimized out
+/// NOTE: It might happen in rare cases that the compiler splits up the DEBUG_ASSERT
+/// leading to false positives. Than use RUNTIME_DEBUG_ASSERT instead.
+extern void link_assert_failed(void);
+// Note void link_assert_failed(void) = delete; does not work, because
+// it is evaluated before optimizing
+#endif
 
 // These macros provide the demangled function name (including helpful template
 // type information) and are supported on every version of GCC, Clang, and MSVC
@@ -37,12 +56,24 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 /// very hard before using this -- this should only be for the most dire of
 /// situations where we know Mixxx cannot take any action without potentially
 /// corrupting user data. Handle errors gracefully whenever possible.
+
+#ifdef HAS_BUILDIN_CONSTANT_P
+#define RELEASE_ASSERT(cond)                                                      \
+    do                                                                            \
+        if (Q_UNLIKELY(__builtin_constant_p(cond) && !static_cast<bool>(cond))) { \
+            link_assert_failed();                                                 \
+        } else if (Q_UNLIKELY(!static_cast<bool>(cond))) {                        \
+            mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION);     \
+        }                                                                         \
+    while (0)
+#else
 #define RELEASE_ASSERT(cond)                                                  \
     do                                                                        \
         if (!static_cast<bool>(cond)) [[unlikely]] {                          \
             mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
         }                                                                     \
     while (0)
+#endif
 
 /// Checks that cond is true in debug builds. If cond is false then prints a
 /// warning message to the console. If Mixxx is built with
@@ -54,16 +85,41 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 ///
 /// In release builds, doSomething() is never called!
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#ifdef HAS_BUILDIN_CONSTANT_P
+#define DEBUG_ASSERT(cond)                                                        \
+    do                                                                            \
+        if (Q_UNLIKELY(__builtin_constant_p(cond) && !static_cast<bool>(cond))) { \
+            link_assert_failed();                                                 \
+        } else if (Q_UNLIKELY(!static_cast<bool>(cond))) {                        \
+            mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION);       \
+        }                                                                         \
+    while (0)
+#else
 #define DEBUG_ASSERT(cond)                                                  \
     do                                                                      \
         if (!static_cast<bool>(cond)) [[unlikely]] {                        \
             mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
         }                                                                   \
     while (0)
+#endif
 #else
 #define DEBUG_ASSERT(cond) \
     do {                   \
     } while (0)
+#endif
+
+/// Same as DEBUG_ASSERT, but without the linker assertion
+/// This can be used where the compiler duplicates the DEBUG_ASSERT statement
+/// leading to an unconditional link_assert_failed() call
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#define RUNTIME_DEBUG_ASSERT(cond)                                          \
+    do                                                                      \
+        if (Q_UNLIKELY(!static_cast<bool>(cond))) {                         \
+            mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
+        }                                                                   \
+    while (0)
+#else
+#define RUNTIME_DEBUG_ASSERT(cond)
 #endif
 
 /// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run
@@ -76,9 +132,40 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 ///
 /// Note that the check and fallback will be included in release builds.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#ifdef MIXXX_LINK_ASSERTIONS_ENABLED
+#define VERIFY_OR_DEBUG_ASSERT(cond)                                          \
+    if (Q_UNLIKELY(__builtin_constant_p(cond) && !static_cast<bool>(cond))) { \
+        link_assert_failed();                                                 \
+    } else if (Q_UNLIKELY(!static_cast<bool>(cond)) &&                        \
+            mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
+#else
 #define VERIFY_OR_DEBUG_ASSERT(cond)            \
     if (Q_UNLIKELY(!static_cast<bool>(cond)) && \
-            mixxx_debug_assert_return_true(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
+            mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
+#endif
 #else
 #define VERIFY_OR_DEBUG_ASSERT(cond) if (!static_cast<bool>(cond)) [[unlikely]]
+#endif
+
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#define RUNTIME_VERIFY_OR_DEBUG_ASSERT(cond)    \
+    if (Q_UNLIKELY(!static_cast<bool>(cond)) && \
+            mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION))
+#else
+#define RUNTIME_VERIFY_OR_DEBUG_ASSERT(cond) if (Q_UNLIKELY(!static_cast<bool>(cond)))
+#endif
+
+/// Same as DEBUG_ASSERT, but if MIXXX_DEBUG_ASSERTIONS_FATAL is disabled run
+/// the specified fallback function. In most cases you should probably use this
+/// rather than DEBUG_ASSERT. Only use DEBUG_ASSERT if there is no appropriate
+/// fallback.
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#define DEBUG_ASSERT_UNREACHABLE(cond)                                  \
+    do {                                                                \
+        mixxx_debug_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
+    } while (0)
+#else
+#define DEBUG_ASSERT_UNREACHABLE(cond) \
+    do {                               \
+    } while (0)
 #endif
