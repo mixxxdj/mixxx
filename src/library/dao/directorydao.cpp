@@ -217,8 +217,10 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
     // Appending '/' is required to disambiguate files from parent
     // directories, e.g. "a/b.mp3" and "a/b/c.mp3" where "a/b" would
     // match both instead of only files in the parent directory "a/b/".
-    DEBUG_ASSERT(!oldDirectory.endsWith('/'));
-    const QString oldDirectoryPrefix = oldDirectory + '/';
+    QString oldDirectoryPrefix = oldDirectory;
+    if (!oldDirectory.endsWith('/')) {
+        oldDirectoryPrefix += '/';
+    }
     query.prepare(QStringLiteral(
             "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
