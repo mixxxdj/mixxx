@@ -1,11 +1,9 @@
 import "../../qml" as Skin
 import "../../qml/Theme"
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
 
 ApplicationWindow {
     id: root
@@ -655,18 +653,6 @@ ApplicationWindow {
 
             anchors.fill: parent
             color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
-
-            Repeater {
-                model: hasHardwareAcceleration ? 1 : 0
-
-                GaussianBlur {
-                    anchors.fill: overlayModal
-                    deviation: 4
-                    radius: Math.max(0, overlayModal.radius)
-                    samples: 16
-                    source: content
-                }
-            }
         }
     }
 }
