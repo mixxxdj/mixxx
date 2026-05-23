@@ -22,11 +22,11 @@ QUrl DlgPreferencePage::helpUrl() const {
 }
 
 void DlgPreferencePage::setScrollSafeGuardForAllInputWidgets(QObject* pObj) {
-    // Set the focus policy to for scrollable input widgets and connect them
-    // to the custom event filter.
-    // Note: finding all relevant widgets with pObj->findchildren<Type*>
-    // is much faster than with
-    // for (auto* ch : pObj->children()) { qobject_cast<Type*>(ch); }
+    // This ensures that scrollable input widgets react on wheel events only if
+    // they have focus. This avoid unintended value changes when scrolling the
+    // preferences pages.
+    // This works by setting the focus policy to Qt::StrongFocus and installing
+    // our custom event filter on them.
     setScrollSafeGuardForChildrenOfType<QComboBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QSpinBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QDoubleSpinBox>(pObj);
@@ -40,6 +40,9 @@ void DlgPreferencePage::setScrollSafeGuard(QWidget* pWidget) {
 
 template<typename T>
 void DlgPreferencePage::setScrollSafeGuardForChildrenOfType(QObject* pObj) {
+    // Note: finding all relevant widgets with pObj->findchildren<Type*>
+    // is much faster than with
+    // for (auto* ch : pObj->children()) { qobject_cast<Type*>(ch); }
     QList<T*> children = pObj->findChildren<T*>();
     for (T* pChild : children) {
         setScrollSafeGuard(pChild);
