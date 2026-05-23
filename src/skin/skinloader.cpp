@@ -139,7 +139,12 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
         return pSkin;
     }
 
-    qWarning() << "Failed to find configured skin" << configSkin;
+    if (isDeveloperOnlyQmlSkin(configSkin)) {
+        qDebug() << "Configured QML skin" << configSkin
+                 << "is unavailable outside developer mode";
+    } else {
+        qWarning() << "Failed to find configured skin" << configSkin;
+    }
 
     // Fallback to default skin as last resort
     const QString defaultSkinName = getDefaultSkinName();
@@ -260,6 +265,25 @@ SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
 #endif
 
     return nullptr;
+}
+
+bool SkinLoader::isDeveloperOnlyQmlSkin([[maybe_unused]] const QString& skinName) const {
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        return false;
+    }
+    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+    for (QDir dir : skinSearchPaths) {
+        if (!dir.cd(skinName)) {
+            continue;
+        }
+        SkinPointer pSkin = QmlSkin::fromDirectory(dir);
+        if (pSkin && pSkin->isValid()) {
+            return true;
+        }
+    }
+#endif
+    return false;
 }
 
 void SkinLoader::setupSpinnyCoverControls() {
