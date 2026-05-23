@@ -1,6 +1,7 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
@@ -31,6 +32,11 @@ void DlgPreferencePage::setScrollSafeGuardForAllInputWidgets(QObject* pObj) {
     setScrollSafeGuardForChildrenOfType<QSpinBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QDoubleSpinBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QSlider>(pObj);
+    // Note: there is a Qt quirk where scrolling stops if a disabled checkbox
+    // moves underneath the cursor. (seen with Qt 6.2.3 on Linux)
+    // We can avoid this by setting the same scrollguard on them, even though
+    // they don't act on wheel events like sliders etc. ¯\_(ツ)_/¯
+    setScrollSafeGuardForChildrenOfType<QCheckBox>(pObj);
 }
 
 void DlgPreferencePage::setScrollSafeGuard(QWidget* pWidget) {
@@ -57,10 +63,12 @@ bool DlgPreferencePage::eventFilter(QObject* pObj, QEvent* pEvent) {
         QSpinBox* spin = qobject_cast<QSpinBox*>(pObj);
         QDoubleSpinBox* spinDbl = qobject_cast<QDoubleSpinBox*>(pObj);
         QSlider* slider = qobject_cast<QSlider*>(pObj);
+        QCheckBox* widget = qobject_cast<QCheckBox*>(pObj);
         if ((combo && !combo->hasFocus()) ||
                 (spin && !spin->hasFocus()) ||
                 (spinDbl && !spinDbl->hasFocus()) ||
-                (slider && !slider->hasFocus())) {
+                (slider && !slider->hasFocus()) ||
+                (widget && !widget->isEnabled())) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             QApplication::sendEvent(layout()->parent(), pEvent);
 #else
