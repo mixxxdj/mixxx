@@ -287,6 +287,8 @@ void allshader::WaveformRenderMark::update() {
         return;
     }
 
+    m_marks.updateSafe();
+
     // For each WaveformMark we create a GeometryNode with Texture
     // (in updateMarkImage). Of these GeometryNodes, we append the
     // the ones that need to be shown on screen as children to
