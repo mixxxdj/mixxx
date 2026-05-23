@@ -776,14 +776,13 @@ TraktorS2MK3.wheelVelocity = function(deckIndex, value) {
     // Velocity smoothing
     const velocity = tickDelta / timeDelta;
     const prevVelocity = this.lastVelocity[deckIndex];
-    let nextVelocity = null;
     // Check if the jogwheel is currently stopped or changing directions.
     // If so, set the velocity to the new value instantly.
     if ((Math.abs(prevVelocity) < JOGWHEEL_EPSILON) || (velocity * prevVelocity < 0)) {
-        nextVelocity = velocity;
+        const nextVelocity = velocity;
     //  Otherwise, smooth the velocity.
     } else {
-        nextVelocity = JOGWHEEL_ALPHA * velocity + (1 - JOGWHEEL_ALPHA) * prevVelocity;
+        const nextVelocity = JOGWHEEL_ALPHA * velocity + (1 - JOGWHEEL_ALPHA) * prevVelocity;
     }
     this.lastVelocity[deckIndex] = nextVelocity;
 
