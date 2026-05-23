@@ -21,6 +21,7 @@ class DlgTrackInfo;
 class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
+class WTrackTableViewHeader;
 
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
@@ -196,6 +197,7 @@ class WTrackTableView : public WLibraryTableView {
     Library* const m_pLibrary;
 
     // Context menu container
+    parented_ptr<WTrackTableViewHeader> m_pHeader;
     parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
