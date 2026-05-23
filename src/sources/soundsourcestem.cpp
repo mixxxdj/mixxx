@@ -11,6 +11,8 @@ extern "C" {
 
 } // extern "C"
 
+#include <memory>
+
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/sample.h"
@@ -28,6 +30,17 @@ constexpr int kNumStreams = 5;
 constexpr int kRequiredStreamCount = kNumStreams - 1; // Stem count doesn't include the main mix
 
 const Logger kLogger("SoundSourceSTEM");
+
+// Local RAII for AVFormatContext; SoundSourceFFmpeg's wrapper is private.
+struct AVFormatContextDeleter {
+    void operator()(AVFormatContext* ctx) const {
+        if (ctx) {
+            avformat_close_input(&ctx);
+        }
+    }
+};
+using AVFormatContextPtr =
+        std::unique_ptr<AVFormatContext, AVFormatContextDeleter>;
 
 } // anonymous namespace
 
@@ -311,9 +324,10 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
     VERIFY_OR_DEBUG_ASSERT(!m_requestedChannelCount.isValid()) {
         return OpenResult::Failed;
     }
-    // Open input
-    AVFormatContext* pavInputFormatContext =
-            SoundSourceFFmpeg::openInputFile(getLocalFileName());
+    // Open input. RAII handles cleanup on every return path.
+    AVFormatContextPtr pavInputFormatContextGuard(
+            SoundSourceFFmpeg::openInputFile(getLocalFileName()));
+    AVFormatContext* pavInputFormatContext = pavInputFormatContextGuard.get();
     if (pavInputFormatContext == nullptr) {
         kLogger.warning()
                 << "Failed to open input file"
