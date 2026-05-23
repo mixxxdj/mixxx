@@ -3,6 +3,7 @@
 #include <QJSEngine>
 #include <algorithm>
 
+#include "controllers/controllershareddata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
 #include "util/cmdlineargs.h"
@@ -99,6 +100,13 @@ bool Controller::applyMapping(const QString& resourcePath) {
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
     m_pScriptEngineLegacy->setSettings(getMappingSettings());
+
+    // Set up shared data if the mapping defines a namespace
+    QString sharedDataNs = getSharedDataNamespace();
+    if (!sharedDataNs.isEmpty() && m_pSharedData) {
+        m_pScriptEngineLegacy->setSharedData(
+                m_pSharedData->namespaced(sharedDataNs));
+    }
 #ifdef MIXXX_USE_QML
     m_pScriptEngineLegacy->setModulePaths(getMappingModules());
     m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());

@@ -311,3 +311,8 @@ void ControllerScriptEngineBase::errorDialogButton(
 void ControllerScriptEngineBase::throwJSError(const QString& message) {
     m_pJSEngine->throwError(message);
 }
+
+void ControllerScriptEngineBase::setSharedData(
+        ControllerNamespacedSharedData* runtimeData) {
+    m_runtimeData = std::unique_ptr<ControllerNamespacedSharedData>(runtimeData);
+}

@@ -7,6 +7,7 @@
 #include <QWaitCondition>
 #include <memory>
 
+#include "controllers/controllershareddata.h"
 #include "javascriptplayerproxy.h"
 #include "mixer/playermanager.h"
 #include "util/runtimeloggingcategory.h"
@@ -55,6 +56,13 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
+    /// Takes ownership of runtimeData.
+    void setSharedData(ControllerNamespacedSharedData* runtimeData);
+
+    ControllerNamespacedSharedData* getSharedData() {
+        return m_runtimeData.get();
+    }
+
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager);
 
     static void registerTrackCollectionManager(
@@ -83,6 +91,7 @@ class ControllerScriptEngineBase : public QObject {
     bool m_bErrorsAreFatal;
 #endif
     std::shared_ptr<QJSEngine> m_pJSEngine;
+    std::unique_ptr<ControllerNamespacedSharedData> m_runtimeData;
 
     Controller* m_pController;
     const RuntimeLoggingCategory m_logger;
@@ -122,4 +131,5 @@ class ControllerScriptEngineBase : public QObject {
 
     friend class ColorMapperJSProxy;
     friend class MidiControllerTest;
+    friend class ControllerSharedDataTest;
 };
