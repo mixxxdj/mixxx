@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QVariantList>
+#include <type_traits>
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
@@ -288,6 +289,22 @@ class QmlConfigProxy : public QObject {
     void bpmSyncLockAlgorithmChanged();
 
   private:
+    template<typename Type, typename Signal>
+    void setConfigValueAndNotify(
+            const QString& group,
+            const QString& key,
+            typename std::conditional<(sizeof(Type) <= 16), Type, const Type&>::
+                    type value,
+            const Type& defaultValue,
+            Signal signal) {
+        if (value == defaultValue) {
+            m_pConfig->remove(ConfigKey(group, key));
+            return;
+        }
+        m_pConfig->setValue(ConfigKey(group, key), value);
+        (this->*signal)();
+    }
+
     static inline UserSettingsPointer s_pUserSettings = nullptr;
 
     const UserSettingsPointer m_pConfig;

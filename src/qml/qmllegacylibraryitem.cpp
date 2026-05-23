@@ -690,7 +690,7 @@ QString QmlLegacyLibraryItem::toolTipTextForTarget(
 void QmlLegacyLibraryItem::updateHoverTarget(
         QWidget* target,
         const QPoint& rootPos,
-        Qt::KeyboardModifiers modifiers) {
+        [[maybe_unused]] Qt::KeyboardModifiers modifiers) {
     if (!target || target == m_pLastHoverWidget) {
         return;
     }
@@ -701,7 +701,6 @@ void QmlLegacyLibraryItem::updateHoverTarget(
     }
 
     const QPointF targetPos = widgetScenePos(target, m_pRootWidget.get(), rootPos);
-    Q_UNUSED(modifiers);
     QEnterEvent enterEvent(targetPos,
             QPointF(rootPos),
             QPointF(target->mapToGlobal(targetPos.toPoint())));

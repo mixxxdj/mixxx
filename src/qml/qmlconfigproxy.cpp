@@ -16,17 +16,13 @@
                 DEFAULT);                                     \
     }
 
-#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                      \
-    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                   \
-    void QmlConfigProxy::set_##NAME(                                        \
-            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type \
-                    value) {                                                \
-        if (value == DEFAULT) {                                             \
-            m_pConfig->remove(ConfigKey(GROUP, KEY));                       \
-            return;                                                         \
-        }                                                                   \
-        m_pConfig->setValue(ConfigKey(GROUP, KEY), value);                  \
-        emit NAME##Changed();                                               \
+#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                       \
+    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                    \
+    void QmlConfigProxy::set_##NAME(                                         \
+            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type  \
+                    value) {                                                 \
+        setConfigValueAndNotify<TYPE>(                                       \
+                GROUP, KEY, value, DEFAULT, &QmlConfigProxy::NAME##Changed); \
     }
 
 namespace {
@@ -103,7 +99,8 @@ namespace qml {
 
 QmlConfigProxy::QmlConfigProxy(
         UserSettingsPointer pConfig, QObject* parent)
-        : QObject(parent), m_pConfig(pConfig) {
+        : QObject(parent),
+          m_pConfig(pConfig) {
 }
 
 QVariantList QmlConfigProxy::hotcueColorPalette() const {
