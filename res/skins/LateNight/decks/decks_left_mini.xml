@@ -15,7 +15,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <SingletonContainer>
-            <ObjectName>Deck3_Mini</ObjectName>
+            <ObjectName>Deck2_Mini</ObjectName>
           </SingletonContainer>
         </Children>
         <Connection>
