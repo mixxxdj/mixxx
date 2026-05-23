@@ -777,6 +777,7 @@ WBpmEditor QDoubleSpinBox::down-button {
 
 /************** Mixer *********************************************************/
 
+#ChannelVolume[highlight="1"],
 #CrossfaderContainer[highlight="1"] {
   border:  1px solid #cf9200;
 }
