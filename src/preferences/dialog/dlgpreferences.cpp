@@ -522,7 +522,10 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
-    pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
+    QWidget* pScrollArea = pWidget->parentWidget()->parentWidget();
+    m_allPages.removeAt(pagesWidget->indexOf(pScrollArea));
+    pagesWidget->removeWidget(pScrollArea);
+    delete pScrollArea;
 }
 
 void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {

@@ -51,11 +51,16 @@ class ControllerManager : public QObject {
     void requestShutdown();
     void requestInitialize();
     void mappingApplied(bool applied);
+    void deviceAdded(Controller* pController);
+    void deviceRemoved(Controller* pController);
 
   public slots:
     void slotApplyMapping(Controller* pController,
             std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
+    void slotAddDevice(Controller* pController);
+    void slotRemoveDevice(Controller* pController);
+    void slotSetUpDevice(Controller* pController);
 
   private slots:
     /// Perform initialization that should be delayed until the ControllerManager
@@ -76,6 +81,9 @@ class ControllerManager : public QObject {
     void pollIfAnyControllersOpen();
     void openController(Controller* pController);
     void closeController(Controller* pController);
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+    void loadMidiBackend();
+#endif
 
     UserSettingsPointer m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;

@@ -1,0 +1,240 @@
+<html>
+<head>
+
+
+
+<title>NinSheetMusic</title>
+<meta name="description" content="The largest free Nintendo sheet music resource on the internet!">
+<meta name="keywords" content="ninsheetmusic, NSM, nintendo, sheet music, mario, zelda, metroid, kirby, pokemon, castlevania, mega man, final fantasy, sonic">
+<meta name="robot" content="index,follow">
+
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<link rel="alternate" type="application/rss+xml" title="NinSheetMusic News" href="http://feeds.feedburner.com/NSM-news">
+
+<style type="text/css">
+
+a:link		{ text-decoration: none; color: #446677; }
+a:visited	{ text-decoration: none; color: #446677; }
+a:active	{ text-decoration: none; color: #668899; }
+a:hover		{ text-decoration: none; color: #113344; }
+
+a.nav:link	{ text-decoration: none; color: #000000; font-weight: bold; }
+a.nav:visited	{ text-decoration: none; color: #000000; font-weight: bold; }
+a.nav:active	{ text-decoration: none; color: #224455; font-weight: bold; }
+a.nav:hover	{ text-decoration: none; color: #335566; font-weight: bold; }
+
+a.franchise:link	{ text-decoration: none; color: #FFFFFF; font-weight: bold; }
+a.franchise:visited	{ text-decoration: none; color: #FFFFFF; font-weight: bold; }
+a.franchise:active	{ text-decoration: none; color: #99BBDD; font-weight: bold; }
+a.franchise:hover	{ text-decoration: none; color: #CCCCCC; font-weight: bold; }
+
+body	{
+margin: 0px;
+background-color: #88A6C0;
+font-family:Verdana;
+	}
+img	{
+border: 0px;
+vertical-align: middle;
+	}
+
+table	{
+border-collapse: collapse;
+	}
+
+hr	{
+height: 1px;
+border: 3px double #000000;
+width: 90%;
+	}
+
+.banner	{
+background-image: url('images/banner_nsm.png');background-repeat: no-repeat;
+background-color: #B1C6D6;
+height: 190px;
+	}
+
+.content{
+background-image: url('images/content.jpg');background-repeat: repeat-x;
+background-color: #E9F0F6;
+padding: 10px;
+height: 500px;
+font-size:12px;
+	}
+
+
+.game	{
+border: 1px solid #000000;
+background-image: url('images/game.jpg');background-repeat: repeat-x;
+background-color: #47637B;
+font-size: 14px;
+font-family: Tahoma;
+text-align: center;
+color: #FFFFFF;
+font-weight:bolder;
+	}
+
+.etc	{
+background-image: url('images/etc.jpg');background-repeat: repeat-x;
+background-color: #EEFFFF;
+border-bottom: 6px double #000000;
+height: 30px;
+	}
+
+#nav	{
+background-image: url('images/navigation.jpg');background-repeat: repeat-x;
+background-color: #EEFFFF;
+height: 25px;
+font-size:14px;
+	}
+
+#franchise{
+background-image: url('images/franchise.jpg');background-repeat: repeat-x;
+background-color: #47637B;
+height: 25px;
+color: #FFFFFF;
+	}
+
+#bottom	{
+background-image: url('images/etc.jpg');background-repeat: repeat-x;
+background-color: #EEFFFF;
+height: 10px;
+	}
+
+#sidebar{
+background-image: url('images/sidebar.jpg');background-repeat: repeat-y;
+background-color: #88A6C0;
+width: 145px;
+padding: 0px;
+color: #FFFFFF;
+	}
+
+#sidebarleft{
+background-image: url('images/sidebarleft.jpg');background-repeat: repeat-y;
+background-color: #88A6C0;
+width: 145px;
+padding: 0px;
+color: #FFFFFF;
+font-size: 12px;
+	}
+
+
+</style>
+
+<link href="https://plus.google.com/106347702632817259192" rel="publisher" />
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26826006-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+</head>
+<body topmargin="0" leftmargin="0" rightmargin="0" bottommargin="0">
+
+<table width="100%" border="1" bordercolor="#000000" cellspacing="0" cellpadding="0">
+<tr>
+<td colspan="3" align="center" class="banner">
+<a href="index.php"><img src="images/spacer.gif" height="99%" width="100%" border="0"></a></td>
+</tr>
+
+<tr>
+<td colspan="3" valign="middle" align="center" id="nav">
+
+<a class="nav" href="index.php">Home</a>
+~
+<a class="nav" href="faq.php">Help</a>
+~
+<a class="nav" href="extra.php">Extra</a>
+~
+<a class="nav" href="smf/">Forums</a>
+~
+<a class="nav" href="http://cbe005.chat.mibbit.com/?server=irc.NFnet.org&channel=%23NinSheetMusic" target="_blank">Chat</a>
+~
+<a class="nav" href="staff.php">Staff</a></td>
+</tr>
+<tr>
+<td valign="top" align="center" id="sidebarleft">
+<br>
+<h3 style="font-family:Tahoma;font-weight:bolder">Sheet Music</h3>
+<a href="sheetmusic.php?series=AnimalCrossing" style="color:#FFFFFF;font-family:Tahoma"><b>Animal Crossing</b></a><br><br><a href="sheetmusic.php?series=BanjoKazooie" style="color:#FFFFFF;font-family:Tahoma"><b>Banjo Kazooie</b></a><br><br><a href="sheetmusic.php?series=Castlevania" style="color:#FFFFFF;font-family:Tahoma"><b>Castlevania</b></a><br><br><a href="sheetmusic.php?series=DonkeyKong" style="color:#FFFFFF;font-family:Tahoma"><b>Donkey Kong</b></a><br><br><a href="sheetmusic.php?series=DragonQuest" style="color:#FFFFFF;font-family:Tahoma"><b>Dragon Quest</b></a><br><br><a href="sheetmusic.php?series=FinalFantasy" style="color:#FFFFFF;font-family:Tahoma"><b>Final Fantasy</b></a><br><br><a href="sheetmusic.php?series=FireEmblem" style="color:#FFFFFF;font-family:Tahoma"><b>Fire Emblem</b></a><br><br><a href="sheetmusic.php?series=GoldenSun" style="color:#FFFFFF;font-family:Tahoma"><b>Golden Sun</b></a><br><br><a href="sheetmusic.php?series=HarvestMoon" style="color:#FFFFFF;font-family:Tahoma"><b>Harvest Moon</b></a><br><br><a href="sheetmusic.php?series=Kirby" style="color:#FFFFFF;font-family:Tahoma"><b>Kirby</b></a><br><br><a href="sheetmusic.php?series=MegaMan" style="color:#FFFFFF;font-family:Tahoma"><b>Mega Man</b></a><br><br><a href="sheetmusic.php?series=MetalGearSolid" style="color:#FFFFFF;font-family:Tahoma"><b>Metal Gear Solid</b></a><br><br><a href="sheetmusic.php?series=Metroid" style="color:#FFFFFF;font-family:Tahoma"><b>Metroid</b></a><br><br><a href="sheetmusic.php?series=Pokemon" style="color:#FFFFFF;font-family:Tahoma"><b>Pokemon</b></a><br><br><a href="sheetmusic.php?series=Sonic" style="color:#FFFFFF;font-family:Tahoma"><b>Sonic</b></a><br><br><a href="sheetmusic.php?series=StarFox" style="color:#FFFFFF;font-family:Tahoma"><b>Star Fox</b></a><br><br><a href="sheetmusic.php?series=SuperMario" style="color:#FFFFFF;font-family:Tahoma"><b>Super Mario</b></a><br><br><a href="sheetmusic.php?series=SuperSmashBros" style="color:#FFFFFF;font-family:Tahoma"><b>Super Smash Bros.</b></a><br><br><a href="sheetmusic.php?series=Tales" style="color:#FFFFFF;font-family:Tahoma"><b>Tales</b></a><br><br><a href="sheetmusic.php?series=TheLegendofZelda" style="color:#FFFFFF;font-family:Tahoma"><b>The Legend of Zelda</b></a><br><br><a href="sheetmusic.php?series=Other" style="color:#FFFFFF;font-family:Tahoma"><b>More...</b></a><br><br>
+</td>
+<td valign="top" class="content">
+
+<br />
+<br />
+
+<h1 align="center">Whoops! 404 - File Not Found</h1>
+<p align="center">Looks like the page you were looking for doesn't exist.
+<br>
+<br>
+<a href="javascript:history.go(-1)">Return to the previous page</a></p>
+<br />
+<br />
+<br />
+
+<br />
+<br />
+<br /><hr /><br />
+<center>
+<font size="1">
+
+
+All sheet music provided by NinSheetMusic is &copy; copyright 2013 its respective owner(s) and NinSheetMusic.
+<br />
+All songs, characters, and games &copy; Copyright Nintendo 2013.
+<br />
+<br />
+
+</center>
+
+
+</td>
+<td valign="top" align="center" id="sidebar">
+
+</br>
+<font size="7" face="Impact">2176</font><br /><font size="2" face="Tahoma"><b>Sheets!</b></font>
+
+<br /><br /><br />
+
+<span style="font-size:14px;font-family:Tahoma;font-weight:bold">Affiliates</span>
+
+<a href="http://www.drshnaps.com" target="_blank"><img src="http://www.ninsheetm.us/images/dsp.gif"></a>
+<br />
+<a href="http://z10.invisionfree.com/NSMRPG" target="_blank"><img src="http://www.ninsheetm.us/images/nsm_rpg.png"></a>
+<br />
+<a href="http://www.vgmusic.com" target="_blank"><img src="http://www.vgmusic.com/images/banners/vgmbttn.gif"></a>
+<br />
+<a href="http://www.mathiasditlev.dk/" target="_blank"><img src="http://www.ninsheetm.us/images/mathiasditlev.gif"></a>
+<br />
+<a href="http://destinedhero.com/thewindmillhut" target="_blank"><img src="http://www.ninsheetm.us/images/TSSicon.gif"></a>
+<br />
+<br />
+<a href="http://www.facebook.com/NinSheetMusic" target="_blank"><img src="http://www.ninsheetm.us/images/nsmfacebook.png"></a>
+<br />
+<br />
+
+<a href="https://plus.google.com/106347702632817259192?prsrc=3" style="display:inline-block;text-decoration:none;color:#333;text-align:center;font:13px/16px arial,sans-serif;white-space:nowrap;"><img src="https://ssl.gstatic.com/images/icons/gplus-32.png" alt="" style="border:0;width:32px;height:32px;margin-bottom:7px;"><br/><span style="font-weight:bold;color:#FFFFFF">NinSheetMusic</span><br/><span style="color:#FFFFFF"> on Google+ </span></a>
+
+</td>
+
+</tr>
+<tr>
+<td colspan="3" align="center" id="bottom">
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

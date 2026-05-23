@@ -44,8 +44,33 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::rescanControllers);
 
+    connect(m_pControllerManager.get(),
+            &ControllerManager::deviceAdded,
+            this,
+            &DlgPrefControllers::slotSetupControllerWidget);
+
+    connect(m_pControllerManager.get(),
+            &ControllerManager::deviceRemoved,
+            this,
+            &DlgPrefControllers::slotDestroyControllerWidget);
+
+    comboBox_midiAPI->addItem("None", "None");
+
 #ifdef __PORTMIDI__
+    comboBox_midiAPI->addItem("PortMidi", "PortMidi");
+#endif
+
+#ifdef __LIBREMIDI__
+    comboBox_midiAPI->addItem("Libremidi", "Libremidi");
+#endif
+
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
     checkBox_midithrough->setChecked(m_pConfig->getValue(kMidiThroughCfgKey, false));
+    comboBox_midiAPI->setCurrentText(m_pConfig->getValue(kMidiAPI, kDefaultMidiAPI));
+    connect(comboBox_midiAPI,
+            &QComboBox::currentTextChanged,
+            this,
+            &DlgPrefControllers::slotMidiAPIChanged);
     connect(checkBox_midithrough,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
             &QCheckBox::checkStateChanged,
@@ -55,6 +80,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             this,
             &DlgPrefControllers::slotMidiThroughChanged);
     txt_midithrough->setTextFormat(Qt::RichText);
+
     //: text enclosed in <b> is bold, <br/> is a linebreak
     //: %1 is the placehodler for 'MIDI Through Port'
     txt_midithrough->setText(tr(
@@ -68,6 +94,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     line_midithrough->hide();
     checkBox_midithrough->hide();
     txt_midithrough->hide();
+    groupBox_midiAPI->hide();
 #endif
 
     // Setting the description text here instead of in the ui file allows to paste
@@ -120,20 +147,20 @@ void DlgPrefControllers::slotUpdate() {
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
-        pControllerDlg->slotCancel();
+    for (const auto& [_, pair] : std::as_const(m_controllerMap)) {
+        pair.first->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
-        pControllerDlg->slotApply();
+    for (const auto& [_, pair] : std::as_const(m_controllerMap)) {
+        pair.first->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
-        pControllerDlg->slotResetToDefaults();
+    for (const auto& [_, pair] : std::as_const(m_controllerMap)) {
+        pair.first->slotResetToDefaults();
     }
 }
 
@@ -141,20 +168,24 @@ QUrl DlgPrefControllers::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
-bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
-    int controllerIndex = m_controllerTreeItems.indexOf(clickedItem);
-    if (controllerIndex >= 0) {
-        DlgPrefController* pControllerDlg = m_controllerPages.value(controllerIndex);
-        if (pControllerDlg) {
-            const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
-                    clickedItem->text(0);
-            m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
+bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* pClickedItem) {
+    DlgPrefController* pControllerDlg = nullptr;
+
+    for (const auto& [_, pair] : m_controllerMap) {
+        if (pair.second == pClickedItem) {
+            pControllerDlg = pair.first;
         }
+    }
+
+    if (pControllerDlg) {
+        const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
+                pClickedItem->text(0);
+        m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         return true;
-    } else if (clickedItem == m_pControllersRootItem) {
+    } else if (pClickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
-        m_pDlgPreferences->expandTreeItem(clickedItem);
-        const QString pageTitle = clickedItem->text(0);
+        m_pDlgPreferences->expandTreeItem(pClickedItem);
+        const QString pageTitle = pClickedItem->text(0);
         m_pDlgPreferences->switchToPage(pageTitle, this);
         return true;
     }
@@ -166,6 +197,83 @@ void DlgPrefControllers::rescanControllers() {
     setupControllerWidgets();
 }
 
+void DlgPrefControllers::slotSetupControllerWidget(Controller* pController) {
+    setupControllerWidget(pController);
+}
+
+void DlgPrefControllers::slotDestroyControllerWidget(Controller* pController) {
+    destroyControllerWidget(pController);
+}
+
+void DlgPrefControllers::setupControllerWidget(Controller* pController) {
+    auto pControllerDlg = make_parented<DlgPrefController>(
+            this, pController, m_pControllerManager, m_pConfig);
+    connect(pControllerDlg,
+            &DlgPrefController::mappingStarted,
+            m_pDlgPreferences,
+            &DlgPreferences::hide);
+    connect(pControllerDlg,
+            &DlgPrefController::mappingEnded,
+            m_pDlgPreferences,
+            &DlgPreferences::show);
+    // Recreate the control picker menus when decks or samplers are added
+    m_pNumDecks->connectValueChanged(pControllerDlg.get(),
+            &DlgPrefController::slotRecreateControlPickerMenu);
+    m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
+            &DlgPrefController::slotRecreateControlPickerMenu);
+
+    connect(pController,
+            &Controller::openChanged,
+            this,
+            [this, pController](bool bOpen) {
+                slotHighlightDevice(pController, bOpen);
+            });
+
+    QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
+            QTreeWidgetItem::Type);
+
+    const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
+        switch (protocol) {
+        case DataRepresentationProtocol::USB_BULK_TRANSFER:
+            return QStringLiteral("ic_preferences_bulk.svg");
+        case DataRepresentationProtocol::HID:
+            return QStringLiteral("ic_preferences_hid.svg");
+        case DataRepresentationProtocol::MIDI:
+            return QStringLiteral("ic_preferences_midi.svg");
+        default:
+            return QStringLiteral("ic_preferences_controllers.svg");
+        }
+    }();
+
+    m_pDlgPreferences->addPageWidget(
+            DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
+            pController->getName(),
+            treeImage);
+
+    m_pControllersRootItem->addChild(pControllerTreeItem);
+    m_controllerMap.emplace(pController, std::pair(pControllerDlg.get(), pControllerTreeItem));
+
+    // If controller is open make controller label bold
+    QFont temp = pControllerTreeItem->font(0);
+    temp.setBold(pController->isOpen());
+    pControllerTreeItem->setFont(0, temp);
+}
+
+void DlgPrefControllers::destroyControllerWidget(Controller* pController) {
+    // pController->disconnect(this);
+    const auto& value = m_controllerMap.extract(pController);
+
+    DEBUG_ASSERT(!value.empty());
+
+    DlgPrefController* pControllerDlg = value.mapped().first;
+    m_pDlgPreferences->removePageWidget(pControllerDlg);
+    delete pControllerDlg;
+
+    QTreeWidgetItem* pControllerTreeItem = value.mapped().second;
+    m_pControllersRootItem->removeChild(pControllerTreeItem);
+    delete pControllerTreeItem;
+}
+
 void DlgPrefControllers::destroyControllerWidgets() {
     // NOTE: this assumes that the list of controllers does not change during the lifetime of Mixxx.
     // This is currently true, but once we support hotplug, we will need better lifecycle management
@@ -175,13 +283,14 @@ void DlgPrefControllers::destroyControllerWidgets() {
     for (auto* pController : std::as_const(controllerList)) {
         pController->disconnect(this);
     }
-    while (!m_controllerPages.isEmpty()) {
-        DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
+
+    for (auto& [key, value] : m_controllerMap) {
+        DlgPrefController* pControllerDlg = value.first;
         m_pDlgPreferences->removePageWidget(pControllerDlg);
-        delete pControllerDlg;
     }
 
-    m_controllerTreeItems.clear();
+    m_controllerMap.clear();
+
     while (m_pControllersRootItem->childCount() > 0) {
         QTreeWidgetItem* pControllerTreeItem = m_pControllersRootItem->takeChild(0);
         delete pControllerTreeItem;
@@ -200,73 +309,18 @@ void DlgPrefControllers::setupControllerWidgets() {
     }
     txtNoControllersAvailable->setVisible(false);
 
-    std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
-
     for (auto* pController : std::as_const(controllerList)) {
-        auto pControllerDlg = make_parented<DlgPrefController>(
-                this, pController, m_pControllerManager, m_pConfig);
-        connect(pControllerDlg,
-                &DlgPrefController::mappingStarted,
-                m_pDlgPreferences,
-                &DlgPreferences::hide);
-        connect(pControllerDlg,
-                &DlgPrefController::mappingEnded,
-                m_pDlgPreferences,
-                &DlgPreferences::show);
-        // Recreate the control picker menus when decks or samplers are added
-        m_pNumDecks->connectValueChanged(pControllerDlg.get(),
-                &DlgPrefController::slotRecreateControlPickerMenu);
-        m_pNumSamplers->connectValueChanged(pControllerDlg.get(),
-                &DlgPrefController::slotRecreateControlPickerMenu);
-
-        m_controllerPages.append(pControllerDlg);
-
-        connect(pController,
-                &Controller::openChanged,
-                this,
-                [this, pDlg = pControllerDlg.get()](bool bOpen) {
-                    slotHighlightDevice(pDlg, bOpen);
-                });
-
-        QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
-                QTreeWidgetItem::Type);
-
-        const QString treeImage = [protocol = pController->getDataRepresentationProtocol()] {
-            switch (protocol) {
-            case DataRepresentationProtocol::USB_BULK_TRANSFER:
-                return QStringLiteral("ic_preferences_bulk.svg");
-            case DataRepresentationProtocol::HID:
-                return QStringLiteral("ic_preferences_hid.svg");
-            case DataRepresentationProtocol::MIDI:
-                return QStringLiteral("ic_preferences_midi.svg");
-            default:
-                return QStringLiteral("ic_preferences_controllers.svg");
-            }
-        }();
-
-        m_pDlgPreferences->addPageWidget(
-                DlgPreferences::PreferencesPage(pControllerDlg, pControllerTreeItem),
-                pController->getName(),
-                treeImage);
-
-        m_pControllersRootItem->addChild(pControllerTreeItem);
-        m_controllerTreeItems.append(pControllerTreeItem);
-
-        // If controller is open make controller label bold
-        QFont temp = pControllerTreeItem->font(0);
-        temp.setBold(pController->isOpen());
-        pControllerTreeItem->setFont(0, temp);
+        setupControllerWidget(pController);
     }
 }
 
-void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, bool enabled) {
-    int controllerPageIndex = m_controllerPages.indexOf(pControllerDlg);
-    if (controllerPageIndex < 0) {
+void DlgPrefControllers::slotHighlightDevice(Controller* pController, bool enabled) {
+    if (!m_controllerMap.contains(pController)) {
         return;
     }
 
-    QTreeWidgetItem* pControllerTreeItem =
-            m_controllerTreeItems.at(controllerPageIndex);
+    QTreeWidgetItem* pControllerTreeItem = m_controllerMap.at(pController).second;
+
     if (!pControllerTreeItem) {
         return;
     }
@@ -276,7 +330,10 @@ void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, 
     pControllerTreeItem->setFont(0, temp);
 }
 
-#ifdef __PORTMIDI__
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+void DlgPrefControllers::slotMidiAPIChanged(const QString& api) {
+    m_pConfig->setValue(kMidiAPI, api);
+}
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 void DlgPrefControllers::slotMidiThroughChanged(Qt::CheckState state) {
     m_pConfig->setValue(kMidiThroughCfgKey, state != Qt::Unchecked);
