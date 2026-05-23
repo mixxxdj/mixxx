@@ -11,6 +11,7 @@
 #include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/genredao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
@@ -111,6 +112,7 @@ class LibraryScanner : public QThread {
     PlaylistDAO m_playlistDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
+    GenreDao m_genreDao;
     TrackDAO m_trackDao;
 
     // Global scanner state for scan currently in progress.
