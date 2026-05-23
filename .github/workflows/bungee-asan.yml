@@ -1,0 +1,179 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+#
+# AddressSanitizer build that runs the Bungee scaler tests so any future
+# overflow of m_contiguousChannelBuffer is caught at test time rather than in
+# production.
+#
+# Scope:
+#   - Linux only (clang sanitizers don't run on Windows MSVC and the Bungee
+#     bug is not platform-specific).
+#   - Builds only the mixxx-test target and runs the *Bungee* gtest filter,
+#     keeping the workflow lean compared with the matrix in build.yml.
+#   - Fires on any change that could affect the Bungee integration; ignores
+#     unrelated PRs.
+#
+# Detect_leaks=0 because mixxx-test has many process-lifetime singletons
+# whose leaks would mask the heap-overflow signal we actually care about.
+# halt_on_error=1 + abort_on_error=1 ensures the CI job fails immediately
+# on the first ASan-detected issue with a usable backtrace.
+
+name: Bungee ASan
+
+on:
+  push:
+    branches:
+      - main
+      - "2.6"
+      - bungee-engine-full
+    paths:
+      - "cmake/patches/bungee/**"
+      - "cmake/patches/pffft/**"
+      - "cmake/modules/FindBungee.cmake"
+      - "src/engine/bufferscalers/enginebufferscalebungee.*"
+      - "src/test/enginebufferscalebungeetest.cpp"
+      - "src/test/enginebufferbungeetest.cpp"
+      - "CMakeLists.txt"
+      - ".github/workflows/bungee-asan.yml"
+  pull_request:
+    paths:
+      - "cmake/patches/bungee/**"
+      - "cmake/patches/pffft/**"
+      - "cmake/modules/FindBungee.cmake"
+      - "src/engine/bufferscalers/enginebufferscalebungee.*"
+      - "src/test/enginebufferscalebungeetest.cpp"
+      - "src/test/enginebufferbungeetest.cpp"
+      - "CMakeLists.txt"
+      - ".github/workflows/bungee-asan.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  asan:
+    name: Linux ASan + Bungee tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+
+    env:
+      CC: clang
+      CXX: clang++
+      # Address sanitizer runtime options.
+      # detect_leaks=0:   we are hunting heap overflows, not leaks; mixxx-test
+      #                   has many process-lifetime singletons that would
+      #                   otherwise drown the signal.
+      # halt_on_error=1:  fail fast on first overflow.
+      # abort_on_error=1: produce a coredump-style backtrace via SIGABRT.
+      # strict_string_checks=1: catch off-by-one in string ops too.
+      ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1:abort_on_error=1:strict_string_checks=1:print_summary=1"
+      # Keep ExternalProject_Add dependencies (bungee_external/eigen3_external/
+      # pffft_external) instrumented too: their configure/build steps run under
+      # `cmake --build`; child CMake processes inherit the runner environment
+      # and initialize CMAKE_C_FLAGS/CMAKE_CXX_FLAGS from CFLAGS/CXXFLAGS.
+      CFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
+      CXXFLAGS: "-fsanitize=address -fno-omit-frame-pointer"
+      # Harmless for static-only ExternalProject deps; retained as a guard if
+      # a future dependency target links a shared library or test executable.
+      LDFLAGS: "-fsanitize=address"
+      # ASAN_OPTIONS already disables leak detection. Keep exitcode=0 as a
+      # belt-and-suspenders guard so leak noise cannot mask heap-overflow
+      # regressions if LSan is re-enabled later.
+      LSAN_OPTIONS: "exitcode=0"
+
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v6
+        with:
+          # `git describe` (used by version stamping) needs full history.
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: "Ensure that all tags are fetched"
+        run: git fetch origin --force --tags
+
+      - name: "Set up gcc/clang problem matcher"
+        uses: ammaraskar/gcc-problem-matcher@0.3.0
+
+      - name: "Set up build environment (apt deps)"
+        run: tools/debian_buildenv.sh setup
+        env:
+          BUILDENV_BASEPATH: /home/runner/buildenv
+
+      - name: "Install clang + ASan runtime"
+        run: |
+          sudo apt-get install -y --no-install-recommends clang lld llvm
+          clang --version
+
+      - name: "Set up ccache"
+        uses: actions/cache@v5
+        with:
+          path: /home/runner/.cache/ccache
+          key: ubuntu-24.04-asan-${{ github.ref }}-${{ github.run_number }}
+          restore-keys: |
+            ubuntu-24.04-asan-${{ github.ref }}
+            ubuntu-24.04-asan-
+
+      - name: "Configure ccache"
+        run: |
+          sudo apt-get install -y --no-install-recommends ccache
+          ccache --zero-stats
+          ccache --max-size=2G
+
+      - name: "Create build directory"
+        run: mkdir build
+
+      # Minimal feature set: enable BUNGEE + tests + ASan; everything that
+      # would just cost compile time without exercising the Bungee path is
+      # turned OFF.  BUILD_BENCH is OFF so we don't depend on libpfm.
+      - name: "Configure (CMake, ASan)"
+        working-directory: build
+        run: >-
+          cmake -S .. -B .
+          -DCMAKE_BUILD_TYPE=Debug
+          -DBUNGEE=ON
+          -DSANITIZE_ADDRESS=ON
+          -DBUILD_TESTING=ON
+          -DBUILD_BENCH=OFF
+          -DDEBUG_ASSERTIONS_FATAL=OFF
+          -DWARNINGS_FATAL=OFF
+          -DBATTERY=OFF
+          -DBROADCAST=OFF
+          -DKEYFINDER=OFF
+          -DLILV=OFF
+          -DOPUS=OFF
+          -DQTKEYCHAIN=OFF
+          # VINYLCONTROL=ON: keep the workflow lean overall, but enable the
+          # internal vinyl-control engine controls so EngineBuffer creates
+          # VinylControlControl on each main deck.  Without it, KeyControl's
+          # vinyl-control ControlProxies fail their debug assert in the
+          # signal-path-test fixture (no production xwax/HID dependency is
+          # added; xwax is bundled).
+          -DVINYLCONTROL=ON
+          -DHID=OFF
+          -DBULK=OFF
+          -DLOCALECOMPARE=OFF
+          -DMAD=OFF
+          -DMODPLUG=OFF
+          -DWAVPACK=OFF
+          -DFFMPEG=OFF
+          -DDOWNLOAD_MANUAL=OFF
+          -DINSTALL_USER_UDEV_RULES=OFF
+          -DCMAKE_C_COMPILER_LAUNCHER=ccache
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: "Build mixxx-test"
+        working-directory: build
+        run: cmake --build . --target mixxx-test -j$(nproc)
+
+      - name: "Print ccache stats"
+        run: ccache --show-stats
+
+      # Run only the Bungee unit + integration tests under ASan.  The full
+      # mixxx-test suite under ASan would run for >30 minutes; this targeted
+      # run completes in well under a minute and exercises the instrumented
+      # Bungee scaler and integration paths.
+      - name: "Run Bungee tests under ASan"
+        working-directory: build
+        env:
+          GTEST_COLOR: "1"
+        run: ./mixxx-test --gtest_filter='*Bungee*'

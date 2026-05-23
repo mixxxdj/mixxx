@@ -1,0 +1,23 @@
+Lower Bungee's declared cmake_minimum_required so Mixxx's source fallback
+(ExternalProject_Add) can build Bungee on hosts that ship CMake older than 3.30.
+
+Bungee upstream pins `cmake_minimum_required(VERSION 3.30...3.31)` as a policy
+choice. The actual CMake commands Bungee uses all work in CMake 3.21+, which is
+also Mixxx's global minimum. Mixxx emits a build-system warning when the host
+CMake is below 3.30 to keep this clearly unsupported by Bungee maintainers.
+
+This patch is Mixxx-specific. It is intentionally kept outside the temporary
+vcpkg overlay, which mirrors microsoft/vcpkg verbatim so that overlay can be
+deleted cleanly once mixxxdj/vcpkg ships the port.
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8,7 +8,7 @@ if (BUNGEE_BUILD_SHARED_LIBRARY)
+   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+ endif()
+
+-cmake_minimum_required(VERSION 3.30...3.31)
++cmake_minimum_required(VERSION 3.21)
+ include(CheckCXXCompilerFlag)
+ include(GNUInstallDirs)

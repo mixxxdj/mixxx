@@ -58,6 +58,9 @@ modules:
   - modules/libebur128.yaml
   - modules/libkeyfinder.yaml
   - modules/libdjinterop.yaml
+  - modules/eigen3.yaml
+  - modules/pffft.yaml
+  - modules/bungee.yaml
   - name: mixxx
     buildsystem: cmake-ninja
     config-opts:
