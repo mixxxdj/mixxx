@@ -49,13 +49,16 @@ QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
     return allDirs;
 }
 
-QStringList DirectoryDAO::getRootDirStrings() const {
+QList<DirectoryDAO::RootDirectory> DirectoryDAO::getRootDirectories() const {
     DEBUG_ASSERT(m_database.isOpen());
-    const auto statement =
-            QStringLiteral("SELECT %1 FROM %2")
-                    .arg(
-                            kLocationColumn,
-                            kTable);
+    const auto statement = QStringLiteral(
+            "SELECT d.%1, COUNT(t.directory) AS total_track, SUM(l.duration) "
+            "AS total_runtime FROM %2 d LEFT JOIN track_locations t ON d.%3 = "
+            "t.directory LEFT JOIN library l ON t.id = l.id GROUP BY d.%4;")
+                                   .arg(kLocationColumn,
+                                           kTable,
+                                           kLocationColumn,
+                                           kLocationColumn);
     FwdSqlQuery query(
             m_database,
             statement);
@@ -63,12 +66,19 @@ QStringList DirectoryDAO::getRootDirStrings() const {
         return {};
     }
 
-    QStringList allDirs;
+    QList<DirectoryDAO::RootDirectory> allDirs;
     const auto locationIndex = query.fieldIndex(kLocationColumn);
+    const auto totalTrackIndex = query.fieldIndex("total_track");
+    const auto totalRuntimeIndex = query.fieldIndex("total_runtime");
     while (query.next()) {
         const auto locationValue =
                 query.fieldValue(locationIndex).toString();
-        allDirs.append(locationValue);
+        const auto totalTrackValue =
+                query.fieldValue(totalTrackIndex).toUInt();
+        const auto totalRuntimeValue =
+                query.fieldValue(totalRuntimeIndex).toUInt();
+        allDirs.append(DirectoryDAO::RootDirectory{
+                locationValue, totalTrackValue, totalRuntimeValue});
     }
     return allDirs;
 }

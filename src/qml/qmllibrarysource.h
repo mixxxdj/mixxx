@@ -1,7 +1,5 @@
 #pragma once
 
-#include <qobject.h>
-
 #include <QAbstractItemModel>
 #include <QObject>
 #include <QQmlEngine>
@@ -61,7 +59,7 @@ namespace qml {
 
 class QmlLibraryTrackListColumn;
 
-class QmlLibrarySource : public QObject {
+class QmlLibraryAbstractSource : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString label MEMBER m_label)
     Q_PROPERTY(QString icon MEMBER m_icon)
@@ -70,7 +68,7 @@ class QmlLibrarySource : public QObject {
     QML_NAMED_ELEMENT(LibrarySource)
     QML_UNCREATABLE("Only accessible via its specialization")
   public:
-    explicit QmlLibrarySource(QObject* parent = nullptr,
+    explicit QmlLibraryAbstractSource(QObject* parent = nullptr,
             const QList<QmlLibraryTrackListColumn*>& columns = {});
 
     QQmlListProperty<QmlLibraryTrackListColumn> columnsQml() {
@@ -97,7 +95,7 @@ class QmlLibrarySource : public QObject {
     QList<QmlLibraryTrackListColumn*> m_columns;
 };
 
-class QmlLibraryAllTrackSource : public QmlLibrarySource {
+class QmlLibraryAllTrackSource : public QmlLibraryAbstractSource {
     Q_OBJECT
     QML_NAMED_ELEMENT(LibraryAllTrackSource)
   public:
