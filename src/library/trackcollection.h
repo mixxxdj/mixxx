@@ -12,6 +12,7 @@
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/dao/trackfingerprintdao.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "preferences/usersettings.h"
 #include "util/thread_affinity.h"
@@ -68,7 +69,10 @@ class TrackCollection : public QObject,
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_analysisDao;
     }
-
+    TrackFingerprintDao& getTrackFingerprintDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_trackFingerprintDao;
+    }
     void connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
     QWeakPointer<BaseTrackCache> disconnectTrackSource();
 
@@ -176,6 +180,7 @@ class TrackCollection : public QObject,
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
+    TrackFingerprintDao m_trackFingerprintDao;
 
     QSharedPointer<BaseTrackCache> m_pTrackSource;
 };
