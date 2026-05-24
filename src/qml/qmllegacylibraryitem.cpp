@@ -30,6 +30,7 @@
 #include <QToolTip>
 #include <QVBoxLayout>
 #include <cmath>
+#include <utility>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
@@ -1062,7 +1063,7 @@ void QmlLegacyLibraryItem::repolishEmbeddedWidgets() {
 
     QList<QWidget*> widgets = m_pRootWidget->findChildren<QWidget*>();
     widgets.prepend(m_pRootWidget.get());
-    for (QWidget* widget : widgets) {
+    for (QWidget* widget : std::as_const(widgets)) {
         if (QStyle* style = widget->style()) {
             style->unpolish(widget);
             style->polish(widget);
@@ -1079,7 +1080,7 @@ void QmlLegacyLibraryItem::enableEmbeddedWidgetInputTracking() {
 
     QList<QWidget*> widgets = m_pRootWidget->findChildren<QWidget*>();
     widgets.prepend(m_pRootWidget.get());
-    for (QWidget* widget : widgets) {
+    for (QWidget* widget : std::as_const(widgets)) {
         widget->setMouseTracking(true);
         widget->setAttribute(Qt::WA_Hover, true);
         widget->setAttribute(Qt::WA_NoMousePropagation, false);
@@ -1625,7 +1626,7 @@ void QmlLegacyLibraryItem::installEmbeddedWidgetEventFilters() {
 
     QList<QWidget*> widgets = m_pRootWidget->findChildren<QWidget*>();
     widgets.prepend(m_pRootWidget.get());
-    for (QWidget* widget : widgets) {
+    for (QWidget* widget : std::as_const(widgets)) {
         if (widget->property(kEventFilterInstalledProperty).toBool()) {
             continue;
         }
