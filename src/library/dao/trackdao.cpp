@@ -1108,6 +1108,33 @@ bool TrackDAO::onPurgingTracks(
         }
     }
     {
+        // Delete orphaned fingerprint metadata for purged tracks
+        FwdSqlQuery query(m_database, QString("DELETE FROM fingerprint_metadata "
+                                              "WHERE track_id IN (%1)")
+                                              .arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // Delete CMRT group memberships for purged tracks
+        FwdSqlQuery query(m_database, QString("DELETE FROM cmrt_members "
+                                              "WHERE track_id IN (%1)")
+                                              .arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // Delete pending AcoustID jobs for purged tracks
+        FwdSqlQuery query(m_database, QString("DELETE FROM acoustid_queue "
+                                              "WHERE track_id IN (%1)")
+                                              .arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
         // Remove Track from library table
         FwdSqlQuery query(m_database, QString(
                 "DELETE FROM library "
