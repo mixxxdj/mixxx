@@ -1,0 +1,291 @@
+#include "library/dao/trackfingerprintdao.h"
+
+#include <QSqlQuery>
+#include <QSqlRecord>
+#include <QVariant>
+#include <QtDebug>
+
+#include "library/queryutil.h"
+
+namespace {
+const QString kFingerprintTableName = QStringLiteral("fingerprint_metadata");
+const QString kCmrtGroupsTableName = QStringLiteral("cmrt_groups");
+} // namespace
+
+bool TrackFingerprintDao::saveFingerprintMetadata(const FingerprintMetadata& metadata) const {
+    if (!m_database.isOpen() || !metadata.trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    // Try to update first (standard Mixxx pattern when trackId is the unique identifier)
+    query.prepare(QString(
+            "UPDATE %1 SET "
+            "fingerprint_hash=:hash, chroma_sha256=:sha256, fingerprint_duration=:duration, "
+            "fingerprint_version=:version, cmrt_group_id=:group_id, "
+            "cmrt_offset_seconds=:offset, is_canonical=:canonical, "
+            "fingerprint_valid=:valid, fingerprint_needs_regen=:needs_regen, "
+            "computed_at=:computed_at "
+            "WHERE track_id=:track_id")
+                    .arg(kFingerprintTableName));
+
+    query.bindValue(":track_id", metadata.trackId.toVariant());
+    query.bindValue(":hash", metadata.fingerprintHash);
+    query.bindValue(":sha256", metadata.chromaSha256);
+    query.bindValue(":duration", metadata.fingerprintDuration);
+    query.bindValue(":version", metadata.fingerprintVersion);
+    // Support NULL for group_id if it's -1
+    if (metadata.cmrtGroupId == -1) {
+        query.bindValue(":group_id", QVariant(QMetaType(QMetaType::Int)));
+    } else {
+        query.bindValue(":group_id", metadata.cmrtGroupId);
+    }
+    query.bindValue(":offset", metadata.cmrtOffsetSeconds);
+    query.bindValue(":canonical", metadata.isCanonical ? 1 : 0);
+    query.bindValue(":valid", metadata.fingerprintValid ? 1 : 0);
+    query.bindValue(":needs_regen", metadata.fingerprintNeedsRegen ? 1 : 0);
+    // Schema stores computed_at as INTEGER (Unix timestamp)
+    query.bindValue(":computed_at", metadata.computedAt.toSecsSinceEpoch());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't update fingerprint_metadata for track"
+                << metadata.trackId;
+        return false;
+    }
+
+    // If no row was updated, it means the row doesn't exist yet, so we INSERT
+    if (query.numRowsAffected() == 0) {
+        query.prepare(QString(
+                "INSERT INTO %1 "
+                "(track_id, fingerprint_hash, chroma_sha256, fingerprint_duration, "
+                "fingerprint_version, cmrt_group_id, cmrt_offset_seconds, is_canonical, "
+                "fingerprint_valid, fingerprint_needs_regen, computed_at) "
+                "VALUES (:track_id, :hash, :sha256, :duration, :version, :group_id, "
+                ":offset, :canonical, :valid, :needs_regen, :computed_at)")
+                        .arg(kFingerprintTableName));
+
+        query.bindValue(":track_id", metadata.trackId.toVariant());
+        query.bindValue(":hash", metadata.fingerprintHash);
+        query.bindValue(":sha256", metadata.chromaSha256);
+        query.bindValue(":duration", metadata.fingerprintDuration);
+        query.bindValue(":version", metadata.fingerprintVersion);
+        if (metadata.cmrtGroupId == -1) {
+            query.bindValue(":group_id", QVariant(QMetaType(QMetaType::Int)));
+        } else {
+            query.bindValue(":group_id", metadata.cmrtGroupId);
+        }
+        query.bindValue(":offset", metadata.cmrtOffsetSeconds);
+        query.bindValue(":canonical", metadata.isCanonical ? 1 : 0);
+        query.bindValue(":valid", metadata.fingerprintValid ? 1 : 0);
+        query.bindValue(":needs_regen", metadata.fingerprintNeedsRegen ? 1 : 0);
+        query.bindValue(":computed_at", metadata.computedAt.toSecsSinceEpoch());
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query)
+                    << "couldn't insert fingerprint_metadata for track"
+                    << metadata.trackId;
+            return false;
+        }
+    }
+    return true;
+}
+
+std::unique_ptr<FingerprintMetadata> TrackFingerprintDao::getFingerprintMetadata(
+        TrackId trackId) const {
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        return nullptr;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "SELECT fingerprint_hash, chroma_sha256, fingerprint_duration, fingerprint_version, "
+            "cmrt_group_id, cmrt_offset_seconds, is_canonical, fingerprint_valid, "
+            "fingerprint_needs_regen, computed_at "
+            "FROM %1 WHERE track_id=:track_id")
+                    .arg(kFingerprintTableName));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch fingerprint_metadata for track" << trackId;
+        return nullptr;
+    }
+
+    if (query.next()) {
+        auto metadata = std::make_unique<FingerprintMetadata>();
+        metadata->trackId = trackId;
+
+        QSqlRecord record = query.record();
+        metadata->fingerprintHash = query.value(record.indexOf("fingerprint_hash")).toUInt();
+        metadata->chromaSha256 = query.value(record.indexOf("chroma_sha256")).toString();
+        metadata->fingerprintDuration =
+                query.value(record.indexOf("fingerprint_duration")).toDouble();
+        metadata->fingerprintVersion =
+                query.value(record.indexOf("fingerprint_version")).toInt();
+
+        QVariant groupIdVar = query.value(record.indexOf("cmrt_group_id"));
+        metadata->cmrtGroupId = groupIdVar.isNull() ? -1 : groupIdVar.toInt();
+
+        metadata->cmrtOffsetSeconds =
+                query.value(record.indexOf("cmrt_offset_seconds")).toDouble();
+        metadata->isCanonical = query.value(record.indexOf("is_canonical")).toBool();
+        metadata->fingerprintValid = query.value(record.indexOf("fingerprint_valid")).toBool();
+        metadata->fingerprintNeedsRegen =
+                query.value(record.indexOf("fingerprint_needs_regen")).toBool();
+        // Schema stores computed_at as INTEGER (Unix timestamp)
+        metadata->computedAt = QDateTime::fromSecsSinceEpoch(
+                query.value(record.indexOf("computed_at")).toLongLong());
+
+        return metadata;
+    }
+
+    return nullptr;
+}
+
+bool TrackFingerprintDao::markFingerprintNeedsRegen(TrackId trackId) const {
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "UPDATE %1 SET fingerprint_needs_regen=1, fingerprint_valid=0 "
+            "WHERE track_id=:track_id")
+                    .arg(kFingerprintTableName));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't mark fingerprint regen for track" << trackId;
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
+}
+
+bool TrackFingerprintDao::deleteFingerprintMetadata(TrackId trackId) const {
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString("DELETE FROM %1 WHERE track_id=:track_id")
+                    .arg(kFingerprintTableName));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't delete fingerprint_metadata for track" << trackId;
+        return false;
+    }
+
+    return true;
+}
+
+int TrackFingerprintDao::createCmrtGroup(const CmrtGroup& group) const {
+    if (!m_database.isOpen()) {
+        return -1;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "INSERT INTO %1 "
+            "(fingerprint_hash, chroma_sha256, canonical_track_id, "
+            "track_count, created_at, last_updated) "
+            "VALUES (:hash, :sha256, :canonical_track, :count, :created, :updated)")
+                    .arg(kCmrtGroupsTableName));
+
+    query.bindValue(":hash", group.fingerprintHash);
+    query.bindValue(":sha256", group.chromaSha256);
+    query.bindValue(":canonical_track", group.canonicalTrackId.toVariant());
+    query.bindValue(":count", group.trackCount);
+    // Schema stores created_at and last_updated as INTEGER (Unix timestamps)
+    query.bindValue(":created", group.createdAt.toSecsSinceEpoch());
+    if (group.lastUpdated.isValid()) {
+        query.bindValue(":updated", group.lastUpdated.toSecsSinceEpoch());
+    } else {
+        query.bindValue(":updated", QVariant(QMetaType(QMetaType::LongLong)));
+    }
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't create new cmrt_group with SHA256" << group.chromaSha256;
+        return -1;
+    }
+
+    return query.lastInsertId().toInt();
+}
+
+std::unique_ptr<CmrtGroup> TrackFingerprintDao::getCmrtGroup(int groupId) const {
+    if (!m_database.isOpen() || groupId < 0) {
+        return nullptr;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "SELECT fingerprint_hash, chroma_sha256, canonical_track_id, track_count, "
+            "created_at, last_updated, musicbrainz_cmrt_mbid, musicbrainz_synced, "
+            "musicbrainz_last_sync, musicbrainz_community_score, musicbrainz_submitted, "
+            "musicbrainz_submission_mbid, local_preferred, conflict_resolved_at, "
+            "conflict_resolution "
+            "FROM %1 WHERE group_id=:group_id")
+                    .arg(kCmrtGroupsTableName));
+    query.bindValue(":group_id", groupId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch cmrt_group with id" << groupId;
+        return nullptr;
+    }
+
+    if (query.next()) {
+        auto group = std::make_unique<CmrtGroup>();
+        group->groupId = groupId;
+
+        QSqlRecord record = query.record();
+        group->fingerprintHash = query.value(record.indexOf("fingerprint_hash")).toUInt();
+        group->chromaSha256 = query.value(record.indexOf("chroma_sha256")).toString();
+        // TrackId must be constructed from QVariant, not int
+        group->canonicalTrackId = TrackId(
+                query.value(record.indexOf("canonical_track_id")));
+        group->trackCount = query.value(record.indexOf("track_count")).toInt();
+        // Schema stores created_at and last_updated as INTEGER (Unix timestamps)
+        group->createdAt = QDateTime::fromSecsSinceEpoch(
+                query.value(record.indexOf("created_at")).toLongLong());
+        QVariant lastUpdatedVar = query.value(record.indexOf("last_updated"));
+        if (!lastUpdatedVar.isNull()) {
+            group->lastUpdated = QDateTime::fromSecsSinceEpoch(lastUpdatedVar.toLongLong());
+        }
+
+        group->musicbrainzCmrtMbid =
+                query.value(record.indexOf("musicbrainz_cmrt_mbid")).toString();
+        group->musicbrainzSynced =
+                query.value(record.indexOf("musicbrainz_synced")).toBool();
+
+        QVariant mbLastSync = query.value(record.indexOf("musicbrainz_last_sync"));
+        if (!mbLastSync.isNull()) {
+            group->musicbrainzLastSync =
+                    QDateTime::fromSecsSinceEpoch(mbLastSync.toLongLong());
+        }
+
+        group->musicbrainzCommunityScore =
+                query.value(record.indexOf("musicbrainz_community_score")).toDouble();
+        group->musicbrainzSubmitted =
+                query.value(record.indexOf("musicbrainz_submitted")).toBool();
+        group->musicbrainzSubmissionMbid =
+                query.value(record.indexOf("musicbrainz_submission_mbid")).toString();
+        group->localPreferred =
+                query.value(record.indexOf("local_preferred")).toBool();
+
+        QVariant conflictAt = query.value(record.indexOf("conflict_resolved_at"));
+        if (!conflictAt.isNull()) {
+            group->conflictResolvedAt =
+                    QDateTime::fromSecsSinceEpoch(conflictAt.toLongLong());
+        }
+
+        group->conflictResolution =
+                query.value(record.indexOf("conflict_resolution")).toString();
+
+        return group;
+    }
+
+    return nullptr;
+}
