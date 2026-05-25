@@ -822,3 +822,14 @@ LibraryTableModel* Library::trackTableModel() const {
 
     return m_pMixxxLibraryFeature->trackTableModel();
 }
+
+void Library::importPlaylistFromFile(const QString& playlistFile) {
+    if (playlistFile.isEmpty()) {
+        return;
+    }
+    const int playlistId = m_pPlaylistFeature->createImportPlaylist(playlistFile);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+    m_pPlaylistFeature->activatePlaylist(playlistId);
+}
