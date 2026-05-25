@@ -489,7 +489,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
           m_pavPacket(av_packet_alloc()),
           m_pavResampledFrame(nullptr),
           m_avutilVersion(avutil_version()),
-          m_leadin_flush_buffers_fix(false) {
+          m_isLibfdk_aac(false) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
@@ -594,7 +594,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
         if (std::strcmp(pDecoder->name, "libfdk_aac") == 0) {
             // Fraunhofer FDK AAC has an issue with flushing memory in the lead-in
-            m_leadin_flush_buffers_fix = true;
+            m_isLibfdk_aac = true;
         }
     }
 
@@ -977,7 +977,7 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     }
 
     // Flush internal decoder state before seeking
-    if (!m_leadin_flush_buffers_fix || seekIndex >= 0) {
+    if (!m_isLibfdk_aac || seekIndex >= 0) {
         // Fast: 0.6 us (Core Ultra 5 125U)
         avcodec_flush_buffers(m_pavCodecContext);
     } else {

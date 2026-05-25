@@ -215,7 +215,7 @@ class SoundSourceFFmpeg : public SoundSource {
 
     const unsigned int m_avutilVersion;
 
-    bool m_leadin_flush_buffers_fix;
+    bool m_isLibfdk_aac;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {
