@@ -613,6 +613,7 @@ void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) 
         return;
     }
     m_pTrackMenu->loadTrackModelIndices(indices);
+    m_pTrackMenu->updateMenus();
     m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
