@@ -22,6 +22,8 @@ WWaveformViewer::WWaveformViewer(
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
+          m_hotcueDragging(false),
+          m_draggedHotcue(Cue::kNoHotCue),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
@@ -90,19 +92,33 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_pWheel->setParameter(0.5);
             m_bBending = false;
         }
-        m_bScratching = true;
-        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    event->pos().x() : event->pos().y();
-        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
-        m_pScratchPosition->set(targetPosition);
-        m_pScratchPositionEnable->set(1.0);
-    } else if (event->button() == Qt::RightButton) {
-        const auto currentTrack = m_waveformWidget->getTrackInfo();
-        if (!isPlaying() && m_pHoveredMark) {
+        // If we're clicking a hotcue mark -> start hotcue dragging
+        const auto pCurrentTrack = m_waveformWidget->getTrackInfo();
+        if (pCurrentTrack && !isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
-                m_pCueMenuPopup->setTrackCueGroup(currentTrack, cueAtClickPos, m_group);
+                m_hotcueDragging = true;
+                m_draggedHotcue = m_pHoveredMark->getHotCue();
+                // TODO set a nice cursor?
+                return;
+            }
+        } else {
+            m_bScratching = true;
+            int eventPosValue =
+                    m_waveformWidget->getOrientation() == Qt::Horizontal
+                    ? event->pos().x()
+                    : event->pos().y();
+            double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+            double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
+            m_pScratchPosition->set(targetPosition);
+            m_pScratchPositionEnable->set(1.0);
+        }
+    } else if (event->button() == Qt::RightButton) {
+        const auto pCurrentTrack = m_waveformWidget->getTrackInfo();
+        if (pCurrentTrack && !isPlaying() && m_pHoveredMark) {
+            auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
+            if (cueAtClickPos) {
+                m_pCueMenuPopup->setTrackCueGroup(pCurrentTrack, cueAtClickPos, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_pCueMenuPopup->popup(event->globalPosition().toPoint());
 #else
@@ -116,13 +132,16 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
                 m_pScratchPositionEnable->set(0.0);
                 m_bScratching = false;
             }
+            if (m_hotcueDragging) {
+                m_hotcueDragging = false;
+            }
             m_pWheel->setParameter(0.5);
             m_bBending = true;
         }
     }
 
     // Set the cursor to a hand while the mouse is down (when cue menu is not open).
-    if (!m_pCueMenuPopup->isVisible()) {
+    if (!m_pCueMenuPopup->isVisible() /* && !hotcueDragging */) {
         setCursor(Qt::ClosedHandCursor);
     }
 }
@@ -141,6 +160,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
         //qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->set(targetPosition);
+        // TODO if hotcueDragging, draw target pos?
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
         int diffValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
@@ -156,7 +176,16 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // clamp to [0.0, 1.0]
         v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
-    } else if (!isPlaying()) {
+    } else if (m_hotcueDragging) {
+        if (isPlaying()) {
+            // abort hotcue dragging if play was toggled
+            m_hotcueDragging = false;
+            return;
+        }
+        // * get cursor pos
+        // * ...
+        // * submit pos to renderer so it can provide feedback/preview
+    } else {
         WaveformMarkPointer pMark;
         pMark = m_waveformWidget->getCueMarkAtPoint(event->pos());
         if (pMark && getCuePointerFromCueMark(pMark)) {
@@ -177,7 +206,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
+void WWaveformViewer::mouseReleaseEvent(QMouseEvent* pEvent) {
     if (m_bScratching) {
         m_pScratchPositionEnable->set(0.0);
         m_bScratching = false;
@@ -186,6 +215,18 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
         m_pWheel->setParameter(0.5);
         m_bBending = false;
     }
+    if (/*pEvent->button() == Qt::LeftButton &&*/ m_hotcueDragging) {
+        m_hotcueDragging = false;
+        auto pHotcue = m_waveformWidget->getCuePointerFromIndex(m_draggedHotcue);
+        if (!pHotcue) {
+            return;
+        }
+
+        double newSamPos =
+                m_waveformWidget->transformRendererPositionToSamplePosition(pEvent->pos());
+        auto newCuePos = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(newSamPos);
+        pHotcue->setStartPosition(newCuePos);
+    }
     m_mouseAnchor = QPoint();
 
     // Set the cursor back to an arrow.
@@ -193,6 +234,7 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 }
 
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
+    // abort hotcue dragging?
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
             onZoomChange(m_waveformWidget->getZoom() / 1.05);

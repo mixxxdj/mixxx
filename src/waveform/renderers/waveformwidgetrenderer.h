@@ -120,6 +120,14 @@ class WaveformWidgetRenderer {
         return (samplePosition - m_firstDisplayedPosition[type] * m_trackSamples) /
                 2 / m_audioSamplePerPixel;
     }
+    inline double transformRendererPositionToSamplePosition(QPoint pos) {
+        int pixelPos = getOrientation() == Qt::Horizontal ? pos.x() : pos.y();
+        double posRange = getLastDisplayedPosition() - getFirstDisplayedPosition();
+        double eventRelPos =
+                static_cast<double>(pixelPos) / getLength();
+        double absPos = (eventRelPos * posRange) + getFirstDisplayedPosition();
+        return getTrackSamples() * absPos;
+    }
 
     int getPlayPosVSample(::WaveformRendererAbstract::PositionSource type =
                                   ::WaveformRendererAbstract::Play) const {
