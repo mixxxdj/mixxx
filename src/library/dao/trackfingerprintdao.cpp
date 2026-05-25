@@ -10,10 +10,20 @@
 namespace {
 const QString kFingerprintTableName = QStringLiteral("fingerprint_metadata");
 const QString kCmrtGroupsTableName = QStringLiteral("cmrt_groups");
+const bool sDebugTrackFingerprintDao = true;
 } // namespace
 
 bool TrackFingerprintDao::saveFingerprintMetadata(const FingerprintMetadata& metadata) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [saveFingerprintMetadata] -> entry"
+                 << "trackId:" << metadata.trackId
+                 << "hash:" << metadata.fingerprintHash
+                 << "sha256:" << metadata.chromaSha256;
+    }
+
     if (!m_database.isOpen() || !metadata.trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [saveFingerprintMetadata] -> "
+                    "aborting: database not open or invalid trackId";
         return false;
     }
 
@@ -56,6 +66,12 @@ bool TrackFingerprintDao::saveFingerprintMetadata(const FingerprintMetadata& met
 
     // If no row was updated, it means the row doesn't exist yet, so we INSERT
     if (query.numRowsAffected() == 0) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [saveFingerprintMetadata] -> "
+                        "no existing row, inserting"
+                     << "trackId:" << metadata.trackId;
+        }
+
         query.prepare(QString(
                 "INSERT INTO %1 "
                 "(track_id, fingerprint_hash, chroma_sha256, fingerprint_duration, "
@@ -87,13 +103,26 @@ bool TrackFingerprintDao::saveFingerprintMetadata(const FingerprintMetadata& met
                     << metadata.trackId;
             return false;
         }
+    } else {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [saveFingerprintMetadata] -> "
+                        "updated existing row"
+                     << "trackId:" << metadata.trackId;
+        }
     }
     return true;
 }
 
 std::unique_ptr<FingerprintMetadata> TrackFingerprintDao::getFingerprintMetadata(
         TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getFingerprintMetadata] -> entry"
+                 << "trackId:" << trackId;
+    }
+
     if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [getFingerprintMetadata] -> "
+                    "aborting: database not open or invalid trackId";
         return nullptr;
     }
 
@@ -136,14 +165,35 @@ std::unique_ptr<FingerprintMetadata> TrackFingerprintDao::getFingerprintMetadata
         metadata->computedAt = QDateTime::fromSecsSinceEpoch(
                 query.value(record.indexOf("computed_at")).toLongLong());
 
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [getFingerprintMetadata] -> found row"
+                     << "trackId:" << trackId
+                     << "hash:" << metadata->fingerprintHash
+                     << "groupId:" << metadata->cmrtGroupId
+                     << "valid:" << metadata->fingerprintValid
+                     << "needsRegen:" << metadata->fingerprintNeedsRegen;
+        }
+
         return metadata;
     }
 
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getFingerprintMetadata] -> "
+                    "no row found for trackId:"
+                 << trackId;
+    }
     return nullptr;
 }
 
 bool TrackFingerprintDao::markFingerprintNeedsRegen(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [markFingerprintNeedsRegen] -> entry"
+                 << "trackId:" << trackId;
+    }
+
     if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [markFingerprintNeedsRegen] -> "
+                    "aborting: database not open or invalid trackId";
         return false;
     }
 
@@ -159,11 +209,24 @@ bool TrackFingerprintDao::markFingerprintNeedsRegen(TrackId trackId) const {
         return false;
     }
 
-    return query.numRowsAffected() > 0;
+    const bool affected = query.numRowsAffected() > 0;
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [markFingerprintNeedsRegen] ->"
+                 << (affected ? "marked" : "no row found")
+                 << "trackId:" << trackId;
+    }
+    return affected;
 }
 
 bool TrackFingerprintDao::deleteFingerprintMetadata(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteFingerprintMetadata] -> entry"
+                 << "trackId:" << trackId;
+    }
+
     if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [deleteFingerprintMetadata] -> "
+                    "aborting: database not open or invalid trackId";
         return false;
     }
 
@@ -178,11 +241,25 @@ bool TrackFingerprintDao::deleteFingerprintMetadata(TrackId trackId) const {
         return false;
     }
 
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteFingerprintMetadata] -> done"
+                 << "trackId:" << trackId
+                 << "rowsAffected:" << query.numRowsAffected();
+    }
     return true;
 }
 
 int TrackFingerprintDao::createCmrtGroup(const CmrtGroup& group) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [createCmrtGroup] -> entry"
+                 << "sha256:" << group.chromaSha256
+                 << "hash:" << group.fingerprintHash
+                 << "canonicalTrackId:" << group.canonicalTrackId;
+    }
+
     if (!m_database.isOpen()) {
+        qDebug() << "TrackFingerprintDao -> [createCmrtGroup] -> "
+                    "aborting: database not open";
         return -1;
     }
 
@@ -212,11 +289,24 @@ int TrackFingerprintDao::createCmrtGroup(const CmrtGroup& group) const {
         return -1;
     }
 
-    return query.lastInsertId().toInt();
+    const int newGroupId = query.lastInsertId().toInt();
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [createCmrtGroup] -> created group"
+                 << "groupId:" << newGroupId
+                 << "sha256:" << group.chromaSha256;
+    }
+    return newGroupId;
 }
 
 std::unique_ptr<CmrtGroup> TrackFingerprintDao::getCmrtGroup(int groupId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getCmrtGroup] -> entry"
+                 << "groupId:" << groupId;
+    }
+
     if (!m_database.isOpen() || groupId < 0) {
+        qDebug() << "TrackFingerprintDao -> [getCmrtGroup] -> "
+                    "aborting: database not open or invalid groupId";
         return nullptr;
     }
 
@@ -250,6 +340,7 @@ std::unique_ptr<CmrtGroup> TrackFingerprintDao::getCmrtGroup(int groupId) const 
         // Schema stores created_at and last_updated as INTEGER (Unix timestamps)
         group->createdAt = QDateTime::fromSecsSinceEpoch(
                 query.value(record.indexOf("created_at")).toLongLong());
+
         QVariant lastUpdatedVar = query.value(record.indexOf("last_updated"));
         if (!lastUpdatedVar.isNull()) {
             group->lastUpdated = QDateTime::fromSecsSinceEpoch(lastUpdatedVar.toLongLong());
@@ -284,8 +375,21 @@ std::unique_ptr<CmrtGroup> TrackFingerprintDao::getCmrtGroup(int groupId) const 
         group->conflictResolution =
                 query.value(record.indexOf("conflict_resolution")).toString();
 
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [getCmrtGroup] -> found group"
+                     << "groupId:" << groupId
+                     << "sha256:" << group->chromaSha256
+                     << "trackCount:" << group->trackCount
+                     << "mbSynced:" << group->musicbrainzSynced;
+        }
+
         return group;
     }
 
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getCmrtGroup] -> "
+                    "no row found for groupId:"
+                 << groupId;
+    }
     return nullptr;
 }
