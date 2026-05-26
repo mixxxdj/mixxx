@@ -69,7 +69,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
     //    B) Applies effects to the buffer, modifying the original input buffer
     // 4. Mix the channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
     ScopedTimer t(QStringLiteral("EngineMixer::applyEffectsInPlaceAndMixChannels"));
-    SampleUtil::clear(pOutput, bufferSize);
+    bool first = true;
     for (auto* pChannelInfo : activeChannels) {
         EngineMixer::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
@@ -93,6 +93,14 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 oldGain,
                 newGain,
                 fadeout);
-        SampleUtil::add(pOutput, pChannelInfo->m_pBuffer.data(), bufferSize);
+        if (first) {
+            SampleUtil::copy(pOutput, pChannelInfo->m_pBuffer.data(), bufferSize);
+            first = false;
+        } else {
+            SampleUtil::add(pOutput, pChannelInfo->m_pBuffer.data(), bufferSize);
+        }
+    }
+    if (first) {
+        SampleUtil::clear(pOutput, bufferSize);
     }
 }

@@ -40,7 +40,7 @@ class EngineSideChain : public QThread, public AudioDestination {
 
     UserSettingsPointer m_pConfig;
     // Indicates that the thread should exit.
-    volatile bool m_bStopThread;
+    std::atomic<bool> m_bStopThread;
 
     FIFO<CSAMPLE> m_sampleFifo;
     CSAMPLE* m_pWorkBuffer;
