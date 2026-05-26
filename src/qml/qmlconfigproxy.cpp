@@ -16,8 +16,7 @@
                 DEFAULT);                                     \
     }
 
-#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                      \
-    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                   \
+#define PROPERTY_IMPL_SETTER(GROUP, KEY, TYPE, NAME, SIGNAL, DEFAULT)       \
     void QmlConfigProxy::set_##NAME(                                        \
             std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type \
                     value) {                                                \
@@ -26,8 +25,13 @@
             return;                                                         \
         }                                                                   \
         m_pConfig->setValue(ConfigKey(GROUP, KEY), value);                  \
-        emit NAME##Changed();                                               \
+        /* false positive: ## token paste confuses clazy */                 \
+        emit SIGNAL(); /* clazy:exclude=incorrect-emit */                   \
     }
+
+#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)    \
+    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT) \
+    PROPERTY_IMPL_SETTER(GROUP, KEY, TYPE, NAME, NAME##Changed, DEFAULT)
 
 namespace {
 QVariantList paletteToQColorList(const ColorPalette& palette) {
