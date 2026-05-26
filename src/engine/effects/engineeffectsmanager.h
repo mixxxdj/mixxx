@@ -46,7 +46,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
-            bool fadeout = false);
+            bool fadeout = false,
+            bool mix = true);
 
     /// Process the postfader EngineEffectChains, leaving the pIn buffer unmodified
     /// and mixing the output into the pOut buffer. Using EngineEffectsManager's
@@ -63,7 +64,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
-            bool fadeout = false);
+            bool fadeout = false,
+            bool mix = true);
 
     bool processEffectsRequest(
             const EffectsRequest& message,
@@ -94,7 +96,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
-            bool fadeout = false);
+            bool fadeout = false,
+            bool mix = true);
 
     EffectsResponsePipe m_responsePipe;
     QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;

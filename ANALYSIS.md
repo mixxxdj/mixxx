@@ -20,9 +20,19 @@ The codebase contained several instances of the `volatile` keyword used for thre
 - **Status**: **Fixed**. Replaced with `std::atomic` to ensure correct memory visibility and ordering across the Engine and UI/Worker threads.
 
 ### B. Redundant Memory Operations in Mixing
-The `ChannelMixer` implementation for in-place mixing followed a "Clear-then-Add" pattern. This resulted in an unnecessary memory pass over the output buffer.
-- **Identified in**: `ChannelMixer::applyEffectsInPlaceAndMixChannels`.
-- **Status**: **Fixed**. Refactored the loop to use `SampleUtil::copy` for the first active channel and `SampleUtil::add` for subsequent ones, saving one full memory pass per mixing cycle.
+The `ChannelMixer` implementation followed a "Clear-then-Add" pattern for both in-place and non-modifying mixing. This resulted in an unnecessary memory pass over the output buffer.
+- **Identified in**: `ChannelMixer::applyEffectsInPlaceAndMixChannels` and `ChannelMixer::applyEffectsAndMixChannels`.
+- **Status**: **Fixed**. Refactored both loops and extended `EngineEffectsManager` to support direct writing (copying) for the first active channel. This eliminates the initial `SampleUtil::clear` operation on the output buffer.
+
+### D. Sub-optimal SIMD Utilization in Ramping Kernels
+`SampleUtil::applyRampingAlternatingGain` used two separate loops for even and odd samples. While functionally correct, this pattern is less cache-friendly and can inhibit the compiler's ability to generate optimal interleaved SIMD instructions.
+- **Identified in**: `SampleUtil::applyRampingAlternatingGain`.
+- **Status**: **Fixed**. Merged the logic into a single loop, improving cache locality and vectorization efficiency.
+
+### E. Unnecessary Intermediate Buffering in Effects Pipeline
+`EngineEffectsManager::processInner` would always use intermediate buffers and an additional `add` step even when no effect chains were active for a channel.
+- **Identified in**: `EngineEffectsManager::processInner`.
+- **Status**: **Fixed**. Implemented a fast-path that detects empty effect chains and uses `SampleUtil::addWithRampingGain` (or `copyWithRampingGain`) to mix the input directly into the destination, bypassing intermediate `m_buffer1/2` allocations.
 
 ### C. Real-Time Safety Considerations (Channel Lookup)
 An O(N) linear search was identified in `EngineMixer::getChannel`. While a `QHash` could reduce this to O(1), further architectural review concluded that for the typical number of channels in Mixxx (4-64), the linear search on `QString` (often hitting early exits on first character mismatch) is safer for real-time operation. `QHash` lookups are not wait-free and could involve heap-traversal or rehashing, which could introduce jitter in the high-priority audio thread.

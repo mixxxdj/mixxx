@@ -199,33 +199,21 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         return;
     }
 
-    const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old)
-            / CSAMPLE_GAIN(numSamples / 2);
-    if (gain1Delta != 0) {
-        const CSAMPLE_GAIN start_gain = gain1Old + gain1Delta;
+    const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old) / CSAMPLE_GAIN(numSamples / 2);
+    const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old) / CSAMPLE_GAIN(numSamples / 2);
+
+    if (gain1Delta != 0 || gain2Delta != 0) {
+        const CSAMPLE_GAIN start_gain1 = gain1Old + gain1Delta;
+        const CSAMPLE_GAIN start_gain2 = gain2Old + gain2Delta;
+        // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            const CSAMPLE_GAIN gain = start_gain + gain1Delta * i;
-            pBuffer[i * 2] *= gain;
+            pBuffer[i * 2] *= (start_gain1 + gain1Delta * i);
+            pBuffer[i * 2 + 1] *= (start_gain2 + gain2Delta * i);
         }
     } else {
-        // not vectorized: vectorization not profitable.
+        // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
             pBuffer[i * 2] *= gain1Old;
-        }
-    }
-
-    const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old)
-            / CSAMPLE_GAIN(numSamples / 2);
-    if (gain2Delta != 0) {
-        const CSAMPLE_GAIN start_gain = gain2Old + gain2Delta;
-        // note: LOOP VECTORIZED. (gcc + clang >= 14)
-        for (int i = 0; i < numSamples / 2; ++i) {
-            const CSAMPLE_GAIN gain = start_gain + gain2Delta * i;
-            pBuffer[i * 2 + 1] *= gain;
-        }
-    } else {
-        // not vectorized: vectorization not profitable.
-        for (int i = 0; i < numSamples / 2; ++i) {
             pBuffer[i * 2 + 1] *= gain2Old;
         }
     }
