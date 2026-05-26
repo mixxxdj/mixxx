@@ -220,7 +220,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
     frames *= rate_delta;
     frames += rate_old * bufferSizeFrames;
-    frames = fabs(frames);
+    frames = std::abs(frames);
 
     // Intentional integer rounding: increases by one if the fractional part of
     // m_dNextFrame and frames are greater than one"
@@ -234,7 +234,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     double startFrame = m_dNextFrame;
     SINT i = 0;
 
-    double rate_add = fabs(rate_old);
+    double rate_add = std::abs(rate_old);
     const double rate_delta_abs =
             rate_old < 0 || rate_new < 0 ? -rate_delta : rate_delta;
 

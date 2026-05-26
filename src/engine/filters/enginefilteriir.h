@@ -238,56 +238,58 @@ class EngineFilterIIR : public EngineFilterIIRBase {
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
         if (!m_doRamping) {
-            for (std::size_t i = 0; i < bufferSize; i += 2) {
-                pOutput[i] = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
-                pOutput[i + 1] = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
-            }
+            processNonRamping(pIn, pOutput, bufferSize);
         } else {
-            double cross_mix = 0.0;
-            double cross_inc = 4.0 / static_cast<double>(bufferSize);
-            for (std::size_t i = 0; i < bufferSize; i += 2) {
-                // Do a linear cross fade between the output of the old
-                // Filter and the new filter.
-                // The new filter is settled for Input = 0 and it sees
-                // all frequencies of the rectangular start impulse.
-                // Since the group delay, after which the start impulse
-                // has passed is unknown here, we just what the half
-                // bufferSize until we use the samples of the new filter.
-                // In one of the previous version we have faded the Input
-                // of the new filter but it turns out that this produces
-                // a gain drop due to the filter delay which is more
-                // conspicuous than the settling noise.
-                double old1;
-                double old2;
-                if (!m_doStart) {
-                    // Process old filter, but only if we do not do a fresh start
-                    old1 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf1, pIn[i]));
-                    old2 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]));
-                } else {
-                    if (m_startFromDry) {
-                        old1 = pIn[i];
-                        old2 = pIn[i + 1];
-                    } else {
-                        old1 = 0;
-                        old2 = 0;
-                    }
-                }
-                double new1 = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
-                double new2 = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
+            processRamping(pIn, pOutput, bufferSize);
+        }
+    }
 
-                if (i < bufferSize / 2) {
-                    pOutput[i] = static_cast<CSAMPLE>(old1);
-                    pOutput[i + 1] = static_cast<CSAMPLE>(old2);
+  private:
+    void processNonRamping(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
+        // note: LOOP VECTORIZED potential if processSample was inlineable and simple.
+        // For now, we just ensure the most direct path.
+        for (std::size_t i = 0; i < bufferSize; i += 2) {
+            pOutput[i] = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
+            pOutput[i + 1] = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
+        }
+    }
+
+    void processRamping(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
+        double cross_mix = 0.0;
+        double cross_inc = 4.0 / static_cast<double>(bufferSize);
+        for (std::size_t i = 0; i < bufferSize; i += 2) {
+            // Do a linear cross fade between the output of the old
+            // Filter and the new filter.
+            double old1;
+            double old2;
+            if (!m_doStart) {
+                // Process old filter, but only if we do not do a fresh start
+                old1 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf1, pIn[i]));
+                old2 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]));
+            } else {
+                if (m_startFromDry) {
+                    old1 = pIn[i];
+                    old2 = pIn[i + 1];
                 } else {
-                    pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
-                    pOutput[i + 1] = static_cast<CSAMPLE>(
-                            new2 * cross_mix + old2 * (1.0 - cross_mix));
-                    cross_mix += cross_inc;
+                    old1 = 0;
+                    old2 = 0;
                 }
             }
-            m_doRamping = false;
-            m_doStart = false;
+            double new1 = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
+            double new2 = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
+
+            if (i < bufferSize / 2) {
+                pOutput[i] = static_cast<CSAMPLE>(old1);
+                pOutput[i + 1] = static_cast<CSAMPLE>(old2);
+            } else {
+                pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
+                pOutput[i + 1] = static_cast<CSAMPLE>(
+                        new2 * cross_mix + old2 * (1.0 - cross_mix));
+                cross_mix += cross_inc;
+            }
         }
+        m_doRamping = false;
+        m_doStart = false;
     }
 
   protected:

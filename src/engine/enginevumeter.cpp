@@ -69,15 +69,15 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
         // ControlObject will not prevent us from causing tons of extra
         // work. Because of this, we use an epsilon here to be gentle on the GUI
         // and MIDI controllers.
-        if (fabs(m_fRMSvolumeL - m_vuMeterLeft.get()) > epsilon) {
+        if (std::abs(m_fRMSvolumeL - m_vuMeterLeft.get()) > epsilon) {
             m_vuMeterLeft.set(m_fRMSvolumeL);
         }
-        if (fabs(m_fRMSvolumeR - m_vuMeterRight.get()) > epsilon) {
+        if (std::abs(m_fRMSvolumeR - m_vuMeterRight.get()) > epsilon) {
             m_vuMeterRight.set(m_fRMSvolumeR);
         }
 
         double fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0;
-        if (fabs(fRMSvolume - m_vuMeter.get()) > epsilon) {
+        if (std::abs(fRMSvolume - m_vuMeter.get()) > epsilon) {
             m_vuMeter.set(fRMSvolume);
         }
 

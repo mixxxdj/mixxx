@@ -3,6 +3,7 @@
 #include <QThread>
 #include <QVector>
 #include <QWaitCondition>
+#include <atomic>
 
 #include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
@@ -75,7 +76,7 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     QT_RECURSIVE_MUTEX m_processorsLock;
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
-    volatile bool m_bReportSignalQuality;
-    volatile bool m_bQuit;
-    volatile bool m_bReloadConfig;
+    std::atomic<bool> m_bReportSignalQuality;
+    std::atomic<bool> m_bQuit;
+    std::atomic<bool> m_bReloadConfig;
 };
