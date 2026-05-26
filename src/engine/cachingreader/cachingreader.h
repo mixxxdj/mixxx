@@ -185,7 +185,13 @@ class CachingReader : public QObject {
 
     // Keeps track of what CachingReaderChunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
-    QHash<int, CachingReaderChunkForOwner*> m_allocatedCachingReaderChunks;
+    // This is a fixed-size open-addressed hash table with linear probing for real-time safety.
+    static constexpr int kChunkLookupTableSize = 256;
+    CachingReaderChunkForOwner* m_chunkLookupTable[kChunkLookupTableSize];
+
+    // Rehashes a cluster of chunks starting after the given hole index.
+    // Required to maintain the linear probing invariant after a deletion.
+    void rehashLookupTableCluster(int hole);
 
     // The linked list of recently-used chunks.
     CachingReaderChunkForOwner* m_mruCachingReaderChunk;

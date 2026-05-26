@@ -71,13 +71,16 @@ void EngineSideChain::receiveBuffer(const AudioInput& input,
     }
     // Just copy the received samples form the sound card input to the
     // engine. After processing we get it back via writeSamples()
-    SampleUtil::copy(m_pSidechainMix, pBuffer, iFrames * mixxx::kEngineChannelOutputCount);
+    const auto channelCount = input.getChannelGroup().getChannelCount();
+    SampleUtil::copy(m_pSidechainMix, pBuffer, iFrames * channelCount);
 }
 
 void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
     Trace sidechain("EngineSideChain::writeSamples");
-    // TODO: remove assumption of stereo buffer
-    const int numSamples = iFrames * mixxx::kEngineChannelOutputCount;
+    // All engine outputs currently processed by the sidechain (Recording,
+    // Broadcasting) are stereo.
+    const auto channelCount = mixxx::kEngineChannelOutputCount;
+    const int numSamples = iFrames * channelCount;
     const int numSamplesWritten = m_sampleFifo.write(pBuffer, numSamples);
 
     if (numSamplesWritten != numSamples) {

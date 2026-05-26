@@ -132,7 +132,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const std::size_t bufferSize) {
     // we do not add more gain then we found in the original track.
     // This compensates a negative ReplayGain or PreGain setting.
 
-    CSAMPLE_GAIN speedGain = std::log10((fabs(static_cast<CSAMPLE_GAIN>(m_dSpeed)) *
+    CSAMPLE_GAIN speedGain = std::log10((std::abs(static_cast<CSAMPLE_GAIN>(m_dSpeed)) *
                                                 kSpeedGainMultiplier) +
                                      1) /
             kSpeedOneDiv;

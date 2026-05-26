@@ -37,7 +37,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
 }
 
 VinylControlProcessor::~VinylControlProcessor() {
-    m_bQuit = true;
+    m_bQuit.store(true);
     m_samplesAvailableSignal.wakeAll();
     wait();
 
@@ -62,16 +62,16 @@ VinylControlProcessor::~VinylControlProcessor() {
 }
 
 void VinylControlProcessor::setSignalQualityReporting(bool enable) {
-    m_bReportSignalQuality = enable;
+    m_bReportSignalQuality.store(enable);
 }
 
 void VinylControlProcessor::shutdown() {
-    m_bQuit = true;
+    m_bQuit.store(true);
     m_samplesAvailableSignal.wakeAll();
 }
 
 void VinylControlProcessor::requestReloadConfig() {
-    m_bReloadConfig = true;
+    m_bReloadConfig.store(true);
     m_samplesAvailableSignal.wakeAll();
 }
 
@@ -79,10 +79,9 @@ void VinylControlProcessor::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
 
-    while (!m_bQuit) {
-        if (m_bReloadConfig) {
+    while (!m_bQuit.load()) {
+        if (m_bReloadConfig.exchange(false)) {
             reloadConfig();
-            m_bReloadConfig = false;
         }
 
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -110,7 +109,7 @@ void VinylControlProcessor::run() {
 
             // TODO(rryan) define a time-based update rate. This will update way
             // too quickly.
-            if (pProcessor && m_bReportSignalQuality) {
+            if (pProcessor && m_bReportSignalQuality.load()) {
                 VinylSignalQualityReport report;
                 if (pProcessor->writeQualityReport(&report)) {
                     report.processor = i;
@@ -121,7 +120,7 @@ void VinylControlProcessor::run() {
             }
         }
 
-        if (m_bQuit) {
+        if (m_bQuit.load()) {
             break;
         }
 
