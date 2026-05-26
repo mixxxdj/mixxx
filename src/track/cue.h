@@ -25,6 +25,9 @@ class Cue : public QObject {
     static_assert(kNoHotCue != mixxx::kFirstHotCueIndex,
             "Conflicting definitions of invalid and first hot cue index");
 
+    static constexpr double kShiftCuesOffsetMillis = 10;
+    static constexpr double kShiftCuesOffsetMillisSmall = 1;
+
     struct StartAndEndPositions {
         mixxx::audio::FramePos startPosition;
         mixxx::audio::FramePos endPosition;
