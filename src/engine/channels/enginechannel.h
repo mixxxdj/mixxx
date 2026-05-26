@@ -81,7 +81,7 @@ class EngineChannel : public EngineObject {
 
     EngineVuMeter m_vuMeter;
     PollingControlProxy m_sampleRate;
-    const CSAMPLE* volatile m_sampleBuffer;
+    std::atomic<const CSAMPLE*> m_sampleBuffer;
 
     // If set to true, this engine channel represents one of the primary playback decks.
     // It is used to check for valid bpm targets by the sync code.

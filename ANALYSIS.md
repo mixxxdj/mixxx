@@ -34,6 +34,16 @@ The `ChannelMixer` implementation followed a "Clear-then-Add" pattern for both i
 - **Identified in**: `EngineEffectsManager::processInner`.
 - **Status**: **Fixed**. Implemented a fast-path that detects empty effect chains and uses `SampleUtil::addWithRampingGain` (or `copyWithRampingGain`) to mix the input directly into the destination, bypassing intermediate `m_buffer1/2` allocations.
 
+### F. Floating-Point Precision and Performance (Standardization)
+The audio kernels in `SampleUtil` were using `fabs` and `abs`, which are overloaded for `double` and `int` respectively. This could lead to unnecessary type promotions to `double` and subsequent demotions to `float` (CSAMPLE), or incorrect integer-based absolute value logic.
+- **Identified in**: `SampleUtil::sumAbsPerChannel` and `SampleUtil::maxAbsAmplitude`.
+- **Status**: **Fixed**. Standardized on `std::abs` (for `float`), ensuring single-precision math is maintained throughout the critical path.
+
+### G. Vectorization Inhibitors in Headphone Processing
+The "Head Split" feature in `EngineMixer` used a loop with in-place dependencies that inhibited automatic vectorization by most compilers.
+- **Identified in**: `EngineMixer::processHeadphones`.
+- **Status**: **Fixed**. Refactored the loop to be data-parallel and compiler-friendly, enabling full SIMD vectorization for this signal path.
+
 ### C. Real-Time Safety Considerations (Channel Lookup)
 An O(N) linear search was identified in `EngineMixer::getChannel`. While a `QHash` could reduce this to O(1), further architectural review concluded that for the typical number of channels in Mixxx (4-64), the linear search on `QString` (often hitting early exits on first character mismatch) is safer for real-time operation. `QHash` lookups are not wait-free and could involve heap-traversal or rehashing, which could introduce jitter in the high-priority audio thread.
 

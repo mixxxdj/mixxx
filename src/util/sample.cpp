@@ -410,10 +410,10 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
 
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numSamples / 2; ++i) {
-        CSAMPLE absl = fabs(pBuffer[i * 2]);
+        CSAMPLE absl = std::abs(pBuffer[i * 2]);
         fAbsL += absl;
         clippedL += absl > CSAMPLE_PEAK ? 1 : 0;
-        CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
+        CSAMPLE absr = std::abs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
         // Replacing the code with a bool clipped will prevent vetorizing
         clippedR += absr > CSAMPLE_PEAK ? 1 : 0;
@@ -449,10 +449,10 @@ CSAMPLE SampleUtil::rms(const CSAMPLE* pBuffer, SINT numSamples) {
 }
 
 CSAMPLE SampleUtil::maxAbsAmplitude(const CSAMPLE* pBuffer, SINT numSamples) {
-    CSAMPLE max = pBuffer[0];
+    CSAMPLE max = std::abs(pBuffer[0]);
     // note: LOOP VECTORIZED.
     for (SINT i = 1; i < numSamples; ++i) {
-        CSAMPLE absValue = abs(pBuffer[i]);
+        CSAMPLE absValue = std::abs(pBuffer[i]);
         if (absValue > max) {
             max = absValue;
         }

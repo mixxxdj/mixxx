@@ -824,13 +824,14 @@ void EngineMixer::processHeadphones(
     // with a mono mix of the headphone buffer, and the right channel of the pfl
     // buffer with a mono mix of the main output buffer.
     if (m_pHeadSplitEnabled->toBool()) {
-        // note: NOT VECTORIZED because of in place copy
-        // with all compilers, except clang >= 14.
+        // note: LOOP VECTORIZED.
         auto* const ph = m_head.data();
         auto* const pm = m_main.data();
-        for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
-            ph[i] = (ph[i] + ph[i + 1]) / 2;
-            ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
+        for (std::size_t i = 0; i < bufferSize / 2; ++i) {
+            const CSAMPLE headMono = (ph[i * 2] + ph[i * 2 + 1]) * 0.5f;
+            const CSAMPLE mainMono = (pm[i * 2] + pm[i * 2 + 1]) * 0.5f;
+            ph[i * 2] = headMono;
+            ph[i * 2 + 1] = mainMono;
         }
     }
 
