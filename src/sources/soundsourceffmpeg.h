@@ -205,7 +205,7 @@ class SoundSourceFFmpeg : public SoundSource {
     const unsigned int m_avutilVersion;
 
   private:
-    const CSAMPLE* resampleDecodedAVFrame();
+    const CSAMPLE* resampleDecodedAVFrame(AVFrame* pavDecodedFrame);
 
     // Seek to the requested start index (if needed) or return false
     // upon seek errors.
@@ -214,6 +214,7 @@ class SoundSourceFFmpeg : public SoundSource {
     bool consumeNextAVPacket(AVPacket** ppavNextPacket);
 
     int m_wantedStreamIndex;
+    bool m_isLibfdk_aac;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {
