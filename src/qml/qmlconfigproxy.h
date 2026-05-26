@@ -6,6 +6,7 @@
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/defs_keylock.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/constants.h"
