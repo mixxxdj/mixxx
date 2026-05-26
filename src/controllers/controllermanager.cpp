@@ -168,18 +168,21 @@ void ControllerManager::slotInitialize() {
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
+    {
+        auto locker = lockMutex(&m_mutex);
 #ifdef __PORTMIDI__
-    m_enumerators.push_back(std::make_unique<PortMidiEnumerator>(m_pConfig));
+        m_enumerators.push_back(std::make_unique<PortMidiEnumerator>(m_pConfig));
 #endif
 #ifdef __HSS1394__
-    m_enumerators.push_back(std::make_unique<Hss1394Enumerator>());
+        m_enumerators.push_back(std::make_unique<Hss1394Enumerator>());
 #endif
 #ifdef __BULK__
-    m_enumerators.push_back(std::make_unique<BulkEnumerator>());
+        m_enumerators.push_back(std::make_unique<BulkEnumerator>());
 #endif
 #ifdef __HID__
-    m_enumerators.push_back(std::make_unique<HidEnumerator>());
+        m_enumerators.push_back(std::make_unique<HidEnumerator>());
 #endif
+    } // Mutex locker released here
     emit initialized();
 }
 
