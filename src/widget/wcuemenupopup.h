@@ -83,6 +83,9 @@ class WCueMenuPopup : public QWidget {
     void updateTypeAndColorIfDefault(mixxx::CueType newType);
     mixxx::audio::FramePos getCurrentPlayPositionWithQuantize() const;
 
+    void shiftCue(int direction);
+    void shiftCueSmall(int direction);
+
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     PollingControlProxy m_pBeatLoopSize;
@@ -97,6 +100,8 @@ class WCueMenuPopup : public QWidget {
     std::unique_ptr<QLineEdit> m_pEditLabel;
     std::unique_ptr<WColorPicker> m_pColorPicker;
     std::unique_ptr<CueMenuPushButton> m_pDeleteCue;
+    std::unique_ptr<CueMenuPushButton> m_pShiftCueEarlier;
+    std::unique_ptr<CueMenuPushButton> m_pShiftCueLater;
     std::unique_ptr<CueMenuPushButton> m_pStandardCue;
     std::unique_ptr<CueMenuPushButton> m_pSavedLoopCue;
     std::unique_ptr<CueMenuPushButton> m_pSavedJumpCue;

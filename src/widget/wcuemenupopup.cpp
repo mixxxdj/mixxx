@@ -150,6 +150,47 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedJumpCueManual);
 
+    m_pShiftCueEarlier = std::make_unique<CueMenuPushButton>(this);
+    m_pShiftCueEarlier->setToolTip(tr(
+            "Shift this cue backwards by %1 milliseconds.\n"
+            "Right-click to shift this cue backwards by %2 milliseconds.\n"
+            "If quantize is enabled shift this cue to the previous beat.")
+                    .arg(QString::number(Cue::kShiftCuesOffsetMillis),
+                            QString::number(Cue::kShiftCuesOffsetMillisSmall)));
+    m_pShiftCueEarlier->setObjectName("CueShiftEarlier");
+    connect(m_pShiftCueEarlier.get(),
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                shiftCue(-1);
+            });
+    connect(m_pShiftCueEarlier.get(),
+            &CueMenuPushButton::rightClicked,
+            this,
+            [this]() {
+                shiftCueSmall(-1);
+            });
+    m_pShiftCueLater = std::make_unique<CueMenuPushButton>(this);
+    m_pShiftCueLater->setToolTip(tr(
+            "Shift this cue forwards by %1 milliseconds.\n"
+            "Right-click to shift this cue forwards by %2 milliseconds.\n"
+            "If quantize is enabled shift this cue to the next beat.")
+                    .arg(QString::number(Cue::kShiftCuesOffsetMillis),
+                            QString::number(Cue::kShiftCuesOffsetMillisSmall)));
+    m_pShiftCueLater->setObjectName("CueShiftLater");
+    connect(m_pShiftCueLater.get(),
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                shiftCue(1);
+            });
+    connect(m_pShiftCueLater.get(),
+            &CueMenuPushButton::rightClicked,
+            this,
+            [this]() {
+                shiftCueSmall(1);
+            });
+
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber.get());
     pLabelLayout->addStretch(1);
@@ -160,8 +201,16 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pLeftLayout->addWidget(m_pEditLabel.get());
     pLeftLayout->addWidget(m_pColorPicker.get());
 
+    QHBoxLayout* pShiftLayout = new QHBoxLayout();
+    pShiftLayout->setObjectName("CueMenuShiftLayout");
+    pShiftLayout->addWidget(m_pShiftCueEarlier.get());
+    pShiftLayout->addWidget(m_pShiftCueLater.get());
+    // no margin, make it look like the beatjump button grid
+    pShiftLayout->setSpacing(0);
+
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pDeleteCue.get());
+    pRightLayout->addLayout(pShiftLayout);
     pRightLayout->addWidget(m_pStandardCue.get());
     pRightLayout->addStretch(1);
     pRightLayout->addWidget(m_pSavedLoopCue.get());
@@ -173,7 +222,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pMainLayout->addSpacing(5);
     pMainLayout->addLayout(pRightLayout);
     setLayout(pMainLayout);
-    // we need to update the the layout here since the size is used to
+    // we need to update the layout here since the size is used to
     // calculate the positioning later
     layout()->update();
     layout()->activate();
@@ -333,6 +382,46 @@ void WCueMenuPopup::slotDeleteCue() {
     }
     m_pTrack->removeCue(m_pCue);
     hide();
+}
+
+void WCueMenuPopup::shiftCue(int direction) {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    if (direction == 0) {
+        return;
+    }
+    direction = direction > 0 ? 1 : -1;
+
+    if (m_pQuantizeEnabled.toBool()) {
+        m_pTrack->shiftHotcuePositionBeats(m_pCue->getHotCue(), direction);
+    } else {
+        m_pTrack->shiftHotcuePositionMillis(
+                m_pCue->getHotCue(), Cue::kShiftCuesOffsetMillis * direction);
+    }
+}
+
+void WCueMenuPopup::shiftCueSmall(int direction) {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    if (direction == 0) {
+        return;
+    }
+    direction = direction > 0 ? 1 : -1;
+
+    if (m_pQuantizeEnabled.toBool()) {
+        m_pTrack->shiftHotcuePositionBeats(m_pCue->getHotCue(), direction);
+    } else {
+        m_pTrack->shiftHotcuePositionMillis(m_pCue->getHotCue(),
+                Cue::kShiftCuesOffsetMillisSmall * direction);
+    }
 }
 
 void WCueMenuPopup::slotStandardCue() {
