@@ -119,7 +119,8 @@ void EngineEffectsManager::processPostFaderInPlace(
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
-        bool fadeout) {
+        bool fadeout,
+        bool mix) {
     processInner(SignalProcessingStage::Postfader,
             inputHandle,
             outputHandle,
@@ -130,7 +131,8 @@ void EngineEffectsManager::processPostFaderInPlace(
             groupFeatures,
             oldGain,
             newGain,
-            fadeout);
+            fadeout,
+            mix);
 }
 
 void EngineEffectsManager::processPostFaderAndMix(
@@ -143,7 +145,8 @@ void EngineEffectsManager::processPostFaderAndMix(
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
-        bool fadeout) {
+        bool fadeout,
+        bool mix) {
     processInner(SignalProcessingStage::Postfader,
             inputHandle,
             outputHandle,
@@ -154,7 +157,8 @@ void EngineEffectsManager::processPostFaderAndMix(
             groupFeatures,
             oldGain,
             newGain,
-            fadeout);
+            fadeout,
+            mix);
 }
 
 void EngineEffectsManager::processInner(
@@ -168,7 +172,8 @@ void EngineEffectsManager::processInner(
         const GroupFeatureState& groupFeatures,
         CSAMPLE_GAIN oldGain,
         CSAMPLE_GAIN newGain,
-        bool fadeout) {
+        bool fadeout,
+        bool mix) {
     const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
 
     if (pIn == pOut) {
@@ -196,6 +201,15 @@ void EngineEffectsManager::processInner(
         // 3. Mix the temporary buffer into pOut
         //    ChannelMixer::applyEffectsAndMixChannels use
         //    this to mix channels into pOut regardless of whether any effects were processed.
+        if (chains.isEmpty()) {
+            if (mix) {
+                SampleUtil::addWithRampingGain(pOut, pIn, oldGain, newGain, numSamples);
+            } else {
+                SampleUtil::copyWithRampingGain(pOut, pIn, oldGain, newGain, numSamples);
+            }
+            return;
+        }
+
         CSAMPLE* pIntermediateInput = m_buffer1.data();
         if (oldGain == CSAMPLE_GAIN_ONE && newGain == CSAMPLE_GAIN_ONE) {
             // Avoid an unnecessary copy. EngineEffectChain::process does not modify the
@@ -230,7 +244,11 @@ void EngineEffectsManager::processInner(
         }
         // pIntermediateInput is the output of the last processed chain. It would
         // be the intermediate input of the next chain if there was one.
-        SampleUtil::add(pOut, pIntermediateInput, numSamples);
+        if (mix) {
+            SampleUtil::add(pOut, pIntermediateInput, numSamples);
+        } else {
+            SampleUtil::copy(pOut, pIntermediateInput, numSamples);
+        }
     }
 }
 

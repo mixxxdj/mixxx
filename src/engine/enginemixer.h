@@ -348,7 +348,6 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<ControlObject> m_pMainMonoMixdown;
     std::unique_ptr<ControlObject> m_pMicMonitorMode;
 
-    // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).
-    volatile bool m_bBusOutputConnected[3];
+    std::atomic<bool> m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
 };

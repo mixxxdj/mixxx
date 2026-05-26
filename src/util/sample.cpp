@@ -199,33 +199,21 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         return;
     }
 
-    const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old)
-            / CSAMPLE_GAIN(numSamples / 2);
-    if (gain1Delta != 0) {
-        const CSAMPLE_GAIN start_gain = gain1Old + gain1Delta;
+    const CSAMPLE_GAIN gain1Delta = (gain1 - gain1Old) / CSAMPLE_GAIN(numSamples / 2);
+    const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old) / CSAMPLE_GAIN(numSamples / 2);
+
+    if (gain1Delta != 0 || gain2Delta != 0) {
+        const CSAMPLE_GAIN start_gain1 = gain1Old + gain1Delta;
+        const CSAMPLE_GAIN start_gain2 = gain2Old + gain2Delta;
+        // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            const CSAMPLE_GAIN gain = start_gain + gain1Delta * i;
-            pBuffer[i * 2] *= gain;
+            pBuffer[i * 2] *= (start_gain1 + gain1Delta * i);
+            pBuffer[i * 2 + 1] *= (start_gain2 + gain2Delta * i);
         }
     } else {
-        // not vectorized: vectorization not profitable.
+        // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
             pBuffer[i * 2] *= gain1Old;
-        }
-    }
-
-    const CSAMPLE_GAIN gain2Delta = (gain2 - gain2Old)
-            / CSAMPLE_GAIN(numSamples / 2);
-    if (gain2Delta != 0) {
-        const CSAMPLE_GAIN start_gain = gain2Old + gain2Delta;
-        // note: LOOP VECTORIZED. (gcc + clang >= 14)
-        for (int i = 0; i < numSamples / 2; ++i) {
-            const CSAMPLE_GAIN gain = start_gain + gain2Delta * i;
-            pBuffer[i * 2 + 1] *= gain;
-        }
-    } else {
-        // not vectorized: vectorization not profitable.
-        for (int i = 0; i < numSamples / 2; ++i) {
             pBuffer[i * 2 + 1] *= gain2Old;
         }
     }
@@ -422,10 +410,10 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
 
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numSamples / 2; ++i) {
-        CSAMPLE absl = fabs(pBuffer[i * 2]);
+        CSAMPLE absl = std::abs(pBuffer[i * 2]);
         fAbsL += absl;
         clippedL += absl > CSAMPLE_PEAK ? 1 : 0;
-        CSAMPLE absr = fabs(pBuffer[i * 2 + 1]);
+        CSAMPLE absr = std::abs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
         // Replacing the code with a bool clipped will prevent vetorizing
         clippedR += absr > CSAMPLE_PEAK ? 1 : 0;
@@ -461,10 +449,10 @@ CSAMPLE SampleUtil::rms(const CSAMPLE* pBuffer, SINT numSamples) {
 }
 
 CSAMPLE SampleUtil::maxAbsAmplitude(const CSAMPLE* pBuffer, SINT numSamples) {
-    CSAMPLE max = pBuffer[0];
+    CSAMPLE max = std::abs(pBuffer[0]);
     // note: LOOP VECTORIZED.
     for (SINT i = 1; i < numSamples; ++i) {
-        CSAMPLE absValue = abs(pBuffer[i]);
+        CSAMPLE absValue = std::abs(pBuffer[i]);
         if (absValue > max) {
             max = absValue;
         }
