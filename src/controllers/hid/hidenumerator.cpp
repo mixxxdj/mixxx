@@ -73,6 +73,13 @@ bool recognizeDevice(const mixxx::hid::DeviceInfo& deviceInfo) {
 
     // Exclude specific devices from the denylist.
     for (const hid_denylist_t& denylisted : kHidDenyList) {
+#ifdef __ANDROID__
+        if (denylisted.vendor_id == kAnyValue &&
+                denylisted.product_id == kAnyValue) {
+            // these wildcard entries would deny any devices on Android, skip
+            continue;
+        }
+#endif
         // If vendor ids are specified and do not match, skip.
         if (denylisted.vendor_id != kAnyValue &&
                 vendor_id != denylisted.vendor_id) {
