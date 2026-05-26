@@ -132,8 +132,10 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     connect(this, &ControllerManager::requestShutdown, this, &ControllerManager::slotShutdown);
 
     // Signal that we should run slotInitialize once our event loop has started
-    // up.
-    emit requestInitialize();
+    // up. invokeMethod with QueuedConnection will post an event to our event loop,
+    // so slotInitialize will not run until after the ControllerManager thread is fully
+    // started and ready to process events.
+    QMetaObject::invokeMethod(this, &ControllerManager::slotInitialize, Qt::QueuedConnection);
 }
 
 ControllerManager::~ControllerManager() {
