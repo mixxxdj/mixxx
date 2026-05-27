@@ -19,7 +19,7 @@
 #define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                       \
     PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                    \
     void QmlConfigProxy::set_##NAME(                                         \
-            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type  \
+            std::conditional_t<(sizeof(TYPE) <= 16), TYPE, const TYPE&>      \
                     value) {                                                 \
         setConfigValueAndNotify<TYPE>(                                       \
                 GROUP, KEY, value, DEFAULT, &QmlConfigProxy::NAME##Changed); \
@@ -98,8 +98,8 @@ namespace mixxx {
 namespace qml {
 
 QmlConfigProxy::QmlConfigProxy(
-        UserSettingsPointer pConfig, QObject* parent)
-        : QObject(parent),
+        UserSettingsPointer pConfig, QObject* pParent)
+        : QObject(pParent),
           m_pConfig(pConfig) {
 }
 

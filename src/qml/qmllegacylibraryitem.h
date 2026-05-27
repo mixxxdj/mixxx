@@ -25,25 +25,25 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     QML_NAMED_ELEMENT(LegacyLibraryItem)
 
   public:
-    explicit QmlLegacyLibraryItem(QQuickItem* parent = nullptr);
+    explicit QmlLegacyLibraryItem(QQuickItem* pParent = nullptr);
     ~QmlLegacyLibraryItem() override;
 
     void paint(QPainter* pPainter) override;
 
   protected:
-    void mousePressEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
+    void mousePressEvent(QMouseEvent* pEvent) override;
+    void mouseReleaseEvent(QMouseEvent* pEvent) override;
+    void mouseMoveEvent(QMouseEvent* pEvent) override;
+    void mouseDoubleClickEvent(QMouseEvent* pEvent) override;
     void mouseUngrabEvent() override;
-    void wheelEvent(QWheelEvent* event) override;
+    void wheelEvent(QWheelEvent* pEvent) override;
 
-    void hoverEnterEvent(QHoverEvent* event) override;
-    void hoverMoveEvent(QHoverEvent* event) override;
-    void hoverLeaveEvent(QHoverEvent* event) override;
+    void hoverEnterEvent(QHoverEvent* pEvent) override;
+    void hoverMoveEvent(QHoverEvent* pEvent) override;
+    void hoverLeaveEvent(QHoverEvent* pEvent) override;
 
-    void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
+    void keyReleaseEvent(QKeyEvent* pEvent) override;
 
     void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
     void componentComplete() override;
@@ -58,43 +58,45 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     void applyLegacyLibrarySkinConfiguration();
     void enableEmbeddedWidgetInputTracking();
     QWidget* widgetAtRootPos(const QPoint& rootPos) const;
-    QAbstractItemView* parentItemView(QWidget* widget) const;
-    QHeaderView* parentHeaderView(QWidget* widget) const;
-    QWidget* eventTargetFor(QWidget* widget) const;
-    QWidget* contextMenuTargetFor(QWidget* widget) const;
-    bool isHeaderResizeHandle(QHeaderView* header, const QPoint& rootPos) const;
-    void maybeApplyHeaderSortFallback(QHeaderView* header, const QPoint& rootPos);
-    bool sendMouseToWidget(QMouseEvent* event, QWidget* target);
-    void sendSyntheticMouseMoveToWidget(QWidget* target,
+    QAbstractItemView* parentItemView(QWidget* pWidget) const;
+    QHeaderView* parentHeaderView(QWidget* pWidget) const;
+    QWidget* eventTargetFor(QWidget* pWidget) const;
+    QWidget* contextMenuTargetFor(QWidget* pWidget) const;
+    bool isHeaderResizeHandle(QHeaderView* pHeader, const QPoint& rootPos) const;
+    void maybeApplyHeaderSortFallback(QHeaderView* pHeader, const QPoint& rootPos);
+    bool sendMouseToWidget(QMouseEvent* pEvent, QWidget* pTarget);
+    void sendSyntheticMouseMoveToWidget(QWidget* pTarget,
             const QPoint& rootPos,
             const QPointF& globalPos,
             Qt::KeyboardModifiers modifiers,
             Qt::MouseButtons buttons = Qt::NoButton);
-    bool sendWheelToWidget(QWheelEvent* event);
-    bool sendHoverToWidget(QHoverEvent* event);
-    void scheduleToolTip(QWidget* target, const QPoint& rootPos);
+    bool sendWheelToWidget(QWheelEvent* pEvent);
+    bool sendHoverToWidget(QHoverEvent* pEvent);
+    void scheduleToolTip(QWidget* pTarget, const QPoint& rootPos);
     void cancelToolTip();
     void showPendingToolTip();
-    QString toolTipTextForTarget(QWidget* target, const QPoint& rootPos) const;
+    QString toolTipTextForTarget(QWidget* pTarget, const QPoint& rootPos) const;
     QPoint mapToGlobalScreen(const QPoint& rootPos) const;
     void syncRootWidgetGlobalPosition();
-    bool sendContextMenuToWidget(QMouseEvent* event, QWidget* target);
-    void updateHoverTarget(QWidget* target, const QPoint& rootPos, Qt::KeyboardModifiers modifiers);
-    void syncCursorFromWidget(QWidget* target, const QPoint& rootPos);
+    bool sendContextMenuToWidget(QMouseEvent* pEvent, QWidget* pTarget);
+    void updateHoverTarget(QWidget* pTarget,
+            const QPoint& rootPos,
+            Qt::KeyboardModifiers modifiers);
+    void syncCursorFromWidget(QWidget* pTarget, const QPoint& rootPos);
     void repaintEmbeddedViews();
     void repolishEmbeddedWidgets();
     void applyLegacyScrollbarStyles();
-    void applyLegacyScrollbarStyle(QScrollBar* scrollBar);
+    void applyLegacyScrollbarStyle(QScrollBar* pScrollBar);
     void applyLegacyTableViewBridgeOptions();
     void applyLegacyColorPickerBridgeOptions();
     void connectSortBypass();
     void requestRender();
     void installEmbeddedWidgetEventFilters();
     void connectEmbeddedWidgetUpdateSignals();
-    void syncEmbeddedTableGeometry(QAbstractItemView* view);
-    void updateEmbeddedFocus(QWidget* target, Qt::FocusReason reason);
+    void syncEmbeddedTableGeometry(QAbstractItemView* pView);
+    void updateEmbeddedFocus(QWidget* pTarget, Qt::FocusReason reason);
 
-    bool eventFilter(QObject* watched, QEvent* event) override;
+    bool eventFilter(QObject* pWatched, QEvent* pEvent) override;
 
     enum class HeaderInteraction {
         None,
@@ -103,8 +105,8 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
         MoveActive,
     };
 
-    void startHeaderInteraction(QWidget* target, const QPoint& rootPos);
-    bool shouldForwardHeaderMove(QWidget* target, const QPoint& rootPos);
+    void startHeaderInteraction(QWidget* pTarget, const QPoint& rootPos);
+    bool shouldForwardHeaderMove(QWidget* pTarget, const QPoint& rootPos);
     void resetHeaderInteraction(bool stopAutoScroll = false);
     void startBridgeAutoScroll();
     void stopBridgeAutoScroll();
@@ -137,7 +139,7 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     // doAutoScroll() never updates draggedPosition for MoveSection state
     // and depends on continuous OS mouse-drag events the bridge does not
     // receive.  We disable native autoscroll and run our own timer that
-    // scrolls the parent table's scrollbar and sends a synthetic mouse
+    // scrolls the pParent table's scrollbar and sends a synthetic mouse
     // move to keep the header's section-move state in sync.
     QTimer m_headerAutoScrollTimer;
     int m_headerAutoScrollCount = 0;
