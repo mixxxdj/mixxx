@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "control/controlpotmeter.h"
+#include "controllers/controller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
@@ -26,6 +27,36 @@ constexpr int kScratchTimerMs = 1;
 constexpr double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 // stop ramping at a rate which doesn't produce any audible output anymore
 constexpr double kBrakeRampToRate = 0.01;
+
+// 2026-05-25: per-controller fast-timer allowlist. Default JS-timer minimum
+// is 20ms (= 50 Hz cap, see beginTimer below). Controllers in this list can
+// request shorter intervals (down to the listed minimum) for fine-grained
+// hardware-display animation.
+struct FastTimerEntry {
+    std::uint16_t vendorId;
+    std::uint16_t productId;
+    int minTimerMs;
+};
+constexpr FastTimerEntry kFastTimerAllowlist[] = {
+        {0x2B73, 0x0041, 5},  // Pioneer DDJ-FLX10 (jog-screen animation @ 200 Hz)
+};
+
+int getMinTimerMsForController(const Controller* pController) {
+    if (!pController) {
+        return 20;
+    }
+    auto vid = pController->getVendorId();
+    auto pid = pController->getProductId();
+    if (!vid.has_value() || !pid.has_value()) {
+        return 20;
+    }
+    for (const auto& entry : kFastTimerAllowlist) {
+        if (entry.vendorId == vid.value() && entry.productId == pid.value()) {
+            return entry.minTimerMs;
+        }
+    }
+    return 20;
+}
 } // namespace
 
 ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
@@ -513,10 +544,16 @@ int ControllerScriptInterfaceLegacy::beginTimer(
         return 0;
     }
 
-    if (intervalMillis < 20) {
+    // Per-controller allowlist: most controllers capped to 20ms (50 Hz max);
+    // controllers in kFastTimerAllowlist (above) can request as low as their
+    // listed minimum.
+    const int minTimerMs = getMinTimerMsForController(
+            m_pScriptEngineLegacy->getController());
+    if (intervalMillis < minTimerMs) {
         qCWarning(m_logger) << "Timer request for" << intervalMillis
-                            << "ms is too short. Setting to the minimum of 20ms.";
-        intervalMillis = 20;
+                            << "ms is too short. Setting to the minimum of"
+                            << minTimerMs << "ms.";
+        intervalMillis = minTimerMs;
     }
 
     // This makes use of every QObject's internal timer mechanism. Nice, clean,

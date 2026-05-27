@@ -48,8 +48,16 @@ const mixxx::Logger kLogger("EngineBuffer");
 constexpr double kLinearScalerElipsis =
         1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
-// Rate at which the playpos slider is updated
-constexpr int kPlaypositionUpdateRate = 15; // updates per second
+// Rate at which the playpos slider is updated.
+// Default upstream Mixxx is 15 Hz — sufficient for the on-screen slider
+// but too coarse for HID controllers with jog screens that need smooth
+// sub-second time/wave updates. Override at compile time with
+// -DPLAYPOSITION_UPDATE_RATE=60 (or 120, 200, etc.).
+// Local override (2026-05-25, FLX10 jog screen): 60 Hz for smoother updates.
+#ifndef PLAYPOSITION_UPDATE_RATE
+#define PLAYPOSITION_UPDATE_RATE 60
+#endif
+constexpr int kPlaypositionUpdateRate = PLAYPOSITION_UPDATE_RATE;
 
 const QString kAppGroup = QStringLiteral("[App]");
 
@@ -166,6 +174,13 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
+    // 2026-05-25 (FLX10 jog screen): expose sample-accurate playposition
+    // as a separate CO that updates every audio buffer (vs throttled
+    // m_playposSlider). Controller scripts can read this for smooth
+    // hardware-display animation without the 60Hz playposition throttle.
+    m_pVisualPlayposCO = new ControlObject(
+        ConfigKey(m_group, "visual_playposition"));
+    m_pVisualPlayposCO->set(0.0);
     connect(m_playposSlider, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlSeek,
             Qt::DirectConnection);
@@ -322,6 +337,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_endButton;
     delete m_stopButton;
     delete m_playposSlider;
+    delete m_pVisualPlayposCO;
 
     delete m_pSlipButton;
     delete m_pRepeat;
@@ -1528,6 +1544,11 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
     }
+
+    // Also update our exposed visual_playposition CO every audio buffer
+    // (no throttling). For controller-script consumers needing sample-accurate
+    // playhead position.
+    m_pVisualPlayposCO->set(fFractionalPlaypos);
 
     // Update visual control object, this needs to be done more often than the
     // playpos slider

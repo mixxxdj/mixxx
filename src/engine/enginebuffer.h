@@ -425,6 +425,9 @@ class EngineBuffer : public EngineObject {
 
     PollingControlProxy m_quantize;
     ControlPotmeter* m_playposSlider;
+    // Sample-accurate playposition CO updated every audio buffer (unthrottled).
+    // For controller scripts needing smooth hardware-display animation.
+    ControlObject* m_pVisualPlayposCO;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
