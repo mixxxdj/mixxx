@@ -335,15 +335,6 @@ SoundSourceFFmpeg::AVCodecContextPtr::alloc(
     return context;
 }
 
-void SoundSourceFFmpeg::AVCodecContextPtr::take(AVCodecContext** ppavCodecContext) {
-    DEBUG_ASSERT(ppavCodecContext != nullptr);
-    if (m_pavCodecContext != *ppavCodecContext) {
-        close();
-        m_pavCodecContext = *ppavCodecContext;
-        *ppavCodecContext = nullptr;
-    }
-}
-
 void SoundSourceFFmpeg::AVCodecContextPtr::close() {
     if (m_pavCodecContext != nullptr) {
         avcodec_free_context(&m_pavCodecContext);

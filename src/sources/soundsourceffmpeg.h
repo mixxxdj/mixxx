@@ -105,7 +105,6 @@ class SoundSourceFFmpeg : public SoundSource {
             close();
         }
 
-        void take(AVCodecContext** ppavCodecContext);
         void close();
 
         friend void swap(AVCodecContextPtr& lhs, AVCodecContextPtr& rhs) {
