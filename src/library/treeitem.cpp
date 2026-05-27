@@ -1,5 +1,6 @@
 #include "library/treeitem.h"
 
+#include "library/libraryfeature.h"
 #include "util/make_const_iterator.h"
 
 /*
@@ -31,11 +32,12 @@ TreeItem::TreeItem(
         LibraryFeature* pFeature,
         QString label,
         QVariant data)
-    : m_pFeature(pFeature),
-      m_pParent(nullptr),
-      m_label(std::move(label)),
-      m_data(std::move(data)),
-      m_bold(false) {
+        : m_pFeature(pFeature),
+          m_pParent(nullptr),
+          m_label(std::move(label)),
+          m_data(std::move(data)),
+          m_bold(false),
+          m_needsUpdate(false) {
 }
 
 TreeItem::~TreeItem() {
@@ -109,4 +111,8 @@ void TreeItem::removeChildren(int row, int count) {
     DEBUG_ASSERT(row <= (m_children.size() - count));
     qDeleteAll(m_children.constBegin() + row, m_children.constBegin() + (row + count));
     constErase(&m_children, m_children.constBegin() + row, m_children.constBegin() + (row + count));
+}
+
+bool TreeItem::isDataUniqueInFeature() const {
+    return feature()->isItemDataUnique(m_data);
 }

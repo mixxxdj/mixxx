@@ -21,6 +21,9 @@ class SetlogFeature : public BasePlaylistFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void activatePlaylist(int playlistId) override;
+    bool isItemDataUnique(const QVariant& data) const override {
+        return data != QVariant(m_yearNodeId);
+    }
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
@@ -40,7 +43,9 @@ class SetlogFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
-    void slotPlaylistTableChanged(int playlistId) override;
+    void slotPlaylistTableChanged(
+            int playlistId,
+            PlaylistDAO::HiddenType type) override;
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
     void slotDeleteAllUnlockedChildPlaylists();

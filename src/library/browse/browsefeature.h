@@ -47,7 +47,7 @@ class BrowseFeature : public LibraryFeature {
     void activate() override;
     void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
-    void onLazyChildExpandation(const QModelIndex& index) override;
+    void onLazyChildExpandation(const QModelIndex& index, bool enforceRebuild = false) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
     void invalidateRightClickIndex();
@@ -82,4 +82,5 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    bool m_forceUpdate;
 };

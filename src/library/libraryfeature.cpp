@@ -27,9 +27,10 @@ LibraryFeature::LibraryFeature(
           m_pLibrary(pLibrary),
           m_pConfig(pConfig),
           m_iconName(iconName) {
-    if (!m_iconName.isEmpty()) {
-        m_icon = QIcon(kIconPath.arg(m_iconName));
+    VERIFY_OR_DEBUG_ASSERT(!m_iconName.isEmpty()) {
+        return;
     }
+    m_icon = QIcon(kIconPath.arg(m_iconName));
 }
 
 void LibraryFeature::selectAndActivate(const QModelIndex& index) {

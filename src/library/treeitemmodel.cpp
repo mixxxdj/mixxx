@@ -11,7 +11,7 @@
 // 1. argument represents a name shown in the sidebar view later on
 // 2. argument represents the absolute path of this tree item
 // 3. argument is a library feature object.
-//    This is necessary because in sidebar.cpp we handle 'activateChid' events
+//    This is necessary because in wlibrarysidebar.cpp we handle 'activateChild' events
 // 4. the parent TreeItem object
 //    The constructor does not add this TreeItem object to the parent's child list
 //
@@ -45,16 +45,16 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         return QVariant();
     }
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
 
     // We use Qt::UserRole to ask for the data.
     switch (role) {
     case Qt::DisplayRole:
-        return item->getLabel();
+        return pItem->getLabel();
     case kDataRole:
-        return item->getData();
+        return pItem->getData();
     case kBoldRole:
-        return item->isBold();
+        return pItem->isBold();
     default:
         return QVariant();
     }
@@ -63,7 +63,7 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
 bool TreeItemModel::setData(const QModelIndex &a_rIndex,
                             const QVariant &a_rValue, int a_iRole) {
     // Get the item referred to by this index.
-    TreeItem *pItem = static_cast<TreeItem*>(a_rIndex.internalPointer());
+    TreeItem* pItem = static_cast<TreeItem*>(a_rIndex.internalPointer());
     if (pItem == nullptr) {
         return false;
     }
@@ -107,16 +107,16 @@ QModelIndex TreeItemModel::index(int row, int column, const QModelIndex &parent)
         return QModelIndex();
     }
 
-    TreeItem *parentItem;
+    TreeItem* pParentItem;
     if (parent.isValid()) {
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        pParentItem = static_cast<TreeItem*>(parent.internalPointer());
     } else {
-        parentItem = getRootItem();
+        pParentItem = getRootItem();
     }
 
-    TreeItem *childItem = parentItem->child(row);
-    if (childItem) {
-        return createIndex(row, column, childItem);
+    TreeItem* pChildItem = pParentItem->child(row);
+    if (pChildItem) {
+        return createIndex(row, column, pChildItem);
     } else {
         return QModelIndex();
     }
@@ -127,14 +127,14 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
         return QModelIndex();
     }
 
-    TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
-    TreeItem *parentItem = childItem->parent();
-    if (!parentItem) {
+    TreeItem* pChildItem = static_cast<TreeItem*>(index.internalPointer());
+    TreeItem* pParentItem = pChildItem->parent();
+    if (!pParentItem) {
         return QModelIndex();
-    } else if (parentItem == getRootItem()) {
+    } else if (pParentItem == getRootItem()) {
         return createIndex(0, 0, getRootItem());
     } else {
-        return createIndex(parentItem->parentRow(), 0, parentItem);
+        return createIndex(pParentItem->parentRow(), 0, pParentItem);
     }
 }
 
@@ -190,10 +190,10 @@ bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent
     if (rows == 0) {
         return true;
     }
-    TreeItem *parentItem = getItem(parent);
+    TreeItem* pParentItem = getItem(parent);
 
     beginRemoveRows(parent, position, position + rows - 1);
-    parentItem->removeChildren(position, rows);
+    pParentItem->removeChildren(position, rows);
     endRemoveRows();
 
     return true;
