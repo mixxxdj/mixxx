@@ -964,14 +964,20 @@ bool SoundSourceFFmpeg::deepFlushBuffers() {
     if (!pParams) {
         return false;
     }
-    avcodec_parameters_from_context(pParams, m_pavCodecContext);
-    const AVCodec* pCodec = m_pavCodecContext->codec;
-    AVCodecContextPtr pavCodecContext = AVCodecContextPtr::alloc(pCodec);
-    if (pavCodecContext) {
-        avcodec_parameters_to_context(pavCodecContext, pParams);
-        if (avcodec_open2(pavCodecContext, pCodec, nullptr) == 0) {
-            m_pavCodecContext = std::move(pavCodecContext);
-            ret = true;
+    if (avcodec_parameters_from_context(pParams, m_pavCodecContext) == 0) {
+        const AVCodec* pCodec = m_pavCodecContext->codec;
+        AVCodecContextPtr pavCodecContext = AVCodecContextPtr::alloc(pCodec);
+        if (pavCodecContext) {
+            pavCodecContext->pkt_timebase = m_pavCodecContext->pkt_timebase;
+            pavCodecContext->request_sample_fmt = m_pavCodecContext->request_sample_fmt;
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+            pavCodecContext->request_channel_layout = m_pavCodecContext->request_channel_layout;
+#endif
+            if (avcodec_parameters_to_context(pavCodecContext, pParams) == 0 &&
+                    avcodec_open2(pavCodecContext, pCodec, nullptr) == 0) {
+                m_pavCodecContext = std::move(pavCodecContext);
+                ret = true;
+            }
         }
     }
     avcodec_parameters_free(&pParams);
