@@ -125,6 +125,14 @@ class TreeItem final {
     bool isBold() const {
         return m_bold;
     }
+    // This is set/used only by BrowseFeature
+    void setIsWatchedLibraryPath(bool watched) {
+        m_isWatched = watched;
+    }
+    bool isWatchedLibraryPath() {
+        return m_isWatched;
+    }
+    void updateIsWatchedLibraryPathRecursively(bool watched);
 
   private:
     explicit TreeItem(
@@ -147,4 +155,5 @@ class TreeItem final {
     QVariant m_data;
     QIcon m_icon;
     bool m_bold;
+    bool m_isWatched;
 };
