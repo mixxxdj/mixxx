@@ -204,6 +204,10 @@ class TrackModel {
     /*non-virtual*/ bool hasCapabilities(Capabilities caps) const {
         return (getCapabilities() & caps) == caps;
     }
+    // Return false via overrides in incompatible track models
+    virtual bool canLoadTrackSetColumns() const {
+        return true;
+    }
     virtual QString getModelSetting(const QString& name) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
@@ -214,6 +218,15 @@ class TrackModel {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.setValue(key, value);
+    }
+
+    QString getCommonHeaderState() {
+        SettingsDAO settings(m_db);
+        return settings.getValue("common_header_state_pb");
+    }
+    bool setCommonHeaderState(const QVariant& value) {
+        SettingsDAO settings(m_db);
+        return settings.setValue("common_header_state_pb", value);
     }
 
     virtual int defaultSortColumn() const {
