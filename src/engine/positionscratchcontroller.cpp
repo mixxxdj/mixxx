@@ -52,7 +52,7 @@ class RateIIFilter {
     }
 
     double filter(double rate) {
-        if (fabs(rate) - fabs(m_last_rate) > -0.1) {
+        if (std::abs(rate) - std::abs(m_last_rate) > -0.1) {
             m_last_rate = m_last_rate * (1 - m_factor) + rate * m_factor;
         } else {
             // do not filter strong decelerations to avoid overshooting
@@ -164,7 +164,7 @@ void PositionScratchController::process(double currentSamplePos,
 
             // If we're playing, then do not decay rate below 1. If we're not playing,
             // then we want to decay all the way down to below 0.01
-            double decayThreshold = fabs(releaseRate);
+            double decayThreshold = std::abs(releaseRate);
             if (decayThreshold < MIN_SEEK_SPEED) {
                 decayThreshold = MIN_SEEK_SPEED;
             }
@@ -182,7 +182,7 @@ void PositionScratchController::process(double currentSamplePos,
 
             // If the rate has decayed below the threshold, or scratching is
             // re-enabled then leave inertia mode.
-            if (fabs(m_rate) < decayThreshold || scratchEnable) {
+            if (std::abs(m_rate) < decayThreshold || scratchEnable) {
                 m_inertiaEnabled = false;
                 m_isScratching = false;
             }
@@ -268,7 +268,7 @@ void PositionScratchController::process(double currentSamplePos,
                             scratchTargetDelta - m_samplePosDeltaSum);
                     m_rate = m_pVelocityController->observation(ctrlError);
                     m_rate /= m_callsPerDt;
-                    if (fabs(m_rate) < MIN_SEEK_SPEED) {
+                    if (std::abs(m_rate) < MIN_SEEK_SPEED) {
                         // we cannot get closer
                         m_rate = 0;
                     }
@@ -280,7 +280,7 @@ void PositionScratchController::process(double currentSamplePos,
             // We quit scratch mode.
             // Disable everything, or optionally enable inertia mode if
             // the previous rate was high enough to count as a 'throw'
-            if (fabs(m_rate) > kThrowThreshold) {
+            if (std::abs(m_rate) > kThrowThreshold) {
                 m_inertiaEnabled = true;
             } else {
                 m_isScratching = false;

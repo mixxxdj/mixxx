@@ -3,6 +3,7 @@
 #include "control/controlpushbutton.h"
 #include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
+#include "util/denormalsarezero.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -76,6 +77,8 @@ void VinylControlProcessor::requestReloadConfig() {
 }
 
 void VinylControlProcessor::run() {
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
 
