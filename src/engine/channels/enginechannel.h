@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include "control/pollingcontrolproxy.h"
 #include "engine/channelhandle.h"
 #include "engine/engineobject.h"

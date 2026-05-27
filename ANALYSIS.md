@@ -44,6 +44,16 @@ The "Head Split" feature in `EngineMixer` used a loop with in-place dependencies
 - **Identified in**: `EngineMixer::processHeadphones`.
 - **Status**: **Fixed**. Refactored the loop to be data-parallel and compiler-friendly, enabling full SIMD vectorization for this signal path.
 
+### H. Denormal Floating-Point Overhead
+Audio worker threads (SideChain, VinylControl) did not explicitly set denormal handling modes. In quiet passages, "denormal" numbers (extremely small floats) can cause significant CPU spikes on some hardware.
+- **Identified in**: `EngineSideChain::run` and `VinylControlProcessor::run`.
+- **Status**: **Fixed**. Enabled DAZ (Denormals-Are-Zero) and FTZ (Flush-To-Zero) modes in these semi-realtime threads to ensure deterministic CPU usage.
+
+### I. Semi-Realtime Latency (SideChain)
+The sidechain wakeup logic was waiting for a large buffer fill threshold before signaling worker threads.
+- **Identified in**: `EngineSideChain::writeSamples`.
+- **Status**: **Fixed**. Refactored the signaling to trigger as soon as data is written, reducing latency for broadcast and recording.
+
 ### C. Real-Time Safety Considerations (Channel Lookup)
 An O(N) linear search was identified in `EngineMixer::getChannel`. While a `QHash` could reduce this to O(1), further architectural review concluded that for the typical number of channels in Mixxx (4-64), the linear search on `QString` (often hitting early exits on first character mismatch) is safer for real-time operation. `QHash` lookups are not wait-free and could involve heap-traversal or rehashing, which could introduce jitter in the high-priority audio thread.
 
@@ -71,4 +81,4 @@ While Mixxx avoids heavy locks in the audio thread, `EngineBuffer` still relies 
 
 ---
 **Architect**: Jules
-**Date**: May 2024
+**Date**: May 2026

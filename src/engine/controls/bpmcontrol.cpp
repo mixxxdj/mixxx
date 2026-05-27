@@ -495,7 +495,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
         // my: 0.98 target: 0.99 backwards: -0.99
         const double backwardsDistance = target_percentage - current_percentage - 1.0;
 
-        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
+        return (std::abs(forwardDistance) < std::abs(backwardsDistance)) ?
                 forwardDistance : backwardsDistance;
     } else { // current_percentage > target_percentage
         // Invariant: forwardDistance - backwardsDistance == 1.0
@@ -506,7 +506,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
         // my: 0.99 target:0.01 backwards: -0.98
         const double backwardsDistance = target_percentage - current_percentage;
 
-        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
+        return (std::abs(forwardDistance) < std::abs(backwardsDistance)) ?
                 forwardDistance : backwardsDistance;
     }
 }
@@ -611,10 +611,10 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         // off, but then it gets turned on.
         constexpr double kTrainWreckThreshold = 0.2;
         constexpr double kSyncAdjustmentCap = 0.05;
-        if (fabs(error) > kTrainWreckThreshold) {
+        if (std::abs(error) > kTrainWreckThreshold) {
             // Assume poor reflexes (late button push) -- speed up to catch the other track.
             adjustment = 1.0 + kSyncAdjustmentCap;
-        } else if (fabs(error) > kErrorThreshold) {
+        } else if (std::abs(error) > kErrorThreshold) {
             // Proportional control constant. The higher this is, the more we
             // influence sync.
             constexpr double kSyncAdjustmentProportional = 0.7;

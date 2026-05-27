@@ -2,6 +2,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <atomic>
 #include <QWaitCondition>
 #include <QList>
 

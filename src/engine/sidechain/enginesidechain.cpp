@@ -15,6 +15,7 @@
 #include "moc_enginesidechain.cpp"
 #include "util/counter.h"
 #include "util/event.h"
+#include "util/denormalsarezero.h"
 #include "util/sample.h"
 #include "util/trace.h"
 
@@ -87,14 +88,17 @@ void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 
-    if (m_sampleFifo.writeAvailable() < SIDECHAIN_BUFFER_SIZE / 5) {
-        // Signal to the sidechain that samples are available.
+    if (numSamplesWritten > 0) {
+        // Signal to the sidechain that samples are available. trigger immediately
+        // to reduce latency.
         Trace wakeup("EngineSideChain::writeSamples wake up");
         m_waitForSamples.wakeAll();
     }
 }
 
 void EngineSideChain::run() {
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
     // the id of this thread, for debugging purposes //XXX copypasta (should
     // factor this out somehow), -kousu 2/2009
     unsigned static id = 0;

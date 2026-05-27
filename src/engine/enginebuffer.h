@@ -4,6 +4,7 @@
 
 #include <QAtomicInt>
 #include <QMutex>
+#include <atomic>
 #include <initializer_list>
 
 #include "audio/frame.h"
