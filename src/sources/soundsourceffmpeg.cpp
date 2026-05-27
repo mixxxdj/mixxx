@@ -958,6 +958,26 @@ SINT readNextPacket(
 }
 } // namespace
 
+bool SoundSourceFFmpeg::deepFlushBuffers() {
+    bool ret = false;
+    AVCodecParameters* pParams = avcodec_parameters_alloc();
+    if (!pParams) {
+        return false;
+    }
+    avcodec_parameters_from_context(pParams, m_pavCodecContext);
+    const AVCodec* pCodec = m_pavCodecContext->codec;
+    AVCodecContextPtr pavCodecContext = AVCodecContextPtr::alloc(pCodec);
+    if (pavCodecContext) {
+        avcodec_parameters_to_context(pavCodecContext, pParams);
+        if (avcodec_open2(pavCodecContext, pCodec, nullptr) == 0) {
+            m_pavCodecContext = std::move(pavCodecContext);
+            ret = true;
+        }
+    }
+    avcodec_parameters_free(&pParams);
+    return ret;
+}
+
 bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     DEBUG_ASSERT(frameIndexRange().containsIndex(startIndex));
 
@@ -989,9 +1009,11 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
         // was limited to -661 instead of -2111. The workaround here is to reopen
         // the codec which initializes all buffers with zero.
         // Slow: 43 us (Core Ultra 5 125U)
-        const AVCodec* pCodec = m_pavCodecContext->codec;
-        avcodec_close(m_pavCodecContext);
-        avcodec_open2(m_pavCodecContext, pCodec, nullptr);
+        if (!deepFlushBuffers()) {
+            kLogger.warning() << "deepFlushBuffers failed";
+            m_frameBuffer.invalidate();
+            return false;
+        }
     }
 
     // Seek to new position
