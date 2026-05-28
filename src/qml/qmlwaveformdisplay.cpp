@@ -149,6 +149,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
         m_dirtyFlag.setFlag(DirtyFlag::Geometry, false);
         pBgNode->setRect(boundingRect());
         pClipNode->setClipRect(boundingRect());
+        pBgNode->markDirty(QSGNode::DirtyGeometry);
+        pClipNode->markDirty(QSGNode::DirtyGeometry);
         resizeRenderer(boundingRect().width(),
                 boundingRect().height(),
                 window()->devicePixelRatio());

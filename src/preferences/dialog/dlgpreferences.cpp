@@ -30,6 +30,7 @@
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwaveform.h"
 #include "util/cmdlineargs.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -165,8 +166,8 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
-    if (pSkinLoader) {
+    // Check if the Waveform factory exists (it is not created in QML mode)
+    if (WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -358,7 +359,8 @@ void DlgPreferences::onShow() {
     int newWidth = m_geometry[2].toInt();
     int newHeight = m_geometry[3].toInt();
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
@@ -577,7 +579,8 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 
 QRect DlgPreferences::getDefaultGeometry() {
     adjustSize();
-    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }

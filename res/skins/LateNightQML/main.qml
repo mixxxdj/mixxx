@@ -1,12 +1,9 @@
-import "." as Skin
+import "../../qml" as Skin
+import "../../qml/Theme"
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Window
-import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
-import "Theme"
 
 ApplicationWindow {
     id: root
@@ -15,9 +12,7 @@ ApplicationWindow {
     property var focusedDeck: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property int numDecks: 4
-    readonly property int numPreviewDecks: 1
     readonly property int numSamplers: 16
-    readonly property int waveformOverviewTypeRgb: 2
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
@@ -27,7 +22,6 @@ ApplicationWindow {
     minimumHeight: 300
     minimumWidth: 680
     visible: true
-    visibility: Mixxx.Config.configStartInFullscreenKey ? Window.FullScreen : Window.Windowed
     width: 1792
 
     Mixxx.ControlProxy {
@@ -44,22 +38,6 @@ ApplicationWindow {
 
         onInitializedChanged: {
             value = root.numSamplers;
-        }
-    }
-    Mixxx.ControlProxy {
-        group: "[App]"
-        key: "num_preview_decks"
-
-        onInitializedChanged: {
-            value = root.numPreviewDecks;
-        }
-    }
-    Mixxx.ControlProxy {
-        group: "[Waveform]"
-        key: "WaveformOverviewType"
-
-        onInitializedChanged: {
-            value = root.waveformOverviewTypeRgb;
         }
     }
     Column {
@@ -161,7 +139,7 @@ ApplicationWindow {
                             devToolsWindow.show();
                     }
 
-                    DeveloperToolsWindow {
+                    Skin.DeveloperToolsWindow {
                         id: devToolsWindow
 
                         height: 480
@@ -236,7 +214,7 @@ ApplicationWindow {
                 SplitView.preferredHeight: library.active ? 120 : undefined
                 visible: !root.maximizeLibrary
 
-                FadeBehavior on visible {
+                Skin.FadeBehavior on visible {
                     fadeTarget: waveforms
                 }
 
@@ -254,7 +232,7 @@ ApplicationWindow {
                         Skin.WaveformDisplay {
                             group: deck3waveform.group
 
-                            FadeBehavior on visible {
+                            Skin.FadeBehavior on visible {
                                 fadeTarget: deck3waveform
                             }
                         }
@@ -290,7 +268,7 @@ ApplicationWindow {
                         Skin.WaveformDisplay {
                             group: deck4waveform.group
 
-                            FadeBehavior on visible {
+                            Skin.FadeBehavior on visible {
                                 fadeTarget: deck4waveform
                             }
                         }
@@ -346,7 +324,7 @@ ApplicationWindow {
                 SplitView.maximumHeight: library.active ? undefined : mixer.height
                 SplitView.minimumHeight: mixer.height
 
-                Deck {
+                Skin.Deck {
                     id: deck1
 
                     editMode: root.editDeck
@@ -384,7 +362,7 @@ ApplicationWindow {
                         top: parent.top
                     }
                 }
-                Mixer {
+                Skin.Mixer {
                     id: mixer
 
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -465,11 +443,11 @@ ApplicationWindow {
                             duration: 200
                         }
                     }
-                    FadeBehavior on visible {
+                    Skin.FadeBehavior on visible {
                         fadeTarget: mixer
                     }
                 }
-                Deck {
+                Skin.Deck {
                     id: deck2
 
                     editMode: root.editDeck
@@ -525,7 +503,7 @@ ApplicationWindow {
                         }
                     }
                     sourceComponent: Component {
-                        Deck {
+                        Skin.Deck {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
                             editMode: root.editDeck
@@ -568,7 +546,7 @@ ApplicationWindow {
                         }
                     }
                     sourceComponent: Component {
-                        Deck {
+                        Skin.Deck {
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
                             editMode: root.editDeck
@@ -619,7 +597,7 @@ ApplicationWindow {
                     width: parent.width
 
                     sourceComponent: Component {
-                        Skin.Library {
+                        Library {
                             anchors.fill: parent
                         }
                     }
@@ -675,18 +653,6 @@ ApplicationWindow {
 
             anchors.fill: parent
             color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
-
-            Repeater {
-                model: hasHardwareAcceleration ? 1 : 0
-
-                GaussianBlur {
-                    anchors.fill: overlayModal
-                    deviation: 4
-                    radius: Math.max(0, overlayModal.radius)
-                    samples: 16
-                    source: content
-                }
-            }
         }
     }
 }
