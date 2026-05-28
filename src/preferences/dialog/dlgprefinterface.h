@@ -50,6 +50,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   private:
     void notifyRebootNecessary();
+    void notifyExperimentalQmlSkinRestartNecessary();
     void loadTooltipPreferenceFromConfig();
     void updateScreenMetrics();
 

@@ -20,6 +20,7 @@
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/widgethelper.h"
+#include "waveform/waveformwidgetfactory.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -281,7 +282,7 @@ void DlgPrefInterface::slotUpdateSkins() {
     const QList<SkinPointer> userSkins = m_pSkinLoader->getUserSkins();
     int index = 0;
     for (const SkinPointer& pSkin : userSkins) {
-        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->name());
+        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->displayName(), pSkin->name());
         m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
@@ -298,7 +299,7 @@ void DlgPrefInterface::slotUpdateSkins() {
     const QList<SkinPointer> systemSkins = m_pSkinLoader->getSystemSkins();
     for (const SkinPointer& pSkin : systemSkins) {
         ComboBoxSkinconf->insertItem(
-                index, systemSkinIcon, pSkin->name());
+                index, systemSkinIcon, pSkin->displayName(), pSkin->name());
         m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
@@ -362,7 +363,7 @@ void DlgPrefInterface::slotUpdate() {
         } else {
             m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
         }
-        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
+        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findData(m_skinNameOnUpdate));
         slotUpdateSchemes();
     }
 
@@ -390,7 +391,7 @@ void DlgPrefInterface::slotUpdate() {
 
 void DlgPrefInterface::slotResetToDefaults() {
     if (m_pSkinLoader) {
-        int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+        int index = ComboBoxSkinconf->findData(m_pSkinLoader->getDefaultSkinName());
         ComboBoxSkinconf->setCurrentIndex(index);
         slotSetSkin(index);
     }
@@ -450,6 +451,13 @@ void DlgPrefInterface::notifyRebootNecessary() {
                "settings will take effect."));
 }
 
+void DlgPrefInterface::notifyExperimentalQmlSkinRestartNecessary() {
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted with the --developer command line option "
+               "to use the experimental LateNight QML skin."));
+}
+
 void DlgPrefInterface::slotSetScheme(int) {
     // This slot can be triggered by opening the preferences. If the current
     // skin does not support color schemes, this would treat the string in the
@@ -495,7 +503,7 @@ void DlgPrefInterface::slotSetSkin(int) {
         return;
     }
 
-    QString newSkinName = ComboBoxSkinconf->currentText();
+    QString newSkinName = ComboBoxSkinconf->currentData().toString();
     if (newSkinName == m_pSkin->name()) {
         return;
     }
@@ -583,6 +591,12 @@ void DlgPrefInterface::slotApply() {
     if (m_pSkin &&
             (m_pSkin->name() != m_skinNameOnUpdate ||
                     m_colorScheme != m_colorSchemeOnUpdate)) {
+        if (m_pSkin->type() == mixxx::skin::SkinType::QML || !WaveformWidgetFactory::isCreated()) {
+            notifyExperimentalQmlSkinRestartNecessary();
+            m_skinNameOnUpdate = m_pSkin->name();
+            m_colorSchemeOnUpdate = m_colorScheme;
+            return;
+        }
         // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog

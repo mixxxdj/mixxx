@@ -61,8 +61,9 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
-    m_pCOTGuiTick = new ControlProxy(
-            QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
+    m_pCOTGuiTick = new ControlProxy(QStringLiteral("[App]"),
+            QStringLiteral("gui_tick_50ms_period_s"),
+            this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);

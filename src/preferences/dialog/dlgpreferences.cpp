@@ -30,6 +30,7 @@
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwaveform.h"
 #include "util/cmdlineargs.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -165,8 +166,8 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
-    if (pSkinLoader) {
+    // Check if the Waveform factory exists (it is not created in QML mode)
+    if (WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
