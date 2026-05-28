@@ -12,7 +12,7 @@ const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]")
 } // namespace
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
+        WaveformWidgetRenderer* waveformWidgetRenderer, Options)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
@@ -56,8 +56,7 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_rgbHighFilteredColor_b(0) {
 }
 
-WaveformRendererSignalBase::~WaveformRendererSignalBase() {
-}
+WaveformRendererSignalBase::~WaveformRendererSignalBase() = default;
 
 bool WaveformRendererSignalBase::init() {
     m_pEQEnabled = std::make_unique<ControlProxy>(
@@ -174,7 +173,7 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         CSAMPLE_GAIN lowVisualGain = 1.0, midVisualGain = 1.0, highVisualGain = 1.0;
 
         // Only adjust low/mid/high gains if EQs are enabled.
-        if (m_pEQEnabled->get() > 0.0) {
+        if (m_pEQEnabled && m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
                     m_pMidFilterControlObject &&
                     m_pHighFilterControlObject) {

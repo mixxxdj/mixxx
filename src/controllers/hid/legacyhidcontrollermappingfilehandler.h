@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef BUILD_TESTING
+#include <gtest/gtest_prod.h>
+#endif
+
 #include "controllers/legacycontrollermappingfilehandler.h"
 
 class LegacyHidControllerMapping;
@@ -15,4 +19,8 @@ class LegacyHidControllerMappingFileHandler : public LegacyControllerMappingFile
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingsPath);
+
+#ifdef BUILD_TESTING
+    FRIEND_TEST(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile);
+#endif
 };

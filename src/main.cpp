@@ -62,6 +62,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     int exitCode;
 #ifdef MIXXX_USE_QML
     if (args.isQml()) {
+        // This is a workaround to support Qt 6.4.2, currently shipped on
+        // Ubuntu 24.04 See
+        // https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-2770811094
+        // for further details
+        qputenv("QT_QUICK_TABLEVIEW_COMPAT_VERSION", "6.4");
         mixxx::qml::QmlApplication qmlApplication(pApp, args);
         exitCode = pApp->exec();
     } else
@@ -92,6 +97,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 pow(pApp->devicePixelRatio(), 2.0f)));
 
         pCoreServices->initialize(pApp);
+
+        if (pCoreServices->getSettings()->getValue(
+                    ConfigKey("[Config]", "did_run_with_unstable"), false)) {
+            qInfo() << "User previously ran the unstable version on this profile";
+        }
 
 #ifdef MIXXX_USE_QOPENGL
         // Will call initialize when the initial wglwidget's
@@ -170,6 +180,18 @@ void applyStyleOverride(CmdlineArgs* pArgs) {
 }
 
 } // anonymous namespace
+
+#ifdef Q_OS_ANDROID
+  // Currently, accessibility properties are not set, leading to a warning spam in
+  // the android logcat. Furthermore, there seems to be a few issues with the default setup,
+  // which leads to huge performance loss and occasional random crash.
+extern "C" {
+JNIEXPORT bool JNICALL
+Java_org_qtproject_qt_android_QtNativeAccessibility_accessibilitySupported(JNIEnv*, jobject) {
+    return false;
+}
+}
+#endif
 
 int main(int argc, char * argv[]) {
     Console console;

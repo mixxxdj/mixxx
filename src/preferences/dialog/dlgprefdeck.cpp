@@ -323,14 +323,14 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     // Speed / Pitch reset configuration
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
-    int configSPAutoReset = m_pConfig->getValue<int>(
+    auto configSPAutoReset = m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
-            BaseTrackPlayer::RESET_PITCH);
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH);
 
-    m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED ||
-                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
-    m_pitchAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_PITCH ||
-                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
+    m_speedAutoReset = (configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_SPEED ||
+            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
+    m_pitchAutoReset = (configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH ||
+            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
@@ -491,18 +491,18 @@ void DlgPrefDeck::slotUpdate() {
         radioButtonResetUnlockedKey->setChecked(true);
     }
 
-    int reset = m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
-            static_cast<int>(BaseTrackPlayer::RESET_PITCH));
-    if (reset == BaseTrackPlayer::RESET_PITCH) {
+    auto reset = m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH);
+    if (reset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH) {
         checkBoxResetPitch->setChecked(true);
         checkBoxResetSpeed->setChecked(false);
-    } else if (reset == BaseTrackPlayer::RESET_SPEED) {
+    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_SPEED) {
         checkBoxResetPitch->setChecked(false);
         checkBoxResetSpeed->setChecked(true);
-    } else if (reset == BaseTrackPlayer::RESET_PITCH_AND_SPEED) {
+    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED) {
         checkBoxResetPitch->setChecked(true);
         checkBoxResetSpeed->setChecked(true);
-    } else if (reset == BaseTrackPlayer::RESET_NONE) {
+    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_NONE) {
         checkBoxResetPitch->setChecked(false);
         checkBoxResetSpeed->setChecked(false);
     }
@@ -732,14 +732,14 @@ void DlgPrefDeck::slotApply() {
             m_bRateDownIncreasesSpeed);
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
 
-    BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
+    BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_NONE;
 
     if (m_speedAutoReset && m_pitchAutoReset) {
-        configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
+        configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED;
     } else if (m_speedAutoReset) {
-        configSPAutoReset = BaseTrackPlayer::RESET_SPEED;
+        configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_SPEED;
     } else if (m_pitchAutoReset) {
-        configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
+        configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_PITCH;
     }
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),

@@ -32,12 +32,16 @@ class SkinLoader : public QObject {
     SkinPointer getConfiguredSkin() const;
     QString getDefaultSkinName() const;
     QList<QDir> getSkinSearchPaths() const;
-    QList<SkinPointer> getSkins() const;
+    QDir getUserSkinDir() const;
+    QDir getSytemSkinDir() const;
+    QList<SkinPointer> getUserSkins() const;
+    QList<SkinPointer> getSystemSkins() const;
 
   private slots:
     void slotNumMicsChanged(double numMics);
 
   private:
+    QList<SkinPointer> getSkinsFromDir(const QDir& dir) const;
     QString pickResizableSkin(const QString& oldSkin) const;
     SkinPointer skinFromDirectory(const QDir& dir) const;
 

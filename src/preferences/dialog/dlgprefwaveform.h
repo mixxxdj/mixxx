@@ -35,14 +35,14 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformEnabled(bool checked);
     void slotSetWaveformAcceleration(bool checked);
 #ifdef MIXXX_USE_QOPENGL
-    void slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option option, bool enabled);
+    void slotSetWaveformOptions(WaveformRendererSignalBase::Option option, bool enabled);
     void slotSetWaveformOptionSplitStereoSignal(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::
+        slotSetWaveformOptions(WaveformRendererSignalBase::Option::
                                        SplitStereoSignal,
                 checked);
     }
     void slotSetWaveformOptionHighDetail(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
+        slotSetWaveformOptions(WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
     void slotSetDefaultZoom(int index);
@@ -65,6 +65,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotStemOutlineOpacity(float value);
     // overview options
     void slotSetWaveformOverviewType();
+    void slotSetOverviewStereoMode(bool mono);
     void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotSetOverviewScaling();
 
@@ -75,7 +76,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void updateEnableUntilMark();
     void updateWaveformTypeOptions(bool useWaveform,
             WaveformWidgetBackend backend,
-            allshader::WaveformRendererSignalBase::Options currentOption);
+            WaveformRendererSignalBase::Options currentOption);
     void updateWaveformAcceleration(
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
     void updateWaveformGeneralOptionsEnabled();
@@ -84,6 +85,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
+    std::unique_ptr<ControlObject> m_pOverviewStereoControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

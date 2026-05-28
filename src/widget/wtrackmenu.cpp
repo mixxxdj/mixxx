@@ -41,6 +41,7 @@
 #include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
+#include "widget/findonweblast.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
@@ -268,21 +269,8 @@ void WTrackMenu::createMenus() {
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
         DEBUG_ASSERT(!m_pFindOnWebMenu);
-        m_pFindOnWebMenu = make_parented<WFindOnWebMenu>(this);
-        connect(m_pFindOnWebMenu,
-                &QMenu::aboutToShow,
-                this,
-                [this] {
-                    m_pFindOnWebMenu->clear();
-                    const auto pTrack = getFirstTrackPointer();
-                    if (pTrack) {
-                        mixxx::library::createFindOnWebSubmenus(
-                                m_pFindOnWebMenu,
-                                *pTrack);
-                    }
-                    m_pFindOnWebMenu->setEnabled(
-                            !m_pFindOnWebMenu->isEmpty());
-                });
+        m_pFindOnWebMenu = make_parented<QMenu>(tr("Find on Web"), this);
+        m_pFindOnWebLastAct = make_parented<FindOnWebLast>(this, m_pConfig);
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
@@ -501,22 +489,23 @@ void WTrackMenu::createActions() {
         connect(m_pBpmUnlockAction, &QAction::triggered, this, &WTrackMenu::slotUnlockBpm);
 
         //BPM edit actions
-        m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
-        storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
         m_pBpmHalveAction = make_parented<QAction>(tr("Halve BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmHalveAction, 0.5);
         m_pBpmTwoThirdsAction = make_parented<QAction>(tr("2/3 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmTwoThirdsAction, 2.0 / 3.0);
         m_pBpmThreeFourthsAction = make_parented<QAction>(tr("3/4 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeFourthsAction, 3.0 / 4.0);
+        m_pBpmFourFifthsAction = make_parented<QAction>(tr("4/5 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmFourFifthsAction, 4.0 / 5.0);
+        m_pBpmFiveFourthsAction = make_parented<QAction>(tr("5/4 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmFiveFourthsAction, 5.0 / 4.0);
         m_pBpmFourThirdsAction = make_parented<QAction>(tr("4/3 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmFourThirdsAction, 4.0 / 3.0);
         m_pBpmThreeHalvesAction = make_parented<QAction>(tr("3/2 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeHalvesAction, 3.0 / 2.0);
+        m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
 
-        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::BpmScale::Double);
-        });
         connect(m_pBpmHalveAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::Halve);
         });
@@ -526,11 +515,20 @@ void WTrackMenu::createActions() {
         connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
         });
+        connect(m_pBpmFourFifthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::FourFifths);
+        });
+        connect(m_pBpmFiveFourthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::FiveFourths);
+        });
         connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::FourThirds);
         });
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
+        });
+        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::Double);
         });
 
         m_pBpmResetAction = make_parented<QAction>(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
@@ -653,6 +651,8 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addAction(m_pBpmFourFifthsAction);
+        m_pBPMMenu->addAction(m_pBpmFiveFourthsAction);
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
@@ -681,8 +681,10 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
-        m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
+        m_pMetadataMenu->addMenu(m_pCoverMenu);
+
+        m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
 
         for (const auto& updateInExternalTrackCollection :
                 std::as_const(m_updateInExternalTrackCollections)) {
@@ -707,8 +709,8 @@ void WTrackMenu::setupActions() {
                     });
         }
 
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
         if (featureIsEnabled(Feature::FindOnWeb)) {
+            m_pMetadataMenu->addAction(m_pFindOnWebLastAct);
             m_pMetadataMenu->addMenu(m_pFindOnWebMenu);
         }
 
@@ -1115,7 +1117,6 @@ void WTrackMenu::updateMenus() {
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
         m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -1139,12 +1140,14 @@ void WTrackMenu::updateMenus() {
         if (featureIsEnabled(Feature::BPM)) {
             m_pBpmUnlockAction->setEnabled(anyBpmLocked);
             m_pBpmLockAction->setEnabled(anyBpmNotLocked);
-            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
             m_pBpmHalveAction->setEnabled(!anyBpmLocked);
             m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
             m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
 
@@ -1158,12 +1161,14 @@ void WTrackMenu::updateMenus() {
                 }
                 if (pTrack) {
                     const double bpm = pTrack->getBpm();
-                    appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmFourFifthsAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmFiveFourthsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
                     appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+                    appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
                 }
             }
         }
@@ -1238,9 +1243,18 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
+        // We have a new Track
+        m_pFindOnWebMenu->clear();
+        m_pFindOnWebLastAct->setVisible(false);
         const auto pTrack = getFirstTrackPointer();
         const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
-        m_pFindOnWebMenu->setEnabled(enableMenu);
+        if (enableMenu) {
+            mixxx::library::createFindOnWebSubmenus(
+                    m_pFindOnWebMenu.toWeakRef(),
+                    m_pFindOnWebLastAct.toWeakRef(),
+                    *pTrack);
+        }
+        m_pFindOnWebMenu->setEnabled(!m_pFindOnWebMenu->isEmpty());
     }
 }
 

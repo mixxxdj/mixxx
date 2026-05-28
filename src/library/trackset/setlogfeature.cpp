@@ -715,13 +715,8 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
             newIndex = m_pSidebarModel->index(selectedYearIndexRow - 1, 0);
         }
     }
-    if (newIndex.isValid()) {
-        emit featureSelect(this, newIndex);
-        activateChild(newIndex);
-    } else if (rootWasSelected) {
-        // calling featureSelect with invalid index will select the root item
-        emit featureSelect(this, newIndex);
-        activate(); // to reload the new current playlist
+    if (newIndex.isValid() || rootWasSelected) {
+        selectAndActivate(newIndex);
     }
 }
 

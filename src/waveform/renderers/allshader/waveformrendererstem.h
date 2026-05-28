@@ -19,7 +19,9 @@ class allshader::WaveformRendererStem final
   public:
     explicit WaveformRendererStem(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play);
+                    ::WaveformRendererAbstract::Play,
+            ::WaveformRendererSignalBase::Options options =
+                    ::WaveformRendererSignalBase::Option::None);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;

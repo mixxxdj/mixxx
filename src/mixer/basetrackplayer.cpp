@@ -157,6 +157,56 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
                 }
             });
 
+    m_pStarsOne = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_one"));
+    connect(m_pStarsOne.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(1);
+                }
+            });
+
+    m_pStarsTwo = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_two"));
+    connect(m_pStarsTwo.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(2);
+                }
+            });
+
+    m_pStarsThree = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_three"));
+    connect(m_pStarsThree.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(3);
+                }
+            });
+
+    m_pStarsFour = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_four"));
+    connect(m_pStarsFour.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(4);
+                }
+            });
+
+    m_pStarsFive = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_five"));
+    connect(m_pStarsFive.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(5);
+                }
+            });
+
     // Deck cloning
     m_pCloneFromDeck = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "CloneFromDeck"),
@@ -699,16 +749,18 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
         if (!m_pChannelToCloneFrom) {
-            BaseTrackPlayer::TrackLoadReset reset = m_pConfig->getValue(
-                    ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
-            if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
+            TrackLoadReset reset = m_pConfig->getValue(
+                    ConfigKey("[Controls]", "SpeedAutoReset"), TrackLoadReset::RESET_PITCH);
+            if (reset == TrackLoadReset::RESET_SPEED ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
                 // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMixer->getEngineSync()->otherSyncedPlaying(getGroup())) {
                     m_pRateRatio->set(1.0);
                 }
             }
-            if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
+            if (reset == TrackLoadReset::RESET_PITCH ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
                 // With KeylockMode::LockCurrentKey we need to reset `pitch`
                 // instead of `pitch_adjust` to avoid a roundtrip in KeyControl
                 // which would lead `pitch` != 0

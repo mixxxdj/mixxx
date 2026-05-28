@@ -408,6 +408,8 @@ class Track : public QObject {
             mixxx::track::io::key::Source keySource = mixxx::track::io::key::USER);
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
+    void setTuningFrequencyHz(double tuningFrequencyHz);
+    double getTuningFrequencyHz() const;
 
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;

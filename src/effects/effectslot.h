@@ -117,7 +117,7 @@ class EffectSlot : public QObject {
         return m_group;
     }
 
-    void initalizeInputChannel(ChannelHandle inputChannel);
+    void initializeInputChannel(ChannelHandle inputChannel);
 
     EffectManifestPointer getManifest() const;
 

@@ -30,7 +30,7 @@ class EngineEffect final : public EffectsRequestHandler {
     ~EngineEffect();
 
     /// Called from the main thread to make sure that the channel already has states
-    void initalizeInputChannel(ChannelHandle inputChannel);
+    void initializeInputChannel(ChannelHandle inputChannel);
 
     /// Called in audio thread
     bool processEffectsRequest(

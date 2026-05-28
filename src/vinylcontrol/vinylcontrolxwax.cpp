@@ -88,10 +88,16 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         // Set up very sensitive steady monitors for CDJs.
         m_pSteadySubtle = new SteadyPitch(0.06, true);
         m_pSteadyGross = new SteadyPitch(0.25, true);
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2CD_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBESDVS) {
         timecode = MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_MIXVIBES7INCH) {
@@ -100,6 +106,10 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         timecode = MIXXX_VINYL_PIONEERA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_PIONEERB) {
         timecode = MIXXX_VINYL_PIONEERB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_ALGORIDDIMA) {
+        timecode = MIXXX_VINYL_ALGORIDDIMA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_ALGORIDDIMB) {
+        timecode = MIXXX_VINYL_ALGORIDDIMB_XWAX_NAME;
     } else {
         qDebug() << "Unknown vinyl type, defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
         timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
@@ -113,12 +123,22 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         m_pSteadyGross = new SteadyPitch(0.5, false);
     }
 
-    timecode_def* tc_def = timecoder_find_definition(timecode);
+    // Determine the config folder path
+    std::string lut_dir_string;
+    const char* lut_dir_path = nullptr;
+
+    if (!getLutDir().isEmpty()) {
+        lut_dir_string = getLutDir().toStdString();
+        lut_dir_path = lut_dir_string.c_str();
+    }
+
+    // Pass the config folder path to the timecoder
+    timecode_def* tc_def = timecoder_find_definition(timecode, lut_dir_path);
     if (tc_def == nullptr) {
         qDebug() << "Error finding timecode definition for " << timecode
                  << ", defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
         timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
-        tc_def = timecoder_find_definition(timecode);
+        tc_def = timecoder_find_definition(timecode, lut_dir_path);
     }
 
     double speed = 1.0;
@@ -194,6 +214,18 @@ void VinylControlXwax::freeLUTs() {
     s_xwaxLUTMutex.unlock();
 }
 
+QString VinylControlXwax::getLutDir() {
+    QDir lutPath(m_pConfig->getSettingsPath().append("/lut/"));
+
+    if (!lutPath.exists()) {
+        if (!lutPath.mkpath(".")) {
+            qWarning() << "Failed to create LUT directory at" << lutPath;
+            return QString{};
+        }
+    }
+
+    return lutPath.absolutePath();
+}
 
 bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
     if (pReport) {
@@ -359,8 +391,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                    m_iPosition <= static_cast<int>(m_uiSafeZone) &&
                    m_dVinylPosition > 0 &&
                    checkSteadyPitch(dVinylPitch, filePosition) > 0.5) {
-            //if good position, and safe, and not in leadin, and steady,
-            //disable
+            // if good position, and safe, and not in lead-in, and steady,
+            // disable
             disableRecordEndMode();
         }
 
@@ -426,9 +458,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 m_bForceResync = false;
             } else if (fabs(m_dDriftAmt) > 0.1 &&
                     m_dVinylPosition < -2.0) {
-                //At first I thought it was a bug to resync to leadin in relative mode,
-                //but after using it that way it's actually pretty convenient.
-                //qDebug() << "Vinyl leadin";
+                // At first I thought it was a bug to resync to lead-in in relative mode,
+                // but after using it that way it's actually pretty convenient.
+                // qDebug() << "Vinyl lead-in";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 if (uiUpdateTime(filePosition)) {

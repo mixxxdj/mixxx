@@ -55,9 +55,6 @@ void WLibrary::switchToView(const QString& name) {
     const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
-            currentWidget());
-
     QWidget* pWidget = m_viewMap.value(name, nullptr);
     if (pWidget != nullptr) {
         LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
@@ -68,8 +65,10 @@ void WLibrary::switchToView(const QString& name) {
             return;
         }
         if (currentWidget() != pWidget) {
-            if (pOldLibrartView) {
-                pOldLibrartView->saveCurrentViewState();
+            LibraryView* pOldLibraryView = dynamic_cast<LibraryView*>(
+                    currentWidget());
+            if (pOldLibraryView) {
+                pOldLibraryView->saveCurrentViewState();
             }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(pWidget);

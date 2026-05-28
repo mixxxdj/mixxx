@@ -56,14 +56,20 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
+#ifndef __SCENEGRAPH__
     int alpha = m_waveformRenderer->getBeatGridAlpha();
     if (alpha == 0) {
         return false;
     }
+    m_color.setAlphaF(alpha / 100.0f);
+#endif
+
+    if (!m_color.alpha()) {
+        // Don't render the beatgrid lines is there are fully transparent
+        return true;
+    }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-
-    m_color.setAlphaF(alpha / 100.0f);
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0.0) {

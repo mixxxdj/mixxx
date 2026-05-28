@@ -196,6 +196,8 @@
               <Align>bottom|right</Align>
               <Color>#FF0000</Color>
               <TextColor>#FFFFFF</TextColor>
+              <EndIcon>skins:LateNight/classic/style/mark_jump_%1.svg</EndIcon>
+              <DisabledOpacity>0.25</DisabledOpacity>
               <Text> %1 </Text>
             </DefaultMark>
             <!-- Cue -->

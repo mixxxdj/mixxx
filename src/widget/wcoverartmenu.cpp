@@ -20,8 +20,7 @@ WCoverArtMenu::~WCoverArtMenu() {
 }
 
 void WCoverArtMenu::createActions() {
-    m_pChange = new QAction(tr("Choose new cover",
-            "change cover art location"), this);
+    m_pChange = new QAction(tr("Choose file", "change cover art location"), this);
     connect(m_pChange, &QAction::triggered, this, &WCoverArtMenu::slotChange);
     addAction(m_pChange);
 

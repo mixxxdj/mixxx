@@ -7,8 +7,9 @@
 #include "util/painterscope.h"
 
 WaveformRendererFilteredSignal::WaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {

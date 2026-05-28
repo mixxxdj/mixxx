@@ -857,6 +857,7 @@ QString YearFilterNode::toSql() const {
 // TODO Convert to DateFilterNode and allow searching for "last_played"
 DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
         : m_operatorQuery(false),
+          m_equalsQuery(false),
           m_operator("=") {
     QDateTime date;
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
@@ -899,14 +900,16 @@ DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
 }
 
 QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
-    // Prior to Qt 6.7 QLocale::toDate() with QLocale::ShortFormat used the
-    // base year 1900. With 6.7+ we can specify the century, ie. 20 for 2000.
-    // Mixxx was created aftre 2000 :)
+    // Try ISO format first (YYYY-MM-DD)
+    QDate date = QDate::fromString(dateStr, Qt::ISODate);
+    if (!date.isValid()) {
+        // Fall back to locale-specific short format
 #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
-    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat);
+        date = QLocale().toDate(dateStr, QLocale::ShortFormat);
 #else
-    QDate date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
+        date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
 #endif
+    }
     if (!date.isValid()) {
         return {};
     }

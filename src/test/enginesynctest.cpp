@@ -1092,8 +1092,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // Make sure playing decks with sync lock enabled do not change tempo when
     // the "Reset Speed/Tempo" preference is set and a track is loaded to another
     // deck with sync lock enabled.
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_SPEED);
 
     // Enable sync on two stopped decks
     auto pButtonSyncEnabled1 =
@@ -1128,8 +1128,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Repeat with RESET_PITCH_AND_SPEED
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
@@ -1146,8 +1146,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     // Even when RESET_NONE is on, sync lock is more important -- do not change
     // the speed of the playing deck.
     EXPECT_TRUE(isSoftLeader(m_sGroup1));
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_NONE));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_NONE);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     track1 = m_pMixerDeck1->loadFakeTrack(false, 124.0);
     ProcessBuffer();
@@ -1163,8 +1163,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(124.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_SPEED
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_SPEED);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.5));
@@ -1181,8 +1181,8 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_PITCH_AND_SPEED
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.5));

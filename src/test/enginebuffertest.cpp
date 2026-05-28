@@ -65,8 +65,8 @@ TEST_F(EngineBufferTest, DisableKeylockKeepsPitch) {
 
 TEST_F(EngineBufferTest, TrackLoadResetsPitch) {
     // When a new track is loaded, the pitch value should be reset.
-    config()->set(ConfigKey("[Controls]","SpeedAutoReset"),
-                  ConfigValue(BaseTrackPlayer::RESET_PITCH));
+    config()->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH);
     ControlObject::set(ConfigKey(m_sGroup1, "file_bpm"), 128.0);
     ControlObject::set(ConfigKey(m_sGroup1, "pitch_adjust"), 0.5);
     ProcessBuffer();
@@ -88,8 +88,8 @@ TEST_F(EngineBufferTest, TrackLoadResetsPitch_LockCurrentKey) {
     // * lock key
     // // * reset pitch -> is now 0 OPTIONAL
     // * load another track -> pitch should (still) be 0
-    config()->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-            ConfigValue(BaseTrackPlayer::RESET_PITCH));
+    config()->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH);
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
             static_cast<double>(KeylockMode::LockCurrentKey));
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);

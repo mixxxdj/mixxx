@@ -11,13 +11,15 @@
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 
-RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
+RGBWaveformWidget::RGBWaveformWidget(const QString& group,
+        QWidget* parent,
+        WaveformRendererSignalBase::Options options)
         : NonGLWaveformWidgetAbstract(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    addRenderer<WaveformRendererRGB>();
+    addRenderer<WaveformRendererRGB>(options);
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 

@@ -604,7 +604,37 @@ declare namespace MixxxControls {
          * @feedback Deck volume fader
          * @kind pot meter control
          */
-        | `volume${PotMeterSuffix}`;
+        | `volume${PotMeterSuffix}`
+
+        /**
+         * Outputs the current instantaneous deck volume (or stem volume for [ChannelN_StemM])
+         *
+         * @groups [ChannelN], [ChannelN_StemM], [PreviewDeckN], [SamplerN]
+         * @range default
+         * @feedback Deck VU meter
+         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
+         */
+        | 'vu_meter'
+
+        /**
+         * Outputs the current instantaneous deck volume for the left channel (or stem volume for [ChannelN_StemM])
+         *
+         * @groups [ChannelN], [ChannelN_StemM], [PreviewDeckN], [SamplerN]
+         * @range default
+         * @feedback Deck VU meter L
+         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
+         */
+        | 'vu_meter_left'
+
+        /**
+         * Outputs the current instantaneous deck volume for the right channel (or stem volume for [ChannelN_StemM])
+         *
+         * @groups [ChannelN], [ChannelN_StemM], [PreviewDeckN], [SamplerN]
+         * @range default
+         * @feedback Deck VU meter R
+         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
+         */
+        | 'vu_meter_right';
 
     type ChannelNPreviewDeckNSamplerNControl =
         /**
@@ -730,6 +760,10 @@ declare namespace MixxxControls {
         /**
          * Set a loop that is beatloop_size beats long and enables the loop.
          * If the loaded track has no beat grid, seconds are used instead of beats.
+         * If there is a rolling beatloop active (beatlooproll_activate
+         * or beatlooproll_X_activate),
+         * adopt that loop and quit slip mode. Releasing the rolling beatloop controls will have
+         * no effect on the play position or loop state.
          * Depending on the state of loop_anchor the loop is created forwards
          * or backwards from the current position.
          *
@@ -1214,6 +1248,8 @@ declare namespace MixxxControls {
          * If hotcue_X_type is “Loop”, looping will be enabled and the loop controls (e.g. loop_start_position, loop_end_position and beatloop_size) will be set accordingly.
          * Just like reloop_toggle, the player seeks back to the loop start when the current play position is behind the loop, and enabled without a seek when it is in front of or inside the loop.
          * This allows a loop catching behavior on one hand and a jump back when the loop has been exit by just triggering this control.
+         * If hotcue_X_type is “Jump”, the jump will be “armed” when set to 1, meaning that the deck will perform the jump to the hotcue when the play position reaches the hotcue’s “from” position (marked with a circular arrow on the waveform).
+         * If the play position is after the saved jump positions (both “from” and “to”), it will bring the playback to the “to” position.
          * Setting the control to 1 when the track is currently not playing (i.e. play is set to 0) will start hotcue previewing.
          * After resetting the control to 0, playback will usually be stopped and the player will seek to the hotcue position.
          * If play is set to 1 while previewing is active, the playback will continue and no seek occurs.
@@ -2297,6 +2333,56 @@ declare namespace MixxxControls {
         | 'stars_down'
 
         /**
+         * Give the currently loaded track a rating of 5 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_five'
+
+        /**
+         * Give the currently loaded track a rating of 4 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_four'
+
+        /**
+         * Give the currently loaded track a rating of 1 star.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_one'
+
+        /**
+         * Give the currently loaded track a rating of 3 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_three'
+
+        /**
+         * Give the currently loaded track a rating of 2 stars.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback Star count is adjusted in the deck’s star widget and in the library table.
+         * @since New in version 2.7.0.
+         */
+        | 'stars_two'
+
+        /**
          * Increase the rating of the currently loaded track (if the skin has star widgets in the decks section).
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -2502,36 +2588,6 @@ declare namespace MixxxControls {
          * @kind pot meter control
          */
         | `visual_key_distance${PotMeterSuffix}`
-
-        /**
-         * Outputs the current instantaneous deck volume
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range default
-         * @feedback Deck VU meter
-         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeter, [PreviewDeckN],VuMeter and [SamplerN],VuMeter controls.
-         */
-        | 'vu_meter'
-
-        /**
-         * Outputs the current instantaneous deck volume for the left channel
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range default
-         * @feedback Deck VU meter L
-         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterL, [PreviewDeckN],VuMeterL and [SamplerN],VuMeterL controls.
-         */
-        | 'vu_meter_left'
-
-        /**
-         * Outputs the current instantaneous deck volume for the right channel
-         *
-         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-         * @range default
-         * @feedback Deck VU meter R
-         * @since New in version 2.4.0: Replaces the deprecated [ChannelN],VuMeterR, [PreviewDeckN],VuMeterR and [SamplerN],VuMeterR controls.
-         */
-        | 'vu_meter_right'
 
         /**
          * Zooms the waveform to look ahead or back as needed.

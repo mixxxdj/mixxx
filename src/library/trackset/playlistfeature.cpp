@@ -40,6 +40,12 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             this,
             &PlaylistFeature::slotShufflePlaylist);
 
+    m_pOrderByCurrentPosAction = make_parented<QAction>(tr("Adopt current order"), this);
+    connect(m_pOrderByCurrentPosAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotOrderTracksByCurrentPosition);
+
     m_pUnlockPlaylistsAction =
             make_parented<QAction>(tr("Unlock all playlists"), this);
     connect(m_pUnlockPlaylistsAction,
@@ -82,6 +88,8 @@ void PlaylistFeature::onRightClickChild(
     int playlistId = playlistIdFromIndex(index);
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    m_pShufflePlaylistAction->setEnabled(!locked);
+    m_pOrderByCurrentPosAction->setEnabled(!locked && isChildIndexSelectedInSidebar(index));
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
     m_pShufflePlaylistAction->setEnabled(!locked);
@@ -95,6 +103,7 @@ void PlaylistFeature::onRightClickChild(
     // TODO If playlist is selected and has more than one track selected
     // show "Shuffle selected tracks", else show "Shuffle playlist"?
     menu.addAction(m_pShufflePlaylistAction);
+    menu.addAction(m_pOrderByCurrentPosAction);
     menu.addSeparator();
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDuplicatePlaylistAction);
@@ -240,9 +249,9 @@ void PlaylistFeature::slotShufflePlaylist() {
 
     // Shuffle all tracks
     // If the playlist is loaded/visible shuffle only selected tracks
-    QModelIndexList selection;
     if (isChildIndexSelectedInSidebar(m_lastRightClickedIndex) &&
             m_pPlaylistTableModel->getPlaylist() == playlistId) {
+        QModelIndexList selection;
         if (m_pLibraryWidget) {
             WTrackTableView* view = dynamic_cast<WTrackTableView*>(
                     m_pLibraryWidget->getActiveView());
@@ -250,7 +259,7 @@ void PlaylistFeature::slotShufflePlaylist() {
                 selection = view->selectionModel()->selectedIndexes();
             }
         }
-        m_pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
+        m_pPlaylistTableModel->shuffleTracks(selection);
     } else {
         // Create a temp model so we don't need to select the playlist
         // in the persistent model in order to shuffle it
@@ -265,8 +274,27 @@ void PlaylistFeature::slotShufflePlaylist() {
                 Qt::AscendingOrder);
         pPlaylistTableModel->select();
 
-        pPlaylistTableModel->shuffleTracks(selection, QModelIndex());
+        pPlaylistTableModel->shuffleTracks();
     }
+}
+
+void PlaylistFeature::slotOrderTracksByCurrentPosition() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        qDebug() << "Can't adopt current sorting for locked playlist" << playlistId
+                 << m_playlistDao.getPlaylistName(playlistId);
+        return;
+    }
+    // Note(ronso0) I propose to proceed only if the playlist is selected and loaded.
+    // without playlist content visible we don't have a preview.
+    if (!isChildIndexSelectedInSidebar(m_lastRightClickedIndex)) {
+        return;
+    }
+    m_pPlaylistTableModel->orderTracksByCurrPos();
 }
 
 void PlaylistFeature::slotUnlockAllPlaylists() {
@@ -384,8 +412,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         // Else (root item was selected or for some reason no index could be created)
         // there's nothing to do: either no child was selected earlier, or the root
         // was selected and will remain selected after the child model was rebuilt.
-        activateChild(newIndex);
-        emit featureSelect(this, newIndex);
+        selectAndActivate(newIndex);
     }
 }
 

@@ -125,10 +125,6 @@ repos:
     hooks:
       - id: prettier
         files: \.(d\.ts|ya?ml)$
-  - repo: https://github.com/qarmin/qml_formatter.git
-    rev: 37c2513b1b8275a475a160ed2f5b044910335d5f # No release tag yet including #6 fix
-    hooks:
-      - id: qml_formatter
   - repo: https://github.com/BlankSpruce/gersemi
     rev: 0.17.1
     hooks:
@@ -160,6 +156,17 @@ repos:
         language: python
         types: [text]
         files: ^CHANGELOG.md$
+      - id: qmlformat
+        name: qmlformat
+        entry: qmlformat
+        pass_filenames: true
+        require_serial: true
+        language: system
+        types: [text]
+        files: ^.*\.qml$
+        args: [-n, -i]
+        stages:
+          - manual
       - id: qmllint
         name: qmllint
         entry: qmllint
@@ -168,6 +175,8 @@ repos:
         language: system
         types: [text]
         files: ^.*\.qml$
+        stages:
+          - manual
       - id: metainfo
         name: metainfo
         description: Update AppStream metainfo releases from CHANGELOG.md.

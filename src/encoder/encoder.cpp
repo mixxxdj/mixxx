@@ -155,3 +155,22 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
         return std::make_shared<EncoderWaveSettings>(pConfig, ENCODING_WAVE);
     }
 }
+
+void Encoder::addToTracklist(const QString& artist,
+        const QString& title,
+        std::chrono::seconds timestamp) {
+    auto recordedDurationSeconds = timestamp.count();
+    m_trackList.append(QStringLiteral("%1:%2:%3: %4 - %5")
+                    .arg(QString::number(recordedDurationSeconds / (60 * 60))
+                                    .rightJustified(2, '0'), // hours
+                            QString::number((recordedDurationSeconds / 60) % 60)
+                                    .rightJustified(2, '0'), // minutes
+                            QString::number(recordedDurationSeconds % 60)
+                                    .rightJustified(2, '0'),
+                            artist.trimmed().isEmpty()
+                                    ? QObject::tr("(Unknown Artist)")
+                                    : artist,
+                            title.trimmed().isEmpty()
+                                    ? QObject::tr("(Unknown Title)")
+                                    : title));
+}

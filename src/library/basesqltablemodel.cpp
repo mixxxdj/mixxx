@@ -120,6 +120,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::Key)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::TuningFrequency)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
     m_columnIndexBySortColumnId[static_cast<int>(
