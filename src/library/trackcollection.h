@@ -182,8 +182,8 @@ class TrackCollection : public QObject,
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
-    TrackDAO m_trackDao;
     TrackFingerprintDao m_trackFingerprintDao;
+    TrackDAO m_trackDao;
 
     QSharedPointer<BaseTrackCache> m_pTrackSource;
 };

@@ -14,6 +14,11 @@ const QString kCmrtMembersTableName = QStringLiteral("cmrt_members");
 const bool sDebugTrackFingerprintDao = true;
 } // namespace
 
+TrackFingerprintDao::TrackFingerprintDao(UserSettingsPointer pConfig)
+        : DAO(),
+          m_pConfig(pConfig) {
+}
+
 bool TrackFingerprintDao::saveFingerprintMetadata(const FingerprintMetadata& metadata) const {
     if (sDebugTrackFingerprintDao) {
         qDebug() << "TrackFingerprintDao -> [saveFingerprintMetadata] -> entry"
