@@ -156,6 +156,28 @@
       </item>
 
       <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_rating_export">
+        <property name="toolTip">
+         <string>Export star ratings to file tags using the FMPS_Rating standard when saving track metadata.&lt;br/&gt;This allows ratings to be shared with other media players that support FMPS (e.g., Strawberry, Clementine).</string>
+        </property>
+        <property name="text">
+         <string>Export star ratings to file tags (FMPS_Rating)</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="3" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_rating_import">
+        <property name="toolTip">
+         <string>Import star ratings from file tags during library scan.&lt;br/&gt;Reads FMPS_Rating (and POPM for MP3 files) from file tags.&lt;br/&gt;Only imports if the track doesn't already have a rating in Mixxx.</string>
+        </property>
+        <property name="text">
+         <string>Import star ratings from file tags on library scan</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="4" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_use_relative_path">
         <property name="text">
          <string>Use relative paths for playlist export if possible</string>
@@ -685,6 +707,8 @@
   <tabstop>checkBox_library_scan_summary</tabstop>
   <tabstop>checkBox_sync_track_metadata</tabstop>
   <tabstop>checkBox_serato_metadata_export</tabstop>
+  <tabstop>checkBox_rating_export</tabstop>
+  <tabstop>checkBox_rating_import</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>checkBox_edit_metadata_selected_clicked</tabstop>
   <tabstop>radioButton_dbclick_deck</tabstop>
