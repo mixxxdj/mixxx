@@ -16,12 +16,16 @@ mixxx::Logger kLogger("TrackCollection");
 } // anonymous namespace
 
 TrackCollection::TrackCollection(
-        QObject* parent,
-        const UserSettingsPointer& pConfig)
+        QObject* parent, const UserSettingsPointer& pConfig)
         : QObject(parent),
           m_analysisDao(pConfig),
           m_trackFingerprintDao(pConfig),
-          m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig) {
+          m_trackDao(m_cueDao,
+                  m_playlistDao,
+                  m_analysisDao,
+                  m_libraryHashDao,
+                  m_trackFingerprintDao,
+                  pConfig) {
     // Forward signals from TrackDAO
     connect(&m_trackDao,
             &TrackDAO::trackDirty,
