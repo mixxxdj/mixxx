@@ -150,7 +150,7 @@ class AutoDJProcessor : public QObject {
         ADJ_LEFT_FADING,
         ADJ_RIGHT_FADING,
         ADJ_ENABLE_P1LOADED,
-        ADJ_ENABLE_P1PLAYING,
+        ADJ_PREROLLING,
         ADJ_DISABLED
     };
 
