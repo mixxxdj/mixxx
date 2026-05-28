@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "library/dao/dao.h"
+#include "preferences/usersettings.h"
 #include "track/trackid.h"
 
 // DTO matching Phase 1 migration of fingerprint_metadata
@@ -59,7 +60,7 @@ struct CmrtMember {
 
 class TrackFingerprintDao : public DAO {
   public:
-    TrackFingerprintDao() = default;
+    explicit TrackFingerprintDao(UserSettingsPointer pConfig);
     ~TrackFingerprintDao() override = default;
 
     // fingerprint_metadata operations
@@ -85,4 +86,7 @@ class TrackFingerprintDao : public DAO {
     // Updates track_count on cmrt_groups when membership changes.
     // Pass +1 when adding a member, -1 when removing.
     bool updateCmrtGroupTrackCount(int groupId, int delta) const;
+
+  private:
+    const UserSettingsPointer m_pConfig;
 };
