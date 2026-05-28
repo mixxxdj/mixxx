@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 #include <memory>
@@ -44,6 +45,17 @@ struct CmrtGroup {
     QString conflictResolution; // 'local_won' | 'remote_won'
 };
 
+struct CmrtMember {
+    int memberId{-1};
+    int groupId{-1};
+    TrackId trackId;
+    double offsetFromCanonical{0.0};
+    double qualityScore{-1.0}; // -1.0 if not yet scored
+    bool isFakeLossless{false};
+    QDateTime addedAt;
+    int userQualityRating{-1}; // -1 if unrated
+};
+
 class TrackFingerprintDao : public DAO {
   public:
     TrackFingerprintDao() = default;
@@ -58,4 +70,13 @@ class TrackFingerprintDao : public DAO {
     // cmrt_groups operations
     int createCmrtGroup(const CmrtGroup& group) const;
     std::unique_ptr<CmrtGroup> getCmrtGroup(int groupId) const;
+
+    // cmrt_members operations
+    bool addCmrtMember(const CmrtMember& member) const;
+    QList<CmrtMember> getCmrtMembersForGroup(int groupId) const;
+    bool deleteCmrtMember(TrackId trackId) const;
+
+    // Updates track_count on cmrt_groups when membership changes.
+    // Pass +1 when adding a member, -1 when removing.
+    bool updateCmrtGroupTrackCount(int groupId, int delta) const;
 };
