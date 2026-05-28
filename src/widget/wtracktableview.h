@@ -21,6 +21,7 @@ class DlgTrackInfo;
 class ExternalTrackCollection;
 class Library;
 class WTrackMenu;
+class DlgStemSelect;
 
 class WTrackTableView : public WLibraryTableView {
     Q_OBJECT
@@ -197,6 +198,8 @@ class WTrackTableView : public WLibraryTableView {
 
     // Context menu container
     parented_ptr<WTrackMenu> m_pTrackMenu;
+
+    parented_ptr<DlgStemSelect> m_pDlgStemSelect;
 
     const double m_backgroundColorOpacity;
     QColor m_focusBorderColor;
