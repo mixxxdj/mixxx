@@ -2657,7 +2657,7 @@ if(FFMPEG)
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
-# STEM file support
+# STEM file support (NEW)
 default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
 if(STEM)
   if(NOT FFMPEG)
@@ -2678,6 +2678,60 @@ if(STEM)
     target_sources(
       mixxx-lib
       PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+
+  # ONNX Runtime - STEMS CONVERSION
+  find_package(ONNXRuntime CONFIG)
+
+  if(ONNXRuntime_FOUND)
+    set(STEM_CONVERSION TRUE)
+    message(STATUS "ONNX Runtime found. Enabling STEM conversion support.")
+  else()
+    find_library(ONNXRUNTIME_LIBRARY NAMES onnxruntime)
+    find_path(
+      ONNXRUNTIME_INCLUDE_DIR
+      NAMES onnxruntime_cxx_api.h
+      PATH_SUFFIXES onnxruntime
+    )
+
+    if(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
+      set(STEM_CONVERSION TRUE)
+      message(
+        STATUS
+        "ONNX Runtime found manually. Enabling STEM conversion support."
+      )
+    else()
+      set(STEM_CONVERSION FALSE)
+      message(
+        STATUS
+        "ONNX Runtime not found. STEM conversion support will be disabled."
+      )
+    endif()
+  endif()
+
+  if(STEM_CONVERSION)
+    target_compile_definitions(mixxx-lib PUBLIC __STEM_CONVERSION__)
+
+    if(TARGET ONNX::Runtime)
+      target_link_libraries(mixxx-lib PRIVATE ONNX::Runtime)
+    elseif(ONNXRUNTIME_LIBRARY AND ONNXRUNTIME_INCLUDE_DIR)
+      target_link_libraries(mixxx-lib PRIVATE ${ONNXRUNTIME_LIBRARY})
+      target_include_directories(
+        mixxx-lib
+        SYSTEM
+        PRIVATE ${ONNXRUNTIME_INCLUDE_DIR}
+      )
+    endif()
+
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/stems/stemconverter.cpp
+        src/stems/stemconversionmanager.cpp
+        src/stems/dlgstemconversion.cpp
+        src/widget/wstemconversionbutton.cpp
+        src/widget/dlgstemconversionoptions.cpp
     )
   endif()
 endif()

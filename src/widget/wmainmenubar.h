@@ -71,6 +71,9 @@ class WMainMenuBar : public QMenuBar {
     void showAbout();
     void showKeywheel(bool visible);
     void showPreferences();
+#ifdef __STEM_CONVERSION__
+    void showStemConversionDialog();
+#endif
     void toggleDeveloperTools(bool toggle);
     void toggleFullScreen(bool toggle);
     void toggleKeyboardShortcuts(bool toggle);
