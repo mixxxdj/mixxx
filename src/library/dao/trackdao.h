@@ -20,6 +20,7 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+class TrackFingerprintDao;
 
 namespace mixxx {
 class FileInfo;
@@ -45,6 +46,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             PlaylistDAO& playlistDao,
             AnalysisDao& analysisDao,
             LibraryHashDAO& libraryHashDao,
+            TrackFingerprintDao& fingerprintDao,
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
@@ -210,6 +212,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
+    TrackFingerprintDao& m_fingerprintDao;
 
     const UserSettingsPointer m_pConfig;
 
