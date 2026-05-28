@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <QDir>
 #include <QList>
 #include <QSqlDatabase>
 #include <QString>
@@ -81,6 +82,17 @@ class TrackFingerprintDao : public DAO {
     // Pass +1 when adding a member, -1 when removing.
     bool updateCmrtGroupTrackCount(int groupId, int delta) const;
 
+    // .chroma file I/O
+    // Fingerprints live in ~/.mixxx/fingerprints/track_{id}.chroma
+    QByteArray loadChromaFile(TrackId trackId) const;
+    bool saveChromaFile(TrackId trackId, const QByteArray& data) const;
+    bool deleteChromaFile(TrackId trackId) const;
+
   private:
+    // Returns ~/.mixxx/fingerprints/ — creates the directory on first call.
+    QDir getFingerprintStoragePath() const;
+    // Returns the absolute path to track_{trackId}.chroma
+    QString getChromaFilePath(TrackId trackId) const;
+
     const UserSettingsPointer m_pConfig;
 };

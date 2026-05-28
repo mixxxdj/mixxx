@@ -15,8 +15,12 @@ const bool sDebugTrackFingerprintDao = true;
 } // namespace
 
 TrackFingerprintDao::TrackFingerprintDao(UserSettingsPointer pConfig)
-        : DAO(),
-          m_pConfig(pConfig) {
+        : m_pConfig(pConfig) {
+    QDir storagePath = getFingerprintStoragePath();
+    if (!QDir().mkpath(storagePath.absolutePath())) {
+        qDebug() << "WARNING: Could not create fingerprint storage path."
+                    " Mixxx will be unable to store .chroma files.";
+    }
 }
 
 bool TrackFingerprintDao::saveFingerprintMetadata(const FingerprintMetadata& metadata) const {
@@ -584,4 +588,127 @@ bool TrackFingerprintDao::updateCmrtGroupTrackCount(int groupId, int delta) cons
                  << "groupId:" << groupId << "delta:" << delta;
     }
     return affected;
+}
+
+QDir TrackFingerprintDao::getFingerprintStoragePath() const {
+    QString settingsPath = m_pConfig->getSettingsPath();
+    QDir dir(settingsPath.append("/fingerprints/"));
+    return dir.absolutePath().append("/");
+}
+
+QString TrackFingerprintDao::getChromaFilePath(TrackId trackId) const {
+    return getFingerprintStoragePath().absoluteFilePath(
+            QStringLiteral("track_%1.chroma").arg(trackId.toString()));
+}
+
+QByteArray TrackFingerprintDao::loadChromaFile(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [loadChromaFile] -> entry trackId:" << trackId;
+    }
+
+    if (!trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [loadChromaFile] -> "
+                    "aborting: invalid trackId";
+        return {};
+    }
+
+    const QString path = getChromaFilePath(trackId);
+    QFile file(path);
+    if (!file.exists()) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [loadChromaFile] -> file does not exist:" << path;
+        }
+        return {};
+    }
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "TrackFingerprintDao -> [loadChromaFile] -> could not open file:" << path;
+        return {};
+    }
+
+    QByteArray data = file.readAll();
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [loadChromaFile] -> done, read bytes:" << data.size();
+    }
+    return data;
+}
+
+bool TrackFingerprintDao::saveChromaFile(TrackId trackId, const QByteArray& data) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [saveChromaFile] -> entry"
+                 << "trackId:" << trackId
+                 << "bytes:" << data.size();
+    }
+
+    if (!trackId.isValid() || data.isEmpty()) {
+        qDebug() << "TrackFingerprintDao -> [saveChromaFile] -> "
+                    "aborting: invalid trackId or empty data";
+        return false;
+    }
+
+    const QString path = getChromaFilePath(trackId);
+    QFile file(path);
+
+    // Prevents a half-written file if Mixxx crashes mid-write.
+    bool success = true;
+    if (file.exists()) {
+        const QString tempPath = path + QStringLiteral(".tmp");
+        QFile tempFile(tempPath);
+        if (!tempFile.open(QIODevice::WriteOnly)) {
+            success = false;
+        } else {
+            if (tempFile.write(data) != data.size()) {
+                tempFile.remove();
+                success = false;
+            }
+            tempFile.close();
+            if (success) {
+                if (!file.remove()) {
+                    success = false;
+                } else if (!tempFile.rename(path)) {
+                    success = false;
+                }
+            }
+        }
+    } else {
+        if (!file.open(QIODevice::WriteOnly)) {
+            success = false;
+        } else {
+            if (file.write(data) != data.size()) {
+                success = false;
+            }
+            file.close();
+        }
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [saveChromaFile] -> done, success:" << success;
+    }
+    return success;
+}
+
+bool TrackFingerprintDao::deleteChromaFile(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteChromaFile] -> entry trackId:" << trackId;
+    }
+
+    if (!trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [deleteChromaFile] -> aborting: invalid trackId";
+        return false;
+    }
+
+    const QString path = getChromaFilePath(trackId);
+    QFile file(path);
+    if (!file.exists()) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [deleteChromaFile] -> file "
+                        "does not exist, nothing to delete";
+        }
+        return true;
+    }
+
+    bool result = file.remove();
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteChromaFile] -> file remove result:" << result;
+    }
+    return result;
 }
