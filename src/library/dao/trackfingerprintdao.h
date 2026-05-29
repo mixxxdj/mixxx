@@ -70,6 +70,17 @@ struct AcoustIdJob {
     QDateTime queuedAt;
 };
 
+struct AcoustIdCacheEntry {
+    QString chromaSha256;           // PK — SHA-256 of .chroma file
+    QString acoustidId;             // AcoustID UUID
+    QString musicbrainzRecordingId; // nullable
+    QString musicbrainzReleaseId;   // nullable
+    QString musicbrainzMetadata;    // full JSON response, nullable
+    double confidence{-1.0};        // 0.0–1.0; -1.0 = not set (maps to NULL)
+    QDateTime lookupTimestamp;
+    QDateTime expiresAt; // isValid() == false if no TTL
+};
+
 class TrackFingerprintDao : public DAO {
   public:
     explicit TrackFingerprintDao(UserSettingsPointer pConfig);
@@ -119,6 +130,20 @@ class TrackFingerprintDao : public DAO {
 
     // Removes a track's queue entry entirely — called from onPurgingTracks.
     bool deleteQueueEntry(TrackId trackId) const;
+
+    // acoustid_cache operations
+    // Stores or refreshes an AcoustID API response keyed on SHA-256.
+    // Safe to call multiple times for the same chromaSha256 — updates in place.
+    bool cacheAcoustIdResult(const AcoustIdCacheEntry& entry) const;
+
+    // Returns the cached entry for a given SHA-256,
+    // or nullptr if not found or expired.
+    std::unique_ptr<AcoustIdCacheEntry> lookupAcoustIdCache(
+            const QString& chromaSha256) const;
+
+    // Removes entries whose expires_at has passed.
+    // Call periodically to prevent unbounded cache growth.
+    bool deleteExpiredCacheEntries() const;
 
   private:
     // Returns ~/.mixxx/fingerprints/ — creates the directory on first call.
