@@ -78,17 +78,17 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     setAttribute(Qt::WA_StyledBackground);
     setObjectName("WCueMenuPopup");
 
-    m_pCueNumber = std::make_unique<QLabel>(this);
+    m_pCueNumber = make_parented<QLabel>(this);
     m_pCueNumber->setToolTip(tr("Cue number"));
     m_pCueNumber->setObjectName("CueNumberLabel");
     m_pCueNumber->setAlignment(Qt::AlignLeft);
 
-    m_pCuePosition = std::make_unique<QLabel>(this);
+    m_pCuePosition = make_parented<QLabel>(this);
     m_pCuePosition->setToolTip(tr("Cue position"));
     m_pCuePosition->setObjectName("CuePositionLabel");
     m_pCuePosition->setAlignment(Qt::AlignRight);
 
-    m_pEditLabel = std::make_unique<QLineEdit>(this);
+    m_pEditLabel = make_parented<QLineEdit>(this);
     m_pEditLabel->setToolTip(tr("Edit cue label"));
     m_pEditLabel->setObjectName("CueLabelEdit");
     m_pEditLabel->setPlaceholderText(tr("Label..."));
@@ -96,7 +96,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     connect(m_pEditLabel.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
     m_pColorPicker =
-            std::make_unique<WColorPicker>(WColorPicker::Option::NoOptions,
+            make_parented<WColorPicker>(WColorPicker::Option::NoOptions,
                     m_colorPaletteSettings.getHotcueColorPalette(),
                     this);
     m_pColorPicker->setObjectName("CueColorPicker");
@@ -105,12 +105,12 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotChangeCueColor);
 
-    m_pDeleteCue = std::make_unique<CueMenuPushButton>(this);
+    m_pDeleteCue = make_parented<CueMenuPushButton>(this);
     m_pDeleteCue->setToolTip(tr("Delete this cue"));
     m_pDeleteCue->setObjectName("CueDeleteButton");
     connect(m_pDeleteCue.get(), &QPushButton::clicked, this, &WCueMenuPopup::slotDeleteCue);
 
-    m_pStandardCue = std::make_unique<CueMenuPushButton>(this);
+    m_pStandardCue = make_parented<CueMenuPushButton>(this);
     m_pStandardCue->setToolTip(
             tr("Turn this cue into a regular hotcue"));
     m_pStandardCue->setObjectName("CueStandardButton");
@@ -120,7 +120,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotStandardCue);
 
-    m_pSavedLoopCue = std::make_unique<CueMenuPushButton>(this);
+    m_pSavedLoopCue = make_parented<CueMenuPushButton>(this);
     m_pSavedLoopCue->setToolTip(tr("Turn this cue into a saved loop") + "\n\n" +
             tr("Left-click: Use the old size if known or the current beatloop "
                "size as the loop size") +
@@ -138,7 +138,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedLoopCueManual);
 
-    m_pSavedJumpCue = std::make_unique<CueMenuPushButton>(this);
+    m_pSavedJumpCue = make_parented<CueMenuPushButton>(this);
     m_pSavedJumpCue->setObjectName("CueSavedJumpButton");
     m_pSavedJumpCue->setCheckable(true);
     connect(m_pSavedJumpCue.get(),
@@ -150,7 +150,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedJumpCueManual);
 
-    m_pShiftCueEarlier = std::make_unique<CueMenuPushButton>(this);
+    m_pShiftCueEarlier = make_parented<CueMenuPushButton>(this);
     m_pShiftCueEarlier->setToolTip(tr(
             "Shift this cue backwards by %1 milliseconds.\n"
             "Right-click to shift this cue backwards by %2 milliseconds.\n"
@@ -170,7 +170,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             [this]() {
                 shiftCueSmall(-1);
             });
-    m_pShiftCueLater = std::make_unique<CueMenuPushButton>(this);
+    m_pShiftCueLater = make_parented<CueMenuPushButton>(this);
     m_pShiftCueLater->setToolTip(tr(
             "Shift this cue forwards by %1 milliseconds.\n"
             "Right-click to shift this cue forwards by %2 milliseconds.\n"
