@@ -45,6 +45,12 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
+#ifdef Q_OS_ANDROID
+// Flag to distinguish our programmatic QT_SCALE_FACTOR (safe default) from a
+// user-provided override. When we set it ourselves as a boot-up default,
+// maybeAutoDetectScaleFactor() must still run to adapt to the actual display.
+static bool s_androidScaleSetInternally = false;
+#endif
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kNotifyMaxDbgTimeKey = QStringLiteral("notify_max_dbg_time");
@@ -169,6 +175,7 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
     qDebug() << "Using Android default" << kScaleFactorEnvVar << scaleFactor;
     qputenv(kScaleFactorEnvVar, scaleFactor);
     pArgs->setScaleFactor(kAndroidDefaultScaleFactor);
+    s_androidScaleSetInternally = true;
     return;
 #endif
     // We cannot use SettingsManager, because it depends on MixxxApplication
@@ -228,8 +235,10 @@ void maybeAutoDetectScaleFactor(CmdlineArgs* pArgs) {
     // On Android only a user-provided environment variable is treated as
     // explicit. The value persisted from a previous Android launch is
     // intentionally ignored here so phone ↔ DeX/external-screen switches
-    // recalculate every time the app opens.
-    if (qEnvironmentVariableIsSet(kScaleFactorEnvVar) &&
+    // recalculate every time the app opens. If we set the env var ourselves
+    // as a safe pre-QApplication default, always proceed with detection.
+    if (!s_androidScaleSetInternally &&
+            qEnvironmentVariableIsSet(kScaleFactorEnvVar) &&
             !qgetenv(kScaleFactorEnvVar).isEmpty()) {
         return;
     }
@@ -241,10 +250,38 @@ void maybeAutoDetectScaleFactor(CmdlineArgs* pArgs) {
     }
     QSize screenSize = pScreen->availableSize();
 #ifdef Q_OS_ANDROID
+    // On Android, QScreen::availableSize() returns logical pixels DIVIDED by
+    // our QT_SCALE_FACTOR (which we set to 0.45 pre-QApplication). To compute
+    // the true density-independent pixel (DIP) count we must undo the effect
+    // of our own scale factor. The devicePixelRatio already accounts for the
+    // display's native density; we should NOT divide by it again because Qt
+    // already incorporated it into the logical coordinate system.
+    //
+    // Example: Samsung DeX on 1920x1080 monitor, DPR=1.5, our scale=0.45
+    //   Qt reports availableSize = 1920 / (0.45 * 1.5) ≈ 2844 logical px
+    //   We want physical DIPs = 1920 / 1.5 = 1280
+    //   So: screenSize * ourScale * DPR / DPR = screenSize * ourScale
+    //
+    // Actually, Qt6 with PassThrough applies: physicalPx = logicalPx * scaleFactor * DPR
+    //   logicalPx = physicalPx / (scaleFactor * DPR)
+    //   physicalDIPs = physicalPx / DPR = logicalPx * scaleFactor
+    //
+    // We need physicalDIPs (what the user actually sees) to calculate the
+    // proper scale for fitting the 1280x668 skin to the real display.
+    const qreal currentScaleFactor = qgetenv(kScaleFactorEnvVar).toDouble();
     const qreal devicePixelRatio = pScreen->devicePixelRatio();
-    if (devicePixelRatio > 1.0) {
-        screenSize = (QSizeF(screenSize) / devicePixelRatio).toSize();
+    if (currentScaleFactor > 0 && devicePixelRatio > 0) {
+        // Recover physical DIPs: logical * ourScale gives us the true
+        // device-independent size of the display.
+        const qreal effectiveFactor = currentScaleFactor;
+        screenSize = QSize(
+                qRound(screenSize.width() * effectiveFactor),
+                qRound(screenSize.height() * effectiveFactor));
     }
+    qDebug() << "Android screen detection: availableSize=" << pScreen->availableSize()
+             << "DPR=" << devicePixelRatio
+             << "QT_SCALE_FACTOR=" << currentScaleFactor
+             << "computed DIPs=" << screenSize;
 #endif
     if (screenSize.isEmpty()) {
         return;
@@ -286,6 +323,12 @@ void maybeAutoDetectScaleFactor(CmdlineArgs* pArgs) {
     // Apply to this run so LegacySkinParser pixmap rendering is sized
     // correctly even on the very first launch on a new display.
     pArgs->setScaleFactor(scale);
+#ifdef Q_OS_ANDROID
+    // Update QT_SCALE_FACTOR so that any Qt internal code that re-reads it
+    // (e.g. dialog font metrics) uses the auto-detected value instead of the
+    // conservative 0.45 boot default.
+    qputenv(kScaleFactorEnvVar, QByteArray::number(scale, 'f', 2));
+#endif
 
     // Persist only when it actually changed — avoids needless writes on the
     // common case where the user always opens Mixxx on the same display.

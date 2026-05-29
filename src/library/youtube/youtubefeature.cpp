@@ -515,6 +515,7 @@ void YouTubeFeature::autoAnalyzeCurrentResults() {
 void YouTubeFeature::onDownloadFinished(
         const QString& videoId, const QString& localPath) {
     m_videoIdsDownloading.remove(videoId);
+    m_downloadRetryCount.remove(videoId);
     if (!QFileInfo::exists(localPath)) {
         kLogger.warning() << "Downloaded file disappeared:" << localPath;
         return;
@@ -612,9 +613,24 @@ void YouTubeFeature::onDownloadFinished(
 
 void YouTubeFeature::onDownloadFailed(const QString& videoId, const QString& error) {
     m_videoIdsDownloading.remove(videoId);
+    int& retries = m_downloadRetryCount[videoId];
+    if (retries < kMaxDownloadRetries) {
+        retries++;
+        kLogger.info() << "YouTube download failed for" << videoId << ":" << error
+                       << "— retrying (attempt" << retries + 1 << ")";
+        // Re-trigger download. requestDownloadFile will check the cache first
+        // and skip if the file appeared in the meantime.
+        m_service.downloadVideo(videoId, cacheDir());
+        m_videoIdsDownloading.insert(videoId);
+        return;
+    }
+    // Exhausted retries — give up and clean up pending state.
+    m_downloadRetryCount.remove(videoId);
     m_pendingPlayerLoads.remove(videoId);
     m_pendingAutoDjLoads.remove(videoId);
-    kLogger.warning() << "YouTube download failed for" << videoId << ":" << error;
+    kLogger.warning() << "YouTube download failed for" << videoId
+                      << "after" << kMaxDownloadRetries + 1
+                      << "attempts:" << error;
 }
 
 void YouTubeFeature::onTrackAnalysisProgress(
