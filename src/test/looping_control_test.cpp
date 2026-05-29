@@ -44,6 +44,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pLoopEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_enabled");
         m_pLoopStartPoint = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_start_position");
         m_pLoopEndPoint = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_end_position");
+        m_pLoopInRange = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_in_range");
         m_pLoopScale = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_scale");
         m_pButtonPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
         m_pPlayPosition = std::make_unique<PollingControlProxy>(m_sGroup1, "playposition");
@@ -116,6 +117,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<PollingControlProxy> m_pLoopEnabled;
     std::unique_ptr<PollingControlProxy> m_pLoopStartPoint;
     std::unique_ptr<PollingControlProxy> m_pLoopEndPoint;
+    std::unique_ptr<PollingControlProxy> m_pLoopInRange;
     std::unique_ptr<PollingControlProxy> m_pLoopScale;
     std::unique_ptr<PollingControlProxy> m_pPlayPosition;
     std::unique_ptr<PollingControlProxy> m_pButtonPlay;
@@ -1327,5 +1329,61 @@ TEST_F(LoopingControlTest, LoopBeatloopReverse) {
         m_pLoopEnabled->set(0.0);
         EXPECT_FALSE(isLoopEnabled());
         EXPECT_EQ(0.0, m_pSlipEnabled->get());
+    }
+}
+
+TEST_F(LoopingControlTest, LoopInRange) {
+    m_pQuantizeEnabled->set(0);
+
+    // No loop set
+    m_pLoopStartPoint->set(-1);
+    m_pLoopEndPoint->set(-1);
+    setCurrentPosition(mixxx::audio::FramePos{50});
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
+
+    // Loop set but playposition outside (before)
+    m_pLoopStartPoint->set(100);
+    m_pLoopEndPoint->set(200);
+    setCurrentPosition(mixxx::audio::FramePos{50});
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
+
+    // Loop set and playposition inside (at start)
+    setCurrentPosition(mixxx::audio::FramePos{100});
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
+
+    // Loop set and playposition inside (middle)
+    setCurrentPosition(mixxx::audio::FramePos{150});
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
+
+    // Loop set and playposition inside (just before end)
+    setCurrentPosition(mixxx::audio::FramePos{199});
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
+
+    // Loop set but playposition outside (at end)
+    setCurrentPosition(mixxx::audio::FramePos{200});
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
+
+    // Loop set but playposition outside (after)
+    setCurrentPosition(mixxx::audio::FramePos{250});
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
+
+    // Loop enabled - should still work
+    m_pButtonReloopToggle->set(1);
+    m_pButtonReloopToggle->set(0);
+    EXPECT_TRUE(isLoopEnabled());
+    setCurrentPosition(mixxx::audio::FramePos{150});
+    EXPECT_EQ(0.0, m_pLoopInRange->get());
+    setCurrentPosition(mixxx::audio::FramePos{
+            250}); // This will actually disable the loop in real engine logic
+                   // if seek is notifySeeked
+    EXPECT_EQ(-1.0, m_pLoopInRange->get());
+
+    if (m_pTrack1) {
+        m_pTrack1->createAndAddCue(mixxx::CueType::Loop, 2, 300.0, 400.0);
+        // LoopingControl should have received cuesUpdated signal
+        setCurrentPosition(mixxx::audio::FramePos{350});
+        EXPECT_EQ(3.0, m_pLoopInRange->get());
+        setCurrentPosition(mixxx::audio::FramePos{450});
+        EXPECT_EQ(-1.0, m_pLoopInRange->get());
     }
 }
