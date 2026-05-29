@@ -321,46 +321,48 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             this,
             &BaseTrackPlayerImpl::slotShiftCuesMillis);
     // the same for the currently focused (last touched) hotcue, if there is one
-    m_pShiftFocusedHotcueEarlier = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "shift_focused_hotcue_earlier"));
-    connect(m_pShiftFocusedHotcueEarlier.get(),
-            &ControlObject::valueChanged,
-            this,
-            [this](double value) {
-                slotShiftFocusedHotcueMillisButton(
-                        value, -Cue::kShiftCuesOffsetMillis);
-            });
-    m_pShiftFocusedHotcueLater = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "shift_focused_hotcue_later"));
-    connect(m_pShiftFocusedHotcueLater.get(),
-            &ControlObject::valueChanged,
-            this,
-            [this](double value) {
-                slotShiftFocusedHotcueMillisButton(
-                        value, Cue::kShiftCuesOffsetMillis);
-            });
-    m_pShiftFocusedHotcueEarlierSmall = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "shift_focused_hotcue_earlier_small"));
-    connect(m_pShiftFocusedHotcueEarlierSmall.get(),
-            &ControlObject::valueChanged,
-            this,
-            [this](double value) {
-                slotShiftFocusedHotcueMillisButton(value, -Cue::kShiftCuesOffsetMillisSmall);
-            });
-    m_pShiftFocusedHotcueLaterSmall = std::make_unique<ControlPushButton>(
-            ConfigKey(getGroup(), "shift_focused_hotcue_later_small"));
-    connect(m_pShiftFocusedHotcueLaterSmall.get(),
-            &ControlObject::valueChanged,
-            this,
-            [this](double value) {
-                slotShiftFocusedHotcueMillisButton(value, Cue::kShiftCuesOffsetMillisSmall);
-            });
-    m_pShiftFocusedHotcue = std::make_unique<ControlObject>(
-            ConfigKey(getGroup(), "shift_focused_hotcue"));
-    connect(m_pShiftFocusedHotcue.get(),
-            &ControlObject::valueChanged,
-            this,
-            &BaseTrackPlayerImpl::slotShiftFocusedHotcueMillis);
+    if (primaryDeck) {
+        m_pShiftFocusedHotcueEarlier = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_earlier"));
+        connect(m_pShiftFocusedHotcueEarlier.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(
+                            value, -Cue::kShiftCuesOffsetMillis);
+                });
+        m_pShiftFocusedHotcueLater = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_later"));
+        connect(m_pShiftFocusedHotcueLater.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(
+                            value, Cue::kShiftCuesOffsetMillis);
+                });
+        m_pShiftFocusedHotcueEarlierSmall = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_earlier_small"));
+        connect(m_pShiftFocusedHotcueEarlierSmall.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(value, -Cue::kShiftCuesOffsetMillisSmall);
+                });
+        m_pShiftFocusedHotcueLaterSmall = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_later_small"));
+        connect(m_pShiftFocusedHotcueLaterSmall.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(value, Cue::kShiftCuesOffsetMillisSmall);
+                });
+        m_pShiftFocusedHotcue = std::make_unique<ControlObject>(
+                ConfigKey(getGroup(), "shift_focused_hotcue"));
+        connect(m_pShiftFocusedHotcue.get(),
+                &ControlObject::valueChanged,
+                this,
+                &BaseTrackPlayerImpl::slotShiftFocusedHotcueMillis);
+    }
 
     // BPM and key of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(getGroup(), "file_bpm"));
