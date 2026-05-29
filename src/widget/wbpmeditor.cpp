@@ -281,7 +281,7 @@ void WBpmEditor::applySpinboxValueAndQuit() {
 
     // Note: this comparison should suffice, no need for epsilon check to
     // account for floating point imprecision, eg. like this
-    // fabs(newValue - origValue) < (1 / pow(10, m_spinboxDecimals))
+    // std::abs(newValue - origValue) < (1 / pow(10, m_spinboxDecimals))
     if (newValue == origValue) {
         switchMode(Mode::Listen);
         return;

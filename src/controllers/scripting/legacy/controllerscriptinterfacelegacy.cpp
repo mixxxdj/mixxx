@@ -823,11 +823,11 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
     qDebug() << "     .";
     qDebug() << "     oldRate " << oldRate;
     qDebug() << "     newRate " << newRate;
-    qDebug() << "     fabs    " << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
+    qDebug() << "     fabs    " << std::abs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
     qDebug() << "     .";
 #endif
     // End scratching if we're ramping and the current rate is really close to the rampTo value
-    if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
+    if ((m_ramp[deck] && std::abs(m_rampTo[deck] - newRate) <= 0.00001) ||
             // or if we brake, spin back or softstart and have crossed over the desired value,
             (m_brakeActive[deck] && newRate < m_rampTo[deck]) ||
             ((m_spinbackActive[deck] || m_softStartActive[deck]) && newRate > m_rampTo[deck]) ||

@@ -92,7 +92,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
             ironedBeat += meanBeatLength;
             const mixxx::audio::FrameDiff_t phaseError = ironedBeat - coarseBeats[i];
             phaseErrorSum += phaseError;
-            if (fabs(phaseError) > maxPhaseError) {
+            if (std::abs(phaseError) > maxPhaseError) {
                 outliersCount++;
                 if (outliersCount > kMaxOutliersCount ||
                         i == leftIndex + 1) { // the first beat must not be an outlier.
@@ -100,7 +100,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
                     break;
                 }
             }
-            if (fabs(phaseErrorSum) > maxPhaseErrorSum) {
+            if (std::abs(phaseErrorSum) > maxPhaseErrorSum) {
                 // we drift away in one direction, the meanBeatLength is not optimal.
                 break;
             }
@@ -114,7 +114,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
                         coarseBeats[leftIndex + 1] - coarseBeats[leftIndex];
                 const mixxx::audio::FrameDiff_t lastBeatLength =
                         coarseBeats[rightIndex] - coarseBeats[rightIndex - 1];
-                regionBorderError = fabs(firstBeatLength + lastBeatLength - (2 * meanBeatLength));
+                regionBorderError = std::abs(firstBeatLength + lastBeatLength - (2 * meanBeatLength));
             }
             if (regionBorderError < maxPhaseError / 2) {
                 // We have found a constant enough region.
@@ -416,14 +416,14 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         if (offset > beatLength / 2) {
             offset -= beatLength;
         }
-        if (abs(offset) < (kMaxSecsPhaseError * sampleRate)) {
+        if (std::abs(offset) < (kMaxSecsPhaseError * sampleRate)) {
             offsetAdjust += offset;
             offsetAdjustCount++;
         }
     }
     offsetAdjust /= offsetAdjustCount;
     qDebug() << "adjusting phase by" << offsetAdjust;
-    DEBUG_ASSERT(abs(offsetAdjust) < (kMaxSecsPhaseError * sampleRate));
+    DEBUG_ASSERT(std::abs(offsetAdjust) < (kMaxSecsPhaseError * sampleRate));
 
     return firstBeat + offsetAdjust;
 }

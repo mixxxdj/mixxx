@@ -45,7 +45,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
     // https://todo.sr.ht/~breakfastquay/rubberband/5
 
-    double speed_abs = fabs(*pTempoRatio);
+    double speed_abs = std::abs(*pTempoRatio);
     if (runningEngineVersion() == 2) {
         constexpr double kMinSeekSpeed = 1.0 / 128.0;
         if (speed_abs < kMinSeekSpeed) {
@@ -55,7 +55,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     }
     // RubberBand handles checking for whether the change in pitchScale is a
     // no-op.
-    double pitchScale = fabs(base_rate * *pPitchRatio);
+    double pitchScale = std::abs(base_rate * *pPitchRatio);
 
     if (pitchScale > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setPitchScale" << *pitch << pitchScale;

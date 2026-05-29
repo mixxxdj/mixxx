@@ -25,7 +25,7 @@ varying highp vec4 vposition;
 void main()
 {
 
-    highp float xBorder = abs(dimension.x * vposition.x);
+    highp float xBorder = std::abs(dimension.x * vposition.x);
     highp float yBorder = dimension.y * vposition.y;
     highp float upperBoard = borders.x;
     highp float lowerBoard = borders.y;

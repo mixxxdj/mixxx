@@ -59,7 +59,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
-    const double blinkIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
+    const double blinkIntensity = (double)(2 * std::abs(elapsed - kBlinkingPeriodMillis / 2)) /
             kBlinkingPeriodMillis;
 
     const double remainingTime = m_pTimeRemainingControl->get();

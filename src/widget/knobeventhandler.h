@@ -34,7 +34,7 @@ class KnobEventHandler {
         QPoint diff = cur - m_prevPos;
         m_prevPos = cur;
         double dist = sqrt(static_cast<double>(diff.x() * diff.x() + diff.y() * diff.y()));
-        bool y_dominant = abs(diff.y()) > abs(diff.x());
+        bool y_dominant = std::abs(diff.y()) > std::abs(diff.x());
 
         // if y is dominant, then treat an increase in dy as negative (y is
         // pointed downward). Otherwise, if y is not dominant and x has

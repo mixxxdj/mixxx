@@ -91,7 +91,7 @@ class ReadAheadManager {
         }
 
         double length() const {
-            return fabs(virtualPlaypositionEndNonInclusive -
+            return std::abs(virtualPlaypositionEndNonInclusive -
                        virtualPlaypositionStart);
         }
 

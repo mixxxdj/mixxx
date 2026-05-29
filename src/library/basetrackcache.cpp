@@ -695,7 +695,7 @@ int BaseTrackCache::compareColumnValues(int sortColumn,
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 
-        if (fabs(delta) < .00001) {
+        if (std::abs(delta) < .00001) {
             result = 0;
         } else if (delta > 0.0) {
             result = 1;

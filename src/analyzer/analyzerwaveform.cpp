@@ -235,10 +235,10 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
 
     for (SINT i = 0; i < count; i += 2) {
         // Take max value, not average of data
-        CSAMPLE cover[2] = {fabs(pWaveformInput[i]), fabs(pWaveformInput[i + 1])};
-        CSAMPLE clow[2] = {fabs(m_buffers.low[i]), fabs(m_buffers.low[i + 1])};
-        CSAMPLE cmid[2] = {fabs(m_buffers.mid[i]), fabs(m_buffers.mid[i + 1])};
-        CSAMPLE chigh[2] = {fabs(m_buffers.high[i]), fabs(m_buffers.high[i + 1])};
+        CSAMPLE cover[2] = {std::abs(pWaveformInput[i]), std::abs(pWaveformInput[i + 1])};
+        CSAMPLE clow[2] = {std::abs(m_buffers.low[i]), std::abs(m_buffers.low[i + 1])};
+        CSAMPLE cmid[2] = {std::abs(m_buffers.mid[i]), std::abs(m_buffers.mid[i + 1])};
+        CSAMPLE chigh[2] = {std::abs(m_buffers.high[i]), std::abs(m_buffers.high[i + 1])};
 
         // This is for if you want to experiment with averaging instead of
         // maxing.
@@ -263,8 +263,8 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
 
         for (int s = 0; s < stemCount; s++) {
             CSAMPLE cstem[2] = {
-                    fabs(pIn[i * stemCount + s * mixxx::kAnalysisChannels]),
-                    fabs(pIn[i * stemCount + s * mixxx::kAnalysisChannels +
+                    std::abs(pIn[i * stemCount + s * mixxx::kAnalysisChannels]),
+                    std::abs(pIn[i * stemCount + s * mixxx::kAnalysisChannels +
                             1])};
             storeIfGreater(&m_stride.m_stemData[Left][s], cstem[Left]);
             storeIfGreater(&m_stride.m_stemData[Right][s], cstem[Right]);

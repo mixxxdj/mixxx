@@ -554,10 +554,6 @@ void SampleUtil::linearCrossfadeStereoBuffersOut(
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 2] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 2] += pSrcFadeIn[i * 2] * cross_mix;
-    }
-    // note: LOOP VECTORIZED only with "int i" (not SINT i)
-    for (int i = 0; i < numSamples / 2; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 2 + 1] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 2 + 1] += pSrcFadeIn[i * 2 + 1] * cross_mix;
     }
@@ -642,10 +638,6 @@ void SampleUtil::linearCrossfadeStereoBuffersIn(
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeIn[i * 2] *= cross_mix;
         pDestSrcFadeIn[i * 2] += pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
-    }
-    // note: LOOP VECTORIZED only with "int i" (not SINT i)
-    for (int i = 0; i < numSamples / 2; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeIn[i * 2 + 1] *= cross_mix;
         pDestSrcFadeIn[i * 2 + 1] += pSrcFadeOut[i * 2 + 1] * (CSAMPLE_GAIN_ONE - cross_mix);
     }

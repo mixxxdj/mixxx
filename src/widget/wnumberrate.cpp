@@ -35,5 +35,5 @@ void WNumberRate::setValue(double dValue) {
     const double digitFactor = pow(10, m_iNoDigits);
     // Calculate percentage rounded to the number of digits specified by iNoDigits
     const double percentage = round((dValue - 1) * 100.0 * digitFactor) / digitFactor;
-    setText(m_skinText + sign(percentage) + QString::number(fabs(percentage), 'f', m_iNoDigits));
+    setText(m_skinText + sign(percentage) + QString::number(std::abs(percentage), 'f', m_iNoDigits));
 }
