@@ -31,8 +31,8 @@ class RampedSample {
             initialized = true;
         } else {
             float difference = newValue - currentValue;
-            if (abs(difference) > maxDifference) {
-                currentValue += difference / abs(difference) * maxDifference;
+            if (std::abs(difference) > maxDifference) {
+                currentValue += difference / std::abs(difference) * maxDifference;
                 ramped = true;
             } else {
                 currentValue = newValue;

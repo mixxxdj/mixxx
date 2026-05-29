@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QAtomicInt>
-#include <QHash>
 #include <QList>
 #include <QVarLengthArray>
 #include <QVector>

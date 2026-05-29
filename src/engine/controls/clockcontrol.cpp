@@ -61,7 +61,7 @@ void ClockControl::updateIndicators(const double dRate,
     // The kSignificiantRateThreshold condition ensures an immediate indicator update, when the play/cue button is pressed
     if ((currentPosition <= (m_lastEvaluatedPosition + kStandStillTolerance * sampleRate)) &&
             (currentPosition >= (m_lastEvaluatedPosition - kStandStillTolerance * sampleRate)) &&
-            (fabs(dRate) <= kSignificiantRateThreshold)) {
+            (std::abs(dRate) <= kSignificiantRateThreshold)) {
         return;
     }
 

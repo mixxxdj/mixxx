@@ -55,7 +55,7 @@ void Battery::update() {
     int lastMinutesLeft = m_iMinutesLeft;
     ChargingState lastChargingState = m_chargingState;
     read();
-    if (fabs(lastPercentage - m_dPercentage) > kPercentageEpsilon ||
+    if (std::abs(lastPercentage - m_dPercentage) > kPercentageEpsilon ||
         lastChargingState != m_chargingState ||
         lastMinutesLeft != m_iMinutesLeft) {
         emit stateChanged();

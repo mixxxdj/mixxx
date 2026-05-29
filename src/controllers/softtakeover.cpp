@@ -56,7 +56,7 @@ bool SoftTakeover::willIgnore(const ControlObject& control,
         return false;
     }
     // On same side of the current parameter value
-    if (fabs(difference) <= m_dThreshold || fabs(prevDiff) <= m_dThreshold) {
+    if (std::abs(difference) <= m_dThreshold || std::abs(prevDiff) <= m_dThreshold) {
         // differences are below threshold
         return false;
     }

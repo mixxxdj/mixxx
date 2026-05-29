@@ -98,6 +98,7 @@ void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
 
 void EngineSideChain::run() {
     _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 
     // the id of this thread, for debugging purposes //XXX copypasta (should
     // factor this out somehow), -kousu 2/2009

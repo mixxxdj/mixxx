@@ -101,7 +101,7 @@ void WEffectParameterNameBase::showNewValue(double newValue) {
         m_parameterUpdated = false;
         return;
     }
-    int absVal = abs(static_cast<int>(round(newValue)));
+    int absVal = std::abs(static_cast<int>(round(newValue)));
     int tenPowDecimals = 1; // omit decimals
     if (absVal < 100) {     // 0-99: round to 2 decimals
         tenPowDecimals = 100;

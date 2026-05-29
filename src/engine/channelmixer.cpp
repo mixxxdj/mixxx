@@ -96,7 +96,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 pChannelInfo->m_features,
                 oldGain,
                 newGain,
-                fadeout);
+                fadeout,
+                !first);
         if (first) {
             SampleUtil::copy(pOutput, pChannelInfo->m_pBuffer.data(), bufferSize);
             first = false;

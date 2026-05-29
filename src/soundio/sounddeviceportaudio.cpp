@@ -1147,7 +1147,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
     if (callbackEntrytoDacSecs <= 0 ||
             (timeSinceLastCbSecs < bufferSizeSec * 2 &&
-            fabs(diff) / bufferSizeSec > 0.1)) {
+            std::abs(diff) / bufferSizeSec > 0.1)) {
         // Fall back to CPU timing:
         // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow),
         // the callbackEntrytoDacSecs time is not in the past

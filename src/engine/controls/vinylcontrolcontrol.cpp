@@ -157,9 +157,9 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
                 continue;
             }
             // pick cues closest to newPlayPos
-            if (!nearestPlayPos.isValid() || (fabs(newPlayPos - cuePosition) < shortestDistance)) {
+            if (!nearestPlayPos.isValid() || (std::abs(newPlayPos - cuePosition) < shortestDistance)) {
                 nearestPlayPos = cuePosition;
-                shortestDistance = fabs(newPlayPos - cuePosition);
+                shortestDistance = std::abs(newPlayPos - cuePosition);
             }
         }
 

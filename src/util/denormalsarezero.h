@@ -20,6 +20,17 @@
 #define _MM_DENORMALS_ZERO_OFF      0x0000
 #endif
 
+/* Additional bits in the MXCSR.  */
+#if !defined(_MM_FLUSH_ZERO_MASK)
+#define _MM_FLUSH_ZERO_MASK     0x8000
+#endif
+#if !defined(_MM_FLUSH_ZERO_ON)
+#define _MM_FLUSH_ZERO_ON       0x8000
+#endif
+#if !defined(_MM_FLUSH_ZERO_OFF)
+#define _MM_FLUSH_ZERO_OFF      0x0000
+#endif
+
 #if defined(__SSE__) && !defined(__EMSCRIPTEN__)
 
 #include <xmmintrin.h>
@@ -34,6 +45,16 @@
   (_mm_getcsr() & _MM_DENORMALS_ZERO_MASK)
 #endif
 
+#if !defined(_MM_SET_FLUSH_ZERO_MODE)
+#define _MM_SET_FLUSH_ZERO_MODE(mode) \
+  _mm_setcsr ((_mm_getcsr () & ~_MM_FLUSH_ZERO_MASK) | (mode))
+#endif
+
+#if !defined(_MM_GET_FLUSH_ZERO_MODE)
+#define _MM_GET_FLUSH_ZERO_MODE() \
+  (_mm_getcsr() & _MM_FLUSH_ZERO_MASK)
+#endif
+
 #else
 
 // this section is active on armhf builds, where DAZ is default
@@ -42,5 +63,7 @@
 
 #define _MM_SET_DENORMALS_ZERO_MODE(mode)
 #define _MM_GET_DENORMALS_ZERO_MODE()
+#define _MM_SET_FLUSH_ZERO_MODE(mode)
+#define _MM_GET_FLUSH_ZERO_MODE()
 
 #endif

@@ -108,7 +108,7 @@ void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) 
 
     // TODO(rryan): What's a good epsilon? Should it be dependent on the min/max
     // angle range? Right now it's just 1/100th of a degree.
-    if (fabs(angle - m_dCurrentAngle) > 0.01) {
+    if (std::abs(angle - m_dCurrentAngle) > 0.01) {
         // paintEvent updates m_dCurrentAngle
         update();
     }

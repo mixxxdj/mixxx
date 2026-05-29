@@ -282,7 +282,7 @@ void KeyControl::updateRate() {
     // If we just unlocked the original key with speed != +-1.0 we may encounter wrong
     // decimals (e.g. 1 - 1.73123e-09) after pitchRatio calculation round-trip.
     // Round to 1.0 to avoid false positive pitch offset (pitchOctaves != 0).
-    double pitchRatioDiffTo1 = fabs(1.0 - m_pitchRateInfo.pitchRatio);
+    double pitchRatioDiffTo1 = std::abs(1.0 - m_pitchRateInfo.pitchRatio);
     if (0.0 < pitchRatioDiffTo1 && pitchRatioDiffTo1 < pow(10, -9)) { // 0.000000001
         m_pitchRateInfo.pitchRatio = 1.0;
         // recalculating doesn't make sense here, the rounding offset will

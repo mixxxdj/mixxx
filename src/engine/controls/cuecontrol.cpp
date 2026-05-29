@@ -2364,7 +2364,7 @@ CueControl::TrackAt CueControl::getTrackAt() const {
     const auto mainCuePosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pCuePoint->get());
-    if (mainCuePosition.isValid() && fabs(info.currentPosition - mainCuePosition) < 0.5) {
+    if (mainCuePosition.isValid() && std::abs(info.currentPosition - mainCuePosition) < 0.5) {
         return TrackAt::Cue;
     }
     return TrackAt::ElseWhere;
@@ -2442,7 +2442,7 @@ bool CueControl::isTrackAtIntroCue() {
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pIntroStartPosition->get());
     return introStartPosition.isValid() &&
-            (fabs(frameInfo().currentPosition - introStartPosition) < 0.5);
+            (std::abs(frameInfo().currentPosition - introStartPosition) < 0.5);
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {

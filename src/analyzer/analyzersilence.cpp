@@ -26,7 +26,7 @@ bool shouldAnalyze(TrackPointer pTrack) {
 template<typename Iterator>
 Iterator first_sound(Iterator begin, Iterator end) {
     return std::find_if(begin, end, [](const auto elem) {
-        return fabs(elem) >= kSilenceThreshold;
+        return std::abs(elem) >= kSilenceThreshold;
     });
 }
 

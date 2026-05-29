@@ -62,7 +62,7 @@ double SteadyPitch::check(double pitch, double time)
         m_dLastTime = time;
         // Rereport the last value since we don't want to interrupt steady
         // pitch in case of resync due to looping or cuepoints.
-        if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
+        if (std::abs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
         {
             //fabricate an old time by take current time and applying
             //last known duration
@@ -76,13 +76,13 @@ double SteadyPitch::check(double pitch, double time)
 
     // If it's been less than the window-size since we reset, return a value
     // indicating that we're steady. This is for CDJs which are really accurate.
-    if (m_bAssumeSteady && fabs(time - m_dSteadyPitchTime) <= m_dSteadyPitch) {
+    if (m_bAssumeSteady && std::abs(time - m_dSteadyPitchTime) <= m_dSteadyPitch) {
         return m_dSteadyPitch + 1;
     }
 
-    if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
+    if (std::abs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
     {
-        if (fabs(time - m_dSteadyPitchTime) > 2.0) //fabs for both directions
+        if (std::abs(time - m_dSteadyPitchTime) > 2.0) //fabs for both directions
         {
             m_dSteadyPitch = pitch;
             m_dOldSteadyPitch = m_dSteadyPitch; //this was a known-good value
@@ -90,7 +90,7 @@ double SteadyPitch::check(double pitch, double time)
             //(or ahead, if moving backward)
             m_dSteadyPitchTime += 1.0 * m_iPlayDirection;
         }
-        m_dLastSteadyDur = fabs(time - m_dSteadyPitchTime);
+        m_dLastSteadyDur = std::abs(time - m_dSteadyPitchTime);
         return m_dLastSteadyDur;
     }
 

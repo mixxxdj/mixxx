@@ -194,7 +194,7 @@ void AutoGainControlEffect::applyAutoGainControl(AutoGainControlGroupState* pSta
     int channelCount = engineParameters.channelCount();
     for (SINT i = 0; i < numSamples; i += channelCount) {
         // Detect peak level across stereo channels
-        CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
+        CSAMPLE maxSample = std::max(std::abs(pInput[i]), std::abs(pInput[i + 1]));
 
         // If the input is silent, output silence
         if (maxSample == CSAMPLE_ZERO) {

@@ -30,7 +30,7 @@ struct MessageStats {
         value_histogram[message.second]++;
 
         // Convert to integers first to get negative values.
-        int absolute_difference = abs(static_cast<int>(message.second) -
+        int absolute_difference = std::abs(static_cast<int>(message.second) -
                                       static_cast<int>(last_value));
         abs_diff_histogram[absolute_difference]++;
         last_value = message.second;

@@ -266,7 +266,7 @@ void AutoDJProcessor::fadeNow() {
 
     // If the user presses "Fade now", assume they want to fade *now*, not later.
     // So if the spinbox time is negative, do not insert silence.
-    double spinboxTime = fabs(m_transitionTime);
+    double spinboxTime = std::abs(m_transitionTime);
 
     double fadeTime;
     if (m_transitionMode == TransitionMode::FullIntroOutro ||
@@ -1309,7 +1309,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // This can happen if we have just enabled auto DJ
         outroStart = fromDeckPosition;
         if (fromDeckPosition > outroEnd) {
-            outroEnd = math_min(outroStart + fabs(m_transitionTime), fromDeckEndPosition);
+            outroEnd = math_min(outroStart + std::abs(m_transitionTime), fromDeckEndPosition);
         }
     }
     double outroLength = outroEnd - outroStart;

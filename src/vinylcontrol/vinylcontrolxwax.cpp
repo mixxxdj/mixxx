@@ -271,7 +271,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // in stereo frames.
     timecoder_submit(&timecoder, m_pWorkBuffer.data(), nFrames);
 
-    bool bHaveSignal = fabs(pSamples[0]) + fabs(pSamples[1]) > kMinSignal;
+    bool bHaveSignal = std::abs(pSamples[0]) + std::abs(pSamples[1]) > kMinSignal;
     //qDebug() << "signal?" << bHaveSignal;
 
     //TODO: Move all these config object get*() calls to an "updatePrefs()" function,
@@ -456,7 +456,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                     resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 }
                 m_bForceResync = false;
-            } else if (fabs(m_dDriftAmt) > 0.1 &&
+            } else if (std::abs(m_dDriftAmt) > 0.1 &&
                     m_dVinylPosition < -2.0) {
                 // At first I thought it was a bug to resync to lead-in in relative mode,
                 // but after using it that way it's actually pretty convenient.
@@ -464,17 +464,17 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 if (uiUpdateTime(filePosition)) {
-                    m_pRateRatio->set(fabs(dVinylPitch));
+                    m_pRateRatio->set(std::abs(dVinylPitch));
                 }
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    (fabs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
+                    (std::abs(m_dVinylPosition - m_dVinylPositionOld) >= 5.0)) {
                 //If the position from the timecode is more than a few seconds off, resync the position.
                 //qDebug() << "resync position (>15.0 sec)";
                 //qDebug() << m_dVinylPosition << m_dVinylPositionOld << m_dVinylPosition - m_dVinylPositionOld;
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
             } else if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE && m_bCDControl &&
-                    fabs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
+                    std::abs(m_dVinylPosition - m_dVinylPositionOld) >= 0.1) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
@@ -507,8 +507,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             }
 
             if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
-                    fabs(dVinylPitch) < 0.05 &&
-                    fabs(m_dDriftAmt) >= 1.0) {
+                    std::abs(dVinylPitch) < 0.05 &&
+                    std::abs(m_dDriftAmt) >= 1.0) {
                 //qDebug() << "slow, out of sync, syncing position";
                 syncPosition();
             }
@@ -576,7 +576,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
         m_pRateRatio->set(1.0);
 
-        if (fabs(filePosition - m_dOldFilePos) >= 0.3 ||
+        if (std::abs(filePosition - m_dOldFilePos) >= 0.3 ||
                 filePosition == m_dOldFilePos) {
             //We are not playing any more
             togglePlayButton(false);
@@ -599,8 +599,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
     // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
     // when passthrough is enabled or is playing in reverse
-    if (std::fabs(m_deltaRelativeDriftAmount) > 1.5 ||
-            std::fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
+    if (std::abs(m_deltaRelativeDriftAmount) > 1.5 ||
+            std::abs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
             m_passthroughEnabled.toBool() || reverseButton->toBool() ||
             m_scratchPositionEnabled.toBool()) {
         m_initialRelativeDriftAmt = m_dDriftAmt;
@@ -622,7 +622,7 @@ void VinylControlXwax::enableConstantMode() {
     mode->set((double)m_iVCMode);
     togglePlayButton(true);
     double rate = m_pVCRate->get();
-    m_pRateRatio->set(fabs(rate));
+    m_pRateRatio->set(std::abs(rate));
     m_pVCRate->set(rate);
 }
 
@@ -631,7 +631,7 @@ void VinylControlXwax::enableConstantMode(double rate) {
     m_iVCMode = MIXXX_VCMODE_CONSTANT;
     mode->set((double)m_iVCMode);
     togglePlayButton(true);
-    m_pRateRatio->set(fabs(rate));
+    m_pRateRatio->set(std::abs(rate));
     m_pVCRate->set(rate);
 }
 
@@ -688,7 +688,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is) {
         // the track will keep playing at the previous rate.
         // This allows for single-deck control, dj handoffs, etc.
 
-        togglePlayButton(playButton->toBool() || fabs(m_pVCRate->get()) > 0.05);
+        togglePlayButton(playButton->toBool() || std::abs(m_pVCRate->get()) > 0.05);
         m_pVCRate->set(m_pRateRatio->get());
         resetSteadyPitch(0.0, 0.0);
         m_bForceResync = true;
@@ -750,7 +750,7 @@ int VinylControlXwax::getPitchQuality(double& pitch) {
     m_dQualityLastPitch = pitch;
 
     if (pitchDifference != 0) {
-        double pitchStability = std::fabs(pitch / pitchDifference);
+        double pitchStability = std::abs(pitch / pitchDifference);
 
         if (pitchStability < 3.0) {
             // Unlikely that this pitch difference is from a proper set up control vinyl

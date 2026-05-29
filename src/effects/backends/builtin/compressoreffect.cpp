@@ -251,7 +251,7 @@ CSAMPLE* CompressorEffect::applyCompression(CompressorGroupState* pState,
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
     for (SINT i = 0; i < numSamples; i += channelCount) {
-        CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
+        CSAMPLE maxSample = std::max(std::abs(pInput[i]), std::abs(pInput[i + 1]));
         if (maxSample == CSAMPLE_ZERO) {
             pGainBuffer[i] = CSAMPLE_ONE;
             pGainBuffer[i + 1] = CSAMPLE_ONE;

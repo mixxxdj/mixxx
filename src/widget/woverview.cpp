@@ -1214,7 +1214,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             double markTimeDistance = samplePositionToSeconds(markSamples - currentPositionSamples);
             const QString cuePositionText = mixxx::Duration::formatTime(markTime) + " -" +
                     mixxx::Duration::formatTime(markTimeRemaining);
-            QString cueTimeDistanceText = mixxx::Duration::formatTime(fabs(markTimeDistance));
+            QString cueTimeDistanceText = mixxx::Duration::formatTime(std::abs(markTimeDistance));
             // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
             // the playhead passes the cue
             if (static_cast<int>(markTimeDistance) < 0) {
@@ -1343,7 +1343,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
                 devicePixelRatioF());
         m_timeRulerPositionLabel.draw(pPainter);
 
-        QString timeDistanceText = mixxx::Duration::formatTime(fabs(timeDistance));
+        QString timeDistanceText = mixxx::Duration::formatTime(std::abs(timeDistance));
         // Cast to int to avoid confusingly switching from -0:00 to 0:00 as
         // the playhead passes the point
         if (static_cast<int>(timeDistance) < 0) {
