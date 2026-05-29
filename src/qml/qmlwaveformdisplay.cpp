@@ -83,6 +83,15 @@ void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF&
     QQuickItem::geometryChange(newGeometry, oldGeometry);
 }
 
+const QmlWaveformRendererFactory::Renderer& QmlWaveformDisplay::createOrCached(
+        QmlWaveformRendererFactory* pQmlRenderer) {
+    auto name = std::string{pQmlRenderer->metaObject()->className()};
+    if (!m_rendererCache.contains(name)) {
+        m_rendererCache[name] = std::move(pQmlRenderer->create(this));
+    }
+    return m_rendererCache[name];
+}
+
 QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
     if (m_dirtyFlag.testFlag(DirtyFlag::Window)) {
         delete node;
@@ -114,14 +123,14 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
             delete getContext();
         }
         setContext(new rendergraph::Context(window()));
-        rendergraph::Node* pTopNode = new rendergraph::Node;
+        QSGNode* pTopNode = new QSGNode;
 
         m_rendererStack.clear();
         for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
             if (!pQmlRenderer->isSupported()) {
                 qDebug() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
             }
-            auto renderer = pQmlRenderer->create(this);
+            auto& renderer = createOrCached(pQmlRenderer);
 #ifdef __STEM__
             VERIFY_OR_DEBUG_ASSERT(renderer.renderer) {
 #else
@@ -132,7 +141,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 continue;
             }
             addRenderer(renderer.renderer);
-            pTopNode->appendChildNode(std::move(renderer.node));
+            renderer.node->setFlag(QSGNode::OwnedByParent, false);
+            pTopNode->appendChildNode(renderer.node.get());
         }
 
         pBgNode->appendChildNode(pTopNode);
