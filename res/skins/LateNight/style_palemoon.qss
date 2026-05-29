@@ -424,6 +424,9 @@ WTrackProperty[selected="true"],
   padding: 0px 2px 0px 2px;
   }
   #BatteryBox,
+  #AbletonLinkPeers{
+  color: #d2d2d2;
+  }
   #ClockWidget {
     margin-bottom: 1px;
   }
