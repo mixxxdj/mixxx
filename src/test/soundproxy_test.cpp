@@ -951,7 +951,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingNIStemFile) {
 
     ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
 
-    // The missing file doesn't contains a magic number or STEM atom, so use the file extension
+    // The missing file doesn't contain a magic number or STEM atom, so use the file extension
     EXPECT_STREQ(qPrintable("stem.mp4"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(missingFileWithUppercaseSuffix))));
