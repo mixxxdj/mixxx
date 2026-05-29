@@ -287,3 +287,17 @@ void DlgPrefControllers::slotMidiThroughChanged(bool checked) {
 }
 #endif
 #endif
+
+void DlgPrefControllers::openLearningWizard(Controller* pController) {
+    if (!pController) {
+        return;
+    }
+
+    // Find the DlgPrefController for this controller by matching the controller pointer
+    for (auto* pControllerDlg : std::as_const(m_controllerPages)) {
+        if (pControllerDlg->controller() == pController) {
+            pControllerDlg->showLearningWizard(true);
+            return;
+        }
+    }
+}
