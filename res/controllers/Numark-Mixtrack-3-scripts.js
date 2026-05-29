@@ -117,7 +117,7 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 
 
 var NumarkMixtrack3 = {
-    group: "[Master]",
+    group: "[Mixer]",
     decks: [],
     samplers: []
 };
@@ -141,7 +141,7 @@ var ledCategories = {
 };
 
 var leds = {
-    // Master: all are first byte 0x90 ( = 0x90+ledcatecories.master )
+    // Main: all are first byte 0x90 ( = 0x90+ledcatecories.master )
     "headphones1": 0x0e,
     "headphones2": 0x0f,
     "all": 0x75,
@@ -667,7 +667,7 @@ var AutoCut = function(decknum) {
 AutoCut.prototype.On = function() {
     if (!this.enabled) {
         this.enabled = true;
-        engine.softTakeover("[Master]", "crossfader", false);
+        engine.softTakeover("[Mixer]", "crossfader", false);
     }
 };
 
@@ -683,15 +683,15 @@ AutoCut.prototype.FaderCut = function(jogValue, decknum) {
         if (decknum === 1) {
             direction = -direction;
         } // else direction is of the good sign
-        engine.setValue("[Master]", "crossfader", direction);
+        engine.setValue("[Mixer]", "crossfader", direction);
     }
 };
 
 AutoCut.prototype.Off = function() {
     if (this.enabled) {
         this.enabled = false;
-        engine.setValue("[Master]", "crossfader", 0);
-        engine.softTakeover("[Master]", "crossfader", true);
+        engine.setValue("[Mixer]", "crossfader", 0);
+        engine.softTakeover("[Mixer]", "crossfader", true);
     }
 };
 

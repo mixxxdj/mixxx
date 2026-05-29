@@ -35,7 +35,7 @@ Description:
               </Label>
             </Children>
             <Connection>
-              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <ConfigKey>[Mixer],headphone_enabled</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
@@ -60,20 +60,20 @@ Description:
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                     <KnobCenterYOffset>2.000</KnobCenterYOffset>
                     <Connection>
-                      <ConfigKey>[Master],headGain</ConfigKey>
+                      <ConfigKey>[Mixer],headphone_gain</ConfigKey>
                     </Connection>
                   </KnobComposed>
                 </Children>
               </WidgetGroup>
               <SliderComposed>
-                <TooltipId>headMix</TooltipId>
+                <TooltipId>headphone_mix</TooltipId>
                 <Size>54f,24f</Size>
                 <ObjectName>MixerbarSlider</ObjectName>
                 <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/headMix_handle.svg</Handle>
                 <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/headMix_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
-                  <ConfigKey>[Master],headMix</ConfigKey>
+                  <ConfigKey>[Mixer],headphone_mix</ConfigKey>
                 </Connection>
               </SliderComposed>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -83,7 +83,7 @@ Description:
                 <SetVariable name="Size">30f,22f</SetVariable>
                 <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+                <SetVariable name="ConfigKey">[Mixer],headphone_split</SetVariable>
               </Template>
                 <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
             </Children>

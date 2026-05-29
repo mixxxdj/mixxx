@@ -345,44 +345,43 @@ KANE_QuNeo.init = function (id) { // called when the device is opened & set up
     engine.connectControl("[Channel1]", "playposition", "KANE_QuNeo.time1Keeper");
     engine.connectControl("[Channel2]", "playposition", "KANE_QuNeo.time2Keeper");
 
-  // led controls for the master / flanger channels
+    // led controls for the master / flanger channels
     engine.connectControl("[Main]", "vu_meter", "KANE_QuNeo.masterVuMeter");
-  //engine.softTakeover("[Master]","volume",true);
-  engine.connectControl("[Master]","headVolume","KANE_QuNeo.headVol");
-  engine.connectControl("[Flanger]","lfoPeriod","KANE_QuNeo.flangerPeriod");
-  engine.connectControl("[Flanger]","lfoDepth","KANE_QuNeo.flangerDepth");
-  engine.connectControl("[Master]","crossfader","KANE_QuNeo.crossFader");
+    //engine.softTakeover("[Mixer]","main_gain",true);
+    engine.connectControl("[Mixer]", "headphone_gain", "KANE_QuNeo.headVol");
+    engine.connectControl("[Flanger]","lfoPeriod","KANE_QuNeo.flangerPeriod");
+    engine.connectControl("[Flanger]","lfoDepth","KANE_QuNeo.flangerDepth");
+    engine.connectControl("[Mixer]", "crossfader", "KANE_QuNeo.crossFader");
 
-  for (var deck = 1; deck <= KANE_QuNeo.numDecks; deck++) {
-      var channelName = KANE_QuNeo.getChannelName(deck)
+    for (var deck = 1; deck <= KANE_QuNeo.numDecks; deck++) {
+        var channelName = KANE_QuNeo.getChannelName(deck)
+         // led controls for deck VU meters
+        engine.connectControl(channelName,"vu_meter","KANE_QuNeo.deck"+deck+"vu_meter");
 
-      // led controls for deck VU meters
-      engine.connectControl(channelName,"vu_meter","KANE_QuNeo.deck"+deck+"vu_meter");
+        // soft takeovers
+        //engine.softTakeover(channelName,"rate",true);
+        //engine.softTakeover(channelName,"volume",true);
+        //engine.softTakeover(channelName,"filterHigh",true);
+        //engine.softTakeover(channelName,"filterMid",true);
+        //engine.softTakeover(channelName,"filterLow",true);
+        //engine.softTakeover(channelName,"pregain",true);
 
-      // soft takeovers
-      //engine.softTakeover(channelName,"rate",true);
-      //engine.softTakeover(channelName,"volume",true);
-      //engine.softTakeover(channelName,"filterHigh",true);
-      //engine.softTakeover(channelName,"filterMid",true);
-      //engine.softTakeover(channelName,"filterLow",true);
-      //engine.softTakeover(channelName,"pregain",true);
+        // Conveniences
+        engine.setValue(channelName,"keylock",1);
+        engine.setValue(channelName,"quantize",1);
+        engine.setValue(channelName,"pregain",KANE_QuNeo.pregain)
+    }
 
-      // Conveniences
-      engine.setValue(channelName,"keylock",1);
-      engine.setValue(channelName,"quantize",1);
-      engine.setValue(channelName,"pregain",KANE_QuNeo.pregain)
-  }
-
-  //engine.setValue("[Samplers]","show_samplers",1)
-  //engine.setValue("[Microphone]","show_microphone",1)
+    //engine.setValue("[Samplers]","show_samplers",1)
+    //engine.setValue("[Microphone]","show_microphone",1)
 
 
     // for coolness
-  //engine.setValue("[Spinny1]","show_spinny",1)
-  //engine.setValue("[Spinny2]","show_spinny",1)
+    //engine.setValue("[Spinny1]","show_spinny",1)
+    //engine.setValue("[Spinny2]","show_spinny",1)
 
-  // now that our controls are up, assert our LED config
-  KANE_QuNeo.assertLEDs(-1); // call with -1 as mode to indicate startup
+    // now that our controls are up, assert our LED config
+    KANE_QuNeo.assertLEDs(-1); // call with -1 as mode to indicate startup
 };
 
 KANE_QuNeo.shutdown = function () {
@@ -1469,8 +1468,7 @@ KANE_QuNeo.getLEDGroup = function (deck) {
 KANE_QuNeo.getChannelName = function (deck) {
     var deckType = KANE_QuNeo.getDeckType(deck);
     if (deckType == "master") // master deck
-    return "[Master]"
-    else if (deckType == "deck") // if dealing with actual decks
+    { return "[Mixer]"; } else if (deckType == "deck") // if dealing with actual decks
     return "[Channel"+deck+"]"
     else if (deckType == "sampler") // if dealing with samplers
     return "[Sampler"+(deck - 4)+"]"
@@ -1643,10 +1641,10 @@ KANE_QuNeo.assertLEDs = function (mode) {
     KANE_QuNeo.assertNudgeLEDs();
     KANE_QuNeo.assertHorizArrowLEDs(1);
     KANE_QuNeo.assertHorizArrowLEDs(2);
-    engine.trigger("[Master]","headVolume");
-    engine.trigger("[Flanger]","lfoPeriod");
-    engine.trigger("[Flanger]","lfoDepth");
-    engine.trigger("[Master]","crossfader");
+    engine.trigger("[Mixer]", "headphone_gain");
+    engine.trigger("[Flanger]", "lfoPeriod");
+    engine.trigger("[Flanger]", "lfoDepth");
+    engine.trigger("[Mixer]", "crossfader");
 
     // trigger all VuMeters
     for (var deck = 0; deck <= KANE_QuNeo.numDecks; deck++)
@@ -2329,8 +2327,8 @@ KANE_QuNeo.masterVuMeter = function (value) {
     }
     }
     if (level == -1) // if there were no playing decks, display volume
-    level = KANE_QuNeo.oneToFiveKnob(engine.getValue("[Master]","volume"))
-    KANE_QuNeo.LEDs(0xb0,0x0b,level);
+    { level = KANE_QuNeo.oneToFiveKnob(engine.getValue("[Mixer]", "main_gain")); }
+    KANE_QuNeo.LEDs(0xb0, 0x0b, level);
 
     // AssertLED Button
     KANE_QuNeo.LEDs(0x90,KANE_QuNeo.assertLED,values.cubedNeverOff)

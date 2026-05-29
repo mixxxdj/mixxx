@@ -72,16 +72,16 @@ MiniMixxx.Encoder = class {
                     this.encoders[mode] = new MiniMixxx.EncoderModeLibraryHorizontal(this, channel, idx);
                     break;
                 case "MAINGAIN":
-                    this.encoders[mode] = new MiniMixxx.EncoderModeMainGain(this, "[Master]", idx);
+                    this.encoders[mode] = new MiniMixxx.EncoderModeMainGain(this, "[Mixer]", idx);
                     break;
                 case "BALANCE":
-                    this.encoders[mode] = new MiniMixxx.EncoderModeBalance(this, "[Master]", idx);
+                    this.encoders[mode] = new MiniMixxx.EncoderModeBalance(this, "[Mixer]", idx);
                     break;
                 case "HEADGAIN":
-                    this.encoders[mode] = new MiniMixxx.EncoderModeHeadGain(this, "[Master]", idx);
+                    this.encoders[mode] = new MiniMixxx.EncoderModeHeadGain(this, "[Mixer]", idx);
                     break;
                 case "HEADMIX":
-                    this.encoders[mode] = new MiniMixxx.EncoderModeHeadMix(this, "[Master]", idx);
+                    this.encoders[mode] = new MiniMixxx.EncoderModeHeadMix(this, "[Mixer]", idx);
                     break;
                 default:
                     console.log("Ignoring unknown encoder mode: " + mode);
@@ -628,14 +628,14 @@ MiniMixxx.EncoderModeMainGain = class extends MiniMixxx.Mode {
         super(parent, "MAINGAIN", channel, idx);
         this.color = MiniMixxx.MainOutColor;
 
-        engine.makeConnection("[Master]", "gain", this.gainIndicator.bind(this));
-        engine.makeConnection("[Master]", "booth_gain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Mixer]", "main_gain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Mixer]", "booth_gain", this.gainIndicator.bind(this));
     }
     handleSpin(velo) {
         if (MiniMixxx.kontrol.shiftActive()) {
-            engine.setValue("[Master]", "booth_gain", engine.getValue("[Master]", "booth_gain") + .02 * velo);
+            engine.setValue("[Mixer]", "booth_gain", engine.getValue("[Mixer]", "booth_gain") + .02 * velo);
         } else {
-            engine.setValue("[Master]", "gain", engine.getValue("[Master]", "gain") + .02 * velo);
+            engine.setValue("[Mixer]", "main_gain", engine.getValue("[Mixer]", "main_gain") + .02 * velo);
         }
     }
     handlePress(value) {
@@ -643,9 +643,9 @@ MiniMixxx.EncoderModeMainGain = class extends MiniMixxx.Mode {
             return;
         }
         if (MiniMixxx.kontrol.shiftActive()) {
-            engine.setValue("[Master]", "booth_gain", 1.0);
+            engine.setValue("[Mixer]", "booth_gain", 1.0);
         } else {
-            engine.setValue("[Master]", "gain", 1.0);
+            engine.setValue("[Mixer]", "main_gain", 1.0);
         }
     }
     gainIndicator(value, _group, _control) {
@@ -658,7 +658,7 @@ MiniMixxx.EncoderModeMainGain = class extends MiniMixxx.Mode {
     }
     setLights() {
         midi.sendShortMsg(0x90, this.idx, this.color);
-        this.gainIndicator(engine.getValue("[Master]", "gain"));
+        this.gainIndicator(engine.getValue("[Mixer]", "main_gain"));
     }
 };
 
@@ -672,16 +672,16 @@ MiniMixxx.EncoderModeHeadGain = class extends MiniMixxx.Mode {
         super(parent, "HEADGAIN", channel, idx);
         this.color = MiniMixxx.HeadOutColor;
 
-        engine.makeConnection("[Master]", "headGain", this.gainIndicator.bind(this));
+        engine.makeConnection("[Mixer]", "headphone_gain", this.gainIndicator.bind(this));
     }
     handleSpin(velo) {
-        engine.setValue("[Master]", "headGain", engine.getValue("[Master]", "headGain") + .02 * velo);
+        engine.setValue("[Mixer]", "headphone_gain", engine.getValue("[Mixer]", "headphone_gain") + .02 * velo);
     }
     handlePress(value) {
         if (value === 0) {
             return;
         }
-        engine.setValue("[Master]", "headGain", 1.0);
+        engine.setValue("[Mixer]", "headphone_gain", 1.0);
     }
     gainIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -693,7 +693,7 @@ MiniMixxx.EncoderModeHeadGain = class extends MiniMixxx.Mode {
     }
     setLights() {
         midi.sendShortMsg(0x90, this.idx, this.color);
-        this.gainIndicator(engine.getValue("[Master]", "headGain"));
+        this.gainIndicator(engine.getValue("[Mixer]", "headphone_gain"));
     }
 };
 
@@ -707,16 +707,16 @@ MiniMixxx.EncoderModeBalance = class extends MiniMixxx.Mode {
         super(parent, "BALANCE", channel, idx);
         this.color = MiniMixxx.MainOutColor;
 
-        engine.makeConnection("[Master]", "balance", this.balIndicator.bind(this));
+        engine.makeConnection("[Mixer]", "balance", this.balIndicator.bind(this));
     }
     handleSpin(velo) {
-        engine.setValue("[Master]", "balance", engine.getValue("[Master]", "balance") + .01 * velo);
+        engine.setValue("[Mixer]", "balance", engine.getValue("[Mixer]", "balance") + .01 * velo);
     }
     handlePress(value) {
         if (value === 0) {
             return;
         }
-        engine.setValue("[Master]", "balance", 0.0);
+        engine.setValue("[Mixer]", "balance", 0.0);
     }
     balIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -727,7 +727,7 @@ MiniMixxx.EncoderModeBalance = class extends MiniMixxx.Mode {
         midi.sendShortMsg(0xB0, this.idx, (value + 1.0) * 64.0 - 1.0);
     }
     setLights() {
-        this.balIndicator(engine.getValue("[Master]", "balance"));
+        this.balIndicator(engine.getValue("[Mixer]", "balance"));
         midi.sendShortMsg(0x90, this.idx, this.color);
     }
 };
@@ -742,16 +742,16 @@ MiniMixxx.EncoderModeHeadMix = class extends MiniMixxx.Mode {
         super(parent, "HEADMIX", channel, idx);
         this.color = MiniMixxx.HeadOutColor;
 
-        engine.makeConnection("[Master]", "headMix", this.mixIndicator.bind(this));
+        engine.makeConnection("[Mixer]", "headphone_mix", this.mixIndicator.bind(this));
     }
     handleSpin(velo) {
-        engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + .01 * velo);
+        engine.setValue("[Mixer]", "headphone_mix", engine.getValue("[Mixer]", "headphone_mix") + .01 * velo);
     }
     handlePress(value) {
         if (value === 0) {
             return;
         }
-        engine.setValue("[Master]", "headMix", 0.0);
+        engine.setValue("[Mixer]", "headphone_mix", 0.0);
     }
     mixIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -762,7 +762,7 @@ MiniMixxx.EncoderModeHeadMix = class extends MiniMixxx.Mode {
         midi.sendShortMsg(0xB0, this.idx, (value + 1.0) * 64.0 - 1.0);
     }
     setLights() {
-        this.mixIndicator(engine.getValue("[Master]", "headMix"));
+        this.mixIndicator(engine.getValue("[Mixer]", "headphone_mix"));
         midi.sendShortMsg(0x90, this.idx, this.color);
     }
 };

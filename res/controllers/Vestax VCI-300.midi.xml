@@ -11,15 +11,15 @@
 			<file filename="Vestax-VCI-300-scripts.js" functionprefix="VestaxVCI300"/>
 		</scriptfiles>
 		<controls>
-<!-- Master Controls -->
+<!-- Mixer Controls -->
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x18</midino>
 				<status>0xB0</status>
 				<key>crossfader</key>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x1A</midino>
 				<status>0xB0</status>
 				<key>VestaxVCI300.onCrossfaderCurve</key>
@@ -28,7 +28,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x1B</midino>
 				<status>0xB0</status>
 				<key>VestaxVCI300.onLinefaderCurve</key>
@@ -37,16 +37,16 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x19</midino>
 				<status>0xB0</status>
-				<key>headMix</key>
+				<key>headphone_mix</key>
 				<options>
 					<invert/>
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x52</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onScrollButton</key>
@@ -56,7 +56,7 @@
 			</control>
 <!-- Navigation Controls -->
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x4A</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onCratesButton</key>
@@ -65,7 +65,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x4B</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onFilesButton</key>
@@ -74,7 +74,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x4C</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onBrowseButton</key>
@@ -83,7 +83,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x4D</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onNavigationUpButton</key>
@@ -92,7 +92,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x4E</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onNavigationDownButton</key>
@@ -101,7 +101,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x4F</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onNavigationBackButton</key>
@@ -110,7 +110,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x50</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onNavigationFwdButton</key>
@@ -119,7 +119,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<midino>0x51</midino>
 				<status>0x90</status>
 				<key>VestaxVCI300.onNavigationTabButton</key>

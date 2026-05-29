@@ -1,6 +1,6 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
-  <SetVariable name="Group">[Master]</SetVariable>
+  <SetVariable name="Group">[Mixer]</SetVariable>
   <SetVariable name="KnobBg">main</SetVariable>
   <SetVariable name="KnobIndicator">main</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
@@ -51,7 +51,7 @@
                         <SetVariable name="KnobColor">orange</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
                         <SetVariable name="ArcUnipolar">true</SetVariable>
-                        <SetVariable name="Control">gain</SetVariable>
+                        <SetVariable name="Control">main_gain</SetVariable>
                         <SetVariable name="Label">Main</SetVariable>
                       </Template>
                     </Children>
@@ -109,7 +109,7 @@
                   </WidgetGroup><!-- BoothLabelBox -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],booth_enabled</ConfigKey>
+                  <ConfigKey>[Mixer],booth_enabled</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- BoothKnobBox -->
@@ -201,7 +201,7 @@
                         <SetVariable name="KnobColor">orange</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
                         <SetVariable name="ArcUnipolar">true</SetVariable>
-                        <SetVariable name="Control">headGain</SetVariable>
+                        <SetVariable name="Control">headphone_gain</SetVariable>
                         <SetVariable name="Label">Head</SetVariable>
                       </Template>
                     </Children>
@@ -212,11 +212,11 @@
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
                       <Template src="skins:LateNight/controls/knob_with_label.xml">
-                        <SetVariable name="TooltipId">headMix</SetVariable>
+                        <SetVariable name="TooltipId">headphone_mix</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">red</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorMstBal"/></SetVariable>
-                        <SetVariable name="Control">headMix</SetVariable>
+                        <SetVariable name="Control">headphone_mix</SetVariable>
                         <SetVariable name="Label">Mix</SetVariable>
                       </Template>
                     </Children>
@@ -251,7 +251,7 @@
                       <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Master],headSplit</ConfigKey>
+                      <ConfigKey>[Mixer],headphone_split</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>
