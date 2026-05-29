@@ -122,7 +122,7 @@ bool StemInfoImporter::maybeStemFile(const QString& filePath) {
 // static
 bool StemInfoImporter::hasStemFileExtension(const QString& filePath) {
     for (const QString& ext : kStemPreferredFileExtensions) {
-        if (filePath.endsWith(ext)) {
+        if (filePath.endsWith(ext, Qt::CaseInsensitive)) {
             return true;
         }
     }
