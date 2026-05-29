@@ -1,0 +1,134 @@
+<Template>
+  <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+  <SetVariable name="ArcUnipolar">true</SetVariable>
+
+<!--
+Eve: All singletons are defined in the regular fx_rack.xml so they don't get inserted more than once
+-->
+
+  <WidgetGroup>
+    <ObjectName>AlignTop</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <!-- These two  racks host 4 effect units total which can be displayed
+          in various combinations:
+          * 1 effect unit
+          * 2 effect units
+          * with controller mappings:
+            only those effect units the controller is currently mapped to
+            (matching the default midi-components.js mapping:
+             left side: units 1 and 3, right side: units 2 and 4)
+          -->
+
+      <!-- EffectUnit 1 + 3 -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <!-- EffectUnit 1 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/fx/unit.xml">
+                <SetVariable name="FxUnit">1</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerL</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit2],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 3 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/fx/unit.xml">
+                <SetVariable name="FxUnit">3</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerL</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- EffectUnit 1 + 3 -->
+
+      <!-- EffectUnit 2 + 4 -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <!-- EffectUnit 2 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/fx/unit.xml">
+                <SetVariable name="FxUnit">2</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerR</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit1],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- EffectUnit 4 -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,min</SizePolicy>
+            <Children>
+              <Template src="skins:LateNight/fx/unit.xml">
+                <SetVariable name="FxUnit">4</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>FxRackFillerR</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey>[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- EffectUnit 2 + 4 -->
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_effectrack</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
