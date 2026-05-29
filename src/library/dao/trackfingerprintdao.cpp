@@ -12,6 +12,7 @@ const QString kFingerprintTableName = QStringLiteral("fingerprint_metadata");
 const QString kCmrtGroupsTableName = QStringLiteral("cmrt_groups");
 const QString kCmrtMembersTableName = QStringLiteral("cmrt_members");
 const QString kAcoustIdQueueTableName = QStringLiteral("acoustid_queue");
+const QString kAcoustIdCacheTableName = QStringLiteral("acoustid_cache");
 const QString kStatusQueued = QStringLiteral("queued");
 const QString kStatusProcessing = QStringLiteral("processing");
 const QString kStatusCompleted = QStringLiteral("completed");
@@ -1036,6 +1037,246 @@ bool TrackFingerprintDao::deleteQueueEntry(TrackId trackId) const {
         qDebug() << "TrackFingerprintDao -> [deleteQueueEntry] -> done"
                  << "trackId:" << trackId
                  << "rowsAffected:" << query.numRowsAffected();
+    }
+    return true;
+}
+
+bool TrackFingerprintDao::cacheAcoustIdResult(
+        const AcoustIdCacheEntry& entry) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [cacheAcoustIdResult] -> entry"
+                 << "sha256:" << entry.chromaSha256
+                 << "acoustidId:" << entry.acoustidId;
+    }
+
+    if (!m_database.isOpen() || entry.chromaSha256.isEmpty() ||
+            entry.acoustidId.isEmpty()) {
+        qDebug() << "TrackFingerprintDao -> [cacheAcoustIdResult] -> "
+                    "aborting: database not open or empty sha256/acoustidId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    // Update first — consistent with saveFingerprintMetadata pattern.
+    query.prepare(QString(
+            "UPDATE %1 SET "
+            "acoustid_id=:acoustid_id, "
+            "musicbrainz_recording_id=:mb_recording, "
+            "musicbrainz_release_id=:mb_release, "
+            "musicbrainz_metadata=:mb_metadata, "
+            "confidence=:confidence, "
+            "lookup_timestamp=:lookup_timestamp, "
+            "expires_at=:expires_at "
+            "WHERE chroma_sha256=:sha256")
+                    .arg(kAcoustIdCacheTableName));
+
+    query.bindValue(":sha256", entry.chromaSha256);
+    query.bindValue(":acoustid_id", entry.acoustidId);
+    query.bindValue(":mb_recording",
+            entry.musicbrainzRecordingId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : entry.musicbrainzRecordingId);
+    query.bindValue(":mb_release",
+            entry.musicbrainzReleaseId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : entry.musicbrainzReleaseId);
+    query.bindValue(":mb_metadata",
+            entry.musicbrainzMetadata.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : entry.musicbrainzMetadata);
+    // confidence: -1.0 sentinel maps to NULL
+    if (entry.confidence < 0.0) {
+        query.bindValue(":confidence", QVariant(QMetaType(QMetaType::Double)));
+    } else {
+        query.bindValue(":confidence", entry.confidence);
+    }
+    query.bindValue(":lookup_timestamp",
+            entry.lookupTimestamp.toSecsSinceEpoch());
+    // expires_at: isValid() == false maps to NULL (no TTL)
+    if (entry.expiresAt.isValid()) {
+        query.bindValue(":expires_at", entry.expiresAt.toSecsSinceEpoch());
+    } else {
+        query.bindValue(":expires_at",
+                QVariant(QMetaType(QMetaType::LongLong)));
+    }
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't update acoustid_cache for sha256"
+                << entry.chromaSha256;
+        return false;
+    }
+
+    if (query.numRowsAffected() == 0) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [cacheAcoustIdResult] -> "
+                        "no existing row, inserting sha256:"
+                     << entry.chromaSha256;
+        }
+
+        query.prepare(QString(
+                "INSERT INTO %1 "
+                "(chroma_sha256, acoustid_id, musicbrainz_recording_id, "
+                "musicbrainz_release_id, musicbrainz_metadata, confidence, "
+                "lookup_timestamp, expires_at) "
+                "VALUES (:sha256, :acoustid_id, :mb_recording, :mb_release, "
+                ":mb_metadata, :confidence, :lookup_timestamp, :expires_at)")
+                        .arg(kAcoustIdCacheTableName));
+
+        // Re-bind all values
+        // QSqlQuery does not carry bindings across prepare() calls.
+        query.bindValue(":sha256", entry.chromaSha256);
+        query.bindValue(":acoustid_id", entry.acoustidId);
+        query.bindValue(":mb_recording",
+                entry.musicbrainzRecordingId.isEmpty()
+                        ? QVariant(QMetaType(QMetaType::QString))
+                        : entry.musicbrainzRecordingId);
+        query.bindValue(":mb_release",
+                entry.musicbrainzReleaseId.isEmpty()
+                        ? QVariant(QMetaType(QMetaType::QString))
+                        : entry.musicbrainzReleaseId);
+        query.bindValue(":mb_metadata",
+                entry.musicbrainzMetadata.isEmpty()
+                        ? QVariant(QMetaType(QMetaType::QString))
+                        : entry.musicbrainzMetadata);
+        if (entry.confidence < 0.0) {
+            query.bindValue(":confidence",
+                    QVariant(QMetaType(QMetaType::Double)));
+        } else {
+            query.bindValue(":confidence", entry.confidence);
+        }
+        query.bindValue(":lookup_timestamp",
+                entry.lookupTimestamp.toSecsSinceEpoch());
+        if (entry.expiresAt.isValid()) {
+            query.bindValue(":expires_at",
+                    entry.expiresAt.toSecsSinceEpoch());
+        } else {
+            query.bindValue(":expires_at",
+                    QVariant(QMetaType(QMetaType::LongLong)));
+        }
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query)
+                    << "couldn't insert acoustid_cache for sha256"
+                    << entry.chromaSha256;
+            return false;
+        }
+    } else {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [cacheAcoustIdResult] -> "
+                        "updated existing row sha256:"
+                     << entry.chromaSha256;
+        }
+    }
+    return true;
+}
+
+std::unique_ptr<AcoustIdCacheEntry> TrackFingerprintDao::lookupAcoustIdCache(
+        const QString& chromaSha256) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [lookupAcoustIdCache] -> entry"
+                 << "sha256:" << chromaSha256;
+    }
+
+    if (!m_database.isOpen() || chromaSha256.isEmpty()) {
+        qDebug() << "TrackFingerprintDao -> [lookupAcoustIdCache] -> "
+                    "aborting: database not open or empty sha256";
+        return nullptr;
+    }
+
+    QSqlQuery query(m_database);
+    // Only return non-expired entries — matches Q5 in Final_Database.md.
+    // Binding the current time rather than using strftime() keeps all
+    // timestamp handling in C++, consistent with the rest of this file.
+    query.prepare(QString(
+            "SELECT acoustid_id, musicbrainz_recording_id, "
+            "musicbrainz_release_id, musicbrainz_metadata, confidence, "
+            "lookup_timestamp, expires_at "
+            "FROM %1 "
+            "WHERE chroma_sha256=:sha256 "
+            "AND (expires_at IS NULL OR expires_at > :now)")
+                    .arg(kAcoustIdCacheTableName));
+    query.bindValue(":sha256", chromaSha256);
+    query.bindValue(":now", QDateTime::currentSecsSinceEpoch());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't look up acoustid_cache for sha256" << chromaSha256;
+        return nullptr;
+    }
+
+    if (query.next()) {
+        auto entry = std::make_unique<AcoustIdCacheEntry>();
+        entry->chromaSha256 = chromaSha256;
+
+        QSqlRecord record = query.record();
+        entry->acoustidId =
+                query.value(record.indexOf("acoustid_id")).toString();
+        entry->musicbrainzRecordingId =
+                query.value(record.indexOf("musicbrainz_recording_id"))
+                        .toString();
+        entry->musicbrainzReleaseId =
+                query.value(record.indexOf("musicbrainz_release_id"))
+                        .toString();
+        entry->musicbrainzMetadata =
+                query.value(record.indexOf("musicbrainz_metadata")).toString();
+
+        QVariant confidenceVar = query.value(record.indexOf("confidence"));
+        entry->confidence = confidenceVar.isNull() ? -1.0
+                                                   : confidenceVar.toDouble();
+
+        entry->lookupTimestamp = QDateTime::fromSecsSinceEpoch(
+                query.value(record.indexOf("lookup_timestamp")).toLongLong());
+
+        QVariant expiresVar = query.value(record.indexOf("expires_at"));
+        if (!expiresVar.isNull()) {
+            entry->expiresAt =
+                    QDateTime::fromSecsSinceEpoch(expiresVar.toLongLong());
+        }
+
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [lookupAcoustIdCache] -> hit"
+                     << "sha256:" << chromaSha256
+                     << "acoustidId:" << entry->acoustidId
+                     << "confidence:" << entry->confidence;
+        }
+        return entry;
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [lookupAcoustIdCache] -> "
+                    "miss (not found or expired) sha256:"
+                 << chromaSha256;
+    }
+    return nullptr;
+}
+
+bool TrackFingerprintDao::deleteExpiredCacheEntries() const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteExpiredCacheEntries] -> entry";
+    }
+
+    if (!m_database.isOpen()) {
+        qDebug() << "TrackFingerprintDao -> [deleteExpiredCacheEntries] -> "
+                    "aborting: database not open";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "DELETE FROM %1 "
+            "WHERE expires_at IS NOT NULL AND expires_at <= :now")
+                    .arg(kAcoustIdCacheTableName));
+    query.bindValue(":now", QDateTime::currentSecsSinceEpoch());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete expired acoustid_cache entries";
+        return false;
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteExpiredCacheEntries] -> done"
+                 << "rowsDeleted:" << query.numRowsAffected();
     }
     return true;
 }
