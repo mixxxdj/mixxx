@@ -16,10 +16,11 @@ jobs:
   pre-commit:
     name: Detecting code style issues
     runs-on: ubuntu-latest
-    # The Dockerfile for this container can be found at:
-    # https://github.com/Holzhaus/mixxx-ci-docker
-    container: holzhaus/mixxx-ci:20220930
     steps:
+      - name: "Install dependencies"
+        run: |
+          sudo apt install -y appstream qt6-declarative-dev-tools clang
+
       - name: "Check out repository"
         uses: actions/checkout@v6
         with:
@@ -29,19 +30,8 @@ jobs:
           # suffice.
           fetch-depth: 0
 
-      - name: "Add GitHub workspace as a safe directory"
-        # Without this, git commands will fail due to mismatching permissions in
-        # the container. See actions/runner#2033 for details.
-        #
-        # The actions/checkout action should already take care of this thanks to
-        # commit actions/checkout@55fd82fc42c0cdd6f1f480dd23f60636a42f6f5c, but
-        # it seems like that's not working properly.
-        run: |
-          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
-          git config --global --list
-
       - name: "Detect code style issues"
-        uses: pre-commit/action@v3.0.1
+        uses: j178/prek-action@v1
         env:
           # There are too many files in the repo that have formatting issues. We'll
           # disable these checks for now when pushing directly (but still run these
