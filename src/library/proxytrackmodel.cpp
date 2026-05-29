@@ -17,6 +17,10 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
         return;
     }
     setSourceModel(pTrackModel);
+    // Sort by UserRole, not default DisplayRole (mostly QString).
+    // Note: make sure that the source model has adequate data in Qt::UserRole
+    // Only relevant source is currently BrowseThread::populateModel()
+    setSortRole(Qt::UserRole);
 }
 
 ProxyTrackModel::~ProxyTrackModel() {
@@ -228,7 +232,7 @@ bool ProxyTrackModel::setModelSetting(const QString& name, const QVariant& value
 }
 
 void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
-    if (m_pTrackModel->isColumnSortable(column)) {
+    if (m_pTrackModel && m_pTrackModel->isColumnSortable(column)) {
         QSortFilterProxyModel::sort(column, order);
     }
 }
