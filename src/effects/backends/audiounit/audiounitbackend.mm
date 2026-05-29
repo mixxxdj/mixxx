@@ -33,13 +33,7 @@ class AudioUnitBackend : public EffectsBackend {
     };
 
     const QList<QString> getEffectIds() const override {
-        QList<QString> effectIds;
-
-        for (NSString* effectId in m_componentsById) {
-            effectIds.append(QString::fromNSString(effectId));
-        }
-
-        return effectIds;
+        return m_manifestsById.keys();
     }
 
     EffectManifestPointer getManifest(const QString& effectId) const override {
