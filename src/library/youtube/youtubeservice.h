@@ -186,9 +186,8 @@ class YouTubeService : public QObject {
     QNetworkAccessManager* m_pNam;
     QString m_ytDlpPath;
     /// Hardcoded fallback list of Piped API instances. Tried in order on
-    /// per-request failure. The list is intentionally small — going through
-    /// every public instance on every search would amplify load and make
-    /// failures slow to surface to the user.
+    /// per-request failure. The expanded list provides better resilience
+    /// against community-maintained instances going offline.
     QStringList m_pipedInstances;
 };
 

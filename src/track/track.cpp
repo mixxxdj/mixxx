@@ -1179,11 +1179,11 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
-    // If loop cues are removed, also clear the last active loop
-    if (type == mixxx::CueType::Loop) {
-        emit loopRemove();
-    }
     if (dirty) {
+        // If loop cues have been removed, also clear the last active loop
+        if (type == mixxx::CueType::Loop) {
+            emit loopRemove();
+        }
         markDirtyAndUnlock(&locked);
         emit cuesUpdated();
     }

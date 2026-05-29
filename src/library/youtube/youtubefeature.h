@@ -132,6 +132,10 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     QHash<QString, QList<PendingPlayerLoad>> m_pendingPlayerLoads;
     QHash<QString, QList<PlaylistDAO::AutoDJSendLoc>> m_pendingAutoDjLoads;
     QSet<QString> m_videoIdsDownloading;
+    /// Track download retry attempts per video id. After kMaxDownloadRetries
+    /// we give up and surface the error to the user.
+    QHash<QString, int> m_downloadRetryCount;
+    static constexpr int kMaxDownloadRetries = 2;
     /// Last error message reported by the underlying YouTubeService for the
     /// current `m_lastQuery`. Cleared when a new search is started or when
     /// results arrive successfully. When non-empty, the home pane shows the
