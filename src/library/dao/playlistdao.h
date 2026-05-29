@@ -98,6 +98,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(const QList<TrackId>& trackIds, const int playlistId, int position);
+    // Get or create the singleton AutoDJ end marker track in the library
+    TrackId getOrCreateAutoDJEndMarker();
+    // Insert the AutoDJ end marker into a playlist at the given position
+    bool insertEndMarkerIntoPlaylist(int playlistId, int position);
     // Remove all tracks from the Auto-DJ Queue
     void clearAutoDJQueue();
     // Add a playlist to the Auto-DJ Queue

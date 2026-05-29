@@ -2853,6 +2853,10 @@ QPushButton#pushButtonAddRandomTrack:enabled {
   image: url(skins:LateNight/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
 }
 
+QPushButton#pushButtonAddEndMarker:enabled {
+  image: url(skins:LateNight/palemoon/buttons/btn__autodj_stop_marker.svg) no-repeat center center;
+}
+
 QPushButton#pushButtonRepeatPlaylist:!checked {
   image: url(skins:LateNight/palemoon/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
   }
