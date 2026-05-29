@@ -249,9 +249,6 @@ void ShoutConnection::updateFromPreferences() {
     QByteArray baStreamWebsite = encodeString(m_pProfile->getStreamWebsite());
     QByteArray baStreamDesc = encodeString(m_pProfile->getStreamDesc());
     QByteArray baStreamGenre = encodeString(m_pProfile->getStreamGenre());
-    QByteArray baStreamIRC = encodeString(m_pProfile->getStreamIRC());
-    QByteArray baStreamAIM = encodeString(m_pProfile->getStreamAIM());
-    QByteArray baStreamICQ = encodeString(m_pProfile->getStreamICQ());
 
     // Whether the stream is public.
     bool streamPublic = m_pProfile->getStreamPublic();
@@ -331,26 +328,19 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-#ifdef SHOUT_META_IRC
-    if (shout_set_meta(m_pShout, SHOUT_META_IRC, baStreamIRC.constData()) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting stream IRC!"), shout_get_error(m_pShout));
-        return;
+    // Send arbitrary extra metadata (irc, instagram, discord, etc.) to the server
+    const QMap<QString, QString> extraMetadata = m_pProfile->getStreamExtraMetadata();
+    for (auto it = extraMetadata.constBegin(); it != extraMetadata.constEnd(); ++it) {
+        if (it.value().isEmpty()) {
+            continue;
+        }
+        QByteArray baKey = it.key().toLatin1();
+        QByteArray baValue = encodeString(it.value());
+        if (shout_set_meta(m_pShout, baKey.constData(), baValue.constData()) != SHOUTERR_SUCCESS) {
+            kLogger.warning() << "Error setting stream meta" << it.key()
+                              << ":" << shout_get_error(m_pShout);
+        }
     }
-#endif
-
-#ifdef SHOUT_META_AIM
-    if (shout_set_meta(m_pShout, SHOUT_META_AIM, baStreamAIM.constData()) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting stream AIM!"), shout_get_error(m_pShout));
-        return;
-    }
-#endif
-
-#ifdef SHOUT_META_ICQ
-    if (shout_set_meta(m_pShout, SHOUT_META_ICQ, baStreamICQ.constData()) != SHOUTERR_SUCCESS) {
-        errorDialog(tr("Error setting stream ICQ!"), shout_get_error(m_pShout));
-        return;
-    }
-#endif
 
     if (shout_set_public(m_pShout, streamPublic ? 1 : 0) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream public!"), shout_get_error(m_pShout));
