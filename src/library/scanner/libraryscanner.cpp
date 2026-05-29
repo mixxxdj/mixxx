@@ -181,6 +181,7 @@ void LibraryScanner::run() {
         m_playlistDao.initialize(dbConnection);
         m_analysisDao.initialize(dbConnection);
         m_directoryDao.initialize(dbConnection);
+        m_fingerprintDao.initialize(dbConnection);
 
         // Start the event loop.
         kLogger.debug() << "Event loop starting";
