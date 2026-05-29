@@ -18,6 +18,10 @@ permissions:
   contents: read #  to fetch code (actions/checkout)
   checks: write #  to create new checks (coverallsapp/github-action)
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   stop-build:
     name: Check if build should be stopped
