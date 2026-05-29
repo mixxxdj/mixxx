@@ -567,29 +567,37 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 
     // For each selected element create a different playlist.
     for (const QString& playlistFile : playlistFiles) {
-        const QFileInfo fileInfo(playlistFile);
-        // Get a valid name
-        const QString baseName = fileInfo.completeBaseName();
-        QString name = baseName;
-        // Check if there already is a playlist by that name. If yes, add
-        // increasing suffix (1++) until we find an unused name.
-        int i = 1;
-        while (m_playlistDao.getPlaylistIdFromName(name) != kInvalidPlaylistId) {
-            name = baseName + QChar(' ') + QString::number(i);
-            ++i;
-        }
-
-        lastPlaylistId = m_playlistDao.createPlaylist(name);
+        lastPlaylistId = createImportPlaylist(playlistFile);
         if (lastPlaylistId == kInvalidPlaylistId) {
-            QMessageBox::warning(nullptr,
-                    tr("Playlist Creation Failed"),
-                    tr("An unknown error occurred while creating playlist: ") + name);
             return;
         }
-
-        slotImportPlaylistFile(playlistFile, lastPlaylistId);
     }
     activatePlaylist(lastPlaylistId);
+}
+
+int BasePlaylistFeature::createImportPlaylist(const QString& playlistFile) {
+    const QFileInfo fileInfo(playlistFile);
+    // Get a valid name
+    const QString baseName = fileInfo.completeBaseName();
+    QString name = baseName;
+    // Check if there already is a playlist by that name. If yes, add
+    // increasing suffix (1++) until we find an unused name.
+    int i = 1;
+    while (m_playlistDao.getPlaylistIdFromName(name) != kInvalidPlaylistId) {
+        name = baseName + QChar(' ') + QString::number(i);
+        ++i;
+    }
+
+    int lastPlaylistId = m_playlistDao.createPlaylist(name);
+    if (lastPlaylistId == kInvalidPlaylistId) {
+        QMessageBox::warning(nullptr,
+                tr("Playlist Creation Failed"),
+                tr("An unknown error occurred while creating playlist: ") + name);
+        return kInvalidPlaylistId;
+    }
+
+    slotImportPlaylistFile(playlistFile, lastPlaylistId);
+    return lastPlaylistId;
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
