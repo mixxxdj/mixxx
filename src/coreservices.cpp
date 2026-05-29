@@ -33,7 +33,7 @@
 #include "moc_coreservices.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
-#ifdef __MODPLUG__
+#if defined(__OPENMPT__) || defined(__MODPLUG__)
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 #include "skin/skincontrols.h"
