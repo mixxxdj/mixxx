@@ -33,6 +33,10 @@ class SoundSourceFFmpeg : public SoundSource {
   private:
     const CSAMPLE* resampleDecodedAVFrame(AVFrame* pavDecodedFrame);
 
+    // recreates the AVCodecContext for cases where the lightweight
+    // avcodec_flush_buffers() is not sufficient
+    bool deepFlushBuffers();
+
     // Seek to the requested start index (if needed) or return false
     // upon seek errors.
     bool adjustCurrentPosition(
@@ -105,7 +109,6 @@ class SoundSourceFFmpeg : public SoundSource {
             close();
         }
 
-        void take(AVCodecContext** ppavCodecContext);
         void close();
 
         friend void swap(AVCodecContextPtr& lhs, AVCodecContextPtr& rhs) {

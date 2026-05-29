@@ -335,15 +335,6 @@ SoundSourceFFmpeg::AVCodecContextPtr::alloc(
     return context;
 }
 
-void SoundSourceFFmpeg::AVCodecContextPtr::take(AVCodecContext** ppavCodecContext) {
-    DEBUG_ASSERT(ppavCodecContext != nullptr);
-    if (m_pavCodecContext != *ppavCodecContext) {
-        close();
-        m_pavCodecContext = *ppavCodecContext;
-        *ppavCodecContext = nullptr;
-    }
-}
-
 void SoundSourceFFmpeg::AVCodecContextPtr::close() {
     if (m_pavCodecContext != nullptr) {
         avcodec_free_context(&m_pavCodecContext);
@@ -967,6 +958,32 @@ SINT readNextPacket(
 }
 } // namespace
 
+bool SoundSourceFFmpeg::deepFlushBuffers() {
+    bool ret = false;
+    AVCodecParameters* pParams = avcodec_parameters_alloc();
+    if (!pParams) {
+        return false;
+    }
+    if (avcodec_parameters_from_context(pParams, m_pavCodecContext) == 0) {
+        const AVCodec* pCodec = m_pavCodecContext->codec;
+        AVCodecContextPtr pavCodecContext = AVCodecContextPtr::alloc(pCodec);
+        if (pavCodecContext) {
+            pavCodecContext->pkt_timebase = m_pavCodecContext->pkt_timebase;
+            pavCodecContext->request_sample_fmt = m_pavCodecContext->request_sample_fmt;
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+            pavCodecContext->request_channel_layout = m_pavCodecContext->request_channel_layout;
+#endif
+            if (avcodec_parameters_to_context(pavCodecContext, pParams) == 0 &&
+                    avcodec_open2(pavCodecContext, pCodec, nullptr) == 0) {
+                m_pavCodecContext = std::move(pavCodecContext);
+                ret = true;
+            }
+        }
+    }
+    avcodec_parameters_free(&pParams);
+    return ret;
+}
+
 bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     DEBUG_ASSERT(frameIndexRange().containsIndex(startIndex));
 
@@ -998,9 +1015,11 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
         // was limited to -661 instead of -2111. The workaround here is to reopen
         // the codec which initializes all buffers with zero.
         // Slow: 43 us (Core Ultra 5 125U)
-        const AVCodec* pCodec = m_pavCodecContext->codec;
-        avcodec_close(m_pavCodecContext);
-        avcodec_open2(m_pavCodecContext, pCodec, nullptr);
+        if (!deepFlushBuffers()) {
+            kLogger.warning() << "deepFlushBuffers failed";
+            m_frameBuffer.invalidate();
+            return false;
+        }
     }
 
     // Seek to new position
