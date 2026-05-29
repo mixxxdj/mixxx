@@ -483,8 +483,9 @@ int main(int argc, char* argv[]) {
     // switch the effective display from phone-size to desktop-size at
     // runtime without restarting the app.
     auto* pScreen = QGuiApplication::primaryScreen();
+    QMetaObject::Connection geometryConn;
     if (pScreen) {
-        QObject::connect(pScreen,
+        geometryConn = QObject::connect(pScreen,
                 &QScreen::availableGeometryChanged,
                 &app,
                 [&args]() {
@@ -495,14 +496,18 @@ int main(int argc, char* argv[]) {
     QObject::connect(&app,
             &QGuiApplication::primaryScreenChanged,
             &app,
-            [&args](QScreen* pNewScreen) {
+            [&args, &geometryConn](QScreen* pNewScreen) {
                 if (!pNewScreen) {
                     return;
                 }
                 qDebug() << "Primary screen changed — re-running scale detection";
                 maybeAutoDetectScaleFactor(&args);
-                // Re-wire the geometry change listener to the new screen.
-                QObject::connect(pNewScreen,
+                // Re-wire the geometry change listener to the new screen,
+                // disconnecting the old one first to avoid duplicate listeners.
+                if (geometryConn) {
+                    QObject::disconnect(geometryConn);
+                }
+                geometryConn = QObject::connect(pNewScreen,
                         &QScreen::availableGeometryChanged,
                         &app,
                         [&args]() {
