@@ -178,18 +178,33 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
     // Android phone/tablet builds run the fixed-pixel LateNight desktop skin.
     // Qt must know the scale factor before QApplication is constructed or
     // widget metrics, dialogs, menus, and fonts remain far too large for the
-    // display. We cannot inspect QScreen before QApplication exists, so use the
-    // minimum supported skin scale as a safe default that fits phones. 0.45 is
-    // the same lower bound used by maybeAutoDetectScaleFactor() below; it
-    // renders LateNight's 1280x668 nominal layout as ~576x301 logical pixels,
-    // which fits modern landscape phones without oversized Qt dialogs. Users
-    // can still override this with QT_SCALE_FACTOR in their environment.
+    // display. We cannot inspect QScreen before QApplication exists, so:
+    //
+    //   1. Use the persisted [Config]/ScaleFactor if it exists — on the
+    //      second launch with the same display this gives Qt the correct
+    //      widget scale from the start (no tiny menus on DeX).
+    //   2. Fall back to the minimum supported skin scale (0.45) as a safe
+    //      one-size-fits-phones default for first launch.
+    //
+    // maybeAutoDetectScaleFactor() still re-runs post-QApplication so the
+    // skin parser pixmaps are correct even on first launch. Persisted value
+    // matching the current display closes the Qt-widget-vs-skin scale gap.
+    auto config = ConfigObject<ConfigValue>(
+            QDir(pArgs->getSettingsPath()).filePath(MIXXX_SETTINGS_FILE),
+            QString(),
+            QString());
+    const QString strScaleFactor = config.getValue(
+            ConfigKey(kConfigGroup, kScaleFactorKey));
+    bool ok = false;
+    const double persistedScale = strScaleFactor.toDouble(&ok);
     constexpr double kAndroidDefaultScaleFactor = 0.45;
-    const QByteArray scaleFactor =
-            QByteArray::number(kAndroidDefaultScaleFactor, 'f', 2);
-    qDebug() << "Using Android default" << kScaleFactorEnvVar << scaleFactor;
-    qputenv(kScaleFactorEnvVar, scaleFactor);
-    pArgs->setScaleFactor(kAndroidDefaultScaleFactor);
+    const double scale = (ok && persistedScale > 0) ? persistedScale
+                                                    : kAndroidDefaultScaleFactor;
+    const QByteArray scaleFactorBytes =
+            QByteArray::number(scale, 'f', 2);
+    qDebug() << "Using Android ScaleFactor" << scaleFactorBytes;
+    qputenv(kScaleFactorEnvVar, scaleFactorBytes);
+    pArgs->setScaleFactor(scale);
     s_androidScaleSetInternally = true;
     return;
 #endif
@@ -461,6 +476,41 @@ int main(int argc, char* argv[]) {
     // Auto-fit the LateNight skin to the actual screen on first launch.
     // No-op if the user already has an explicit ScaleFactor in config or env.
     maybeAutoDetectScaleFactor(&args);
+
+    // Re-run auto-detection when the screen geometry or primary screen
+    // changes (Samsung DeX connect/disconnect, external monitor
+    // plug/unplug, phone rotation). Critical on Android where DeX can
+    // switch the effective display from phone-size to desktop-size at
+    // runtime without restarting the app.
+    auto* pScreen = QGuiApplication::primaryScreen();
+    if (pScreen) {
+        QObject::connect(pScreen,
+                &QScreen::availableGeometryChanged,
+                &app,
+                [&args]() {
+                    qDebug() << "Screen geometry changed — re-running scale detection";
+                    maybeAutoDetectScaleFactor(&args);
+                });
+    }
+    QObject::connect(&app,
+            &QGuiApplication::primaryScreenChanged,
+            &app,
+            [&args](QScreen* pNewScreen) {
+                if (!pNewScreen) {
+                    return;
+                }
+                qDebug() << "Primary screen changed — re-running scale detection";
+                maybeAutoDetectScaleFactor(&args);
+                // Re-wire the geometry change listener to the new screen.
+                QObject::connect(pNewScreen,
+                        &QScreen::availableGeometryChanged,
+                        &app,
+                        [&args]() {
+                            qDebug()
+                                    << "Screen geometry changed — re-running scale detection";
+                            maybeAutoDetectScaleFactor(&args);
+                        });
+            });
 
 #if defined(Q_OS_WIN)
     // The Mixxx style is based on Qt's WindowsVista style

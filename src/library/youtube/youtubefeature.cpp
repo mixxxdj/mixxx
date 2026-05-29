@@ -471,7 +471,8 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
                     QDir::Files | QDir::NoDotAndDotDot);
     for (const QString& f : existing) {
         if (f.endsWith(QStringLiteral(".info.json")) ||
-                f.endsWith(QStringLiteral(".sponsor.json"))) {
+                f.endsWith(QStringLiteral(".sponsor.json")) ||
+                f.endsWith(QStringLiteral(".part"))) {
             continue;
         }
         onDownloadFinished(videoId, dir.filePath(f));

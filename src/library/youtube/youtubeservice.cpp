@@ -48,21 +48,22 @@ constexpr int kSponsorBlockTimeoutMs = 8 * 1000;
 const QString kDefaultRegion = QStringLiteral("GR");
 
 // Hardcoded list of Piped API instances tried in order on per-request
-// failure. Picked from the official Piped instance list
-// (https://github.com/TeamPiped/documentation/blob/main/content/docs/public-instances/index.md)
-// for geographic spread + uptime track record. More instances = better
-// resilience when individual community-maintained servers go down.
+// failure. Instances verified as working (both /search and /streams return
+// 200) as of 2026-05-29. Piped community instances are ephemeral — the
+// official registry at https://piped-instances.kavin.rocks/ currently lists
+// only private.coffee as active. Periodically re-verify and update this list.
+// Verified working:
+//   api.piped.private.coffee     (AT) — 100% 24h uptime, registered
+//   api.piped.projectsegfau.lt   (LT) — working, unregistered
+//   pipedapi.orangenet.cc        (CC) — working, unregistered
+//   pi.ggtyler.dev               (redirects) — working, unregistered
+// Degraded (intermittent / slow): pipedapi.kavin.rocks (526 origin error)
 const QStringList kPipedInstances = {
-        QStringLiteral("https://pipedapi.kavin.rocks"),
         QStringLiteral("https://api.piped.private.coffee"),
-        QStringLiteral("https://pipedapi.r4fo.com"),
         QStringLiteral("https://api.piped.projectsegfau.lt"),
-        QStringLiteral("https://pipedapi.adminforge.de"),
-        QStringLiteral("https://pipedapi.darkness.services"),
-        QStringLiteral("https://api.piped.yt"),
-        QStringLiteral("https://pipedapi.osphost.fi"),
-        QStringLiteral("https://pipedapi.smnz.de"),
-        QStringLiteral("https://pipedapi.ngn.tf"),
+        QStringLiteral("https://pipedapi.orangenet.cc"),
+        QStringLiteral("https://pi.ggtyler.dev"),
+        QStringLiteral("https://pipedapi.kavin.rocks"),
 };
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
