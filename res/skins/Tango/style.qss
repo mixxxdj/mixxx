@@ -3135,6 +3135,9 @@ QPushButton#pushButtonShuffle {
 QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/../Tango/buttons/btn_autodj_addrandom.svg) no-repeat center center;
 }
+QPushButton#pushButtonAddEndMarker {
+  image: url(skin:/../Tango/buttons/btn_autodj_stop_marker.svg) no-repeat center center;
+}
 QPushButton#pushButtonRepeatPlaylist:!checked {
   image: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_off.svg) no-repeat center center;
   }
