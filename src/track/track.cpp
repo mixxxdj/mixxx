@@ -980,6 +980,10 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
 }
 
 void Track::shiftCuePositionsMillis(double milliseconds) {
+    if (milliseconds == 0) {
+        return;
+    }
+
     auto locked = lockMutex(&m_qMutex);
 
     VERIFY_OR_DEBUG_ASSERT(m_record.getStreamInfoFromSource()) {
@@ -994,6 +998,10 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
 }
 
 void Track::shiftHotcuePositionMillis(int hotcue, double milliseconds) {
+    if (milliseconds == 0) {
+        return;
+    }
+
     auto locked = lockMutex(&m_qMutex);
 
     CuePointer pHotcue = findHotcueByIndex(hotcue);

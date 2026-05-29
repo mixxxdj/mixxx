@@ -84,9 +84,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             // signal-to-signal
             &BaseTrackPlayerImpl::noVinylControlInputConfigured);
 
-    // PollingControlProxy would be preferred, but CO is not available at init
-    // since it's created by CueControl which is created by EngineBuffer
-    m_focusedHotcueIndexCO = PollingControlProxy(getGroup(), "hotcue_focus");
+    m_focusedHotcueIndexCO = PollingControlProxy(getGroup(), QStringLiteral("hotcue_focus"));
     m_pQuantizeEnabled = PollingControlProxy(getGroup(), QStringLiteral("quantize"));
 
     m_pEject = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "eject"));
