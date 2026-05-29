@@ -37,6 +37,7 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 #include "skin/skincontrols.h"
+#include "skin/skinloader.h"
 #ifdef MIXXX_USE_QML
 #include <QQuickWindow>
 #include <QSGRendererInterface>
@@ -823,6 +824,7 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
     mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
     mixxx::qml::QmlControllerManagerProxy::registerManager(
             getControllerManager(),
@@ -897,9 +899,10 @@ bool CoreServices::initializeDatabase() {
 std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
     // Note: We return here the base class pointer to make the coreservices.h usable
     // in test classes where header included from dlgpreferences.h are not accessible.
+    auto pSkinLoader = std::make_shared<mixxx::skin::SkinLoader>(getSettings());
     std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
             getScreensaverManager(),
-            nullptr,
+            pSkinLoader,
             getSoundManager(),
             getControllerManager(),
             getVinylControlManager(),
@@ -924,6 +927,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(nullptr);
     mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
     mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 

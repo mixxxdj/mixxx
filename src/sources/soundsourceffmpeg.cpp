@@ -53,10 +53,13 @@ constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 
 constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
+// Note: The fist audio stream can be at any stream index after other stream types
+constexpr int kFirstAudioStream = -1;
+
 const Logger kLogger("SoundSourceFFmpeg");
 
 int64_t getStreamStartTime(const AVStream& avStream) {
-    auto start_time = avStream.start_time;
+    int64_t start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
         switch (avStream.codecpar->codec_id) {
@@ -154,12 +157,14 @@ void SoundSourceFFmpeg::initChannelLayoutFromStream(
         // layout, e.g. for a mono WAV files with a single channel!
         av_channel_layout_default(pUninitializedChannelLayout,
                 avStream.codecpar->ch_layout.nb_channels);
-        kLogger.info()
-                << "Unknown channel layout -> using default layout"
-                << pUninitializedChannelLayout->order
-                << "for"
-                << avStream.codecpar->ch_layout.nb_channels
-                << "channel(s)";
+        if (avStream.codecpar->ch_layout.nb_channels > 1) {
+            kLogger.warning()
+                    << "Unknown channel layout -> using default layout"
+                    << pUninitializedChannelLayout->order
+                    << "for"
+                    << avStream.codecpar->ch_layout.nb_channels
+                    << "channels";
+        }
     } else {
         av_channel_layout_default(pUninitializedChannelLayout, 0);
         av_channel_layout_copy(pUninitializedChannelLayout, &avStream.codecpar->ch_layout);
@@ -173,12 +178,14 @@ int64_t SoundSourceFFmpeg::getStreamChannelLayout(const AVStream& avStream) {
         // Workaround: FFmpeg sometimes fails to determine the channel
         // layout, e.g. for a mono WAV files with a single channel!
         channel_layout = av_get_default_channel_layout(avStream.codecpar->channels);
-        kLogger.info()
-                << "Unknown channel layout -> using default layout"
-                << channel_layout
-                << "for"
-                << avStream.codecpar->channels
-                << "channel(s)";
+        if (avStream.codecpar->channels > 1) {
+            kLogger.warning()
+                    << "Unknown channel layout -> using default layout"
+                    << channel_layout
+                    << "for"
+                    << avStream.codecpar->channels
+                    << "channels";
+        }
     }
     return channel_layout;
 }
@@ -462,7 +469,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
     }
 
     if (!disabledInputFormats.isEmpty()) {
-        kLogger.info().noquote()
+        kLogger.debug().noquote()
                 << "Disabling untested input formats:"
                 << disabledInputFormats.join(QStringLiteral(", "));
     }
@@ -484,19 +491,24 @@ QString SoundSourceProviderFFmpeg::getVersionString() const {
     return QString::fromUtf8(av_version_info());
 }
 
-SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
+SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url, int wantedStreamIndex)
         : SoundSource(url),
           m_pavStream(nullptr),
           m_pavDecodedFrame(nullptr),
           m_seekPrerollFrameCount(0),
           m_pavPacket(av_packet_alloc()),
           m_pavResampledFrame(nullptr),
-          m_avutilVersion(avutil_version()) {
+          m_avutilVersion(avutil_version()),
+          m_wantedStreamIndex(wantedStreamIndex) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
     av_channel_layout_default(&m_avResampledChannelLayout, 0);
 #endif
+}
+
+SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
+        : SoundSourceFFmpeg(url, kFirstAudioStream) {
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
@@ -528,7 +540,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     kLogger.debug()
             << "AVFormatContext"
             << "{ nb_streams" << m_pavInputFormatContext->nb_streams
-            << "| start_time" << m_pavInputFormatContext->start_time
+            << "| start_time"
+            << (m_pavInputFormatContext->start_time == AV_NOPTS_VALUE
+                               ? "AV_NOPTS_VALUE"
+                               : QString::number(
+                                         m_pavInputFormatContext->start_time))
             << "| duration" << m_pavInputFormatContext->duration
             << "| bit_rate" << m_pavInputFormatContext->bit_rate
             << "| packet_size" << m_pavInputFormatContext->packet_size
@@ -560,13 +576,26 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     const int av_find_best_stream_result = av_find_best_stream(
             m_pavInputFormatContext,
             AVMEDIA_TYPE_AUDIO,
-            /*wanted_stream_nb*/ -1,
+            m_wantedStreamIndex,
             /*related_stream*/ -1,
             &pDecoder,
             /*flags*/ 0);
     if (av_find_best_stream_result < 0) {
         switch (av_find_best_stream_result) {
         case AVERROR_STREAM_NOT_FOUND:
+            if (m_wantedStreamIndex >= 0) {
+                // This happens if m_wantedStreamIndex is not an audio stream
+                if (m_pavInputFormatContext->nb_streams <=
+                        static_cast<unsigned int>(m_wantedStreamIndex)) {
+                    kLogger.warning().noquote()
+                            << "cannot find stream" << m_wantedStreamIndex;
+                } else {
+                    kLogger.warning().noquote()
+                            << "stream" << m_wantedStreamIndex << "isn't an audio stream";
+                }
+                return OpenResult::Failed;
+            }
+            // called with kFirstAudioStream
             kLogger.warning()
                     << "av_find_best_stream() failed to find an audio stream";
             break;
@@ -627,6 +656,9 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
                 << formatErrorString(avcodec_parameters_to_context_result);
         return SoundSource::OpenResult::Aborted;
     }
+
+    // Copy time base for random seeks:
+    pavCodecContext->pkt_timebase = pavStream->time_base;
 
     // Request output format
     pavCodecContext->request_sample_fmt = s_avSampleFormat;
@@ -1208,21 +1240,15 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                         convertStreamTimeToFrameIndex(
                                 *m_pavStream, m_pavDecodedFrame->pts);
 
-                if (m_avutilVersion >= AV_VERSION_INT(56, 52, 100)) {
-                    // From ffmpeg 4.4 only audible samples are counted, i.e. any inaudible aka
-                    // "priming" samples are not included in nb_samples!
-                    // https://github.com/mixxxdj/mixxx/issues/10464
-                    if (streamFrameIndex < 0) {
 #if VERBOSE_DEBUG_LOG
-                        const auto inaudibleFrameCountUntilStartOfStream = -streamFrameIndex;
-                        kLogger.debug()
-                                << "Skipping"
-                                << inaudibleFrameCountUntilStartOfStream
-                                << "inaudible sample frames before the start of the stream";
-#endif
-                        streamFrameIndex = 0;
-                    }
+                if (streamFrameIndex < 0) {
+                    const SINT inaudibleFrameCountUntilStartOfStream = -streamFrameIndex;
+                    kLogger.info()
+                            << "Stream has"
+                            << inaudibleFrameCountUntilStartOfStream
+                            << "inaudible sample frames before the start";
                 }
+#endif
 
                 decodedFrameRange = IndexRange::forward(
                         streamFrameIndex,
