@@ -10,27 +10,33 @@
 #include "effects/backends/effectprocessor.h"
 #include "util/class.h"
 #include "util/types.h"
+#include "engine/filters/enginefilterbutterworth4.h"
 
-class ReverbGroupState : public EffectState {
+
+
+class BandpassReverbGroupState : public EffectState {
   public:
-    ReverbGroupState(const mixxx::EngineParameters& engineParameters)
+    BandpassReverbGroupState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters),
               sampleRate(engineParameters.sampleRate()),
-              sendPrevious(0) {
+              sendPrevious(0),
+               butterworthBP(engineParameters.sampleRate(), 200.0, 2000.0) {
         reverb.init(sampleRate);
     }
     
-    ~ReverbGroupState() override = default;
+    ~BandpassReverbGroupState() override = default;
 
     float sampleRate;
     float sendPrevious;
     MixxxPlateX2 reverb;
+
+    EngineFilterButterworth4Band butterworthBP;
 };
 
-class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
+class BandpassReverbEffect : public EffectProcessorImpl<BandpassReverbGroupState> {
   public:
-    ReverbEffect() = default;
-    ~ReverbEffect() override = default;
+    BandpassReverbEffect() = default;
+    ~BandpassReverbEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -39,7 +45,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
     void processChannel(
-            ReverbGroupState* pState,
+            BandpassReverbGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const mixxx::EngineParameters& engineParameters,
@@ -55,7 +61,11 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     EngineEffectParameterPointer m_pBandWidthParameter;
     EngineEffectParameterPointer m_pDampingParameter;
     EngineEffectParameterPointer m_pSendParameter;
+    EngineEffectParameterPointer m_pBPFreqParameter;
+    EngineEffectParameterPointer m_pBPQParameter;
+    EngineEffectParameterPointer m_pOrderParameter;
   
 
-    DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
+
+    DISALLOW_COPY_AND_ASSIGN(BandpassReverbEffect);
 };

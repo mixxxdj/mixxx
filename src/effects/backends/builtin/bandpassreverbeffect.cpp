@@ -1,35 +1,30 @@
-// EXPERIMENT: learning Mixxx reverb code flow
-#include "effects/backends/builtin/reverbeffect.h"
+
+#include "effects/backends/builtin/bandpassreverbeffect.h"
 
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 #include <QDebug>
+#include <vector>
 
-// ================================
-// Reverb Band-Pass Experiment
-// Author: Tanu
-// Goal: Understand where and how a band-pass filter
-// can be integrated into the reverb signal path.
-// ================================
 
-// static
-QString ReverbEffect::getId() {
-    return "org.mixxx.effects.reverb";
+
+QString BandpassReverbEffect::getId() {
+    return "org.mixxx.effects.bandpassreverb";
 }
 
 // static
-EffectManifestPointer ReverbEffect::getManifest() {
+EffectManifestPointer BandpassReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
-    pManifest->setAddDryToWet(true);
+    pManifest->setAddDryToWet(false);
     pManifest->setEffectRampsFromDry(true);
 
     pManifest->setId(getId());
-    pManifest->setName(QObject::tr("Reverb"));
+    pManifest->setName(QObject::tr("Bandpass Reverb"));
     pManifest->setAuthor("The Mixxx Team, CAPS Plugins");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-            "Emulates the sound of the signal bouncing off the walls of a room"));
+            "Reverb effect followed by a band-pass filter for shaping the reverberated signal."));
 
     EffectManifestParameterPointer decay = pManifest->addParameter();
     decay->setId("decay");
@@ -75,26 +70,58 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NotInverted);
     send->setRange(0, 0, 1);
 
+    EffectManifestParameterPointer bpFreq = pManifest->addParameter();
+    bpFreq->setId("bp_freq");
+    bpFreq->setName(QObject::tr("BP Frequency"));
+    bpFreq->setShortName(QObject::tr("BPFreq"));
+    bpFreq->setDescription(QObject::tr("Center frequency of band-pass filter"));
+    bpFreq->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    bpFreq->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    bpFreq->setRange(200, 1000, 5000);
+
+    EffectManifestParameterPointer bpQ = pManifest->addParameter();
+    bpQ->setId("bp_q");
+    bpQ->setName(QObject::tr("Bandwidth"));
+    bpQ->setShortName(QObject::tr("Width"));
+    bpQ->setDescription(QObject::tr("Controls width of the band-pass filter"));
+    bpQ->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    bpQ->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    bpQ->setRange(0.1, 0.707, 10);
+
+    EffectManifestParameterPointer order = pManifest->addParameter();
+    order->setId("filter_order");
+    order->setName(QObject::tr("Filter Order"));
+    order->setShortName(QObject::tr("Order"));
+    order->setDescription(QObject::tr("Controls steepness of band-pass filter"));
+    order->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    order->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    order->setRange(1, 1, 4);
+
     return pManifest;
 }
 
-void ReverbEffect::loadEngineEffectParameters(
+void BandpassReverbEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pDecayParameter = parameters.value("decay");
     m_pBandWidthParameter = parameters.value("bandwidth");
     m_pDampingParameter = parameters.value("damping");
     m_pSendParameter = parameters.value("send_amount");
+    m_pBPFreqParameter = parameters.value("bp_freq");
+    m_pBPQParameter = parameters.value("bp_q");
+    m_pOrderParameter = parameters.value("filter_order");
 }
 
 
-void ReverbEffect::processChannel(
-        ReverbGroupState* pState,
+void BandpassReverbEffect::processChannel(
+        BandpassReverbGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
+        const GroupFeatureState& groupFeatures){
+    
             
+    
     Q_UNUSED(groupFeatures);
 
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
@@ -107,13 +134,60 @@ void ReverbEffect::processChannel(
         pState->sampleRate = engineParameters.sampleRate();
     }
 
-    // Reinitialize the effect when turning it on to prevent replaying the old buffer
-    // from the last time the effect was enabled..
+
     if (enableState == EffectEnableState::Enabling) {
         pState->reverb.activate();
     }
 
-    pState->reverb.processBuffer(pInput,
+ 
+    sample_t freq = static_cast<sample_t>(m_pBPFreqParameter->value());
+    sample_t q = static_cast<sample_t>(m_pBPQParameter->value());
+
+    sample_t bandwidthHz = freq / q;
+
+    sample_t lowFreq = freq - bandwidthHz * 0.5;
+    sample_t highFreq = freq + bandwidthHz * 0.5;
+
+    if (lowFreq < 20.0) {
+        lowFreq = 20.0;
+    }
+
+    if (highFreq > engineParameters.sampleRate() / 2.0 - 100.0) {
+        highFreq = engineParameters.sampleRate() / 2.0 - 100.0;
+    }
+
+    pState->butterworthBP.setFrequencyCorners(
+            engineParameters.sampleRate(),
+            lowFreq,
+            highFreq);
+
+
+ std::vector<CSAMPLE> filteredBuffer(engineParameters.samplesPerBuffer());
+std::vector<CSAMPLE> tempBuffer(engineParameters.samplesPerBuffer());
+
+const int order = static_cast<int>(m_pOrderParameter->value());
+
+pState->butterworthBP.process(
+        pInput,
+        filteredBuffer.data(),
+        engineParameters.samplesPerBuffer());
+
+for (int stage = 1; stage < order; ++stage) {
+
+    pState->butterworthBP.process(
+            filteredBuffer.data(),
+            tempBuffer.data(),
+            engineParameters.samplesPerBuffer());
+
+    filteredBuffer.swap(tempBuffer);
+}
+
+
+
+
+
+    pState->reverb.processBuffer(
+            filteredBuffer.data(),
             pOutput,
             engineParameters.samplesPerBuffer(),
             bandwidth,
@@ -122,9 +196,7 @@ void ReverbEffect::processChannel(
             sendCurrent,
             pState->sendPrevious);
 
-    // The ramping of the send parameter handles ramping when enabling, so
-    // this effect must handle ramping to dry when disabling itself (instead
-    // of being handled by EngineEffect::process).
+
     if (enableState == EffectEnableState::Disabling) {
         SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
         pState->sendPrevious = 0;
