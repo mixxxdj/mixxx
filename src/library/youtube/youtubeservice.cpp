@@ -361,7 +361,7 @@ void YouTubeService::searchViaPiped(const QString& query,
             QStringLiteral("music_songs"),
             cap,
             instanceIdx,
-            [this, query, cap, instanceIdx, onAllFailed](const QString& /*lastError*/) {
+            [this, query, cap, onAllFailed](const QString& /*lastError*/) {
                 // music_songs failed on all instances — try music_videos
                 kLogger.info() << "music_songs filter failed for" << query
                                << "— trying music_videos";
