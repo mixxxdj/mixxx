@@ -58,6 +58,18 @@ struct CmrtMember {
     int userQualityRating{-1}; // -1 if unrated
 };
 
+struct AcoustIdJob {
+    int queueId{-1};
+    TrackId trackId;
+    int priority{5}; // lower = higher priority
+    QString status;  // 'queued' | 'processing' | 'completed' | 'failed'
+    int attempts{0};
+    int maxAttempts{3};
+    QDateTime lastAttempt; // nullable — isValid() == false if never attempted
+    QString errorMessage;
+    QDateTime queuedAt;
+};
+
 class TrackFingerprintDao : public DAO {
   public:
     explicit TrackFingerprintDao(UserSettingsPointer pConfig);
@@ -87,6 +99,26 @@ class TrackFingerprintDao : public DAO {
     QByteArray loadChromaFile(TrackId trackId) const;
     bool saveChromaFile(TrackId trackId, const QByteArray& data) const;
     bool deleteChromaFile(TrackId trackId) const;
+
+    // acoustid_queue operations
+    // Enqueues a track for AcoustID lookup. Silently no-ops if track_id
+    // is already in the queue (UNIQUE constraint on track_id).
+    bool enqueueAcoustId(TrackId trackId, int priority = 5) const;
+
+    // Updates the status of a queued job and increments the attempt counter.
+    // Pass a non-empty errorMessage only on failure.
+    bool updateQueueStatus(
+            int queueId,
+            const QString& status,
+            const QString& errorMessage = QString()) const;
+
+    // Returns up to `limit` jobs that are ready to run, ordered by
+    // priority ASC then queued_at ASC. Used by the background worker
+    // and by the startup load (Q7 in Final_Database.md).
+    QList<AcoustIdJob> getPendingJobs(int limit = 10) const;
+
+    // Removes a track's queue entry entirely — called from onPurgingTracks.
+    bool deleteQueueEntry(TrackId trackId) const;
 
   private:
     // Returns ~/.mixxx/fingerprints/ — creates the directory on first call.

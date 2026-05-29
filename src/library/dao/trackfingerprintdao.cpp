@@ -11,6 +11,11 @@ namespace {
 const QString kFingerprintTableName = QStringLiteral("fingerprint_metadata");
 const QString kCmrtGroupsTableName = QStringLiteral("cmrt_groups");
 const QString kCmrtMembersTableName = QStringLiteral("cmrt_members");
+const QString kAcoustIdQueueTableName = QStringLiteral("acoustid_queue");
+const QString kStatusQueued = QStringLiteral("queued");
+const QString kStatusProcessing = QStringLiteral("processing");
+const QString kStatusCompleted = QStringLiteral("completed");
+const QString kStatusFailed = QStringLiteral("failed");
 const bool sDebugTrackFingerprintDao = true;
 } // namespace
 
@@ -711,4 +716,200 @@ bool TrackFingerprintDao::deleteChromaFile(TrackId trackId) const {
         qDebug() << "TrackFingerprintDao -> [deleteChromaFile] -> file remove result:" << result;
     }
     return result;
+}
+
+bool TrackFingerprintDao::enqueueAcoustId(
+        TrackId trackId, int priority) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [enqueueAcoustId] -> entry"
+                 << "trackId:" << trackId
+                 << "priority:" << priority;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [enqueueAcoustId] -> "
+                    "aborting: database not open or invalid trackId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    // INSERT OR IGNORE respects the UNIQUE(track_id) constraint —
+    // a track already in the queue is not re-queued.
+    query.prepare(QString(
+            "INSERT OR IGNORE INTO %1 "
+            "(track_id, priority, status, queued_at) "
+            "VALUES (:track_id, :priority, :status, :queued_at)")
+                    .arg(kAcoustIdQueueTableName));
+
+    query.bindValue(":track_id", trackId.toVariant());
+    query.bindValue(":priority", priority);
+    query.bindValue(":status", kStatusQueued);
+    query.bindValue(":queued_at", QDateTime::currentSecsSinceEpoch());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't enqueue AcoustID job for track" << trackId;
+        return false;
+    }
+
+    const bool inserted = query.numRowsAffected() > 0;
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [enqueueAcoustId] ->"
+                 << (inserted ? "enqueued" : "already in queue")
+                 << "trackId:" << trackId;
+    }
+    return true;
+}
+
+bool TrackFingerprintDao::updateQueueStatus(
+        int queueId,
+        const QString& status,
+        const QString& errorMessage) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [updateQueueStatus] -> entry"
+                 << "queueId:" << queueId
+                 << "status:" << status;
+    }
+
+    if (!m_database.isOpen() || queueId < 0) {
+        qDebug() << "TrackFingerprintDao -> [updateQueueStatus] -> "
+                    "aborting: database not open or invalid queueId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "UPDATE %1 SET "
+            "status = :status, "
+            "attempts = attempts + 1, "
+            "last_attempt = :last_attempt, "
+            "error_message = :error_message "
+            "WHERE queue_id = :queue_id")
+                    .arg(kAcoustIdQueueTableName));
+
+    query.bindValue(":status", status);
+    query.bindValue(":last_attempt", QDateTime::currentSecsSinceEpoch());
+    // Store NULL when there is no error message.
+    if (errorMessage.isEmpty()) {
+        query.bindValue(":error_message",
+                QVariant(QMetaType(QMetaType::QString)));
+    } else {
+        query.bindValue(":error_message", errorMessage);
+    }
+    query.bindValue(":queue_id", queueId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't update queue status for queueId" << queueId;
+        return false;
+    }
+
+    const bool affected = query.numRowsAffected() > 0;
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [updateQueueStatus] ->"
+                 << (affected ? "updated" : "no row found")
+                 << "queueId:" << queueId
+                 << "status:" << status;
+    }
+    return affected;
+}
+
+QList<AcoustIdJob> TrackFingerprintDao::getPendingJobs(int limit) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getPendingJobs] -> entry"
+                 << "limit:" << limit;
+    }
+
+    if (!m_database.isOpen()) {
+        qDebug() << "TrackFingerprintDao -> [getPendingJobs] -> "
+                    "aborting: database not open";
+        return {};
+    }
+
+    QSqlQuery query(m_database);
+    // Returns jobs that are either waiting for a first attempt ('queued')
+    // or eligible for a retry ('failed' and under max_attempts).
+    // priority ASC, queued_at ASC.
+    query.prepare(QString(
+            "SELECT queue_id, track_id, priority, status, "
+            "attempts, max_attempts, last_attempt, error_message, queued_at "
+            "FROM %1 "
+            "WHERE (status = :queued OR status = :failed) "
+            "AND attempts < max_attempts "
+            "ORDER BY priority ASC, queued_at ASC "
+            "LIMIT :limit")
+                    .arg(kAcoustIdQueueTableName));
+
+    query.bindValue(":queued", kStatusQueued);
+    query.bindValue(":failed", kStatusFailed);
+    query.bindValue(":limit", limit);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch pending AcoustID jobs";
+        return {};
+    }
+
+    QList<AcoustIdJob> jobs;
+    QSqlRecord record = query.record();
+    while (query.next()) {
+        AcoustIdJob job;
+        job.queueId = query.value(record.indexOf("queue_id")).toInt();
+        job.trackId = TrackId(query.value(record.indexOf("track_id")));
+        job.priority = query.value(record.indexOf("priority")).toInt();
+        job.status = query.value(record.indexOf("status")).toString();
+        job.attempts = query.value(record.indexOf("attempts")).toInt();
+        job.maxAttempts =
+                query.value(record.indexOf("max_attempts")).toInt();
+
+        QVariant lastAttemptVar =
+                query.value(record.indexOf("last_attempt"));
+        if (!lastAttemptVar.isNull()) {
+            job.lastAttempt = QDateTime::fromSecsSinceEpoch(
+                    lastAttemptVar.toLongLong());
+        }
+
+        job.errorMessage =
+                query.value(record.indexOf("error_message")).toString();
+        job.queuedAt = QDateTime::fromSecsSinceEpoch(
+                query.value(record.indexOf("queued_at")).toLongLong());
+
+        jobs.append(job);
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getPendingJobs] -> found"
+                 << jobs.size() << "pending jobs";
+    }
+    return jobs;
+}
+
+bool TrackFingerprintDao::deleteQueueEntry(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteQueueEntry] -> entry"
+                 << "trackId:" << trackId;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [deleteQueueEntry] -> "
+                    "aborting: database not open or invalid trackId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString("DELETE FROM %1 WHERE track_id = :track_id")
+                    .arg(kAcoustIdQueueTableName));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't delete queue entry for track" << trackId;
+        return false;
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [deleteQueueEntry] -> done"
+                 << "trackId:" << trackId
+                 << "rowsAffected:" << query.numRowsAffected();
+    }
+    return true;
 }
