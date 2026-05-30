@@ -1162,7 +1162,7 @@ void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double millise
 }
 
 void BaseTrackPlayerImpl::slotShiftFocusedHotcueMillis(double milliseconds) {
-    if (!m_pLoadedTrack) {
+    if (!m_pLoadedTrack || milliseconds == 0) {
         return;
     }
     // `hotcue_focus` control is 1-based, track hotcues are 0-based
@@ -1179,7 +1179,7 @@ void BaseTrackPlayerImpl::slotShiftFocusedHotcueMillis(double milliseconds) {
 }
 
 void BaseTrackPlayerImpl::slotShiftFocusedHotcueMillisButton(double value, double milliseconds) {
-    if (value <= 0) {
+    if (value <= 0 || milliseconds == 0) {
         return;
     }
     slotShiftFocusedHotcueMillis(milliseconds);
