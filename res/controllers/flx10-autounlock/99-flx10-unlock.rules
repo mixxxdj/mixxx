@@ -1,0 +1,4 @@
+# Auto-unlock the Pioneer DDJ-FLX10 on plug-in.
+# When the device (VID 2b73 / PID 0041) is added, ask systemd to start the
+# oneshot unlock service (the 7 vendor control transfers).
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2b73", ATTR{idProduct}=="0041", TAG+="systemd", ENV{SYSTEMD_WANTS}+="flx10-unlock.service"

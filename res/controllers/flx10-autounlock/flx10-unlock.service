@@ -1,0 +1,9 @@
+[Unit]
+Description=Unlock Pioneer DDJ-FLX10 (vendor handshake)
+# Started by udev (ENV{SYSTEMD_WANTS}) when the FLX10 is plugged in.
+
+[Service]
+Type=oneshot
+# Small settle so the device is fully enumerated before the control transfers.
+ExecStartPre=/bin/sleep 1
+ExecStart=/usr/bin/python3 /usr/local/bin/flx10_unlock_minimal.py
