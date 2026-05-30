@@ -38,6 +38,7 @@
 
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
+#include "preferences/dialog/dlgprefosc.h"
 #include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
 
@@ -218,6 +219,12 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Recording"),
             "ic_preferences_recording.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefOsc(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("OSC"),
+            "ic_preferences_broadcast.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefBeats(this, m_pConfig),
