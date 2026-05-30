@@ -922,21 +922,33 @@ QString Track::getURL() const {
     return m_record.getUrl();
 }
 
-const ConstWaveformPointer& Track::getWaveform() const {
+ConstWaveformPointer Track::getWaveform() const {
+    // Lock + return by value: the waveform shared_ptr may be reassigned by the
+    // analyzer thread while a reader (e.g. the HID screen controller script)
+    // copies it. Unsynchronised concurrent access to the same shared_ptr races
+    // its refcount control block → double-free / heap corruption.
+    const auto locked = lockMutex(&m_qMutex);
     return m_waveform;
 }
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
+    {
+        const auto locked = lockMutex(&m_qMutex);
+        m_waveform = std::move(pWaveform);
+    }
     emit waveformUpdated();
 }
 
 ConstWaveformPointer Track::getWaveformSummary() const {
+    const auto locked = lockMutex(&m_qMutex);
     return m_waveformSummary;
 }
 
 void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
-    m_waveformSummary = pWaveform;
+    {
+        const auto locked = lockMutex(&m_qMutex);
+        m_waveformSummary = std::move(pWaveform);
+    }
     emit waveformSummaryUpdated();
 }
 

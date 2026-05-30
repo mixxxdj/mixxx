@@ -293,7 +293,12 @@ class Track : public QObject {
     /// any metadata in file tags. Otherwise just the title (even if it is empty).
     QString getTitleInfo() const;
 
-    const ConstWaveformPointer& getWaveform() const;
+    // Returns by value (a copy of the shared_ptr) under the track mutex.
+    // Must NOT return a reference: the waveform is read from the controller
+    // thread (HID screen scripting) while the analyzer thread may reassign it,
+    // so the shared_ptr access has to be lock-protected to avoid a refcount
+    // data race (→ double-free / heap corruption).
+    ConstWaveformPointer getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;
