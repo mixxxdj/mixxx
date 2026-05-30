@@ -1702,7 +1702,7 @@
                 <key>keylock</key>
                 <description>Keylock CH1</description>
                 <status>0x90</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1712,7 +1712,7 @@
                 <key>keylock</key>
                 <description>Keylock CH2</description>
                 <status>0x91</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1722,7 +1722,7 @@
                 <key>keylock</key>
                 <description>Keylock CH3</description>
                 <status>0x92</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <options>
                     <normal/>
                 </options>
@@ -1732,7 +1732,7 @@
                 <key>keylock</key>
                 <description>Keylock CH4</description>
                 <status>0x93</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <options>
                     <normal/>
                 </options>
@@ -4437,7 +4437,7 @@
                 <key>keylock</key>
                 <description>Keylock Feedback CH1</description>
                 <status>0x90</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -4520,7 +4520,7 @@
                 <key>keylock</key>
                 <description>Keylock Feedback CH2</description>
                 <status>0x91</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -4567,7 +4567,7 @@
                 <key>keylock</key>
                 <description>Keylock Feedback CH3</description>
                 <status>0x92</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -4614,7 +4614,7 @@
                 <key>keylock</key>
                 <description>Keylock Feedback CH4</description>
                 <status>0x93</status>
-                <midino>0x1C</midino>
+                <midino>0x4A</midino>
                 <minimum>0.5</minimum>
             </output>
             <output>
