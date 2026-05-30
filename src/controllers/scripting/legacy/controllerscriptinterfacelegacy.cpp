@@ -13,6 +13,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
+#include "track/beats.h"
 #include "track/track.h"
 #include "waveform/waveform.h"
 #include "util/cmdlineargs.h"
@@ -228,6 +229,36 @@ QJSValue ControllerScriptInterfaceLegacy::getWaveformSummary(
         result.setProperty(static_cast<quint32>(i * 4 + 2), mi);
         result.setProperty(static_cast<quint32>(i * 4 + 3), hi);
     }
+    return result;
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getBeatInfo(const QString& group) {
+    const auto pJSEngine = m_pScriptEngineLegacy->jsEngine();
+    if (!pJSEngine) {
+        return QJSValue::NullValue;
+    }
+    const TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
+    if (!pTrack) {
+        return QJSValue::NullValue;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return QJSValue::NullValue;
+    }
+    const double sampleRate = pTrack->getSampleRate();
+    if (sampleRate <= 0.0) {
+        return QJSValue::NullValue;
+    }
+    // First marker = the grid's first downbeat (Mixxx anchors markers there).
+    const auto firstMarker = pBeats->cfirstmarker();
+    const double beatLengthSeconds = firstMarker.beatLengthFrames() / sampleRate;
+    const double firstDownbeatSeconds = (*firstMarker).value() / sampleRate;
+    if (!(beatLengthSeconds > 0.0)) {
+        return QJSValue::NullValue;
+    }
+    QJSValue result = pJSEngine->newArray(2);
+    result.setProperty(0, beatLengthSeconds);
+    result.setProperty(1, firstDownbeatSeconds);
     return result;
 }
 
