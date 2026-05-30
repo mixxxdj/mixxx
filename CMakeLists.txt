@@ -3830,12 +3830,16 @@ if(QML)
 
   if(QT_KNOWN_POLICY_QTP0004)
     # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
-    # OLD (Qt < 6.8) requires to import qml modules with a folder e.g.:
+    # OLD requires to import qml modules with a folder e.g.:
     # fragmentShader: "qrc:/shaders/rgbsignal_qml.frag.qsb"
-    # For using NEW, we need to back-port:
+    # We keep OLD for Qt < 6.8 because using NEW would require a backport:
     # https://github.com/qt/qtdeclarative/commit/6314d305ee0d9064ca848980ef2dab1793c191b8
-    # until Qt 6.8 lands in all supported distros
-    qt6_policy(SET QTP0004 OLD)
+    # For Qt >= 6.8, we use NEW to match current Qt behavior and suppress the deprecation warning.
+    if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+      qt6_policy(SET QTP0004 NEW)
+    else()
+      qt6_policy(SET QTP0004 OLD)
+    endif()
   endif()
 
   add_subdirectory(res/shaders)
