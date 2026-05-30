@@ -76,8 +76,9 @@ QList<QString> ParserPls::parseAllLocations(const QString& playlistFile) {
     return locations;
 }
 
-bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &items, bool useRelativePath)
-{
+bool ParserPls::writePLSFile(const QString& file_str,
+        const QList<QString>& items,
+        PlaylistExportFilePathMode filePathMode) {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
@@ -97,14 +98,18 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
     out << "[playlist]\n";
     out << "NumberOfEntries=" << items.size() << "\n";
     for (int i = 0; i < items.size(); ++i) {
-        //Write relative path if possible
-        if (useRelativePath) {
+        // FIXME add helper functions for these three types
+        if (filePathMode == PlaylistExportFilePathMode::AbsolutePaths) {
+            out << "File" << i << "=" << items.at(i);
+        } else if (filePathMode == PlaylistExportFilePathMode::RelativePaths) {
             //QDir::relativePath() will return the absolutePath if it cannot compute the
             //relative Path
-            out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i)) << "\n";
-        } else {
-            out << "File" << i << "=" << items.at(i) << "\n";
+            out << "File" << i << "=" << base_dir.relativeFilePath(items.at(i));
+        } else { // NoPaths
+            mixxx::FileInfo file(items.at(i));
+            out << "File" << i << "=" << QStringLiteral("./") << file.fileName();
         }
+        out << QStringLiteral("\n");
     }
 
     return true;
