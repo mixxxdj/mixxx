@@ -342,7 +342,8 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     downloadViaPiped(videoId,
             cacheDir,
             /*instanceIdx=*/0,
-            [this, videoId, cacheDir, hasYtDlpFallback, useAndroidBundled](const QString& lastError) {
+            [this, videoId, cacheDir, hasYtDlpFallback, useAndroidBundled](
+                    const QString& lastError) {
                 if (useAndroidBundled) {
                     kLogger.warning() << "All Piped instances failed for download"
                                       << videoId << ":" << lastError
@@ -970,7 +971,8 @@ void YouTubeService::downloadViaAndroidBundled(
     QThread* thread = QThread::create([guard, videoId, cacheDir]() {
         QJniObject context = QNativeInterface::QAndroidApplication::context();
         if (!context.isValid()) {
-            if (guard) Q_EMIT guard->downloadFailed(videoId, "No Android context");
+            if (guard)
+                Q_EMIT guard->downloadFailed(videoId, "No Android context");
             return;
         }
 
@@ -981,7 +983,8 @@ void YouTubeService::downloadViaAndroidBundled(
                 "()Lcom/yausername/youtubedl_android/YoutubeDL;");
 
         if (!ytdl.isValid()) {
-            if (guard) Q_EMIT guard->downloadFailed(videoId, "Bundled yt-dlp (youtubedl-android) not available");
+            if (guard)
+                Q_EMIT guard->downloadFailed(videoId, "Bundled yt-dlp (youtubedl-android) not available");
             return;
         }
 
@@ -1032,7 +1035,8 @@ void YouTubeService::downloadViaAndroidBundled(
                 request.object());
 
         if (!response.isValid()) {
-            if (guard) Q_EMIT guard->downloadFailed(videoId, "yt-dlp exec returned null");
+            if (guard)
+                Q_EMIT guard->downloadFailed(videoId, "yt-dlp exec returned null");
             return;
         }
 
@@ -1041,7 +1045,8 @@ void YouTubeService::downloadViaAndroidBundled(
                 "getOut",
                 "()Ljava/lang/String;");
         if (!outStr) {
-            if (guard) Q_EMIT guard->downloadFailed(videoId, "yt-dlp produced no output");
+            if (guard)
+                Q_EMIT guard->downloadFailed(videoId, "yt-dlp produced no output");
             return;
         }
 

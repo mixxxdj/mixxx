@@ -254,13 +254,18 @@ if(ANDROID)
     list(GET _dl_status 0 _dl_code)
     list(GET _dl_status 1 _dl_msg)
     if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_aar_path}")
-      message(FATAL_ERROR "Failed to download youtubedl-android AAR: ${_dl_msg}")
+      message(
+        FATAL_ERROR
+        "Failed to download youtubedl-android AAR: ${_dl_msg}")
     endif()
     # Verify SHA256 of the downloaded file.
     file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
     if(NOT _aar_dl_sha STREQUAL _ytdlp_aar_sha256)
       file(REMOVE "${_ytdlp_aar_path}")
-      message(FATAL_ERROR "Downloaded youtubedl-android AAR SHA256 mismatch (expected ${_ytdlp_aar_sha256}, got ${_aar_dl_sha})")
+      message(
+        FATAL_ERROR
+        "Downloaded youtubedl-android AAR SHA256 mismatch "
+        "(expected ${_ytdlp_aar_sha256}, got ${_aar_dl_sha})")
     endif()
     file(SIZE "${_ytdlp_aar_path}" _aar_size)
     message(STATUS "Downloaded and verified youtubedl-android AAR (${_aar_size} bytes)")
@@ -309,7 +314,9 @@ if(ANDROID)
   if(EXISTS "${_ytdlp_classes_jar}")
     message(STATUS "  yt-dlp classes.jar: ${_ytdlp_classes_jar}")
   else()
-    message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
+    message(
+      FATAL_ERROR
+      "classes.jar not found in youtubedl-android AAR")
   endif()
 
   # ---------------------------------------------------------------------------
@@ -327,7 +334,9 @@ if(ANDROID)
     )
     message(STATUS "  yt-dlp package: ${_ytdlp_raw}")
   else()
-    message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
+    message(
+      FATAL_ERROR
+      "res/raw/ytdlp not found in youtubedl-android AAR")
   endif()
 
   # ---------------------------------------------------------------------------
