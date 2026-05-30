@@ -843,7 +843,8 @@ void YouTubeFeature::rebuildSidebar() {
                 // is loadable. Without this guard, depending on filesystem
                 // sort order we could wire the sidebar entry to a JSON file.
                 if (f.endsWith(QStringLiteral(".info.json")) ||
-                        f.endsWith(QStringLiteral(".sponsor.json"))) {
+                        f.endsWith(QStringLiteral(".sponsor.json")) ||
+                        f.endsWith(QStringLiteral(".part"))) {
                     continue;
                 }
                 localPath = dir.filePath(f);
