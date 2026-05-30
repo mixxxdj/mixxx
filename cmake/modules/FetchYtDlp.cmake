@@ -75,7 +75,6 @@ endif()
 
 # Desktop downloader: skip entirely on Android.
 if(NOT ANDROID)
-
   set(_ytdlp_cache_dir "${CMAKE_BINARY_DIR}/_deps/yt-dlp-${YTDLP_VERSION}")
   set(_ytdlp_path "${_ytdlp_cache_dir}/${_ytdlp_install_name}")
   set(
@@ -202,14 +201,16 @@ if(NOT ANDROID)
     STATUS
     "Mixxx will bundle yt-dlp ${YTDLP_VERSION} from ${YTDLP_BINARY_PATH}"
   )
-
 endif()
 
 # ---------------------------------------------------------------------------
 # Android: bundle youtubedl-android AAR (Python 3.11 runtime + yt-dlp)
 # ---------------------------------------------------------------------------
 if(ANDROID)
-  set(_ytdlp_android_dir "${CMAKE_BINARY_DIR}/_deps/yt-dlp-android-${YTDLP_VERSION}")
+  set(
+    _ytdlp_android_dir
+    "${CMAKE_BINARY_DIR}/_deps/yt-dlp-android-${YTDLP_VERSION}"
+  )
   file(MAKE_DIRECTORY "${_ytdlp_android_dir}")
 
   # Download the youtubedl-android AAR which bundles:
@@ -218,11 +219,15 @@ if(ANDROID)
   #   - Java/Kotlin wrapper classes (classes.jar)
   # Maven coordinates: io.github.junkfood02.youtubedl-android:library:0.18.1
   set(_ytdlp_aar_path "${_ytdlp_android_dir}/library-0.18.1.aar")
-  set(_ytdlp_aar_url
-    "https://repo1.maven.org/maven2/io/github/junkfood02/youtubedl-android/library/0.18.1/library-0.18.1.aar")
+  set(
+    _ytdlp_aar_url
+    "https://repo1.maven.org/maven2/io/github/junkfood02.youtubedl-android/library/0.18.1/library-0.18.1.aar"
+  )
   # SHA-256 of the AAR (verified against Maven Central).
-  set(_ytdlp_aar_sha256
-    "579b5fb480892b1abc2b218c2089699d52759cc8d7ba256bf876453f0365faef")
+  set(
+    _ytdlp_aar_sha256
+    "579b5fb480892b1abc2b218c2089699d52759cc8d7ba256bf876453f0365faef"
+  )
 
   # AAR is ~57 MB (mostly the Python stdlib zip embedded in libpython.zip.so).
   # Check cache first to avoid re-downloading on every configure.

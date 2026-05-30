@@ -984,7 +984,8 @@ void YouTubeService::downloadViaAndroidBundled(
 
         if (!ytdl.isValid()) {
             if (guard)
-                Q_EMIT guard->downloadFailed(videoId, "Bundled yt-dlp (youtubedl-android) not available");
+                Q_EMIT guard->downloadFailed(
+                        videoId, "Bundled yt-dlp (youtubedl-android) not available");
             return;
         }
 
@@ -1003,11 +1004,13 @@ void YouTubeService::downloadViaAndroidBundled(
 
         // Add download options.
         request.callMethod<QJniObject>("addOption",
-                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
+                "YoutubeDLRequest;",
                 QJniObject::fromString("-f").object(),
                 QJniObject::fromString("bestaudio").object());
         request.callMethod<QJniObject>("addOption",
-                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
+                "YoutubeDLRequest;",
                 QJniObject::fromString("-o").object(),
                 QJniObject::fromString(outputTemplate).object());
         request.callMethod<QJniObject>("addOption",
