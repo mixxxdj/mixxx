@@ -14,8 +14,10 @@
 
 namespace {
 
-// We assume that the test folder is a sibling to the res folder
+// We assume that the test folder is a sibling to the src folder
 const QString kTestPath = QStringLiteral("../src/test");
+const QString kTestFile1 = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-jpg.mp3");
+const QString kTestFile2 = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-png.mp3");
 
 } // namespace
 
@@ -61,6 +63,11 @@ class MixxxTest : public testing::Test {
 
     const QDir& getTestDir() const {
         return getOrInitTestDir();
+    }
+
+    const QString getTestFile(const QString& type) const {
+        return getTestDir().filePath(
+                QStringLiteral("id3-test-data/cover-test-øé~ł€˚%1").arg(type));
     }
 
   private:
