@@ -214,17 +214,55 @@ if(ANDROID)
   set(_ytdlp_zip_path "${_ytdlp_android_dir}/yt-dlp")
   set(_ytdlp_zip_url
     "https://github.com/yt-dlp/yt-dlp/releases/download/${YTDLP_VERSION}/yt-dlp")
+  # SHA-256 for the "yt-dlp" zipimport asset (from SHA2-256SUMS).
+  set(_ytdlp_zip_sha256
+    "3bda0968a01cde70d26720653003b28553c71be14dcb2e5f4c24e9921fdad745")
 
   message(STATUS "Downloading yt-dlp zipimport package for Android")
-  file(
-    DOWNLOAD "${_ytdlp_zip_url}" "${_ytdlp_zip_path}"
-    SHOW_PROGRESS
-    STATUS _dl_status
-    TLS_VERIFY ON
-  )
-  list(GET _dl_status 0 _dl_code)
-  if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_zip_path}")
-    message(WARNING "Failed to download yt-dlp zipimport for Android; download may fail without Termux Python")
+  set(_max_attempts 3)
+  set(_attempt 1)
+  set(_ytdlp_zip_ok FALSE)
+  while(_attempt LESS_EQUAL _max_attempts AND NOT _ytdlp_zip_ok)
+    message(
+      STATUS
+      "Downloading yt-dlp zipimport (${_attempt}/${_max_attempts})")
+    file(
+      DOWNLOAD "${_ytdlp_zip_url}" "${_ytdlp_zip_path}"
+      SHOW_PROGRESS
+      STATUS _dl_status
+      TLS_VERIFY ON
+    )
+    list(GET _dl_status 0 _dl_code)
+    list(GET _dl_status 1 _dl_msg)
+    if(_dl_code EQUAL 0 AND EXISTS "${_ytdlp_zip_path}")
+      file(SIZE "${_ytdlp_zip_path}" _dl_size)
+      if(_dl_size GREATER 0)
+        file(SHA256 "${_ytdlp_zip_path}" _actual_sha)
+        if(_actual_sha STREQUAL _ytdlp_zip_sha256)
+          set(_ytdlp_zip_ok TRUE)
+        else()
+          message(
+            WARNING
+            "yt-dlp zipimport hash mismatch (expected ${_ytdlp_zip_sha256}, got ${_actual_sha}), retrying")
+          file(REMOVE "${_ytdlp_zip_path}")
+        endif()
+      else()
+        message(STATUS "Downloaded yt-dlp zipimport is 0 bytes, retrying")
+        file(REMOVE "${_ytdlp_zip_path}")
+      endif()
+    else()
+      message(STATUS "yt-dlp zipimport download failed: ${_dl_msg}")
+      file(REMOVE "${_ytdlp_zip_path}")
+    endif()
+    math(EXPR _attempt "${_attempt} + 1")
+  endwhile()
+
+  if(NOT _ytdlp_zip_ok)
+    message(
+      WARNING
+      "Failed to download yt-dlp zipimport package for Android after ${_max_attempts} "
+      "attempts. On-device downloads will fall back to Piped only (or a "
+      "Termux-installed yt-dlp + Python).")
   else()
     message(STATUS "Downloaded yt-dlp zipimport package to ${_ytdlp_zip_path}")
   endif()
@@ -236,7 +274,7 @@ if(ANDROID)
   # filesystem.  The AndroidActivity base class copies assets on first
   # launch; alternatively we can install them as extra resources.
   # We CMake-install both files into a known directory that the app
-  # can discover via QStandardPaths::AppDataLocation + "/yt-dpp/".
+  # can discover via QStandardPaths::AppDataLocation + "/yt-dlp/".
   set(
     YTDLP_ANDROID_HOME
     "${_ytdlp_android_dir}"

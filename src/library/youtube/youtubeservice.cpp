@@ -273,7 +273,7 @@ QString YouTubeService::locateYtDlp() {
     //      c) If no python found, return empty — Piped is the only option
     const QStringList androidPythonCandidates = {
         // Bundled p4a python (if user built with ANDROID_PYTHON_FOR_ANDROID_PATH)
-        QStringLiteral("libpython3.so"),
+        QStandardPaths::AppDataLocation + QStringLiteral("/yt-dlp/libpython3.so"),
         // Termux (the most common way to get python on Android)
         QStringLiteral("/data/data/com.termux/files/usr/bin/python3"),
         QStringLiteral("/data/data/com.termux/files/usr/bin/python"),
@@ -854,9 +854,11 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             m_ytDlpPath.endsWith(QStringLiteral("python3"), Qt::CaseInsensitive);
 
     QStringList args;
+#if defined(Q_OS_ANDROID)
+    const bool isPythonInterpreter =
+            m_ytDlpPath.endsWith(QStringLiteral("python"), Qt::CaseInsensitive) ||
+            m_ytDlpPath.endsWith(QStringLiteral("python3"), Qt::CaseInsensitive);
     if (isPythonInterpreter) {
-        // Find the bundled yt-dlp zipimport package (downloaded at configure
-        // time and installed into the app data directory).
         const QString ytDlpZip = QStandardPaths::locate(
                 QStandardPaths::AppDataLocation,
                 QStringLiteral("yt-dlp/__main__.py"),
@@ -868,10 +870,8 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
         }
         args.append(ytDlpZip);
     }
-    args.append({
-#else
-    const QStringList args = {
 #endif
+    args.append({
             QStringLiteral("-f"),
             QStringLiteral("bestaudio"),
             QStringLiteral("--no-playlist"),
@@ -887,9 +887,6 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             QStringLiteral("--"),
             QStringLiteral("https://www.youtube.com/watch?v=") + videoId,
     });
-#if !defined(Q_OS_ANDROID)
-    }
-#endif
     runYtDlp(
             args,
             kDownloadTimeoutMs,
