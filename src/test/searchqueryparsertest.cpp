@@ -1391,3 +1391,66 @@ TEST_F(SearchQueryParserTest, QuotedOrOperator) {
     pTrackI->setComment("house");
     EXPECT_TRUE(pQuery->match(pTrackI));
 }
+
+TEST_F(SearchQueryParserTest, OrOperatorInParenthesis) {
+    m_parser.setSearchColumns({"title"});
+
+    TrackPointer pTrackA = newTestTrack();
+    TrackPointer pTrackB = newTestTrack();
+    TrackPointer pTrackC = newTestTrack();
+    TrackPointer pTrackD = newTestTrack();
+    TrackPointer pTrackE = newTestTrack();
+    TrackPointer pTrackF = newTestTrack();
+    pTrackA->setTitle("purple");
+    pTrackB->setTitle("black shoe");
+    pTrackC->setTitle("red shoe");
+    pTrackD->setTitle("white jacket");
+    pTrackE->setTitle("white");
+    pTrackF->setTitle("jacket");
+
+    // Regular use case
+    auto pQuery = m_parser.parseQuery("shoe (black|purple) | jacket (white|red)", QString());
+    //                                      (-----|------) |        (-----|---)
+    //                               = shoe AND black
+    //                              OR shoe AND purple
+    //                              OR jacket AND white
+    //                              OR jacket AND red
+    EXPECT_FALSE(pQuery->match(pTrackA)); // purple
+    EXPECT_TRUE(pQuery->match(pTrackB));  // black shoe
+    EXPECT_FALSE(pQuery->match(pTrackC)); // red shoe
+    EXPECT_TRUE(pQuery->match(pTrackD));  // white jacket
+    EXPECT_FALSE(pQuery->match(pTrackE)); // white
+    EXPECT_FALSE(pQuery->match(pTrackF)); // jacket
+
+    // Quotes in 2nd level OR node
+    pQuery = m_parser.parseQuery(R"(shoe (black|"purple nose") | "white ja" | red)", QString());
+    //                                   (     |"           ") | "        " |
+    //                                  split here,          here     and here
+    //                          = shoe AND black
+    //                         OR shoe AND "purple nose"
+    //                         OR "white ja"
+    //                         OR red
+    EXPECT_FALSE(pQuery->match(pTrackA)); // purple
+    EXPECT_TRUE(pQuery->match(pTrackB));  // shoe black
+    EXPECT_TRUE(pQuery->match(pTrackC));  // red shoe
+    EXPECT_TRUE(pQuery->match(pTrackD));  // white jacket
+    EXPECT_FALSE(pQuery->match(pTrackE)); // white
+    EXPECT_FALSE(pQuery->match(pTrackF)); // jacket
+
+    // | inside quotes and unclosed parenthesis
+    pQuery = m_parser.parseQuery(R"(shoe (black"|purple) | jacket" (white|"red)", QString());
+    //                                   (     "↑        ↑       " (     ↑"
+    //                            not splitting here or here,            |
+    //                            they're inside quotes                  |
+    //                                                    not splitting here either
+    //                                                    because of missing )
+    //                          = shoe
+    //                        AND (black"|purple) | jacket
+    //                        AND (white|"red
+    EXPECT_FALSE(pQuery->match(pTrackA)); // purple
+    EXPECT_FALSE(pQuery->match(pTrackB)); // black shoe
+    EXPECT_FALSE(pQuery->match(pTrackC)); // red shoe
+    EXPECT_FALSE(pQuery->match(pTrackD)); // white jacket
+    EXPECT_FALSE(pQuery->match(pTrackE)); // white
+    EXPECT_FALSE(pQuery->match(pTrackE)); // jacket
+}
