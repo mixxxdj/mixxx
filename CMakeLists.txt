@@ -2817,7 +2817,8 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFmpeg_LIBRARIES}")
+
+  target_link_libraries(mixxx-lib PRIVATE FFmpeg::FFmpeg)
   target_include_directories(mixxx-lib PUBLIC "${FFmpeg_INCLUDE_DIRS}")
 endif()
 
