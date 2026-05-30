@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/defs_keylock.h"
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
@@ -277,7 +278,10 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
+    m_pPitch = make_parented<ControlProxy>(getGroup(), "pitch", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
+    m_pKeylock = make_parented<ControlProxy>(getGroup(), "keylock", this);
+    m_pKeylockMode = make_parented<ControlProxy>(getGroup(), "keylockMode", this);
 
     m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
@@ -705,7 +709,16 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 }
             }
             if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
-                m_pPitchAdjust->set(0.0);
+                // With KeylockMode::LockCurrentKey we need to reset `pitch`
+                // instead of `pitch_adjust` to avoid a roundtrip in KeyControl
+                // which would lead `pitch` != 0
+                if (m_pKeylock->toBool() &&
+                        m_pKeylockMode->get() ==
+                                static_cast<double>(KeylockMode::LockCurrentKey)) {
+                    m_pPitch->set(0.0);
+                } else {
+                    m_pPitchAdjust->set(0.0);
+                }
             }
         } else {
             // perform a clone of the given channel
@@ -723,8 +736,12 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                     m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
 
             // copy the loop state
-            if (ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0) {
+            if (ControlObject::get(
+                        ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0 &&
+                    ControlObject::get(ConfigKey(getGroup(), "loop_enabled")) != 1.0) {
+                // trigger (set 1, then 0) in order to avoid a stuck "reloop_toggle" button
                 ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
+                ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 0.0);
             }
         }
 

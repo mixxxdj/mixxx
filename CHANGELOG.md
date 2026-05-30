@@ -889,7 +889,7 @@ Note: Version 2.5.5 has been skipped following an issue in the release workflow.
 * Fix handling of "vinylcontrol_enabled" causes a frozen vinyl spinny mouse control
   [#15168](https://github.com/mixxxdj/mixxx/pull/15168)
   [#15165](https://github.com/mixxxdj/mixxx/issues/15165)
-* Pitch filter improvements [#15230](https15054://github.com/mixxxdj/mixxx/pull/15230)
+* Pitch filter improvements [#15230](https://github.com/mixxxdj/mixxx/pull/15230)
 * Add a quadrature phase tracker
   [#15217](https://github.com/mixxxdj/mixxx/pull/15217)
   [#15283](https://github.com/mixxxdj/mixxx/pull/15283)
@@ -2640,4 +2640,4 @@ Note: Version 2.5.5 has been skipped following an issue in the release workflow.
 
 ## Older Changelog
 
-Find older changelog entries [here](https://github.com/mixxxdj/mixxx/blob/2.5.0/CHANGELOG.md).
+Find older changelog entries in the [2.5.0 Changelog](https://github.com/mixxxdj/mixxx/blob/2.5.0/CHANGELOG.md).
