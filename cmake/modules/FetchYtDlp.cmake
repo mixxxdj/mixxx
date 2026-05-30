@@ -233,83 +233,88 @@ if(ANDROID)
   # Check cache first to avoid re-downloading on every configure.
   set(_need_aar_download TRUE)
   if(EXISTS "${_ytdlp_aar_path}")
-    file(SIZE "${_ytdlp_aar_path}" _aar_size)
-    if(_aar_size GREATER 50000000)
-      file(SHA256 "${_ytdlp_aar_path}" _aar_have_sha)
-      if(_aar_have_sha STREQUAL _ytdlp_aar_sha256)
-        set(_need_aar_download FALSE)
-        message(
-          STATUS
-          "Using cached youtubedl-android AAR (${_aar_size} bytes, SHA256 verified)"
-        )
-      else()
-        message(
-          WARNING
-          "Cached youtubedl-android AAR has wrong SHA256 (${_aar_have_sha}), re-downloading"
-        )
-        file(REMOVE "${_ytdlp_aar_path}")
-      endif()
-    else()
-      file(REMOVE "${_ytdlp_aar_path}")
-    endif()
-  endif()
-
-  if(_need_aar_download)
-    # AAR is ~57 MB. Maven Central CDN or GitHub Actions runners can be flaky,
-    # so retry up to 3 times before giving up.
-    set(_max_attempts 3)
-    set(_attempt 1)
-    set(_aar_ok FALSE)
-    while(_attempt LESS_EQUAL _max_attempts AND NOT _aar_ok)
-      message(STATUS "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})...")
-      file(
-        DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
-        SHOW_PROGRESS
-        STATUS _dl_status
-        TLS_VERIFY ON
-      )
-      list(GET _dl_status 0 _dl_code)
-      list(GET _dl_status 1 _dl_msg)
-      if(_dl_code EQUAL 0 AND EXISTS "${_ytdlp_aar_path}")
-        file(SIZE "${_ytdlp_aar_path}" _aar_size)
-        if(_aar_size GREATER 50000000)
-          # Verify SHA256 so a CDN glitch that returns garbage doesn't sneak in.
-          file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
-          if(_aar_dl_sha STREQUAL _ytdlp_aar_sha256)
-            set(_aar_ok TRUE)
-          else()
-            message(STATUS "SHA256 mismatch, retrying")
-            file(REMOVE "${_ytdlp_aar_path}")
-          endif()
+      file(SIZE "${_ytdlp_aar_path}" _aar_size)
+      if(_aar_size GREATER 50000000)
+        file(SHA256 "${_ytdlp_aar_path}" _aar_have_sha)
+        if(_aar_have_sha STREQUAL _ytdlp_aar_sha256)
+          set(_need_aar_download FALSE)
+          message(
+            STATUS
+            "Using cached youtubedl-android AAR (${_aar_size} bytes, SHA256 verified)"
+          )
         else()
-          message(STATUS "Downloaded file too small (${_aar_size} bytes), retrying")
+          message(
+            WARNING
+            "Cached youtubedl-android AAR has wrong SHA256 (${_aar_have_sha}), re-downloading"
+          )
           file(REMOVE "${_ytdlp_aar_path}")
         endif()
       else()
-        message(STATUS "Download failed: ${_dl_msg}, retrying")
         file(REMOVE "${_ytdlp_aar_path}")
       endif()
-      math(EXPR _attempt "${_attempt} + 1")
-    endwhile()
-
-    if(NOT _aar_ok)
-      message(
-        WARNING
-        "Failed to download youtubedl-android AAR after ${_max_attempts} attempts. "
-        "You can manually place the AAR at ${_ytdlp_aar_path} and re-run cmake."
-      )
     endif()
 
-  endif()
+    if(_need_aar_download)
+    # AAR is ~57 MB. Maven Central CDN or GitHub Actions runners can be flaky,
+    # so retry up to 3 times before giving up.
+      set(_max_attempts 3)
+      set(_attempt 1)
+      set(_aar_ok FALSE)
+      while(_attempt LESS_EQUAL _max_attempts AND NOT _aar_ok)
+        message(
+          STATUS
+          "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})..."
+        )
+        file(
+          DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
+          SHOW_PROGRESS
+          STATUS _dl_status
+          TLS_VERIFY ON
+        )
+        list(GET _dl_status 0 _dl_code)
+        list(GET _dl_status 1 _dl_msg)
+        if(_dl_code EQUAL 0 AND EXISTS "${_ytdlp_aar_path}")
+          file(SIZE "${_ytdlp_aar_path}" _aar_size)
+          if(_aar_size GREATER 50000000)
+          # Verify SHA256 so a CDN glitch that returns garbage doesn't sneak in.
+            file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
+            if(_aar_dl_sha STREQUAL _ytdlp_aar_sha256)
+              set(_aar_ok TRUE)
+            else()
+              message(STATUS "SHA256 mismatch, retrying")
+              file(REMOVE "${_ytdlp_aar_path}")
+            endif()
+          else()
+            message(
+              STATUS
+              "Downloaded file too small (${_aar_size} bytes), retrying"
+            )
+            file(REMOVE "${_ytdlp_aar_path}")
+          endif()
+        else()
+          message(STATUS "Download failed: ${_dl_msg}, retrying")
+          file(REMOVE "${_ytdlp_aar_path}")
+        endif()
+        math(EXPR _attempt "${_attempt} + 1")
+      endwhile()
 
-  # Only process the AAR if it was downloaded or cached successfully.
+      if(NOT _aar_ok)
+        message(
+          WARNING
+          "Failed to download youtubedl-android AAR after ${_max_attempts} attempts. "
+          "You can manually place the AAR at ${_ytdlp_aar_path} and re-run cmake."
+        )
+      endif()
+    endif()
+
+  # Extract the AAR (it's a zip file).
   if(EXISTS "${_ytdlp_aar_path}")
-  set(_ytdlp_aar_extracted "${_ytdlp_android_dir}/extracted")
-  file(MAKE_DIRECTORY "${_ytdlp_aar_extracted}")
+      set(_ytdlp_aar_extracted "${_ytdlp_android_dir}/extracted")
+      file(MAKE_DIRECTORY "${_ytdlp_aar_extracted}")
 
-  # We use CMake's execute_process to extract since file(ARCHIVE_EXTRACT)
+    # We use CMake's execute_process to extract since file(ARCHIVE_EXTRACT)
   # is only available in CMake 3.18+.
-  if(NOT EXISTS "${_ytdlp_aar_extracted}/jni")
+    if(NOT EXISTS "${_ytdlp_aar_extracted}/jni")
       message(STATUS "Extracting youtubedl-android AAR...")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E tar xf "${_ytdlp_aar_path}"
@@ -320,11 +325,11 @@ if(ANDROID)
         message(FATAL_ERROR "Failed to extract youtubedl-android AAR")
       endif()
     endif()
-  
-    # ---------------------------------------------------------------------------
-    # Install JNI shared libraries into the APK's lib directory.
-    # These go into QT_ANDROID_EXTRA_LIBS so Qt's androiddeployqt picks them up.
-    # ---------------------------------------------------------------------------
+
+  # ---------------------------------------------------------------------------
+  # Install JNI shared libraries into the APK's lib directory.
+  # These go into QT_ANDROID_EXTRA_LIBS so Qt's androiddeployqt picks them up.
+  # ---------------------------------------------------------------------------
     set(_ytdlp_jni_libs "")
     foreach(_abi IN ITEMS arm64-v8a armeabi-v7a x86_64)
       set(_aar_jni_dir "${_ytdlp_aar_extracted}/jni/${_abi}")
@@ -337,7 +342,7 @@ if(ANDROID)
         endforeach()
       endif()
     endforeach()
-  
+
     # ---------------------------------------------------------------------------
     # Install the classes.jar into the APK's classpath.
     # We add it to the target's linked libraries so androiddeployqt includes it.
@@ -348,7 +353,7 @@ if(ANDROID)
     else()
       message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
     endif()
-  
+
     # ---------------------------------------------------------------------------
     # Install the yt-dlp package as an Android asset.
     # The youtubedl-android library loads it from res/raw/ytdlp at runtime.
@@ -366,7 +371,7 @@ if(ANDROID)
     else()
       message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
     endif()
-  
+
     # ---------------------------------------------------------------------------
     # Add JNI libs and classes.jar to the target.
     # ---------------------------------------------------------------------------
@@ -375,15 +380,15 @@ if(ANDROID)
       APPEND
       PROPERTY QT_ANDROID_EXTRA_LIBS ${_ytdlp_jni_libs}
     )
-  
+
     # Add classes.jar to the target's dependencies.
     target_link_libraries(mixxx PRIVATE "${_ytdlp_classes_jar}")
-  
+
     # ---------------------------------------------------------------------------
     # Define a preprocessor macro so the C++ code knows the bundled runtime exists.
     # ---------------------------------------------------------------------------
     target_compile_definitions(mixxx-lib PUBLIC HAVE_YTDLP_ANDROID=1)
-  
+
     message(STATUS "youtubedl-android AAR bundled for Android")
-    endif()
   endif()
+endif()
