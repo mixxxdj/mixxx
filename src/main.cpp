@@ -489,7 +489,7 @@ int main(int argc, char* argv[]) {
         geometryConn = QObject::connect(pScreen,
                 &QScreen::availableGeometryChanged,
                 &app,
-                [&args, &app]() {
+                [&args]() {
                     qDebug() << "Screen geometry changed — re-running scale detection";
                     maybeAutoDetectScaleFactor(&args);
                 });
@@ -497,7 +497,7 @@ int main(int argc, char* argv[]) {
     QObject::connect(&app,
             &QGuiApplication::primaryScreenChanged,
             &app,
-            [&args, &app, &geometryConn](QScreen* pNewScreen) {
+            [&args, &geometryConn](QScreen* pNewScreen) {
                 if (!pNewScreen) {
                     return;
                 }
@@ -511,7 +511,7 @@ int main(int argc, char* argv[]) {
                 geometryConn = QObject::connect(pNewScreen,
                         &QScreen::availableGeometryChanged,
                         &app,
-                        [&args, &app]() {
+                        [&args]() {
                             qDebug()
                                     << "Screen geometry changed — re-running scale detection";
                             maybeAutoDetectScaleFactor(&args);
