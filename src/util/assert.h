@@ -49,10 +49,10 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
 /// MIXXX_DEBUG_ASSERTIONS_FATAL then the warning message is fatal. Compiles
 /// to nothing in release builds.
 ///
-/// Be careful of the common mistake with assertions:
+/// In release builds, it marks cond as used and checks if it can be converted
+/// to bool. Be careful of the common mistake with assertions:
 ///   DEBUG_ASSERT(doSomething());
-///
-/// In release builds, doSomething() is never called!
+/// doSomething() is never called, in In release builds.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define DEBUG_ASSERT(cond)                                                  \
     do                                                                      \
@@ -61,8 +61,9 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
         }                                                                   \
     while (0)
 #else
-#define DEBUG_ASSERT(cond) \
-    do {                   \
+#define DEBUG_ASSERT(cond)                                                \
+    do {                                                                  \
+        [[maybe_unused]] std::size_t s = sizeof(static_cast<bool>(cond)); \
     } while (0)
 #endif
 

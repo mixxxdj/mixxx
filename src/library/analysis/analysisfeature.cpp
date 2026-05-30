@@ -55,6 +55,12 @@ AnalysisFeature::AnalysisFeature(
           m_title(m_baseTitle) {
 }
 
+AnalysisFeature::~AnalysisFeature() {
+    // We need to delete m_pTrackAnalysisScheduler here immediately synchronously,
+    // waiting for pending threads to have finished, to not killthem during exit
+    delete m_pTrackAnalysisScheduler.release();
+}
+
 void AnalysisFeature::resetTitle() {
     m_title = m_baseTitle;
     emit featureIsLoading(this, false);
