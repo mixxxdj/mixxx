@@ -2,6 +2,7 @@
 
 #include "engine/engine.h"
 #include "util/assert.h"
+#include "util/denormalsarezero.h"
 #include "util/compatibility/qmutex.h"
 
 RubberBandTask::RubberBandTask(
@@ -32,6 +33,9 @@ void RubberBandTask::waitReady() {
 }
 
 void RubberBandTask::run() {
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+
     VERIFY_OR_DEBUG_ASSERT(m_completedSema.available() == 0 && m_input && m_samples) {
         return;
     };

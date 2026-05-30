@@ -161,7 +161,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_bBusOutputConnected[EngineChannel::LEFT] = false;
     m_bBusOutputConnected[EngineChannel::CENTER] = false;
     m_bBusOutputConnected[EngineChannel::RIGHT] = false;
-    m_bExternalRecordBroadcastInputConnected = false;
+    m_bExternalRecordBroadcastInputConnected.store(false);
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     m_pSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
@@ -1011,7 +1011,7 @@ void EngineMixer::onInputConnected(const AudioInput& input) {
         // We don't track enabled vinyl control inputs.
         break;
     case AudioPathType::RecordBroadcast:
-        m_bExternalRecordBroadcastInputConnected = true;
+        m_bExternalRecordBroadcastInputConnected.store(true);
         break;
     default:
         break;
@@ -1030,7 +1030,7 @@ void EngineMixer::onInputDisconnected(const AudioInput& input) {
         // We don't track enabled vinyl control inputs.
         break;
     case AudioPathType::RecordBroadcast:
-        m_bExternalRecordBroadcastInputConnected = false;
+        m_bExternalRecordBroadcastInputConnected.store(false);
         break;
     default:
         break;
@@ -1070,5 +1070,5 @@ void EngineMixer::registerNonEngineChannelSoundIO(gsl::not_null<SoundManager*> p
 }
 
 bool EngineMixer::sidechainMixRequired() const {
-    return m_pEngineSideChain && !m_bExternalRecordBroadcastInputConnected;
+    return m_pEngineSideChain && !m_bExternalRecordBroadcastInputConnected.load();
 }

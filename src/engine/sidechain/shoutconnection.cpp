@@ -24,6 +24,7 @@
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
+#include "util/denormalsarezero.h"
 #include "util/logger.h"
 
 namespace {
@@ -970,6 +971,9 @@ bool ShoutConnection::threadWaiting() {
 }
 
 void ShoutConnection::run() {
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+
     QThread::currentThread()->setObjectName(
             QString("ShoutOutput '%1'").arg(m_pProfile->getProfileName()));
     kLogger.debug() << "run: Starting thread";

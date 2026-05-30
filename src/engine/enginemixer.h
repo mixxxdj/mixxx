@@ -349,5 +349,5 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<ControlObject> m_pMicMonitorMode;
 
     std::atomic<bool> m_bBusOutputConnected[3];
-    bool m_bExternalRecordBroadcastInputConnected;
+    std::atomic<bool> m_bExternalRecordBroadcastInputConnected;
 };
