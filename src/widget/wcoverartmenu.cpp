@@ -2,24 +2,46 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QLabel>
+#include <QWidgetAction>
 
+#include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "moc_wcoverartmenu.cpp"
 #include "util/assert.h"
 
 WCoverArtMenu::WCoverArtMenu(QWidget* parent)
         : QMenu(parent),
+          m_pCoverPreviewAction(nullptr),
+          m_pCoverLabel(nullptr),
           m_isWorkerRunning(false) {
     createActions();
+    connect(CoverArtCache::instance(),
+            &CoverArtCache::coverFound,
+            this,
+            &WCoverArtMenu::slotCoverFound);
 }
 
 WCoverArtMenu::~WCoverArtMenu() {
+    delete m_pCoverPreviewAction;
     delete m_pChange;
     delete m_pReload;
     delete m_pUnset;
 }
 
 void WCoverArtMenu::createActions() {
+    m_pCoverPreviewAction = new QWidgetAction(this);
+    m_pCoverLabel = new QLabel(this);
+    m_pCoverLabel->setFixedSize(kCoverPreviewSize, kCoverPreviewSize);
+    m_pCoverLabel->setAlignment(Qt::AlignCenter);
+    m_pCoverLabel->setScaledContents(false);
+    m_pCoverLabel->setStyleSheet(
+            QStringLiteral("QLabel { background-color: palette(base); border: 1px solid palette(mid); }"));
+    m_pCoverPreviewAction->setDefaultWidget(m_pCoverLabel);
+    addAction(m_pCoverPreviewAction);
+
+    addSeparator();
+
     m_pChange = new QAction(tr("Choose file", "change cover art location"), this);
     connect(m_pChange, &QAction::triggered, this, &WCoverArtMenu::slotChange);
     addAction(m_pChange);
@@ -37,6 +59,25 @@ void WCoverArtMenu::createActions() {
 
 void WCoverArtMenu::setCoverArt(const CoverInfo& coverInfo) {
     m_coverInfo = coverInfo;
+    m_pCoverLabel->clear();
+    m_pCoverLabel->setToolTip(QString());
+    if (coverInfo.trackLocation.isEmpty()) {
+        return;
+    }
+    CoverArtCache::requestCover(this, coverInfo);
+}
+
+void WCoverArtMenu::slotCoverFound(const QObject* requester,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap) {
+    if (requester != this || coverInfo != m_coverInfo || pixmap.isNull()) {
+        return;
+    }
+    QPixmap scaled = pixmap.scaled(kCoverPreviewSize,
+            kCoverPreviewSize,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    m_pCoverLabel->setPixmap(scaled);
 }
 
 void WCoverArtMenu::slotChange() {
