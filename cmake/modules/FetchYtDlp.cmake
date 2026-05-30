@@ -285,7 +285,10 @@ if(ANDROID)
             file(REMOVE "${_ytdlp_aar_path}")
           endif()
         else()
-          message(STATUS "Downloaded file too small (${_aar_size} bytes), retrying")
+          message(
+            STATUS
+            "Downloaded file too small (${_aar_size} bytes), retrying"
+          )
           file(REMOVE "${_ytdlp_aar_path}")
         endif()
       else()
