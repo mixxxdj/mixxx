@@ -35,17 +35,32 @@ void EngineXfader::getXfadeGains(double xfadePosition,
         xfadePositionRight = xfadePosition + powerCalibration;
     }
 
-    if (xfadePositionLeft < 0) { // on left side
-        xfadePositionLeft *= -1;
-        *gain2 = 1.0f - static_cast<float>(std::pow(xfadePositionLeft, transform));
-    } else {
-        *gain2 = 1.0f;
-    }
+    if (transform == 1.0) {
+        // Fast path for linear crossfader (default) to avoid expensive std::pow
+        if (xfadePositionLeft < 0) {
+            *gain2 = 1.0f + static_cast<float>(xfadePositionLeft);
+        } else {
+            *gain2 = 1.0f;
+        }
 
-    if (xfadePositionRight > 0) { // right side
-        *gain1 = 1.0f - static_cast<float>(std::pow(xfadePositionRight, transform));
+        if (xfadePositionRight > 0) {
+            *gain1 = 1.0f - static_cast<float>(xfadePositionRight);
+        } else {
+            *gain1 = 1.0f;
+        }
     } else {
-        *gain1 = 1.0f;
+        if (xfadePositionLeft < 0) { // on left side
+            xfadePositionLeft *= -1;
+            *gain2 = 1.0f - static_cast<float>(std::pow(xfadePositionLeft, transform));
+        } else {
+            *gain2 = 1.0f;
+        }
+
+        if (xfadePositionRight > 0) { // right side
+            *gain1 = 1.0f - static_cast<float>(std::pow(xfadePositionRight, transform));
+        } else {
+            *gain1 = 1.0f;
+        }
     }
 
     // prevent phase reversal

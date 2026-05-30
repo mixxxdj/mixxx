@@ -232,7 +232,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
 
     inline float tanh_approx(float input) {
         // return tanhf(input); // 142ns for process;
-        return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
+        return input / (1.0f + input * input / (3.0f + input * input / 5.0f)); // 119ns for process
     }
 
 
