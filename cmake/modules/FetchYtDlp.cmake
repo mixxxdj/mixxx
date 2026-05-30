@@ -51,9 +51,8 @@ elseif(APPLE)
   set(_ytdlp_install_name "yt-dlp")
 elseif(UNIX)
   if(ANDROID)
-    set(_ytdlp_asset "")
-    set(_ytdlp_sha256 "")
-    set(_ytdlp_install_name "")
+    # Android: skip the desktop downloader entirely.
+    # The youtubedl-android AAR is handled below in the Android block.
   else()
     set(_ytdlp_asset "yt-dlp_linux")
     set(
@@ -73,6 +72,9 @@ else()
   )
   return()
 endif()
+
+# Desktop downloader: skip entirely on Android.
+if(NOT ANDROID)
 
 set(_ytdlp_cache_dir "${CMAKE_BINARY_DIR}/_deps/yt-dlp-${YTDLP_VERSION}")
 set(_ytdlp_path "${_ytdlp_cache_dir}/${_ytdlp_install_name}")
@@ -201,8 +203,10 @@ message(
   "Mixxx will bundle yt-dlp ${YTDLP_VERSION} from ${YTDLP_BINARY_PATH}"
 )
 
+endif() # NOT ANDROID — end of desktop downloader
+
 # ---------------------------------------------------------------------------
-# Android: bundle static Python + yt-dlp zipimport as extra resources
+# Android: bundle youtubedl-android AAR (Python 3.11 runtime + yt-dlp)
 # ---------------------------------------------------------------------------
 if(ANDROID)
   set(_ytdlp_android_dir "${CMAKE_BINARY_DIR}/_deps/yt-dlp-android-${YTDLP_VERSION}")
@@ -224,13 +228,16 @@ if(ANDROID)
   # Check cache first to avoid re-downloading on every configure.
   set(_need_aar_download TRUE)
   if(EXISTS "${_ytdlp_aar_path}")
-    file(SHA256 "${_ytdlp_aar_path}" _aar_have_sha)
-    # If the file exists and is larger than 50 MB we assume it's valid
-    # (the real SHA256 check is done below on the extracted artifacts).
     file(SIZE "${_ytdlp_aar_path}" _aar_size)
     if(_aar_size GREATER 50000000)
-      set(_need_aar_download FALSE)
-      message(STATUS "Using cached youtubedl-android AAR (${_aar_size} bytes)")
+      file(SHA256 "${_ytdlp_aar_path}" _aar_have_sha)
+      if(_aar_have_sha STREQUAL _ytdlp_aar_sha256)
+        set(_need_aar_download FALSE)
+        message(STATUS "Using cached youtubedl-android AAR (${_aar_size} bytes, SHA256 verified)")
+      else()
+        message(WARNING "Cached youtubedl-android AAR has wrong SHA256 (${_aar_have_sha}), re-downloading")
+        file(REMOVE "${_ytdlp_aar_path}")
+      endif()
     else()
       file(REMOVE "${_ytdlp_aar_path}")
     endif()
@@ -249,8 +256,14 @@ if(ANDROID)
     if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_aar_path}")
       message(FATAL_ERROR "Failed to download youtubedl-android AAR: ${_dl_msg}")
     endif()
+    # Verify SHA256 of the downloaded file.
+    file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
+    if(NOT _aar_dl_sha STREQUAL _ytdlp_aar_sha256)
+      file(REMOVE "${_ytdlp_aar_path}")
+      message(FATAL_ERROR "Downloaded youtubedl-android AAR SHA256 mismatch (expected ${_ytdlp_aar_sha256}, got ${_aar_dl_sha})")
+    endif()
     file(SIZE "${_ytdlp_aar_path}" _aar_size)
-    message(STATUS "Downloaded youtubedl-android AAR (${_aar_size} bytes)")
+    message(STATUS "Downloaded and verified youtubedl-android AAR (${_aar_size} bytes)")
   endif()
 
   # Extract the AAR (it's a zip file).
