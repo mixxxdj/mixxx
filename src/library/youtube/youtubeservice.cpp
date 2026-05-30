@@ -51,12 +51,19 @@ const QString kDefaultRegion = QStringLiteral("GR");
 // (https://github.com/TeamPiped/documentation/blob/main/content/docs/public-instances/index.md)
 // for geographic spread + uptime track record. Keep the list short — every
 // extra instance only adds latency on full-failure paths.
+//
+// NOTE (2026-05-30): The Piped ecosystem is in crisis — most public
+// instances are either down or returning 0 audio streams because YouTube
+// blocks anonymous access (see Piped#3658).  We keep a short list as a
+// best-effort primary path on Android, but downloads increasingly require
+// the yt-dlp fallback.  Update this list periodically from the official
+// instances page; instances that consistently return 0 audio streams
+// should be removed.
 const QStringList kPipedInstances = {
         QStringLiteral("https://api.piped.private.coffee"),
-        QStringLiteral("https://pipedapi.kavin.rocks"),
-        QStringLiteral("https://api.piped.projectsegfau.lt"),
-        QStringLiteral("https://pipedapi.adminforge.de"),
-        QStringLiteral("https://pipedapi.r4fo.com"),
+        QStringLiteral("https://pipedapi-libre.kavin.rocks"),
+        QStringLiteral("https://piped-api.privacy.com.de"),
+        QStringLiteral("https://api.piped.yt"),
 };
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
@@ -257,6 +264,32 @@ QString YouTubeService::locateYtDlp() {
         kLogger.warning() << "MIXXX_YTDLP set to" << p
                           << "but that path is not executable; ignoring";
     }
+#if defined(Q_OS_ANDROID)
+    // 2. Android: the PyInstaller binary doesn't run under Bionic, so we look
+    //    for a Python interpreter + the bundled yt-dlp zipimport package.
+    //    Search order:
+    //      a) Bundled python-for-android shared lib next to mixxx libs
+    //      b) Termux or other on-device python
+    //      c) If no python found, return empty — Piped is the only option
+    const QStringList androidPythonCandidates = {
+        // Bundled p4a python (if user built with ANDROID_PYTHON_FOR_ANDROID_PATH)
+        QStringLiteral("libpython3.so"),
+        // Termux (the most common way to get python on Android)
+        QStringLiteral("/data/data/com.termux/files/usr/bin/python3"),
+        QStringLiteral("/data/data/com.termux/files/usr/bin/python"),
+        // User-installed python builds
+        QStringLiteral("/system/bin/python3"),
+        QStringLiteral("/system/xbin/python3"),
+    };
+    for (const QString& candidate : std::as_const(androidPythonCandidates)) {
+        if (QFileInfo(candidate).isExecutable()) {
+            kLogger.info() << "Android: found Python at" << candidate;
+            return candidate;  // caller will use this as python, not yt-dlp binary
+        }
+    }
+    kLogger.info() << "Android: no bundled/on-device python found; yt-dlp unavailable";
+    return QString();
+#else
     // 2. Bundled-next-to-binary + common install dirs.
     const QStringList fallbackBins = ytDlpFallbackBins();
     for (const QString& candidate : std::as_const(fallbackBins)) {
@@ -271,6 +304,7 @@ QString YouTubeService::locateYtDlp() {
         return fromPath;
     }
     return QString();
+#endif
 }
 
 // =============================================================================
@@ -810,7 +844,34 @@ void YouTubeService::searchViaYtDlp(const QString& query, int cap) {
 void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cacheDir) {
     const QString outTemplate =
             QDir(cacheDir).filePath(QStringLiteral("%(id)s.%(ext)s"));
+
+#if defined(Q_OS_ANDROID)
+    // On Android, m_ytDlpPath may point to a Python interpreter rather than
+    // the yt-dlp PyInstaller binary.  Detect this by checking if the filename
+    // looks like a python binary, and if so prepend it as the script arg.
+    const bool isPythonInterpreter =
+            m_ytDlpPath.endsWith(QStringLiteral("python"), Qt::CaseInsensitive) ||
+            m_ytDlpPath.endsWith(QStringLiteral("python3"), Qt::CaseInsensitive);
+
+    QStringList args;
+    if (isPythonInterpreter) {
+        // Find the bundled yt-dlp zipimport package (downloaded at configure
+        // time and installed into the app data directory).
+        const QString ytDlpZip = QStandardPaths::locate(
+                QStandardPaths::AppDataLocation,
+                QStringLiteral("yt-dlp/__main__.py"),
+                QStandardPaths::LocateFile);
+        if (ytDlpZip.isEmpty()) {
+            Q_EMIT downloadFailed(videoId,
+                    tr("Python found (%1) but no bundled yt-dlp package").arg(m_ytDlpPath));
+            return;
+        }
+        args.append(ytDlpZip);
+    }
+    args.append({
+#else
     const QStringList args = {
+#endif
             QStringLiteral("-f"),
             QStringLiteral("bestaudio"),
             QStringLiteral("--no-playlist"),
@@ -825,7 +886,10 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             QStringLiteral("after_move:filepath"),
             QStringLiteral("--"),
             QStringLiteral("https://www.youtube.com/watch?v=") + videoId,
-    };
+    });
+#if !defined(Q_OS_ANDROID)
+    }
+#endif
     runYtDlp(
             args,
             kDownloadTimeoutMs,

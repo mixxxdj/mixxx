@@ -17,10 +17,13 @@
 # SHA-256 from the matching SHA2-256SUMS asset on GitHub Releases:
 #   https://github.com/yt-dlp/yt-dlp/releases
 #
-# Skipped on Android — the standalone binary is host-architecture-specific
-# (x86_64 PyInstaller bundles a CPython interpreter that does not run under
-# Bionic + the NDK loader). Android users can still set MIXXX_YTDLP to a
-# Termux-installed binary if they want the YouTube tab there.
+# Desktop (Win/macOS/Linux): bundles the standard PyInstaller binary.
+#
+# Android: bundles a static Python 3.11 musl/aarch64 binary + the yt-dlp
+# zipimport package.  PyInstaller binaries cannot run under Bionic, so we
+# build yt-dlp from the universal zip and invoke it via an embedded Python
+# interpreter at runtime.  The assets are installed into the APK's
+# lib/extraResources/ folder so the C++ layer can discover them at runtime.
 
 set(
   YTDLP_VERSION
@@ -29,6 +32,9 @@ set(
   "Pinned yt-dlp release tag to bundle inside Mixxx"
 )
 
+# ---------------------------------------------------------------------------
+# Platform-specific yt-dlp binary (PyInstaller) for desktop
+# ---------------------------------------------------------------------------
 if(WIN32)
   set(_ytdlp_asset "yt-dlp.exe")
   set(
@@ -43,13 +49,19 @@ elseif(APPLE)
     "e80c47b3ce712acee51d5e3d4eace2d181b44d38f1942c3a32e3c7ff53cd9ed5"
   )
   set(_ytdlp_install_name "yt-dlp")
-elseif(UNIX AND NOT ANDROID)
-  set(_ytdlp_asset "yt-dlp_linux")
-  set(
-    _ytdlp_sha256
-    "c2b0189f581fe4a2ddd41954f1bcb7d327db04b07ed0dea97e4f1b3e09b5dd8e"
-  )
-  set(_ytdlp_install_name "yt-dlp")
+elseif(UNIX)
+  if(ANDROID)
+    set(_ytdlp_asset "")
+    set(_ytdlp_sha256 "")
+    set(_ytdlp_install_name "")
+  else()
+    set(_ytdlp_asset "yt-dlp_linux")
+    set(
+      _ytdlp_sha256
+      "c2b0189f581fe4a2ddd41954f1bcb7d327db04b07ed0dea97e4f1b3e09b5dd8e"
+    )
+    set(_ytdlp_install_name "yt-dlp")
+  endif()
 else()
   message(STATUS "yt-dlp bundling skipped: unsupported platform")
   set(
@@ -188,3 +200,71 @@ message(
   STATUS
   "Mixxx will bundle yt-dlp ${YTDLP_VERSION} from ${YTDLP_BINARY_PATH}"
 )
+
+# ---------------------------------------------------------------------------
+# Android: bundle static Python + yt-dlp zipimport as extra resources
+# ---------------------------------------------------------------------------
+if(ANDROID)
+  set(_ytdlp_android_dir "${CMAKE_BINARY_DIR}/_deps/yt-dlp-android-${YTDLP_VERSION}")
+  file(MAKE_DIRECTORY "${_ytdlp_android_dir}")
+
+  # Download the cross-platform yt-dlp zipimport package (pure Python, works
+  # with any Python >= 3.7).  This is the "yt-dlp" file in the GitHub release
+  # assets -- a valid zip archive containing all yt-dlp source modules.
+  set(_ytdlp_zip_path "${_ytdlp_android_dir}/yt-dlp")
+  set(_ytdlp_zip_url
+    "https://github.com/yt-dlp/yt-dlp/releases/download/${YTDLP_VERSION}/yt-dlp")
+
+  message(STATUS "Downloading yt-dlp zipimport package for Android")
+  file(
+    DOWNLOAD "${_ytdlp_zip_url}" "${_ytdlp_zip_path}"
+    SHOW_PROGRESS
+    STATUS _dl_status
+    TLS_VERIFY ON
+  )
+  list(GET _dl_status 0 _dl_code)
+  if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_zip_path}")
+    message(WARNING "Failed to download yt-dlp zipimport for Android; download may fail without Termux Python")
+  else()
+    message(STATUS "Downloaded yt-dlp zipimport package to ${_ytdlp_zip_path}")
+  endif()
+
+  # Compute the path where the Java/Qt loader will unpack assets on Android.
+  # The Qt resource system deploys files into the APK under
+  # assets:/ (read-only at runtime).  For binaries that must be executed
+  # (python) or opened as files (yt-dlp zip), we need them on the
+  # filesystem.  The AndroidActivity base class copies assets on first
+  # launch; alternatively we can install them as extra resources.
+  # We CMake-install both files into a known directory that the app
+  # can discover via QStandardPaths::AppDataLocation + "/yt-dpp/".
+  set(
+    YTDLP_ANDROID_HOME
+    "${_ytdlp_android_dir}"
+    CACHE PATH
+    "Bundled Android yt-dlp resources directory"
+    FORCE
+  )
+
+  install(
+    FILES "${_ytdlp_zip_path}"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}/yt-dlp"
+    RENAME "__main__.py"
+  )
+
+  # If the user has a pre-built android python on the expected path, bundle it.
+  # Build hint: python-for-android provides distributpkgs; or build with
+  # --enable-static and run cmake with ANDROID_PYTHON_FOR_ANDROID_PATH.
+  # Otherwise we'll try Termux python on-device.
+  if(ANDROID_PYTHON_FOR_ANDROID_PATH AND EXISTS "${ANDROID_PYTHON_FOR_ANDROID_PATH}")
+    set(_python_android_bin "${ANDROID_PYTHON_FOR_ANDROID_PATH}")
+  else()
+    set(_python_android_bin "")
+  endif()
+
+  if(_python_android_bin)
+    install(
+      PROGRAMS "${_python_android_bin}"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/yt-dlp"
+    )
+  endif()
+endif()

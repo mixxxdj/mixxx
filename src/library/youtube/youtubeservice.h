@@ -42,18 +42,15 @@ struct YouTubeVideoInfo {
 ///      Pure Qt over HTTPS — no native dependency, no bundled binary, no
 ///      JNI bridge.
 ///
-///   2. **Bundled `yt-dlp`** (defense in depth on desktop). On Linux/macOS
+///   2. **Bundled `yt-dlp`** (defense in depth on all platforms). On Linux/macOS
 ///      /Windows the install layout ships the official self-contained
 ///      `yt-dlp` PyInstaller binary next to the Mixxx executable (see
-///      cmake/modules/FetchYtDlp.cmake). YouTubeService prefers the bundled
-///      copy, then the user's PATH, then a list of common install dirs, then
-///      `MIXXX_YTDLP`. Used only when every Piped instance is unreachable —
-///      e.g. when an ISP / corporate network blocks the public Piped
-///      instances but the user can still hit youtube.com directly.
-///
-/// On Android the standalone yt-dlp binary doesn't exist (it's a glibc
-/// PyInstaller bundle), so we only use Piped there. That's still "out of
-/// the box" because Piped needs no client-side install at all.
+///      cmake/modules/FetchYtDlp.cmake). On Android we bundle the yt-dlp
+///      zipimport package and look for a Python interpreter (bundled p4a,
+///      Termux, or system). YouTubeService prefers the bundled copy, then
+///      the user's PATH, then a list of common install dirs, then
+///      `MIXXX_YTDLP`. Used when Piped instances are unreachable or return
+///      no audio streams.
 class YouTubeService : public QObject {
     Q_OBJECT
   public:
@@ -86,10 +83,11 @@ class YouTubeService : public QObject {
     /// SponsorBlock API at sponsor.ajay.app.
     void fetchSponsorSegments(const QString& videoId);
 
-    /// Absolute path to the yt-dlp binary that will be used as the desktop
-    /// fallback, or empty if none was found. Empty is normal on Android (and
-    /// on desktops where the user removed the bundled copy) and does NOT
-    /// indicate that the YouTube tab is broken — Piped is the primary path.
+    /// Absolute path to the yt-dlp binary (desktop) or Python interpreter
+    /// (Android, used to run the bundled yt-dlp zipimport package). Empty
+    /// if none was found. Empty is normal when no Python is available on
+    /// Android and does NOT indicate that the YouTube tab is broken — Piped
+    /// remains the primary path.
     QString ytDlpPath() const {
         return m_ytDlpPath;
     }
