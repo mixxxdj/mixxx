@@ -980,6 +980,10 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
 }
 
 void Track::shiftCuePositionsMillis(double milliseconds) {
+    if (milliseconds == 0) {
+        return;
+    }
+
     auto locked = lockMutex(&m_qMutex);
 
     VERIFY_OR_DEBUG_ASSERT(m_record.getStreamInfoFromSource()) {
@@ -989,6 +993,94 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
+
+    markDirtyAndUnlock(&locked);
+}
+
+void Track::shiftHotcuePositionMillis(int hotcue, double milliseconds) {
+    if (milliseconds == 0) {
+        return;
+    }
+
+    auto locked = lockMutex(&m_qMutex);
+
+    CuePointer pHotcue = findHotcueByIndex(hotcue);
+    if (!pHotcue) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_record.getStreamInfoFromSource()) {
+        return;
+    }
+    double frames = m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(milliseconds);
+
+    const auto dur = m_record.getStreamInfoFromSource()->getDuration();
+    const auto totalFrames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    dur.toDoubleMillis());
+    const auto endPos = pHotcue->getPosition();
+    if (endPos + frames >= mixxx::audio::FramePos(totalFrames)) {
+        qWarning() << "Rejecting to shift hotcue" << hotcue << "past the track end";
+        return;
+    }
+    pHotcue->shiftPositionFrames(frames);
+
+    markDirtyAndUnlock(&locked);
+}
+
+void Track::shiftHotcuePositionBeats(int hotcue, int direction) {
+    if (direction == 0) {
+        return;
+    }
+    if (!m_pBeats) {
+        return;
+    }
+    direction = direction > 0 ? 1 : -1;
+
+    auto locked = lockMutex(&m_qMutex);
+    CuePointer pHotcue = findHotcueByIndex(hotcue);
+    if (!pHotcue) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_record.getStreamInfoFromSource()) {
+        return;
+    }
+
+    auto currPos = pHotcue->getPosition();
+    VERIFY_OR_DEBUG_ASSERT(currPos.isValid()) {
+        return;
+    };
+
+    // This is called by `shift_focused_hotcue_later|earlier[_small]` when
+    // `quantize` is enabled.
+    // Hence the purpose is to shift the cue to the prev or next beat position.
+    // In case the cue is currently not quantized (like when cue has been set
+    // without quantize or beatgrid has been shifted since setting it) we shift
+    // it to the closest beat first.
+    // The user may then shift to the prev/next beat.
+
+    // If the cue is be exactly on a beat findNthBeat(pos, n) would return that
+    // same position. In that case we need to look one beat further.
+    auto newPos = currPos;
+    int offset = 1;
+    while (newPos == currPos) {
+        VERIFY_OR_DEBUG_ASSERT(offset <= 2) {
+            qWarning() << "Could not shift cue point, couldn't find next/prev beat";
+            return;
+        }
+        newPos = m_pBeats->findNthBeat(currPos, direction * offset);
+        offset++;
+    }
+
+    const auto dur = m_record.getStreamInfoFromSource()->getDuration();
+    const auto totalFrames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    dur.toDoubleMillis());
+    if (newPos >= mixxx::audio::FramePos(totalFrames)) {
+        qWarning() << "Rejecting to shift hotcue" << hotcue << "past the track end";
+        return;
+    }
+
+    pHotcue->shiftPositionFrames(newPos - currPos);
 
     markDirtyAndUnlock(&locked);
 }
