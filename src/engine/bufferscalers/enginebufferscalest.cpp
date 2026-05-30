@@ -99,13 +99,20 @@ void EngineBufferScaleST::onSignalChanged() {
     if (!getOutputSignal().isValid()) {
         return;
     }
-    m_pSoundTouch->setSampleRate(getOutputSignal().getSampleRate());
-    m_pSoundTouch->setChannels(getOutputSignal().getChannelCount());
 
-    // Setting the tempo to a very low value will force SoundTouch
-    // to preallocate buffers large enough to (almost certainly)
-    // avoid memory reallocations during playback.
-    m_pSoundTouch->setTempo(0.1);
+    // SoundTouch::setSampleRate and setChannels can trigger internal
+    // re-allocations. We should only call them if the signal format has
+    // actually changed.
+    if (m_pSoundTouch->getInputSampleRate() != getOutputSignal().getSampleRate() ||
+            m_pSoundTouch->getInputOutputChannels() != getOutputSignal().getChannelCount()) {
+        m_pSoundTouch->setSampleRate(getOutputSignal().getSampleRate());
+        m_pSoundTouch->setChannels(getOutputSignal().getChannelCount());
+
+        // Setting the tempo to a very low value will force SoundTouch
+        // to preallocate buffers large enough to (almost certainly)
+        // avoid memory reallocations during playback.
+        m_pSoundTouch->setTempo(0.1);
+    }
     m_pSoundTouch->setTempo(m_dTempoRatio);
     clear();
 }

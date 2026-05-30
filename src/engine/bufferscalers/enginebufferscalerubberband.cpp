@@ -95,9 +95,10 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
 }
 
 void EngineBufferScaleRubberBand::onSignalChanged() {
-    // TODO: Resetting the sample rate will cause internal
-    // memory allocations that may block the real-time thread.
-    // When is this function actually invoked??
+    // NOTE: Resetting the sample rate will cause internal memory allocations
+    // that may block the real-time thread. This is typically invoked during
+    // track loading or sample rate changes in the preferences, which are
+    // non-real-time events. However, we should avoid redundant re-initialization.
     if (!getOutputSignal().isValid()) {
         return;
     }
@@ -133,10 +134,20 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
     }
 #endif
 
-    m_rubberBand.setup(
-            getOutputSignal().getSampleRate(),
-            getOutputSignal().getChannelCount(),
-            rubberbandOptions);
+    // Check if re-initialization is actually necessary to avoid redundant
+    // allocations.
+    if (m_rubberBand.isValid() &&
+            m_rubberBand.getSampleRate() == getOutputSignal().getSampleRate() &&
+            m_rubberBand.getChannelCount() == getOutputSignal().getChannelCount()) {
+        // Options are not easily queryable, so we still clear to be safe
+        // but avoid a full setup() if the signal format hasn't changed.
+        m_rubberBand.clear();
+    } else {
+        m_rubberBand.setup(
+                getOutputSignal().getSampleRate(),
+                getOutputSignal().getChannelCount(),
+                rubberbandOptions);
+    }
     // Setting the time ratio to a very high value will cause RubberBand
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.

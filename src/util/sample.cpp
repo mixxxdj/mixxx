@@ -207,8 +207,8 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         const CSAMPLE_GAIN start_gain2 = gain2Old + gain2Delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            pBuffer[i * 2] *= (start_gain1 + gain1Delta * i);
-            pBuffer[i * 2 + 1] *= (start_gain2 + gain2Delta * i);
+            pBuffer[i * 2] *= (start_gain1 + gain1Delta * static_cast<float>(i));
+            pBuffer[i * 2 + 1] *= (start_gain2 + gain2Delta * static_cast<float>(i));
         }
     } else {
         // note: LOOP VECTORIZED.
@@ -987,18 +987,37 @@ void SampleUtil::copy2WithRampingGain(CSAMPLE* M_RESTRICT pDest,
         copy1WithRampingGain(pDest, pSrc0, gain0in, gain0out, iNumSamples);
         return;
     }
-    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / static_cast<float>(iNumSamples / 2);
+    const float fNumFrames = static_cast<float>(iNumSamples / 2);
+    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / fNumFrames;
     const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
-    const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / static_cast<float>(iNumSamples / 2);
+    const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / fNumFrames;
     const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples / 2; ++i) {
-        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
-        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * static_cast<float>(i);
-        pDest[i * 2] = pSrc0[i * 2] * gain0 +
-                pSrc1[i * 2] * gain1;
-        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
-                pSrc1[i * 2 + 1] * gain1;
+
+    if (gain_delta0 == 0.0f && gain0in == CSAMPLE_GAIN_ONE) {
+        // Fast path for Dry+Wet where dry gain is unity
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] + pSrc1[i * 2] * gain1;
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] + pSrc1[i * 2 + 1] * gain1;
+        }
+    } else if (gain_delta1 == 0.0f && gain1in == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] * gain0 + pSrc1[i * 2];
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 + pSrc1[i * 2 + 1];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
+            const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                    pSrc1[i * 2] * gain1;
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                    pSrc1[i * 2 + 1] * gain1;
+        }
     }
 }
 // static

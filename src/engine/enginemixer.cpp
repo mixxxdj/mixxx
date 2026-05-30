@@ -535,15 +535,28 @@ void EngineMixer::process(const std::size_t bufferSize) {
     }
 
     if (mainEnabled) {
-        // Mix the crossfader orientation buffers together into the main mix
-        SampleUtil::copy3WithGain(m_main.data(),
-                m_outputBusBuffers[EngineChannel::LEFT].data(),
-                1.0f,
-                m_outputBusBuffers[EngineChannel::CENTER].data(),
-                1.0f,
-                m_outputBusBuffers[EngineChannel::RIGHT].data(),
-                1.0f,
-                static_cast<int>(bufferSize));
+        // Mix the crossfader orientation buffers together into the main mix.
+        // If only one orientation is active, we can skip the expensive 3-way mix.
+        bool leftIn = !m_activeBusChannels[EngineChannel::LEFT].isEmpty();
+        bool centerIn = !m_activeBusChannels[EngineChannel::CENTER].isEmpty();
+        bool rightIn = !m_activeBusChannels[EngineChannel::RIGHT].isEmpty();
+
+        if (leftIn && !centerIn && !rightIn) {
+            m_main.copy(m_outputBusBuffers[EngineChannel::LEFT], bufferSize);
+        } else if (!leftIn && centerIn && !rightIn) {
+            m_main.copy(m_outputBusBuffers[EngineChannel::CENTER], bufferSize);
+        } else if (!leftIn && !centerIn && rightIn) {
+            m_main.copy(m_outputBusBuffers[EngineChannel::RIGHT], bufferSize);
+        } else {
+            SampleUtil::copy3WithGain(m_main.data(),
+                    m_outputBusBuffers[EngineChannel::LEFT].data(),
+                    1.0f,
+                    m_outputBusBuffers[EngineChannel::CENTER].data(),
+                    1.0f,
+                    m_outputBusBuffers[EngineChannel::RIGHT].data(),
+                    1.0f,
+                    static_cast<int>(bufferSize));
+        }
 
         MicMonitorMode configuredMicMonitorMode = static_cast<MicMonitorMode>(
             static_cast<int>(m_pMicMonitorMode->get()));
