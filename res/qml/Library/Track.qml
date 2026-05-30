@@ -57,7 +57,17 @@ Item {
                     delegate: MenuItem {
                         text: qsTr("Deck %1").arg(modelData + 1)
 
-                        onTriggered: Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`).loadTrack(track)
+                        onTriggered: {
+                            const player = Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`);
+                            if (track) {
+                                player.loadTrack(track);
+                            } else if (file_url) {
+                                // YouTube placeholder tracks have no TrackPointer;
+                                // load via URL so the YouTube feature can download
+                                // and stream to the deck.
+                                player.loadTrackFromLocationUrl(file_url);
+                            }
+                        }
                     }
 
                     onObjectAdded: (index, object) => loadToDeckMenu.insertItem(index, object)

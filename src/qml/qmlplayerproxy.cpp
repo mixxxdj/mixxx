@@ -56,7 +56,10 @@ void QmlPlayerProxy::loadTrackFromLocationUrl(const QUrl& trackLocationUrl, bool
     if (trackLocationUrl.isLocalFile()) {
         loadTrackFromLocation(trackLocationUrl.toLocalFile(), play);
     } else {
-        qWarning() << "QmlPlayerProxy: URL" << trackLocationUrl << "is not a local file!";
+        // Non-local URLs (e.g. youtube://) must be forwarded as-is so the
+        // PlayerManager → Library → YouTubeFeature pipeline can handle the
+        // download and load to the target deck.
+        Q_EMIT loadTrackFromLocationRequested(trackLocationUrl.toString(), play);
     }
 }
 
