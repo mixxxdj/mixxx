@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
-        <name>DDJ-FLX10 PROD</name>
+        <name>DDJ-FLX10 Native Waveform</name>
         <author>Marc Zischka</author>
         <description>DDJ-FLX10 mapping v1.0.1 - Compatible Mixxx 2.3.6+ </description>
     </info>
