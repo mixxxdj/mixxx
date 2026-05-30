@@ -744,8 +744,8 @@ void EngineMixer::process(const std::size_t bufferSize) {
         }
 
         // Balance values
-        CSAMPLE balright = 1.;
-        CSAMPLE balleft = 1.;
+        CSAMPLE balright = 1.0f;
+        CSAMPLE balleft = 1.0f;
         const auto bal = static_cast<CSAMPLE_GAIN>(m_pBalance->get());
         if (bal > 0.) {
             balleft -= bal;

@@ -120,7 +120,7 @@ void EngineSideChain::run() {
                                                  SIDECHAIN_BUFFER_SIZE))) {
             Trace process("EngineSideChain::process");
             MMutexLocker locker(&m_workerLock);
-            foreach (SideChainWorker* pWorker, m_workers) {
+            for (SideChainWorker* pWorker : m_workers) {
                 pWorker->process(m_pWorkBuffer, samples_read);
             }
         }

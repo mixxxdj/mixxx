@@ -97,15 +97,17 @@ class ScannerGlobal {
     }
 
     bool shouldCancel() const {
-        return m_shouldCancel;
+        return m_shouldCancel.load();
     }
 
+    // This is used for database layer compatibility (TrackDAO)
+    // which has not yet been modernized to std::atomic.
     volatile const bool* shouldCancelPointer() const {
-        return &m_shouldCancel;
+        return reinterpret_cast<volatile const bool*>(&m_shouldCancel);
     }
 
     void cancel() {
-        m_shouldCancel = true;
+        m_shouldCancel.store(true);
     }
 
     bool scanFinishedCleanly() const {
@@ -201,7 +203,7 @@ class ScannerGlobal {
     QStringList m_addedTracks;
 
     std::atomic<bool> m_scanFinishedCleanly;
-    volatile bool m_shouldCancel;
+    std::atomic<bool> m_shouldCancel;
 
     // Stats tracking.
     PerformanceTimer m_timer;
