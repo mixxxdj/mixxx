@@ -46,8 +46,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void previous();
 
   protected:
-    // used to set the maximum size of the cover label
+    // used to set the maximum size of the cover label and the star rating
     void resizeEvent(QResizeEvent* pEvent) override;
+    void showEvent(QShowEvent* pEvent) override;
 
   private slots:
     void slotNextButton();
@@ -93,6 +94,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void saveTrack();
     void clear();
     void init();
+
+    void adjustWidgetSizes();
 
     void updateKeyText();
     void displayKeyText();
