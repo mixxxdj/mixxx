@@ -51,29 +51,32 @@ void EngineDelay::slotDelayChanged() {
 }
 
 void EngineDelay::process(CSAMPLE* pInputOutput, const std::size_t bufferSize) {
-    if (m_iDelay > 0) {
-        // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
-        // From a mathematical point of view, this addition can be removed. Anyway,
-        // from the cpp point of view, the modulo operator for negative values
-        // (for example, x % y, where x is a negative value) produces negative results
-        // (but in math the result value is positive).
-        int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
+    if (m_iDelay <= 0) {
+        return;
+    }
 
-        VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos >= 0) {
-            return;
+    // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
+    int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
+
+    VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos >= 0 && iDelaySourcePos < kiMaxDelay) {
+        return;
+    }
+
+    for (std::size_t i = 0; i < bufferSize; ++i) {
+        // put sample into delay buffer:
+        m_delayBuffer[m_iDelayPos] = pInputOutput[i];
+
+        // Take delayed sample from delay buffer and copy it to dest buffer:
+        pInputOutput[i] = m_delayBuffer[iDelaySourcePos];
+
+        // Increment indices without using expensive modulo (%) in the inner loop
+        m_iDelayPos++;
+        if (m_iDelayPos >= kiMaxDelay) {
+            m_iDelayPos = 0;
         }
-        VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos <= kiMaxDelay) {
-            return;
-        }
-
-        for (std::size_t i = 0; i < bufferSize; ++i) {
-            // put sample into delay buffer:
-            m_delayBuffer[m_iDelayPos] = pInputOutput[i];
-            m_iDelayPos = (m_iDelayPos + 1) % kiMaxDelay;
-
-            // Take delayed sample from delay buffer and copy it to dest buffer:
-            pInputOutput[i] = m_delayBuffer[iDelaySourcePos];
-            iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
+        iDelaySourcePos++;
+        if (iDelaySourcePos >= kiMaxDelay) {
+            iDelaySourcePos = 0;
         }
     }
 }
