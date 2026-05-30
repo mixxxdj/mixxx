@@ -225,8 +225,10 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     KeyChangeList key_changes = m_pPlugin->getKeyChanges();
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysisEnabled);
-    Keys track_keys = KeyFactory::makePreferredKeys(
-            key_changes, extraVersionInfo, m_sampleRate, m_totalFrames);
+    Keys track_keys = KeyFactory::makePreferredKeys(key_changes,
+            extraVersionInfo,
+            m_sampleRate,
+            m_totalFrames);
     tio->setKeys(track_keys);
 }
 
