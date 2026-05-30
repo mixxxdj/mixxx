@@ -64,6 +64,7 @@ mixxx::cache_key_t LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
 
 void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, mixxx::cache_key_t hash) {
     //qDebug() << "LibraryHashDAO::saveDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    qWarning() << "--------- saveDirectoryHash" << dirPath;
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO LibraryHashes (directory_path, hash, directory_deleted) "
                     "VALUES (:directory_path, :hash, :directory_deleted)");
@@ -75,12 +76,14 @@ void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, mixxx::cache_key_
         LOG_FAILED_QUERY(query) << "Creating new dirhash failed.";
     }
     //qDebug() << "created new hash" << hash;
+    qWarning() << "--------- --> test hash:" << getDirectoryHash(dirPath);
 }
 
 void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
                                          mixxx::cache_key_t newHash,
                                          int dir_deleted) {
     //qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    qWarning() << "--------- updateDirectoryHash" << dirPath;
     QSqlQuery query(m_database);
     // By definition if we have calculated a new hash for a directory then it
     // exists and no longer needs verification.
@@ -101,12 +104,36 @@ void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
     //qDebug() << getDirectoryHash(dirPath);
 }
 
+void LibraryHashDAO::clearDirectoryHash(const QString& dirPath) {
+    // qDebug() << "LibraryHashDAO::clearDirectoryHash" <<
+    // QThread::currentThread() << m_database.connectionName();
+    qWarning() << "--------- clearDirectoryHash" << dirPath;
+    QSqlQuery query(m_database);
+    query.prepare(
+            "UPDATE LibraryHashes "
+            "SET hash=:hash, needs_verification=1 "
+            "WHERE directory_path=:directory_path");
+    query.bindValue(":directory_path", dirPath);
+    query.bindValue(":hash", mixxx::invalidCacheKey());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "Clearing existing dirhash for" << dirPath << "failed.";
+    }
+    // qDebug() << "cleared existing hash for" << dirPath;
+
+    // DEBUG: Print out the directory hash we just saved to verify...
+    qWarning() << "--> test hash:" << getDirectoryHash(dirPath);
+}
+
 void LibraryHashDAO::updateDirectoryStatuses(const QStringList& dirPaths,
                                              const bool deleted,
                                              const bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
     FieldEscaper escaper(m_database);
     QStringList escapedDirPaths = escaper.escapeStrings(dirPaths);
+    qWarning() << "--------- updateDirectoryStatuses: deleted:" << deleted
+               << "| verified:" << verified;
+    qWarning() << "--------- dirs:" << dirPaths.join(',');
 
     QSqlQuery query(m_database);
     query.prepare(

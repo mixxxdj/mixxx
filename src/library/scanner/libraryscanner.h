@@ -118,6 +118,13 @@ class LibraryScanner : public QThread {
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
 
+    // this is for tracking directories where we didn't manage to add all files
+    // before the scan has been canceled
+    QStringList m_unfinishedDirectories;
+
     QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
+
+    bool m_canceled;
+    int m_trackCancelCounter;
 };

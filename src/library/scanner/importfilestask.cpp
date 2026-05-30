@@ -25,6 +25,7 @@ void ImportFilesTask::run() {
     for (const QFileInfo& fileInfo: m_filesToImport) {
         // If a flag was raised telling us to cancel the library scan then stop.
         if (m_scannerGlobal->shouldCancel()) {
+            qWarning() << "--- ImportFilesTask cancel, setSuccess FALSE";
             setSuccess(false);
             return;
         }
@@ -53,6 +54,8 @@ void ImportFilesTask::run() {
         }
     }
     // Insert or update the hash in the database.
+    qWarning() << "--- ImportFilesTask: emit directoryHashedAndScanned" << m_dirPath;
     emit directoryHashedAndScanned(m_dirPath, !m_prevHashExists, m_newHash);
+    qWarning() << "--- ImportFilesTask: setSuccess TRUE";
     setSuccess(true);
 }
