@@ -1192,6 +1192,7 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void BpmControl::trackBpmLockChanged(bool locked) {
+    // This is called by EngineBuffer after receiving Track::bpmLockChanged() signal
     m_pBpmLock->setAndConfirm(locked);
     if (locked) {
         m_pBeatsUndoPossible->forceSet(0);
@@ -1255,7 +1256,8 @@ void BpmControl::slotToggleBpmLock(double v) {
     }
     bool locked = pTrack->isBpmLocked();
     pTrack->setBpmLocked(!locked);
-    // The pushbutton is updated in trackBpmLockChanged() via bpmLockChanged() signal.
+    // Track emits bpmLockChanged() signal, and EngineBuffer updates the pushbutton
+    // by calling trackBpmLockChanged()
 }
 
 mixxx::Bpm BpmControl::updateLocalBpm() {
