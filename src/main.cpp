@@ -28,6 +28,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #endif
 #include "mixxxmainwindow.h"
+#include "preferences/configobject.h"
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
