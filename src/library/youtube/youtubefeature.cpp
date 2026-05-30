@@ -471,7 +471,8 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
                     QDir::Files | QDir::NoDotAndDotDot);
     for (const QString& f : existing) {
         if (f.endsWith(QStringLiteral(".info.json")) ||
-                f.endsWith(QStringLiteral(".sponsor.json"))) {
+                f.endsWith(QStringLiteral(".sponsor.json")) ||
+                f.endsWith(QStringLiteral(".part"))) {
             continue;
         }
         onDownloadFinished(videoId, dir.filePath(f));
@@ -842,7 +843,8 @@ void YouTubeFeature::rebuildSidebar() {
                 // is loadable. Without this guard, depending on filesystem
                 // sort order we could wire the sidebar entry to a JSON file.
                 if (f.endsWith(QStringLiteral(".info.json")) ||
-                        f.endsWith(QStringLiteral(".sponsor.json"))) {
+                        f.endsWith(QStringLiteral(".sponsor.json")) ||
+                        f.endsWith(QStringLiteral(".part"))) {
                     continue;
                 }
                 localPath = dir.filePath(f);
@@ -1008,7 +1010,8 @@ void YouTubeFeature::replaceTrackTable(
                         QDir::Files | QDir::NoDotAndDotDot);
         for (const QString& f : existing) {
             if (f.endsWith(QStringLiteral(".info.json")) ||
-                    f.endsWith(QStringLiteral(".sponsor.json"))) {
+                    f.endsWith(QStringLiteral(".sponsor.json")) ||
+                    f.endsWith(QStringLiteral(".part"))) {
                 continue;
             }
             location = dir.filePath(f);
