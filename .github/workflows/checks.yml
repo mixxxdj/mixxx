@@ -129,9 +129,7 @@ jobs:
             ..
         working-directory: build
       - name: Set up problem matcher
-        uses: ammaraskar/gcc-problem-matcher@0.3.0
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+        run: echo "::add-matcher::.github/gcc-matcher.json"
       - name: Build
         # Do not abort on errors and build/check the whole project
         run: cmake --build . -j $(nproc) -- --keep-going

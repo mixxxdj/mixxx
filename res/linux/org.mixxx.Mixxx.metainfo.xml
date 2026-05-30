@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.7.0" type="development" date="2026-03-13" timestamp="1773425142">
+    <release version="2.7.0" type="development" date="2026-04-03" timestamp="1775221182">
       <description>
 </description>
     </release>
-    <release version="2.6.0" type="development" date="2026-03-13" timestamp="1773425142">
+    <release version="2.6.0" type="development" date="2026-04-03" timestamp="1775221182">
       <description>
  <p>
   STEM file support
@@ -1954,7 +1954,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-03-13" timestamp="1773425142">
+    <release version="2.5.5" type="development" date="2026-04-03" timestamp="1775221182">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.

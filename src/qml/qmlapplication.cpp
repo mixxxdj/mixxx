@@ -5,6 +5,7 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QTextDocument>
+#include <utility>
 #ifndef Q_OS_ANDROID
 #include <QMessageBox>
 #include <QPushButton>
@@ -18,6 +19,7 @@
 #include "qml/qmldlgpreferencesproxy.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
+#include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 #if defined(Q_OS_ANDROID)
@@ -47,12 +49,17 @@ namespace mixxx {
 namespace qml {
 
 QmlApplication::QmlApplication(
-        QGuiApplication* app,
-        const CmdlineArgs& args)
-        : m_pCoreServices(std::make_unique<mixxx::CoreServices>(args, app)),
+        QApplication* app,
+        std::shared_ptr<CoreServices> pCoreServices,
+        const QString& mainQmlFilePath)
+        : m_pCoreServices(std::move(pCoreServices)),
           m_visualsManager(std::make_unique<VisualsManager>()),
-          m_mainFilePath(m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
+          m_pGuiTick(std::make_unique<GuiTick>()),
+          m_mainFilePath(mainQmlFilePath.isEmpty()
+                          ? m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName
+                          : mainQmlFilePath),
           m_pAppEngine(nullptr),
+          m_loadSucceeded(false),
 #if defined(Q_OS_ANDROID)
           m_perfSession(nullptr),
 #endif
@@ -72,12 +79,23 @@ QmlApplication::QmlApplication(
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");
-    // configVersion is FUTURE_UNSTABLE for fresh profiles created by the QML
-    // build's upgrade path. An empty string means the upgrade code ran but the
-    // version key was not written (should not normally happen, but we treat it
-    // safely as "new profile" to avoid a false "existing profile" error).
+
+    // The risk check guards against Mixxx 3.0 potentially running different
+    // database upgrade paths that could corrupt 2.x profiles.
+    //
+    // When a QML skin is auto-detected from preferences (--developer, no
+    // --new-ui), the underlying binary and DB schema are identical to a
+    // normal 2.x launch — there is no data corruption risk. Skip the gate.
+    //
+    // When explicitly launched with --new-ui, the full 3.0 application path
+    // is taken and the gate remains in effect as designed.
+    const bool viaNewUiFlag = CmdlineArgs::Instance().isQml();
+
     if (configVersion == VersionStore::FUTURE_UNSTABLE || configVersion.isEmpty()) {
         qDebug() << "Generating a new user profile for safe testing with unstable code";
+    } else if (!viaNewUiFlag) {
+        qDebug() << "QmlApplication: QML skin loaded via preferences, "
+                    "skipping data-corruption risk check (2.x profile is safe)";
     } else if (CmdlineArgs::Instance().isAwareOfRisk()) {
         qCritical() << "Existing user profile detected from" << configVersion
                     << "but you said you wanted to play with fire!";
@@ -166,7 +184,16 @@ QmlApplication::QmlApplication(
                     m_visualsManager->addDeckIfNotExist(group);
                 }
             });
-    loadQml(m_mainFilePath);
+
+    connect(&m_guiTickTimer, &QTimer::timeout, this, [this]() {
+        m_pGuiTick->process();
+    });
+    m_guiTickTimer.start(std::chrono::milliseconds(16));
+
+    m_loadSucceeded = loadQml(m_mainFilePath);
+    if (!m_loadSucceeded) {
+        return;
+    }
 
     m_pCoreServices->getControllerManager()->setUpDevices();
 
@@ -174,7 +201,10 @@ QmlApplication::QmlApplication(
             &QmlAutoReload::triggered,
             this,
             [this]() {
-                loadQml(m_mainFilePath);
+                if (!loadQml(m_mainFilePath)) {
+                    qWarning() << "Auto-reload failed to load QML. Exiting.";
+                    QCoreApplication::exit(-1);
+                }
             });
 
 #if defined(Q_OS_ANDROID)
@@ -220,7 +250,7 @@ QmlApplication::~QmlApplication() {
     m_pCoreServices.reset();
 }
 
-void QmlApplication::loadQml(const QString& path) {
+bool QmlApplication::loadQml(const QString& path) {
     // QQmlApplicationEngine::load creates a new window but also leaves the old one,
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
@@ -236,7 +266,9 @@ void QmlApplication::loadQml(const QString& path) {
 
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
-        qCritical() << "Failed to load QML file" << path;
+        qWarning() << "Failed to load QML file" << path;
+        m_pAppEngine.reset();
+        return false;
     }
 
 #if defined(Q_OS_ANDROID)
@@ -249,6 +281,7 @@ void QmlApplication::loadQml(const QString& path) {
         break;
     }
 #endif
+    return true;
 }
 
 } // namespace qml

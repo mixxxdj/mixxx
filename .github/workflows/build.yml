@@ -515,9 +515,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
-        uses: ammaraskar/gcc-problem-matcher@0.3.0
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+        run: echo "::add-matcher::.github/gcc-matcher.json"
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
@@ -562,7 +560,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.2.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -661,7 +659,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.2.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}

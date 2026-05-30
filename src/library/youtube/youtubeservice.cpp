@@ -44,33 +44,30 @@ const Logger kLogger("YouTubeService");
 constexpr int kSearchTimeoutMs = 30 * 1000;        // 30 s
 constexpr int kDownloadTimeoutMs = 10 * 60 * 1000; // 10 min
 // Piped HTTP requests get a tighter ceiling — each instance failure should
-// surface fast so we can fail over to the next one without burning a minute
-// per dead instance. /streams is included because it can wait on YouTube
-// upstream, but we still want to move on within ~15 s.
-constexpr int kPipedHttpTimeoutMs = 15 * 1000;
+// surface fast so we can fail over to the next one without burning too long
+// per dead instance. With 10 instances at 10s each, worst case is ~100s.
+constexpr int kPipedHttpTimeoutMs = 10 * 1000;
 constexpr int kMaxPipedSearchPages = 5;
+// SponsorBlock API timeout — prevents indefinite hangs if the service is slow.
+constexpr int kSponsorBlockTimeoutMs = 8 * 1000;
 // Project default for this fork: the requested first-open YouTube feed is Greek
 // top songs, not generic global/United States YouTube trends.
 const QString kDefaultRegion = QStringLiteral("GR");
 
 // Hardcoded list of Piped API instances tried in order on per-request
-// failure. Picked from the official Piped instance list
-// (https://github.com/TeamPiped/documentation/blob/main/content/docs/public-instances/index.md)
-// for geographic spread + uptime track record. Keep the list short — every
-// extra instance only adds latency on full-failure paths.
-//
-// NOTE (2026-05-30): The Piped ecosystem is in crisis — most public
-// instances are either down or returning 0 audio streams because YouTube
-// blocks anonymous access (see Piped#3658).  We keep a short list as a
-// best-effort primary path on Android, but downloads increasingly require
-// the yt-dlp fallback.  Update this list periodically from the official
-// instances page; instances that consistently return 0 audio streams
-// should be removed.
+// failure. Instances verified as working (both /search and /streams return
+// 200) as of 2026-05-29. Piped community instances are ephemeral — the
+// official registry at https://piped-instances.kavin.rocks/ currently lists
+// only private.coffee as active. Periodically re-verify and update this list.
+// When all Piped instances fail, the youtubedl-android bundled runtime
+// (JNI-based, no external Python needed) serves as the Android fallback.
 const QStringList kPipedInstances = {
         QStringLiteral("https://api.piped.private.coffee"),
-        QStringLiteral("https://pipedapi-libre.kavin.rocks"),
-        QStringLiteral("https://piped-api.privacy.com.de"),
-        QStringLiteral("https://api.piped.yt"),
+        QStringLiteral("https://api.piped.projectsegfau.lt"),
+        QStringLiteral("https://pipedapi.orangenet.cc"),
+        QStringLiteral("https://pi.ggtyler.dev"),
+        QStringLiteral("https://pipedapi.kavin.rocks"),
+};
 };
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
@@ -386,12 +383,36 @@ void YouTubeService::searchViaPiped(const QString& query,
         int cap,
         int instanceIdx,
         const std::function<void(const QString&)>& onAllFailed) {
+    // Try music_songs first for higher-quality results, then fall back to
+    // music_videos, then all videos if the specific filters find nothing.
+    // This ensures any song can be found regardless of YouTube's internal
+    // categorization.
     searchViaPipedWithFilter(query,
             query,
             QStringLiteral("music_songs"),
             cap,
             instanceIdx,
-            onAllFailed);
+            [this, query, cap, onAllFailed](const QString& /*lastError*/) {
+                // music_songs failed on all instances — try music_videos
+                kLogger.info() << "music_songs filter failed for" << query
+                               << "— trying music_videos";
+                searchViaPipedWithFilter(query,
+                        query,
+                        QStringLiteral("music_videos"),
+                        cap,
+                        /*instanceIdx=*/0,
+                        [this, query, cap, onAllFailed](const QString& /*lastError2*/) {
+                            // music_videos also failed — try unfiltered "videos"
+                            kLogger.info() << "music_videos filter failed for"
+                                           << query << "— trying videos";
+                            searchViaPipedWithFilter(query,
+                                    query,
+                                    QStringLiteral("videos"),
+                                    cap,
+                                    /*instanceIdx=*/0,
+                                    onAllFailed);
+                        });
+            });
 }
 
 void YouTubeService::searchViaPipedWithFilter(const QString& emittedQuery,
@@ -1110,6 +1131,7 @@ void YouTubeService::fetchSponsorSegmentsInternal(
                     .arg(videoId));
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", "Mixxx/SponsorBlock");
+    request.setTransferTimeout(kSponsorBlockTimeoutMs);
     QNetworkReply* reply = m_pNam->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, cb]() {
         reply->deleteLater();
@@ -1130,6 +1152,8 @@ void YouTubeService::fetchSponsorSegmentsInternal(
             }
         }
         // 404 just means "no segments for this video" — not an error.
+        // Timeout or network failure also yields empty segments — we don't
+        // block track loading on SponsorBlock availability.
         cb(segments);
     });
 }

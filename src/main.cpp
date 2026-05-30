@@ -28,9 +28,12 @@
 #include "waveform/waveformwidgetfactory.h"
 #endif
 #include "mixxxmainwindow.h"
+#include "preferences/configobject.h"
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
+#include "skin/skin.h"
+#include "skin/skinloader.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -45,6 +48,12 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
+#ifdef Q_OS_ANDROID
+// Flag to distinguish our programmatic QT_SCALE_FACTOR (safe default) from a
+// user-provided override. When we set it ourselves as a boot-up default,
+// maybeAutoDetectScaleFactor() must still run to adapt to the actual display.
+static bool s_androidScaleSetInternally = false;
+#endif
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kNotifyMaxDbgTimeKey = QStringLiteral("notify_max_dbg_time");
@@ -63,6 +72,7 @@ int runMixxx(QGuiApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
+    auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 #ifdef MIXXX_USE_QML
     // The user can opt in to the experimental QML UI on any platform with
     // `--qml`. On Android we used to force this on (no Qt-Widgets support
@@ -70,20 +80,32 @@ int runMixxx(QGuiApplication* pApp, const CmdlineArgs& args) {
     // DeX / large tablets the desktop skin is actually preferred), so the
     // override is now opt-in everywhere. The skin engine + LateNight skin run
     // on Android via `MixxxApplication` (QApplication) below.
-    const bool useQml = args.isQml();
-    if (useQml) {
+    QString mainQmlFilePath;
+    bool loadQml = args.isQml();
+    if (!loadQml && args.getDeveloper()) {
+        mixxx::skin::SkinLoader skinLoader(pCoreServices->getSettings());
+        const mixxx::skin::SkinPointer pSkin = skinLoader.getConfiguredSkin();
+        if (pSkin && pSkin->type() == mixxx::skin::SkinType::QML) {
+            loadQml = true;
+            mainQmlFilePath = pSkin->mainQmlFilePath();
+        }
+    }
+    if (loadQml) {
         // This is a workaround to support Qt 6.4.2, currently shipped on
         // Ubuntu 24.04 See
         // https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-2770811094
         // for further details
         qputenv("QT_QUICK_TABLEVIEW_COMPAT_VERSION", "6.4");
-        mixxx::qml::QmlApplication qmlApplication(pApp, args);
-        exitCode = pApp->exec();
+        mixxx::qml::QmlApplication qmlApplication(
+                qobject_cast<QApplication*>(pApp), pCoreServices, mainQmlFilePath);
+        if (!qmlApplication.isReady()) {
+            exitCode = kFatalErrorOnStartupExitCode;
+        } else {
+            exitCode = pApp->exec();
+        }
     } else
 #endif
     {
-        auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.
@@ -157,18 +179,34 @@ void adjustScaleFactor(CmdlineArgs* pArgs) {
     // Android phone/tablet builds run the fixed-pixel LateNight desktop skin.
     // Qt must know the scale factor before QApplication is constructed or
     // widget metrics, dialogs, menus, and fonts remain far too large for the
-    // display. We cannot inspect QScreen before QApplication exists, so use the
-    // minimum supported skin scale as a safe default that fits phones. 0.45 is
-    // the same lower bound used by maybeAutoDetectScaleFactor() below; it
-    // renders LateNight's 1280x668 nominal layout as ~576x301 logical pixels,
-    // which fits modern landscape phones without oversized Qt dialogs. Users
-    // can still override this with QT_SCALE_FACTOR in their environment.
+    // display. We cannot inspect QScreen before QApplication exists, so:
+    //
+    //   1. Use the persisted [Config]/ScaleFactor if it exists — on the
+    //      second launch with the same display this gives Qt the correct
+    //      widget scale from the start (no tiny menus on DeX).
+    //   2. Fall back to the minimum supported skin scale (0.45) as a safe
+    //      one-size-fits-phones default for first launch.
+    //
+    // maybeAutoDetectScaleFactor() still re-runs post-QApplication so the
+    // skin parser pixmaps are correct even on first launch. Persisted value
+    // matching the current display closes the Qt-widget-vs-skin scale gap.
+    auto config = ConfigObject<ConfigValue>(
+            QDir(pArgs->getSettingsPath()).filePath(MIXXX_SETTINGS_FILE),
+            QString(),
+            QString());
+    const QString strScaleFactor = config.getValue(
+            ConfigKey(kConfigGroup, kScaleFactorKey));
+    bool ok = false;
+    const double persistedScale = strScaleFactor.toDouble(&ok);
     constexpr double kAndroidDefaultScaleFactor = 0.45;
-    const QByteArray scaleFactor =
-            QByteArray::number(kAndroidDefaultScaleFactor, 'f', 2);
-    qDebug() << "Using Android default" << kScaleFactorEnvVar << scaleFactor;
-    qputenv(kScaleFactorEnvVar, scaleFactor);
-    pArgs->setScaleFactor(kAndroidDefaultScaleFactor);
+    const double scale = (ok && persistedScale > 0) ? persistedScale
+                                                    : kAndroidDefaultScaleFactor;
+    const QByteArray scaleFactorBytes =
+            QByteArray::number(scale, 'f', 2);
+    qDebug() << "Using Android ScaleFactor" << scaleFactorBytes;
+    qputenv(kScaleFactorEnvVar, scaleFactorBytes);
+    pArgs->setScaleFactor(scale);
+    s_androidScaleSetInternally = true;
     return;
 #endif
     // We cannot use SettingsManager, because it depends on MixxxApplication
@@ -228,8 +266,10 @@ void maybeAutoDetectScaleFactor(CmdlineArgs* pArgs) {
     // On Android only a user-provided environment variable is treated as
     // explicit. The value persisted from a previous Android launch is
     // intentionally ignored here so phone ↔ DeX/external-screen switches
-    // recalculate every time the app opens.
-    if (qEnvironmentVariableIsSet(kScaleFactorEnvVar) &&
+    // recalculate every time the app opens. If we set the env var ourselves
+    // as a safe pre-QApplication default, always proceed with detection.
+    if (!s_androidScaleSetInternally &&
+            qEnvironmentVariableIsSet(kScaleFactorEnvVar) &&
             !qgetenv(kScaleFactorEnvVar).isEmpty()) {
         return;
     }
@@ -241,10 +281,38 @@ void maybeAutoDetectScaleFactor(CmdlineArgs* pArgs) {
     }
     QSize screenSize = pScreen->availableSize();
 #ifdef Q_OS_ANDROID
+    // On Android, QScreen::availableSize() returns logical pixels DIVIDED by
+    // our QT_SCALE_FACTOR (which we set to 0.45 pre-QApplication). To compute
+    // the true density-independent pixel (DIP) count we must undo the effect
+    // of our own scale factor. The devicePixelRatio already accounts for the
+    // display's native density; we should NOT divide by it again because Qt
+    // already incorporated it into the logical coordinate system.
+    //
+    // Example: Samsung DeX on 1920x1080 monitor, DPR=1.5, our scale=0.45
+    //   Qt reports availableSize = 1920 / (0.45 * 1.5) ≈ 2844 logical px
+    //   We want physical DIPs = 1920 / 1.5 = 1280
+    //   So: screenSize * ourScale * DPR / DPR = screenSize * ourScale
+    //
+    // Actually, Qt6 with PassThrough applies: physicalPx = logicalPx * scaleFactor * DPR
+    //   logicalPx = physicalPx / (scaleFactor * DPR)
+    //   physicalDIPs = physicalPx / DPR = logicalPx * scaleFactor
+    //
+    // We need physicalDIPs (what the user actually sees) to calculate the
+    // proper scale for fitting the 1280x668 skin to the real display.
+    const qreal currentScaleFactor = qgetenv(kScaleFactorEnvVar).toDouble();
     const qreal devicePixelRatio = pScreen->devicePixelRatio();
-    if (devicePixelRatio > 1.0) {
-        screenSize = (QSizeF(screenSize) / devicePixelRatio).toSize();
+    if (currentScaleFactor > 0 && devicePixelRatio > 0) {
+        // Recover physical DIPs: logical * ourScale gives us the true
+        // device-independent size of the display.
+        const qreal effectiveFactor = currentScaleFactor;
+        screenSize = QSize(
+                qRound(screenSize.width() * effectiveFactor),
+                qRound(screenSize.height() * effectiveFactor));
     }
+    qDebug() << "Android screen detection: availableSize=" << pScreen->availableSize()
+             << "DPR=" << devicePixelRatio
+             << "QT_SCALE_FACTOR=" << currentScaleFactor
+             << "computed DIPs=" << screenSize;
 #endif
     if (screenSize.isEmpty()) {
         return;
@@ -286,6 +354,12 @@ void maybeAutoDetectScaleFactor(CmdlineArgs* pArgs) {
     // Apply to this run so LegacySkinParser pixmap rendering is sized
     // correctly even on the very first launch on a new display.
     pArgs->setScaleFactor(scale);
+#ifdef Q_OS_ANDROID
+    // Update QT_SCALE_FACTOR so that any Qt internal code that re-reads it
+    // (e.g. dialog font metrics) uses the auto-detected value instead of the
+    // conservative 0.45 boot default.
+    qputenv(kScaleFactorEnvVar, QByteArray::number(scale, 'f', 2));
+#endif
 
     // Persist only when it actually changed — avoids needless writes on the
     // common case where the user always opens Mixxx on the same display.
@@ -403,6 +477,46 @@ int main(int argc, char* argv[]) {
     // Auto-fit the LateNight skin to the actual screen on first launch.
     // No-op if the user already has an explicit ScaleFactor in config or env.
     maybeAutoDetectScaleFactor(&args);
+
+    // Re-run auto-detection when the screen geometry or primary screen
+    // changes (Samsung DeX connect/disconnect, external monitor
+    // plug/unplug, phone rotation). Critical on Android where DeX can
+    // switch the effective display from phone-size to desktop-size at
+    // runtime without restarting the app.
+    auto* pScreen = QGuiApplication::primaryScreen();
+    QMetaObject::Connection geometryConn;
+    if (pScreen) {
+        geometryConn = QObject::connect(pScreen,
+                &QScreen::availableGeometryChanged,
+                &app,
+                [&args]() {
+                    qDebug() << "Screen geometry changed — re-running scale detection";
+                    maybeAutoDetectScaleFactor(&args);
+                });
+    }
+    QObject::connect(&app,
+            &QGuiApplication::primaryScreenChanged,
+            &app,
+            [&args, &app, &geometryConn](QScreen* pNewScreen) {
+                if (!pNewScreen) {
+                    return;
+                }
+                qDebug() << "Primary screen changed — re-running scale detection";
+                maybeAutoDetectScaleFactor(&args);
+                // Re-wire the geometry change listener to the new screen,
+                // disconnecting the old one first to avoid duplicate listeners.
+                if (geometryConn) {
+                    QObject::disconnect(geometryConn);
+                }
+                geometryConn = QObject::connect(pNewScreen,
+                        &QScreen::availableGeometryChanged,
+                        &app,
+                        [&args]() {
+                            qDebug()
+                                    << "Screen geometry changed — re-running scale detection";
+                            maybeAutoDetectScaleFactor(&args);
+                        });
+            });
 
 #if defined(Q_OS_WIN)
     // The Mixxx style is based on Qt's WindowsVista style

@@ -43,7 +43,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void slotStemStrategyChanged(int index);
 
   private:
-    void loadSettings();
+    void updateGui();
 
     BeatDetectionSettings m_bpmSettings;
     QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
