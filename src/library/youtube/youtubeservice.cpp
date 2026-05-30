@@ -867,6 +867,7 @@ void YouTubeService::searchViaYtDlp(const QString& query, int cap) {
 }
 
 void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cacheDir) {
+    Q_UNUSED(videoId)
     const QString outTemplate =
             QDir(cacheDir).filePath(QStringLiteral("%(id)s.%(ext)s"));
 
