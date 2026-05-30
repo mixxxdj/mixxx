@@ -343,6 +343,7 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePos());
+    updateLoopCue(loopInfo);
 }
 
 void LoopingControl::slotLoopHalve(double pressed) {
@@ -688,6 +689,7 @@ void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
         m_loopInfo.setValue(loopInfo);
         m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePos());
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePos());
+        updateLoopCue(loopInfo);
     }
     setLoopingEnabled(enabled);
 
@@ -795,28 +797,17 @@ void LoopingControl::setLoopInToCurrentPosition() {
     }
 
     m_loopInfo.setValue(loopInfo);
+    updateLoopCue(loopInfo);
     //qDebug() << "set loop_in to " << loopInfo.startPosition;
 }
 
-// Clear the last active loop while saved loop (cue + info) remains untouched
+/// Clear the last active loop while saved loops (cue + info) remain untouched.
+/// This is called either when triggering the `loop_remove` CO or by
+/// Track::loopRemove() signal (relayed via CueControl and EngineBuffer)
 void LoopingControl::slotLoopRemove() {
     setLoopingEnabled(false);
+    // This also calls updateLoopCue() which removes the CuePointer from the track
     clearLoopInfoAndControls();
-    // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
-    // if the loop is valid, else it is removed.
-    // We remove it here right away so the loop is not restored
-    // when the track is loaded to another player in the meantime.
-    auto pLoadedTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pLoadedTrack) {
-        return;
-    }
-    const QList<CuePointer> cuePoints = pLoadedTrack->getCuePoints();
-    for (const auto& pCue : cuePoints) {
-        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
-            pLoadedTrack->removeCue(pCue);
-            return;
-        }
-    }
 }
 
 void LoopingControl::clearLoopInfoAndControls() {
@@ -825,6 +816,7 @@ void LoopingControl::clearLoopInfoAndControls() {
     m_oldLoopInfo = loopInfo;
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    updateLoopCue(loopInfo);
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
@@ -945,6 +937,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     loopInfo.endPosition = position;
 
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    updateLoopCue(loopInfo);
 
     // start looping
     if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
@@ -1150,6 +1143,7 @@ void LoopingControl::slotLoopStartPos(double positionSamples) {
 
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_loopInfo.setValue(loopInfo);
+    updateLoopCue(loopInfo);
 }
 
 void LoopingControl::slotLoopEndPos(double positionSamples) {
@@ -1180,6 +1174,7 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
     loopInfo.seekMode = LoopSeekMode::MovedOut;
     m_pCOLoopEndPosition->set(position.toEngineSamplePosMaybeInvalid());
     m_loopInfo.setValue(loopInfo);
+    updateLoopCue(loopInfo);
 }
 
 // This is called from the engine thread
@@ -1672,6 +1667,7 @@ void LoopingControl::slotBeatLoop(double beats,
     emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
     m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
     m_pCOLoopEndPosition->set(newloopInfo.endPosition.toEngineSamplePos());
+    updateLoopCue(newloopInfo);
 
     if (enable) {
         setLoopingEnabled(true);
@@ -1835,7 +1831,39 @@ void LoopingControl::slotLoopMove(double beats) {
         emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
         m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+        updateLoopCue(loopInfo);
     }
+}
+
+void LoopingControl::updateLoopCue(const LoopInfo& loopInfo) {
+    // Skip if we don't have a track.
+    // Also skip in tests where we only have fake tracks w/o location.
+    if (!m_pTrack || m_pTrack->getLocation().isEmpty()) {
+        return;
+    }
+
+    // We need valid start/end and start < end for a loop cue
+    if (!loopInfo.startPosition.isValid() || !loopInfo.endPosition.isValid() ||
+            loopInfo.endPosition <= loopInfo.startPosition) {
+        m_pTrack->removeCuesOfType(mixxx::CueType::Loop);
+        return;
+    }
+
+    const QList<CuePointer> cuePoints = m_pTrack->getCuePoints();
+    for (const auto& pCue : cuePoints) {
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            pCue->setStartPosition(loopInfo.startPosition);
+            pCue->setEndPosition(loopInfo.endPosition);
+            return;
+        }
+    }
+
+    // We didn't find a loop cue to modify, create a new one
+    m_pTrack->createAndAddCue(
+            mixxx::CueType::Loop,
+            Cue::kNoHotCue,
+            loopInfo.startPosition,
+            loopInfo.endPosition);
 }
 
 // Used to simulate looping while slip mode is enabled

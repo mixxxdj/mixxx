@@ -530,6 +530,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             &CueControl::trackAnalyzed,
             Qt::DirectConnection);
 
+    // Note: this has to be a direct connection so we can synchronously update
+    // cue position COs. WOverview and WaveformRenderMarkBase for example are
+    // also listening to cuesUpdated() (queued connections) and need the new
+    // positions when they iterate over the cues to update the marks and ranges.
     connect(m_pLoadedTrack.get(),
             &Track::cuesUpdated,
             this,
