@@ -1012,6 +1012,16 @@ void Track::shiftHotcuePositionMillis(int hotcue, double milliseconds) {
         return;
     }
     double frames = m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(milliseconds);
+
+    const auto dur = m_record.getStreamInfoFromSource()->getDuration();
+    const auto totalFrames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    dur.toDoubleMillis());
+    const auto endPos = pHotcue->getPosition();
+    if (endPos + frames >= mixxx::audio::FramePos(totalFrames)) {
+        qWarning() << "Rejecting to shift hotcue" << hotcue << "past the track end";
+        return;
+    }
     pHotcue->shiftPositionFrames(frames);
 
     markDirtyAndUnlock(&locked);
@@ -1059,6 +1069,15 @@ void Track::shiftHotcuePositionBeats(int hotcue, int direction) {
         }
         newPos = m_pBeats->findNthBeat(currPos, direction * offset);
         offset++;
+    }
+
+    const auto dur = m_record.getStreamInfoFromSource()->getDuration();
+    const auto totalFrames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    dur.toDoubleMillis());
+    if (newPos >= mixxx::audio::FramePos(totalFrames)) {
+        qWarning() << "Rejecting to shift hotcue" << hotcue << "past the track end";
+        return;
     }
 
     pHotcue->shiftPositionFrames(newPos - currPos);
