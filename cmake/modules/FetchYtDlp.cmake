@@ -238,9 +238,15 @@ if(ANDROID)
       file(SHA256 "${_ytdlp_aar_path}" _aar_have_sha)
       if(_aar_have_sha STREQUAL _ytdlp_aar_sha256)
         set(_need_aar_download FALSE)
-        message(STATUS "Using cached youtubedl-android AAR (${_aar_size} bytes, SHA256 verified)")
+        message(
+          STATUS
+          "Using cached youtubedl-android AAR (${_aar_size} bytes, SHA256 verified)"
+        )
       else()
-        message(WARNING "Cached youtubedl-android AAR has wrong SHA256 (${_aar_have_sha}), re-downloading")
+        message(
+          WARNING
+          "Cached youtubedl-android AAR has wrong SHA256 (${_aar_have_sha}), re-downloading"
+        )
         file(REMOVE "${_ytdlp_aar_path}")
       endif()
     else()
@@ -261,7 +267,8 @@ if(ANDROID)
     if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_aar_path}")
       message(
         FATAL_ERROR
-        "Failed to download youtubedl-android AAR: ${_dl_msg}")
+        "Failed to download youtubedl-android AAR: ${_dl_msg}"
+      )
     endif()
     # Verify SHA256 of the downloaded file.
     file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
@@ -273,7 +280,10 @@ if(ANDROID)
         "(expected ${_ytdlp_aar_sha256}, got ${_aar_dl_sha})")
     endif()
     file(SIZE "${_ytdlp_aar_path}" _aar_size)
-    message(STATUS "Downloaded and verified youtubedl-android AAR (${_aar_size} bytes)")
+    message(
+      STATUS
+      "Downloaded and verified youtubedl-android AAR (${_aar_size} bytes)"
+    )
   endif()
 
   # Extract the AAR (it's a zip file).
@@ -319,9 +329,7 @@ if(ANDROID)
   if(EXISTS "${_ytdlp_classes_jar}")
     message(STATUS "  yt-dlp classes.jar: ${_ytdlp_classes_jar}")
   else()
-    message(
-      FATAL_ERROR
-      "classes.jar not found in youtubedl-android AAR")
+    message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
   endif()
 
   # ---------------------------------------------------------------------------
@@ -339,9 +347,7 @@ if(ANDROID)
     )
     message(STATUS "  yt-dlp package: ${_ytdlp_raw}")
   else()
-    message(
-      FATAL_ERROR
-      "res/raw/ytdlp not found in youtubedl-android AAR")
+    message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
   endif()
 
   # ---------------------------------------------------------------------------
@@ -349,7 +355,9 @@ if(ANDROID)
   # ---------------------------------------------------------------------------
   set_property(
     TARGET mixxx
-    APPEND PROPERTY QT_ANDROID_EXTRA_LIBS ${_ytdlp_jni_libs})
+    APPEND
+    PROPERTY QT_ANDROID_EXTRA_LIBS ${_ytdlp_jni_libs}
+  )
 
   # Add classes.jar to the target's dependencies.
   target_link_libraries(mixxx PRIVATE "${_ytdlp_classes_jar}")

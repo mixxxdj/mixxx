@@ -24,8 +24,8 @@
 #include <utility>
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
-#include <QJniObject>
 #include <QJniEnvironment>
+#include <QJniObject>
 #include <QNativeInterface/QAndroidApplication>
 #endif
 
@@ -67,7 +67,7 @@ const QStringList kPipedInstances = {
         QStringLiteral("https://pipedapi.orangenet.cc"),
         QStringLiteral("https://pi.ggtyler.dev"),
         QStringLiteral("https://pipedapi.kavin.rocks"),
-};
+}; // namespace
 };
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
@@ -1057,7 +1057,8 @@ void YouTubeService::downloadViaAndroidBundled(
         QString outputPath = QString::fromUtf8(outChars);
         env->ReleaseStringUTFChars(outStr, outChars);
 
-        if (!guard) return; // Service destroyed, nothing more to do
+        if (!guard)
+            return; // Service destroyed, nothing more to do
 
         if (!outputPath.isEmpty() && QFileInfo::exists(outputPath)) {
             // Route through finalizeDownload for SponsorBlock/post-processing,

@@ -42,12 +42,10 @@ struct YouTubeVideoInfo {
 ///      Pure Qt over HTTPS — no native dependency, no bundled binary, no
 ///      JNI bridge.
 ///
-///   2. **Bundled yt-dlp** (defense in depth on all platforms). On Linux/macOS
-     /Windows the install layout ships the official self-contained yt-dlp
-     PyInstaller binary. On Android we bundle the youtubedl-android AAR
-     (Python 3.11 runtime + yt-dlp) and call it via JNI — no external
-     dependencies, no Termux, no system Python needed. Used when Piped
-     instances are unreachable or return no audio streams.
+///   2. **Bundled yt-dlp** (fallback on all platforms). Desktop: ships the
+///      official self-contained PyInstaller binary. Android: bundles the
+///      youtubedl-android AAR (Python 3.11 runtime + yt-dlp) and calls it via
+///      JNI — no external dependencies, no Termux, no system Python needed.
 class YouTubeService : public QObject {
     Q_OBJECT
   public:
