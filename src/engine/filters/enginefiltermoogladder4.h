@@ -68,22 +68,22 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
     // cutoff  in Hz
     // resonance  range 0 ... 4 (4 = self resonance)
     void setParameter(mixxx::audio::SampleRate sampleRate, float cutoff, float resonance) {
-        constexpr float v2 = 2 + kVt; // twice the 'thermal voltage of a transistor'
+        constexpr float v2 = 2.0f + kVt; // twice the 'thermal voltage of a transistor'
 
-        float kfc = cutoff / sampleRate;
+        const float kfc = cutoff / static_cast<float>(sampleRate);
         float kf = kfc;
         if (MODE == MoogMode::LowPassOversampling || MODE == MoogMode::HighPassOversampling) {
             // m_inputSampeRate is half the actual filter sample rate in oversampling mode
-            kf = kfc / 2;
+            kf = kfc * 0.5f;
         }
 
         // frequency & amplitude correction
         const float kfcr = 1.8730f * (kfc * kfc * kfc) + 0.4955f * (kfc * kfc) -
                 0.6490f * kfc + 0.9988f;
 
-        float x = -2.0f * kPi * kfcr * kf; // input for taylor approximations
-        float exp_out  = expf(x);
-        m_k2vgNew = v2 * (1 - exp_out); // filter tuning
+        const float x = -2.0f * kPi * kfcr * kf; // input for taylor approximations
+        const float exp_out = std::exp(x);
+        m_k2vgNew = v2 * (1.0f - exp_out); // filter tuning
 
         // Resonance correction for self oscillation ~4
         m_kacrNew = resonance * (-3.9364f * (kfc * kfc) + 1.8409f * kfc + 0.9968f);
@@ -93,7 +93,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
             // This for all intents and purposes is just 1.0, so let's just stick with that
             // m_postGainNew = 0.9999999983339118f + (4.58745459575558e-13f * resonance);
-            m_postGainNew = 1.0;
+            m_postGainNew = 1.0f;
         } else {
             // Analyzing this filter as a linear system will show a small dip in
             // passband/DC gain when the cutoff frequency is around 10 kHz:
@@ -134,52 +134,42 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
             }
         } else if (!m_buffersClear) {
-            float startPostGain = m_postGain;
-            float startKacr = m_kacr;
-            float startK2vg = m_k2vg;
-            double cross_mix = 0.0;
-            double cross_inc = 2.0 / static_cast<double>(bufferSize);
+            const float startPostGain = m_postGain;
+            const float startKacr = m_kacr;
+            const float startK2vg = m_k2vg;
+            float cross_mix = 0.0f;
+            const float cross_inc = 2.0f / static_cast<float>(bufferSize);
 
             for (std::size_t i = 0; i < bufferSize; i += 2) {
                 cross_mix += cross_inc;
-                m_postGain = static_cast<float>(m_postGainNew * cross_mix +
-                        startPostGain * (1.0 - cross_mix));
-                m_kacr = static_cast<float>(m_kacrNew * cross_mix + startKacr * (1.0 - cross_mix));
-                m_k2vg = static_cast<float>(m_k2vgNew * cross_mix + startK2vg * (1.0 - cross_mix));
+                m_postGain = m_postGainNew * cross_mix +
+                        startPostGain * (1.0f - cross_mix);
+                m_kacr = m_kacrNew * cross_mix + startKacr * (1.0f - cross_mix);
+                m_k2vg = m_k2vgNew * cross_mix + startK2vg * (1.0f - cross_mix);
                 pOutput[i] = processSample(pIn[i], &m_buf[0]);
-                pOutput[i+1] = processSample(pIn[i+1], &m_buf[1]);
+                pOutput[i + 1] = processSample(pIn[i + 1], &m_buf[1]);
             }
 
         } else {
             m_postGain = m_postGainNew;
             m_kacr = m_kacrNew;
             m_k2vg = m_k2vgNew;
-            double cross_mix = 0.0;
-            double cross_inc = 4.0 / static_cast<double>(bufferSize);
+            float cross_mix = 0.0f;
+            const float cross_inc = 4.0f / static_cast<float>(bufferSize);
             for (std::size_t i = 0; i < bufferSize; i += 2) {
                 // Do a linear cross fade between the output of the old
                 // Filter and the new filter.
-                // The new filter is settled for Input = 0 and it sees
-                // all frequencies of the rectangular start impulse.
-                // Since the group delay, after which the start impulse
-                // has passed is unknown here, we just what the half
-                // bufferSize until we use the samples of the new filter.
-                // In one of the previous version we have faded the Input
-                // of the new filter but it turns out that this produces
-                // a gain drop due to the filter delay which is more
-                // conspicuous than the settling noise.
-                CSAMPLE old1 = pIn[i];
-                CSAMPLE old2 = pIn[i + 1];
-                double new1 = processSample(pIn[i], &m_buf[0]);
-                double new2 = processSample(pIn[i+1], &m_buf[1]);
+                const CSAMPLE old1 = pIn[i];
+                const CSAMPLE old2 = pIn[i + 1];
+                const CSAMPLE new1 = processSample(pIn[i], &m_buf[0]);
+                const CSAMPLE new2 = processSample(pIn[i + 1], &m_buf[1]);
 
                 if (i < bufferSize / 2) {
                     pOutput[i] = old1;
                     pOutput[i + 1] = old2;
                 } else {
-                    pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
-                    pOutput[i + 1] = static_cast<CSAMPLE>(
-                            new2 * cross_mix + old2 * (1.0 - cross_mix));
+                    pOutput[i] = new1 * cross_mix + old1 * (1.0f - cross_mix);
+                    pOutput[i + 1] = new2 * cross_mix + old2 * (1.0f - cross_mix);
                     cross_mix += cross_inc;
                 }
             }
