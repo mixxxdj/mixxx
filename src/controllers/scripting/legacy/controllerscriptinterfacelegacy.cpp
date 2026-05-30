@@ -9,8 +9,12 @@
 #include "controllers/controller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
+#include "mixer/basetrackplayer.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
+#include "track/track.h"
+#include "waveform/waveform.h"
 #include "util/cmdlineargs.h"
 #include "util/fpclassify.h"
 #include "util/make_const_iterator.h"
@@ -169,6 +173,62 @@ QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
 
 QObject* ControllerScriptInterfaceLegacy::getPlayer(const QString& group) {
     return m_pScriptEngineLegacy->getPlayer(group);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getWaveformSummary(
+        const QString& group, int nPoints) {
+    const auto pJSEngine = m_pScriptEngineLegacy->jsEngine();
+    if (!pJSEngine) {
+        return QJSValue::NullValue;
+    }
+    // getPlayer() returns a JS proxy, not the deck — use PlayerInfo to reach
+    // the loaded track directly.
+    const TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
+    if (!pTrack) {
+        return QJSValue::NullValue;
+    }
+    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    if (!pWaveform || pWaveform->getDataSize() <= 0) {
+        // Fall back to the overview (summary) waveform if the full one isn't
+        // loaded yet.
+        pWaveform = pTrack->getWaveformSummary();
+    }
+    if (!pWaveform || pWaveform->getDataSize() <= 0) {
+        return QJSValue::NullValue;
+    }
+    const int srcSize = pWaveform->getDataSize();
+    if (nPoints <= 0 || nPoints > srcSize) {
+        nPoints = srcSize;
+    }
+    // Flat array of [all, low, mid, high] per bin (matches Mixxx's internal
+    // WaveformData layout: all=overall amplitude/height, low/mid/high=bands).
+    // Peak (max) downsampling preserves transients, which is what a waveform
+    // display wants. Each value is 0..255.
+    QJSValue result = pJSEngine->newArray(static_cast<quint32>(nPoints * 4));
+    for (int i = 0; i < nPoints; ++i) {
+        const int s0 = static_cast<int>(
+                static_cast<int64_t>(i) * srcSize / nPoints);
+        int s1 = static_cast<int>(
+                static_cast<int64_t>(i + 1) * srcSize / nPoints);
+        if (s1 <= s0) {
+            s1 = s0 + 1;
+        }
+        if (s1 > srcSize) {
+            s1 = srcSize;
+        }
+        int al = 0, lo = 0, mi = 0, hi = 0;
+        for (int s = s0; s < s1; ++s) {
+            al = std::max<int>(al, pWaveform->getAll(s));
+            lo = std::max<int>(lo, pWaveform->getLow(s));
+            mi = std::max<int>(mi, pWaveform->getMid(s));
+            hi = std::max<int>(hi, pWaveform->getHigh(s));
+        }
+        result.setProperty(static_cast<quint32>(i * 4), al);
+        result.setProperty(static_cast<quint32>(i * 4 + 1), lo);
+        result.setProperty(static_cast<quint32>(i * 4 + 2), mi);
+        result.setProperty(static_cast<quint32>(i * 4 + 3), hi);
+    }
+    return result;
 }
 
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {

@@ -57,6 +57,13 @@ class ControllerScriptInterfaceLegacy : public QObject {
 
     Q_INVOKABLE QJSValue getSetting(const QString& name);
     Q_INVOKABLE QObject* getPlayer(const QString& group);
+    // Returns the loaded track's analysed waveform, peak-downsampled to
+    // nPoints bins, as a flat JS array [all0,low0,mid0,high0, all1,…] (each
+    // value 0..255; all=overall amplitude, low/mid/high=frequency bands).
+    // nPoints<=0 returns the full-resolution waveform. Returns null if no
+    // track/waveform is loaded. Lets controllers with screens (e.g. DDJ-FLX10)
+    // render waveforms without an external daemon.
+    Q_INVOKABLE QJSValue getWaveformSummary(const QString& group, int nPoints);
     Q_INVOKABLE double getValue(const QString& group, const QString& name);
     Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
     Q_INVOKABLE double getParameter(const QString& group, const QString& name);
