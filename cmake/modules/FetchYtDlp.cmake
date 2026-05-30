@@ -285,10 +285,7 @@ if(ANDROID)
             file(REMOVE "${_ytdlp_aar_path}")
           endif()
         else()
-          message(
-            STATUS
-            "Downloaded file too small (${_aar_size} bytes), retrying"
-          )
+          message(STATUS "Downloaded file too small (${_aar_size} bytes), retrying")
           file(REMOVE "${_ytdlp_aar_path}")
         endif()
       else()
@@ -307,88 +304,88 @@ if(ANDROID)
     endif()
   endif()
 
-  # Extract the AAR (it's a zip file).
   if(EXISTS "${_ytdlp_aar_path}")
+    # Extract the AAR (it's a zip file).
     set(_ytdlp_aar_extracted "${_ytdlp_android_dir}/extracted")
-  file(MAKE_DIRECTORY "${_ytdlp_aar_extracted}")
+    file(MAKE_DIRECTORY "${_ytdlp_aar_extracted}")
 
-  # We use CMake's execute_process to extract since file(ARCHIVE_EXTRACT)
-  # is only available in CMake 3.18+.
-  if(NOT EXISTS "${_ytdlp_aar_extracted}/jni")
-    message(STATUS "Extracting youtubedl-android AAR...")
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xf "${_ytdlp_aar_path}"
-      WORKING_DIRECTORY "${_ytdlp_aar_extracted}"
-      RESULT_VARIABLE _extract_result
-    )
-    if(NOT _extract_result EQUAL 0)
-      message(FATAL_ERROR "Failed to extract youtubedl-android AAR")
+    # We use CMake's execute_process to extract since file(ARCHIVE_EXTRACT)
+    # is only available in CMake 3.18+.
+    if(NOT EXISTS "${_ytdlp_aar_extracted}/jni")
+      message(STATUS "Extracting youtubedl-android AAR...")
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xf "${_ytdlp_aar_path}"
+        WORKING_DIRECTORY "${_ytdlp_aar_extracted}"
+        RESULT_VARIABLE _extract_result
+      )
+      if(NOT _extract_result EQUAL 0)
+        message(FATAL_ERROR "Failed to extract youtubedl-android AAR")
+      endif()
     endif()
-  endif()
 
-  # ---------------------------------------------------------------------------
-  # Install JNI shared libraries into the APK's lib directory.
-  # These go into QT_ANDROID_EXTRA_LIBS so Qt's androiddeployqt picks them up.
-  # ---------------------------------------------------------------------------
-  set(_ytdlp_jni_libs "")
-  foreach(_abi IN ITEMS arm64-v8a armeabi-v7a x86_64)
-    set(_aar_jni_dir "${_ytdlp_aar_extracted}/jni/${_abi}")
-    if(EXISTS "${_aar_jni_dir}")
-      # Collect all .so files from this ABI's jni directory.
-      file(GLOB _abi_so_files "${_aar_jni_dir}/*.so")
-      foreach(_so_file IN LISTS _abi_so_files)
-        list(APPEND _ytdlp_jni_libs "${_so_file}")
-        message(STATUS "  yt-dlp JNI lib: ${_so_file}")
-      endforeach()
+    # ---------------------------------------------------------------------------
+    # Install JNI shared libraries into the APK's lib directory.
+    # These go into QT_ANDROID_EXTRA_LIBS so Qt's androiddeployqt picks them up.
+    # ---------------------------------------------------------------------------
+    set(_ytdlp_jni_libs "")
+    foreach(_abi IN ITEMS arm64-v8a armeabi-v7a x86_64)
+      set(_aar_jni_dir "${_ytdlp_aar_extracted}/jni/${_abi}")
+      if(EXISTS "${_aar_jni_dir}")
+        # Collect all .so files from this ABI's jni directory.
+        file(GLOB _abi_so_files "${_aar_jni_dir}/*.so")
+        foreach(_so_file IN LISTS _abi_so_files)
+          list(APPEND _ytdlp_jni_libs "${_so_file}")
+          message(STATUS "  yt-dlp JNI lib: ${_so_file}")
+        endforeach()
+      endif()
+    endforeach()
+
+    # ---------------------------------------------------------------------------
+    # Install the classes.jar into the APK's classpath.
+    # We add it to the target's linked libraries so androiddeployqt includes it.
+    # ---------------------------------------------------------------------------
+    set(_ytdlp_classes_jar "${_ytdlp_aar_extracted}/classes.jar")
+    if(EXISTS "${_ytdlp_classes_jar}")
+      message(STATUS "  yt-dlp classes.jar: ${_ytdlp_classes_jar}")
+    else()
+      message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
     endif()
-  endforeach()
 
-  # ---------------------------------------------------------------------------
-  # Install the classes.jar into the APK's classpath.
-  # We add it to the target's linked libraries so androiddeployqt includes it.
-  # ---------------------------------------------------------------------------
-  set(_ytdlp_classes_jar "${_ytdlp_aar_extracted}/classes.jar")
-  if(EXISTS "${_ytdlp_classes_jar}")
-    message(STATUS "  yt-dlp classes.jar: ${_ytdlp_classes_jar}")
-  else()
-    message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
-  endif()
+    # ---------------------------------------------------------------------------
+    # Install the yt-dlp package as an Android asset.
+    # The youtubedl-android library loads it from res/raw/ytdlp at runtime.
+    # ---------------------------------------------------------------------------
+    set(_ytdlp_raw "${_ytdlp_aar_extracted}/res/raw/ytdlp")
+    if(EXISTS "${_ytdlp_raw}")
+      install(
+        FILES "${_ytdlp_raw}"
+        DESTINATION "${CMAKE_SOURCE_DIR}/packaging/android/assets"
+        # androiddeployqt packages everything under the assets directory
+        # into the APK's assets folder.
+        RENAME "ytdlp"
+      )
+      message(STATUS "  yt-dlp package: ${_ytdlp_raw}")
+    else()
+      message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
+    endif()
 
-  # ---------------------------------------------------------------------------
-  # Install the yt-dlp package as an Android asset.
-  # The youtubedl-android library loads it from res/raw/ytdlp at runtime.
-  # ---------------------------------------------------------------------------
-  set(_ytdlp_raw "${_ytdlp_aar_extracted}/res/raw/ytdlp")
-  if(EXISTS "${_ytdlp_raw}")
-    install(
-      FILES "${_ytdlp_raw}"
-      DESTINATION "${CMAKE_SOURCE_DIR}/packaging/android/assets"
-      # androiddeployqt packages everything under the assets directory
-      # into the APK's assets folder.
-      RENAME "ytdlp"
+    # ---------------------------------------------------------------------------
+    # Add JNI libs and classes.jar to the target.
+    # ---------------------------------------------------------------------------
+    set_property(
+      TARGET mixxx
+      APPEND
+      PROPERTY QT_ANDROID_EXTRA_LIBS ${_ytdlp_jni_libs}
     )
-    message(STATUS "  yt-dlp package: ${_ytdlp_raw}")
-  else()
-    message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
-  endif()
 
-  # ---------------------------------------------------------------------------
-  # Add JNI libs and classes.jar to the target.
-  # ---------------------------------------------------------------------------
-  set_property(
-    TARGET mixxx
-    APPEND
-    PROPERTY QT_ANDROID_EXTRA_LIBS ${_ytdlp_jni_libs}
-  )
+    # Add classes.jar to the target's dependencies.
+    target_link_libraries(mixxx PRIVATE "${_ytdlp_classes_jar}")
 
-  # Add classes.jar to the target's dependencies.
-  target_link_libraries(mixxx PRIVATE "${_ytdlp_classes_jar}")
+    # ---------------------------------------------------------------------------
+    # Define a preprocessor macro so the C++ code knows the bundled runtime exists.
+    # ---------------------------------------------------------------------------
+    target_compile_definitions(mixxx-lib PUBLIC HAVE_YTDLP_ANDROID=1)
 
-  # ---------------------------------------------------------------------------
-  # Define a preprocessor macro so the C++ code knows the bundled runtime exists.
-  # ---------------------------------------------------------------------------
-  target_compile_definitions(mixxx-lib PUBLIC HAVE_YTDLP_ANDROID=1)
-
-  message(STATUS "youtubedl-android AAR bundled for Android")
+    message(STATUS "youtubedl-android AAR bundled for Android")
   endif()
 endif()
