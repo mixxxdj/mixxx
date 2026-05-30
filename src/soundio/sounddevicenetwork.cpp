@@ -300,69 +300,76 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     int writeExpected = writeExpectedFrames * m_numOutputChannels;
 
     if (writeExpected <= 0) {
-        // Overflow
-        // kLogger.debug() << "workerWriteProcess: buffer full"
+        // Overflow: We more than one buffer ahead. That happens if the engine tries to catch up
+        // already earlier misses already filled with silence
+        // kLogger.debug() << "workerWriteProcess: ahead of time"
         //                 << "outChunkSize" << outChunkSize
         //                 << "readAvailable" << readAvailable
         //                 << "writeExpected" << writeExpected
         //                 << "streamTime" << pWorker->getStreamTimeFrames();
         // catch up by skipping chunk
         m_pSoundManager->underflowHappened(25);
+        return;
     }
-    int copyCount = qMin(readAvailable, writeExpected);
 
-    if (copyCount > 0) {
-        if (writeExpected - copyCount > outChunkSize) {
-            // Underflow
-            // kLogger.debug() << "workerWriteProcess: buffer empty."
-            //                 << "Catch up with silence:" << writeExpected - copyCount
-            //                 << "streamTime" << pWorker->getStreamTimeFrames();;
-            // catch up by filling buffer until we are synced
-            workerWriteSilence(pWorker, (writeExpected - copyCount) / m_numOutputChannels);
-            m_pSoundManager->underflowHappened(24);
-        } else if (writeExpected - copyCount > outChunkSize / 2) {
-            // try to keep PAs buffer filled up to 0.5 chunks
-            if (pWorker->outputDrift()) {
-                // duplicate one frame
-                // kLogger.debug() << "workerWriteProcess() duplicate one frame"
-                //                 << (float)writeExpected / outChunkSize
-                //                 << (float)readAvailable / outChunkSize;
-                workerWrite(pWorker, dataPtr1, 1);
-            } else {
-                pWorker->setOutputDrift(true);
-            }
-        } else if (writeExpected < outChunkSize / 2) {
-            // We will overshoot by more than a half of the new frames
-            if (pWorker->outputDrift()) {
-                // kLogger.debug() << "workerWriteProcess() "
-                //                    "skip one frame"
-                //                 << (float)writeAvailable / outChunkSize
-                //                 << (float)readAvailable / outChunkSize;
-                if (size1 >= m_numOutputChannels) {
-                    dataPtr1 += m_numOutputChannels;
-                    size1 -= m_numOutputChannels;
-                }
-            } else {
-                pWorker->setOutputDrift(true);
+    if (writeExpected - readAvailable > outChunkSize) {
+        // Underflow: We are late by more than one buffer outChunkSize
+
+        // kLogger.debug() << "workerWriteProcess: buffer empty."
+        //                 << "Catch up with silence:" << writeExpected - copyCount
+        //                 << "streamTime" << pWorker->getStreamTimeFrames();;
+
+        // Catch up by filling buffer until the worker buffer is in sync with
+        // the network clock. Worker buffers are by a magnitude bigger than
+        // engine buffers and can consume these samples. But remove one chunk
+        // to not add the normal sleep after this call.
+        int silenceFrames = (writeExpected - readAvailable - outChunkSize) / m_numOutputChannels;
+        workerWriteSilence(pWorker, silenceFrames);
+        // Inform the engine cycle about the extra frames written to avoid
+        // underflows in other code paths.
+        m_targetTime += static_cast<qint64>(silenceFrames / m_sampleRate.toDouble() * 1000000);
+        m_pSoundManager->underflowHappened(24);
+    } else if (writeExpected - readAvailable > outChunkSize / 2) {
+        // try to keep PAs buffer filled up to 0.5 chunks
+        if (pWorker->outputDrift()) {
+            // duplicate one frame
+            // kLogger.debug() << "workerWriteProcess() duplicate one frame"
+            //                 << (float)writeExpected / outChunkSize
+            //                 << (float)readAvailable / outChunkSize;
+            workerWrite(pWorker, dataPtr1, 1);
+        } else {
+            pWorker->setOutputDrift(true);
+        }
+    } else if (writeExpected < outChunkSize / 2) {
+        // We will overshoot by more than a half of the new frames
+        if (pWorker->outputDrift()) {
+            // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
+            //                    "skip one frame"
+            //                 << (float)writeAvailable / outChunkSize
+            //                 << (float)readAvailable / outChunkSize;
+            if (size1 >= m_numOutputChannels) {
+                dataPtr1 += m_numOutputChannels;
+                size1 -= m_numOutputChannels;
             }
         } else {
-            pWorker->setOutputDrift(false);
+            pWorker->setOutputDrift(true);
         }
+    } else {
+        pWorker->setOutputDrift(false);
+    }
 
-        workerWrite(pWorker, dataPtr1, size1 / m_numOutputChannels);
-        if (size2 > 0) {
-            workerWrite(pWorker, dataPtr2, size2 / m_numOutputChannels);
-        }
+    workerWrite(pWorker, dataPtr1, size1 / m_numOutputChannels);
+    if (size2 > 0) {
+        workerWrite(pWorker, dataPtr2, size2 / m_numOutputChannels);
+    }
 
-        QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-        if (pFifo) {
-            // interval = copyCount
-            // Check for desired kNetworkLatencyFrames + 1/2 interval to
-            // avoid big jitter due to interferences with sync code
-            if (pFifo->readAvailable() + copyCount / 2 >=
-                    (m_numOutputChannels * kNetworkLatencyFrames)) {
-                pWorker->outputAvailable();
-            }
+    QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
+    if (pFifo) {
+        // Check for desired kNetworkLatencyFrames + 1/2 interval to
+        // avoid big jitter due to interferences with sync code
+        if (pFifo->readAvailable() + outChunkSize / 2 >=
+                (m_numOutputChannels * kNetworkLatencyFrames)) {
+            pWorker->outputAvailable();
         }
     }
 }
@@ -536,12 +543,16 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
 
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     unsigned long sleepUs = 0;
-    if (currentTime > m_targetTime) {
-        m_pSoundManager->underflowHappened(22);
-        //qDebug() << "underflow" << currentTime << m_targetTime;
-        m_targetTime = currentTime;
+    qint64 remain = m_targetTime - currentTime;
+    if (remain < 0) {
+        // qDebug() << "delayed" << remain << m_targetTime;
+        if (remain + static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000) < 0) {
+            // No remaining time, so we don't sleep to catch up.
+            // m_targetTime is adjusted in workerWriteProcess()
+            m_pSoundManager->underflowHappened(22);
+        }
     } else {
-        sleepUs = m_targetTime - currentTime;
+        sleepUs = static_cast<unsigned long>(remain);
     }
 
     //qDebug() << "sleep" << sleepUs;
