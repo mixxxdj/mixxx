@@ -67,8 +67,8 @@ const QStringList kPipedInstances = {
         QStringLiteral("https://pipedapi.orangenet.cc"),
         QStringLiteral("https://pi.ggtyler.dev"),
         QStringLiteral("https://pipedapi.kavin.rocks"),
-}; // namespace
 };
+} // anonymous namespace
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
 // the bundled binary next to the Mixxx executable wins, then the user's
@@ -238,7 +238,6 @@ QList<YouTubeVideoInfo> parsePipedItems(const QJsonArray& items, int cap) {
     }
     return results;
 }
-} // namespace
 
 const QString YouTubeService::kTrendingQueryPrefix =
         QStringLiteral("__trending__:");
@@ -342,14 +341,17 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     downloadViaPiped(videoId,
             cacheDir,
             /*instanceIdx=*/0,
-            [this, videoId, cacheDir, hasYtDlpFallback, useAndroidBundled](
+            [this, videoId, cacheDir, hasYtDlpFallback](
                     const QString& lastError) {
-                if (useAndroidBundled) {
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+                if (m_ytDlpPath == QStringLiteral("android-bundled")) {
                     kLogger.warning() << "All Piped instances failed for download"
                                       << videoId << ":" << lastError
                                       << "— falling back to bundled yt-dlp (JNI)";
                     downloadViaAndroidBundled(videoId, cacheDir);
-                } else if (hasYtDlpFallback) {
+                } else
+#endif
+                if (hasYtDlpFallback) {
                     kLogger.warning() << "All Piped instances failed for download"
                                       << videoId << ":" << lastError
                                       << "— falling back to yt-dlp";
@@ -953,9 +955,8 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
                 kLogger.warning() << "yt-dlp download failed:" << err;
                 Q_EMIT downloadFailed(videoId, err);
             });
+#endif // !defined(Q_OS_ANDROID)
 }
-
-#endif // !defined(Q_OS_ANDROID) — end of desktop downloadViaYtDlp
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
 // =============================================================================

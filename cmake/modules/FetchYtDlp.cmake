@@ -255,29 +255,49 @@ if(ANDROID)
   endif()
 
   if(_need_aar_download)
-    message(STATUS "Downloading youtubedl-android AAR (57 MB)...")
-    file(
-      DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
-      SHOW_PROGRESS
-      STATUS _dl_status
-      TLS_VERIFY ON
-    )
-    list(GET _dl_status 0 _dl_code)
-    list(GET _dl_status 1 _dl_msg)
-    if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_aar_path}")
-      message(
-        FATAL_ERROR
-        "Failed to download youtubedl-android AAR: ${_dl_msg}"
+    # AAR is ~57 MB. Maven Central CDN or GitHub Actions runners can be flaky,
+    # so retry up to 3 times before giving up.
+    set(_max_attempts 3)
+    set(_attempt 1)
+    set(_aar_ok FALSE)
+    while(_attempt LESS_EQUAL _max_attempts AND NOT _aar_ok)
+      message(STATUS "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})...")
+      file(
+        DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
+        SHOW_PROGRESS
+        STATUS _dl_status
+        TLS_VERIFY ON
       )
-    endif()
-    # Verify SHA256 of the downloaded file.
-    file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
-    if(NOT _aar_dl_sha STREQUAL _ytdlp_aar_sha256)
-      file(REMOVE "${_ytdlp_aar_path}")
+      list(GET _dl_status 0 _dl_code)
+      list(GET _dl_status 1 _dl_msg)
+      if(_dl_code EQUAL 0 AND EXISTS "${_ytdlp_aar_path}")
+        file(SIZE "${_ytdlp_aar_path}" _aar_size)
+        if(_aar_size GREATER 50000000)
+          # Verify SHA256 so a CDN glitch that returns garbage doesn't sneak in.
+          file(SHA256 "${_ytdlp_aar_path}" _aar_dl_sha)
+          if(_aar_dl_sha STREQUAL _ytdlp_aar_sha256)
+            set(_aar_ok TRUE)
+          else()
+            message(STATUS "SHA256 mismatch, retrying")
+            file(REMOVE "${_ytdlp_aar_path}")
+          endif()
+        else()
+          message(STATUS "Downloaded file too small (${_aar_size} bytes), retrying")
+          file(REMOVE "${_ytdlp_aar_path}")
+        endif()
+      else()
+        message(STATUS "Download failed: ${_dl_msg}, retrying")
+        file(REMOVE "${_ytdlp_aar_path}")
+      endif()
+      math(EXPR _attempt "${_attempt} + 1")
+    endwhile()
+
+    if(NOT _aar_ok)
       message(
         FATAL_ERROR
-        "Downloaded youtubedl-android AAR SHA256 mismatch "
-        "(expected ${_ytdlp_aar_sha256}, got ${_aar_dl_sha})")
+        "Failed to download youtubedl-android AAR after ${_max_attempts} attempts. "
+        "You can manually place the AAR at ${_ytdlp_aar_path} and re-run cmake."
+      )
     endif()
     file(SIZE "${_ytdlp_aar_path}" _aar_size)
     message(
