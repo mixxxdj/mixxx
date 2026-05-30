@@ -333,11 +333,6 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     }
     QDir().mkpath(cacheDir);
     const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
-#if defined(Q_OS_ANDROID)
-    const bool useAndroidBundled = (m_ytDlpPath == QStringLiteral("android-bundled"));
-#else
-    const bool useAndroidBundled = false;
-#endif
     downloadViaPiped(videoId,
             cacheDir,
             /*instanceIdx=*/0,

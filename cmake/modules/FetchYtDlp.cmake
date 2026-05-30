@@ -261,7 +261,10 @@ if(ANDROID)
     set(_attempt 1)
     set(_aar_ok FALSE)
     while(_attempt LESS_EQUAL _max_attempts AND NOT _aar_ok)
-      message(STATUS "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})...")
+      message(
+        STATUS
+        "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})..."
+      )
       file(
         DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
         SHOW_PROGRESS
@@ -282,7 +285,10 @@ if(ANDROID)
             file(REMOVE "${_ytdlp_aar_path}")
           endif()
         else()
-          message(STATUS "Downloaded file too small (${_aar_size} bytes), retrying")
+          message(
+            STATUS
+            "Downloaded file too small (${_aar_size} bytes), retrying"
+          )
           file(REMOVE "${_ytdlp_aar_path}")
         endif()
       else()
