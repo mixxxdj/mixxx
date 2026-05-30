@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QSharedPointer>
 #include <QStringList>
+#include <atomic>
 
 #include "util/cache.h"
 #include "util/compatibility/qmutex.h"
@@ -108,11 +109,11 @@ class ScannerGlobal {
     }
 
     bool scanFinishedCleanly() const {
-        return m_scanFinishedCleanly;
+        return m_scanFinishedCleanly.load();
     }
 
     void clearScanFinishedCleanly() {
-        m_scanFinishedCleanly = false;
+        m_scanFinishedCleanly.store(false);
     }
 
     void addVerifiedDirectory(const QString& directory) {
@@ -199,7 +200,7 @@ class ScannerGlobal {
     // The list of tracks added by the scan.
     QStringList m_addedTracks;
 
-    volatile bool m_scanFinishedCleanly;
+    std::atomic<bool> m_scanFinishedCleanly;
     volatile bool m_shouldCancel;
 
     // Stats tracking.

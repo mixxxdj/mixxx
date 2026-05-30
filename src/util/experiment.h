@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtDebug>
+#include <atomic>
 
 class Experiment {
   public:
@@ -38,11 +39,11 @@ class Experiment {
     }
 
     static Mode mode() {
-        return s_mode;
+        return s_mode.load();
     }
 
   private:
     Experiment();
 
-    static volatile Mode s_mode;
+    static std::atomic<Mode> s_mode;
 };

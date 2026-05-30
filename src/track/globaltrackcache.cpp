@@ -1,6 +1,7 @@
 #include "track/globaltrackcache.h"
 
 #include <QCoreApplication>
+#include <atomic>
 
 #include "moc_globaltrackcache.cpp"
 #include "track/track.h"
@@ -15,7 +16,7 @@ constexpr std::size_t kUnorderedCollectionMinCapacity = 1024;
 const mixxx::Logger kLogger("GlobalTrackCache");
 
 //static
-GlobalTrackCache* volatile s_pInstance = nullptr;
+std::atomic<GlobalTrackCache*> s_pInstance = nullptr;
 
 // Enforce logging during tests
 constexpr bool kLogEnabled = false;
@@ -81,16 +82,17 @@ GlobalTrackCacheLocker::~GlobalTrackCacheLocker() {
 }
 
 void GlobalTrackCacheLocker::lockCache() {
-    DEBUG_ASSERT(s_pInstance);
+    GlobalTrackCache* pInstance = s_pInstance.load();
+    DEBUG_ASSERT(pInstance);
     DEBUG_ASSERT(!m_pInstance);
     if (traceLogEnabled()) {
         kLogger.trace() << "Locking cache";
     }
-    s_pInstance->m_mutex.lock();
+    pInstance->m_mutex.lock();
     if (traceLogEnabled()) {
         kLogger.trace() << "Cache is locked";
     }
-    m_pInstance = s_pInstance;
+    m_pInstance = pInstance;
 }
 
 void GlobalTrackCacheLocker::unlockCache() {
@@ -155,22 +157,24 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         mixxx::FileAccess fileAccess,
         bool temporary)
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
-    DEBUG_ASSERT(m_pInstance);
+    GlobalTrackCache* pInstance = s_pInstance.load();
+    DEBUG_ASSERT(pInstance);
     if (temporary) {
-        m_pInstance->resolveTemporary(this, std::move(fileAccess));
+        pInstance->resolveTemporary(this, std::move(fileAccess));
     } else {
-        m_pInstance->resolve(this, std::move(fileAccess), TrackId());
+        pInstance->resolve(this, std::move(fileAccess), TrackId());
     }
-    m_pInstance->m_mutex.unlock();
+    pInstance->m_mutex.unlock();
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         mixxx::FileAccess fileAccess,
         TrackId trackId)
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
-    DEBUG_ASSERT(m_pInstance);
-    m_pInstance->resolve(this, std::move(fileAccess), std::move(trackId));
-    m_pInstance->m_mutex.unlock();
+    GlobalTrackCache* pInstance = s_pInstance.load();
+    DEBUG_ASSERT(pInstance);
+    pInstance->resolve(this, std::move(fileAccess), std::move(trackId));
+    pInstance->m_mutex.unlock();
 }
 
 GlobalTrackCacheResolver::~GlobalTrackCacheResolver() {
@@ -222,14 +226,15 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
 void GlobalTrackCache::createInstance(
         GlobalTrackCacheSaver* pSaver,
         deleteTrackFn_t deleteTrackFn) {
-    DEBUG_ASSERT(!s_pInstance);
+    DEBUG_ASSERT(!s_pInstance.load());
     kLogger.info() << "Creating instance";
-    s_pInstance = new GlobalTrackCache(pSaver, deleteTrackFn);
+    s_pInstance.store(new GlobalTrackCache(pSaver, deleteTrackFn));
 }
 
 //static
 void GlobalTrackCache::destroyInstance() {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(s_pInstance);
+    GlobalTrackCache* pInstance = s_pInstance.load();
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(pInstance);
 
     kLogger.info() << "Destroying instance";
     // Processing all pending events is required to evict all
@@ -237,9 +242,8 @@ void GlobalTrackCache::destroyInstance() {
     QCoreApplication::processEvents();
     // Now the cache should be empty
     DEBUG_ASSERT(GlobalTrackCacheLocker().isEmpty());
-    GlobalTrackCache* pInstance = s_pInstance;
     // Reset the static/global pointer before entering the destructor
-    s_pInstance = nullptr;
+    s_pInstance.store(nullptr);
     // Delete the singular instance
     pInstance->deleteLater();
 }
@@ -277,11 +281,15 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
     // conditions before locking the cache this pointer might
     // already have been either deleted or reused by a second
     // shared_ptr.
-    if (s_pInstance) {
+    GlobalTrackCache* pInstance = s_pInstance.load();
+    if (pInstance) {
         QMetaObject::invokeMethod(
-                s_pInstance,
+                pInstance,
                 [cacheEntryPtr = std::move(cacheEntryPtr)] {
-                    s_pInstance->slotEvictAndSave(cacheEntryPtr);
+                    GlobalTrackCache* pInstance = s_pInstance.load();
+                    if (pInstance) {
+                        pInstance->slotEvictAndSave(cacheEntryPtr);
+                    }
                 },
                 // Qt will choose either a direct or a queued connection
                 // depending on the thread from which this method has

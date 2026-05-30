@@ -64,7 +64,7 @@ class EngineMixer : public QObject, public AudioSource {
     void registerNonEngineChannelSoundIO(gsl::not_null<SoundManager*> pSoundManager);
 
     // WARNING: These methods are called by the main thread. They should only
-    // touch the volatile bool connected indicators (see below). However, when
+    // touch the std::atomic bool connected indicators (see below). However, when
     // these methods are called the callback is guaranteed to be inactive
     // (SoundManager closes all devices before calling these). This may change
     // in the future.
