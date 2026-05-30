@@ -8,6 +8,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility/qmutex.h"
+#include "util/denormalsarezero.h"
 #include "util/event.h"
 #include "util/fifo.h"
 #include "util/logger.h"
@@ -114,6 +115,9 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 }
 
 void CachingReaderWorker::run() {
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+
     // the id of this thread, for debugging purposes
     static auto lastId = QAtomicInt(0);
     const auto id = lastId.fetchAndAddRelaxed(1) + 1;

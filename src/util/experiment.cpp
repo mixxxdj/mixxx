@@ -1,4 +1,4 @@
 #include "util/experiment.h"
 
 // static
-volatile Experiment::Mode Experiment::s_mode = Experiment::OFF;
+std::atomic<Experiment::Mode> Experiment::s_mode = Experiment::OFF;

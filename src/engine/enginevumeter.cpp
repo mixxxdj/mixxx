@@ -59,25 +59,29 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
     // Are we ready to update the VU meter?:
     if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
         doSmooth(m_fRMSvolumeL,
-                std::log10(SHRT_MAX * m_fRMSvolumeSumL / (m_samplesCalculated * 1000) + 1));
+                std::log10(static_cast<CSAMPLE>(SHRT_MAX) * m_fRMSvolumeSumL /
+                                (static_cast<CSAMPLE>(m_samplesCalculated) * 1000.0f) +
+                        1.0f));
         doSmooth(m_fRMSvolumeR,
-                std::log10(SHRT_MAX * m_fRMSvolumeSumR / (m_samplesCalculated * 1000) + 1));
+                std::log10(static_cast<CSAMPLE>(SHRT_MAX) * m_fRMSvolumeSumR /
+                                (static_cast<CSAMPLE>(m_samplesCalculated) * 1000.0f) +
+                        1.0f));
 
-        const double epsilon = .0001;
+        const CSAMPLE epsilon = 0.0001f;
 
         // Since VU meters are a rolling sum of audio, the no-op checks in
         // ControlObject will not prevent us from causing tons of extra
         // work. Because of this, we use an epsilon here to be gentle on the GUI
         // and MIDI controllers.
-        if (std::abs(m_fRMSvolumeL - m_vuMeterLeft.get()) > epsilon) {
+        if (std::abs(m_fRMSvolumeL - static_cast<CSAMPLE>(m_vuMeterLeft.get())) > epsilon) {
             m_vuMeterLeft.set(m_fRMSvolumeL);
         }
-        if (std::abs(m_fRMSvolumeR - m_vuMeterRight.get()) > epsilon) {
+        if (std::abs(m_fRMSvolumeR - static_cast<CSAMPLE>(m_vuMeterRight.get())) > epsilon) {
             m_vuMeterRight.set(m_fRMSvolumeR);
         }
 
-        double fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0;
-        if (std::abs(fRMSvolume - m_vuMeter.get()) > epsilon) {
+        const CSAMPLE fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0f;
+        if (std::abs(fRMSvolume - static_cast<CSAMPLE>(m_vuMeter.get())) > epsilon) {
             m_vuMeter.set(fRMSvolume);
         }
 

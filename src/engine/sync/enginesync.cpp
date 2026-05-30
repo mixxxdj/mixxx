@@ -542,7 +542,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
     Syncable* pFirstPlayingDeck = nullptr;
     Syncable* pFirstNonplayingDeck = nullptr;
-    foreach (Syncable* pSyncable, m_syncables) {
+    for (Syncable* pSyncable : m_syncables) {
         EngineChannel* pChannel = pSyncable->getChannel();
         // Exclude non-decks
         if (pChannel == nullptr || pChannel == pDontPick) {
@@ -617,7 +617,7 @@ EngineChannel* EngineSync::getLeaderChannel() const {
 }
 
 Syncable* EngineSync::getSyncableForGroup(const QString& group) {
-    foreach (Syncable* pSyncable, m_syncables) {
+    for (Syncable* pSyncable : m_syncables) {
         if (pSyncable->getGroup() == group) {
             return pSyncable;
         }
@@ -659,7 +659,7 @@ void EngineSync::updateLeaderBpm(Syncable* pSource, mixxx::Bpm bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateLeaderBpm(bpm);
     }
-    foreach (Syncable* pSyncable, m_syncables) {
+    for (Syncable* pSyncable : std::as_const(m_syncables)) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
@@ -672,7 +672,7 @@ void EngineSync::updateLeaderInstantaneousBpm(Syncable* pSource, mixxx::Bpm bpm)
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateInstantaneousBpm(bpm);
     }
-    foreach (Syncable* pSyncable, m_syncables) {
+    for (Syncable* pSyncable : std::as_const(m_syncables)) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
@@ -690,7 +690,7 @@ void EngineSync::updateLeaderBeatDistance(Syncable* pSource, double beatDistance
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateLeaderBeatDistance(beatDistance);
     }
-    foreach (Syncable* pSyncable, m_syncables) {
+    for (Syncable* pSyncable : std::as_const(m_syncables)) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
@@ -745,7 +745,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->reinitLeaderParams(beatDistance, baseBpm, bpm);
     }
-    foreach (Syncable* pSyncable, m_syncables) {
+    for (Syncable* pSyncable : std::as_const(m_syncables)) {
         if (!pSyncable->isSynchronized()) {
             continue;
         }

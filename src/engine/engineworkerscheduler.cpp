@@ -3,6 +3,7 @@
 #include "engine/engineworker.h"
 #include "moc_engineworkerscheduler.cpp"
 #include "util/compatibility/qmutex.h"
+#include "util/denormalsarezero.h"
 #include "util/event.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
@@ -42,6 +43,9 @@ void EngineWorkerScheduler::runWorkers() {
 }
 
 void EngineWorkerScheduler::run() {
+    _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+
     static const QString tag("EngineWorkerScheduler");
     bool quit = false;
     while (!quit) {

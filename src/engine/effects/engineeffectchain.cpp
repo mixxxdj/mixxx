@@ -265,9 +265,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                 m_mixMode == EffectChainMixMode::DryPlusWet;
 
                         if (!skipAddingDry) {
-                            for (SINT i = 0; i <= static_cast<SINT>(numSamples); ++i) {
-                                pIntermediateOutput[i] += pIntermediateInput[i];
-                            }
+                            SampleUtil::add(pIntermediateOutput, pIntermediateInput, numSamples);
                         }
 
                         firstAddDryToWetEffectProcessed = true;

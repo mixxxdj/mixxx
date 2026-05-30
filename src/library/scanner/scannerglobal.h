@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QSharedPointer>
 #include <QStringList>
+#include <atomic>
 
 #include "util/cache.h"
 #include "util/compatibility/qmutex.h"
@@ -96,23 +97,25 @@ class ScannerGlobal {
     }
 
     bool shouldCancel() const {
-        return m_shouldCancel;
+        return m_shouldCancel.load();
     }
 
+    // This is used for database layer compatibility (TrackDAO)
+    // which has not yet been modernized to std::atomic.
     volatile const bool* shouldCancelPointer() const {
-        return &m_shouldCancel;
+        return reinterpret_cast<volatile const bool*>(&m_shouldCancel);
     }
 
     void cancel() {
-        m_shouldCancel = true;
+        m_shouldCancel.store(true);
     }
 
     bool scanFinishedCleanly() const {
-        return m_scanFinishedCleanly;
+        return m_scanFinishedCleanly.load();
     }
 
     void clearScanFinishedCleanly() {
-        m_scanFinishedCleanly = false;
+        m_scanFinishedCleanly.store(false);
     }
 
     void addVerifiedDirectory(const QString& directory) {
@@ -199,8 +202,8 @@ class ScannerGlobal {
     // The list of tracks added by the scan.
     QStringList m_addedTracks;
 
-    volatile bool m_scanFinishedCleanly;
-    volatile bool m_shouldCancel;
+    std::atomic<bool> m_scanFinishedCleanly;
+    std::atomic<bool> m_shouldCancel;
 
     // Stats tracking.
     PerformanceTimer m_timer;

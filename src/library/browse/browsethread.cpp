@@ -30,7 +30,7 @@ static QMutex s_Mutex;
  */
 BrowseThread::BrowseThread(QObject *parent)
         : QThread(parent) {
-    m_bStopThread = false;
+    m_bStopThread.store(false);
     m_model_observer = nullptr;
     //start Thread
     start(QThread::LowPriority);
@@ -39,7 +39,7 @@ BrowseThread::BrowseThread(QObject *parent)
 
 BrowseThread::~BrowseThread() {
     qDebug() << "Wait to finish browser background thread";
-    m_bStopThread = true;
+    m_bStopThread.store(true);
     //wake up thread since it might wait for user input
     m_locationUpdated.wakeAll();
     //Wait until thread terminated
@@ -75,13 +75,13 @@ void BrowseThread::run() {
     QThread::currentThread()->setObjectName("BrowseThread");
     m_mutex.lock();
 
-    while (!m_bStopThread) {
+    while (!m_bStopThread.load()) {
         //Wait until the user has selected a folder
         m_locationUpdated.wait(&m_mutex);
         Trace trace("BrowseThread");
 
         //Terminate thread if Mixxx closes
-        if(m_bStopThread) {
+        if (m_bStopThread.load()) {
             break;
         }
         // Populate the model
@@ -143,7 +143,7 @@ void BrowseThread::populateModel() {
 
     int row = 0;
     // Iterate over the files
-    while (!m_bStopThread && fileIt.hasNext()) {
+    while (!m_bStopThread.load() && fileIt.hasNext()) {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
         m_path_mutex.lock();

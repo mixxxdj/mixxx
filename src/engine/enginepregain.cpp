@@ -15,7 +15,7 @@ constexpr CSAMPLE_GAIN kSpeedGainMultiplier = 4.0f;
 // -1 dB to not risk any clipping even for lossy track that may have samples above 1.0
 constexpr CSAMPLE_GAIN kMaxTotalGainBySpeed = 0.9f;
 // value to normalize gain to 1 at speed one
-const CSAMPLE_GAIN kSpeedOneDiv = std::log10((1 * kSpeedGainMultiplier) + 1);
+const CSAMPLE_GAIN kSpeedOneDiv = std::log10((1.0f * kSpeedGainMultiplier) + 1.0f);
 } // anonymous namespace
 
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = nullptr;
@@ -134,7 +134,7 @@ void EnginePregain::process(CSAMPLE* pInOut, const std::size_t bufferSize) {
 
     CSAMPLE_GAIN speedGain = std::log10((std::abs(static_cast<CSAMPLE_GAIN>(m_dSpeed)) *
                                                 kSpeedGainMultiplier) +
-                                     1) /
+                                     1.0f) /
             kSpeedOneDiv;
     // Limit speed Gain to 0 dB if totalGain is already > 0.9 or Limit the
     // resulting totalGain to 0.9 for all other cases. This should avoid clipping even

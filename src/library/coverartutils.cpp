@@ -4,6 +4,7 @@
 #include <QDirIterator>
 #include <QRegularExpression>
 #include <QtConcurrentRun>
+#include <atomic>
 
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -16,7 +17,7 @@ mixxx::Logger kLogger("CoverArtUtils");
 
 // The concurrent guessing of cover art in background tasks
 // is enabled, unless it is explicitly disabled during tests!
-volatile bool s_enableConcurrentGuessingOfTrackCoverInfo = true;
+std::atomic<bool> s_enableConcurrentGuessingOfTrackCoverInfo = true;
 
 } // anonymous namespace
 
@@ -243,7 +244,7 @@ void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
 
 QFuture<void> guessTrackCoverInfoConcurrently(
         TrackPointer pTrack) {
-    if (s_enableConcurrentGuessingOfTrackCoverInfo) {
+    if (s_enableConcurrentGuessingOfTrackCoverInfo.load()) {
         return QtConcurrent::run([pTrack] {
             CoverInfoGuesser().guessAndSetCoverInfoForTrack(pTrack);
         });
@@ -255,5 +256,5 @@ QFuture<void> guessTrackCoverInfoConcurrently(
 }
 
 void disableConcurrentGuessingOfTrackCoverInfoDuringTests() {
-    s_enableConcurrentGuessingOfTrackCoverInfo = false;
+    s_enableConcurrentGuessingOfTrackCoverInfo.store(false);
 }

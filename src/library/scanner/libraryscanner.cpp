@@ -187,7 +187,7 @@ void LibraryScanner::run() {
 
 void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
-    DEBUG_ASSERT(m_state == STARTING);
+    DEBUG_ASSERT(m_state.load() == STARTING);
 
     cleanUpDatabase(m_libraryHashDao.database());
 
@@ -534,7 +534,7 @@ void LibraryScanner::cancelAndQuit() {
 
 // be sure we hold the m_stateSema and we are in CANCELING state
 void LibraryScanner::cancel() {
-    DEBUG_ASSERT(m_state == CANCELING);
+    DEBUG_ASSERT(m_state.load() == CANCELING);
 
 
     // we need to make a local copy because cancel is called
@@ -680,7 +680,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
     case IDLE:
         // we are leaving STARTING or CANCELING state
         // m_state is already IDLE if a scan was canceled
-        m_state = IDLE;
+        m_state.store(IDLE);
         m_stateSema.release();
         return true;
     case STARTING:
@@ -688,31 +688,31 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         // to prevent losing cancel commands or start the scanner
         // twice
         if (m_stateSema.tryAcquire()) {
-            if (m_state != IDLE) {
+            if (m_state.load() != IDLE) {
                 kLogger.debug() << "Scan already in progress";
                 m_stateSema.release();
                 return false;
             }
-            m_state = STARTING;
+            m_state.store(STARTING);
             return true;
         } else {
-            kLogger.debug() << "can't acquire semaphore, state =" << m_state;
+            kLogger.debug() << "can't acquire semaphore, state =" << m_state.load();
             return false;
         }
     case SCANNING:
-        DEBUG_ASSERT(m_state == STARTING);
+        DEBUG_ASSERT(m_state.load() == STARTING);
         // Transition protected by the semaphore is over now
         // Allow canceling
-        m_state = SCANNING;
+        m_state.store(SCANNING);
         m_stateSema.release();
         return true;
     case CANCELING:
-        DEBUG_ASSERT(m_state != CANCELING);
+        DEBUG_ASSERT(m_state.load() != CANCELING);
         // canceling is always possible, but wait
         // until there is no scan starting.
         // It must be unlocked by changeScannerState(IDLE);
         m_stateSema.acquire();
-        m_state = CANCELING;
+        m_state.store(CANCELING);
         return true;
     case FINISHED:
         // we must not acquire the semaphore here, because
@@ -720,7 +720,7 @@ bool LibraryScanner::changeScannerState(ScannerState newState) {
         // are canceling.
         // There is no race condition, since the state
         // is set to IDLE after canceling as well
-        m_state = IDLE;
+        m_state.store(IDLE);
         return true;
     default:
         DEBUG_ASSERT(false);

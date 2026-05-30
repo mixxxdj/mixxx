@@ -7,6 +7,7 @@
 #include <QSemaphore>
 #include <QThread>
 #include <QThreadPool>
+#include <atomic>
 
 #include "library/dao/analysisdao.h"
 #include "library/dao/cuedao.h"
@@ -121,7 +122,7 @@ class LibraryScanner : public QThread {
     // new scan while the old one is canceled
     QSemaphore m_stateSema;
     // this is accessed main and LibraryScanner thread
-    volatile ScannerState m_state;
+    std::atomic<ScannerState> m_state;
 
     QSet<QString> m_previouslyMissingTracks;
     int m_numRelocatedTracks;
