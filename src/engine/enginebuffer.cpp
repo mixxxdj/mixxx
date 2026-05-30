@@ -1509,13 +1509,13 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /
             m_trackSampleRateOld / getRateRatio();
-    if (speed > 0 && fFractionalPlaypos == 1.0) {
+    if (speed > 0.0 && fFractionalPlaypos >= 1.0) {
         // Play pos at Track end
-        speed = 0;
+        speed = 0.0;
     }
 
     double effectiveSlipRate = m_dSlipRate;
-    if (effectiveSlipRate > 0.0 && fFractionalSlipPos == 1.0) {
+    if (effectiveSlipRate > 0.0 && fFractionalSlipPos >= 1.0) {
         // Slip pos at Track end
         effectiveSlipRate = 0.0;
     }

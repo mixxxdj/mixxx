@@ -129,13 +129,13 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   static_cast<double>(pConfig->getValue(
                           ConfigKey(group, "keylock_engine"),
                           EngineBuffer::defaultKeylockEngine())))),
-          m_mainGainOld(0.0),
-          m_boothGainOld(0.0),
-          m_headphoneMainGainOld(0.0),
-          m_headphoneGainOld(1.0),
-          m_duckingGainOld(1.0),
-          m_balleftOld(1.0),
-          m_balrightOld(1.0),
+          m_mainGainOld(0.0f),
+          m_boothGainOld(0.0f),
+          m_headphoneMainGainOld(0.0f),
+          m_headphoneGainOld(1.0f),
+          m_duckingGainOld(1.0f),
+          m_balleftOld(1.0f),
+          m_balrightOld(1.0f),
           m_numMicsConfigured(0),
           m_mainHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
@@ -189,7 +189,7 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_pHeadMix->set(-1.);
 
     m_pHeadSplitEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
-    m_pHeadSplitEnabled->set(0.0);
+    m_pHeadSplitEnabled->set(0.0f);
 
     // zero out otherwise uninitialized buffers
     m_head.clear();
@@ -538,11 +538,11 @@ void EngineMixer::process(const std::size_t bufferSize) {
         // Mix the crossfader orientation buffers together into the main mix
         SampleUtil::copy3WithGain(m_main.data(),
                 m_outputBusBuffers[EngineChannel::LEFT].data(),
-                1.0,
+                1.0f,
                 m_outputBusBuffers[EngineChannel::CENTER].data(),
-                1.0,
+                1.0f,
                 m_outputBusBuffers[EngineChannel::RIGHT].data(),
-                1.0,
+                1.0f,
                 static_cast<int>(bufferSize));
 
         MicMonitorMode configuredMicMonitorMode = static_cast<MicMonitorMode>(
@@ -747,9 +747,9 @@ void EngineMixer::process(const std::size_t bufferSize) {
         CSAMPLE balright = 1.0f;
         CSAMPLE balleft = 1.0f;
         const auto bal = static_cast<CSAMPLE_GAIN>(m_pBalance->get());
-        if (bal > 0.) {
+        if (bal > 0.0f) {
             balleft -= bal;
-        } else if (bal < 0.) {
+        } else if (bal < 0.0f) {
             balright += bal;
         }
 

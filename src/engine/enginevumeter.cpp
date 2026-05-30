@@ -58,14 +58,13 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
 
     // Are we ready to update the VU meter?:
     if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
+        const float samplesCalculatedFloat = static_cast<float>(m_samplesCalculated);
+        const float logScaleFactor = static_cast<float>(SHRT_MAX) / 1000.0f;
+
         doSmooth(m_fRMSvolumeL,
-                std::log10(static_cast<CSAMPLE>(SHRT_MAX) * m_fRMSvolumeSumL /
-                                (static_cast<CSAMPLE>(m_samplesCalculated) * 1000.0f) +
-                        1.0f));
+                std::log10(logScaleFactor * m_fRMSvolumeSumL / samplesCalculatedFloat + 1.0f));
         doSmooth(m_fRMSvolumeR,
-                std::log10(static_cast<CSAMPLE>(SHRT_MAX) * m_fRMSvolumeSumR /
-                                (static_cast<CSAMPLE>(m_samplesCalculated) * 1000.0f) +
-                        1.0f));
+                std::log10(logScaleFactor * m_fRMSvolumeSumR / samplesCalculatedFloat + 1.0f));
 
         const CSAMPLE epsilon = 0.0001f;
 
@@ -93,7 +92,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0);
-        m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / bufferSize / 2000);
+        m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0);
     } else {
@@ -102,7 +101,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0);
-        m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / bufferSize / 2000);
+        m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0);
     } else {
@@ -111,8 +110,8 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
 
     m_peakIndicator.set(
             (m_peakIndicatorRight.toBool() || m_peakIndicatorLeft.toBool())
-                    ? 1.0
-                    : 0.0);
+                    ? 1.0f
+                    : 0.0f);
 }
 
 void EngineVuMeter::doSmooth(CSAMPLE& currentVolume, CSAMPLE newVolume) {
@@ -124,8 +123,8 @@ void EngineVuMeter::doSmooth(CSAMPLE& currentVolume, CSAMPLE newVolume) {
     if (currentVolume < 0) {
         currentVolume = 0;
     }
-    if (currentVolume > 1.0) {
-        currentVolume = 1.0;
+    if (currentVolume > 1.0f) {
+        currentVolume = 1.0f;
     }
 }
 
