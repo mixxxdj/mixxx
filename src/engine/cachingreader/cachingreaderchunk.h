@@ -28,12 +28,12 @@ public:
   // Converts frames to samples
   static constexpr SINT frames2samples(
           SINT frames, mixxx::audio::ChannelCount channelCount) noexcept {
-      return frames * channelCount;
+      return frames * static_cast<SINT>(channelCount);
   }
     // Converts samples to frames
   static SINT samples2frames(SINT samples, mixxx::audio::ChannelCount channelCount) {
-      DEBUG_ASSERT(0 == (samples % channelCount));
-      return samples / channelCount;
+      DEBUG_ASSERT(0 == (samples % static_cast<SINT>(channelCount)));
+      return samples / static_cast<SINT>(channelCount);
   }
 
     // Returns the corresponding chunk index for a frame index

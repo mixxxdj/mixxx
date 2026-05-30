@@ -50,7 +50,7 @@ CachingReader::CachingReader(const QString& group,
           // buffer, where new requests replace old requests when full. Those
           // old requests need to be returned immediately to the CachingReader
           // that must take ownership and free them!!!
-          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory / 4),
+          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory),
           // The capacity of the back channel must be equal to the number of
           // allocated chunks, because the worker use writeBlocking(). Otherwise
           // the worker could get stuck in a hot loop!!!
@@ -343,14 +343,14 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
         mixxx::audio::ChannelCount channelCount) {
     // Check for bad inputs
     // Refuse to read from an invalid position
-    VERIFY_OR_DEBUG_ASSERT(startSample % channelCount == 0) {
+    VERIFY_OR_DEBUG_ASSERT(startSample % static_cast<SINT>(channelCount) == 0) {
         kLogger.critical()
                 << "Invalid arguments for read():"
                 << "startSample =" << startSample;
         return ReadResult::UNAVAILABLE;
     }
     // Refuse to read from an invalid number of samples
-    VERIFY_OR_DEBUG_ASSERT(numSamples % channelCount == 0) {
+    VERIFY_OR_DEBUG_ASSERT(numSamples % static_cast<SINT>(channelCount) == 0) {
         kLogger.critical()
                 << "Invalid arguments for read():"
                 << "numSamples =" << numSamples;

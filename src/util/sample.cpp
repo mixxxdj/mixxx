@@ -750,24 +750,23 @@ void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
         mixxx::audio::ChannelCount numChannels,
         int excludeChannelMask) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
-    int stereoChCount = numChannels / mixxx::audio::ChannelCount::stereo();
+    const SINT stereoChCount = static_cast<SINT>(numChannels) / 2;
     // Making sure we aren't using this function with more channel than supported with the mask
-    DEBUG_ASSERT(stereoChCount < static_cast<int>(sizeof(excludeChannelMask) * 8));
-    SampleUtil::clear(pDest, numFrames * mixxx::audio::ChannelCount::stereo());
-    for (int stemIdx = 0; stemIdx < stereoChCount; stemIdx++) {
-        if (excludeChannelMask >> stemIdx & 0b1) {
-            continue;
+    DEBUG_ASSERT(stereoChCount < static_cast<SINT>(sizeof(excludeChannelMask) * 8));
+
+    // Outer loop over frames for better cache locality.
+    for (SINT i = 0; i < numFrames; ++i) {
+        CSAMPLE sumL = 0.0f;
+        CSAMPLE sumR = 0.0f;
+        for (SINT stemIdx = 0; stemIdx < stereoChCount; ++stemIdx) {
+            if (excludeChannelMask >> stemIdx & 0b1) {
+                continue;
+            }
+            sumL += pSrc[i * numChannels + stemIdx * 2];
+            sumR += pSrc[i * numChannels + stemIdx * 2 + 1];
         }
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < numFrames; i++) {
-            const int srcIdx = numChannels * i +
-                    stemIdx * mixxx::audio::ChannelCount::stereo();
-            const int destIdx = mixxx::audio::ChannelCount::stereo() * i;
-            pDest[destIdx] +=
-                    pSrc[srcIdx];
-            pDest[destIdx + 1] +=
-                    pSrc[srcIdx + 1];
-        }
+        pDest[i * 2] = sumL;
+        pDest[i * 2 + 1] = sumR;
     }
 }
 
@@ -777,19 +776,19 @@ void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
         SINT numFrames,
         mixxx::audio::ChannelCount numChannels) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
-    int stereoChCount = numChannels / mixxx::audio::ChannelCount::stereo();
-    SampleUtil::clear(pDest, numFrames * mixxx::audio::ChannelCount::stereo());
-    for (int stemIdx = 0; stemIdx < stereoChCount; stemIdx++) {
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < numFrames; i++) {
-            const int srcIdx = numChannels * i +
-                    stemIdx * mixxx::audio::ChannelCount::stereo();
-            const int destIdx = mixxx::audio::ChannelCount::stereo() * i;
-            pDest[destIdx] +=
-                    pSrc[srcIdx];
-            pDest[destIdx + 1] +=
-                    pSrc[srcIdx + 1];
+    const SINT stereoChCount = static_cast<SINT>(numChannels) / 2;
+
+    // Outer loop over frames for better cache locality.
+    // note: LOOP VECTORIZED (inner loop is fixed small count for stems/stereo).
+    for (SINT i = 0; i < numFrames; ++i) {
+        CSAMPLE sumL = 0.0f;
+        CSAMPLE sumR = 0.0f;
+        for (SINT stemIdx = 0; stemIdx < stereoChCount; ++stemIdx) {
+            sumL += pSrc[i * numChannels + stemIdx * 2];
+            sumR += pSrc[i * numChannels + stemIdx * 2 + 1];
         }
+        pDest[i * 2] = sumL;
+        pDest[i * 2 + 1] = sumR;
     }
 }
 
@@ -909,11 +908,41 @@ void SampleUtil::copyReverse(CSAMPLE* M_RESTRICT pDest,
         int channelCount) {
     DEBUG_ASSERT(numSamples % channelCount == 0);
     for (SINT frameIdx = 0; frameIdx < numSamples / channelCount; ++frameIdx) {
-        const int endpos = (numSamples - 1) - frameIdx * channelCount;
+        const SINT endpos = (numSamples - 1) - frameIdx * channelCount;
         // note: LOOP VECTORIZED.
         for (int chIdx = 0; chIdx < channelCount; chIdx++) {
             pDest[frameIdx * channelCount + chIdx] = pSrc[endpos - channelCount + chIdx + 1];
         }
+    }
+}
+
+// static
+void SampleUtil::copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numFrames; ++i) {
+        const SINT endpos = (numFrames - 1 - i) * 2;
+        pDest[i * 2] = pSrc[endpos];
+        pDest[i * 2 + 1] = pSrc[endpos + 1];
+    }
+}
+
+// static
+void SampleUtil::copyReverseStem(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numFrames; ++i) {
+        const SINT endpos = (numFrames - 1 - i) * 8;
+        pDest[i * 8] = pSrc[endpos];
+        pDest[i * 8 + 1] = pSrc[endpos + 1];
+        pDest[i * 8 + 2] = pSrc[endpos + 2];
+        pDest[i * 8 + 3] = pSrc[endpos + 3];
+        pDest[i * 8 + 4] = pSrc[endpos + 4];
+        pDest[i * 8 + 5] = pSrc[endpos + 5];
+        pDest[i * 8 + 6] = pSrc[endpos + 6];
+        pDest[i * 8 + 7] = pSrc[endpos + 7];
     }
 }
 // static

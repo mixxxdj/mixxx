@@ -420,6 +420,14 @@ class SampleUtil {
             SINT numSamples,
             int channelCount);
 
+    static void copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc,
+            SINT numFrames);
+
+    static void copyReverseStem(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc,
+            SINT numFrames);
+
     static void copy1WithGain(CSAMPLE* M_RESTRICT pDest,
             const CSAMPLE* M_RESTRICT pSrc0,
             CSAMPLE_GAIN gain0,
