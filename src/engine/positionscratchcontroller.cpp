@@ -336,7 +336,7 @@ void PositionScratchController::reset() {
     // Resets the scratch state to avoid engine freeze due to insanley high rate
     // reported on track load while scratching.
     // https://github.com/mixxxdj/mixxx/issues/15082
-    m_pScratchEnable->set(0.0);
+    m_pScratchEnable->set(0.0f);
     m_isScratching = false;
     m_inertiaEnabled = false;
     m_rate = 0;

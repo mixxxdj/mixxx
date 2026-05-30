@@ -72,8 +72,8 @@ void EnginePregain::process(CSAMPLE* pInOut, const std::size_t bufferSize) {
         // TODO(XXX): consider a good default.
         // Do we expect an replaygain leveled input or
         // Normalized to 1 input?
-        fReplayGainCorrection = 1; // We expect a replaygain leveled input
-    } else if (fReplayGain == 0) {
+        fReplayGainCorrection = 1.0f; // We expect a replaygain leveled input
+    } else if (fReplayGain == 0.0f) {
         // use predicted replaygain
         fReplayGainCorrection = static_cast<CSAMPLE_GAIN>(s_pDefaultBoost->get());
         // We prepare for smoothfading to ReplayGain suggested gain
