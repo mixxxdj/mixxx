@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+    <info>
+        <name>DDJ-FLX10 Screen</name>
+        <author>Victor Pineda (Veezuhz)</author>
+        <description>Jog wheel HID screen module for DDJ-FLX10. Enable alongside the main MIDI mapping.</description>
+    </info>
+    <controller id="DDJ-FLX10 Screen">
+        <devices>
+            <product protocol="hid" vendor_id="0x2B73" product_id="0x0041" />
+        </devices>
+        <scriptfiles>
+            <file filename="PioneerDDJFLX10-screen.js" functionprefix="PioneerDDJFLX10Screen"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
