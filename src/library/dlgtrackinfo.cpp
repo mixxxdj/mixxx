@@ -1,5 +1,6 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QScrollArea>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
@@ -20,6 +21,8 @@
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "util/parented_ptr.h"
+#include "util/widgethelper.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
@@ -880,6 +883,108 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     m_pDlgTagFetcher->show();
 }
 
+void DlgTrackInfo::showEvent(QShowEvent* pEvent) {
+    QDialog::showEvent(pEvent);
+    // If the dialog doesn't fit the screen (with some margin), make it scrollable
+    // by putting the Summary tab inside a QScrollArea (plus some magic);
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    QRect screenAvailableGeometry;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenAvailableGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        screenAvailableGeometry = pScreen->availableGeometry();
+    }
+
+    const QRect geometry = frameGeometry();
+    int currHeight = geometry.height();
+    int top = geometry.top();
+#ifndef __WINDOWS__
+    // On Linux, when the window is shown for the first time by the window manager,
+    // Qt doesn't have information about the frame size, so the offset is zero.
+    // As such, the first time it opens the window does not include the offset.
+    // Assume window decoration is 30 px tall, the frame is 2 px wide and some margin.
+    // Even for taller decoration, this kind of works since the Cancel|Reset|Okay buttons
+    // would still be partly visible.
+    // FIXME: we could also assume the window decoration is about as tall as
+    // those button and simply subtract btnCancel->height().
+    constexpr int kDecorationHeight = 50;
+    currHeight += kDecorationHeight;
+    top -= kDecorationHeight;
+#endif
+
+    if (currHeight > screenAvailableGeometry.height()) {
+        int origWidth = frameGeometry().width();
+        parented_ptr<QScrollArea> pScrollArea = make_parented<QScrollArea>(tabWidget);
+        pScrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContentsOnFirstShow);
+
+        // Store the Summary tab's title before we (implicitly) remove its tab via
+        // QScrollArea::setWidget().
+        const QString summaryTitle = tabWidget->tabText(tabWidget->indexOf(tabSummary));
+        pScrollArea->setWidget(tabSummary);
+
+        // With true, adjustSize() avoids the horizontal scrollbar, but the comment
+        // editor will grow taller than necessary (~5 lines).
+        // With false, the comment editor will be small (~2 lines), but adjustSize()
+        // won't avoid the horizontal scrollbar, even when we use the Summary tab's
+        // width for the QScrollArea's minimum width.
+        pScrollArea->setWidgetResizable(true);
+
+        // Some settings to get the same look as the regular layout/view:
+        // By default, the QScrollArea would use another palette. Disable that.
+        pScrollArea->viewport()->setAutoFillBackground(false);
+        pScrollArea->widget()->setAutoFillBackground(false);
+        // Also don't draw an extra border
+        pScrollArea->setFrameStyle(QFrame::NoFrame);
+
+        // Expand the QScrollArea so that we don't need the horizontal scrollbar.
+        pScrollArea->setMinimumWidth(tabSummary->width());
+
+        // Move the Summary tab into the QScrollArea
+        tabWidget->removeTab(tabWidget->indexOf(tabSummary));
+        tabWidget->insertTab(0, pScrollArea.get(), summaryTitle);
+        tabWidget->setCurrentIndex(0);
+
+        // When wrapping tabSummary in a QScollArea, the comment editor grows larger
+        // than the 3 lines in regular mode.
+        // Setting the QSizePolicy (tried all) doesn't fix it.
+        // Let's use the triple the height of a QLineEdit because they behave well.
+        // Note: now the comment editor won't expand when the dialog is expanded,
+        // as it does in the original layout.
+        txtComment->setFixedHeight(txtTrackNumber->geometry().height() * 3);
+
+        // Note: with this alone the dialog would be much smaller than necessary.
+        // Without this the dialog would fit the screen exactly, but some parts
+        // may still be occluded by taskbar or other (system) toolbars.
+        // Also, for some setGeometry() would not trigger a resize event, even
+        // though the dialog is reported to be visible. (noticed on Linux)
+        adjustSize();
+
+        // Now expand vertically to available screen height.
+        // And show horizontally centered (Note: for some reason frameGeometry().left()
+        // would not work reliably after adjustSize(), dialog would be moved to left side.
+        int newX = screenAvailableGeometry.left() +
+                screenAvailableGeometry.width() / 2 -
+                frameGeometry().width() / 2;
+        int optHeight = screenAvailableGeometry.height();
+#ifndef __WINDOWS__
+        optHeight -= kDecorationHeight;
+#endif
+        setGeometry(
+                newX,
+                screenAvailableGeometry.top(),
+                origWidth,
+                optHeight);
+    } else if (geometry.bottom() > screenAvailableGeometry.bottom()) {
+        // Dialog fits the available space but is positioned too low and buttons
+        // are (partially) occluded by the taskbar
+        // Move it up.
+        int overlap = geometry.bottom() - screenAvailableGeometry.bottom();
+        move(geometry.x(), top - overlap);
+    }
+}
+
 void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     QDialog::resizeEvent(pEvent);
 
@@ -907,4 +1012,8 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+
+    // Set fixed height on stars widget so it doesn't expand the adjacent
+    // txtAlbumArtist vertically
+    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
 }
