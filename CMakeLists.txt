@@ -296,6 +296,19 @@ if(DEFINED ENV{MIXXX_VCPKG_ROOT} AND NOT DEFINED MIXXX_VCPKG_ROOT)
 endif()
 
 if(DEFINED MIXXX_VCPKG_ROOT)
+  # Validate MIXXX_VCPKG_ROOT points to a vcpkg root to avoid confusing follow-up errors.
+  set(_vcpkg_toolchain "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+  if(NOT EXISTS "${_vcpkg_toolchain}")
+    file(TO_NATIVE_PATH "${_vcpkg_toolchain}" _vcpkg_toolchain_native)
+    message(
+      STATUS
+      "MIXXX_VCPKG_ROOT was set to \"${MIXXX_VCPKG_ROOT}\", but this is not a valid vcpkg root.\n"
+      "Expected to find: ${_vcpkg_toolchain_native}\n"
+      "Please set MIXXX_VCPKG_ROOT to the vcpkg root directory, the folder containing the vcpkg tool (vcpkg.exe on Windows)."
+    )
+    fatal_error_missing_env()
+  endif()
+
   if(
     EXISTS "${MIXXX_VCPKG_ROOT}/overlay/ports"
     OR NOT EXISTS "${MIXXX_VCPKG_ROOT}/ports"
@@ -5414,7 +5427,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute stonking)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
