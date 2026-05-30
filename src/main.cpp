@@ -497,7 +497,7 @@ int main(int argc, char* argv[]) {
     QObject::connect(&app,
             &QGuiApplication::primaryScreenChanged,
             &app,
-            [&args, &geometryConn](QScreen* pNewScreen) {
+            [&args, &app, &geometryConn](QScreen* pNewScreen) {
                 if (!pNewScreen) {
                     return;
                 }
