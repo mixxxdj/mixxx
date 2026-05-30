@@ -79,6 +79,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     parented_ptr<ControlProxy> m_pPassthroughEnabled;
     bool m_bScratching;
     bool m_bBending;
+    bool m_hotcueDragging;
+    int m_draggedHotcue;
     QPoint m_mouseAnchor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     WaveformMarkPointer m_pHoveredMark;
