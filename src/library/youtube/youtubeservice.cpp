@@ -351,7 +351,7 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
                     downloadViaAndroidBundled(videoId, cacheDir);
                 } else
 #endif
-                if (hasYtDlpFallback) {
+                        if (hasYtDlpFallback) {
                     kLogger.warning() << "All Piped instances failed for download"
                                       << videoId << ":" << lastError
                                       << "— falling back to yt-dlp";
@@ -1066,8 +1066,7 @@ void YouTubeService::downloadViaAndroidBundled(
             // same as the desktop path. Use invokeMethod to marshal back to
             // the object's thread.
             QMetaObject::invokeMethod(guard, [guard, videoId, outputPath]() {
-                if (guard) guard->finalizeDownload(videoId, outputPath);
-            }, Qt::QueuedConnection);
+                if (guard) guard->finalizeDownload(videoId, outputPath); }, Qt::QueuedConnection);
         } else {
             Q_EMIT guard->downloadFailed(videoId,
                     "yt-dlp finished but file not found: " + outputPath);

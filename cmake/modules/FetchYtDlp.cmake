@@ -261,7 +261,10 @@ if(ANDROID)
     set(_attempt 1)
     set(_aar_ok FALSE)
     while(_attempt LESS_EQUAL _max_attempts AND NOT _aar_ok)
-      message(STATUS "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})...")
+      message(
+        STATUS
+        "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})..."
+      )
       file(
         DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
         SHOW_PROGRESS
@@ -278,15 +281,24 @@ if(ANDROID)
           if(_aar_dl_sha STREQUAL _ytdlp_aar_sha256)
             set(_aar_ok TRUE)
           else()
-            message(STATUS "SHA256 mismatch, retrying")
+            message(
+              STATUS
+              "SHA256 mismatch, retrying"
+            )
             file(REMOVE "${_ytdlp_aar_path}")
           endif()
         else()
-          message(STATUS "Downloaded file too small (${_aar_size} bytes), retrying")
+          message(
+            STATUS
+            "Downloaded file too small (${_aar_size} bytes), retrying"
+          )
           file(REMOVE "${_ytdlp_aar_path}")
         endif()
       else()
-        message(STATUS "Download failed: ${_dl_msg}, retrying")
+        message(
+          STATUS
+          "Download failed: ${_dl_msg}, retrying"
+        )
         file(REMOVE "${_ytdlp_aar_path}")
       endif()
       math(EXPR _attempt "${_attempt} + 1")
