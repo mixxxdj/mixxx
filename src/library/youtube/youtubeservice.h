@@ -42,15 +42,12 @@ struct YouTubeVideoInfo {
 ///      Pure Qt over HTTPS — no native dependency, no bundled binary, no
 ///      JNI bridge.
 ///
-///   2. **Bundled `yt-dlp`** (defense in depth on all platforms). On Linux/macOS
-///      /Windows the install layout ships the official self-contained
-///      `yt-dlp` PyInstaller binary next to the Mixxx executable (see
-///      cmake/modules/FetchYtDlp.cmake). On Android we bundle the yt-dlp
-///      zipimport package and look for a Python interpreter (bundled p4a,
-///      Termux, or system). YouTubeService prefers the bundled copy, then
-///      the user's PATH, then a list of common install dirs, then
-///      `MIXXX_YTDLP`. Used when Piped instances are unreachable or return
-///      no audio streams.
+2. **Bundled yt-dlp** (defense in depth on all platforms). On Linux/macOS
+     /Windows the install layout ships the official self-contained yt-dlp
+     PyInstaller binary. On Android we bundle the youtubedl-android AAR
+     (Python 3.11 runtime + yt-dlp) and call it via JNI — no external
+     dependencies, no Termux, no system Python needed. Used when Piped
+     instances are unreachable or return no audio streams.
 class YouTubeService : public QObject {
     Q_OBJECT
   public:
@@ -83,11 +80,9 @@ class YouTubeService : public QObject {
     /// SponsorBlock API at sponsor.ajay.app.
     void fetchSponsorSegments(const QString& videoId);
 
-    /// Absolute path to the yt-dlp binary (desktop) or Python interpreter
-    /// (Android, used to run the bundled yt-dlp zipimport package). Empty
-    /// if none was found. Empty is normal when no Python is available on
-    /// Android and does NOT indicate that the YouTube tab is broken — Piped
-    /// remains the primary path.
+    /// Absolute path to the yt-dlp binary (desktop) or "android-bundled"
+    /// marker (Android, indicating the youtubedl-android JNI runtime).
+    /// Empty if no runtime was found (desktop without bundled yt-dlp only).
     QString ytDlpPath() const {
         return m_ytDlpPath;
     }
@@ -168,6 +163,15 @@ class YouTubeService : public QObject {
 
     void searchViaYtDlp(const QString& query, int cap);
     void downloadViaYtDlp(const QString& videoId, const QString& cacheDir);
+
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+    // ----- bundled youtubedl-android (Android only, no external deps) -----
+
+    /// Download using the bundled youtubedl-android runtime via JNI.
+    /// This is the primary fallback on Android when Piped fails.
+    /// No external Python, Termux, or system dependency needed.
+    void downloadViaAndroidBundled(const QString& videoId, const QString& cacheDir);
+#endif
 
     // ----- shared -----
 

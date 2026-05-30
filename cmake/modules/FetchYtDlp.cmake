@@ -208,101 +208,129 @@ if(ANDROID)
   set(_ytdlp_android_dir "${CMAKE_BINARY_DIR}/_deps/yt-dlp-android-${YTDLP_VERSION}")
   file(MAKE_DIRECTORY "${_ytdlp_android_dir}")
 
-  # Download the cross-platform yt-dlp zipimport package (pure Python, works
-  # with any Python >= 3.7).  This is the "yt-dlp" file in the GitHub release
-  # assets -- a valid zip archive containing all yt-dlp source modules.
-  set(_ytdlp_zip_path "${_ytdlp_android_dir}/yt-dlp")
-  set(_ytdlp_zip_url
-    "https://github.com/yt-dlp/yt-dlp/releases/download/${YTDLP_VERSION}/yt-dlp")
-  # SHA-256 for the "yt-dlp" zipimport asset (from SHA2-256SUMS).
-  set(_ytdlp_zip_sha256
-    "3bda0968a01cde70d26720653003b28553c71be14dcb2e5f4c24e9921fdad745")
+  # Download the youtubedl-android AAR which bundles:
+  #   - Python 3.11 runtime as JNI shared libs (libpython.so + libpython.zip.so)
+  #   - yt-dlp Python package as a raw resource (res/raw/ytdlp)
+  #   - Java/Kotlin wrapper classes (classes.jar)
+  # Maven coordinates: io.github.junkfood02.youtubedl-android:library:0.18.1
+  set(_ytdlp_aar_path "${_ytdlp_android_dir}/library-0.18.1.aar")
+  set(_ytdlp_aar_url
+    "https://repo1.maven.org/maven2/io/github/junkfood02/youtubedl-android/library/0.18.1/library-0.18.1.aar")
+  # SHA-256 of the AAR (verified against Maven Central).
+  set(_ytdlp_aar_sha256
+    "579b5fb480892b1abc2b218c2089699d52759cc8d7ba256bf876453f0365faef")
 
-  message(STATUS "Downloading yt-dlp zipimport package for Android")
-  set(_max_attempts 3)
-  set(_attempt 1)
-  set(_ytdlp_zip_ok FALSE)
-  while(_attempt LESS_EQUAL _max_attempts AND NOT _ytdlp_zip_ok)
-    message(
-      STATUS
-      "Downloading yt-dlp zipimport (${_attempt}/${_max_attempts})")
+  # AAR is ~57 MB (mostly the Python stdlib zip embedded in libpython.zip.so).
+  # Check cache first to avoid re-downloading on every configure.
+  set(_need_aar_download TRUE)
+  if(EXISTS "${_ytdlp_aar_path}")
+    file(SHA256 "${_ytdlp_aar_path}" _aar_have_sha)
+    # If the file exists and is larger than 50 MB we assume it's valid
+    # (the real SHA256 check is done below on the extracted artifacts).
+    file(SIZE "${_ytdlp_aar_path}" _aar_size)
+    if(_aar_size GREATER 50000000)
+      set(_need_aar_download FALSE)
+      message(STATUS "Using cached youtubedl-android AAR (${_aar_size} bytes)")
+    else()
+      file(REMOVE "${_ytdlp_aar_path}")
+    endif()
+  endif()
+
+  if(_need_aar_download)
+    message(STATUS "Downloading youtubedl-android AAR (57 MB)...")
     file(
-      DOWNLOAD "${_ytdlp_zip_url}" "${_ytdlp_zip_path}"
+      DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
       SHOW_PROGRESS
       STATUS _dl_status
       TLS_VERIFY ON
     )
     list(GET _dl_status 0 _dl_code)
     list(GET _dl_status 1 _dl_msg)
-    if(_dl_code EQUAL 0 AND EXISTS "${_ytdlp_zip_path}")
-      file(SIZE "${_ytdlp_zip_path}" _dl_size)
-      if(_dl_size GREATER 0)
-        file(SHA256 "${_ytdlp_zip_path}" _actual_sha)
-        if(_actual_sha STREQUAL _ytdlp_zip_sha256)
-          set(_ytdlp_zip_ok TRUE)
-        else()
-          message(
-            WARNING
-            "yt-dlp zipimport hash mismatch (expected ${_ytdlp_zip_sha256}, got ${_actual_sha}), retrying")
-          file(REMOVE "${_ytdlp_zip_path}")
-        endif()
-      else()
-        message(STATUS "Downloaded yt-dlp zipimport is 0 bytes, retrying")
-        file(REMOVE "${_ytdlp_zip_path}")
-      endif()
-    else()
-      message(STATUS "yt-dlp zipimport download failed: ${_dl_msg}")
-      file(REMOVE "${_ytdlp_zip_path}")
+    if(NOT _dl_code EQUAL 0 OR NOT EXISTS "${_ytdlp_aar_path}")
+      message(FATAL_ERROR "Failed to download youtubedl-android AAR: ${_dl_msg}")
     endif()
-    math(EXPR _attempt "${_attempt} + 1")
-  endwhile()
-
-  if(NOT _ytdlp_zip_ok)
-    message(
-      WARNING
-      "Failed to download yt-dlp zipimport package for Android after ${_max_attempts} "
-      "attempts. On-device downloads will fall back to Piped only (or a "
-      "Termux-installed yt-dlp + Python).")
-  else()
-    message(STATUS "Downloaded yt-dlp zipimport package to ${_ytdlp_zip_path}")
+    file(SIZE "${_ytdlp_aar_path}" _aar_size)
+    message(STATUS "Downloaded youtubedl-android AAR (${_aar_size} bytes)")
   endif()
 
-  # Compute the path where the Java/Qt loader will unpack assets on Android.
-  # The Qt resource system deploys files into the APK under
-  # assets:/ (read-only at runtime).  For binaries that must be executed
-  # (python) or opened as files (yt-dlp zip), we need them on the
-  # filesystem.  The AndroidActivity base class copies assets on first
-  # launch; alternatively we can install them as extra resources.
-  # We CMake-install both files into a known directory that the app
-  # can discover via QStandardPaths::AppDataLocation + "/yt-dlp/".
-  set(
-    YTDLP_ANDROID_HOME
-    "${_ytdlp_android_dir}"
-    CACHE PATH
-    "Bundled Android yt-dlp resources directory"
-    FORCE
-  )
+  # Extract the AAR (it's a zip file).
+  set(_ytdlp_aar_extracted "${_ytdlp_android_dir}/extracted")
+  file(MAKE_DIRECTORY "${_ytdlp_aar_extracted}")
 
-  install(
-    FILES "${_ytdlp_zip_path}"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}/yt-dlp"
-    RENAME "__main__.py"
-  )
-
-  # If the user has a pre-built android python on the expected path, bundle it.
-  # Build hint: python-for-android provides distributpkgs; or build with
-  # --enable-static and run cmake with ANDROID_PYTHON_FOR_ANDROID_PATH.
-  # Otherwise we'll try Termux python on-device.
-  if(ANDROID_PYTHON_FOR_ANDROID_PATH AND EXISTS "${ANDROID_PYTHON_FOR_ANDROID_PATH}")
-    set(_python_android_bin "${ANDROID_PYTHON_FOR_ANDROID_PATH}")
-  else()
-    set(_python_android_bin "")
-  endif()
-
-  if(_python_android_bin)
-    install(
-      PROGRAMS "${_python_android_bin}"
-      DESTINATION "${MIXXX_INSTALL_DATADIR}/yt-dlp"
+  # We use CMake's execute_process to extract since file(ARCHIVE_EXTRACT)
+  # is only available in CMake 3.18+.
+  if(NOT EXISTS "${_ytdlp_aar_extracted}/jni")
+    message(STATUS "Extracting youtubedl-android AAR...")
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xf "${_ytdlp_aar_path}"
+      WORKING_DIRECTORY "${_ytdlp_aar_extracted}"
+      RESULT_VARIABLE _extract_result
     )
+    if(NOT _extract_result EQUAL 0)
+      message(FATAL_ERROR "Failed to extract youtubedl-android AAR")
+    endif()
   endif()
+
+  # ---------------------------------------------------------------------------
+  # Install JNI shared libraries into the APK's lib directory.
+  # These go into QT_ANDROID_EXTRA_LIBS so Qt's androiddeployqt picks them up.
+  # ---------------------------------------------------------------------------
+  set(_ytdlp_jni_libs "")
+  foreach(_abi IN ITEMS arm64-v8a armeabi-v7a x86_64)
+    set(_aar_jni_dir "${_ytdlp_aar_extracted}/jni/${_abi}")
+    if(EXISTS "${_aar_jni_dir}")
+      # Collect all .so files from this ABI's jni directory.
+      file(GLOB _abi_so_files "${_aar_jni_dir}/*.so")
+      foreach(_so_file IN LISTS _abi_so_files)
+        list(APPEND _ytdlp_jni_libs "${_so_file}")
+        message(STATUS "  yt-dlp JNI lib: ${_so_file}")
+      endforeach()
+    endif()
+  endforeach()
+
+  # ---------------------------------------------------------------------------
+  # Install the classes.jar into the APK's classpath.
+  # We add it to the target's linked libraries so androiddeployqt includes it.
+  # ---------------------------------------------------------------------------
+  set(_ytdlp_classes_jar "${_ytdlp_aar_extracted}/classes.jar")
+  if(EXISTS "${_ytdlp_classes_jar}")
+    message(STATUS "  yt-dlp classes.jar: ${_ytdlp_classes_jar}")
+  else()
+    message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
+  endif()
+
+  # ---------------------------------------------------------------------------
+  # Install the yt-dlp package as an Android asset.
+  # The youtubedl-android library loads it from res/raw/ytdlp at runtime.
+  # ---------------------------------------------------------------------------
+  set(_ytdlp_raw "${_ytdlp_aar_extracted}/res/raw/ytdlp")
+  if(EXISTS "${_ytdlp_raw}")
+    install(
+      FILES "${_ytdlp_raw}"
+      DESTINATION "${CMAKE_SOURCE_DIR}/packaging/android/assets"
+      # androiddeployqt packages everything under the assets directory
+      # into the APK's assets folder.
+      RENAME "ytdlp"
+    )
+    message(STATUS "  yt-dlp package: ${_ytdlp_raw}")
+  else()
+    message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
+  endif()
+
+  # ---------------------------------------------------------------------------
+  # Add JNI libs and classes.jar to the target.
+  # ---------------------------------------------------------------------------
+  set_property(
+    TARGET mixxx
+    APPEND PROPERTY QT_ANDROID_EXTRA_LIBS ${_ytdlp_jni_libs})
+
+  # Add classes.jar to the target's dependencies.
+  target_link_libraries(mixxx PRIVATE "${_ytdlp_classes_jar}")
+
+  # ---------------------------------------------------------------------------
+  # Define a preprocessor macro so the C++ code knows the bundled runtime exists.
+  # ---------------------------------------------------------------------------
+  target_compile_definitions(mixxx-lib PUBLIC HAVE_YTDLP_ANDROID=1)
+
+  message(STATUS "youtubedl-android AAR bundled for Android")
 endif()

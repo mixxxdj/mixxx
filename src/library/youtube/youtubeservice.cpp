@@ -17,10 +17,17 @@
 #include <QSet>
 #include <QStandardPaths>
 #include <QStringList>
+#include <QThread>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
 #include <utility>
+
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+#include <QJniObject>
+#include <QJniEnvironment>
+#include <QNativeInterface/QAndroidApplication>
+#endif
 
 #include "library/youtube/youtubeaudiocutter.h"
 #include "util/logger.h"
@@ -265,30 +272,11 @@ QString YouTubeService::locateYtDlp() {
                           << "but that path is not executable; ignoring";
     }
 #if defined(Q_OS_ANDROID)
-    // 2. Android: the PyInstaller binary doesn't run under Bionic, so we look
-    //    for a Python interpreter + the bundled yt-dlp zipimport package.
-    //    Search order:
-    //      a) Bundled python-for-android shared lib next to mixxx libs
-    //      b) Termux or other on-device python
-    //      c) If no python found, return empty — Piped is the only option
-    const QStringList androidPythonCandidates = {
-        // Bundled p4a python (if user built with ANDROID_PYTHON_FOR_ANDROID_PATH)
-        QStandardPaths::AppDataLocation + QStringLiteral("/yt-dlp/libpython3.so"),
-        // Termux (the most common way to get python on Android)
-        QStringLiteral("/data/data/com.termux/files/usr/bin/python3"),
-        QStringLiteral("/data/data/com.termux/files/usr/bin/python"),
-        // User-installed python builds
-        QStringLiteral("/system/bin/python3"),
-        QStringLiteral("/system/xbin/python3"),
-    };
-    for (const QString& candidate : std::as_const(androidPythonCandidates)) {
-        if (QFileInfo(candidate).isExecutable()) {
-            kLogger.info() << "Android: found Python at" << candidate;
-            return candidate;  // caller will use this as python, not yt-dlp binary
-        }
-    }
-    kLogger.info() << "Android: no bundled/on-device python found; yt-dlp unavailable";
-    return QString();
+    // Android: the youtubedl-android AAR is bundled in the APK at build time.
+    // It provides a complete Python 3.11 runtime + yt-dlp via JNI.
+    // Return a special marker path so downloadVideo() knows to use the
+    // JNI-based downloader instead of trying to exec a binary.
+    return QStringLiteral("android-bundled");
 #else
     // 2. Bundled-next-to-binary + common install dirs.
     const QStringList fallbackBins = ytDlpFallbackBins();
@@ -317,11 +305,19 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
         return;
     }
     const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
+#if defined(Q_OS_ANDROID)
+    // On Android, the bundled yt-dlp is accessed via JNI, not QProcess.
+    // searchViaYtDlp only works with a real binary path.
+    const bool canSearchViaYtDlp = hasYtDlpFallback &&
+            (m_ytDlpPath != QStringLiteral("android-bundled"));
+#else
+    const bool canSearchViaYtDlp = hasYtDlpFallback;
+#endif
     searchViaPiped(query,
             cap,
             /*instanceIdx=*/0,
-            [this, query, cap, hasYtDlpFallback](const QString& lastError) {
-                if (hasYtDlpFallback) {
+            [this, query, cap, canSearchViaYtDlp](const QString& lastError) {
+                if (canSearchViaYtDlp) {
                     kLogger.warning() << "All Piped instances failed for search"
                                       << query << ":" << lastError
                                       << "— falling back to yt-dlp";
@@ -341,11 +337,21 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     }
     QDir().mkpath(cacheDir);
     const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
+#if defined(Q_OS_ANDROID)
+    const bool useAndroidBundled = (m_ytDlpPath == QStringLiteral("android-bundled"));
+#else
+    const bool useAndroidBundled = false;
+#endif
     downloadViaPiped(videoId,
             cacheDir,
             /*instanceIdx=*/0,
-            [this, videoId, cacheDir, hasYtDlpFallback](const QString& lastError) {
-                if (hasYtDlpFallback) {
+            [this, videoId, cacheDir, hasYtDlpFallback, useAndroidBundled](const QString& lastError) {
+                if (useAndroidBundled) {
+                    kLogger.warning() << "All Piped instances failed for download"
+                                      << videoId << ":" << lastError
+                                      << "— falling back to bundled yt-dlp (JNI)";
+                    downloadViaAndroidBundled(videoId, cacheDir);
+                } else if (hasYtDlpFallback) {
                     kLogger.warning() << "All Piped instances failed for download"
                                       << videoId << ":" << lastError
                                       << "— falling back to yt-dlp";
@@ -845,19 +851,15 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
     const QString outTemplate =
             QDir(cacheDir).filePath(QStringLiteral("%(id)s.%(ext)s"));
 
-#if defined(Q_OS_ANDROID)
-    // On Android, m_ytDlpPath may point to a Python interpreter rather than
-    // the yt-dlp PyInstaller binary.  Detect this by checking if the filename
-    // looks like a python binary, and if so prepend it as the script arg.
+    // NOTE: On Android, downloadViaYtDlp is never called because locateYtDlp()
+    // returns "android-bundled" and downloadVideo() routes to
+    // downloadViaAndroidBundled() instead.  This function is kept for desktop
+    // platforms only.
+#if !defined(Q_OS_ANDROID)
     const bool isPythonInterpreter =
             m_ytDlpPath.endsWith(QStringLiteral("python"), Qt::CaseInsensitive) ||
             m_ytDlpPath.endsWith(QStringLiteral("python3"), Qt::CaseInsensitive);
-
     QStringList args;
-#if defined(Q_OS_ANDROID)
-    const bool isPythonInterpreter =
-            m_ytDlpPath.endsWith(QStringLiteral("python"), Qt::CaseInsensitive) ||
-            m_ytDlpPath.endsWith(QStringLiteral("python3"), Qt::CaseInsensitive);
     if (isPythonInterpreter) {
         const QString ytDlpZip = QStandardPaths::locate(
                 QStandardPaths::AppDataLocation,
@@ -870,7 +872,6 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
         }
         args.append(ytDlpZip);
     }
-#endif
     args.append({
             QStringLiteral("-f"),
             QStringLiteral("bestaudio"),
@@ -931,6 +932,118 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
                 Q_EMIT downloadFailed(videoId, err);
             });
 }
+
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+// =============================================================================
+// Bundled youtubedl-android (JNI-based, no external dependencies)
+// =============================================================================
+
+void YouTubeService::downloadViaAndroidBundled(
+        const QString& videoId, const QString& cacheDir) {
+    // Run the JNI download on a worker thread so we don't block the UI.
+    // The youtubedl-android library handles:
+    //   - Extracting the Python stdlib to the app's files directory (once)
+    //   - Initializing the Python runtime via JNI
+    //   - Running yt-dlp to download the audio stream
+    //   - Returning the output file path
+    
+    QThread* thread = QThread::create([this, videoId, cacheDir]() {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        if (!context.isValid()) {
+            Q_EMIT downloadFailed(videoId, "No Android context");
+            return;
+        }
+
+        // Get the YoutubeDL singleton and initialize it.
+        // init() extracts the Python stdlib and sets up the runtime.
+        // It's idempotent — safe to call multiple times.
+        QJniObject ytdl = QJniObject::callStaticObjectMethod(
+                "com/yausername/youtubedl_android/YoutubeDL",
+                "getInstance",
+                "()Lcom/yausername/youtubedl_android/YoutubeDL;");
+
+        if (!ytdl.isValid()) {
+            Q_EMIT downloadFailed(videoId, "Bundled yt-dlp (youtubedl-android) not available");
+            return;
+        }
+
+        // Initialize with the Android context (required before first exec).
+        ytdl.callMethod<void>("init",
+                "(Landroid/content/Context;)V",
+                context.object());
+
+        // Build the request: URL + options.
+        // YoutubeDLRequest takes a URL string; options are added via addOption().
+        QString videoUrl = "https://www.youtube.com/watch?v=" + videoId;
+        QString outputTemplate = QDir(cacheDir).filePath("%(id)s.%(ext)s");
+
+        QJniObject request("com/yausername/youtubedl_android/YoutubeDLRequest",
+                "(Ljava/lang/String;)V",
+                QJniObject::fromString(videoUrl).object());
+
+        // Add download options directly to the request.
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("-f").object(),
+                QJniObject::fromString("bestaudio").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("-o").object(),
+                QJniObject::fromString(outputTemplate).object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--no-playlist").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--no-warnings").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--no-cache-dir").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--ignore-config").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--no-mtime").object());
+
+        // Execute the download (blocks this thread until complete).
+        QJniEnvironment env;
+        QJniObject response = ytdl.callObjectMethod(
+                "exec",
+                "(Lcom/yausername/youtubedl_android/YoutubeDLRequest;)"
+                "Lcom/yausername/youtubedl_android/YoutubeDLResponse;",
+                request.object());
+
+        if (!response.isValid()) {
+            Q_EMIT downloadFailed(videoId, "yt-dlp exec returned null");
+            return;
+        }
+
+        // Extract the output file path from the response.
+        jstring outStr = response.callObjectMethod<jstring>(
+                "getOut",
+                "()Ljava/lang/String;");
+        if (!outStr) {
+            Q_EMIT downloadFailed(videoId, "yt-dlp produced no output");
+            return;
+        }
+
+        const char* outChars = env->GetStringUTFChars(outStr, nullptr);
+        QString outputPath = QString::fromUtf8(outChars);
+        env->ReleaseStringUTFChars(outStr, outStr);
+
+        if (!outputPath.isEmpty() && QFileInfo::exists(outputPath)) {
+            Q_EMIT downloadFinished(videoId, outputPath);
+        } else {
+            Q_EMIT downloadFailed(videoId,
+                    "yt-dlp finished but file not found: " + outputPath);
+        }
+    });
+
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+    thread->start();
+}
+#endif // Q_OS_ANDROID && HAVE_YTDLP_ANDROID
 
 // =============================================================================
 // Shared post-download chain: SponsorBlock fetch → in-place cut → emit
