@@ -256,7 +256,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
 
     void processRamping(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
         float cross_mix = 0.0f;
-        float cross_inc = 4.0f / static_cast<float>(bufferSize);
+        const float cross_inc = 2.0f / static_cast<float>(bufferSize);
         for (std::size_t i = 0; i < bufferSize; i += 2) {
             // Do a linear cross fade between the output of the old
             // Filter and the new filter.
@@ -275,17 +275,12 @@ class EngineFilterIIR : public EngineFilterIIRBase {
                     old2 = 0.0f;
                 }
             }
-            float new1 = static_cast<float>(processSample(m_coef, m_buf1, pIn[i]));
-            float new2 = static_cast<float>(processSample(m_coef, m_buf2, pIn[i + 1]));
+            const float new1 = static_cast<float>(processSample(m_coef, m_buf1, pIn[i]));
+            const float new2 = static_cast<float>(processSample(m_coef, m_buf2, pIn[i + 1]));
 
-            if (i < bufferSize / 2) {
-                pOutput[i] = old1;
-                pOutput[i + 1] = old2;
-            } else {
-                pOutput[i] = new1 * cross_mix + old1 * (1.0f - cross_mix);
-                pOutput[i + 1] = new2 * cross_mix + old2 * (1.0f - cross_mix);
-                cross_mix += cross_inc;
-            }
+            pOutput[i] = new1 * cross_mix + old1 * (1.0f - cross_mix);
+            pOutput[i + 1] = new2 * cross_mix + old2 * (1.0f - cross_mix);
+            cross_mix += cross_inc;
         }
         m_doRamping = false;
         m_doStart = false;

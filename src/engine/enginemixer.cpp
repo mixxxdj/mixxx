@@ -547,6 +547,27 @@ void EngineMixer::process(const std::size_t bufferSize) {
             m_main.copy(m_outputBusBuffers[EngineChannel::CENTER], bufferSize);
         } else if (!leftIn && !centerIn && rightIn) {
             m_main.copy(m_outputBusBuffers[EngineChannel::RIGHT], bufferSize);
+        } else if (leftIn && centerIn && !rightIn) {
+            SampleUtil::copy2WithGain(m_main.data(),
+                    m_outputBusBuffers[EngineChannel::LEFT].data(),
+                    1.0f,
+                    m_outputBusBuffers[EngineChannel::CENTER].data(),
+                    1.0f,
+                    static_cast<int>(bufferSize));
+        } else if (leftIn && !centerIn && rightIn) {
+            SampleUtil::copy2WithGain(m_main.data(),
+                    m_outputBusBuffers[EngineChannel::LEFT].data(),
+                    1.0f,
+                    m_outputBusBuffers[EngineChannel::RIGHT].data(),
+                    1.0f,
+                    static_cast<int>(bufferSize));
+        } else if (!leftIn && centerIn && rightIn) {
+            SampleUtil::copy2WithGain(m_main.data(),
+                    m_outputBusBuffers[EngineChannel::CENTER].data(),
+                    1.0f,
+                    m_outputBusBuffers[EngineChannel::RIGHT].data(),
+                    1.0f,
+                    static_cast<int>(bufferSize));
         } else {
             SampleUtil::copy3WithGain(m_main.data(),
                     m_outputBusBuffers[EngineChannel::LEFT].data(),

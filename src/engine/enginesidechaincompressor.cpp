@@ -47,9 +47,10 @@ void EngineSideChainCompressor::setAboveThreshold(bool value) {
 void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const std::size_t bufferSize) {
     m_bAboveThreshold = false;
     for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
-        // Correctly use the absolute average of the stereo pair to ensure the
-        // compressor reacts to both positive and negative signal half-waves.
-        const CSAMPLE val = std::abs((pIn[i] + pIn[i + 1]) * 0.5f);
+        // Use the average of absolute values to ensure the compressor reacts
+        // to the full signal energy (both positive and negative half-waves)
+        // and is robust against anti-phase signals.
+        const CSAMPLE val = (std::abs(pIn[i]) + std::abs(pIn[i + 1])) * 0.5f;
         if (val > m_threshold) {
             m_bAboveThreshold = true;
             return;

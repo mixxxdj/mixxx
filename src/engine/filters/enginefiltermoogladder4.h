@@ -155,7 +155,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             m_kacr = m_kacrNew;
             m_k2vg = m_k2vgNew;
             float cross_mix = 0.0f;
-            const float cross_inc = 4.0f / static_cast<float>(bufferSize);
+            const float cross_inc = 2.0f / static_cast<float>(bufferSize);
             for (std::size_t i = 0; i < bufferSize; i += 2) {
                 // Do a linear cross fade between the output of the old
                 // Filter and the new filter.
@@ -164,14 +164,9 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 const CSAMPLE new1 = processSample(pIn[i], &m_buf[0]);
                 const CSAMPLE new2 = processSample(pIn[i + 1], &m_buf[1]);
 
-                if (i < bufferSize / 2) {
-                    pOutput[i] = old1;
-                    pOutput[i + 1] = old2;
-                } else {
-                    pOutput[i] = new1 * cross_mix + old1 * (1.0f - cross_mix);
-                    pOutput[i + 1] = new2 * cross_mix + old2 * (1.0f - cross_mix);
-                    cross_mix += cross_inc;
-                }
+                pOutput[i] = new1 * cross_mix + old1 * (1.0f - cross_mix);
+                pOutput[i + 1] = new2 * cross_mix + old2 * (1.0f - cross_mix);
+                cross_mix += cross_inc;
             }
         }
         m_doRamping = false;
