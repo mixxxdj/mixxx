@@ -1897,7 +1897,11 @@ declare namespace MixxxControls {
         | 'pfl'
 
         /**
-         * The total adjustment to the track’s pitch, including changes from the rate slider if keylock is off as well as pitch_adjust.
+         * The total adjustment to the track’s pitch, including changes from the rate slider
+         * if keylock is off as well as pitch_adjust.
+         * It is reset to 0 after loading a new track when “Key/Pitch” is ticked in
+         * Options ‣ Preferences ‣ Decks ‣ Reset On Track Load and when
+         * “Keylock mode” is “Current key”.
          * This is a ControlPotMeter control.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
@@ -1909,7 +1913,10 @@ declare namespace MixxxControls {
         | `pitch${PotMeterSuffix}`
 
         /**
-         * Adjusts the pitch in addition to the tempo slider pitch and keylock. It is reset after loading a new track.
+         * Adjusts the pitch in addition to the tempo slider pitch and keylock.
+         * It is reset to 0 after loading a new track when “Key/Pitch” is ticked in
+         * Options ‣ Preferences ‣ Decks ‣ Reset On Track Load
+         * and when “Keylock mode” is “Original key”.
          * This is a ControlPotMeter control.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
