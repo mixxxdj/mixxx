@@ -152,7 +152,7 @@ PlayerManager::~PlayerManager() {
     m_microphones.clear();
     m_auxiliaries.clear();
     // We need to delete m_pTrackAnalysisScheduler here immediately synchronously,
-    // waiting for pending threads to have finished, to not killthem during exit
+    // waiting for pending threads to have finished, to not kill them during exit
     delete m_pTrackAnalysisScheduler.release();
 }
 
