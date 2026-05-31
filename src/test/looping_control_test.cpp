@@ -44,7 +44,6 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pLoopEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_enabled");
         m_pLoopStartPoint = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_start_position");
         m_pLoopEndPoint = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_end_position");
-        m_pLoopInRange = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_in_range");
         m_pLoopScale = std::make_unique<PollingControlProxy>(m_sGroup1, "loop_scale");
         m_pButtonPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
         m_pPlayPosition = std::make_unique<PollingControlProxy>(m_sGroup1, "playposition");
@@ -117,7 +116,6 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<PollingControlProxy> m_pLoopEnabled;
     std::unique_ptr<PollingControlProxy> m_pLoopStartPoint;
     std::unique_ptr<PollingControlProxy> m_pLoopEndPoint;
-    std::unique_ptr<PollingControlProxy> m_pLoopInRange;
     std::unique_ptr<PollingControlProxy> m_pLoopScale;
     std::unique_ptr<PollingControlProxy> m_pPlayPosition;
     std::unique_ptr<PollingControlProxy> m_pButtonPlay;
