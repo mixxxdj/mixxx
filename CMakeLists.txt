@@ -2779,31 +2779,57 @@ if(FFMPEG)
   # Minimum library versions according to <https://ffmpeg.org/download.html>
   # Windows: Version numbers are not available!?
   # macOS: Untested
-  if(FFmpeg_AVCODEC_VERSION AND FFmpeg_AVCODEC_VERSION VERSION_LESS 58.35.100)
+  if(
+    NOT FFmpeg_AVCODEC_VERSION
+    OR FFmpeg_AVCODEC_VERSION VERSION_LESS 58.35.100
+  )
     message(
       FATAL_ERROR
       "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFmpeg_AVCODEC_VERSION})."
     )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVCODEC: ${FFmpeg_AVCODEC_LIBRARIES} (found version \"${FFmpeg_AVCODEC_VERSION}\")"
+    )
   endif()
-  if(FFmpeg_AVFORMAT_VERSION AND FFmpeg_AVFORMAT_VERSION VERSION_LESS 58.20.100)
+  if(
+    NOT FFmpeg_AVFORMAT_VERSION
+    OR FFmpeg_AVFORMAT_VERSION VERSION_LESS 58.20.100
+  )
     message(
       FATAL_ERROR
       "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFmpeg_AVFORMAT_VERSION})."
     )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVFORMAT: ${FFmpeg_AVFORMAT_LIBRARIES} (found version \"${FFmpeg_AVFORMAT_VERSION}\")"
+    )
   endif()
-  if(FFmpeg_AVUTIL_VERSION AND FFmpeg_AVUTIL_VERSION VERSION_LESS 56.22.100)
+  if(NOT FFmpeg_AVUTIL_VERSION OR FFmpeg_AVUTIL_VERSION VERSION_LESS 56.22.100)
     message(
       FATAL_ERROR
       "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFmpeg_AVUTIL_VERSION})."
     )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVUTIL: ${FFmpeg_AVUTIL_LIBRARIES} (found version \"${FFmpeg_AVUTIL_VERSION}\")"
+    )
   endif()
   if(
-    FFmpeg_SWRESAMPLE_VERSION
-    AND FFmpeg_SWRESAMPLE_VERSION VERSION_LESS 3.3.100
+    NOT FFmpeg_SWRESAMPLE_VERSION
+    OR FFmpeg_SWRESAMPLE_VERSION VERSION_LESS 3.3.100
   )
     message(
       FATAL_ERROR
       "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFmpeg_SWRESAMPLE_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg SWRESAMPLE: ${FFmpeg_SWRESAMPLE_LIBRARIES} (found version \"${FFmpeg_SWRESAMPLE_VERSION}\")"
     )
   endif()
 
