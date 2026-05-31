@@ -1600,6 +1600,13 @@ PioneerDDJFLX10.loopInAdjust = function(channel, control, value, status, group) 
 PioneerDDJFLX10.loopOutAdjust = function(channel, control, value, status, group) {
     if (value === 0) return;
     var deck = PioneerDDJFLX10._getDeckFromGroup(group);
+    // With no active loop this button reloops the last stored loop (matches
+    // Serato's out-adjust button). While looping it toggles jog out-adjust mode.
+    if (engine.getValue(group, "loop_enabled") <= 0) {
+        engine.setValue(group, "reloop_toggle", 1);
+        engine.setValue(group, "reloop_toggle", 0);
+        return;
+    }
     PioneerDDJFLX10._loopAdjustMode[deck] = PioneerDDJFLX10._loopAdjustMode[deck] === "out" ? null : "out";
 };
 

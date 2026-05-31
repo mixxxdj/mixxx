@@ -1298,8 +1298,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reloop_toggle</key>
-                <description>Activate / Release Loop Ch1</description>
+                <key>beatloop_activate</key>
+                <description>4-Beat Loop toggle (create/exit) Ch1</description>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <options>
@@ -1308,8 +1308,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reloop_toggle</key>
-                <description>Activate / Release Loop Ch2</description>
+                <key>beatloop_activate</key>
+                <description>4-Beat Loop toggle (create/exit) Ch2</description>
                 <status>0x91</status>
                 <midino>0x14</midino>
                 <options>
@@ -1318,8 +1318,8 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reloop_toggle</key>
-                <description>Activate / Release Loop Ch3</description>
+                <key>beatloop_activate</key>
+                <description>4-Beat Loop toggle (create/exit) Ch3</description>
                 <status>0x92</status>
                 <midino>0x14</midino>
                 <options>
@@ -1328,8 +1328,8 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reloop_toggle</key>
-                <description>Activate / Release Loop Ch4</description>
+                <key>beatloop_activate</key>
+                <description>4-Beat Loop toggle (create/exit) Ch4</description>
                 <status>0x93</status>
                 <midino>0x14</midino>
                 <options>
