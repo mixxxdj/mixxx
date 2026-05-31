@@ -861,7 +861,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
                     kMaxSleepchunks / kMaxSleepSteps);
             for (; sleepSteps > 0; --sleepSteps) {
                 QThread::msleep(sleepMs);
-                writeAvailable = m_inputFifo->readAvailable();
+                writeAvailable = m_inputFifo->writeAvailable();
                 if (writeAvailable >= inChunkSize) {
                     break;
                 }
