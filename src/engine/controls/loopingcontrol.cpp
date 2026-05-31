@@ -1,6 +1,7 @@
 #include "engine/controls/loopingcontrol.h"
 
 #include <QtDebug>
+#include <algorithm>
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -107,9 +108,6 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOLoopEnabled->connectValueChangeRequest(this,
             &LoopingControl::slotLoopEnabledValueChangeRequest,
             Qt::DirectConnection);
-
-    m_pCOLoopInRange = new ControlObject(ConfigKey(group, "loop_in_range"));
-    m_pCOLoopInRange->set(0.0);
 
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(group, "loop_start_position"));
@@ -261,7 +259,6 @@ LoopingControl::~LoopingControl() {
     delete m_pReloopToggleButton;
     delete m_pReloopAndStopButton;
     delete m_pCOLoopEnabled;
-    delete m_pCOLoopInRange;
     delete m_pCOLoopStartPosition;
     delete m_pCOLoopEndPosition;
     delete m_pCOLoopScale;
@@ -409,27 +406,6 @@ void LoopingControl::process(const double rate,
     } else if (m_bAdjustingLoopOut) {
         setLoopOutToCurrentPosition();
     }
-
-    LoopInfo loopInfo = m_loopInfo.getValue();
-    double loopInRangeValue = -1.0;
-    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
-        if (currentPosition >= loopInfo.startPosition &&
-                currentPosition < loopInfo.endPosition) {
-            loopInRangeValue = 0.0;
-        }
-    }
-
-    SavedLoops savedLoops = m_savedLoops.getValue();
-    for (int i = 0; i < savedLoops.count; ++i) {
-        if (currentPosition >= savedLoops.loops[i].startPosition &&
-                currentPosition < savedLoops.loops[i].endPosition) {
-            if (savedLoops.loops[i].hotcueIndex != Cue::kNoHotCue) {
-                loopInRangeValue = static_cast<double>(savedLoops.loops[i].hotcueIndex + 1);
-                break;
-            }
-        }
-    }
-    m_pCOLoopInRange->set(loopInRangeValue);
 }
 
 mixxx::audio::FramePos LoopingControl::nextTrigger(bool reverse,
@@ -1103,29 +1079,79 @@ void LoopingControl::slotReloopToggle(double val) {
         return;
     }
 
-    // If we're looping, stop looping
-    if (m_bLoopingEnabled) {
-        // If loop roll was active, also disable slip.
-        if (m_bLoopRollActive) {
-            m_pSlipEnabled->set(0);
-            m_bLoopRollActive = false;
-            m_activeLoopRolls.clear();
-        }
-        setLoopingEnabled(false);
-        //qDebug() << "reloop_toggle looping off";
-    } else {
-        // If we're not looping, enable the loop. If the loop is ahead of the
-        // current play position, do not jump to it.
-        LoopInfo loopInfo = m_loopInfo.getValue();
-        if (loopInfo.startPosition.isValid() &&
-                loopInfo.endPosition.isValid() &&
-                loopInfo.startPosition <= loopInfo.endPosition) {
-            setLoopingEnabled(true);
-            if (m_currentPosition.getValue() > loopInfo.endPosition) {
-                slotLoopInGoto(1);
+    auto mode = static_cast<ReloopToggleMode>(
+            static_cast<int>(
+                    m_pConfig->getValue<double>(
+                            reloopToggleModeConfigKey(),
+                            static_cast<double>(ReloopToggleMode::Legacy))));
+
+    if (mode == ReloopToggleMode::Legacy) {
+        // Legacy behavior: toggle the last active loop
+        // If we're looping, stop looping
+        if (m_bLoopingEnabled) {
+            // If loop roll was active, also disable slip.
+            if (m_bLoopRollActive) {
+                m_pSlipEnabled->set(0);
+                m_bLoopRollActive = false;
+                m_activeLoopRolls.clear();
+            }
+            setLoopingEnabled(false);
+            // qDebug() << "reloop_toggle looping off";
+        } else {
+            // If we're not looping, enable the loop. If the loop is ahead of the
+            // current play position, do not jump to it.
+            LoopInfo loopInfo = m_loopInfo.getValue();
+            if (loopInfo.startPosition.isValid() &&
+                    loopInfo.endPosition.isValid() &&
+                    loopInfo.startPosition <= loopInfo.endPosition) {
+                setLoopingEnabled(true);
+                if (m_currentPosition.getValue() > loopInfo.endPosition) {
+                    slotLoopInGoto(1);
+                }
             }
         }
-        //qDebug() << "reloop_toggle looping on";
+    } else {
+        // NearestLoop mode: toggle the loop under or ahead of the playhead
+        const auto currentPosition = m_currentPosition.getValue();
+
+        QList<CuePointer> cues = m_pTrack->getCuePoints();
+        // Filter to only loop cues with valid positions, then sort by position
+        cues.erase(
+                std::remove_if(cues.begin(), cues.end(), [](const CuePointer& pCue) {
+                    return pCue->getType() != mixxx::CueType::Loop ||
+                            !pCue->getPosition().isValid() ||
+                            !pCue->getEndPosition().isValid();
+                }),
+                cues.end());
+        std::sort(cues.begin(), cues.end(), [](const CuePointer& a, const CuePointer& b) {
+            return a->getPosition() < b->getPosition();
+        });
+
+        // First check if we're inside any saved loop
+        for (const auto& pCue : cues) {
+            if (currentPosition >= pCue->getPosition() &&
+                    currentPosition < pCue->getEndPosition()) {
+                // Found the loop we're inside. Toggle it.
+                if (m_bLoopingEnabled) {
+                    setLoopingEnabled(false);
+                } else {
+                    setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
+                }
+                return;
+            }
+        }
+
+        // Find the nearest loop ahead by position
+        for (int i = 0; i < cues.size(); ++i) {
+            if (cues[i]->getPosition() >= currentPosition) {
+                if (m_bLoopingEnabled) {
+                    setLoopingEnabled(false);
+                } else {
+                    setLoop(cues[i]->getPosition(), cues[i]->getEndPosition(), true);
+                }
+                return;
+            }
+        }
     }
 }
 
@@ -1267,44 +1293,12 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(),
-                &Track::cuesUpdated,
-                this,
-                &LoopingControl::slotTrackCuesUpdated);
-    }
     m_pTrack = pNewTrack;
-    if (m_pTrack) {
-        connect(m_pTrack.get(),
-                &Track::cuesUpdated,
-                this,
-                &LoopingControl::slotTrackCuesUpdated,
-                Qt::DirectConnection);
-    }
     mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
     }
     trackBeatsUpdated(pBeats);
-    slotTrackCuesUpdated();
-}
-
-void LoopingControl::slotTrackCuesUpdated() {
-    SavedLoops savedLoops;
-    if (m_pTrack) {
-        const QList<CuePointer> cues = m_pTrack->getCuePoints();
-        for (const auto& pCue : cues) {
-            if (pCue->getType() == mixxx::CueType::Loop) {
-                if (savedLoops.count < kMaxSavedLoops) {
-                    savedLoops.loops[savedLoops.count].startPosition = pCue->getPosition();
-                    savedLoops.loops[savedLoops.count].endPosition = pCue->getEndPosition();
-                    savedLoops.loops[savedLoops.count].hotcueIndex = pCue->getHotCue();
-                    savedLoops.count++;
-                }
-            }
-        }
-    }
-    m_savedLoops.setValue(savedLoops);
 }
 
 void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {

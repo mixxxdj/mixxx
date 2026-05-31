@@ -18,6 +18,15 @@ class BeatJumpControl;
 class BeatLoopingControl;
 
 class LoopingControl : public EngineControl {
+  public:
+    enum class ReloopToggleMode {
+        Legacy = 0,
+        NearestLoop = 1,
+    };
+    static ConfigKey reloopToggleModeConfigKey() {
+        return ConfigKey(QStringLiteral("[Controls]"),
+                QStringLiteral("ReloopToggleMode"));
+    }
     Q_OBJECT
   public:
     static QList<double> getBeatSizes();
@@ -158,21 +167,8 @@ class LoopingControl : public EngineControl {
 
   private slots:
     void slotLoopEnabledValueChangeRequest(double enabled);
-    void slotTrackCuesUpdated();
 
   private:
-    struct SavedLoopInfo {
-        mixxx::audio::FramePos startPosition;
-        mixxx::audio::FramePos endPosition;
-        int hotcueIndex;
-    };
-    static constexpr int kMaxSavedLoops = 64;
-    struct SavedLoops {
-        SavedLoopInfo loops[kMaxSavedLoops];
-        int count = 0;
-    };
-    ControlValueAtomic<SavedLoops> m_savedLoops;
-
     void setLoopingEnabled(bool enabled);
     void setLoopInToCurrentPosition();
     void setLoopOutToCurrentPosition();
@@ -220,7 +216,6 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
-    ControlObject* m_pCOLoopInRange;
     ControlPushButton* m_pCOLoopAnchor;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInGotoButton;

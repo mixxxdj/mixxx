@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "engine/controls/cuecontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
@@ -94,6 +95,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
+    void slotReloopToggleModeChanged(int index);
 
   private:
     // Because the CueDefault list is out of order, we have to set the combo
@@ -142,6 +144,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     RateControl::RampMode m_bRateRamping;
     int m_iRateRampSensitivity;
+    LoopingControl::ReloopToggleMode m_reloopToggleMode;
     double m_dRateTempCoarse;
     double m_dRateTempFine;
     double m_dRatePermCoarse;
