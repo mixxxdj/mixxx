@@ -1,6 +1,7 @@
 #include "soundio/sounddevicenetwork.h"
 
 #include <QtDebug>
+#include <atomic>
 
 #include "control/controlobject.h"
 #include "engine/sidechain/enginenetworkstream.h"
@@ -29,6 +30,19 @@ constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 
 const QString kAppGroup = QStringLiteral("[App]");
+
+bool updateIfGreater(std::atomic_int* pAtomic, int newValue) {
+    int current = pAtomic->load(std::memory_order_relaxed);
+    while (newValue > current &&
+            pAtomic->compare_exchange_weak(
+                    current, // non const reference, updated each call
+                    newValue)) {
+        // pAtomic has now newValue
+        return true;
+    }
+    return false;
+}
+
 } // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(
@@ -327,7 +341,10 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         workerWriteSilence(pWorker, silenceFrames);
         // Inform the engine cycle about the extra frames written to avoid
         // underflows in other code paths.
-        m_targetTime += static_cast<qint64>(silenceFrames / m_sampleRate.toDouble() * 1000000);
+        // Note, this is called for each pWorker (broadcats connection) all
+        // running at the same network clock. The value is used for shifting
+        // the m_targetTime and then reset to 0.
+        updateIfGreater(&m_extraFramesWritten, silenceFrames);
         m_pSoundManager->underflowHappened(24);
     } else if (writeExpected - readAvailable > outChunkSize / 2) {
         // try to keep PAs buffer filled up to 0.5 chunks
@@ -522,7 +539,8 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
     m_clkRefTimer.start();
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
-    // This deadline for the next buffer in microseconds since the Unix epoch
+    // Calculate the deadline for the next buffer in microseconds since the Unix epoch
+    framesPerBuffer += m_extraFramesWritten.exchange(0, std::memory_order_relaxed);
     m_targetTime += static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000);
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
