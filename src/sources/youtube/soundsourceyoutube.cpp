@@ -9,7 +9,7 @@ namespace mixxx {
 
 namespace {
 const Logger kLogger("SoundSourceYouTube");
-}
+} // namespace
 
 const QString SoundSourceProviderYouTube::kDisplayName = "YouTube";
 

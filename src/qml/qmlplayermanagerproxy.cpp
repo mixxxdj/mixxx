@@ -65,7 +65,10 @@ void QmlPlayerManagerProxy::loadLocationUrlIntoNextAvailableDeck(
     if (trackLocationUrl.isLocalFile()) {
         loadLocationIntoNextAvailableDeck(trackLocationUrl.toLocalFile(), play);
     } else {
-        qWarning() << "QmlPlayerManagerProxy: URL" << trackLocationUrl << "is not a local file!";
+        // Non-local URLs (e.g. youtube://) must be routed through the same
+        // PlayerManager → Library path so that the YouTube feature can
+        // download the video and load it onto the next available deck.
+        loadLocationIntoNextAvailableDeck(trackLocationUrl.toString(), play);
     }
 }
 

@@ -56,6 +56,16 @@ const QString kHomeCachedScheme = QStringLiteral("ytcached");
 const QString kHomeAutoAnalyzeScheme = QStringLiteral("ytautoanalyze");
 const QString kAutoAnalyzePayload = QStringLiteral("yt-auto-analyze");
 
+/// Returns true for sidecar files that accompany a downloaded YouTube audio
+/// file and should be excluded when looking for the actual audio bytes.
+/// Matches: .info.json (yt-dlp metadata), .sponsor.json (SponsorBlock data),
+///          .part (incomplete download temp file).
+bool isYouTubeSidecarFile(const QString& name) {
+    return name.endsWith(QStringLiteral(".info.json")) ||
+            name.endsWith(QStringLiteral(".sponsor.json")) ||
+            name.endsWith(QStringLiteral(".part"));
+}
+
 struct TrackDisplayMetadata {
     QString artist;
     QString title;
@@ -470,9 +480,7 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
             dir.entryList({videoId + QStringLiteral(".*")},
                     QDir::Files | QDir::NoDotAndDotDot);
     for (const QString& f : existing) {
-        if (f.endsWith(QStringLiteral(".info.json")) ||
-                f.endsWith(QStringLiteral(".sponsor.json")) ||
-                f.endsWith(QStringLiteral(".part"))) {
+        if (isYouTubeSidecarFile(f)) {
             continue;
         }
         onDownloadFinished(videoId, dir.filePath(f));
@@ -842,9 +850,7 @@ void YouTubeFeature::rebuildSidebar() {
                 // SponsorBlock sidecar (.sponsor.json) — only the audio file
                 // is loadable. Without this guard, depending on filesystem
                 // sort order we could wire the sidebar entry to a JSON file.
-                if (f.endsWith(QStringLiteral(".info.json")) ||
-                        f.endsWith(QStringLiteral(".sponsor.json")) ||
-                        f.endsWith(QStringLiteral(".part"))) {
+                if (isYouTubeSidecarFile(f)) {
                     continue;
                 }
                 localPath = dir.filePath(f);
@@ -1009,9 +1015,7 @@ void YouTubeFeature::replaceTrackTable(
                 dir.entryList({info.id + QStringLiteral(".*")},
                         QDir::Files | QDir::NoDotAndDotDot);
         for (const QString& f : existing) {
-            if (f.endsWith(QStringLiteral(".info.json")) ||
-                    f.endsWith(QStringLiteral(".sponsor.json")) ||
-                    f.endsWith(QStringLiteral(".part"))) {
+            if (isYouTubeSidecarFile(f)) {
                 continue;
             }
             location = dir.filePath(f);
