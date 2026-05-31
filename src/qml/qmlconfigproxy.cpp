@@ -16,17 +16,13 @@
                 DEFAULT);                                     \
     }
 
-#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                      \
-    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                   \
-    void QmlConfigProxy::set_##NAME(                                        \
-            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type \
-                    value) {                                                \
-        if (value == DEFAULT) {                                             \
-            m_pConfig->remove(ConfigKey(GROUP, KEY));                       \
-        } else {                                                            \
-            m_pConfig->setValue(ConfigKey(GROUP, KEY), value);              \
-        }                                                                   \
-        emit NAME##Changed();                                               \
+#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                       \
+    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                    \
+    void QmlConfigProxy::set_##NAME(                                         \
+            std::conditional_t<(sizeof(TYPE) <= 16), TYPE, const TYPE&>      \
+                    value) {                                                 \
+        setConfigValueAndNotify<TYPE>(                                       \
+                GROUP, KEY, value, DEFAULT, &QmlConfigProxy::NAME##Changed); \
     }
 
 namespace {
@@ -42,6 +38,7 @@ const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlGroup = QStringLiteral("[Control]");
 const QString kWaveformGroup = QStringLiteral("[Waveform]");
+const QString kControlsGroup = QStringLiteral("[Controls]");
 const QString kLibraryGroup = QStringLiteral("[Library]");
 const QString kBpmGroup = QStringLiteral("[BPM]");
 
@@ -114,8 +111,9 @@ namespace mixxx {
 namespace qml {
 
 QmlConfigProxy::QmlConfigProxy(
-        UserSettingsPointer pConfig, QObject* parent)
-        : QObject(parent), m_pConfig(pConfig) {
+        UserSettingsPointer pConfig, QObject* pParent)
+        : QObject(pParent),
+          m_pConfig(pConfig) {
 }
 
 QVariantList QmlConfigProxy::hotcueColorPalette() const {
@@ -240,17 +238,17 @@ void QmlConfigProxy ::set_waveformOptions(QmlWaveformDisplay::Options value) {
 }
 
 PROPERTY_IMPL(kWaveformGroup, kBeatGridAlphaKey, double, waveformBeatGridAlpha, 90);
-PROPERTY_IMPL(kLibraryGroup,
+PROPERTY_IMPL(kControlsGroup,
         kTooltipsKey,
         mixxx::preferences::Tooltips,
         libraryTooltips,
         mixxx::preferences::Tooltips::On);
-PROPERTY_IMPL(kLibraryGroup,
+PROPERTY_IMPL(kConfigGroup,
         kInhibitScreensaverKey,
         mixxx::preferences::ScreenSaver,
         libraryInhibitScreensaver,
         mixxx::preferences::ScreenSaver::On);
-PROPERTY_IMPL(kLibraryGroup, kHideMenuBarKey, bool, libraryHideMenuBar, false);
+PROPERTY_IMPL(kConfigGroup, kHideMenuBarKey, bool, libraryHideMenuBar, false);
 PROPERTY_IMPL(kLibraryGroup,
         kEnableSearchCompletionsKey,
         bool,
@@ -340,7 +338,7 @@ PROPERTY_IMPL(kConfigGroup,
         QString,
         configKeyColorPalette,
         PredefinedColorPalettes::kDefaultKeyColorPalette.getName());
-PROPERTY_IMPL(kControlGroup,
+PROPERTY_IMPL(kConfigGroup,
         kKeyColorsEnabledKey,
         bool,
         configKeyColorsEnabled,

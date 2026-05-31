@@ -3,9 +3,11 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QVariantList>
+#include <type_traits>
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/defs_keylock.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/constants.h"
@@ -13,11 +15,11 @@
 #include "preferences/usersettings.h"
 #include "qml/qmlwaveformdisplay.h"
 
-#define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                                  \
-  public:                                                                   \
-    TYPE NAME() const;                                                      \
-    void set_##NAME(                                                        \
-            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type \
+#define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                              \
+  public:                                                               \
+    TYPE NAME() const;                                                  \
+    void set_##NAME(                                                    \
+            std::conditional_t<(sizeof(TYPE) <= 16), TYPE, const TYPE&> \
                     value);
 
 namespace mixxx {
@@ -223,7 +225,7 @@ class QmlConfigProxy : public QObject {
   public:
     explicit QmlConfigProxy(
             UserSettingsPointer pConfig,
-            QObject* parent = nullptr);
+            QObject* pParent = nullptr);
 
     // with UserSettings, since there is no synchronisation upon mutations.
     QVariantList hotcueColorPalette() const;
@@ -390,6 +392,21 @@ class QmlConfigProxy : public QObject {
     void bpmSyncLockAlgorithmChanged();
 
   private:
+    template<typename Type, typename Signal>
+    void setConfigValueAndNotify(
+            const QString& group,
+            const QString& key,
+            std::conditional_t<(sizeof(Type) <= 16), Type, const Type&> value,
+            const Type& defaultValue,
+            Signal signal) {
+        if (value == defaultValue) {
+            m_pConfig->remove(ConfigKey(group, key));
+            return;
+        }
+        m_pConfig->setValue(ConfigKey(group, key), value);
+        emit(this->*signal)();
+    }
+
     static inline UserSettingsPointer s_pUserSettings = nullptr;
 
     const UserSettingsPointer m_pConfig;

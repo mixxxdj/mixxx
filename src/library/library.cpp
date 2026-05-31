@@ -339,6 +339,12 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    const auto sidebarHoverExpandDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverExpandDelayConfigKey,
+                    kSidebarHoverExpandDelayDefault);
+    pSidebarWidget->slotSetExpandOnHoverDelay(sidebarHoverExpandDelay);
+
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
     // Setup the sources view
@@ -384,6 +390,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &Library::setTrackTableFont,
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
+
+    connect(this,
+            &Library::setSidebarHoverExpandDelay,
+            pSidebarWidget,
+            &WLibrarySidebar::slotSetExpandOnHoverDelay);
 
     for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);

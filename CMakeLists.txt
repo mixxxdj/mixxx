@@ -296,6 +296,19 @@ if(DEFINED ENV{MIXXX_VCPKG_ROOT} AND NOT DEFINED MIXXX_VCPKG_ROOT)
 endif()
 
 if(DEFINED MIXXX_VCPKG_ROOT)
+  # Validate MIXXX_VCPKG_ROOT points to a vcpkg root to avoid confusing follow-up errors.
+  set(_vcpkg_toolchain "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+  if(NOT EXISTS "${_vcpkg_toolchain}")
+    file(TO_NATIVE_PATH "${_vcpkg_toolchain}" _vcpkg_toolchain_native)
+    message(
+      STATUS
+      "MIXXX_VCPKG_ROOT was set to \"${MIXXX_VCPKG_ROOT}\", but this is not a valid vcpkg root.\n"
+      "Expected to find: ${_vcpkg_toolchain_native}\n"
+      "Please set MIXXX_VCPKG_ROOT to the vcpkg root directory, the folder containing the vcpkg tool (vcpkg.exe on Windows)."
+    )
+    fatal_error_missing_env()
+  endif()
+
   if(
     EXISTS "${MIXXX_VCPKG_ROOT}/overlay/ports"
     OR NOT EXISTS "${MIXXX_VCPKG_ROOT}/ports"
@@ -2207,13 +2220,17 @@ if(RELATIVE_MACRO_PATHS)
 endif()
 
 option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
-if(WARNINGS_FATAL)
-  if(MSVC)
-    target_compile_options(mixxx-lib PUBLIC /WX)
-  else()
-    target_compile_options(mixxx-lib PUBLIC -Werror)
+macro(mixxx_target_warnings_fatal target scope)
+  if(WARNINGS_FATAL)
+    if(MSVC)
+      target_compile_options(${target} ${scope} /WX)
+    else()
+      target_compile_options(${target} ${scope} -Werror)
+    endif()
   endif()
-endif()
+endmacro()
+
+mixxx_target_warnings_fatal(mixxx-lib PUBLIC)
 
 target_compile_definitions(
   mixxx-lib
@@ -2994,6 +3011,7 @@ if(BUILD_TESTING)
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
+        src/test/themeqml_test.cpp
     )
   endif()
 
@@ -3300,6 +3318,20 @@ if(ENGINEPRIME)
       "${CMAKE_PREFIX_PATH}"
     )
 
+    # Apple Clang >= 16 enabled -Wdeprecated-literal-operator by default and
+    # treats it as an error, which breaks the libdjinterop build because the
+    # library uses the deprecated whitespace syntax (operator"" _suffix).
+    # GCC does not have this warning at all and rejects unknown -Wno-error=
+    # flags, so we only pass the suppression flag on Apple Clang.
+    set(DJINTEROP_EXTRA_CMAKE_ARGS "")
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+      list(
+        APPEND
+        DJINTEROP_EXTRA_CMAKE_ARGS
+        -DCMAKE_CXX_FLAGS=-Wno-error=deprecated-literal-operator
+      )
+    endif()
+
     # For offline builds download the archive file from the URL and
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
@@ -3336,7 +3368,7 @@ if(ENGINEPRIME)
         -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
         -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
-        -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
+        -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE} ${DJINTEROP_EXTRA_CMAKE_ARGS}
       BUILD_COMMAND ${CMAKE_COMMAND} --build . --target DjInterop
       BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
@@ -3794,20 +3826,27 @@ if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
 endif()
 
 if(QML)
+  target_sources(mixxx-lib PRIVATE src/skin/qml/qmlskin.cpp)
+
   if(QT_KNOWN_POLICY_QTP0004)
     # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
-    # OLD (Qt < 6.8) requires to import qml modules with a folder e.g.:
+    # OLD requires to import qml modules with a folder e.g.:
     # fragmentShader: "qrc:/shaders/rgbsignal_qml.frag.qsb"
-    # For using NEW, we need to back-port:
+    # We keep OLD for Qt < 6.8 because using NEW would require a backport:
     # https://github.com/qt/qtdeclarative/commit/6314d305ee0d9064ca848980ef2dab1793c191b8
-    # until Qt 6.8 lands in all supported distros
-    qt6_policy(SET QTP0004 OLD)
+    # For Qt >= 6.8, we use NEW to match current Qt behavior and suppress the deprecation warning.
+    if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+      qt6_policy(SET QTP0004 NEW)
+    else()
+      qt6_policy(SET QTP0004 OLD)
+    endif()
   endif()
 
   add_subdirectory(res/shaders)
 
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   qt_add_library(mixxx-qml-lib STATIC)
+  mixxx_target_warnings_fatal(mixxx-qml-lib PUBLIC)
 
   if(WIN32)
     target_compile_definitions(mixxx-qml-lib PUBLIC __WINDOWS__)
@@ -3897,6 +3936,7 @@ if(QML)
       src/qml/qmleffectmanifestparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp
+      src/qml/qmllegacylibraryitem.cpp
       src/qml/qmllibraryproxy.cpp
       src/qml/qmllibrarysource.cpp
       src/qml/qmllibrarysourcetree.cpp
@@ -5220,6 +5260,7 @@ target_compile_definitions(
   rendergraph_gl
   PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
 )
+mixxx_target_warnings_fatal(rendergraph_gl PRIVATE)
 target_link_libraries(mixxx-lib PUBLIC rendergraph_gl)
 target_compile_definitions(mixxx-lib PUBLIC rendergraph=rendergraph_gl)
 target_compile_definitions(mixxx-lib PRIVATE allshader=allshader_gl)
@@ -5231,6 +5272,7 @@ if(QML)
     rendergraph_sg
     PUBLIC $<$<CONFIG:Debug>:MIXXX_DEBUG_ASSERTIONS_ENABLED>
   )
+  mixxx_target_warnings_fatal(rendergraph_sg PRIVATE)
   target_link_libraries(mixxx-qml-lib PRIVATE rendergraph_sg)
   target_compile_definitions(mixxx-qml-lib PRIVATE rendergraph=rendergraph_sg)
   target_compile_definitions(mixxx-qml-lib PRIVATE __SCENEGRAPH__)
@@ -5396,7 +5438,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute stonking)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

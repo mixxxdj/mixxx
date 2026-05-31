@@ -442,13 +442,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.2.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          trusted-signing-account-name: mixxx
+          signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: exe
@@ -541,7 +541,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.2.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}

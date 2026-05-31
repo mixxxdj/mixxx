@@ -1,10 +1,12 @@
 #pragma once
 
+#include <QList>
 #include <QString>
 #include <QWidget>
 #include <memory>
 #include <vector>
 
+#include "preferences/configobject.h"
 #include "util/string.h"
 
 class ControlWidgetPropertyConnection;
@@ -29,17 +31,30 @@ class WBaseWidget {
 
     void appendBaseTooltip(const QString& tooltip) {
         m_baseTooltip.append(mixxx::removeTrailingWhitespaces(tooltip));
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     void prependBaseTooltip(const QString& tooltip) {
         m_baseTooltip.prepend(mixxx::removeTrailingWhitespaces(tooltip));
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     void setBaseTooltip(const QString& tooltip) {
         m_baseTooltip = mixxx::removeTrailingWhitespaces(tooltip);
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void setShortcutTooltip(const QString& tooltip) {
+        // While the other set functions are called only during widget construction,
+        // this is also called each time the keyboard config file is reloaded,
+        // so this may be called even though this widget's shortcuts are unchanged
+        // and/or while we currently don't show shortcuts, so just update when
+        // we need in order to prevent thousands of no-ops.
+        bool reloadNow = m_showKeyboardShortcuts && m_shortcutTooltip != tooltip;
+        m_shortcutTooltip = tooltip;
+        if (reloadNow) {
+            updateBaseTooltipOptShortcuts();
+        }
     }
 
     QString baseTooltip() const {
@@ -65,6 +80,44 @@ class WBaseWidget {
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
 
+    QString shortcutHints() const {
+        return m_shortcutTooltip;
+    }
+
+    QString baseTooltipOptShortcuts() const {
+        return m_baseTooltipOptShortcuts;
+    }
+
+    /// Set by LegacySkinParser on widget construction
+    void setShortcutControlsAndCommands(
+            const QList<std::pair<ConfigKey, QString>>& controlsCommands) {
+        m_shortcutControlsAndCommands = controlsCommands;
+    }
+
+    /// Called by KeyboardEventFilter::updateWidgetShortcuts() when the keyboard
+    /// config has been (re)loaded in order to update the shortcut tooltips
+    const QList<std::pair<ConfigKey, QString>>& getShortcutControlsAndCommands() const {
+        return m_shortcutControlsAndCommands;
+    }
+
+    /// Append/remove shortcuts hint when shortcuts are toggled
+    void toggleKeyboardShortcutHints(bool enabled) {
+        if (m_showKeyboardShortcuts == enabled) {
+            return;
+        }
+        m_showKeyboardShortcuts = enabled;
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void toggleShowOnlyKeyboardShortcuts(bool show) {
+        if (m_showOnlyKeyboardShortcuts == show) {
+            return;
+        }
+        m_showOnlyKeyboardShortcuts = show;
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void updateBaseTooltipOptShortcuts();
 
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is
@@ -100,7 +153,15 @@ class WBaseWidget {
 
   private:
     QWidget* m_pWidget;
+
     QString m_baseTooltip;
+    QString m_shortcutTooltip;
+    QString m_baseTooltipOptShortcuts;
+    // Map of [ConfigKey, tr string] of control or all sub-controls.
+    QList<std::pair<ConfigKey, QString>> m_shortcutControlsAndCommands;
+
+    bool m_showKeyboardShortcuts;
+    bool m_showOnlyKeyboardShortcuts;
 
     friend class ControlParameterWidgetConnection;
 };

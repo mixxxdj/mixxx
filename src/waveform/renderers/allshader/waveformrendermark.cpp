@@ -53,6 +53,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
                 .setTexture(std::make_unique<Texture>(pContext, image));
         m_textureWidth = image.width();
         m_textureHeight = image.height();
+        markDirtyMaterial();
     }
     void update(float x, float y, float devicePixelRatio) {
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
@@ -68,6 +69,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
                         y + m_textureHeight / devicePixelRatio},
                 {0.f, 0.f},
                 {1.f, 1.f});
+        markDirtyGeometry();
     }
     float textureWidth() const {
         return m_textureWidth;
@@ -275,6 +277,8 @@ void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
             {posx1, posy1}, {posx2, posy2}, {r, g, b, a}, {r, g, b, 0.f});
     vertexUpdater.addRectangleVGradient(
             {posx1, posy4}, {posx2, posy3}, {r, g, b, a}, {r, g, b, 0.f});
+    pNode->markDirtyGeometry();
+    pNode->markDirtyMaterial();
 }
 
 bool allshader::WaveformRenderMark::isSubtreeBlocked() const {
@@ -593,6 +597,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
 
     dynamic_cast<TextureMaterial&>(m_pPlayPosNode->material())
             .setTexture(std::make_unique<Texture>(pContext, image));
+    m_pPlayPosNode->markDirtyMaterial();
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
