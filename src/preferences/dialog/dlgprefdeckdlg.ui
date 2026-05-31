@@ -200,18 +200,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
        </widget>
       </item>
       <item row="7" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBoxReloopToggleMode">
-        <item>
-         <property name="text">
-          <string>Legacy (last active loop)</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Nearest loop</string>
-         </property>
-        </item>
-       </widget>
+       <widget class="QComboBox" name="comboBoxReloopToggleMode"/>
       </item>
      </layout>
     </widget>

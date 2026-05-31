@@ -430,10 +430,12 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
     // Reloop toggle mode
-    comboBoxReloopToggleMode->setCurrentIndex(static_cast<int>(
-            m_pConfig->getValue<double>(
-                    LoopingControl::reloopToggleModeConfigKey(),
-                    static_cast<double>(LoopingControl::ReloopToggleMode::Legacy))));
+    comboBoxReloopToggleMode->clear();
+    comboBoxReloopToggleMode->addItem(tr("Legacy (last active loop)"),
+            static_cast<int>(LoopingControl::ReloopToggleMode::Legacy));
+    comboBoxReloopToggleMode->addItem(tr("Nearest Loop"),
+            static_cast<int>(LoopingControl::ReloopToggleMode::NearestLoop));
+
     connect(comboBoxReloopToggleMode,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
