@@ -764,7 +764,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // Since we are on the non Clock reference device and may have an independent
     // crystal clock, a jitter compensation and drift correction is required.
     //
-    // Depending in the underlying API, sound hardware and CPU load, there is a
+    // Depending on the underlying API, sound hardware and CPU load, there is a
     // jitter (delayed call) by up to two buffer sizes compared to the engine
     // call running Clock Reference callback. It happens that the second one
     // fires two times and then the first one fires two time as well to catch
@@ -781,7 +781,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // dropouts or clicks.
     //
     // So that's why we need a Fifo of 3 chunks (kFifoSize = 3)
-    // The buffer however is 4 chunks, because it is rounded up to pwer of 2
+    // The buffer however is 4 chunks, because it is rounded up to power of 2
     //
     // Normal buffer situation when entering this function:
     // Input buffer:
