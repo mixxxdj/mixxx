@@ -516,6 +516,60 @@ PioneerDDJFLX10Screen._buildIdleState = function(deckNum) {
     return p;
 };
 
+// Tempo-range slot for xx27 byte[4]. The firmware (Serato mode) shows a fixed
+// label per slot: 0 = blank, 1 = ±8, 2 = ±16, 3 = ±50. We map Mixxx's rateRange
+// (the MIDI cycler's 0.06/0.10/0.16/0.20) onto those slots 0-based, i.e.
+// 6%→blank, 10%→±8, 16%→±16, 20%→±50.
+PioneerDDJFLX10Screen._RATE_RANGES = [0.06, 0.10, 0.16, 0.20];
+
+// DEBUG range-probe: when _RANGE_PROBE is true, byte[4] is auto-cycled 1..16
+// (5s each, logged) so we can read off the % the FLX10 shows for every slot.
+// Set false once the firmware's slot table is known.
+PioneerDDJFLX10Screen._RANGE_PROBE     = false;
+PioneerDDJFLX10Screen._rangeProbeVal   = 1;
+PioneerDDJFLX10Screen._rangeProbeTimer = 0;
+PioneerDDJFLX10Screen._startRangeProbe = function() {
+    if (!this._RANGE_PROBE || this._rangeProbeTimer) { return; }
+    var self = this;
+    console.log("FLX10 RANGE PROBE: byte[4] = 1");
+    this._rangeProbeTimer = engine.beginTimer(5000, function() {
+        self._rangeProbeVal = (self._rangeProbeVal % 16) + 1;
+        console.log("FLX10 RANGE PROBE: byte[4] = " + self._rangeProbeVal);
+    });
+};
+PioneerDDJFLX10Screen._rateRangeIndex = function(group) {
+    var rr = engine.getValue(group, "rateRange");
+    if (!(rr > 0)) { return 0; }   // blank
+    var best = 0;
+    var bestDelta = 1e9;
+    for (var i = 0; i < this._RATE_RANGES.length; i++) {
+        var d = Math.abs(rr - this._RATE_RANGES[i]);
+        if (d < bestDelta) { bestDelta = d; best = i; }
+    }
+    return best;   // 0-based slot: 0=blank, 1=±8, 2=±16, 3=±50
+};
+
+// Beat-loop size code for xx27 byte[20] (the loop-size readout, e.g. "4").
+// Maps Mixxx's beatloop_size (beats) to the FLX10's code, decoded from a
+// Serato beatloop capture (1/32..32 -> 0x05,06,07,08,0a,0c,0d,0e,0f,10,11).
+PioneerDDJFLX10Screen._BEATLOOP_CODES = [
+    {size: 0.03125, code: 0x05}, {size: 0.0625, code: 0x06},
+    {size: 0.125, code: 0x07}, {size: 0.25, code: 0x08},
+    {size: 0.5, code: 0x0a}, {size: 1, code: 0x0c},
+    {size: 2, code: 0x0d}, {size: 4, code: 0x0e},
+    {size: 8, code: 0x0f}, {size: 16, code: 0x10},
+    {size: 32, code: 0x11},
+];
+PioneerDDJFLX10Screen._beatloopCode = function(size) {
+    var best = 0x0e;
+    var bestDelta = 1e9;
+    for (var i = 0; i < this._BEATLOOP_CODES.length; i++) {
+        var d = Math.abs(size - this._BEATLOOP_CODES[i].size);
+        if (d < bestDelta) { bestDelta = d; best = this._BEATLOOP_CODES[i].code; }
+    }
+    return best;
+};
+
 PioneerDDJFLX10Screen._buildState = function(deckByte, trackLoaded) {
     var p = this._zeros();
     p[0]  = deckByte;
@@ -563,7 +617,56 @@ PioneerDDJFLX10Screen._buildState = function(deckByte, trackLoaded) {
         // chasing the flash; that was a dead end (the flash was the ms-overflow,
         // see top-of-file), so reverted to theparade — which keeps the b29
         // Camelot-key calibration below valid (it was measured in this mode).
-        p[3]  = 0x88;
+        // byte[3]: theparade mode base 0x80; bit 0x08 = KEYLOCK indicator (the
+        // blue lock icon on the jog screen). Decoded from a Serato keylock
+        // on/off capture (byte[3] = 0x80 off / 0x88 on). Reflect Mixxx's live
+        // keylock so the screen lock matches.
+        p[3]  = 0x80 | (engine.getValue(group, "keylock") > 0 ? 0x08 : 0x00);
+        p[4]  = this._RANGE_PROBE
+            ? this._rangeProbeVal               // DEBUG: sweep to map firmware slots
+            : this._rateRangeIndex(group);      // tempo-range index → shown %
+        // Beat loop (decoded from Serato capture): byte[20] = loop-size readout;
+        // byte[2] bit 0x08 = loop active; byte[23]/[25] + byte[26..27] (loop
+        // length, ms) = the loop region/markers.
+        var bls = engine.getValue(group, "beatloop_size");
+        if (bls > 0) { p[20] = this._beatloopCode(bls); }
+        // Loop region: byte[2] bit 0x08 draws it; byte[23..24]=start and
+        // byte[26..27]=end, each an LE16 in the playhead ms timeline =
+        // (sample / track_samples) * duration * 1000. byte[25] picks the tint:
+        // 0x00 = active/closed (strong), 0x80 = pending (light). Three states,
+        // decoded from Serato captures:
+        //   active  (loop_enabled)          -> strong tint, start=in, end=out
+        //   pending (in-point set, no out)  -> light tint,  start=in, end=playhead
+        //   else (no loop / stale leftover) -> region not drawn
+        // Pending is detected via loop_end_position < 0: Mixxx's loop_in clears
+        // the out-point when you set the in-point at/after the old out (the
+        // normal "start a fresh loop ahead" case). (LE16 => positions past ~65s
+        // clamp; revisit if needed.)
+        var lts = engine.getValue(group, "track_samples");
+        var ldur = engine.getValue(group, "duration");
+        var ls = engine.getValue(group, "loop_start_position");
+        var le = engine.getValue(group, "loop_end_position");
+        if (lts > 0 && ldur > 0 && ls >= 0) {
+            var sMs = Math.round((ls / lts) * ldur * 1000);
+            var eMs = -1;
+            if (engine.getValue(group, "loop_enabled") > 0 && le >= 0) {
+                p[25] = 0x00;                                   // active: strong
+                eMs = Math.round((le / lts) * ldur * 1000);
+            } else if (le < 0) {
+                p[25] = 0x80;                                   // pending: light
+                eMs = Math.round(
+                    engine.getValue(group, "playposition") * ldur * 1000);
+            }
+            if (eMs >= 0) {
+                p[2] |= 0x08;                                   // draw region
+                if (sMs > 0xffff) { sMs = 0xffff; }
+                if (eMs > 0xffff) { eMs = 0xffff; }
+                p[23] = sMs & 0xff;
+                p[24] = (sMs >> 8) & 0xff;
+                p[26] = eMs & 0xff;
+                p[27] = (eMs >> 8) & 0xff;
+            }
+        }
         p[19] = 0x07;
         p[32] = 0xad;  p[33] = 0x05;  p[34] = 0x00;
         // 2026-05-26 v2 — corrected after live track test. The original sweep
@@ -1418,15 +1521,31 @@ PioneerDDJFLX10Screen._TEST_JPEG_HEX = (
     "8a2800a28a2800a28a2800a28a2800a28a2800a28a2800a28a2800a28a2803ffd9");
 
 PioneerDDJFLX10Screen._uploadAlbumArt = function(deck) {
-    var hex = this._TEST_JPEG_HEX;
+    // Prefer the loaded track's real cover (engine.getCoverArt returns a 240x240
+    // JPEG as a byte array). Fall back to the solid placeholder when there's no
+    // cover, the cover isn't decoded yet, or on a Mixxx without the native API.
+    var bytes = null;
+    if (typeof engine.getCoverArt === "function") {
+        bytes = engine.getCoverArt("[Channel" + deck + "]", 240);
+    }
+    var byteAt, jpegSize;
+    if (bytes && bytes.length) {
+        byteAt = function(i) { return bytes[i]; };
+        jpegSize = bytes.length;
+    } else {
+        var hex = this._TEST_JPEG_HEX;
+        byteAt = function(i) { return parseInt(hex.substr(i * 2, 2), 16); };
+        jpegSize = hex.length / 2;
+    }
     var db = this._DECK_BYTE[deck - 1];
-    var jpegSize = hex.length / 2;
     var SEG1_CAP = 119;
     var SEG_CAP  = 122;
     var totalSegs = (jpegSize <= SEG1_CAP) ? 1
                     : 1 + Math.ceil((jpegSize - SEG1_CAP) / SEG_CAP);
+    // byte[4] (segment count) is 8-bit, so >255 segments (~31 KB) can't be
+    // addressed; the JPEG quality in getCoverArt keeps 240x240 well under that.
+    if (totalSegs > 255) { totalSegs = 255; }
 
-    var hexAt = function(i) { return parseInt(hex.substr(i * 2, 2), 16); };
     var pos = 0;
     for (var seg = 1; seg <= totalSegs; seg++) {
         var p = this._zeros();
@@ -1438,11 +1557,11 @@ PioneerDDJFLX10Screen._uploadAlbumArt = function(deck) {
             p[6] = jpegSize & 0xff;
             p[7] = (jpegSize >> 8) & 0xff;
             var take = Math.min(SEG1_CAP, jpegSize - pos);
-            for (var j = 0; j < take; j++) { p[9 + j] = hexAt(pos + j); }
+            for (var j = 0; j < take; j++) { p[9 + j] = byteAt(pos + j); }
             pos += take;
         } else {
             var take2 = Math.min(SEG_CAP, jpegSize - pos);
-            for (var k = 0; k < take2; k++) { p[6 + k] = hexAt(pos + k); }
+            for (var k = 0; k < take2; k++) { p[6 + k] = byteAt(pos + k); }
             pos += take2;
         }
         this._sendRaw(p);
@@ -2000,6 +2119,7 @@ PioneerDDJFLX10Screen.init = function(id) {
         }
         this._startTrickle();
         if (this._EQ_REACTIVE) { this._startEqRefresh(); }
+        this._startRangeProbe();
     }
 
     // Track-load detection only — xx 27 updates come from the timer above
