@@ -811,7 +811,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
 
     // In case of delayed engine calls we do not immediately write audible
     // silence. Instead we sleep a bit, but return always before the time
-    // of a whole cunk expires. It turns out that a real hw underflow has a
+    // of a whole chunk expires. It turns out that a real hw underflow has a
     // bigger impact than silence padding in Mixxx
     // sound API has its own measure to deal with the second.
     constexpr double kMaxSleepchunks = 0.5;
