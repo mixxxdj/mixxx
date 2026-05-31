@@ -44,15 +44,17 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
         }                                                                     \
     while (0)
 
-/// Checks that cond is true in debug builds. If cond is false then prints a
-/// warning message to the console. If Mixxx is built with
-/// MIXXX_DEBUG_ASSERTIONS_FATAL then the warning message is fatal. Compiles
-/// to nothing in release builds.
+/// Verifies that `cond` evaluates to `true` in debug builds. If not, a
+/// critical error message is printed. If Mixxx is built with
+/// `MIXXX_DEBUG_ASSERTIONS_FATAL`, the process is terminated or
+/// it breaks with SIGINT under gdb with command line option
+/// --debug-assert-break
 ///
-/// In release builds, it marks cond as used and checks if it can be converted
-/// to bool. Be careful of the common mistake with assertions:
-///   DEBUG_ASSERT(doSomething());
-/// doSomething() is never called, in In release builds.
+/// This macro expands to no runtime code in release builds. At compile time
+/// `cond` is however verified to be convertible to `bool`.
+/// Be careful of the common mistake with assertions:
+///   `DEBUG_ASSERT(doSomething());`
+/// `doSomething()` is never called, in In release builds.
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 #define DEBUG_ASSERT(cond)                                                  \
     do                                                                      \
