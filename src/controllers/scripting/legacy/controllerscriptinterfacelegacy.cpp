@@ -1,5 +1,6 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <QBuffer>
 #include <QStringEncoder>
 #include <gsl/pointers>
 
@@ -9,6 +10,7 @@
 #include "controllers/controller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
+#include "library/coverart.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -259,6 +261,51 @@ QJSValue ControllerScriptInterfaceLegacy::getBeatInfo(const QString& group) {
     QJSValue result = pJSEngine->newArray(2);
     result.setProperty(0, beatLengthSeconds);
     result.setProperty(1, firstDownbeatSeconds);
+    return result;
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getCoverArt(const QString& group, int size) {
+    const auto pJSEngine = m_pScriptEngineLegacy->jsEngine();
+    if (!pJSEngine) {
+        return QJSValue::NullValue;
+    }
+    const TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
+    if (!pTrack) {
+        return QJSValue::NullValue;
+    }
+    // loadImage() resolves embedded art or an external cover file and decodes
+    // it. Called once per track load (in the screen's upload sequence), so the
+    // disk read/decode cost is acceptable on the controller thread.
+    const CoverInfo::LoadedImage loaded =
+            pTrack->getCoverInfoWithLocation().loadImage(pTrack);
+    if (loaded.result != CoverInfo::LoadedImage::Result::Ok || loaded.image.isNull()) {
+        return QJSValue::NullValue;
+    }
+    if (size <= 0) {
+        size = 240;   // DDJ-FLX10 jog-screen art is 240x240
+    }
+    // Scale to fill a square then centre-crop, so non-square covers aren't
+    // letterboxed/distorted.
+    const QImage scaled = loaded.image.scaled(size,
+            size,
+            Qt::KeepAspectRatioByExpanding,
+            Qt::SmoothTransformation);
+    const QImage square = scaled.copy((scaled.width() - size) / 2,
+            (scaled.height() - size) / 2,
+            size,
+            size);
+    QByteArray jpeg;
+    QBuffer buffer(&jpeg);
+    if (!buffer.open(QIODevice::WriteOnly) || !square.save(&buffer, "JPEG", 85)) {
+        return QJSValue::NullValue;
+    }
+    buffer.close();
+    // Return the JPEG as a flat JS array of byte values (0..255).
+    QJSValue result = pJSEngine->newArray(static_cast<quint32>(jpeg.size()));
+    for (int i = 0; i < jpeg.size(); ++i) {
+        result.setProperty(static_cast<quint32>(i),
+                static_cast<int>(static_cast<unsigned char>(jpeg.at(i))));
+    }
     return result;
 }
 
