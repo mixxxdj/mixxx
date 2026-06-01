@@ -82,7 +82,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 0.6490f * kfc + 0.9988f;
 
         const float x = -2.0f * kPi * kfcr * kf; // input for taylor approximations
-        const float exp_out = std::exp(x);
+        const float exp_out = std::exp(static_cast<float>(x));
         m_k2vgNew = v2 * (1.0f - exp_out); // filter tuning
 
         // Resonance correction for self oscillation ~4

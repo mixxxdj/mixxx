@@ -129,7 +129,7 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
 
 // static
 SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
-        CSAMPLE* pBuffer,
+        CSAMPLE* M_RESTRICT pBuffer,
         SINT numSamples,
         CSAMPLE_GAIN mainGain,
         CSAMPLE_GAIN mainGainOld,
@@ -150,29 +150,50 @@ SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
     float clippedL = 0.0f;
     float clippedR = 0.0f;
 
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < numSamples / 2; ++i) {
-        const float f = static_cast<float>(i + 1);
-        const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
-        const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
-        const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
+    if (monoMixdown) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples / 2; ++i) {
+            const float f = static_cast<float>(i + 1);
+            const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
+            const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
+            const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
 
-        CSAMPLE l = pBuffer[i * 2] * lg;
-        CSAMPLE r = pBuffer[i * 2 + 1] * rg;
+            CSAMPLE l = pBuffer[i * 2] * lg;
+            CSAMPLE r = pBuffer[i * 2 + 1] * rg;
 
-        const CSAMPLE absL = std::abs(l);
-        const CSAMPLE absR = std::abs(r);
-        sumAbsL += absL;
-        sumAbsR += absR;
-        clippedL += (absL > CSAMPLE_PEAK) ? 1.0f : 0.0f;
-        clippedR += (absR > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+            const CSAMPLE absL = std::abs(l);
+            const CSAMPLE absR = std::abs(r);
+            sumAbsL += absL;
+            sumAbsR += absR;
+            clippedL += (absL > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+            clippedR += (absR > CSAMPLE_PEAK) ? 1.0f : 0.0f;
 
-        if (monoMixdown) {
             l = r = (l + r) * 0.5f;
-        }
 
-        pBuffer[i * 2] = l;
-        pBuffer[i * 2 + 1] = r;
+            pBuffer[i * 2] = l;
+            pBuffer[i * 2 + 1] = r;
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples / 2; ++i) {
+            const float f = static_cast<float>(i + 1);
+            const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
+            const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
+            const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
+
+            CSAMPLE l = pBuffer[i * 2] * lg;
+            CSAMPLE r = pBuffer[i * 2 + 1] * rg;
+
+            const CSAMPLE absL = std::abs(l);
+            const CSAMPLE absR = std::abs(r);
+            sumAbsL += absL;
+            sumAbsR += absR;
+            clippedL += (absL > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+            clippedR += (absR > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+
+            pBuffer[i * 2] = l;
+            pBuffer[i * 2 + 1] = r;
+        }
     }
 
     *pfAbsLSum = sumAbsL;

@@ -51,13 +51,13 @@ void EngineXfader::getXfadeGains(double xfadePosition,
     } else {
         if (xfadePositionLeft < 0) { // on left side
             xfadePositionLeft *= -1;
-            *gain2 = 1.0f - static_cast<float>(std::pow(xfadePositionLeft, transform));
+            *gain2 = 1.0f - static_cast<float>(std::pow(static_cast<float>(xfadePositionLeft), static_cast<float>(transform)));
         } else {
             *gain2 = 1.0f;
         }
 
         if (xfadePositionRight > 0) { // right side
-            *gain1 = 1.0f - static_cast<float>(std::pow(xfadePositionRight, transform));
+            *gain1 = 1.0f - static_cast<float>(std::pow(static_cast<float>(xfadePositionRight), static_cast<float>(transform)));
         } else {
             *gain1 = 1.0f;
         }

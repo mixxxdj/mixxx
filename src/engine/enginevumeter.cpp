@@ -68,9 +68,9 @@ void EngineVuMeter::processFused(
         const float logScaleFactor = static_cast<float>(SHRT_MAX) / 1000.0f;
 
         doSmooth(m_fRMSvolumeL,
-                std::log10(logScaleFactor * m_fRMSvolumeSumL / samplesCalculatedFloat + 1.0f));
+                std::log10(static_cast<float>(logScaleFactor) * (m_fRMSvolumeSumL / samplesCalculatedFloat) + 1.0f));
         doSmooth(m_fRMSvolumeR,
-                std::log10(logScaleFactor * m_fRMSvolumeSumR / samplesCalculatedFloat + 1.0f));
+                std::log10(static_cast<float>(logScaleFactor) * (m_fRMSvolumeSumR / samplesCalculatedFloat) + 1.0f));
 
         const CSAMPLE epsilon = 0.0001f;
 
@@ -98,7 +98,9 @@ void EngineVuMeter::processFused(
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0f);
-        m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
+        m_peakDurationL = static_cast<int>(
+                std::round(0.5f * static_cast<float>(sampleRate) /
+                        (static_cast<float>(bufferSize) / 2.0f)));
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0f);
     } else {
@@ -107,7 +109,9 @@ void EngineVuMeter::processFused(
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0f);
-        m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
+        m_peakDurationR = static_cast<int>(
+                std::round(0.5f * static_cast<float>(sampleRate) /
+                        (static_cast<float>(bufferSize) / 2.0f)));
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0f);
     } else {

@@ -164,7 +164,7 @@ class SampleUtil {
             CSAMPLE_GAIN new_gain, SINT numSamples);
 
     static CLIP_STATUS finalizeMainMix(
-            CSAMPLE* pBuffer,
+            CSAMPLE* M_RESTRICT pBuffer,
             SINT numSamples,
             CSAMPLE_GAIN mainGain,
             CSAMPLE_GAIN mainGainOld,
