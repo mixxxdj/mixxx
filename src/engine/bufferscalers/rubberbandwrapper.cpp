@@ -215,6 +215,9 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
         m_pInstances.clear();
     };
 
+    m_sampleRate = sampleRate;
+    m_channelCount = chCount;
+
     m_channelPerWorker = getChannelPerWorker(chCount);
     qDebug() << "RubberBandWrapper::setup - using" << m_channelPerWorker << "channel(s) per task";
     VERIFY_OR_DEBUG_ASSERT(0 == chCount % m_channelPerWorker) {

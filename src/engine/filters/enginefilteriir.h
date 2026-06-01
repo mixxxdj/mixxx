@@ -255,38 +255,32 @@ class EngineFilterIIR : public EngineFilterIIRBase {
     }
 
     void processRamping(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
-        double cross_mix = 0.0;
-        double cross_inc = 4.0 / static_cast<double>(bufferSize);
+        float cross_mix = 0.0f;
+        const float cross_inc = 2.0f / static_cast<float>(bufferSize);
         for (std::size_t i = 0; i < bufferSize; i += 2) {
             // Do a linear cross fade between the output of the old
             // Filter and the new filter.
-            double old1;
-            double old2;
+            float old1;
+            float old2;
             if (!m_doStart) {
                 // Process old filter, but only if we do not do a fresh start
-                old1 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf1, pIn[i]));
-                old2 = static_cast<CSAMPLE>(processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]));
+                old1 = static_cast<float>(processSample(m_oldCoef, m_oldBuf1, pIn[i]));
+                old2 = static_cast<float>(processSample(m_oldCoef, m_oldBuf2, pIn[i + 1]));
             } else {
                 if (m_startFromDry) {
                     old1 = pIn[i];
                     old2 = pIn[i + 1];
                 } else {
-                    old1 = 0;
-                    old2 = 0;
+                    old1 = 0.0f;
+                    old2 = 0.0f;
                 }
             }
-            double new1 = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
-            double new2 = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
+            const float new1 = static_cast<float>(processSample(m_coef, m_buf1, pIn[i]));
+            const float new2 = static_cast<float>(processSample(m_coef, m_buf2, pIn[i + 1]));
 
-            if (i < bufferSize / 2) {
-                pOutput[i] = static_cast<CSAMPLE>(old1);
-                pOutput[i + 1] = static_cast<CSAMPLE>(old2);
-            } else {
-                pOutput[i] = static_cast<CSAMPLE>(new1 * cross_mix + old1 * (1.0 - cross_mix));
-                pOutput[i + 1] = static_cast<CSAMPLE>(
-                        new2 * cross_mix + old2 * (1.0 - cross_mix));
-                cross_mix += cross_inc;
-            }
+            pOutput[i] = new1 * cross_mix + old1 * (1.0f - cross_mix);
+            pOutput[i + 1] = new2 * cross_mix + old2 * (1.0f - cross_mix);
+            cross_mix += cross_inc;
         }
         m_doRamping = false;
         m_doStart = false;

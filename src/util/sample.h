@@ -163,6 +163,19 @@ class SampleUtil {
     static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
             CSAMPLE_GAIN new_gain, SINT numSamples);
 
+    static CLIP_STATUS finalizeMainMix(
+            CSAMPLE* pBuffer,
+            SINT numSamples,
+            CSAMPLE_GAIN mainGain,
+            CSAMPLE_GAIN mainGainOld,
+            CSAMPLE_GAIN balL,
+            CSAMPLE_GAIN balR,
+            CSAMPLE_GAIN balLOld,
+            CSAMPLE_GAIN balROld,
+            CSAMPLE* pfAbsLSum,
+            CSAMPLE* pfAbsRSum,
+            bool monoMixdown);
+
     // Apply the necessary ramping gain to normalize the signal to a given amplitude,
     // i.e make the biggest sample have the given amplitude.
     //
@@ -419,6 +432,14 @@ class SampleUtil {
             const CSAMPLE* M_RESTRICT pSrc,
             SINT numSamples,
             int channelCount);
+
+    static void copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc,
+            SINT numFrames);
+
+    static void copyReverseStem(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc,
+            SINT numFrames);
 
     static void copy1WithGain(CSAMPLE* M_RESTRICT pDest,
             const CSAMPLE* M_RESTRICT pSrc0,

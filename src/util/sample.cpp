@@ -128,6 +128,67 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
 }
 
 // static
+SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
+        CSAMPLE* pBuffer,
+        SINT numSamples,
+        CSAMPLE_GAIN mainGain,
+        CSAMPLE_GAIN mainGainOld,
+        CSAMPLE_GAIN balL,
+        CSAMPLE_GAIN balR,
+        CSAMPLE_GAIN balLOld,
+        CSAMPLE_GAIN balROld,
+        CSAMPLE* pfAbsLSum,
+        CSAMPLE* pfAbsRSum,
+        bool monoMixdown) {
+    const float fNumFrames = static_cast<float>(numSamples / 2);
+    const CSAMPLE_GAIN mInc = (mainGain - mainGainOld) / fNumFrames;
+    const CSAMPLE_GAIN blInc = (balL - balLOld) / fNumFrames;
+    const CSAMPLE_GAIN brInc = (balR - balROld) / fNumFrames;
+
+    CSAMPLE sumAbsL = 0.0f;
+    CSAMPLE sumAbsR = 0.0f;
+    float clippedL = 0.0f;
+    float clippedR = 0.0f;
+
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < numSamples / 2; ++i) {
+        const float f = static_cast<float>(i + 1);
+        const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
+        const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
+        const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
+
+        CSAMPLE l = pBuffer[i * 2] * lg;
+        CSAMPLE r = pBuffer[i * 2 + 1] * rg;
+
+        const CSAMPLE absL = std::abs(l);
+        const CSAMPLE absR = std::abs(r);
+        sumAbsL += absL;
+        sumAbsR += absR;
+        clippedL += (absL > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+        clippedR += (absR > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+
+        if (monoMixdown) {
+            l = r = (l + r) * 0.5f;
+        }
+
+        pBuffer[i * 2] = l;
+        pBuffer[i * 2 + 1] = r;
+    }
+
+    *pfAbsLSum = sumAbsL;
+    *pfAbsRSum = sumAbsR;
+
+    CLIP_STATUS clipping = NO_CLIPPING;
+    if (clippedL > 0.0f) {
+        clipping |= CLIPPING_LEFT;
+    }
+    if (clippedR > 0.0f) {
+        clipping |= CLIPPING_RIGHT;
+    }
+    return clipping;
+}
+
+// static
 void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
         CSAMPLE_GAIN new_gain, SINT numSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {
@@ -207,8 +268,8 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         const CSAMPLE_GAIN start_gain2 = gain2Old + gain2Delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            pBuffer[i * 2] *= (start_gain1 + gain1Delta * i);
-            pBuffer[i * 2 + 1] *= (start_gain2 + gain2Delta * i);
+            pBuffer[i * 2] *= (start_gain1 + gain1Delta * static_cast<float>(i));
+            pBuffer[i * 2 + 1] *= (start_gain2 + gain2Delta * static_cast<float>(i));
         }
     } else {
         // note: LOOP VECTORIZED.
@@ -237,9 +298,16 @@ void SampleUtil::addWithGain(CSAMPLE* M_RESTRICT pDest,
         return;
     }
 
-    // note: LOOP VECTORIZED.
-    for (SINT i = 0; i < numSamples; ++i) {
-        pDest[i] += pSrc[i] * gain;
+    if (gain == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (SINT i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc[i];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (SINT i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc[i] * gain;
+        }
     }
 }
 
@@ -257,14 +325,21 @@ void SampleUtil::addWithRampingGain(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
+            const CSAMPLE_GAIN gain = start_gain + gain_delta * static_cast<float>(i);
             pDest[i * 2] += pSrc[i * 2] * gain;
             pDest[i * 2 + 1] += pSrc[i * 2 + 1] * gain;
         }
     } else {
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < numSamples; ++i) {
-            pDest[i] += pSrc[i] * old_gain;
+        if (old_gain == CSAMPLE_GAIN_ONE) {
+            // note: LOOP VECTORIZED.
+            for (int i = 0; i < numSamples; ++i) {
+                pDest[i] += pSrc[i];
+            }
+        } else {
+            // note: LOOP VECTORIZED.
+            for (int i = 0; i < numSamples; ++i) {
+                pDest[i] += pSrc[i] * old_gain;
+            }
         }
     }
 }
@@ -282,9 +357,26 @@ void SampleUtil::add2WithGain(CSAMPLE* M_RESTRICT pDest,
         return;
     }
 
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < numSamples; ++i) {
-        pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2;
+    if (gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc1[i] + pSrc2[i];
+        }
+    } else if (gain1 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc1[i] + pSrc2[i] * gain2;
+        }
+    } else if (gain2 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc1[i] * gain1 + pSrc2[i];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2;
+        }
     }
 }
 
@@ -305,9 +397,16 @@ void SampleUtil::add3WithGain(CSAMPLE* pDest,
         return;
     }
 
-    // note: LOOP VECTORIZED.
-    for (SINT i = 0; i < numSamples; ++i) {
-        pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
+    if (gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE && gain3 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (SINT i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc1[i] + pSrc2[i] + pSrc3[i];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (SINT i = 0; i < numSamples; ++i) {
+            pDest[i] += pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
+        }
     }
 }
 
@@ -545,10 +644,10 @@ void SampleUtil::linearCrossfadeStereoBuffersOut(
         SINT numSamples) {
     // M_RESTRICT unoptimizes the function for some reason.
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE
-            / static_cast<CSAMPLE_GAIN>(numSamples / 2);
+            / static_cast<float>(numSamples / 2);
     // note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples / 2; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i);
+        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i + 1);
         pDestSrcFadeOut[i * 2] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 2] += pSrcFadeIn[i * 2] * cross_mix;
         pDestSrcFadeOut[i * 2 + 1] *= (CSAMPLE_GAIN_ONE - cross_mix);
@@ -562,10 +661,10 @@ void SampleUtil::linearCrossfadeStemBuffersOut(
         const CSAMPLE* M_RESTRICT pSrcFadeIn,
         SINT numSamples) {
     // M_RESTRICT unoptimizes the function for some reason.
-    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / static_cast<CSAMPLE_GAIN>(numSamples / 8);
+    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / static_cast<float>(numSamples / 8);
     // note: LOOP VECTORIZED.
     for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i);
+        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i + 1);
         pDestSrcFadeOut[i * 8] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 8] += pSrcFadeIn[i * 8] * cross_mix;
         pDestSrcFadeOut[i * 8 + 1] *= (CSAMPLE_GAIN_ONE - cross_mix);
@@ -606,11 +705,11 @@ void SampleUtil::linearCrossfadeBuffersOut(
         // Fallback to unoptimised function
         {
             DEBUG_ASSERT(numSamples % channelCount == 0);
-            int numFrame = numSamples / channelCount;
+            const int numFrame = static_cast<int>(numSamples / channelCount);
             const CSAMPLE_GAIN cross_inc =
-                    CSAMPLE_GAIN_ONE / static_cast<CSAMPLE_GAIN>(numSamples / channelCount);
+                    CSAMPLE_GAIN_ONE / static_cast<float>(numFrame);
             for (int i = 0; i < numFrame; ++i) {
-                const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i);
+                const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i + 1);
                 // note: LOOP VECTORIZED.
                 for (int chIdx = 0; chIdx < channelCount; chIdx++) {
                     pDestSrcFadeOut[i * channelCount + chIdx] *= (CSAMPLE_GAIN_ONE - cross_mix);
@@ -629,10 +728,10 @@ void SampleUtil::linearCrossfadeStereoBuffersIn(
         const CSAMPLE* M_RESTRICT pSrcFadeOut,
         SINT numSamples) {
     // M_RESTRICT unoptimizes the function for some reason.
-    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / static_cast<CSAMPLE_GAIN>(numSamples / 2);
+    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / static_cast<float>(numSamples / 2);
     /// note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples / 2; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i);
+        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i + 1);
         pDestSrcFadeIn[i * 2] *= cross_mix;
         pDestSrcFadeIn[i * 2] += pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeIn[i * 2 + 1] *= cross_mix;
@@ -646,10 +745,10 @@ void SampleUtil::linearCrossfadeStemBuffersIn(
         const CSAMPLE* M_RESTRICT pSrcFadeOut,
         SINT numSamples) {
     // M_RESTRICT unoptimizes the function for some reason.
-    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / static_cast<CSAMPLE_GAIN>(numSamples / 8);
+    const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / static_cast<float>(numSamples / 8);
     // note: LOOP VECTORIZED.
     for (int i = 0; i < numSamples / 8; ++i) {
-        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i);
+        const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i + 1);
         pDestSrcFadeIn[i * 8] *= cross_mix;
         pDestSrcFadeIn[i * 8] += pSrcFadeOut[i * 8] * (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeIn[i * 8 + 1] *= cross_mix;
@@ -689,11 +788,11 @@ void SampleUtil::linearCrossfadeBuffersIn(
     default:
         // Fallback to unoptimised function
         {
-            int numFrame = numSamples / channelCount;
+            const int numFrame = static_cast<int>(numSamples / channelCount);
             const CSAMPLE_GAIN cross_inc =
-                    CSAMPLE_GAIN_ONE / static_cast<CSAMPLE_GAIN>(numSamples / channelCount);
+                    CSAMPLE_GAIN_ONE / static_cast<float>(numFrame);
             for (int i = 0; i < numFrame; ++i) {
-                const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i);
+                const CSAMPLE_GAIN cross_mix = cross_inc * static_cast<float>(i + 1);
                 // note: LOOP VECTORIZED.
                 for (int chIdx = 0; chIdx < channelCount; chIdx++) {
                     pDestSrcFadeIn[i * channelCount + chIdx] *= cross_mix;
@@ -750,24 +849,23 @@ void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
         mixxx::audio::ChannelCount numChannels,
         int excludeChannelMask) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
-    int stereoChCount = numChannels / mixxx::audio::ChannelCount::stereo();
+    const SINT stereoChCount = static_cast<SINT>(numChannels) / 2;
     // Making sure we aren't using this function with more channel than supported with the mask
-    DEBUG_ASSERT(stereoChCount < static_cast<int>(sizeof(excludeChannelMask) * 8));
-    SampleUtil::clear(pDest, numFrames * mixxx::audio::ChannelCount::stereo());
-    for (int stemIdx = 0; stemIdx < stereoChCount; stemIdx++) {
-        if (excludeChannelMask >> stemIdx & 0b1) {
-            continue;
+    DEBUG_ASSERT(stereoChCount < static_cast<SINT>(sizeof(excludeChannelMask) * 8));
+
+    // Outer loop over frames for better cache locality.
+    for (SINT i = 0; i < numFrames; ++i) {
+        CSAMPLE sumL = 0.0f;
+        CSAMPLE sumR = 0.0f;
+        for (SINT stemIdx = 0; stemIdx < stereoChCount; ++stemIdx) {
+            if (excludeChannelMask >> stemIdx & 0b1) {
+                continue;
+            }
+            sumL += pSrc[i * numChannels + stemIdx * 2];
+            sumR += pSrc[i * numChannels + stemIdx * 2 + 1];
         }
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < numFrames; i++) {
-            const int srcIdx = numChannels * i +
-                    stemIdx * mixxx::audio::ChannelCount::stereo();
-            const int destIdx = mixxx::audio::ChannelCount::stereo() * i;
-            pDest[destIdx] +=
-                    pSrc[srcIdx];
-            pDest[destIdx + 1] +=
-                    pSrc[srcIdx + 1];
-        }
+        pDest[i * 2] = sumL;
+        pDest[i * 2 + 1] = sumR;
     }
 }
 
@@ -777,19 +875,19 @@ void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
         SINT numFrames,
         mixxx::audio::ChannelCount numChannels) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
-    int stereoChCount = numChannels / mixxx::audio::ChannelCount::stereo();
-    SampleUtil::clear(pDest, numFrames * mixxx::audio::ChannelCount::stereo());
-    for (int stemIdx = 0; stemIdx < stereoChCount; stemIdx++) {
-        // note: LOOP VECTORIZED.
-        for (int i = 0; i < numFrames; i++) {
-            const int srcIdx = numChannels * i +
-                    stemIdx * mixxx::audio::ChannelCount::stereo();
-            const int destIdx = mixxx::audio::ChannelCount::stereo() * i;
-            pDest[destIdx] +=
-                    pSrc[srcIdx];
-            pDest[destIdx + 1] +=
-                    pSrc[srcIdx + 1];
+    const SINT stereoChCount = static_cast<SINT>(numChannels) / 2;
+
+    // Outer loop over frames for better cache locality.
+    // note: LOOP VECTORIZED (inner loop is fixed small count for stems/stereo).
+    for (SINT i = 0; i < numFrames; ++i) {
+        CSAMPLE sumL = 0.0f;
+        CSAMPLE sumR = 0.0f;
+        for (SINT stemIdx = 0; stemIdx < stereoChCount; ++stemIdx) {
+            sumL += pSrc[i * numChannels + stemIdx * 2];
+            sumR += pSrc[i * numChannels + stemIdx * 2 + 1];
         }
+        pDest[i * 2] = sumL;
+        pDest[i * 2 + 1] = sumR;
     }
 }
 
@@ -909,11 +1007,41 @@ void SampleUtil::copyReverse(CSAMPLE* M_RESTRICT pDest,
         int channelCount) {
     DEBUG_ASSERT(numSamples % channelCount == 0);
     for (SINT frameIdx = 0; frameIdx < numSamples / channelCount; ++frameIdx) {
-        const int endpos = (numSamples - 1) - frameIdx * channelCount;
+        const SINT endpos = (numSamples - 1) - frameIdx * channelCount;
         // note: LOOP VECTORIZED.
         for (int chIdx = 0; chIdx < channelCount; chIdx++) {
             pDest[frameIdx * channelCount + chIdx] = pSrc[endpos - channelCount + chIdx + 1];
         }
+    }
+}
+
+// static
+void SampleUtil::copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numFrames; ++i) {
+        const SINT endpos = (numFrames - 1 - i) * 2;
+        pDest[i * 2] = pSrc[endpos];
+        pDest[i * 2 + 1] = pSrc[endpos + 1];
+    }
+}
+
+// static
+void SampleUtil::copyReverseStem(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
+        SINT numFrames) {
+    // note: LOOP VECTORIZED.
+    for (SINT i = 0; i < numFrames; ++i) {
+        const SINT endpos = (numFrames - 1 - i) * 8;
+        pDest[i * 8] = pSrc[endpos];
+        pDest[i * 8 + 1] = pSrc[endpos + 1];
+        pDest[i * 8 + 2] = pSrc[endpos + 2];
+        pDest[i * 8 + 3] = pSrc[endpos + 3];
+        pDest[i * 8 + 4] = pSrc[endpos + 4];
+        pDest[i * 8 + 5] = pSrc[endpos + 5];
+        pDest[i * 8 + 6] = pSrc[endpos + 6];
+        pDest[i * 8 + 7] = pSrc[endpos + 7];
     }
 }
 // static
@@ -941,12 +1069,23 @@ void SampleUtil::copy1WithRampingGain(CSAMPLE* M_RESTRICT pDest,
         return;
     }
     const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / static_cast<float>(iNumSamples / 2);
-    const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples / 2; ++i) {
-        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
-        pDest[i * 2] = pSrc0[i * 2] * gain0;
-        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0;
+    if (gain_delta0 != 0.0f) {
+        const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] * gain0;
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0;
+        }
+    } else {
+        if (gain0in == CSAMPLE_GAIN_ONE) {
+            copy(pDest, pSrc0, iNumSamples);
+        } else {
+            // note: LOOP VECTORIZED.
+            for (int i = 0; i < iNumSamples; ++i) {
+                pDest[i] = pSrc0[i] * gain0in;
+            }
+        }
     }
 }
 // static
@@ -964,10 +1103,27 @@ void SampleUtil::copy2WithGain(CSAMPLE* M_RESTRICT pDest,
         copy1WithGain(pDest, pSrc0, gain0, iNumSamples);
         return;
     }
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc0[i] * gain0 +
-                pSrc1[i] * gain1;
+
+    if (gain0 == CSAMPLE_GAIN_ONE && gain1 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc0[i] + pSrc1[i];
+        }
+    } else if (gain0 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc0[i] + pSrc1[i] * gain1;
+        }
+    } else if (gain1 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc0[i] * gain0 + pSrc1[i];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc0[i] * gain0 + pSrc1[i] * gain1;
+        }
     }
 }
 // static
@@ -987,18 +1143,37 @@ void SampleUtil::copy2WithRampingGain(CSAMPLE* M_RESTRICT pDest,
         copy1WithRampingGain(pDest, pSrc0, gain0in, gain0out, iNumSamples);
         return;
     }
-    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / static_cast<float>(iNumSamples / 2);
+    const float fNumFrames = static_cast<float>(iNumSamples / 2);
+    const CSAMPLE_GAIN gain_delta0 = (gain0out - gain0in) / fNumFrames;
     const CSAMPLE_GAIN start_gain0 = gain0in + gain_delta0;
-    const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / static_cast<float>(iNumSamples / 2);
+    const CSAMPLE_GAIN gain_delta1 = (gain1out - gain1in) / fNumFrames;
     const CSAMPLE_GAIN start_gain1 = gain1in + gain_delta1;
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples / 2; ++i) {
-        const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
-        const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * static_cast<float>(i);
-        pDest[i * 2] = pSrc0[i * 2] * gain0 +
-                pSrc1[i * 2] * gain1;
-        pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
-                pSrc1[i * 2 + 1] * gain1;
+
+    if (gain_delta0 == 0.0f && gain0in == CSAMPLE_GAIN_ONE) {
+        // Fast path for Dry+Wet where dry gain is unity
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] + pSrc1[i * 2] * gain1;
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] + pSrc1[i * 2 + 1] * gain1;
+        }
+    } else if (gain_delta1 == 0.0f && gain1in == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] * gain0 + pSrc1[i * 2];
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 + pSrc1[i * 2 + 1];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples / 2; ++i) {
+            const CSAMPLE_GAIN gain0 = start_gain0 + gain_delta0 * static_cast<float>(i);
+            const CSAMPLE_GAIN gain1 = start_gain1 + gain_delta1 * static_cast<float>(i);
+            pDest[i * 2] = pSrc0[i * 2] * gain0 +
+                    pSrc1[i * 2] * gain1;
+            pDest[i * 2 + 1] = pSrc0[i * 2 + 1] * gain0 +
+                    pSrc1[i * 2 + 1] * gain1;
+        }
     }
 }
 // static
@@ -1022,11 +1197,19 @@ void SampleUtil::copy3WithGain(CSAMPLE* M_RESTRICT pDest,
         copy2WithGain(pDest, pSrc0, gain0, pSrc1, gain1, iNumSamples);
         return;
     }
-    // note: LOOP VECTORIZED.
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc0[i] * gain0 +
-                pSrc1[i] * gain1 +
-                pSrc2[i] * gain2;
+
+    if (gain0 == CSAMPLE_GAIN_ONE && gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE) {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc0[i] + pSrc1[i] + pSrc2[i];
+        }
+    } else {
+        // note: LOOP VECTORIZED.
+        for (int i = 0; i < iNumSamples; ++i) {
+            pDest[i] = pSrc0[i] * gain0 +
+                    pSrc1[i] * gain1 +
+                    pSrc2[i] * gain2;
+        }
     }
 }
 // static

@@ -35,32 +35,47 @@ void EngineXfader::getXfadeGains(double xfadePosition,
         xfadePositionRight = xfadePosition + powerCalibration;
     }
 
-    if (xfadePositionLeft < 0) { // on left side
-        xfadePositionLeft *= -1;
-        *gain2 = static_cast<CSAMPLE_GAIN>(1.0 - (1.0 * pow(xfadePositionLeft, transform)));
+    if (transform == 1.0) {
+        // Fast path for linear crossfader (default) to avoid expensive std::pow
+        if (xfadePositionLeft < 0) {
+            *gain2 = 1.0f + static_cast<float>(xfadePositionLeft);
+        } else {
+            *gain2 = 1.0f;
+        }
+
+        if (xfadePositionRight > 0) {
+            *gain1 = 1.0f - static_cast<float>(xfadePositionRight);
+        } else {
+            *gain1 = 1.0f;
+        }
     } else {
-        *gain2 = 1.0f;
+        if (xfadePositionLeft < 0) { // on left side
+            xfadePositionLeft *= -1;
+            *gain2 = 1.0f - static_cast<float>(std::pow(xfadePositionLeft, transform));
+        } else {
+            *gain2 = 1.0f;
+        }
+
+        if (xfadePositionRight > 0) { // right side
+            *gain1 = 1.0f - static_cast<float>(std::pow(xfadePositionRight, transform));
+        } else {
+            *gain1 = 1.0f;
+        }
     }
 
-    if(xfadePositionRight > 0) { // right side
-        *gain1 = static_cast<CSAMPLE_GAIN>(1.0 - (1.0 * pow(xfadePositionRight, transform)));
-    } else {
-        *gain1 = 1.0f;
-    }
-
-    //prevent phase reversal
-    if (*gain1 < 0.0) {
+    // prevent phase reversal
+    if (*gain1 < 0.0f) {
         *gain1 = 0.0f;
     }
-    if (*gain2 < 0.0) {
+    if (*gain2 < 0.0f) {
         *gain2 = 0.0f;
     }
 
     if (curve == MIXXX_XFADER_CONSTPWR) {
         if (*gain1 > *gain2) {
-            *gain2 = 1 - *gain1;
+            *gain2 = 1.0f - *gain1;
         } else {
-            *gain1 = 1 - *gain2;
+            *gain1 = 1.0f - *gain2;
         }
 
         // The resulting power at the crossover point depends on the correlation of the input signals
@@ -71,7 +86,7 @@ void EngineXfader::getXfadeGains(double xfadePosition,
         // with one exception of mixing two parts of the same track, which resulted in 0.66.
         // Based on the testing, we normalize the gain as if the signals were uncorrelated. The
         // correction on the following lines ensures that  gain1^2 + gain2^2 == 1.
-        CSAMPLE_GAIN gain = static_cast<CSAMPLE_GAIN>(sqrt(*gain1 * *gain1 + *gain2 * *gain2));
+        const CSAMPLE_GAIN gain = std::sqrt(*gain1 * *gain1 + *gain2 * *gain2);
         *gain1 = *gain1 / gain;
         *gain2 = *gain2 / gain;
     }

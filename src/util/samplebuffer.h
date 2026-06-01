@@ -133,6 +133,15 @@ class SampleBuffer final {
         SampleUtil::copy(data(), other.data(), std::min<SINT>(size(), other.size()));
     }
 
+    void copyWithRampingGain(const SampleBuffer& other,
+            CSAMPLE_GAIN old_gain,
+            CSAMPLE_GAIN new_gain,
+            SINT nsamples) noexcept {
+        DEBUG_ASSERT(size() >= nsamples);
+        DEBUG_ASSERT(other.size() >= nsamples);
+        SampleUtil::copyWithRampingGain(data(), other.data(), old_gain, new_gain, nsamples);
+    }
+
     /// Deprecated: use std::span<const CSAMPLE>, SampleBuffer::span() const and
     /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
     class ReadableSlice final {

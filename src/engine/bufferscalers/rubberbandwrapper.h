@@ -24,12 +24,23 @@ class RubberBandWrapper {
 
     // The following method are helper function and do not wrap any RubberBand calls
     void clear();
+
+    mixxx::audio::SampleRate getSampleRate() const {
+        return m_sampleRate;
+    }
+    mixxx::audio::ChannelCount getChannelCount() const {
+        return m_channelCount;
+    }
+
     void setup(mixxx::audio::SampleRate sampleRate,
             mixxx::audio::ChannelCount chCount,
             const RubberBand::RubberBandStretcher::Options& opt);
     bool isValid() const;
 
   private:
+    mixxx::audio::SampleRate m_sampleRate;
+    mixxx::audio::ChannelCount m_channelCount;
+
     // copy constructor of RubberBand::RubberBandStretcher is implicitly deleted.
     std::vector<std::unique_ptr<RubberBandTask>> m_pInstances;
     // Number of channel used for each instance. This may vary whether the track

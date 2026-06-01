@@ -210,19 +210,19 @@ SINT ReadAheadManager::getNextSamples(double dRate,
 
         // start reading before the loop start point or the saved jump, to crossfade these samples
         // with the samples we need to the loop end
-        int seek_read_position = SampleUtil::roundPlayPosToFrameStart(
+        const SINT seek_read_position = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition +
                         (in_reverse ? preseek_samples : -preseek_samples),
                 channelCount);
 
-        int crossFadeStart = 0;
-        int crossFadeSamples = samples_from_reader;
+        SINT crossFadeStart = 0;
+        SINT crossFadeSamples = samples_from_reader;
         if (seek_read_position < 0) {
             // we start in the pre-role without suitable samples for crossfading
             crossFadeStart = -seek_read_position;
             crossFadeSamples -= crossFadeStart;
         } else {
-            int trackSamples = static_cast<int>(
+            const SINT trackSamples = static_cast<SINT>(
                     m_pLoopingControl->getTrackFrame().toSamplePos(
                             channelCount));
             if (seek_read_position > trackSamples) {

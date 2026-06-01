@@ -44,13 +44,19 @@ EngineVuMeter::EngineVuMeter(const QString& group,
 
 void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
+    const mixxx::audio::SampleRate sampleRate =
+            mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
+    const SampleUtil::CLIP_STATUS clipped =
+            SampleUtil::sumAbsPerChannel(&fVolSumL, &fVolSumR, pIn, bufferSize);
+    processFused(fVolSumL, fVolSumR, clipped, sampleRate, bufferSize);
+}
 
-    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
-
-    SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL,
-            &fVolSumR,
-            pIn,
-            bufferSize);
+void EngineVuMeter::processFused(
+        CSAMPLE fVolSumL,
+        CSAMPLE fVolSumR,
+        SampleUtil::CLIP_STATUS clipped,
+        mixxx::audio::SampleRate sampleRate,
+        std::size_t bufferSize) {
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
@@ -79,7 +85,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
             m_vuMeterRight.set(m_fRMSvolumeR);
         }
 
-        const CSAMPLE fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0f;
+        const CSAMPLE fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) * 0.5f;
         if (std::abs(fRMSvolume - static_cast<CSAMPLE>(m_vuMeter.get())) > epsilon) {
             m_vuMeter.set(fRMSvolume);
         }
@@ -91,19 +97,19 @@ void EngineVuMeter::process(CSAMPLE* pIn, const std::size_t bufferSize) {
     }
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
-        m_peakIndicatorLeft.set(1.0);
+        m_peakIndicatorLeft.set(1.0f);
         m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
     } else if (m_peakDurationL <= 0) {
-        m_peakIndicatorLeft.set(0.0);
+        m_peakIndicatorLeft.set(0.0f);
     } else {
         --m_peakDurationL;
     }
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
-        m_peakIndicatorRight.set(1.0);
+        m_peakIndicatorRight.set(1.0f);
         m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
     } else if (m_peakDurationR <= 0) {
-        m_peakIndicatorRight.set(0.0);
+        m_peakIndicatorRight.set(0.0f);
     } else {
         --m_peakDurationR;
     }
