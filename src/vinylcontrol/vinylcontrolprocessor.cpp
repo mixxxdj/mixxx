@@ -3,6 +3,7 @@
 #include "control/controlpushbutton.h"
 #include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
+#include "util/performancetimer.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -76,13 +77,24 @@ void VinylControlProcessor::requestReloadConfig() {
 }
 
 void VinylControlProcessor::run() {
-    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+    unsigned static id = 0; // the id of this thread, for debugging purposes
+    // FIXME copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
+
+    PerformanceTimer reportTimer;
+    reportTimer.start();
 
     while (!m_bQuit) {
         if (m_bReloadConfig) {
             reloadConfig();
             m_bReloadConfig = false;
+        }
+
+        bool timeToWriteSignalQualityReport = m_bReportSignalQuality &&
+                reportTimer.elapsed().toIntegerMillis() >=
+                        MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS;
+        if (timeToWriteSignalQualityReport) {
+            reportTimer.restart();
         }
 
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -108,16 +120,18 @@ void VinylControlProcessor::run() {
                 }
             }
 
-            // TODO(rryan) define a time-based update rate. This will update way
-            // too quickly.
-            if (pProcessor && m_bReportSignalQuality) {
+            // If enabled, update the report at the same rate we use to call
+            // VinylControlManager::updateSignalQualityListeners()
+            if (pProcessor && timeToWriteSignalQualityReport) {
                 VinylSignalQualityReport report;
                 if (pProcessor->writeQualityReport(&report)) {
                     report.processor = i;
-                    if (m_signalQualityFifo.write(&report, 1) != 1) {
+                    if (m_signalQualityFifo.write(&report, 1) == 1) {
+                    } else {
                         qWarning() << "VinylControlProcessor could not write signal quality report for VC index:" << i;
                     }
                 }
+                emit qualityReportWritten();
             }
         }
 
