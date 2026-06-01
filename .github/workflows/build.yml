@@ -792,6 +792,7 @@ jobs:
         - /usr:/host/usr
         - /opt:/host/opt
     strategy:
+      fail-fast: false
       matrix:
         variant:
           - arch: x86_64
