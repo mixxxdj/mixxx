@@ -267,28 +267,28 @@ QString YouTubeService::locateYtDlp() {
         kLogger.warning() << "MIXXX_YTDLP set to" << p
                           << "but that path is not executable; ignoring";
     }
-#if defined(Q_OS_ANDROID)
-    // Android: the youtubedl-android AAR is bundled in the APK at build time.
-    // It provides a complete Python 3.11 runtime + yt-dlp via JNI.
-    // Return a special marker path so downloadVideo() knows to use the
-    // JNI-based downloader instead of trying to exec a binary.
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+    // Android + bundled AAR: the youtubedl-android AAR is compiled into the
+    // APK at build time. Return a special marker so downloadVideo() routes to
+    // the JNI-based downloader instead of trying to exec a binary.
     return QStringLiteral("android-bundled");
-#else
-    // 2. Bundled-next-to-binary + common install dirs.
+#endif
+    // 2. Bundled-next-to-binary + common install dirs (includes Termux on Android).
     const QStringList fallbackBins = ytDlpFallbackBins();
     for (const QString& candidate : std::as_const(fallbackBins)) {
         if (QFileInfo(candidate).isExecutable()) {
             return candidate;
         }
     }
+#if !defined(Q_OS_ANDROID)
     // 3. PATH lookup — handles "yt-dlp" and "yt-dlp.exe" on Windows.
     const QString fromPath =
             QStandardPaths::findExecutable(QStringLiteral("yt-dlp"));
     if (!fromPath.isEmpty()) {
         return fromPath;
     }
-    return QString();
 #endif
+    return QString();
 }
 
 // =============================================================================
@@ -332,30 +332,41 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
         return;
     }
     QDir().mkpath(cacheDir);
-    const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
     downloadViaPiped(videoId,
             cacheDir,
             /*instanceIdx=*/0,
-            [this, videoId, cacheDir, hasYtDlpFallback](
-                    const QString& lastError) {
+            [this, videoId, cacheDir](const QString& pipedError) {
+                // Piped failed on all instances — try the InnerTube API next.
+                // This is the same underlying API that yt-dlp and ytdlnis use:
+                // the Android client context returns plain (non-cipher) stream
+                // URLs valid for ~6 hours, with no external dependencies and no
+                // third-party proxy server needed. Works on every platform.
+                kLogger.warning() << "All Piped instances failed for download"
+                                  << videoId << ":" << pipedError
+                                  << "— trying InnerTube API";
+                downloadViaInnerTube(videoId,
+                        cacheDir,
+                        [this, videoId, cacheDir](const QString& innerTubeError) {
+                            // InnerTube also failed — last resort: yt-dlp binary /
+                            // android-bundled JNI runtime (when compiled in).
+                            kLogger.warning()
+                                    << "InnerTube failed for" << videoId << ":"
+                                    << innerTubeError;
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
-                if (m_ytDlpPath == QStringLiteral("android-bundled")) {
-                    kLogger.warning() << "All Piped instances failed for download"
-                                      << videoId << ":" << lastError
-                                      << "— falling back to bundled yt-dlp (JNI)";
-                    downloadViaAndroidBundled(videoId, cacheDir);
-                } else
+                            if (m_ytDlpPath == QStringLiteral("android-bundled")) {
+                                kLogger.warning()
+                                        << "Falling back to bundled yt-dlp (JNI)";
+                                downloadViaAndroidBundled(videoId, cacheDir);
+                                return;
+                            }
 #endif
-                        if (hasYtDlpFallback) {
-                    kLogger.warning() << "All Piped instances failed for download"
-                                      << videoId << ":" << lastError
-                                      << "— falling back to yt-dlp";
-                    downloadViaYtDlp(videoId, cacheDir);
-                } else {
-                    kLogger.warning() << "All Piped instances failed for download"
-                                      << videoId << ":" << lastError;
-                    Q_EMIT downloadFailed(videoId, lastError);
-                }
+                            if (!m_ytDlpPath.isEmpty()) {
+                                kLogger.warning() << "Falling back to yt-dlp binary";
+                                downloadViaYtDlp(videoId, cacheDir);
+                            } else {
+                                Q_EMIT downloadFailed(videoId, innerTubeError);
+                            }
+                        });
             });
 }
 
@@ -736,14 +747,147 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
                     return;
                 }
                 delete outFile;
-                kLogger.info() << "Downloaded" << videoId << "→" << outPath
-                               << "via Piped";
+                kLogger.info() << "Downloaded" << videoId << "→" << outPath;
                 finalizeDownload(videoId, outPath);
             });
 }
 
 // =============================================================================
-// yt-dlp (desktop fallback only)
+// YouTube InnerTube API (secondary backend — all platforms incl. Android)
+// =============================================================================
+
+void YouTubeService::downloadViaInnerTube(
+        const QString& videoId,
+        const QString& cacheDir,
+        const std::function<void(const QString&)>& onAllFailed) {
+    // The InnerTube player API is what yt-dlp and ytdlnis use internally.
+    // Sending an Android client context causes YouTube to return plain
+    // (non-cipher) adaptive stream URLs that are valid for ~6 hours. This
+    // requires no external binary, no third-party proxy, and works on every Qt
+    // platform including Android. Falls back to yt-dlp only when this fails.
+    static const QLatin1String kClientName("ANDROID");
+    static const QLatin1String kClientVersion("17.31.35");
+    // "3" is the client-name numeric ID for the Android app.
+    static const QLatin1String kClientNameId("3");
+    static const QLatin1String kApiKey("AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM394");
+
+    QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/player"));
+    QUrlQuery query;
+    query.addQueryItem(QStringLiteral("key"), kApiKey);
+    reqUrl.setQuery(query);
+
+    QJsonObject client;
+    client.insert(QStringLiteral("clientName"), QString(kClientName));
+    client.insert(QStringLiteral("clientVersion"), QString(kClientVersion));
+    client.insert(QStringLiteral("hl"), QStringLiteral("en"));
+    client.insert(QStringLiteral("gl"), QStringLiteral("US"));
+    client.insert(QStringLiteral("androidSdkVersion"), 30);
+    QJsonObject context;
+    context.insert(QStringLiteral("client"), client);
+    QJsonObject body;
+    body.insert(QStringLiteral("videoId"), videoId);
+    body.insert(QStringLiteral("context"), context);
+
+    QNetworkRequest req(reqUrl);
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+            QStringLiteral("application/json"));
+    req.setRawHeader("User-Agent",
+            QStringLiteral("com.google.android.youtube/%1 (Linux; U; Android 11) gzip")
+                    .arg(kClientVersion)
+                    .toUtf8());
+    req.setRawHeader("X-YouTube-Client-Name", QByteArray(kClientNameId));
+    req.setRawHeader("X-YouTube-Client-Version", QByteArray(kClientVersion));
+    req.setTransferTimeout(kPipedHttpTimeoutMs);
+
+    QNetworkReply* reply = m_pNam->post(
+            req, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    connect(reply,
+            &QNetworkReply::finished,
+            this,
+            [this, reply, videoId, cacheDir, onAllFailed]() {
+                reply->deleteLater();
+                if (reply->error() != QNetworkReply::NoError) {
+                    kLogger.warning() << "InnerTube request failed for" << videoId
+                                      << ":" << reply->errorString();
+                    onAllFailed(tr("InnerTube API failed: %1").arg(reply->errorString()));
+                    return;
+                }
+                const QJsonObject root =
+                        QJsonDocument::fromJson(reply->readAll()).object();
+                // Check playability before touching streamingData.
+                const QJsonObject playability =
+                        root.value(QStringLiteral("playabilityStatus")).toObject();
+                const QString status =
+                        playability.value(QStringLiteral("status")).toString();
+                if (status != QStringLiteral("OK")) {
+                    const QString reason =
+                            playability.value(QStringLiteral("reason")).toString();
+                    kLogger.warning() << "InnerTube: video" << videoId
+                                      << "not playable:" << status << reason;
+                    onAllFailed(tr("Video not playable: %1")
+                                        .arg(reason.isEmpty() ? status : reason));
+                    return;
+                }
+                const QJsonArray adaptiveFormats =
+                        root.value(QStringLiteral("streamingData"))
+                                .toObject()
+                                .value(QStringLiteral("adaptiveFormats"))
+                                .toArray();
+                if (adaptiveFormats.isEmpty()) {
+                    kLogger.warning() << "InnerTube: no adaptiveFormats for" << videoId;
+                    onAllFailed(tr("InnerTube returned no adaptive formats"));
+                    return;
+                }
+                // Convert InnerTube adaptiveFormats → Piped-compatible audioStreams
+                // so we can reuse downloadAudioStream() directly. InnerTube embeds
+                // the codec inside the mimeType ("audio/mp4; codecs=\"mp4a.40.2\"");
+                // Piped exposes it as a dedicated "codec" field. Extract it here.
+                QJsonArray audioStreams;
+                for (const QJsonValue& v : adaptiveFormats) {
+                    const QJsonObject f = v.toObject();
+                    const QString mime =
+                            f.value(QStringLiteral("mimeType")).toString();
+                    if (!mime.startsWith(QStringLiteral("audio"))) {
+                        continue; // skip video-only tracks
+                    }
+                    // Skip cipher-encrypted streams (unexpected for Android client).
+                    const QString streamUrl =
+                            f.value(QStringLiteral("url")).toString();
+                    if (streamUrl.isEmpty()) {
+                        continue;
+                    }
+                    // Extract codec string from e.g. "audio/mp4; codecs=\"mp4a.40.2\""
+                    QString codec;
+                    const int cIdx = mime.indexOf(QStringLiteral("codecs=\""));
+                    if (cIdx >= 0) {
+                        const int start = cIdx + 8; // length of 'codecs="'
+                        const int end = mime.indexOf(QLatin1Char('"'), start);
+                        if (end > start) {
+                            codec = mime.mid(start, end - start);
+                        }
+                    }
+                    QJsonObject stream;
+                    stream.insert(QStringLiteral("url"), streamUrl);
+                    stream.insert(QStringLiteral("mimeType"), mime);
+                    stream.insert(QStringLiteral("codec"), codec);
+                    stream.insert(QStringLiteral("bitrate"),
+                            f.value(QStringLiteral("bitrate")).toInt());
+                    audioStreams.append(stream);
+                }
+                if (audioStreams.isEmpty()) {
+                    kLogger.warning()
+                            << "InnerTube: no audio-only streams for" << videoId;
+                    onAllFailed(tr("InnerTube returned no audio-only streams"));
+                    return;
+                }
+                kLogger.info() << "InnerTube: found" << audioStreams.size()
+                               << "audio streams for" << videoId;
+                downloadAudioStream(videoId, cacheDir, audioStreams, onAllFailed);
+            });
+}
+
+// =============================================================================
+// yt-dlp (binary fallback — desktop and Termux-on-Android)
 // =============================================================================
 
 void YouTubeService::runYtDlp(const QStringList& args,
@@ -867,15 +1011,8 @@ void YouTubeService::searchViaYtDlp(const QString& query, int cap) {
 }
 
 void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cacheDir) {
-    Q_UNUSED(videoId)
     const QString outTemplate =
             QDir(cacheDir).filePath(QStringLiteral("%(id)s.%(ext)s"));
-
-    // NOTE: On Android, downloadViaYtDlp is never called because locateYtDlp()
-    // returns "android-bundled" and downloadVideo() routes to
-    // downloadViaAndroidBundled() instead.  This function is kept for desktop
-    // platforms only.
-#if !defined(Q_OS_ANDROID)
     const bool isPythonInterpreter =
             m_ytDlpPath.endsWith(QStringLiteral("python"), Qt::CaseInsensitive) ||
             m_ytDlpPath.endsWith(QStringLiteral("python3"), Qt::CaseInsensitive);
@@ -951,7 +1088,6 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
                 kLogger.warning() << "yt-dlp download failed:" << err;
                 Q_EMIT downloadFailed(videoId, err);
             });
-#endif // !defined(Q_OS_ANDROID)
 }
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)

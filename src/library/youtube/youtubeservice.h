@@ -29,7 +29,7 @@ struct YouTubeVideoInfo {
 
 /// YouTube extractor + downloader.
 ///
-/// Uses two cooperating backends so the YouTube tab works out of the box
+/// Uses three cooperating backends so the YouTube tab works out of the box
 /// on every platform Mixxx ships on, with no external setup required:
 ///
 ///   1. **Piped HTTP** (primary, all platforms incl. Android). Piped is an
@@ -42,10 +42,18 @@ struct YouTubeVideoInfo {
 ///      Pure Qt over HTTPS — no native dependency, no bundled binary, no
 ///      JNI bridge.
 ///
-///   2. **Bundled yt-dlp** (fallback on all platforms). Desktop: ships the
-///      official self-contained PyInstaller binary. Android: bundles the
+///   2. **YouTube InnerTube API** (secondary, all platforms incl. Android).
+///      The same internal API used by yt-dlp and ytdlnis. We POST to
+///      `https://www.youtube.com/youtubei/v1/player` with an Android client
+///      context, which returns non-cipher adaptive stream URLs valid for ~6h.
+///      Pure Qt/HTTPS — no external dependencies, no third-party proxy.
+///      Used when all Piped instances are unreachable.
+///
+///   3. **Bundled yt-dlp** (last resort). Desktop: ships the official
+///      self-contained PyInstaller binary. Android: bundles the
 ///      youtubedl-android AAR (Python 3.11 runtime + yt-dlp) and calls it via
 ///      JNI — no external dependencies, no Termux, no system Python needed.
+///      Also works with Termux-installed yt-dlp on Android.
 class YouTubeService : public QObject {
     Q_OBJECT
   public:
@@ -78,9 +86,10 @@ class YouTubeService : public QObject {
     /// SponsorBlock API at sponsor.ajay.app.
     void fetchSponsorSegments(const QString& videoId);
 
-    /// Absolute path to the yt-dlp binary (desktop) or "android-bundled"
-    /// marker (Android, indicating the youtubedl-android JNI runtime).
-    /// Empty if no runtime was found (desktop without bundled yt-dlp only).
+    /// Absolute path to the yt-dlp binary (desktop/Termux), "android-bundled"
+    /// marker (Android with HAVE_YTDLP_ANDROID compiled in), or empty string
+    /// when no yt-dlp runtime is available. The InnerTube backend is used
+    /// regardless of this value; yt-dlp is only a last-resort fallback.
     QString ytDlpPath() const {
         return m_ytDlpPath;
     }
@@ -148,7 +157,16 @@ class YouTubeService : public QObject {
             const QJsonArray& audioStreams,
             const std::function<void(const QString&)>& onFailure);
 
-    // ----- yt-dlp (desktop fallback) -----
+    /// Try the YouTube InnerTube player API as a secondary download backend.
+    /// POSTs to /youtubei/v1/player with an Android client context, which
+    /// returns non-cipher stream URLs. Works on all platforms including Android.
+    /// Called when all Piped instances fail; invokes onAllFailed when it too
+    /// cannot produce a usable stream.
+    void downloadViaInnerTube(const QString& videoId,
+            const QString& cacheDir,
+            const std::function<void(const QString& lastError)>& onAllFailed);
+
+    // ----- yt-dlp (binary fallback — desktop and Termux-on-Android) -----
 
     /// Spawn yt-dlp with `args`; on completion call `onSuccess(stdout)` or
     /// `onFailure(message)`. `timeoutMs` is enforced via QTimer; processes
