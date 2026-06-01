@@ -2,8 +2,8 @@
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
         <name>DDJ-FLX10 Native Waveform</name>
-        <author>Marc Zischka</author>
-        <description>DDJ-FLX10 mapping v1.0.1 - Compatible Mixxx 2.3.6+ </description>
+        <author>Marc Zischka, Victor Pineda (Veezuhz)</author>
+        <description>DDJ-FLX10 mapping with native jog-screen waveform/beatgrid/art. Based on Marc Zischka's v1.0.1 (Mixxx 2.3.6+); native-screen and control additions by Victor Pineda (Veezuhz).</description>
     </info>
     <controller id="DDJ-FLX10">
         <scriptfiles>
@@ -1878,6 +1878,46 @@
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>PioneerDDJFLX10.wheelSeek</key>
+                <description>Jog Press+Seek CH1 (loop adjust / needle seek)</description>
+                <status>0xB0</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJFLX10.wheelSeek</key>
+                <description>Jog Press+Seek CH2 (loop adjust / needle seek)</description>
+                <status>0xB1</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>PioneerDDJFLX10.wheelSeek</key>
+                <description>Jog Press+Seek CH3 (loop adjust / needle seek)</description>
+                <status>0xB2</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>PioneerDDJFLX10.wheelSeek</key>
+                <description>Jog Press+Seek CH4 (loop adjust / needle seek)</description>
+                <status>0xB3</status>
+                <midino>0x1F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Skin]</group>
                 <key>show_samplers</key>
                 <description>Show samplers</description>
@@ -3282,7 +3322,7 @@
                 <key>PioneerDDJFLX10.beatFxOnOff</key>
                 <description>BeatFX ON/OFF toggle</description>
                 <status>0x94</status>
-                <midino>0x47</midino>
+                <midino>0x46</midino>
                 <options>
                     <script-binding/>
                 </options>

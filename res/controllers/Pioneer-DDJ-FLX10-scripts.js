@@ -86,6 +86,14 @@ var JOG_BEND_DIVISOR = 16;
 // Loop adjust step: samples moved per jog unit when in loop in/out adjust mode.
 // At 44.1 kHz, 100 samples ≈ 2.3 ms per minimum jog tick.
 var LOOP_ADJUST_STEP = 100;
+// Needle-seek step: samples the playhead moves per jog unit on the pressed jog
+// (CC 0x1F) when no loop-adjust mode is active. Tune for seek feel.
+// 106 engine samples/unit ≈ true 1:1 with a 33⅓ RPM record (1500 jog units =
+// 1 revolution = 1.8 s of audio, matching the scratch-mode vinyl calibration).
+var SEEK_STEP = 106;
+// Fast needle-seek step when SHIFT is held with the pressed jog
+// (shift + press + turn = CC 0x1F while shiftActive). Tune for fast-seek feel.
+var FAST_SEEK_STEP = 4000;
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Global variables
@@ -642,24 +650,50 @@ PioneerDDJFLX10.shutdown = function() {
 // Jog Wheel Management
 PioneerDDJFLX10._loopAdjustMode = {1: null, 2: null, 3: null, 4: null};
 
+// Nudge the active loop's in or out boundary in place (engine samples), without
+// moving the playhead. loop_start_position / loop_end_position are writable COs
+// that adjust the loop directly (Mixxx clamps to keep in < out). No-op if the
+// boundary isn't set (cur < 0).
+PioneerDDJFLX10._nudgeLoop = function(group, deck, newValue) {
+    var ctrl = PioneerDDJFLX10._loopAdjustMode[deck] === "in"
+        ? "loop_start_position"
+        : "loop_end_position";
+    var cur = engine.getValue(group, ctrl);
+    if (cur >= 0) {
+        engine.setValue(group, ctrl, cur + newValue * LOOP_ADJUST_STEP);
+    }
+};
+
 PioneerDDJFLX10.wheelTurn = function(channel, control, value, status, group) {
     var newValue = value - 64;
     var deckNumber = PioneerDDJFLX10._getDeckFromGroup(group);
-    if (engine.isScratching(deckNumber)) {
+    // Loop-adjust takes priority so a touched platter nudges the boundary
+    // instead of scratching/seeking.
+    if (PioneerDDJFLX10._loopAdjustMode[deckNumber]) {
+        PioneerDDJFLX10._nudgeLoop(group, deckNumber, newValue);
+    } else if (engine.isScratching(deckNumber)) {
         engine.scratchTick(deckNumber, newValue);
-    } else if (PioneerDDJFLX10._loopAdjustMode[deckNumber]) {
-        var mode = PioneerDDJFLX10._loopAdjustMode[deckNumber];
-        var ctrl = mode === "in" ? "loop_in" : "loop_out";
-        var total = engine.getValue(group, "track_samples");
-        if (total > 0) {
-            var pos = engine.getValue(group, "playposition") * total;
-            pos = Math.max(0, Math.min(total, pos + newValue * LOOP_ADJUST_STEP));
-            engine.setValue(group, "playposition", pos / total);
-            engine.setValue(group, ctrl, 1);
-            engine.setValue(group, ctrl, 0);
-        }
     } else {
         engine.setValue(group, 'jog', PioneerDDJFLX10.sensitivityMinimizer(newValue, JOG_BEND_DIVISOR));
+    }
+};
+
+// Pressed jog (CC 0x1F) — "press and seek". In loop-adjust mode it nudges the
+// selected in/out boundary; otherwise it needle-seeks the playhead.
+PioneerDDJFLX10.wheelSeek = function(channel, control, value, status, group) {
+    var newValue = value - 64;
+    var deck = PioneerDDJFLX10._getDeckFromGroup(group);
+    if (PioneerDDJFLX10._loopAdjustMode[deck]) {
+        PioneerDDJFLX10._nudgeLoop(group, deck, newValue);
+        return;
+    }
+    // SHIFT held = fast seek (shift + press + turn); otherwise normal seek.
+    var step = PioneerDDJFLX10.shiftActive ? FAST_SEEK_STEP : SEEK_STEP;
+    var total = engine.getValue(group, "track_samples");
+    if (total > 0) {
+        var pos = engine.getValue(group, "playposition") * total + newValue * step;
+        engine.setValue(group, "playposition",
+            Math.max(0, Math.min(total, pos)) / total);
     }
 };
 
@@ -675,6 +709,10 @@ PioneerDDJFLX10.LedVuMeterCH4 = function (value) { PioneerDDJFLX10._sendVu(0xB3,
 
 PioneerDDJFLX10.wheelTouch = function(channel, control, value, status, group) {
     var deckNumber = PioneerDDJFLX10._getDeckFromGroup(group);
+    // While adjusting a loop boundary, don't scratch — keep the loop playing.
+    if (PioneerDDJFLX10._loopAdjustMode[deckNumber]) {
+        return;
+    }
     if (value === 0x7F) {
         engine.scratchEnable(deckNumber, SCRATCH_INTERVALS_PER_REV, 33+1/3, 1.0/8, (1.0/8)/32);
     } else {
@@ -1405,40 +1443,22 @@ PioneerDDJFLX10.syncKeyHandler = function(channel, control, value, status, group
 // BeatFX ON/OFF — toggles the 3 effect slots on/off.
 // SHIFT + ON/OFF triggers the effect index scan (prints to Log tab).
 PioneerDDJFLX10.beatFxOnOff = function(channel, control, value, status, group) {
-    if (value === 0) return;
+    // The FLX10 BEAT FX button is momentary: it sends value 127 on press and
+    // value 0 on release (both on status 0x94). Drive the effect directly from
+    // that value — hold = effect on, release = off. A direct set (not a toggle)
+    // means a missed press/release can never leave the state inverted.
+    var on = value > 0;
+    // Shift + press runs the effect scanner (diagnostic); ignore its release.
     if (PioneerDDJFLX10.shiftActive) {
-        PioneerDDJFLX10._beatFxScanStart();
+        if (on) { PioneerDDJFLX10._beatFxScanStart(); }
         return;
     }
-    if (PioneerDDJFLX10._beatFxFadeTimer) {
-        engine.stopTimer(PioneerDDJFLX10._beatFxFadeTimer);
-        PioneerDDJFLX10._beatFxFadeTimer = 0;
-    }
-    PioneerDDJFLX10._beatFxActive = !PioneerDDJFLX10._beatFxActive;
-    var slot;
-    if (PioneerDDJFLX10._beatFxActive) {
-        for (slot = 1; slot <= 3; slot++) {
-            engine.setValue("[EffectRack1_EffectUnit1_Effect" + slot + "]", "enabled", 1);
+    PioneerDDJFLX10._beatFxActive = on;
+    for (var slot = 1; slot <= 3; slot++) {
+        engine.setValue("[EffectRack1_EffectUnit1_Effect" + slot + "]", "enabled", on ? 1 : 0);
+        if (on) {
             engine.setValue("[EffectRack1_EffectUnit1_Effect" + slot + "]", "mix", 1.0);
         }
-    } else {
-        // Fade mix to 0 over 750 ms (15 steps × 50 ms) so echo tails ring out naturally.
-        var fadeStep = 0;
-        var FADE_STEPS = 15;
-        PioneerDDJFLX10._beatFxFadeTimer = engine.beginTimer(50, function() {
-            fadeStep++;
-            var ratio = Math.max(0, 1.0 - fadeStep / FADE_STEPS);
-            for (var s = 1; s <= 3; s++) {
-                engine.setValue("[EffectRack1_EffectUnit1_Effect" + s + "]", "mix", ratio);
-            }
-            if (fadeStep >= FADE_STEPS) {
-                for (var s2 = 1; s2 <= 3; s2++) {
-                    engine.setValue("[EffectRack1_EffectUnit1_Effect" + s2 + "]", "enabled", 0);
-                }
-                engine.stopTimer(PioneerDDJFLX10._beatFxFadeTimer);
-                PioneerDDJFLX10._beatFxFadeTimer = 0;
-            }
-        });
     }
 };
 

@@ -2047,6 +2047,13 @@ PioneerDDJFLX10Screen._sendBeatGrid = function(deck, durationSec) {
 PioneerDDJFLX10Screen._NATIVE_WAVEFORM = true;
 PioneerDDJFLX10Screen._wfPollTimer = {1: 0, 2: 0, 3: 0, 4: 0};
 
+// Block play until the track is analysed, so you never perform on a blank jog
+// screen. Pressing play on an un-analysed deck "arms" it; it auto-starts the
+// instant the waveform lands. Set false to leave play untouched.
+PioneerDDJFLX10Screen._BLOCK_PLAY_UNTIL_ANALYZED = true;
+PioneerDDJFLX10Screen._wfReady   = {1: false, 2: false, 3: false, 4: false};
+PioneerDDJFLX10Screen._playArmed = {1: false, 2: false, 3: false, 4: false};
+
 PioneerDDJFLX10Screen._onTrackLoad = function(deck) {
     if (!this._NATIVE_WAVEFORM) {
         return;   // external daemon handles the xx30/35/36 upload
@@ -2054,14 +2061,26 @@ PioneerDDJFLX10Screen._onTrackLoad = function(deck) {
     var group = "[Channel" + deck + "]";
     var duration = engine.getValue(group, "duration");
     if (!(duration > 0)) { return; }
-    // The analysed waveform lands in Track memory a moment after load, so poll
-    // engine.getWaveformSummary() until it's ready, then do the upload.
+    // Fresh load: not analysed yet -> hold the play gate and re-pull until the
+    // waveform lands. (The old 6 s cap was why an un-analysed track only showed
+    // its wave on the 2nd, already-cached load.)
+    this._wfReady[deck] = false;
+    this._playArmed[deck] = false;   // a new load clears any pending armed play
     if (this._wfPollTimer[deck]) {
         engine.stopTimer(this._wfPollTimer[deck]);
         this._wfPollTimer[deck] = 0;
     }
     var self = this;
     var tries = 0;
+    var markReady = function() {
+        self._wfReady[deck] = true;
+        if (self._playArmed[deck]) {       // play was pressed while analysing
+            self._playArmed[deck] = false;
+            engine.setValue("[Channel" + deck + "]", "play", 1);
+        }
+    };
+    // Poll well past first-analysis time (a long track on slow hardware can take
+    // far longer than 6 s). Replaced on the next track load; ~3 min safety cap.
     this._wfPollTimer[deck] = engine.beginTimer(150, function() {
         tries++;
         var entries = self._generateEntries(deck, duration);
@@ -2069,9 +2088,11 @@ PioneerDDJFLX10Screen._onTrackLoad = function(deck) {
             engine.stopTimer(self._wfPollTimer[deck]);
             self._wfPollTimer[deck] = 0;
             self._uploadWaveform(deck, duration, entries);
-        } else if (tries >= 40) {   // ~6 s
+            markReady();
+        } else if (tries >= 1200) {   // ~3 min
             engine.stopTimer(self._wfPollTimer[deck]);
             self._wfPollTimer[deck] = 0;
+            markReady();   // release the gate even if analysis never finished
             console.log("FLX10 screen: waveform not ready for deck " + deck +
                         " after " + tries + " polls");
         }
@@ -2136,6 +2157,20 @@ PioneerDDJFLX10Screen.init = function(id) {
                         var bpm = engine.getValue("[Channel" + deck + "]", "bpm");
                         if (bpm > 0) { PioneerDDJFLX10Screen._deckBpm[deck] = bpm; }
                         PioneerDDJFLX10Screen._onTrackLoad(deck);
+                    }
+                }
+            );
+            // Play gate: hold play until the deck is analysed. Pressing play
+            // while analysing arms the deck; _onTrackLoad auto-starts it when
+            // the waveform lands.
+            engine.makeConnection(
+                "[Channel" + deck + "]",
+                "play",
+                function(value) {
+                    if (!PioneerDDJFLX10Screen._BLOCK_PLAY_UNTIL_ANALYZED) { return; }
+                    if (value > 0 && !PioneerDDJFLX10Screen._wfReady[deck]) {
+                        PioneerDDJFLX10Screen._playArmed[deck] = true;
+                        engine.setValue("[Channel" + deck + "]", "play", 0);
                     }
                 }
             );
