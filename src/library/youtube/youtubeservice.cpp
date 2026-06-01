@@ -795,8 +795,8 @@ void YouTubeService::downloadViaInnerTube(
             QStringLiteral("com.google.android.youtube/%1 (Linux; U; Android 11) gzip")
                     .arg(kClientVersion)
                     .toUtf8());
-    req.setRawHeader("X-YouTube-Client-Name", QByteArray(kClientNameId));
-    req.setRawHeader("X-YouTube-Client-Version", QByteArray(kClientVersion));
+    req.setRawHeader("X-YouTube-Client-Name", QByteArray(kClientNameId.latin1()));
+    req.setRawHeader("X-YouTube-Client-Version", QByteArray(kClientVersion.latin1()));
     req.setTransferTimeout(kPipedHttpTimeoutMs);
 
     QNetworkReply* reply = m_pNam->post(
