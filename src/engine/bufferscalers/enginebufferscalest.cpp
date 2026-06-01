@@ -103,8 +103,7 @@ void EngineBufferScaleST::onSignalChanged() {
     // SoundTouch::setSampleRate and setChannels can trigger internal
     // re-allocations. We should only call them if the signal format has
     // actually changed.
-    if (m_pSoundTouch->getInputSampleRate() != getOutputSignal().getSampleRate() ||
-            m_pSoundTouch->getInputOutputChannels() != getOutputSignal().getChannelCount()) {
+    if (m_pSoundTouch->numChannels() != getOutputSignal().getChannelCount()) {
         m_pSoundTouch->setSampleRate(getOutputSignal().getSampleRate());
         m_pSoundTouch->setChannels(getOutputSignal().getChannelCount());
 

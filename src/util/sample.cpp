@@ -128,6 +128,67 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
 }
 
 // static
+SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
+        CSAMPLE* pBuffer,
+        SINT numSamples,
+        CSAMPLE_GAIN mainGain,
+        CSAMPLE_GAIN mainGainOld,
+        CSAMPLE_GAIN balL,
+        CSAMPLE_GAIN balR,
+        CSAMPLE_GAIN balLOld,
+        CSAMPLE_GAIN balROld,
+        CSAMPLE* pfAbsLSum,
+        CSAMPLE* pfAbsRSum,
+        bool monoMixdown) {
+    const float fNumFrames = static_cast<float>(numSamples / 2);
+    const CSAMPLE_GAIN mInc = (mainGain - mainGainOld) / fNumFrames;
+    const CSAMPLE_GAIN blInc = (balL - balLOld) / fNumFrames;
+    const CSAMPLE_GAIN brInc = (balR - balROld) / fNumFrames;
+
+    CSAMPLE sumAbsL = 0.0f;
+    CSAMPLE sumAbsR = 0.0f;
+    float clippedL = 0.0f;
+    float clippedR = 0.0f;
+
+    // note: LOOP VECTORIZED.
+    for (int i = 0; i < numSamples / 2; ++i) {
+        const float f = static_cast<float>(i + 1);
+        const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
+        const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
+        const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
+
+        CSAMPLE l = pBuffer[i * 2] * lg;
+        CSAMPLE r = pBuffer[i * 2 + 1] * rg;
+
+        const CSAMPLE absL = std::abs(l);
+        const CSAMPLE absR = std::abs(r);
+        sumAbsL += absL;
+        sumAbsR += absR;
+        clippedL += (absL > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+        clippedR += (absR > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+
+        if (monoMixdown) {
+            l = r = (l + r) * 0.5f;
+        }
+
+        pBuffer[i * 2] = l;
+        pBuffer[i * 2 + 1] = r;
+    }
+
+    *pfAbsLSum = sumAbsL;
+    *pfAbsRSum = sumAbsR;
+
+    CLIP_STATUS clipping = NO_CLIPPING;
+    if (clippedL > 0.0f) {
+        clipping |= CLIPPING_LEFT;
+    }
+    if (clippedR > 0.0f) {
+        clipping |= CLIPPING_RIGHT;
+    }
+    return clipping;
+}
+
+// static
 void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
         CSAMPLE_GAIN new_gain, SINT numSamples) {
     if (old_gain == CSAMPLE_GAIN_ONE && new_gain == CSAMPLE_GAIN_ONE) {

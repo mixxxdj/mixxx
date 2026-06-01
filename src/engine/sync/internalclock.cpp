@@ -229,7 +229,7 @@ void InternalClock::onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size
         m_dBeatLength = 21338;
     }
 
-    m_dClockPosition = fmod(m_dClockPosition, m_dBeatLength);
+    m_dClockPosition = std::fmod(m_dClockPosition, m_dBeatLength);
     double beatDistance = getBeatDistance();
     m_pClockBeatDistance->set(beatDistance);
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);

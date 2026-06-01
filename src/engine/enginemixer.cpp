@@ -542,11 +542,11 @@ void EngineMixer::process(const std::size_t bufferSize) {
         bool rightIn = !m_activeBusChannels[EngineChannel::RIGHT].isEmpty();
 
         if (leftIn && !centerIn && !rightIn) {
-            m_main.copy(m_outputBusBuffers[EngineChannel::LEFT], bufferSize);
+            m_main.copy(m_outputBusBuffers[EngineChannel::LEFT], static_cast<SINT>(bufferSize));
         } else if (!leftIn && centerIn && !rightIn) {
-            m_main.copy(m_outputBusBuffers[EngineChannel::CENTER], bufferSize);
+            m_main.copy(m_outputBusBuffers[EngineChannel::CENTER], static_cast<SINT>(bufferSize));
         } else if (!leftIn && !centerIn && rightIn) {
-            m_main.copy(m_outputBusBuffers[EngineChannel::RIGHT], bufferSize);
+            m_main.copy(m_outputBusBuffers[EngineChannel::RIGHT], static_cast<SINT>(bufferSize));
         } else if (leftIn && centerIn && !rightIn) {
             SampleUtil::copy2WithGain(m_main.data(),
                     m_outputBusBuffers[EngineChannel::LEFT].data(),
@@ -580,36 +580,26 @@ void EngineMixer::process(const std::size_t bufferSize) {
         }
 
         MicMonitorMode configuredMicMonitorMode = static_cast<MicMonitorMode>(
-            static_cast<int>(m_pMicMonitorMode->get()));
+                static_cast<int>(m_pMicMonitorMode->get()));
+        const CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
+        const CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
 
         // Process main, booth, and record/broadcast buffers according to the
         // MicMonitorMode configured in DlgPrefSound
-        // TODO(Be): make SampleUtil ramping functions update the old gain variable
         if (configuredMicMonitorMode == MicMonitorMode::Main) {
-            // Process main channel effects
-            // TODO(Be): Move this after mixing in talkover. To apply main effects
-            // to both the main and booth in that case will require refactoring
-            // the effects system to be able to process the same effects on multiple
-            // buffers within the same callback.
             applyMainEffects(bufferSize);
 
-            // Apply talkover ducking gain after applying effects in order to
-            // avoid ducking neutralization by some effects (e.g. compressor or
-            // AGC)
-            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
-            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
+            SampleUtil::applyRampingGain(
+                    m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
             m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, bufferSize);
             }
 
-            // Copy main mix to booth output with booth gain before mixing
-            // talkover with main mix
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
-                SampleUtil::copyWithRampingGain(
-                        m_booth.data(),
+                SampleUtil::copyWithRampingGain(m_booth.data(),
                         m_main.data(),
                         m_boothGainOld,
                         boothGain,
@@ -617,50 +607,32 @@ void EngineMixer::process(const std::size_t bufferSize) {
                 m_boothGainOld = boothGain;
             }
 
-            // Mix talkover into main mix
             if (m_numMicsConfigured > 0) {
                 SampleUtil::add(m_main.data(), m_talkover.data(), bufferSize);
             }
 
-            // Apply main gain
-            CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
-            SampleUtil::applyRampingGain(m_main.data(), m_mainGainOld, mainGain, bufferSize);
-            m_mainGainOld = mainGain;
-
-            // Record/broadcast signal is the same as the main output
             if (sidechainMixRequired()) {
-                m_sidechainMix.copy(m_main, bufferSize);
+                m_sidechainMix.copyWithRampingGain(
+                        m_main, m_mainGainOld, mainGain, static_cast<SINT>(bufferSize));
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
-            // Process main channel effects
-            // TODO(Be): Move this after mixing in talkover. For the main output only
-            // MicMonitorMode above, that will require refactoring the effects system
-            // to be able to process the same effects on different buffers
-            // within the same callback. For consistency between the MicMonitorModes,
-            // process main effects here before mixing in talkover.
             applyMainEffects(bufferSize);
 
-            // Apply talkover ducking gain after applying effects in order to
-            // avoid ducking neutralization by some effects (e.g. compressor or
-            // AGC)
-            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
-            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
+            SampleUtil::applyRampingGain(
+                    m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
             m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, bufferSize);
             }
 
-            // Mix talkover with main
             if (m_numMicsConfigured > 0) {
                 SampleUtil::add(m_main.data(), m_talkover.data(), bufferSize);
             }
 
-            // Copy main mix (with talkover mixed in) to booth output with booth gain
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
-                SampleUtil::copyWithRampingGain(
-                        m_booth.data(),
+                SampleUtil::copyWithRampingGain(m_booth.data(),
                         m_main.data(),
                         m_boothGainOld,
                         boothGain,
@@ -668,30 +640,14 @@ void EngineMixer::process(const std::size_t bufferSize) {
                 m_boothGainOld = boothGain;
             }
 
-            // Apply main gain
-            CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
-            SampleUtil::applyRampingGain(
-                    m_main.data(),
-                    m_mainGainOld,
-                    mainGain,
-                    bufferSize);
-            m_mainGainOld = mainGain;
-
-            // Record/broadcast signal is the same as the main output
             if (sidechainMixRequired()) {
-                m_sidechainMix.copy(m_main, bufferSize);
+                m_sidechainMix.copyWithRampingGain(
+                        m_main, m_mainGainOld, mainGain, static_cast<SINT>(bufferSize));
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DirectMonitor) {
-            // Skip mixing talkover with the main and booth outputs
-            // if using direct monitoring because it is being mixed in hardware
-            // without the latency of sending the signal into Mixxx for processing.
-            // However, include the talkover mix in the record/broadcast signal.
-
-            // Copy main mix to booth output with booth gain
             if (boothEnabled) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
-                SampleUtil::copyWithRampingGain(
-                        m_booth.data(),
+                SampleUtil::copyWithRampingGain(m_booth.data(),
                         m_main.data(),
                         m_boothGainOld,
                         boothGain,
@@ -699,72 +655,34 @@ void EngineMixer::process(const std::size_t bufferSize) {
                 m_boothGainOld = boothGain;
             }
 
-            // Process main channel effects
-            // NOTE(Be): This should occur before mixing in talkover for the
-            // record/broadcast signal so the record/broadcast signal is the same
-            // as what is heard on the main & booth outputs.
             applyMainEffects(bufferSize);
 
-            // Apply talkover ducking gain after applying effects in order to
-            // avoid ducking neutralization by some effects (e.g. compressor or
-            // AGC)
-            CSAMPLE_GAIN duckingGain = m_pTalkoverDucking->getGain(iFrames);
-            SampleUtil::applyRampingGain(m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
+            SampleUtil::applyRampingGain(
+                    m_main.data(), m_duckingGainOld, duckingGain, bufferSize);
             m_duckingGainOld = duckingGain;
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, bufferSize);
             }
 
-            // Apply main gain
-            CSAMPLE_GAIN mainGain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
-            SampleUtil::applyRampingGain(
-                    m_main.data(),
-                    m_mainGainOld,
-                    mainGain,
-                    bufferSize);
-            m_mainGainOld = mainGain;
             if (sidechainMixRequired()) {
-                m_sidechainMix.copy(m_main, bufferSize);
+                m_sidechainMix.copyWithRampingGain(
+                        m_main, m_mainGainOld, mainGain, static_cast<SINT>(bufferSize));
 
                 if (m_numMicsConfigured > 0) {
-                    // The talkover signal Mixxx receives is delayed by the round trip latency.
-                    // There is an output latency between the time Mixxx processes the audio
-                    // and the user hears it. So if the microphone user plays on beat with
-                    // what they hear, they will be playing out of sync with the engine's
-                    // processing by the output latency. Additionally, Mixxx gets input signals
-                    // delayed by the input latency. By the time Mixxx receives the input signal,
-                    // a full round trip through the signal chain has elapsed since Mixxx
-                    // processed the output signal.
-                    // Although Mixxx receives the input signal delayed, the user hears it mixed
-                    // in hardware with the main & booth outputs without that
-                    // latency, so to record/broadcast the same signal that is heard
-                    // on the main & booth outputs, the main mix must be delayed before
-                    // mixing the talkover signal for the record/broadcast mix.
-                    // If not using microphone inputs or recording/broadcasting from
-                    // a sound card input, skip unnecessary processing here.
-
-                    // Copy the main mix to a separate buffer before delaying it
-                    // to avoid delaying the main output.
-                    m_pLatencyCompensationDelay->process(m_sidechainMix.data(), bufferSize);
-                    SampleUtil::add(m_sidechainMix.data(), m_talkover.data(), bufferSize);
+                    m_pLatencyCompensationDelay->process(
+                            m_sidechainMix.data(), bufferSize);
+                    SampleUtil::add(m_sidechainMix.data(),
+                            m_talkover.data(),
+                            bufferSize);
                 }
             }
         }
 
-        // Submit buffer to the side chain to do CPU intensive non-realtime
-        // tasks like recording. The SoundDeviceNetwork, responsible for
-        // passing samples to the network reads directly from m_pSidechainMix,
-        // registering it with SoundDevice::addOutput().
-        // Note: In case the broadcast/recording input is configured,
-        // EngineSideChain::receiveBuffer has copied the input buffer to m_pSidechainMix
-        // via before (called by SoundManager::pushInputBuffers())
         if (m_pEngineSideChain) {
             m_pEngineSideChain->writeSamples(m_sidechainMix.data(), iFrames);
         }
 
-        // Process effects that apply to main hardware output only but not
-        // record/broadcast signal
         if (m_pEngineEffectsManager) {
             GroupFeatureState mainFeatures;
             mainFeatures.gain = m_pMainGain->get();
@@ -777,7 +695,6 @@ void EngineMixer::process(const std::size_t bufferSize) {
                     mainFeatures);
         }
 
-        // Balance values
         CSAMPLE balright = 1.0f;
         CSAMPLE balleft = 1.0f;
         const auto bal = static_cast<CSAMPLE_GAIN>(m_pBalance->get());
@@ -787,26 +704,29 @@ void EngineMixer::process(const std::size_t bufferSize) {
             balright += bal;
         }
 
-        // Perform balancing on main out
-        SampleUtil::applyRampingAlternatingGain(m_main.data(),
+        CSAMPLE fVolSumL = 0.0f;
+        CSAMPLE fVolSumR = 0.0f;
+        const SampleUtil::CLIP_STATUS clipping = SampleUtil::finalizeMainMix(
+                m_main.data(),
+                bufferSize,
+                mainGain,
+                m_mainGainOld,
                 balleft,
                 balright,
                 m_balleftOld,
                 m_balrightOld,
-                bufferSize);
+                &fVolSumL,
+                &fVolSumR,
+                m_pMainMonoMixdown->toBool());
 
+        m_mainGainOld = mainGain;
         m_balleftOld = balleft;
         m_balrightOld = balright;
 
-        // Update VU meter (it does not return anything). Needs to be here so that
-        // main balance and talkover is reflected in the VU meter.
         if (m_pVumeter != nullptr) {
-            m_pVumeter->process(m_main.data(), bufferSize);
+            m_pVumeter->processFused(
+                    fVolSumL, fVolSumR, clipping, m_sampleRate, bufferSize);
         }
-    }
-
-    if (m_pMainMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_main.data(), bufferSize);
     }
 
     if (mainEnabled) {

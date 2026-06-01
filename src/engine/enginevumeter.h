@@ -3,6 +3,7 @@
 #include "control/controlobject.h"
 #include "control/pollingcontrolproxy.h"
 #include "engine/engineobject.h"
+#include "util/sample.h"
 
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
@@ -12,6 +13,14 @@ class EngineVuMeter : public EngineObject {
             bool createLegacyAliases = true);
 
     virtual void process(CSAMPLE* pInOut, const std::size_t bufferSize);
+
+    // Optimized version for fused mixer kernel
+    void processFused(
+            CSAMPLE fVolSumL,
+            CSAMPLE fVolSumR,
+            SampleUtil::CLIP_STATUS clipped,
+            mixxx::audio::SampleRate sampleRate,
+            std::size_t bufferSize);
 
     void reset();
 
