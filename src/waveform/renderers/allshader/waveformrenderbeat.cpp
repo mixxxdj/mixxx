@@ -1,12 +1,16 @@
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 
 #include <QDomNode>
+#include <QVector4D>
+
+#include <cmath>
 
 #include "moc_waveformrenderbeat.cpp"
 #include "rendergraph/geometry.h"
-#include "rendergraph/material/unicolormaterial.h"
-#include "rendergraph/vertexupdaters/vertexupdater.h"
+#include "rendergraph/material/rgbamaterial.h"
+#include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "skin/legacy/skincontext.h"
+#include "track/beats.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
@@ -19,13 +23,21 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
-    initForRectangles<UniColorMaterial>(0);
+    initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
     m_color = QColor(skinContext.selectString(node, QStringLiteral("BeatColor")));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
+
+    // Downbeat (bar-start) line. Defaults to a bright rekordbox-style red when
+    // the skin doesn't specify a <DownbeatColor>.
+    m_downbeatColor = QColor(skinContext.selectString(node, QStringLiteral("DownbeatColor")));
+    if (!m_downbeatColor.isValid()) {
+        m_downbeatColor = QColor(255, 0, 0);
+    }
+    m_downbeatColor = WSkinColor::getCorrectColor(m_downbeatColor).toRgb();
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
@@ -62,6 +74,7 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
     m_color.setAlphaF(alpha / 100.0f);
+    m_downbeatColor.setAlphaF(alpha / 100.0f);
 #endif
 
     if (!m_color.alpha()) {
@@ -108,7 +121,22 @@ bool WaveformRenderBeat::preprocessInner() {
     const int reserved = numBeatsInRange * numVerticesPerLine;
     geometry().allocate(reserved);
 
-    VertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::Point2D>()};
+    // Downbeat anchor: the grid's first marker is on a downbeat; bars are 4
+    // beats, so every 4th beat from the anchor is a bar start (drawn red).
+    const auto firstMarker = trackBeats->cfirstmarker();
+    const double firstMarkerFrames = (*firstMarker).value();
+    const double beatLengthFrames = firstMarker.beatLengthFrames();
+
+    const QVector4D beatColor{static_cast<float>(m_color.redF()),
+            static_cast<float>(m_color.greenF()),
+            static_cast<float>(m_color.blueF()),
+            static_cast<float>(m_color.alphaF())};
+    const QVector4D downbeatColor{static_cast<float>(m_downbeatColor.redF()),
+            static_cast<float>(m_downbeatColor.greenF()),
+            static_cast<float>(m_downbeatColor.blueF()),
+            static_cast<float>(m_downbeatColor.alphaF())};
+
+    RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -123,14 +151,21 @@ bool WaveformRenderBeat::preprocessInner() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
+        bool isDownbeat = false;
+        if (beatLengthFrames > 0.0) {
+            const long long idx = std::llround(
+                    (it->value() - firstMarkerFrames) / beatLengthFrames);
+            isDownbeat = (((idx % 4) + 4) % 4) == 0;
+        }
+
         vertexUpdater.addRectangle({x1, 0.f},
-                {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth});
+                {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth},
+                isDownbeat ? downbeatColor : beatColor);
     }
     markDirtyGeometry();
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
 
-    material().setUniform(1, m_color);
     markDirtyMaterial();
 
     return true;
