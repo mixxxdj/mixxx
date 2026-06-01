@@ -154,9 +154,9 @@ SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
             const float f = static_cast<float>(i + 1);
-            const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
-            const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
-            const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
+            // Help compiler use FMA: lg = (mOld + mInc*f) * (bOld + bInc*f)
+            const CSAMPLE_GAIN lg = (mainGainOld + mInc * f) * (balLOld + blInc * f);
+            const CSAMPLE_GAIN rg = (mainGainOld + mInc * f) * (balROld + brInc * f);
 
             CSAMPLE l = pBuffer[i * 2] * lg;
             CSAMPLE r = pBuffer[i * 2 + 1] * rg;
@@ -177,9 +177,8 @@ SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
             const float f = static_cast<float>(i + 1);
-            const CSAMPLE_GAIN mg = mainGainOld + mInc * f;
-            const CSAMPLE_GAIN lg = mg * (balLOld + blInc * f);
-            const CSAMPLE_GAIN rg = mg * (balROld + brInc * f);
+            const CSAMPLE_GAIN lg = (mainGainOld + mInc * f) * (balLOld + blInc * f);
+            const CSAMPLE_GAIN rg = (mainGainOld + mInc * f) * (balROld + brInc * f);
 
             CSAMPLE l = pBuffer[i * 2] * lg;
             CSAMPLE r = pBuffer[i * 2 + 1] * rg;

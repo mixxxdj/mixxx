@@ -8,7 +8,7 @@ namespace {
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 constexpr unsigned int kVuUpdateRate = 30; // in Hz (1/s), fits to display frame rate
-constexpr int kPeakDuration = 500;         // in ms
+constexpr float kPeakHoldSeconds = 0.5f;   // in s
 
 // Smoothing Factors
 // Must be from 0-1 the lower the factor, the more smoothing that is applied
@@ -99,7 +99,7 @@ void EngineVuMeter::processFused(
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0f);
         m_peakDurationL = static_cast<int>(
-                std::round(0.5f * static_cast<float>(sampleRate) /
+                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) /
                         (static_cast<float>(bufferSize) / 2.0f)));
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0f);
@@ -110,7 +110,7 @@ void EngineVuMeter::processFused(
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0f);
         m_peakDurationR = static_cast<int>(
-                std::round(0.5f * static_cast<float>(sampleRate) /
+                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) /
                         (static_cast<float>(bufferSize) / 2.0f)));
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0f);
