@@ -825,7 +825,7 @@ void YouTubeService::downloadViaInnerTube(
                     kLogger.warning() << "InnerTube: video" << videoId
                                       << "not playable:" << status << reason;
                     onAllFailed(tr("Video not playable: %1")
-                                        .arg(reason.isEmpty() ? status : reason));
+                                    .arg(reason.isEmpty() ? status : reason));
                     return;
                 }
                 const QJsonArray adaptiveFormats =
