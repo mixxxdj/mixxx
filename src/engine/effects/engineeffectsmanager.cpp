@@ -32,9 +32,10 @@ void EngineEffectsManager::onCallbackStart() {
         case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
         case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL: {
             bool chainExists = false;
-            for (const auto& chains : std::as_const(m_chainsByStage)) {
+            for (const auto& chains : m_chainsByStage) {
                 if (chains.contains(request->pTargetChain)) {
                     chainExists = true;
+                    break;
                 }
             }
 
@@ -174,7 +175,7 @@ void EngineEffectsManager::processInner(
         CSAMPLE_GAIN newGain,
         bool fadeout,
         bool mix) {
-    const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
+    const QList<EngineEffectChain*>& chains = m_chainsByStage[static_cast<size_t>(stage)];
 
     if (pIn == pOut) {
         // Gain and effects are applied to the buffer in place,
@@ -254,7 +255,7 @@ void EngineEffectsManager::processInner(
 
 bool EngineEffectsManager::addEffectChain(EngineEffectChain* pChain,
         SignalProcessingStage stage) {
-    QList<EngineEffectChain*>& chains = m_chainsByStage[stage];
+    QList<EngineEffectChain*>& chains = m_chainsByStage[static_cast<size_t>(stage)];
     VERIFY_OR_DEBUG_ASSERT(!chains.contains(pChain)) {
         return false;
     }
@@ -266,7 +267,7 @@ bool EngineEffectsManager::addEffectChain(EngineEffectChain* pChain,
 
 bool EngineEffectsManager::removeEffectChain(EngineEffectChain* pChain,
         SignalProcessingStage stage) {
-    QList<EngineEffectChain*>& chains = m_chainsByStage[stage];
+    QList<EngineEffectChain*>& chains = m_chainsByStage[static_cast<size_t>(stage)];
     VERIFY_OR_DEBUG_ASSERT(chains.contains(pChain)) {
         return false;
     }

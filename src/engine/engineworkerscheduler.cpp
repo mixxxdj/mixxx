@@ -59,7 +59,7 @@ void EngineWorkerScheduler::run() {
         Event::end(tag);
         {
             const auto lock = lockMutex(&m_mutex);
-            if (!m_bQuit) {
+            while (!m_bQuit && !m_bWakeScheduler.load()) {
                 // Wait for next runWorkers() call
                 m_waitCondition.wait(&m_mutex); // unlock mutex and wait
             }

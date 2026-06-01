@@ -150,16 +150,24 @@ SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
     float clippedL = 0.0f;
     float clippedR = 0.0f;
 
+    CSAMPLE_GAIN lg = (mainGainOld + mInc) * (balLOld + blInc);
+    CSAMPLE_GAIN dlg = mainGainOld * blInc + balLOld * mInc + 3.0f * mInc * blInc;
+    const CSAMPLE_GAIN ddlg = 2.0f * mInc * blInc;
+
+    CSAMPLE_GAIN rg = (mainGainOld + mInc) * (balROld + brInc);
+    CSAMPLE_GAIN drg = mainGainOld * brInc + balROld * mInc + 3.0f * mInc * brInc;
+    const CSAMPLE_GAIN ddrg = 2.0f * mInc * brInc;
+
     if (monoMixdown) {
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            const float f = static_cast<float>(i + 1);
-            // Help compiler use FMA: lg = (mOld + mInc*f) * (bOld + bInc*f)
-            const CSAMPLE_GAIN lg = (mainGainOld + mInc * f) * (balLOld + blInc * f);
-            const CSAMPLE_GAIN rg = (mainGainOld + mInc * f) * (balROld + brInc * f);
-
             CSAMPLE l = pBuffer[i * 2] * lg;
             CSAMPLE r = pBuffer[i * 2 + 1] * rg;
+
+            lg += dlg;
+            dlg += ddlg;
+            rg += drg;
+            drg += ddrg;
 
             const CSAMPLE absL = std::abs(l);
             const CSAMPLE absR = std::abs(r);
@@ -176,12 +184,13 @@ SampleUtil::CLIP_STATUS SampleUtil::finalizeMainMix(
     } else {
         // note: LOOP VECTORIZED.
         for (int i = 0; i < numSamples / 2; ++i) {
-            const float f = static_cast<float>(i + 1);
-            const CSAMPLE_GAIN lg = (mainGainOld + mInc * f) * (balLOld + blInc * f);
-            const CSAMPLE_GAIN rg = (mainGainOld + mInc * f) * (balROld + brInc * f);
-
             CSAMPLE l = pBuffer[i * 2] * lg;
             CSAMPLE r = pBuffer[i * 2 + 1] * rg;
+
+            lg += dlg;
+            dlg += ddlg;
+            rg += drg;
+            drg += ddrg;
 
             const CSAMPLE absL = std::abs(l);
             const CSAMPLE absR = std::abs(r);
@@ -239,7 +248,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN old_gain,
 }
 
 CSAMPLE SampleUtil::copyWithRampingNormalization(CSAMPLE* pDest,
-        const CSAMPLE* pSrc,
+        const CSAMPLE* M_RESTRICT pSrc,
         CSAMPLE_GAIN old_gain,
         CSAMPLE_GAIN targetAmplitude,
         SINT numSamples) {
@@ -498,14 +507,15 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest,
     // sample values convert to -1.0, none will convert to +1.0.
     DEBUG_ASSERT(-SAMPLE_MINIMUM >= SAMPLE_MAXIMUM);
     const CSAMPLE kConversionFactor = SAMPLE_MINIMUM * -1.0f;
+    const CSAMPLE kInvConversionFactor = 1.0f / kConversionFactor;
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numSamples; ++i) {
-        pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
+        pDest[i] = CSAMPLE(pSrc[i]) * kInvConversionFactor;
     }
 }
 
 //static
-void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc,
         SINT numSamples) {
     // We use here -SAMPLE_MINIMUM for a perfect round trip with convertS16ToFloat32
     // +1.0 is clamped to 32767 (0.99996942)
@@ -520,8 +530,8 @@ void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
 }
 
 // static
-SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
-        CSAMPLE* pfAbsR, const CSAMPLE* pBuffer, SINT numSamples) {
+SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* M_RESTRICT pfAbsL,
+        CSAMPLE* M_RESTRICT pfAbsR, const CSAMPLE* M_RESTRICT pBuffer, SINT numSamples) {
     CSAMPLE fAbsL = CSAMPLE_ZERO;
     CSAMPLE fAbsR = CSAMPLE_ZERO;
     float clippedL = 0.0f;
@@ -532,10 +542,10 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
         const CSAMPLE absl = std::abs(pBuffer[i * 2]);
         fAbsL += absl;
         // Note: Replacing the code with a bool clipped will prevent vetorizing
-        clippedL += (absl > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+        clippedL = std::max(clippedL, (absl > CSAMPLE_PEAK) ? 1.0f : 0.0f);
         const CSAMPLE absr = std::abs(pBuffer[i * 2 + 1]);
         fAbsR += absr;
-        clippedR += (absr > CSAMPLE_PEAK) ? 1.0f : 0.0f;
+        clippedR = std::max(clippedR, (absr > CSAMPLE_PEAK) ? 1.0f : 0.0f);
     }
 
     *pfAbsL = fAbsL;
@@ -551,7 +561,7 @@ SampleUtil::CLIP_STATUS SampleUtil::sumAbsPerChannel(CSAMPLE* pfAbsL,
 }
 
 // static
-CSAMPLE SampleUtil::sumSquared(const CSAMPLE* pBuffer, SINT numSamples) {
+CSAMPLE SampleUtil::sumSquared(const CSAMPLE* M_RESTRICT pBuffer, SINT numSamples) {
     CSAMPLE sumSq = CSAMPLE_ZERO;
 
     // note: LOOP VECTORIZED.
@@ -849,7 +859,7 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples) {
 }
 
 // static
-void SampleUtil::mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples) {
+void SampleUtil::mixMultichannelToMono(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc, SINT numSamples) {
     auto chCount = mixxx::kEngineChannelOutputCount.value();
     const CSAMPLE_GAIN mixScale = 1.0f / static_cast<float>(chCount);
     // note: LOOP VECTORIZED.
@@ -863,8 +873,8 @@ void SampleUtil::mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT
 }
 
 // static
-void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
-        const CSAMPLE* pSrc,
+void SampleUtil::mixMultichannelToStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
         SINT numFrames,
         mixxx::audio::ChannelCount numChannels,
         int excludeChannelMask) {
@@ -890,8 +900,8 @@ void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
 }
 
 // static
-void SampleUtil::mixMultichannelToStereo(CSAMPLE* pDest,
-        const CSAMPLE* pSrc,
+void SampleUtil::mixMultichannelToStereo(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
         SINT numFrames,
         mixxx::audio::ChannelCount numChannels) {
     DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());

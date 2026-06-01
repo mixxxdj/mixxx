@@ -131,7 +131,16 @@ void VinylControlProcessor::run() {
         // Wait for a signal from the main thread or engine thread that we
         // should wake up and process input.
         m_waitForSampleMutex.lock();
-        m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
+        bool samplesAvailable = false;
+        for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+            if (m_samplePipes[i]->readAvailable() > 0) {
+                samplesAvailable = true;
+                break;
+            }
+        }
+        if (!m_bQuit.load() && !m_bReloadConfig.load() && !samplesAvailable) {
+            m_samplesAvailableSignal.wait(&m_waitForSampleMutex);
+        }
         m_waitForSampleMutex.unlock();
     }
 }

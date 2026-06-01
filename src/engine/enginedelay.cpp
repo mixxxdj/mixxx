@@ -39,10 +39,10 @@ void EngineDelay::slotDelayChanged() {
     double newDelay = m_pDelayPot->get();
     double sampleRate = m_pSampleRate->get();
 
-    m_iDelay = (int)(sampleRate * newDelay / 1000);
+    m_iDelay = static_cast<int>(sampleRate * newDelay / 1000.0f);
     m_iDelay *= 2;
-    if (m_iDelay > (kiMaxDelay - 2)) {
-        m_iDelay = (kiMaxDelay - 2);
+    if (m_iDelay > ((kiMaxDelay - 2))) {
+        m_iDelay = ((kiMaxDelay - 2));
     }
     if (m_iDelay <= 0) {
         // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay

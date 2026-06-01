@@ -86,9 +86,9 @@ void EngineXfader::getXfadeGains(double xfadePosition,
         // with one exception of mixing two parts of the same track, which resulted in 0.66.
         // Based on the testing, we normalize the gain as if the signals were uncorrelated. The
         // correction on the following lines ensures that  gain1^2 + gain2^2 == 1.
-        const CSAMPLE_GAIN gain = std::sqrt(*gain1 * *gain1 + *gain2 * *gain2);
-        *gain1 = *gain1 / gain;
-        *gain2 = *gain2 / gain;
+        const CSAMPLE_GAIN invGain = 1.0f / std::sqrt(*gain1 * *gain1 + *gain2 * *gain2);
+        *gain1 *= invGain;
+        *gain2 *= invGain;
     }
 
     if (reverse) {
