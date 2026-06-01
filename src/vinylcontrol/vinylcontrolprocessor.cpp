@@ -92,7 +92,7 @@ void VinylControlProcessor::run() {
 
         bool timeToWriteSignalQualityReport = m_bReportSignalQuality &&
                 reportTimer.elapsed().toIntegerMillis() >=
-                        MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS;
+                        MIXXX_VINYL_SCOPE_UPDATE_PERIOD_MS;
         if (timeToWriteSignalQualityReport) {
             reportTimer.restart();
         }
