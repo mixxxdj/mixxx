@@ -28,7 +28,7 @@ class ControlPushButton;
 class EngineSideChain;
 class EffectsManager;
 class EngineEffectsManager;
-class EngineSync;
+#include "engine/sync/enginesync.h"
 class EngineTalkoverDucking;
 class EngineDelay;
 
@@ -36,7 +36,7 @@ class EngineDelay;
 // engine. Prevents memory allocation in EngineMixer::addChannel.
 static constexpr int kPreallocatedChannels = 64;
 
-class EngineMixer : public QObject, public AudioSource {
+class EngineMixer : public QObject, public AudioSource, public EngineSync::GainSource {
     Q_OBJECT
   public:
     EngineMixer(UserSettingsPointer pConfig,
@@ -112,7 +112,7 @@ class EngineMixer : public QObject, public AudioSource {
         return m_pEngineSideChain.get();
     }
 
-    CSAMPLE_GAIN getMainGain(int channelIndex) const;
+    CSAMPLE_GAIN getMainGain(int channelIndex) const override;
 
     struct ChannelInfo {
         ChannelInfo(int index)

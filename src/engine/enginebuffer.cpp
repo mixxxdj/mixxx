@@ -58,9 +58,10 @@ const QString kAppGroup = QStringLiteral("[App]");
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        EngineMixer* pMixingEngine,
+        EngineSync* pEngineSync,
         mixxx::audio::ChannelCount maxSupportedChannel)
         : m_group(group),
+          m_pChannel(pChannel),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
           m_pSyncControl(nullptr),
@@ -200,7 +201,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pLoopingControl = new LoopingControl(group, pConfig);
     addControl(m_pLoopingControl);
 
-    m_pEngineSync = pMixingEngine->getEngineSync();
+    m_pEngineSync = pEngineSync;
 
     m_pSyncControl = new SyncControl(group, pConfig, pChannel, m_pEngineSync);
 
@@ -230,7 +231,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     // TODO(rryan) remove this dependence?
     m_pRateControl->setBpmControl(m_pBpmControl);
     m_pSyncControl->setEngineControls(m_pRateControl, m_pBpmControl);
-    pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
+    m_pEngineSync->addSyncableDeck(m_pSyncControl);
     addControl(m_pSyncControl);
 
     m_pKeyControl = new KeyControl(group, pConfig);
@@ -296,11 +297,6 @@ EngineBuffer::EngineBuffer(const QString& group,
     writer.setDevice(&df);
 #endif
 
-    // Now that all EngineControls have been created call setEngineMixer.
-    // TODO(XXX): Get rid of EngineControl::setEngineMixer and
-    // EngineControl::setEngineBuffer entirely and pass them through the
-    // constructor.
-    setEngineMixer(pMixingEngine);
 }
 
 EngineBuffer::~EngineBuffer() {
@@ -400,11 +396,6 @@ void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
     m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
-void EngineBuffer::setEngineMixer(EngineMixer* pEngineMixer) {
-    for (const auto& pControl : std::as_const(m_engineControls)) {
-        pControl->setEngineMixer(pEngineMixer);
-    }
-}
 
 void EngineBuffer::queueNewPlaypos(mixxx::audio::FramePos position, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.

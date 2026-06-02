@@ -61,7 +61,6 @@ class EngineControl : public QObject {
     /// is a potential imminent seek target.
     virtual void hintReader(gsl::not_null<HintVector*> pHintList);
 
-    virtual void setEngineMixer(EngineMixer* pEngineMixer);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setFrameInfo(mixxx::audio::FramePos currentPosition,
             mixxx::audio::FramePos trackEndPosition,
@@ -110,7 +109,6 @@ class EngineControl : public QObject {
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
-    EngineMixer* getEngineMixer();
     EngineBuffer* getEngineBuffer();
 
     const QString m_group;
@@ -118,7 +116,6 @@ class EngineControl : public QObject {
 
   private:
     ControlValueAtomic<FrameInfo> m_frameInfo;
-    EngineMixer* m_pEngineMixer;
     EngineBuffer* m_pEngineBuffer;
 
     friend class CueControlTest;

@@ -11,6 +11,7 @@
 #include "track/track_decl.h"
 #include "util/fifo.h"
 #include "util/types.h"
+#include "util/chunklookuptable.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -184,13 +185,7 @@ class CachingReader : public QObject {
 
     // Keeps track of what CachingReaderChunks we've allocated and indexes them based on what
     // chunk number they are allocated to.
-    // This is a fixed-size open-addressed hash table with linear probing for real-time safety.
-    static constexpr int kChunkLookupTableSize = 256;
-    CachingReaderChunkForOwner* m_chunkLookupTable[kChunkLookupTableSize];
-
-    // Rehashes a cluster of chunks starting after the given hole index.
-    // Required to maintain the linear probing invariant after a deletion.
-    void rehashLookupTableCluster(int hole);
+    ChunkLookupTable<CachingReaderChunkForOwner, 256> m_chunkLookupTable;
 
     // The linked list of recently-used chunks.
     CachingReaderChunkForOwner* m_mruCachingReaderChunk;

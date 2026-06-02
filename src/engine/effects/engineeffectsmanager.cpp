@@ -12,6 +12,10 @@ EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe&& responsePipe)
           m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
+    for (auto& stage : m_chainsByStage) {
+        stage.size = 0;
+        stage.chains.fill(nullptr);
+    }
 }
 
 void EngineEffectsManager::onCallbackStart() {
@@ -32,9 +36,14 @@ void EngineEffectsManager::onCallbackStart() {
         case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
         case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL: {
             bool chainExists = false;
-            for (const auto& chains : m_chainsByStage) {
-                if (chains.contains(request->pTargetChain)) {
-                    chainExists = true;
+            for (const auto& stage : m_chainsByStage) {
+                for (int i = 0; i < stage.size; ++i) {
+                    if (stage.chains[i] == request->pTargetChain) {
+                        chainExists = true;
+                        break;
+                    }
+                }
+                if (chainExists) {
                     break;
                 }
             }
@@ -175,13 +184,14 @@ void EngineEffectsManager::processInner(
         CSAMPLE_GAIN newGain,
         bool fadeout,
         bool mix) {
-    const QList<EngineEffectChain*>& chains = m_chainsByStage[static_cast<size_t>(stage)];
+    const auto& stageList = m_chainsByStage[static_cast<size_t>(stage)];
 
     if (pIn == pOut) {
         // Gain and effects are applied to the buffer in place,
         // modifying the original input buffer
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
-        for (EngineEffectChain* pChain : chains) {
+        for (int i = 0; i < stageList.size; ++i) {
+            EngineEffectChain* pChain = stageList.chains[i];
             if (pChain) {
                 if (pChain->process(inputHandle,
                             outputHandle,
@@ -202,7 +212,7 @@ void EngineEffectsManager::processInner(
         // 3. Mix the temporary buffer into pOut
         //    ChannelMixer::applyEffectsAndMixChannels use
         //    this to mix channels into pOut regardless of whether any effects were processed.
-        if (chains.isEmpty()) {
+        if (stageList.size == 0) {
             if (mix) {
                 SampleUtil::addWithRampingGain(pOut, pIn, oldGain, newGain, numSamples);
             } else {
@@ -221,7 +231,8 @@ void EngineEffectsManager::processInner(
         }
 
         CSAMPLE* pIntermediateOutput;
-        for (EngineEffectChain* pChain : chains) {
+        for (int i = 0; i < stageList.size; ++i) {
+            EngineEffectChain* pChain = stageList.chains[i];
             if (pChain) {
                 // Select an unused intermediate buffer for the next output
                 if (pIntermediateInput == m_buffer1.data()) {
@@ -255,23 +266,32 @@ void EngineEffectsManager::processInner(
 
 bool EngineEffectsManager::addEffectChain(EngineEffectChain* pChain,
         SignalProcessingStage stage) {
-    QList<EngineEffectChain*>& chains = m_chainsByStage[static_cast<size_t>(stage)];
-    VERIFY_OR_DEBUG_ASSERT(!chains.contains(pChain)) {
+    auto& stageList = m_chainsByStage[static_cast<size_t>(stage)];
+    for (int i = 0; i < stageList.size; ++i) {
+        if (stageList.chains[i] == pChain) {
+            return false;
+        }
+    }
+    if (stageList.size >= kMaxEffectChainsPerStage) {
         return false;
     }
-    // This might allocate in the audio thread, but it is only used when Mixxx
-    // is starting up so there is no issue.
-    chains.append(pChain);
+    stageList.chains[stageList.size++] = pChain;
     return true;
 }
 
 bool EngineEffectsManager::removeEffectChain(EngineEffectChain* pChain,
         SignalProcessingStage stage) {
-    QList<EngineEffectChain*>& chains = m_chainsByStage[static_cast<size_t>(stage)];
-    VERIFY_OR_DEBUG_ASSERT(chains.contains(pChain)) {
-        return false;
+    auto& stageList = m_chainsByStage[static_cast<size_t>(stage)];
+    for (int i = 0; i < stageList.size; ++i) {
+        if (stageList.chains[i] == pChain) {
+            for (int j = i; j < stageList.size - 1; ++j) {
+                stageList.chains[j] = stageList.chains[j + 1];
+            }
+            stageList.chains[--stageList.size] = nullptr;
+            return true;
+        }
     }
-    return chains.removeAll(pChain) > 0;
+    return false;
 }
 
 bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,

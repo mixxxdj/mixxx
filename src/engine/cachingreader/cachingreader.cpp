@@ -64,7 +64,7 @@ CachingReader::CachingReader(const QString& group,
                   &m_chunkReadRequestFIFO,
                   &m_readerStatusUpdateFIFO,
                   maxSupportedChannel) {
-    memset(m_chunkLookupTable, 0, sizeof(m_chunkLookupTable));
+    m_chunkLookupTable.clear();
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
     // list.
@@ -110,16 +110,7 @@ void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
     DEBUG_ASSERT(pChunk);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
-    const SINT chunkIndex = pChunk->getIndex();
-    int pos = static_cast<int>(static_cast<uint>(chunkIndex) % kChunkLookupTableSize);
-    while (m_chunkLookupTable[pos]) {
-        if (m_chunkLookupTable[pos]->getIndex() == chunkIndex) {
-            m_chunkLookupTable[pos] = nullptr;
-            rehashLookupTableCluster(pos);
-            break;
-        }
-        pos = (pos + 1) % kChunkLookupTableSize;
-    }
+    m_chunkLookupTable.remove(pChunk->getIndex());
 
     freeChunkFromList(pChunk);
 }
@@ -139,7 +130,7 @@ void CachingReader::freeAllChunks() {
     DEBUG_ASSERT(!m_mruCachingReaderChunk);
     DEBUG_ASSERT(!m_lruCachingReaderChunk);
 
-    memset(m_chunkLookupTable, 0, sizeof(m_chunkLookupTable));
+    m_chunkLookupTable.clear();
 }
 
 CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
@@ -151,11 +142,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
 
     pChunk->init(chunkIndex);
 
-    int pos = static_cast<int>(static_cast<uint>(chunkIndex) % kChunkLookupTableSize);
-    while (m_chunkLookupTable[pos]) {
-        pos = (pos + 1) % kChunkLookupTableSize;
-    }
-    m_chunkLookupTable[pos] = pChunk;
+    m_chunkLookupTable.insert(chunkIndex, pChunk);
 
     return pChunk;
 }
@@ -177,37 +164,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkInde
 }
 
 CachingReaderChunkForOwner* CachingReader::lookupChunk(SINT chunkIndex) {
-    int pos = static_cast<int>(static_cast<uint>(chunkIndex) % kChunkLookupTableSize);
-    while (m_chunkLookupTable[pos]) {
-        if (m_chunkLookupTable[pos]->getIndex() == chunkIndex) {
-            return m_chunkLookupTable[pos];
-        }
-        pos = (pos + 1) % kChunkLookupTableSize;
-    }
-    return nullptr;
-}
-
-void CachingReader::rehashLookupTableCluster(int hole) {
-    int next = (hole + 1) % kChunkLookupTableSize;
-    while (m_chunkLookupTable[next]) {
-        CachingReaderChunkForOwner* pChunk = m_chunkLookupTable[next];
-        int idealPos = static_cast<int>(static_cast<uint>(pChunk->getIndex()) % kChunkLookupTableSize);
-
-        // Check if next is not between idealPos and hole (circularly)
-        bool between;
-        if (idealPos <= next) {
-            between = (idealPos <= hole && hole < next);
-        } else {
-            between = (idealPos <= hole || hole < next);
-        }
-
-        if (between) {
-            m_chunkLookupTable[hole] = pChunk;
-            m_chunkLookupTable[next] = nullptr;
-            hole = next;
-        }
-        next = (next + 1) % kChunkLookupTableSize;
-    }
+    return m_chunkLookupTable.lookup(chunkIndex);
 }
 
 void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {

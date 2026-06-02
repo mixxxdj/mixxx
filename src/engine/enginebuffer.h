@@ -51,7 +51,6 @@ class EngineBufferScaleST;
 class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
-class EngineMixer;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -105,7 +104,7 @@ class EngineBuffer : public EngineObject {
     EngineBuffer(const QString& group,
             UserSettingsPointer pConfig,
             EngineChannel* pChannel,
-            EngineMixer* pMixingEngine,
+            EngineSync* pEngineSync,
             mixxx::audio::ChannelCount maxSupportedChannel);
     virtual ~EngineBuffer();
 
@@ -120,6 +119,12 @@ class EngineBuffer : public EngineObject {
     mixxx::audio::FramePos getPlayPos() const {
         return m_playPos;
     }
+    EngineChannel* getChannel() const {
+        return m_pChannel;
+    }
+    EngineSync* getEngineSync() const {
+        return m_pEngineSync;
+    }
     bool getScratching() const;
     bool isReverse() const;
     /// Returns current bpm value (not thread-safe)
@@ -133,7 +138,6 @@ class EngineBuffer : public EngineObject {
             mixxx::audio::FramePos endPositon,
             bool enabled);
     // Sets pointer to other engine buffer/channel
-    void setEngineMixer(EngineMixer*);
 
     // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(mixxx::audio::FramePos newpos, enum SeekRequest seekType);
@@ -320,6 +324,7 @@ class EngineBuffer : public EngineObject {
 
     // Holds the name of the control group
     const QString m_group;
+    EngineChannel* const m_pChannel;
     int m_channelIndex;
 
     UserSettingsPointer m_pConfig;

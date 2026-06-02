@@ -71,6 +71,19 @@ class EngineSync : public SyncableListener {
 
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getLeaderChannel() const;
+
+    class GainSource {
+      public:
+        virtual ~GainSource() = default;
+        virtual CSAMPLE_GAIN getMainGain(int channelIndex) const = 0;
+    };
+    void setGainSource(GainSource* pGainSource) {
+        m_pGainSource = pGainSource;
+    }
+    CSAMPLE_GAIN getMainGain(int channelIndex) const {
+        return m_pGainSource ? m_pGainSource->getMainGain(channelIndex) : 0.0f;
+    }
+
     void onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize);
     void onCallbackEnd(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize);
 
@@ -161,6 +174,7 @@ class EngineSync : public SyncableListener {
     friend class EngineSyncTest;
 
     UserSettingsPointer m_pConfig;
+    GainSource* m_pGainSource = nullptr;
     /// The InternalClock syncable.
     InternalClock* m_pInternalClock;
     /// The current Syncable that is the leader.

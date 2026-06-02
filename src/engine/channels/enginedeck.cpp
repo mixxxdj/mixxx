@@ -8,6 +8,7 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginemixer.h"
 #include "engine/enginepregain.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
@@ -46,7 +47,7 @@ EngineDeck::EngineDeck(
     m_pBuffer = new EngineBuffer(getGroup(),
             pConfig,
             this,
-            pMixingEngine,
+            pMixingEngine->getEngineSync(),
 #ifdef __STEM__
             primaryDeck ? mixxx::audio::ChannelCount::stem()
                         : mixxx::audio::ChannelCount::stereo()

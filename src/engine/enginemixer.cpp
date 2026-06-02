@@ -206,6 +206,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_pXFaderMode->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pXFaderReverse->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
+    m_pEngineSync->setGainSource(this);
+
     m_pBoothEnabled->setReadOnly();
     m_pHeadphoneEnabled->setReadOnly();
 

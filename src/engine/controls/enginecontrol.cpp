@@ -9,7 +9,6 @@ EngineControl::EngineControl(const QString& group,
         UserSettingsPointer pConfig)
         : m_group(group),
           m_pConfig(pConfig),
-          m_pEngineMixer(nullptr),
           m_pEngineBuffer(nullptr) {
     setFrameInfo(mixxx::audio::kStartFramePos,
             mixxx::audio::kInvalidFramePos,
@@ -38,9 +37,6 @@ void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 void EngineControl::hintReader(gsl::not_null<HintVector*>) {
 }
 
-void EngineControl::setEngineMixer(EngineMixer* pEngineMixer) {
-    m_pEngineMixer = pEngineMixer;
-}
 
 void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
     m_pEngineBuffer = pEngineBuffer;
@@ -60,9 +56,6 @@ UserSettingsPointer EngineControl::getConfig() {
     return m_pConfig;
 }
 
-EngineMixer* EngineControl::getEngineMixer() {
-    return m_pEngineMixer;
-}
 
 EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
@@ -101,17 +94,17 @@ void EngineControl::seek(double fractionalPosition) {
 }
 
 EngineBuffer* EngineControl::pickSyncTarget() {
-    EngineMixer* pEngineMixer = getEngineMixer();
-    if (!pEngineMixer) {
+    EngineBuffer* pEngineBuffer = getEngineBuffer();
+    if (!pEngineBuffer) {
         return nullptr;
     }
 
-    EngineSync* pEngineSync = pEngineMixer->getEngineSync();
+    EngineSync* pEngineSync = pEngineBuffer->getEngineSync();
     if (!pEngineSync) {
         return nullptr;
     }
 
-    EngineChannel* pThisChannel = pEngineMixer->getChannel(getGroup());
+    EngineChannel* pThisChannel = pEngineBuffer->getChannel();
     Syncable* pSyncable = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
     // pickNonSyncSyncTarget can return nullptr, but if it doesn't the Syncable
     // definitely has an EngineChannel.
