@@ -71,6 +71,7 @@
 #FxUnitHeaderCollapsed,
 #FxUnitHeaderExpanded,
 #SamplerExpandBox,
+#StemExpandBox,
 #SearchLineBox,
 #LibExpandBox,
 #SidebarBox,
@@ -1020,6 +1021,10 @@ WEffectSelector:!editable:on {
   padding: 0px 1px 0px 1px;
 }
 
+#StemExpandBox {
+  padding: 0px 1px 0px 1px;
+}
+
 #SamplerMini {
   padding: 0px 1px 1px 0px;
   }
@@ -1659,6 +1664,7 @@ WPushButton#PlayPreview {
 
 WPushButton#FxExpand,
 WPushButton#SamplerExpand,
+WPushButton#StemExpand,
 #FxAssignButtons WPushButton,
 #VinylControls WPushButton,
 #KeyControls WPushButton,
@@ -1973,6 +1979,7 @@ WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
 WPushButton#FxExpand[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
+WPushButton#StemExpand[displayValue="0"],
 WPushButton#CrossfaderButton[displayValue="0"],
 WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
@@ -2587,11 +2594,13 @@ WPushButton#PlayDeck[value="0"] {
 
 #FxExpand[value="0"],
 #SamplerExpand[value="0"],
+#StemExpand[value="0"],
 #LibExpand[value="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
   }
   #FxExpand[value="1"],
   #SamplerExpand[value="1"],
+  #StemExpand[value="1"],
   #LibExpand[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
   }

@@ -783,6 +783,15 @@ WEffectChainPresetButton::menu-indicator {
 
 /************** Samplers *****************************************************/
 
+/************** Stems ******************************************************/
+#StemRow {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+#StemExpandBox {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+}
+
+/************** Stems *****************************************************/
 
 
 /************** Mic Aux *******************************************************/
