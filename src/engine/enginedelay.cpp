@@ -41,8 +41,8 @@ void EngineDelay::slotDelayChanged() {
 
     m_iDelay = static_cast<int>(sampleRate * newDelay / 1000.0f);
     m_iDelay *= 2;
-    if (m_iDelay > ((kiMaxDelay - 2))) {
-        m_iDelay = ((kiMaxDelay - 2));
+    if (m_iDelay > (kiMaxDelay - 2)) {
+        m_iDelay = (kiMaxDelay - 2);
     }
     if (m_iDelay <= 0) {
         // We start bypassing, so clear buffer, to avoid noise in case of re-enable delay
@@ -50,7 +50,7 @@ void EngineDelay::slotDelayChanged() {
     }
 }
 
-void EngineDelay::process(CSAMPLE* pInputOutput, const std::size_t bufferSize) {
+void EngineDelay::process(CSAMPLE* M_RESTRICT pInputOutput, const std::size_t bufferSize) {
     if (m_iDelay <= 0) {
         return;
     }

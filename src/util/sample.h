@@ -226,7 +226,7 @@ class SampleUtil {
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
-    static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
+    static void convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest, const SAMPLE* M_RESTRICT pSrc,
             SINT numSamples);
 
     // Convert and normalize a buffer of CSAMPLEs in the range [-1.0, 1.0]

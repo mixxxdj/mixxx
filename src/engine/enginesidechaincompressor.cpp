@@ -44,17 +44,19 @@ void EngineSideChainCompressor::setAboveThreshold(bool value) {
     m_bAboveThreshold = value;
 }
 
-void EngineSideChainCompressor::processKey(const CSAMPLE* pIn, const std::size_t bufferSize) {
-    m_bAboveThreshold = false;
+void EngineSideChainCompressor::processKey(const CSAMPLE* M_RESTRICT pIn, const std::size_t bufferSize) {
+    CSAMPLE maxKeyAmplitude = 0.0f;
+    // note: LOOP VECTORIZED.
+    // Branchless peak detection facilitates SIMD auto-vectorization.
     for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
         // Use the average of absolute values to ensure the compressor reacts
         // to the full signal energy (both positive and negative half-waves)
         // and is robust against anti-phase signals.
         const CSAMPLE val = (std::abs(pIn[i]) + std::abs(pIn[i + 1])) * 0.5f;
-        if (val > m_threshold) {
-            m_bAboveThreshold = true;
-            return;
-        }
+        maxKeyAmplitude = std::max(maxKeyAmplitude, val);
+    }
+    if (maxKeyAmplitude > m_threshold) {
+        m_bAboveThreshold = true;
     }
 }
 
@@ -82,5 +84,9 @@ double EngineSideChainCompressor::calculateCompressedGain(int frames) {
             }
         }
     }
+    // Reset for next cycle. If multiple keys are processed, this should be
+    // handled by the caller or by a separate reset method. Mixxx currently
+    // calls processKey once per cycle.
+    m_bAboveThreshold = false;
     return m_compressRatio;
 }

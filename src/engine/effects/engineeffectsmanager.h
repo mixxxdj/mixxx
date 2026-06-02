@@ -102,7 +102,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             bool mix = true);
 
     EffectsResponsePipe m_responsePipe;
-    std::array<QList<EngineEffectChain*>, 2> m_chainsByStage;
+    std::array<QList<EngineEffectChain*>, static_cast<size_t>(SignalProcessingStage::Count)> m_chainsByStage;
     QList<EngineEffect*> m_effects;
 
     mixxx::SampleBuffer m_buffer1;
