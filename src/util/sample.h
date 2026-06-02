@@ -146,7 +146,7 @@ class SampleUtil {
     // Copy pSrc to pDest and multiply each sample by a factor of gain.
     // For optimum performance use the in-place function applyGain()
     // if pDest == pSrc!
-    static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copyWithGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
             CSAMPLE_GAIN gain, SINT numSamples);
 
     // Apply a different gain to every other sample.
@@ -164,7 +164,7 @@ class SampleUtil {
             CSAMPLE_GAIN new_gain, SINT numSamples);
 
     static CLIP_STATUS finalizeMainMix(
-            CSAMPLE* pBuffer,
+            CSAMPLE* M_RESTRICT pBuffer,
             SINT numSamples,
             CSAMPLE_GAIN mainGain,
             CSAMPLE_GAIN mainGainOld,
@@ -186,7 +186,7 @@ class SampleUtil {
     //
     // Returns the applied gain.
     static CSAMPLE copyWithRampingNormalization(CSAMPLE* pDest,
-            const CSAMPLE* pSrc,
+            const CSAMPLE* M_RESTRICT pSrc,
             CSAMPLE_GAIN old_gain,
             CSAMPLE_GAIN targetAmplitude,
             SINT numSamples);
@@ -196,107 +196,107 @@ class SampleUtil {
     // Copy pSrc to pDest and ramp gain
     // For optimum performance use the in-place function applyRampingGain()
     // if pDest == pSrc!
-    static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copyWithRampingGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
             SINT numSamples);
 
     // Add pSrc to pDest
-    static void add(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples);
+    static void add(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc, SINT numSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
-    static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void addWithGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
             CSAMPLE_GAIN gain, SINT numSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
-    static void addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void addWithRampingGain(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
             SINT numSamples);
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2
-    static void add2WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-            CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
+    static void add2WithGain(CSAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1, const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
             SINT numSamples);
 
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2 plus pSrc3 multiplied by gain3
-    static void add3WithGain(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-            CSAMPLE_GAIN gain1, const CSAMPLE* pSrc2, CSAMPLE_GAIN gain2,
-            const CSAMPLE* pSrc3, CSAMPLE_GAIN gain3, SINT numSamples);
+    static void add3WithGain(CSAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1, const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
+            const CSAMPLE* M_RESTRICT pSrc3, CSAMPLE_GAIN gain3, SINT numSamples);
 
     // Convert and normalize a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX]
     // to a buffer of CSAMPLEs in the range [-1.0, 1.0].
-    static void convertS16ToFloat32(CSAMPLE* pDest, const SAMPLE* pSrc,
+    static void convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest, const SAMPLE* M_RESTRICT pSrc,
             SINT numSamples);
 
     // Convert and normalize a buffer of CSAMPLEs in the range [-1.0, 1.0]
     // to a buffer of SAMPLEs in the range [-SAMPLE_MAX, SAMPLE_MAX].
-    static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
+    static void convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc,
             SINT numSamples);
 
     // For each pair of samples in pBuffer (l,r) -- stores the sum of the
     // absolute values of l in pfAbsL, and the sum of the absolute values of r
     // in pfAbsR.
     // The return value tells whether there is clipping in pBuffer or not.
-    static CLIP_STATUS sumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
-            const CSAMPLE* pBuffer, SINT numSamples);
+    static CLIP_STATUS sumAbsPerChannel(CSAMPLE* M_RESTRICT pfAbsL, CSAMPLE* M_RESTRICT pfAbsR,
+            const CSAMPLE* M_RESTRICT pBuffer, SINT numSamples);
 
     // Returns the sum of the squared values of the buffer.
-    static CSAMPLE sumSquared(const CSAMPLE* pBuffer, SINT numSamples);
+    static CSAMPLE sumSquared(const CSAMPLE* M_RESTRICT pBuffer, SINT numSamples);
 
     // Returns the root mean square of the values of the buffer.
-    static CSAMPLE rms(const CSAMPLE* pBuffer, SINT numSamples);
+    static CSAMPLE rms(const CSAMPLE* M_RESTRICT pBuffer, SINT numSamples);
 
-    static CSAMPLE maxAbsAmplitude(const CSAMPLE* pBuffer, SINT numSamples);
+    static CSAMPLE maxAbsAmplitude(const CSAMPLE* M_RESTRICT pBuffer, SINT numSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest
     // to the valid range of CSAMPLE. pDest and pSrc must not overlap.
-    static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc,
             SINT numSamples);
 
     // Interleave the samples in pSrc1 and pSrc2 into pDest (stereo). iNumSamples must be
     // the number of samples in pSrc1 and pSrc2, and pDest must have at least
     // space for numFrames*2 samples. pDest must not be an alias of pSrc1 or
     // pSrc2.
-    static void interleaveBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc1,
-            const CSAMPLE* pSrc2, SINT numSamples);
+    static void interleaveBuffer(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc1,
+            const CSAMPLE* M_RESTRICT pSrc2, SINT numSamples);
 
     // Interleave the samples in pSrc1, pSrc2, etc... into pDest (stem stereo). numFrames must be
     // the number of samples each pSrc, and pDest must have at least
     // space for numFrames*8 samples. pDest must not be an alias any pSrc.
     static void interleaveBuffer(CSAMPLE* pDest,
-            const CSAMPLE* pSrc1,
-            const CSAMPLE* pSrc2,
-            const CSAMPLE* pSrc3,
-            const CSAMPLE* pSrc4,
-            const CSAMPLE* pSrc5,
-            const CSAMPLE* pSrc6,
-            const CSAMPLE* pSrc7,
-            const CSAMPLE* pSrc8,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            const CSAMPLE* M_RESTRICT pSrc2,
+            const CSAMPLE* M_RESTRICT pSrc3,
+            const CSAMPLE* M_RESTRICT pSrc4,
+            const CSAMPLE* M_RESTRICT pSrc5,
+            const CSAMPLE* M_RESTRICT pSrc6,
+            const CSAMPLE* M_RESTRICT pSrc7,
+            const CSAMPLE* M_RESTRICT pSrc8,
             SINT numFrames);
 
     // Deinterleave the samples in pSrc alternately into pDest1 and
     // pDest2 (stereo). numFrames must be the number of samples in pDest1 and pDest2,
     // and pSrc must have at least numFrames*2 samples. Neither pDest1 or
     // pDest2 can be aliases of pSrc.
-    static void deinterleaveBuffer(CSAMPLE* pDest1,
-            CSAMPLE* pDest2,
-            const CSAMPLE* pSrc,
+    static void deinterleaveBuffer(CSAMPLE* M_RESTRICT pDest1,
+            CSAMPLE* M_RESTRICT pDest2,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames);
 
     // Deinterleave the samples in pSrc alternately into pDest1, pDest2, etc ti
     // pDest8 (stem stereo). numFrames must be the number of samples in each
     // pDest*, and pSrc must have at least numFrames*8 samples. None of the
     // pDest can be aliases of pSrc.
-    static void deinterleaveBuffer(CSAMPLE* pDest1,
-            CSAMPLE* pDest2,
-            CSAMPLE* pDest3,
-            CSAMPLE* pDest4,
-            CSAMPLE* pDest5,
-            CSAMPLE* pDest6,
-            CSAMPLE* pDest7,
-            CSAMPLE* pDest8,
-            const CSAMPLE* pSrc,
+    static void deinterleaveBuffer(CSAMPLE* M_RESTRICT pDest1,
+            CSAMPLE* M_RESTRICT pDest2,
+            CSAMPLE* M_RESTRICT pDest3,
+            CSAMPLE* M_RESTRICT pDest4,
+            CSAMPLE* M_RESTRICT pDest5,
+            CSAMPLE* M_RESTRICT pDest6,
+            CSAMPLE* M_RESTRICT pDest7,
+            CSAMPLE* M_RESTRICT pDest8,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames);
 
     /// Crossfade two buffers together. All the buffers must be the same length.
@@ -320,7 +320,7 @@ class SampleUtil {
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
-    static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void mixStereoToMono(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc,
             SINT numSamples);
     // In place version of the above.
     static void mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples);
@@ -328,7 +328,7 @@ class SampleUtil {
     // Mix a buffer down to mono, resulting in a shorter buffer with only one channel.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
-    static void mixMultichannelToMono(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples);
+    static void mixMultichannelToMono(CSAMPLE* M_RESTRICT pDest, const CSAMPLE* M_RESTRICT pSrc, SINT numSamples);
 
     // Mix a buffer down to stereo, resulting in a shorter buffer with only one
     // channel. This uses a simple (L+R)/2 method, which assumes that the multi
@@ -337,14 +337,14 @@ class SampleUtil {
     // real-time use case. The exclude channel mask can bne used to exclude a
     // stereo pair (two consecutive channel) out of the mix. The LSB is the
     // first stereo channel
-    static void mixMultichannelToStereo(CSAMPLE* pDest,
-            const CSAMPLE* pSrc,
+    static void mixMultichannelToStereo(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,
             int excludeChannelMask);
     // Full downmix overload
-    static void mixMultichannelToStereo(CSAMPLE* pDest,
-            const CSAMPLE* pSrc,
+    static void mixMultichannelToStereo(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels);
 
@@ -357,7 +357,7 @@ class SampleUtil {
     // into pDest.
     // (numFrames) samples will be read from pSrc
     // (numFrames * 2) samples will be written into pDest
-    static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames);
 
     // Scales, adds and doubles the mono samples in pSrc to dual mono samples
@@ -366,14 +366,14 @@ class SampleUtil {
     // (numFrames * 2) samples will be added to pDest
     static void addMonoToStereoWithGain(CSAMPLE_GAIN gain,
             CSAMPLE* pDest,
-            const CSAMPLE* pSrc,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames);
 
     // Adds and doubles the mono samples in pSrc to dual mono samples
     // to pDest.
     // (numFrames) samples will be read from pSrc
     // (numFrames * 2) samples will be added to pDest
-    static void addMonoToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
+    static void addMonoToStereo(CSAMPLE* pDest, const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames);
 
     // In-place strips interleaved multi-channel samples in pBuffer with
@@ -399,7 +399,7 @@ class SampleUtil {
     // With sourceChannel=3, dst will take the value of
     //    4L4R
     static void copyOneStereoFromMulti(CSAMPLE* pDest,
-            const CSAMPLE* pSrc,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,
             int sourceChannel = 0);
@@ -419,7 +419,7 @@ class SampleUtil {
     // (2L2R) at the end (channelOffset=3), it will yield the following result
     //    11SSSS22
     static void insertStereoToMulti(CSAMPLE* pDest,
-            const CSAMPLE* pSrc,
+            const CSAMPLE* M_RESTRICT pSrc,
             SINT numFrames,
             mixxx::audio::ChannelCount numChannels,
             int channelOffset);

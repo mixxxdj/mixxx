@@ -28,7 +28,8 @@ inline qhash_seed_t qHash(const EffectBackendType& backendType) {
 
 enum class SignalProcessingStage {
     Prefader,
-    Postfader
+    Postfader,
+    Count
 };
 
 inline qhash_seed_t qHash(

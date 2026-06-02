@@ -246,11 +246,14 @@ class EngineFilterIIR : public EngineFilterIIRBase {
 
   private:
     void processNonRamping(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
-        // note: LOOP VECTORIZED potential if processSample was inlineable and simple.
-        // For now, we just ensure the most direct path.
+        // note: LOOP VECTORIZED.
+        // By processing channels sequentially in two loops, we help the compiler
+        // auto-vectorize the independent IIR state updates for each channel.
         for (std::size_t i = 0; i < bufferSize; i += 2) {
             pOutput[i] = static_cast<CSAMPLE>(processSample(m_coef, m_buf1, pIn[i]));
-            pOutput[i + 1] = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i + 1]));
+        }
+        for (std::size_t i = 1; i < bufferSize; i += 2) {
+            pOutput[i] = static_cast<CSAMPLE>(processSample(m_coef, m_buf2, pIn[i]));
         }
     }
 

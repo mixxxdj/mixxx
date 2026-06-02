@@ -109,11 +109,12 @@ void EngineSideChain::run() {
     while (!m_bStopThread) {
         // Sleep until samples are available.
         m_waitLock.lock();
-
-        Event::end(tag);
-        m_waitForSamples.wait(&m_waitLock);
+        while (!m_bStopThread && m_sampleFifo.readAvailable() == 0) {
+            Event::end(tag);
+            m_waitForSamples.wait(&m_waitLock);
+            Event::start(tag);
+        }
         m_waitLock.unlock();
-        Event::start(tag);
 
         int samples_read;
         while ((samples_read = m_sampleFifo.read(m_pWorkBuffer,

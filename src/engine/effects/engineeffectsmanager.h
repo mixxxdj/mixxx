@@ -1,5 +1,7 @@
 #pragma once
 
+#include <array>
+
 #include "audio/types.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
@@ -100,7 +102,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             bool mix = true);
 
     EffectsResponsePipe m_responsePipe;
-    QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
+    std::array<QList<EngineEffectChain*>, static_cast<size_t>(SignalProcessingStage::Count)> m_chainsByStage;
     QList<EngineEffect*> m_effects;
 
     mixxx::SampleBuffer m_buffer1;

@@ -13,7 +13,7 @@ class EngineDelay : public EngineObject {
     EngineDelay(const ConfigKey& delayControl, bool bPersist = true);
     ~EngineDelay() override;
 
-    void process(CSAMPLE* pInOut, const std::size_t bufferSize) override;
+    void process(CSAMPLE* M_RESTRICT pInOut, const std::size_t bufferSize) override;
 
     void setDelay(double newDelay);
 

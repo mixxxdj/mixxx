@@ -39,7 +39,7 @@ void EngineDelay::slotDelayChanged() {
     double newDelay = m_pDelayPot->get();
     double sampleRate = m_pSampleRate->get();
 
-    m_iDelay = (int)(sampleRate * newDelay / 1000);
+    m_iDelay = static_cast<int>(sampleRate * newDelay / 1000.0f);
     m_iDelay *= 2;
     if (m_iDelay > (kiMaxDelay - 2)) {
         m_iDelay = (kiMaxDelay - 2);
@@ -50,7 +50,7 @@ void EngineDelay::slotDelayChanged() {
     }
 }
 
-void EngineDelay::process(CSAMPLE* pInputOutput, const std::size_t bufferSize) {
+void EngineDelay::process(CSAMPLE* M_RESTRICT pInputOutput, const std::size_t bufferSize) {
     if (m_iDelay <= 0) {
         return;
     }

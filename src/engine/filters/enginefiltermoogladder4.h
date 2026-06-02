@@ -82,7 +82,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
                 0.6490f * kfc + 0.9988f;
 
         const float x = -2.0f * kPi * kfcr * kf; // input for taylor approximations
-        const float exp_out = std::exp(x);
+        const float exp_out = std::exp(static_cast<float>(x));
         m_k2vgNew = v2 * (1.0f - exp_out); // filter tuning
 
         // Resonance correction for self oscillation ~4
@@ -194,7 +194,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Oversampling if requested
         if (MODE == MoogMode::LowPassOversampling || MODE == MoogMode::HighPassOversampling) {
             // 1/2-sample delay for phase compensation
-            pB->m_amf = (az4 + pB->m_az5) / 2;
+            pB->m_amf = (az4 + pB->m_az5) * 0.5f;
             pB->m_az5 = az4;
 
             // Oversampling (repeat same block)
@@ -213,14 +213,14 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             pB->m_azt4 = az4 - at4;
 
             // 1/2-sample delay for phase compensation
-            pB->m_amf = (az4 + pB->m_az5) / 2;
+            pB->m_amf = (az4 + pB->m_az5) * 0.5f;
             pB->m_az5 = az4;
         } else {
             pB->m_amf = az4;
         }
 
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            return (x1 - 3 * az3 + 2 * az4) * m_postGain;
+            return (x1 - 3.0f * az3 + 2.0f * az4) * m_postGain;
         }
         return pB->m_amf * m_postGain;
     }

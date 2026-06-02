@@ -88,7 +88,7 @@ double EngineBufferScaleLinear::scaleBuffer(
 
         // reset m_floorSampleOld in a way as we were coming from
         // the other direction
-        SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
+        SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(std::ceil(m_dNextFrame)));
         int chCount = getOutputSignal().getChannelCount();
         if (iNextSample >= 0 && iNextSample + chCount <= m_bufferIntSize) {
             SampleUtil::copy(m_floorSampleOld.data(), &m_bufferInt[iNextSample], chCount);
@@ -115,8 +115,8 @@ double EngineBufferScaleLinear::scaleBuffer(
         // force a buffer read:
         m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation
-        m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
-        m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
+        m_dCurrentFrame = 0.0 - (m_dCurrentFrame - std::floor(m_dCurrentFrame));
+        m_dNextFrame = 1.0 - (m_dNextFrame - std::floor(m_dNextFrame));
 
         // second half: rate goes from zero to new rate
         m_dOldRate = 0.0;
@@ -135,7 +135,7 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
     SINT samples_needed = buf_size;
     CSAMPLE* write_buf = buf;
     // Use up what's left of the internal buffer.
-    SINT iNextFrame = static_cast<SINT>(ceil(m_dNextFrame));
+    SINT iNextFrame = static_cast<SINT>(std::ceil(m_dNextFrame));
     SINT iNextSample = math_max<SINT>(getOutputSignal().frames2samples(iNextFrame), 0);
     SINT readSize = math_min<SINT>(m_bufferIntSize - iNextSample, samples_needed);
     if (readSize > 0) {
@@ -217,7 +217,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     //for (int j = 0; j < bufferSizeFrames; ++j) {
     //    frames += (j * rate_delta) + rate_old;
     //}
-    frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
+    frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0f;
     frames *= rate_delta;
     frames += rate_old * bufferSizeFrames;
     frames = std::abs(frames);
@@ -225,7 +225,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     // Intentional integer rounding: increases by one if the fractional part of
     // m_dNextFrame and frames are greater than one"
     SINT unscaled_frames_needed = static_cast<SINT>(frames +
-            m_dNextFrame - floor(m_dNextFrame));
+            m_dNextFrame - std::floor(m_dNextFrame));
 
     int chCount = getOutputSignal().getChannelCount();
     m_floorSample.clear();
@@ -250,7 +250,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
         // The first bounds check (< m_bufferIntSize) is probably not needed.
 
-        SINT currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
+        SINT currentFrameFloor = static_cast<SINT>(std::floor(m_dCurrentFrame));
 
         int sampleCount = getOutputSignal().frames2samples(currentFrameFloor);
         if (currentFrameFloor < 0) {
@@ -313,7 +313,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
         // For the current index, what percentage is it
         // between the previous and the next?
-        CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame) - currentFrameFloor;
+        CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame - static_cast<double>(currentFrameFloor));
 
         // Perform linear interpolation
         for (int chIdx = 0; chIdx < chCount; chIdx++) {

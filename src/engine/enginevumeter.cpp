@@ -8,7 +8,11 @@ namespace {
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
 constexpr unsigned int kVuUpdateRate = 30; // in Hz (1/s), fits to display frame rate
-constexpr int kPeakDuration = 500;         // in ms
+constexpr float kPeakHoldSeconds = 0.5f;   // in s
+
+// Factor used to scale the normalized float RMS sum to a legacy 16-bit range
+// for the logarithmic VU meter calculation. 32767 is SHRT_MAX.
+constexpr float kLegacyLogScaleFactor = 32.767f;
 
 // Smoothing Factors
 // Must be from 0-1 the lower the factor, the more smoothing that is applied
@@ -65,12 +69,11 @@ void EngineVuMeter::processFused(
     // Are we ready to update the VU meter?:
     if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
         const float samplesCalculatedFloat = static_cast<float>(m_samplesCalculated);
-        const float logScaleFactor = static_cast<float>(SHRT_MAX) / 1000.0f;
 
         doSmooth(m_fRMSvolumeL,
-                std::log10(logScaleFactor * m_fRMSvolumeSumL / samplesCalculatedFloat + 1.0f));
+                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumL / samplesCalculatedFloat) + 1.0f));
         doSmooth(m_fRMSvolumeR,
-                std::log10(logScaleFactor * m_fRMSvolumeSumR / samplesCalculatedFloat + 1.0f));
+                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumR / samplesCalculatedFloat) + 1.0f));
 
         const CSAMPLE epsilon = 0.0001f;
 
@@ -98,7 +101,9 @@ void EngineVuMeter::processFused(
 
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0f);
-        m_peakDurationL = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
+        m_peakDurationL = static_cast<int>(
+                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) /
+                        (static_cast<float>(bufferSize) / 2.0f)));
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0f);
     } else {
@@ -107,7 +112,9 @@ void EngineVuMeter::processFused(
 
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0f);
-        m_peakDurationR = static_cast<int>(kPeakDuration * sampleRate / (bufferSize * 500));
+        m_peakDurationR = static_cast<int>(
+                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) /
+                        (static_cast<float>(bufferSize) / 2.0f)));
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0f);
     } else {

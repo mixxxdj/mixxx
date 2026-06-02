@@ -12,7 +12,6 @@
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.
-using std::fabs;
 
 #define math_max std::max
 #define math_min std::min
