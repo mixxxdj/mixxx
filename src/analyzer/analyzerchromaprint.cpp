@@ -304,6 +304,25 @@ void AnalyzerChromaprint::storeResults(TrackPointer /*pTrack*/) {
                     << "rawBytes:" << rawData.size();
 }
 
+void AnalyzerChromaprint::cleanup() {
+    if (sDebugAnalyzerChromaprint) {
+        qDebug() << "AnalyzerChromaprint -> [cleanup] -> entry"
+                 << "trackId:" << m_trackId
+                 << "hasContext:" << (m_pChromaprintCtx != nullptr);
+    }
+
+    if (m_pChromaprintCtx) {
+        chromaprint_free(m_pChromaprintCtx);
+        m_pChromaprintCtx = nullptr;
+    }
+
+    // Release the conversion buffer memory
+    m_int16Buffer.clear();
+    m_int16Buffer.shrink_to_fit();
+
+    m_trackId = TrackId();
+}
+
 // private
 bool AnalyzerChromaprint::hasValidFingerprint(TrackPointer pTrack) const {
     const TrackId trackId = pTrack->getId();
@@ -366,4 +385,36 @@ bool AnalyzerChromaprint::hasValidFingerprint(TrackPointer pTrack) const {
                  << "computedAt:" << pMetadata->computedAt.toString(Qt::ISODate);
     }
     return true;
+}
+
+// static private
+quint32 AnalyzerChromaprint::computeSimHash(const uint32_t* fprint, int size) {
+    // Bit-voting SimHash (same algorithm as chromaprint_hash_fingerprint()
+    // in newer library versions).
+    //
+    // For each of the 32 bit positions:
+    //   - Increment a counter for each fingerprint value that has the bit set
+    //   - Decrement for each that does not
+    // The final SimHash sets the bit if the counter is positive (more set than unset).
+    //
+    // Result: a locality-sensitive 32-bit hash where similar fingerprints
+    // (small Hamming distance) produce similar SimHash values. Used as the
+    // fast pre-filter in Q1 — NOT a unique key.
+    int bitCounts[32] = {};
+    for (int i = 0; i < size; ++i) {
+        for (int b = 0; b < 32; ++b) {
+            if (fprint[i] & (1u << b)) {
+                ++bitCounts[b];
+            } else {
+                --bitCounts[b];
+            }
+        }
+    }
+    quint32 hash = 0;
+    for (int b = 0; b < 32; ++b) {
+        if (bitCounts[b] > 0) {
+            hash |= (1u << b);
+        }
+    }
+    return hash;
 }
