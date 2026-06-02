@@ -194,7 +194,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
         // Oversampling if requested
         if (MODE == MoogMode::LowPassOversampling || MODE == MoogMode::HighPassOversampling) {
             // 1/2-sample delay for phase compensation
-            pB->m_amf = (az4 + pB->m_az5) / 2;
+            pB->m_amf = (az4 + pB->m_az5) * 0.5f;
             pB->m_az5 = az4;
 
             // Oversampling (repeat same block)
@@ -213,14 +213,14 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             pB->m_azt4 = az4 - at4;
 
             // 1/2-sample delay for phase compensation
-            pB->m_amf = (az4 + pB->m_az5) / 2;
+            pB->m_amf = (az4 + pB->m_az5) * 0.5f;
             pB->m_az5 = az4;
         } else {
             pB->m_amf = az4;
         }
 
         if (MODE == MoogMode::HighPassOversampling || MODE == MoogMode::HighPass) {
-            return (x1 - 3 * az3 + 2 * az4) * m_postGain;
+            return (x1 - 3.0f * az3 + 2.0f * az4) * m_postGain;
         }
         return pB->m_amf * m_postGain;
     }

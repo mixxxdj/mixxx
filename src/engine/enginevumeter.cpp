@@ -71,9 +71,9 @@ void EngineVuMeter::processFused(
         const float samplesCalculatedFloat = static_cast<float>(m_samplesCalculated);
 
         doSmooth(m_fRMSvolumeL,
-                std::log10(kLegacyLogScaleFactor * (m_fRMSvolumeSumL / samplesCalculatedFloat) + 1.0f));
+                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumL / samplesCalculatedFloat) + 1.0f));
         doSmooth(m_fRMSvolumeR,
-                std::log10(kLegacyLogScaleFactor * (m_fRMSvolumeSumR / samplesCalculatedFloat) + 1.0f));
+                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumR / samplesCalculatedFloat) + 1.0f));
 
         const CSAMPLE epsilon = 0.0001f;
 

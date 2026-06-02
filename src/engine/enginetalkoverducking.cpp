@@ -33,8 +33,8 @@ EngineTalkoverDucking::EngineTalkoverDucking(
     setParameters(
             kDuckThreshold,
             static_cast<CSAMPLE>(m_pDuckStrength->get()),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2));
+            static_cast<unsigned int>(static_cast<float>(m_pSampleRate->get()) * 0.05f),
+            static_cast<unsigned int>(static_cast<float>(m_pSampleRate->get()) * 0.5f));
 
     m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
     m_pTalkoverDucking->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
@@ -58,15 +58,15 @@ void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
     setParameters(
             kDuckThreshold,
             static_cast<CSAMPLE>(m_pDuckStrength->get()),
-            static_cast<unsigned int>(samplerate / 2 * .1),
-            static_cast<unsigned int>(samplerate / 2));
+            static_cast<unsigned int>(static_cast<float>(samplerate) * 0.05f),
+            static_cast<unsigned int>(static_cast<float>(samplerate) * 0.5f));
 }
 
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
     setParameters(kDuckThreshold,
             static_cast<CSAMPLE>(strength),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2));
+            static_cast<unsigned int>(static_cast<float>(m_pSampleRate->get()) * 0.05f),
+            static_cast<unsigned int>(static_cast<float>(m_pSampleRate->get()) * 0.5f));
     m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
 }
 

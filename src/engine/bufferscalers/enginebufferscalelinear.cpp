@@ -313,7 +313,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
         // For the current index, what percentage is it
         // between the previous and the next?
-        CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame) - currentFrameFloor;
+        CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame - static_cast<double>(currentFrameFloor));
 
         // Perform linear interpolation
         for (int chIdx = 0; chIdx < chCount; chIdx++) {
