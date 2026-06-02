@@ -1124,29 +1124,21 @@ void LoopingControl::slotReloopToggle(double val) {
                 }),
                 cues.end());
         std::sort(cues.begin(), cues.end(), [](const CuePointer& a, const CuePointer& b) {
-            return a->getPosition() < b->getPosition();
+            return a->getEndPosition() < b->getEndPosition();
         });
-
-        // First check if we're inside any saved loop
-        for (const auto& pCue : cues) {
-            if (currentPosition >= pCue->getPosition() &&
-                    currentPosition < pCue->getEndPosition()) {
-                // Found the loop we're inside. Toggle it.
-                if (m_bLoopingEnabled) {
-                    setLoopingEnabled(false);
-                } else {
-                    setLoop(pCue->getPosition(), pCue->getEndPosition(), true);
-                }
-                return;
-            }
-        }
 
         // Find the nearest loop ahead by position
         for (int i = 0; i < cues.size(); ++i) {
-            if (cues[i]->getPosition() >= currentPosition) {
+            if (cues[i]->getEndPosition() >= currentPosition) {
                 if (m_bLoopingEnabled) {
                     setLoopingEnabled(false);
+                } else if (cues[i]->getHotCue() != Cue::kNoHotCue) {
+                    ConfigKey key(getGroup(),
+                            QStringLiteral("hotcue_%1_cueloop")
+                                    .arg(cues[i]->getHotCue() + 1));
+                    ControlObject::set(key, 1.0);
                 } else {
+                    emit loopReset();
                     setLoop(cues[i]->getPosition(), cues[i]->getEndPosition(), true);
                 }
                 return;
