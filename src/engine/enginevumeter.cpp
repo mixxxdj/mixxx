@@ -70,10 +70,11 @@ void EngineVuMeter::processFused(
     if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
         const float samplesCalculatedFloat = static_cast<float>(m_samplesCalculated);
 
+        const float fInvSamplesCalculated = 1.0f / samplesCalculatedFloat;
         doSmooth(m_fRMSvolumeL,
-                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumL / samplesCalculatedFloat) + 1.0f));
+                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumL * fInvSamplesCalculated) + 1.0f));
         doSmooth(m_fRMSvolumeR,
-                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumR / samplesCalculatedFloat) + 1.0f));
+                std::log10(static_cast<float>(kLegacyLogScaleFactor) * (m_fRMSvolumeSumR * fInvSamplesCalculated) + 1.0f));
 
         const CSAMPLE epsilon = 0.0001f;
 
@@ -102,8 +103,8 @@ void EngineVuMeter::processFused(
     if (clipped & SampleUtil::CLIPPING_LEFT) {
         m_peakIndicatorLeft.set(1.0f);
         m_peakDurationL = static_cast<int>(
-                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) /
-                        (static_cast<float>(bufferSize) / 2.0f)));
+                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) *
+                        (2.0f / static_cast<float>(bufferSize))));
     } else if (m_peakDurationL <= 0) {
         m_peakIndicatorLeft.set(0.0f);
     } else {
@@ -113,8 +114,8 @@ void EngineVuMeter::processFused(
     if (clipped & SampleUtil::CLIPPING_RIGHT) {
         m_peakIndicatorRight.set(1.0f);
         m_peakDurationR = static_cast<int>(
-                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) /
-                        (static_cast<float>(bufferSize) / 2.0f)));
+                std::round(kPeakHoldSeconds * static_cast<float>(sampleRate) *
+                        (2.0f / static_cast<float>(bufferSize))));
     } else if (m_peakDurationR <= 0) {
         m_peakIndicatorRight.set(0.0f);
     } else {

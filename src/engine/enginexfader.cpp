@@ -10,7 +10,7 @@ const double EngineXfader::kTransformMin = 0.6;
 
 double EngineXfader::getPowerCalibration(double transform) {
     // get the transform_root of -3db (.5)
-    return pow(0.5, 1.0 / transform);
+    return std::pow(0.5, 1.0 / transform);
 }
 
 void EngineXfader::getXfadeGains(double xfadePosition,
@@ -50,14 +50,14 @@ void EngineXfader::getXfadeGains(double xfadePosition,
         }
     } else {
         if (xfadePositionLeft < 0) { // on left side
-            xfadePositionLeft *= -1;
-            *gain2 = 1.0f - static_cast<float>(std::pow(static_cast<float>(xfadePositionLeft), static_cast<float>(transform)));
+            xfadePositionLeft *= -1.0;
+            *gain2 = 1.0f - std::pow(static_cast<float>(xfadePositionLeft), static_cast<float>(transform));
         } else {
             *gain2 = 1.0f;
         }
 
         if (xfadePositionRight > 0) { // right side
-            *gain1 = 1.0f - static_cast<float>(std::pow(static_cast<float>(xfadePositionRight), static_cast<float>(transform)));
+            *gain1 = 1.0f - std::pow(static_cast<float>(xfadePositionRight), static_cast<float>(transform));
         } else {
             *gain1 = 1.0f;
         }

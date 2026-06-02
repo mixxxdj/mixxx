@@ -126,7 +126,7 @@ void PositionScratchController::slotUpdateFilterParameters(double sampleRate) {
     // Normally the Mouse is sampled every 8 ms so with this 16 ms window we
     // have 0 ... 3 samples. The remaining jitter is ironed by the following IIR
     // lowpass filter
-    m_callsPerDt = static_cast<int>(ceil(kDefaultSampleInterval / m_dt));
+    m_callsPerDt = static_cast<int>(std::ceil(kDefaultSampleInterval / m_dt));
 
     m_callsToStop = m_dt / kTimeToStop;
 
@@ -176,7 +176,7 @@ void PositionScratchController::process(double currentSamplePos,
             // decayThreshold = kMaxVelocity * alpha ^ (# callbacks to stop in)
             // # callbacks = kTimeToStop / m_dt
             // alpha = (decayThreshold / kMaxVelocity) ^ (m_dt / kTimeToStop)
-            const double kExponentialDecay = pow(decayThreshold / kMaxVelocity, m_callsToStop);
+            const double kExponentialDecay = std::pow(decayThreshold / kMaxVelocity, m_callsToStop);
 
             m_rate *= kExponentialDecay;
 

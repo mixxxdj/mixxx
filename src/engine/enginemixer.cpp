@@ -780,7 +780,7 @@ void EngineMixer::processHeadphones(
     if (m_pHeadSplitEnabled->toBool()) {
         // note: LOOP VECTORIZED.
         auto* const M_RESTRICT ph = m_head.data();
-        auto* const M_RESTRICT pm = m_main.data();
+        const auto* const M_RESTRICT pm = m_main.data();
         for (std::size_t i = 0; i < bufferSize / 2; ++i) {
             const CSAMPLE headMono = (ph[i * 2] + ph[i * 2 + 1]) * 0.5f;
             const CSAMPLE mainMono = (pm[i * 2] + pm[i * 2 + 1]) * 0.5f;
