@@ -2406,6 +2406,12 @@ target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
+if(NOT TARGET SQLite3::SQLite3) # CMake < 4.3
+  # This will allow to use the new name while still permitting it to
+  # compile with older versions of CMake.
+  add_library(SQLite3::SQLite3 ALIAS SQLite::SQLite3)
+endif()
+
 # For LOCALECOMPARE we call directly sqlite functions to the database opened by
 # Qt. It only works without crashing when Mixxx links to the same sqlite
 # library as Qt.
@@ -2428,10 +2434,10 @@ if(LOCALECOMPARE)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __SQLITE3__)
-  target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 elseif(SQLite3_IS_STATIC)
   # in the static case we need to link SQLite3 uncoditionally
-  target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
