@@ -55,6 +55,22 @@ namespace qml {
 
 namespace {
 const QColor kLegacyLibraryBackgroundColor(0x1e, 0x1e, 0x1e);
+
+struct SchemeStyle {
+    QString qssName;
+    QString signalColor;
+};
+
+SchemeStyle getActiveSchemeStyle() {
+    UserSettingsPointer pConfig = QmlConfigProxy::get();
+    QString configScheme = pConfig->getValue(
+            ConfigKey(QStringLiteral("[Config]"), QStringLiteral("Scheme")));
+    if (configScheme.compare(QStringLiteral("Classic"), Qt::CaseInsensitive) == 0) {
+        return {QStringLiteral("style_classic.qss"), QStringLiteral("#e7c413")};
+    } else {
+        return {QStringLiteral("style_palemoon.qss"), QStringLiteral("#d9b28c")};
+    }
+}
 } // namespace
 
 QmlLegacyLibraryItem::~QmlLegacyLibraryItem() = default;
@@ -1451,13 +1467,16 @@ void QmlLegacyLibraryItem::applyLegacyLibrarySkinConfiguration() {
     SkinContext context(QmlConfigProxy::get(), lateNightSkinPath + QStringLiteral("/skin.xml"));
     context.setSkinBasePath(lateNightSkinPath);
 
+    const SchemeStyle scheme = getActiveSchemeStyle();
+
     QDomDocument document(QStringLiteral("QmlLegacyLibraryItemLibrarySetup"));
     const QString libraryXml = QStringLiteral(
             "<Library>"
             "<ShowButtonText>false</ShowButtonText>"
             "<TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>"
-            "<SignalColor>#e7c413</SignalColor>"
-            "</Library>");
+            "<SignalColor>%1</SignalColor>"
+            "</Library>")
+                                       .arg(scheme.signalColor);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     const QDomDocument::ParseResult parseResult = document.setContent(libraryXml);
     if (!parseResult) {
@@ -1499,8 +1518,9 @@ void QmlLegacyLibraryItem::applyLegacyStylesheet() {
             resourcePath + QStringLiteral("skins/LateNight"));
     QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
     QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinRoot});
+    const SchemeStyle scheme = getActiveSchemeStyle();
     const QString styleFilePath =
-            skinsRoot + QStringLiteral("LateNight/style_classic.qss");
+            skinsRoot + QStringLiteral("LateNight/") + scheme.qssName;
 
     QFile styleFile(styleFilePath);
     if (!styleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {

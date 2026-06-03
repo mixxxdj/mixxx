@@ -208,6 +208,8 @@ class QmlConfigProxy : public QObject {
     Q_PROPERTY(bool configStartInFullscreenKey READ configStartInFullscreenKey
                     WRITE set_configStartInFullscreenKey NOTIFY
                             configStartInFullscreenKeyChanged);
+    Q_PROPERTY(QString configScheme READ configScheme WRITE set_configScheme
+                    NOTIFY configSchemeChanged);
     // BPM group
     Q_PROPERTY(EngineSync::SyncLockAlgorithm bpmSyncLockAlgorithm READ
                     bpmSyncLockAlgorithm WRITE set_bpmSyncLockAlgorithm NOTIFY
@@ -325,6 +327,7 @@ class QmlConfigProxy : public QObject {
     PROPERTY_DECL_ACCESSOR(QString, configKeyColorPalette);
     PROPERTY_DECL_ACCESSOR(bool, configKeyColorsEnabled);
     PROPERTY_DECL_ACCESSOR(bool, configStartInFullscreenKey);
+    PROPERTY_DECL_ACCESSOR(QString, configScheme);
 
     // BPM group
     PROPERTY_DECL_ACCESSOR(EngineSync::SyncLockAlgorithm, bpmSyncLockAlgorithm);
@@ -389,6 +392,7 @@ class QmlConfigProxy : public QObject {
     void configKeyColorPaletteChanged();
     void configKeyColorsEnabledChanged();
     void configStartInFullscreenKeyChanged();
+    void configSchemeChanged();
     void bpmSyncLockAlgorithmChanged();
 
   private:

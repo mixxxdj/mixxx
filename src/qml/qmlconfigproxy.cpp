@@ -101,6 +101,7 @@ const QString kTrackColorPaletteKey = QStringLiteral("TrackColorPalette");
 const QString kKeyColorPaletteKey = QStringLiteral("KeyColorPalette");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kKeyColorsEnabledKey = QStringLiteral("key_colors_enabled");
+const QString kSchemeKey = QStringLiteral("Scheme");
 
 // BPM group
 const QString kSyncLockAlgorithmKey = QStringLiteral("sync_lock_algorithm");
@@ -348,6 +349,11 @@ PROPERTY_IMPL(kConfigGroup,
         bool,
         configStartInFullscreenKey,
         false);
+PROPERTY_IMPL(kConfigGroup,
+        kSchemeKey,
+        QString,
+        configScheme,
+        QStringLiteral("PaleMoon"));
 PROPERTY_IMPL(kBpmGroup,
         kSyncLockAlgorithmKey,
         EngineSync::SyncLockAlgorithm,
