@@ -743,8 +743,10 @@ void CoreServices::initialize(QGuiApplication* pApp) {
             // volume is present (unusual, but keeps a sane default).
             const QString musicDir = QStandardPaths::writableLocation(
                     QStandardPaths::MusicLocation);
-            if (!musicDir.isEmpty()) {
-                QDir(musicDir).mkpath(QStringLiteral("."));
+            QDir musicQDir(musicDir);
+            if (!musicDir.isEmpty() &&
+                    (musicQDir.exists() ||
+                            musicQDir.mkpath(QStringLiteral(".")))) {
                 androidRoots.append(musicDir);
             }
         }
