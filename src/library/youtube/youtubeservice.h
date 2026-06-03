@@ -32,24 +32,23 @@ struct YouTubeVideoInfo {
 /// Uses three cooperating backends so the YouTube tab works out of the box
 /// on every platform Mixxx ships on, with no external setup required:
 ///
-///   1. **Piped HTTP** (primary, all platforms incl. Android). Piped is an
+///   1. **YouTube InnerTube API** (primary, all platforms incl. Android).
+///      The same internal API used by yt-dlp and ytdlnis, hit directly with
+///      no third-party proxy. Search/trending POST to
+///      `https://www.youtube.com/youtubei/v1/search`; stream resolution POSTs
+///      to `.../youtubei/v1/player` with a sequence of mobile/embedded client
+///      contexts (ANDROID_VR, iOS, embedded TV), each of which can return
+///      non-cipher adaptive stream URLs valid for ~6h. We fail over across
+///      clients so a single throttled client does not break things. Because it
+///      depends on no community-run servers, this is the most reliable path
+///      and is therefore tried first. Pure Qt/HTTPS — no external deps.
+///
+///   2. **Piped HTTP** (fallback, all platforms incl. Android). Piped is an
 ///      open-source, federated REST proxy in front of YouTube
 ///      (https://github.com/TeamPiped/Piped). We round-robin a hardcoded
-///      list of known-good public instances; on per-request failure we
-///      automatically failover to the next instance. Search is `/search`,
-///      stream resolution is `/streams/<id>` which returns direct unsigned
-///      googlevideo URLs that we then pull with QNetworkAccessManager.
-///      Pure Qt over HTTPS — no native dependency, no bundled binary, no
-///      JNI bridge.
-///
-///   2. **YouTube InnerTube API** (secondary, all platforms incl. Android).
-///      The same internal API used by yt-dlp and ytdlnis. We POST to
-///      `https://www.youtube.com/youtubei/v1/player` with a sequence of
-///      mobile/embedded client contexts (iOS, Android, embedded TV), each of
-///      which can return non-cipher adaptive stream URLs valid for ~6h. We
-///      fail over across clients so a single client being throttled does not
-///      break downloads. Pure Qt/HTTPS — no external dependencies, no
-///      third-party proxy. Used when all Piped instances are unreachable.
+///      list of public instances; on per-request failure we failover to the
+///      next instance. Used when InnerTube is unreachable. Piped community
+///      instances are ephemeral, so this is a best-effort secondary path.
 ///
 ///   3. **Bundled yt-dlp** (last resort). Desktop: ships the official
 ///      self-contained PyInstaller binary. Android: bundles the
@@ -109,7 +108,24 @@ class YouTubeService : public QObject {
     /// m_ytDlpPath at construction.
     static QString locateYtDlp();
 
-    // ----- Piped (primary) -----
+    // ----- InnerTube search (primary) -----
+
+    /// Try a search against the YouTube InnerTube /search endpoint using
+    /// `m_innerTubeClients[clientIdx]` (indexed into the internal client
+    /// table). On network/parse failure — or a 200 with no parseable videos —
+    /// recurses to the next client. On success emits searchResultsReady(
+    /// emittedQuery, results). When every client is exhausted, calls
+    /// `onAllFailed(lastError)` so the caller can fall through to Piped/yt-dlp.
+    /// `requestQuery` is the text actually sent to YouTube; `emittedQuery` is
+    /// echoed back on searchResultsReady (these differ for trending, where the
+    /// emitted value is the kTrendingQueryPrefix sentinel).
+    void searchViaInnerTube(const QString& emittedQuery,
+            const QString& requestQuery,
+            int cap,
+            int clientIdx,
+            const std::function<void(const QString& lastError)>& onAllFailed);
+
+    // ----- Piped (search/download fallback) -----
 
     /// Try a Piped search against `m_pipedInstances[instanceIdx]`. On
     /// network/parse failure, recurses to the next instance. When all

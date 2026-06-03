@@ -311,6 +311,147 @@ QList<YouTubeVideoInfo> parsePipedItems(const QJsonArray& items, int cap) {
     return results;
 }
 
+// Extract plain text from an InnerTube text object, which may use either the
+// {"runs":[{"text":...}, ...]} or the {"simpleText":...} shape.
+QString innerTubeText(const QJsonObject& obj) {
+    const QJsonValue simple = obj.value(QStringLiteral("simpleText"));
+    if (simple.isString()) {
+        return simple.toString();
+    }
+    QString out;
+    const QJsonArray runs = obj.value(QStringLiteral("runs")).toArray();
+    for (const QJsonValue& r : runs) {
+        out += r.toObject().value(QStringLiteral("text")).toString();
+    }
+    return out;
+}
+
+// Parse a "M:SS" or "H:MM:SS" timestamp into seconds. Returns -1 when the
+// string is empty or not a recognizable timestamp. Live and upcoming videos
+// expose no lengthText at all, so a -1 here doubles as a "this is a live or
+// otherwise non-playable item, skip it" signal.
+int parseTimestampToSeconds(const QString& text) {
+    const QString t = text.trimmed();
+    if (t.isEmpty()) {
+        return -1;
+    }
+    const QStringList parts = t.split(QLatin1Char(':'));
+    if (parts.isEmpty() || parts.size() > 3) {
+        return -1;
+    }
+    int seconds = 0;
+    for (const QString& p : parts) {
+        bool ok = false;
+        const int n = p.trimmed().toInt(&ok);
+        if (!ok || n < 0) {
+            return -1;
+        }
+        seconds = seconds * 60 + n;
+    }
+    return seconds;
+}
+
+// Recursively walk an InnerTube /search (or /browse) response collecting every
+// video item. ANDROID_VR/TVHTML5 clients expose items as "compactVideoRenderer"
+// and the WEB client as "videoRenderer"; both share the field layout we need
+// (videoId, title, byline, lengthText). Channels, playlists and live streams
+// are skipped. Stops once `cap` unique videos have been gathered.
+void collectInnerTubeVideos(const QJsonValue& node,
+        QList<YouTubeVideoInfo>* out,
+        QSet<QString>* seen,
+        int cap) {
+    if (out->size() >= cap) {
+        return;
+    }
+    if (node.isObject()) {
+        const QJsonObject obj = node.toObject();
+        const QJsonValue compact = obj.value(QStringLiteral("compactVideoRenderer"));
+        const QJsonValue plain = obj.value(QStringLiteral("videoRenderer"));
+        const QJsonObject video = compact.isObject()
+                ? compact.toObject()
+                : (plain.isObject() ? plain.toObject() : QJsonObject());
+        if (!video.isEmpty()) {
+            YouTubeVideoInfo info;
+            info.id = video.value(QStringLiteral("videoId")).toString();
+            info.title =
+                    innerTubeText(video.value(QStringLiteral("title")).toObject());
+            QString uploader = innerTubeText(
+                    video.value(QStringLiteral("longBylineText")).toObject());
+            if (uploader.isEmpty()) {
+                uploader = innerTubeText(
+                        video.value(QStringLiteral("shortBylineText")).toObject());
+            }
+            info.uploader = uploader;
+            const int dur = parseTimestampToSeconds(innerTubeText(
+                    video.value(QStringLiteral("lengthText")).toObject()));
+            // No lengthText -> live/upcoming/non-playable: skip it.
+            info.isLive = dur < 0;
+            info.durationSec = dur > 0 ? dur : 0;
+            if (!info.isLive && isValidYouTubeVideoId(info.id) &&
+                    !info.title.isEmpty() && !seen->contains(info.id)) {
+                seen->insert(info.id);
+                out->append(info);
+            }
+            // Don't descend into a matched renderer's children.
+            return;
+        }
+        for (const QJsonValue& v : obj) {
+            collectInnerTubeVideos(v, out, seen, cap);
+            if (out->size() >= cap) {
+                return;
+            }
+        }
+    } else if (node.isArray()) {
+        const QJsonArray arr = node.toArray();
+        for (const QJsonValue& v : arr) {
+            collectInnerTubeVideos(v, out, seen, cap);
+            if (out->size() >= cap) {
+                return;
+            }
+        }
+    }
+}
+
+// Parse an InnerTube search response into our internal video list, capped at
+// `cap`. Returns an empty list when the response contained no usable videos.
+QList<YouTubeVideoInfo> parseInnerTubeSearch(const QJsonObject& root, int cap) {
+    QList<YouTubeVideoInfo> results;
+    QSet<QString> seen;
+    collectInnerTubeVideos(QJsonValue(root), &results, &seen, cap);
+    return results;
+}
+
+// Build the InnerTube `context.client` object for the given client descriptor.
+// Shared by the player (download) and search request paths so both speak the
+// exact same client identity to YouTube.
+QJsonObject innerTubeClientContext(const InnerTubeClient& c) {
+    QJsonObject client;
+    client.insert(QStringLiteral("clientName"), QString::fromLatin1(c.clientName));
+    client.insert(QStringLiteral("clientVersion"),
+            QString::fromLatin1(c.clientVersion));
+    client.insert(QStringLiteral("hl"), QStringLiteral("en"));
+    client.insert(QStringLiteral("gl"), QStringLiteral("US"));
+    if (c.androidSdkVersion > 0) {
+        client.insert(QStringLiteral("androidSdkVersion"), c.androidSdkVersion);
+    }
+    if (c.deviceMake[0] != '\0') {
+        client.insert(QStringLiteral("deviceMake"),
+                QString::fromLatin1(c.deviceMake));
+    }
+    if (c.deviceModel[0] != '\0') {
+        client.insert(QStringLiteral("deviceModel"),
+                QString::fromLatin1(c.deviceModel));
+    }
+    if (c.osName[0] != '\0') {
+        client.insert(QStringLiteral("osName"), QString::fromLatin1(c.osName));
+    }
+    if (c.osVersion[0] != '\0') {
+        client.insert(QStringLiteral("osVersion"),
+                QString::fromLatin1(c.osVersion));
+    }
+    return client;
+}
+
 const QString YouTubeService::kTrendingQueryPrefix =
         QStringLiteral("__trending__:");
 
@@ -364,7 +505,7 @@ QString YouTubeService::locateYtDlp() {
 }
 
 // =============================================================================
-// Public API — picks Piped first, yt-dlp as desktop fallback
+// Public API — InnerTube first (search + download), then Piped, then yt-dlp
 // =============================================================================
 
 void YouTubeService::searchVideos(const QString& query, int cap) {
@@ -372,29 +513,47 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
         Q_EMIT searchResultsReady(query, {});
         return;
     }
-    const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
-#if defined(Q_OS_ANDROID)
-    // On Android, the bundled yt-dlp is accessed via JNI, not QProcess.
-    // searchViaYtDlp only works with a real binary path.
-    const bool canSearchViaYtDlp = hasYtDlpFallback &&
-            (m_ytDlpPath != QStringLiteral("android-bundled"));
-#else
-    const bool canSearchViaYtDlp = hasYtDlpFallback;
-#endif
-    searchViaPiped(query,
+    // Primary backend: the YouTube InnerTube /search endpoint. It is hit
+    // directly (no third-party Piped proxy), so it does not depend on the
+    // health of community-run instances — which is why search used to return
+    // nothing and lag for ~100s while cycling through dead Piped hosts. We fail
+    // over to Piped and then yt-dlp only if InnerTube itself fails.
+    searchViaInnerTube(query,
+            query,
             cap,
-            /*instanceIdx=*/0,
-            [this, query, cap, canSearchViaYtDlp](const QString& lastError) {
-                if (canSearchViaYtDlp) {
-                    kLogger.warning() << "All Piped instances failed for search"
-                                      << query << ":" << lastError
-                                      << "— falling back to yt-dlp";
-                    searchViaYtDlp(query, cap);
-                } else {
-                    kLogger.warning() << "All Piped instances failed for search"
-                                      << query << ":" << lastError;
-                    Q_EMIT searchFailed(query, lastError);
-                }
+            /*clientIdx=*/0,
+            [this, query, cap](const QString& innerTubeError) {
+                kLogger.warning()
+                        << "InnerTube search failed for" << query << ":"
+                        << innerTubeError << "— falling back to Piped";
+                const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
+#if defined(Q_OS_ANDROID)
+                // On Android, the bundled yt-dlp is accessed via JNI, not
+                // QProcess. searchViaYtDlp only works with a real binary path.
+                const bool canSearchViaYtDlp = hasYtDlpFallback &&
+                        (m_ytDlpPath != QStringLiteral("android-bundled"));
+#else
+                const bool canSearchViaYtDlp = hasYtDlpFallback;
+#endif
+                searchViaPiped(query,
+                        cap,
+                        /*instanceIdx=*/0,
+                        [this, query, cap, canSearchViaYtDlp](
+                                const QString& lastError) {
+                            if (canSearchViaYtDlp) {
+                                kLogger.warning()
+                                        << "All Piped instances failed for "
+                                           "search"
+                                        << query << ":" << lastError
+                                        << "— falling back to yt-dlp";
+                                searchViaYtDlp(query, cap);
+                            } else {
+                                kLogger.warning()
+                                        << "All search backends failed for"
+                                        << query << ":" << lastError;
+                                Q_EMIT searchFailed(query, lastError);
+                            }
+                        });
             });
 }
 
@@ -404,26 +563,28 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
         return;
     }
     QDir().mkpath(cacheDir);
-    downloadViaPiped(videoId,
+    // Primary: the YouTube InnerTube player API (same reliable, proxy-free path
+    // used for search). The Android client context returns plain (non-cipher)
+    // stream URLs valid for ~6 hours with no external dependencies. We only fall
+    // back to the (frequently-dead) Piped instances and then yt-dlp if every
+    // InnerTube client fails — this avoids the long stall the user hit while
+    // cycling through unreachable Piped hosts before each download.
+    downloadViaInnerTube(videoId,
             cacheDir,
-            /*instanceIdx=*/0,
-            [this, videoId, cacheDir](const QString& pipedError) {
-                // Piped failed on all instances — try the InnerTube API next.
-                // This is the same underlying API that yt-dlp and ytdlnis use:
-                // the Android client context returns plain (non-cipher) stream
-                // URLs valid for ~6 hours, with no external dependencies and no
-                // third-party proxy server needed. Works on every platform.
-                kLogger.warning() << "All Piped instances failed for download"
-                                  << videoId << ":" << pipedError
-                                  << "— trying InnerTube API";
-                downloadViaInnerTube(videoId,
+            [this, videoId, cacheDir](const QString& innerTubeError) {
+                kLogger.warning() << "InnerTube download failed for" << videoId
+                                  << ":" << innerTubeError
+                                  << "— falling back to Piped";
+                downloadViaPiped(videoId,
                         cacheDir,
-                        [this, videoId, cacheDir](const QString& innerTubeError) {
-                            // InnerTube also failed — last resort: yt-dlp binary /
+                        /*instanceIdx=*/0,
+                        [this, videoId, cacheDir, innerTubeError](
+                                const QString& pipedError) {
+                            // Piped also failed — last resort: yt-dlp binary /
                             // android-bundled JNI runtime (when compiled in).
                             kLogger.warning()
-                                    << "InnerTube failed for" << videoId << ":"
-                                    << innerTubeError;
+                                    << "All Piped instances failed for download"
+                                    << videoId << ":" << pipedError;
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
                             if (m_ytDlpPath == QStringLiteral("android-bundled")) {
                                 kLogger.warning()
@@ -453,12 +614,108 @@ void YouTubeService::fetchTrending(const QString& region, int cap) {
                           << region << "— defaulting to GR";
         r = kDefaultRegion;
     }
-    fetchTrendingViaPiped(r, cap, /*instanceIdx=*/0);
+    // Primary backend: resolve the region's "top songs" feed through the
+    // InnerTube /search endpoint (same reliable path as searchVideos), then
+    // fall back to Piped only if InnerTube fails. The sentinel query carries
+    // the region so YouTubeFeature renders a "Trending in <Country>" header.
+    const QString sentinelQuery = kTrendingQueryPrefix + r;
+    const QString requestQuery = countryTopSongsCategoryQuery(r);
+    searchViaInnerTube(sentinelQuery,
+            requestQuery,
+            cap,
+            /*clientIdx=*/0,
+            [this, r, cap](const QString& innerTubeError) {
+                kLogger.warning() << "InnerTube trending failed for" << r << ":"
+                                  << innerTubeError << "— falling back to Piped";
+                fetchTrendingViaPiped(r, cap, /*instanceIdx=*/0);
+            });
 }
 
 // =============================================================================
 // Piped (primary backend, works on every Qt platform incl. Android)
 // =============================================================================
+
+// =============================================================================
+// YouTube InnerTube search (primary backend — all platforms incl. Android)
+// =============================================================================
+
+void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
+        const QString& requestQuery,
+        int cap,
+        int clientIdx,
+        const std::function<void(const QString&)>& onAllFailed) {
+    const QVector<InnerTubeClient>& clients = innerTubeClients();
+    if (clientIdx < 0 || clientIdx >= clients.size()) {
+        onAllFailed(tr("All InnerTube clients failed for search"));
+        return;
+    }
+    const InnerTubeClient& c = clients.at(clientIdx);
+
+    // Advance to the next client on any per-client failure (network error or a
+    // response we could not parse a single video out of).
+    auto tryNext = [this, emittedQuery, requestQuery, cap, clientIdx, onAllFailed](
+                           const QString& err) {
+        const QVector<InnerTubeClient>& cl = innerTubeClients();
+        if (clientIdx + 1 < cl.size()) {
+            kLogger.info() << "InnerTube search client"
+                           << cl.at(clientIdx).clientName << "failed:" << err
+                           << "— trying next client";
+            searchViaInnerTube(
+                    emittedQuery, requestQuery, cap, clientIdx + 1, onAllFailed);
+        } else {
+            onAllFailed(err);
+        }
+    };
+
+    QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/search"));
+    if (c.apiKey[0] != '\0') {
+        QUrlQuery query;
+        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
+        reqUrl.setQuery(query);
+    }
+
+    QJsonObject context;
+    context.insert(QStringLiteral("client"), innerTubeClientContext(c));
+    QJsonObject body;
+    body.insert(QStringLiteral("context"), context);
+    body.insert(QStringLiteral("query"), requestQuery);
+
+    QNetworkRequest req(reqUrl);
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+            QStringLiteral("application/json"));
+    req.setRawHeader("User-Agent", QByteArray(c.userAgent));
+    req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
+    req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
+    req.setTransferTimeout(kPipedHttpTimeoutMs);
+
+    QNetworkReply* reply = m_pNam->post(
+            req, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    connect(reply,
+            &QNetworkReply::finished,
+            this,
+            [this, reply, emittedQuery, requestQuery, cap, tryNext]() {
+                reply->deleteLater();
+                if (reply->error() != QNetworkReply::NoError) {
+                    tryNext(tr("InnerTube search request failed: %1")
+                                    .arg(reply->errorString()));
+                    return;
+                }
+                const QJsonObject root =
+                        QJsonDocument::fromJson(reply->readAll()).object();
+                const QList<YouTubeVideoInfo> results =
+                        parseInnerTubeSearch(root, cap);
+                if (results.isEmpty()) {
+                    // A 200 with no parseable videos usually means this client
+                    // returned a renderer shape we don't handle (e.g. the iOS
+                    // elementRenderer). Fail over to the next client.
+                    tryNext(tr("InnerTube search returned no usable results"));
+                    return;
+                }
+                kLogger.info() << "InnerTube search returned" << results.size()
+                               << "results for" << requestQuery;
+                Q_EMIT searchResultsReady(emittedQuery, results);
+            });
+}
 
 void YouTubeService::searchViaPiped(const QString& query,
         int cap,
@@ -861,8 +1118,6 @@ void YouTubeService::downloadViaInnerTubeClient(
         return;
     }
     const InnerTubeClient& c = clients.at(clientIdx);
-    const QString clientName = QString::fromLatin1(c.clientName);
-    const QString clientVersion = QString::fromLatin1(c.clientVersion);
     const QString userAgent = QString::fromLatin1(c.userAgent);
 
     // Helper to advance to the next client on any per-client failure.
@@ -890,29 +1145,7 @@ void YouTubeService::downloadViaInnerTubeClient(
         reqUrl.setQuery(query);
     }
 
-    QJsonObject client;
-    client.insert(QStringLiteral("clientName"), clientName);
-    client.insert(QStringLiteral("clientVersion"), clientVersion);
-    client.insert(QStringLiteral("hl"), QStringLiteral("en"));
-    client.insert(QStringLiteral("gl"), QStringLiteral("US"));
-    if (c.androidSdkVersion > 0) {
-        client.insert(QStringLiteral("androidSdkVersion"), c.androidSdkVersion);
-    }
-    if (c.deviceMake[0] != '\0') {
-        client.insert(QStringLiteral("deviceMake"),
-                QString::fromLatin1(c.deviceMake));
-    }
-    if (c.deviceModel[0] != '\0') {
-        client.insert(QStringLiteral("deviceModel"),
-                QString::fromLatin1(c.deviceModel));
-    }
-    if (c.osName[0] != '\0') {
-        client.insert(QStringLiteral("osName"), QString::fromLatin1(c.osName));
-    }
-    if (c.osVersion[0] != '\0') {
-        client.insert(QStringLiteral("osVersion"),
-                QString::fromLatin1(c.osVersion));
-    }
+    QJsonObject client = innerTubeClientContext(c);
     QJsonObject context;
     context.insert(QStringLiteral("client"), client);
     QJsonObject body;

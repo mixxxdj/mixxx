@@ -826,27 +826,41 @@ void CoreServices::initialize(QGuiApplication* pApp) {
 #if defined(Q_OS_ANDROID)
     // The MANAGE_EXTERNAL_STORAGE grant requested above is asynchronous: on the
     // very first launch the storage scan below starts *before* the user has
-    // granted all-files access, so it reads nothing and the library shows up
-    // empty. On every subsequent launch loadRootDirs() is no longer empty, so
-    // without this block the dirs would never be rescanned and the library
-    // would stay empty forever even after the user grants the permission.
+    // granted all-files access. Every directory under shared storage is then
+    // unreadable, so requestAddDir() fails for /storage/emulated/0 and the
+    // library shows up empty. Worse, QStandardPaths::MusicLocation (an
+    // app-specific path that *is* readable without the grant) may get
+    // registered as the sole root, so on later launches loadRootDirs() is no
+    // longer empty and the real music volume never gets scanned — leaving the
+    // library permanently empty even after the user grants the permission.
     //
-    // Whenever all-files access is (now) granted, make sure the primary
-    // shared-storage volume is registered and force an incremental rescan so
-    // the music that only became readable after the grant finally appears.
+    // So: once all-files access is granted, make sure the primary shared-storage
+    // volume itself is registered (unless an existing root already covers it),
+    // then force a rescan so the music that only became readable after the grant
+    // finally appears. addDirectory() transparently replaces any now-redundant
+    // child roots (e.g. the app-specific fallback) when a parent is added.
     {
         const bool hasAllFilesAccess = QJniObject::callStaticMethod<jboolean>(
                 "android/os/Environment", "isExternalStorageManager");
         if (hasAllFilesAccess) {
-            if (m_pTrackCollectionManager->internalCollection()
-                            ->loadRootDirs()
-                            .isEmpty()) {
-                const QString primaryStorage =
-                        QStringLiteral("/storage/emulated/0");
-                if (QFileInfo::exists(primaryStorage) &&
-                        m_pLibrary->requestAddDir(primaryStorage)) {
-                    musicDirAdded = true;
+            const QString primaryStorage = QStringLiteral("/storage/emulated/0");
+            // Is the primary volume already watched, either directly or via an
+            // ancestor root? If so, skip the add to avoid the "already in your
+            // library" dialog; the rescan below still picks up its contents.
+            bool primaryCovered = false;
+            const QStringList rootDirs =
+                    m_pTrackCollectionManager->internalCollection()
+                            ->getRootDirStrings();
+            for (const QString& root : rootDirs) {
+                if (primaryStorage == root ||
+                        primaryStorage.startsWith(root + QLatin1Char('/'))) {
+                    primaryCovered = true;
+                    break;
                 }
+            }
+            if (!primaryCovered && QFileInfo::exists(primaryStorage) &&
+                    m_pLibrary->requestAddDir(primaryStorage)) {
+                musicDirAdded = true;
             }
             // Force a rescan so storage that became readable only after the
             // permission grant is picked up. The scanner is incremental, so
