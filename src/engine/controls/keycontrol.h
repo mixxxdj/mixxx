@@ -63,6 +63,12 @@ class KeyControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_keylockMode;
     std::unique_ptr<ControlPushButton> m_keyunlockMode;
 
+    // Per-deck toggle for the harmonic key highlighter in the library.
+    // When enabled, the library track table is tinted by each track's
+    // harmonic relationship to this deck's current engine key.
+    // Read by KeyHighlightManager via a ControlProxy.
+    std::unique_ptr<ControlPushButton> m_pKeyHighlight;
+
     // The current loaded file's detected key
     std::unique_ptr<ControlObject> m_pFileKey;
 
