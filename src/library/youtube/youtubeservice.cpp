@@ -21,6 +21,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QVector>
 #include <utility>
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
@@ -68,6 +69,54 @@ const QStringList kPipedInstances = {
         QStringLiteral("https://pi.ggtyler.dev"),
         QStringLiteral("https://pipedapi.kavin.rocks"),
 };
+
+// InnerTube client contexts tried in order by downloadViaInnerTubeClient().
+// Each entry mimics an official YouTube app/device so the player endpoint
+// returns plain (non-cipher) adaptive stream URLs that need no JS signature
+// deciphering. YouTube periodically tightens individual clients (e.g. the
+// ANDROID client now sometimes 403s the actual stream without a poToken), so
+// we fail over across several clients to maximise the chance one still yields
+// a directly-downloadable audio stream. The iOS client is currently the most
+// reliable for unsigned URLs and is therefore tried first.
+struct InnerTubeClient {
+    const char* clientName;
+    const char* clientVersion;
+    const char* clientNameId; // numeric X-YouTube-Client-Name
+    const char* apiKey;
+    const char* userAgent;
+    const char* deviceModel; // optional, empty when not applicable
+};
+
+const QVector<InnerTubeClient>& innerTubeClients() {
+    static const QVector<InnerTubeClient> kClients = {
+            // iOS YouTube app — returns unsigned URLs, no poToken required.
+            {"IOS",
+                    "19.45.4",
+                    "5",
+                    "AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc",
+                    "com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 18_1_0 "
+                    "like Mac OS X)",
+                    "iPhone16,2"},
+            // Android YouTube app — historically reliable, kept as a fallback.
+            {"ANDROID",
+                    "19.44.38",
+                    "3",
+                    "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM394",
+                    "com.google.android.youtube/19.44.38 (Linux; U; Android 14) "
+                    "gzip",
+                    ""},
+            // TV HTML5 client — another unsigned-URL path, useful when the
+            // mobile clients are throttled.
+            {"TVHTML5_SIMPLY_EMBEDDED_PLAYER",
+                    "2.0",
+                    "85",
+                    "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+                    "Mozilla/5.0 (PlayStation; PlayStation 4/12.00) AppleWebKit/"
+                    "605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
+                    ""},
+    };
+    return kClients;
+}
 } // anonymous namespace
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
@@ -662,7 +711,8 @@ void YouTubeService::downloadViaPiped(const QString& videoId,
 void YouTubeService::downloadAudioStream(const QString& videoId,
         const QString& cacheDir,
         const QJsonArray& audioStreams,
-        const std::function<void(const QString&)>& onFailure) {
+        const std::function<void(const QString&)>& onFailure,
+        const QString& streamUserAgent) {
     // Pick the highest-bitrate M4A/AAC stream first because Mixxx already
     // supports this container everywhere the YouTube feature is built. Fall
     // back to WebM/Opus only if Piped does not expose an M4A stream.
@@ -709,7 +759,15 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
     }
 
     QNetworkRequest req((QUrl(streamUrl)));
-    req.setRawHeader("User-Agent", "Mixxx/YouTube");
+    // googlevideo validates that the stream request comes from the same client
+    // that resolved the URL. When the URL was obtained from an InnerTube client
+    // (Android/iOS), reuse that client's User-Agent so the CDN does not reject
+    // the request with HTTP 403. Piped URLs are already proxied/unsigned, so a
+    // generic User-Agent is fine there.
+    req.setRawHeader("User-Agent",
+            streamUserAgent.isEmpty()
+                    ? QByteArray("Mixxx/YouTube")
+                    : streamUserAgent.toUtf8());
     // googlevideo CDN is generally fast; a transfer timeout of 10 min mirrors
     // the yt-dlp watchdog and matches kDownloadTimeoutMs.
     req.setTransferTimeout(kDownloadTimeoutMs);
@@ -761,42 +819,76 @@ void YouTubeService::downloadViaInnerTube(
         const QString& cacheDir,
         const std::function<void(const QString&)>& onAllFailed) {
     // The InnerTube player API is what yt-dlp and ytdlnis use internally.
-    // Sending an Android client context causes YouTube to return plain
+    // Sending a mobile/embedded client context causes YouTube to return plain
     // (non-cipher) adaptive stream URLs that are valid for ~6 hours. This
     // requires no external binary, no third-party proxy, and works on every Qt
-    // platform including Android. Falls back to yt-dlp only when this fails.
-    static const QLatin1String kClientName("ANDROID");
-    static const QLatin1String kClientVersion("17.31.35");
-    // "3" is the client-name numeric ID for the Android app.
-    static const QLatin1String kClientNameId("3");
-    static const QLatin1String kApiKey("AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM394");
+    // platform including Android. We try several clients in turn (see
+    // innerTubeClients()) and only fall back to yt-dlp once all of them fail.
+    downloadViaInnerTubeClient(videoId, cacheDir, /*clientIdx=*/0, onAllFailed);
+}
+
+void YouTubeService::downloadViaInnerTubeClient(
+        const QString& videoId,
+        const QString& cacheDir,
+        int clientIdx,
+        const std::function<void(const QString&)>& onAllFailed) {
+    const QVector<InnerTubeClient>& clients = innerTubeClients();
+    if (clientIdx < 0 || clientIdx >= clients.size()) {
+        onAllFailed(tr("All InnerTube clients failed"));
+        return;
+    }
+    const InnerTubeClient& c = clients.at(clientIdx);
+    const QString clientName = QString::fromLatin1(c.clientName);
+    const QString clientVersion = QString::fromLatin1(c.clientVersion);
+    const QString userAgent = QString::fromLatin1(c.userAgent);
+
+    // Helper to advance to the next client on any per-client failure.
+    auto tryNext = [this, videoId, cacheDir, clientIdx, onAllFailed](
+                           const QString& err) {
+        const QVector<InnerTubeClient>& cl = innerTubeClients();
+        if (clientIdx + 1 < cl.size()) {
+            kLogger.warning() << "InnerTube client"
+                              << cl.at(clientIdx).clientName << "failed for"
+                              << videoId << ":" << err << "— trying next client";
+            downloadViaInnerTubeClient(
+                    videoId, cacheDir, clientIdx + 1, onAllFailed);
+        } else {
+            onAllFailed(err);
+        }
+    };
 
     QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/player"));
     QUrlQuery query;
-    query.addQueryItem(QStringLiteral("key"), kApiKey);
+    query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
     reqUrl.setQuery(query);
 
     QJsonObject client;
-    client.insert(QStringLiteral("clientName"), QString(kClientName));
-    client.insert(QStringLiteral("clientVersion"), QString(kClientVersion));
+    client.insert(QStringLiteral("clientName"), clientName);
+    client.insert(QStringLiteral("clientVersion"), clientVersion);
     client.insert(QStringLiteral("hl"), QStringLiteral("en"));
     client.insert(QStringLiteral("gl"), QStringLiteral("US"));
-    client.insert(QStringLiteral("androidSdkVersion"), 30);
+    if (clientName == QStringLiteral("ANDROID")) {
+        client.insert(QStringLiteral("androidSdkVersion"), 34);
+    }
+    if (c.deviceModel[0] != '\0') {
+        client.insert(QStringLiteral("deviceModel"),
+                QString::fromLatin1(c.deviceModel));
+    }
     QJsonObject context;
     context.insert(QStringLiteral("client"), client);
     QJsonObject body;
     body.insert(QStringLiteral("videoId"), videoId);
     body.insert(QStringLiteral("context"), context);
+    // Required for the embedded TV client to consider the video playable.
+    body.insert(QStringLiteral("contentCheckOk"), true);
+    body.insert(QStringLiteral("racyCheckOk"), true);
 
     QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,
             QStringLiteral("application/json"));
-    req.setRawHeader("User-Agent",
-            QStringLiteral("com.google.android.youtube/%1 (Linux; U; Android 11) gzip")
-                    .arg(kClientVersion)
-                    .toUtf8());
-    req.setRawHeader("X-YouTube-Client-Name", QByteArray(kClientNameId.latin1()));
-    req.setRawHeader("X-YouTube-Client-Version", QByteArray(kClientVersion.latin1()));
+    req.setRawHeader("User-Agent", userAgent.toUtf8());
+    req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
+    req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
     req.setTransferTimeout(kPipedHttpTimeoutMs);
 
     QNetworkReply* reply = m_pNam->post(
@@ -804,12 +896,11 @@ void YouTubeService::downloadViaInnerTube(
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, videoId, cacheDir, onAllFailed]() {
+            [this, reply, videoId, cacheDir, userAgent, tryNext]() {
                 reply->deleteLater();
                 if (reply->error() != QNetworkReply::NoError) {
-                    kLogger.warning() << "InnerTube request failed for" << videoId
-                                      << ":" << reply->errorString();
-                    onAllFailed(tr("InnerTube API failed: %1").arg(reply->errorString()));
+                    tryNext(tr("InnerTube API failed: %1")
+                                    .arg(reply->errorString()));
                     return;
                 }
                 const QJsonObject root =
@@ -822,9 +913,7 @@ void YouTubeService::downloadViaInnerTube(
                 if (status != QStringLiteral("OK")) {
                     const QString reason =
                             playability.value(QStringLiteral("reason")).toString();
-                    kLogger.warning() << "InnerTube: video" << videoId
-                                      << "not playable:" << status << reason;
-                    onAllFailed(tr("Video not playable: %1")
+                    tryNext(tr("Video not playable: %1")
                                     .arg(reason.isEmpty() ? status : reason));
                     return;
                 }
@@ -834,8 +923,7 @@ void YouTubeService::downloadViaInnerTube(
                                 .value(QStringLiteral("adaptiveFormats"))
                                 .toArray();
                 if (adaptiveFormats.isEmpty()) {
-                    kLogger.warning() << "InnerTube: no adaptiveFormats for" << videoId;
-                    onAllFailed(tr("InnerTube returned no adaptive formats"));
+                    tryNext(tr("InnerTube returned no adaptive formats"));
                     return;
                 }
                 // Convert InnerTube adaptiveFormats → Piped-compatible audioStreams
@@ -850,7 +938,8 @@ void YouTubeService::downloadViaInnerTube(
                     if (!mime.startsWith(QStringLiteral("audio"))) {
                         continue; // skip video-only tracks
                     }
-                    // Skip cipher-encrypted streams (unexpected for Android client).
+                    // Skip cipher-encrypted streams (those expose the params
+                    // under "signatureCipher" instead of a ready-to-use "url").
                     const QString streamUrl =
                             f.value(QStringLiteral("url")).toString();
                     if (streamUrl.isEmpty()) {
@@ -875,14 +964,16 @@ void YouTubeService::downloadViaInnerTube(
                     audioStreams.append(stream);
                 }
                 if (audioStreams.isEmpty()) {
-                    kLogger.warning()
-                            << "InnerTube: no audio-only streams for" << videoId;
-                    onAllFailed(tr("InnerTube returned no audio-only streams"));
+                    tryNext(tr("InnerTube returned no audio-only streams"));
                     return;
                 }
                 kLogger.info() << "InnerTube: found" << audioStreams.size()
                                << "audio streams for" << videoId;
-                downloadAudioStream(videoId, cacheDir, audioStreams, onAllFailed);
+                // If the actual stream download fails (e.g. a 403 from the CDN
+                // because this client now needs a poToken), fall through to the
+                // next client rather than giving up.
+                downloadAudioStream(
+                        videoId, cacheDir, audioStreams, tryNext, userAgent);
             });
 }
 
