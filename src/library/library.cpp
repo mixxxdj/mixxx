@@ -9,6 +9,7 @@
 #include "library/analysis/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
+#include "library/basetracktablemodel.h"
 #include "library/browse/browsefeature.h"
 #include "library/dateformatbroadcaster.h"
 #ifdef __ENGINEPRIME__
@@ -16,6 +17,7 @@
 #endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
+#include "library/keyhighlightmanager.h"
 #include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
@@ -72,12 +74,19 @@ Library::Library(
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
+          m_pKeyHighlightManager(
+                  make_parented<mixxx::KeyHighlightManager>(this)),
           m_pLibraryWidget(nullptr),
           m_pKeyNotation(std::make_unique<ControlObject>(
                   mixxx::library::prefs::kKeyNotationConfigKey, false)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
     DateFormatChangedBroadcaster::createInstance();
+
+    // Make the harmonic key highlighter available to all track table models.
+    // Must happen before any feature (and thus any model) is constructed so the
+    // models connect to its highlightChanged() signal.
+    BaseTrackTableModel::setKeyHighlightManager(m_pKeyHighlightManager.get());
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -273,6 +282,9 @@ Library::Library(
 }
 
 Library::~Library() {
+    // The manager is owned by this Library; clear the process-wide pointer so
+    // no model can dereference it after we are gone.
+    BaseTrackTableModel::setKeyHighlightManager(nullptr);
     DateFormatChangedBroadcaster::destroy();
 }
 
