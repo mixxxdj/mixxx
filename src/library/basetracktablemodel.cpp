@@ -9,6 +9,7 @@
 #include "base/Pitch.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
+#include "library/keyhighlightmanager.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/checkboxdelegate.h"
@@ -41,6 +42,47 @@
 namespace {
 
 const mixxx::Logger kLogger("BaseTrackTableModel");
+
+// Background palette for the harmonic key highlighter. The green tiers shade by
+// harmonic closeness (perfect = darkest); yellow marks a +/-1 semitone shift;
+// red is out of key. Played tracks get a dark blue that takes precedence. These
+// are sensible defaults; a skin/QSS override hook can be added later.
+const QColor kKeyHighlightGreenPerfect(0x1B, 0x78, 0x37);
+const QColor kKeyHighlightGreenNeighbour(0x7F, 0xBF, 0x7B);
+const QColor kKeyHighlightYellow(0xF4, 0xD0, 0x3F);
+const QColor kKeyHighlightRed(0xC0, 0x39, 0x2B);
+const QColor kKeyHighlightPlayed(0x1A, 0x2A, 0x44);
+
+// Returns a text colour with enough contrast to read on the given highlight
+// background. The light tiers (neighbour green, yellow) need dark text; the
+// dark tiers need light text.
+QColor keyHighlightForeground(KeyUtils::KeyHighlightClass highlightClass) {
+    switch (highlightClass) {
+    case KeyUtils::KeyHighlightClass::GreenNeighbour:
+    case KeyUtils::KeyHighlightClass::Yellow:
+        return QColor(Qt::black);
+    default:
+        return QColor(Qt::white);
+    }
+}
+
+// Returns the background colour for a highlight class, or an invalid QColor for
+// None (caller falls through to default behaviour).
+QColor keyHighlightBackground(KeyUtils::KeyHighlightClass highlightClass) {
+    switch (highlightClass) {
+    case KeyUtils::KeyHighlightClass::GreenPerfect:
+        return kKeyHighlightGreenPerfect;
+    case KeyUtils::KeyHighlightClass::GreenNeighbour:
+        return kKeyHighlightGreenNeighbour;
+    case KeyUtils::KeyHighlightClass::Yellow:
+        return kKeyHighlightYellow;
+    case KeyUtils::KeyHighlightClass::Red:
+        return kKeyHighlightRed;
+    case KeyUtils::KeyHighlightClass::None:
+        return QColor();
+    }
+    return QColor();
+}
 
 constexpr double kRelativeHeightOfCoverartToolTip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
@@ -86,6 +128,7 @@ int BaseTrackTableModel::s_bpmColumnPrecision =
         kBpmColumnPrecisionDefault;
 bool BaseTrackTableModel::s_keyColorsEnabled = kKeyColorsEnabledDefault;
 std::optional<ColorPalette> BaseTrackTableModel::s_keyColorPalette;
+mixxx::KeyHighlightManager* BaseTrackTableModel::s_pKeyHighlightManager = nullptr;
 
 // static
 void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
@@ -106,6 +149,12 @@ void BaseTrackTableModel::setKeyColorsEnabled(bool keyColorsEnabled) {
 // static
 void BaseTrackTableModel::setKeyColorPalette(const ColorPalette& palette) {
     s_keyColorPalette = palette;
+}
+
+// static
+void BaseTrackTableModel::setKeyHighlightManager(
+        mixxx::KeyHighlightManager* pManager) {
+    s_pKeyHighlightManager = pManager;
 }
 
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
@@ -147,6 +196,12 @@ BaseTrackTableModel::BaseTrackTableModel(
                 &CoverArtCache::coverFound,
                 this,
                 &BaseTrackTableModel::slotCoverFound);
+    }
+    if (s_pKeyHighlightManager) {
+        connect(s_pKeyHighlightManager,
+                &mixxx::KeyHighlightManager::highlightChanged,
+                this,
+                &BaseTrackTableModel::slotKeyHighlightChanged);
     }
 }
 
@@ -415,6 +470,38 @@ QVariant BaseTrackTableModel::data(
     }
 
     if (role == Qt::BackgroundRole) {
+        // While the harmonic key highlighter is active it tints the whole row,
+        // overriding the per-track colour label. Played tracks take precedence
+        // and get a dark blue (you usually don't want to replay them).
+        if (s_pKeyHighlightManager && s_pKeyHighlightManager->isActive()) {
+            // A missing file is a more important warning than the harmonic hint;
+            // fall through to the default background so it doesn't get a green
+            // tint fighting the red "missing" text set in the ForegroundRole
+            // branch below. Mirrors the precedence there.
+            const auto missingRaw = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED);
+            const bool missing = !missingRaw.isNull() &&
+                    missingRaw.canConvert<bool>() && missingRaw.toBool();
+            if (!missing) {
+                if (s_bApplyPlayedTrackColor) {
+                    const auto playedRaw = rawSiblingValue(
+                            index,
+                            ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
+                    if (!playedRaw.isNull() &&
+                            playedRaw.canConvert<bool>() &&
+                            playedRaw.toBool()) {
+                        return QBrush(kKeyHighlightPlayed);
+                    }
+                }
+                const auto bgColor =
+                        keyHighlightBackground(keyHighlightClassForIndex(index));
+                if (bgColor.isValid()) {
+                    return QBrush(bgColor);
+                }
+            }
+            // Missing, or no key on this track -> fall through to the default.
+        }
         const auto rgbColorValue = rawSiblingValue(
                 index,
                 ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
@@ -432,7 +519,8 @@ QVariant BaseTrackTableModel::data(
         // Custom text color for missing tracks
         // Visible in playlists, crates and Missing feature.
         // Check this first so played, missing tracks (unlikely case, but possible)
-        // get the 'missing' color.
+        // get the 'missing' color. This also takes precedence over the key
+        // highlighter, since a missing file is a more important warning.
         // Note: this is not helpful in Tracks -> Missing, so override it with
         // the regular track color (WTrackTableView { color: #xxx; }) like this:
         // #DlgMissing WTrackTableView { qproperty-trackMissingColor: #xxx; }
@@ -444,18 +532,35 @@ QVariant BaseTrackTableModel::data(
                 missingRaw.toBool()) {
             return QVariant::fromValue(m_trackMissingColor);
         }
+        // Read PLAYED once and reuse it for both the highlighter-active branch
+        // (light text on the dark-blue played background) and the regular
+        // played-track text colour below.
+        QVariant playedRaw;
+        bool played = false;
         if (s_bApplyPlayedTrackColor) {
-            // Custom text color for played tracks
-            auto playedRaw = rawSiblingValue(
-                    index,
-                    ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
-            if (!playedRaw.isNull() &&
-                    playedRaw.canConvert<bool>() &&
-                    playedRaw.toBool()) {
-                // TODO Maybe adjust color for bright track colors?
-                // Here or in DefaultDelegate
-                return QVariant::fromValue(m_trackPlayedColor);
+            playedRaw = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
+            played = !playedRaw.isNull() &&
+                    playedRaw.canConvert<bool>() && playedRaw.toBool();
+        }
+        // When the key highlighter paints a row background, pick a contrasting
+        // text colour. Played tracks get a dark blue background, so use light
+        // text there too.
+        if (s_pKeyHighlightManager && s_pKeyHighlightManager->isActive()) {
+            if (played) {
+                return QVariant::fromValue(QColor(Qt::white));
             }
+            const auto highlightClass = keyHighlightClassForIndex(index);
+            if (highlightClass != KeyUtils::KeyHighlightClass::None) {
+                return QVariant::fromValue(
+                        keyHighlightForeground(highlightClass));
+            }
+        }
+        if (played) {
+            // Custom text color for played tracks
+            // TODO Maybe adjust color for bright track colors?
+            // Here or in DefaultDelegate
+            return QVariant::fromValue(m_trackPlayedColor);
         }
     }
 
@@ -511,6 +616,29 @@ QVariant BaseTrackTableModel::rawSiblingValue(
     }
     const QModelIndex siblingIndex = index.sibling(index.row(), siblingColumn);
     return rawValue(siblingIndex);
+}
+
+KeyUtils::KeyHighlightClass BaseTrackTableModel::keyHighlightClassForIndex(
+        const QModelIndex& index) const {
+    if (!s_pKeyHighlightManager || !s_pKeyHighlightManager->isActive()) {
+        return KeyUtils::KeyHighlightClass::None;
+    }
+    const QVariant keyCodeValue = rawSiblingValue(
+            index,
+            ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+    if (keyCodeValue.isNull()) {
+        return KeyUtils::KeyHighlightClass::None;
+    }
+    bool ok;
+    const int keyCode = keyCodeValue.toInt(&ok);
+    if (!ok) {
+        return KeyUtils::KeyHighlightClass::None;
+    }
+    const auto key = KeyUtils::keyFromNumericValue(keyCode);
+    if (key == mixxx::track::io::key::INVALID) {
+        return KeyUtils::KeyHighlightClass::None;
+    }
+    return s_pKeyHighlightManager->classOf(key);
 }
 
 bool BaseTrackTableModel::setData(
@@ -1145,6 +1273,21 @@ void BaseTrackTableModel::slotRefreshOverviewRows(const QList<int>& rows) {
 
 void BaseTrackTableModel::slotRefreshAllRows() {
     select();
+}
+
+void BaseTrackTableModel::slotKeyHighlightChanged() {
+    const int rows = rowCount();
+    const int columns = columnCount();
+    if (rows <= 0 || columns <= 0) {
+        return;
+    }
+    // The highlighter tints the whole row, so repaint every visible cell. We
+    // only changed how the background/foreground are derived, so restrict the
+    // notification to those roles to avoid unnecessary re-layout. This does not
+    // re-query the database.
+    emit dataChanged(index(0, 0),
+            index(rows - 1, columns - 1),
+            {Qt::BackgroundRole, Qt::ForegroundRole});
 }
 
 void BaseTrackTableModel::slotTracksRemoved(const QSet<TrackId>& trackIds) {

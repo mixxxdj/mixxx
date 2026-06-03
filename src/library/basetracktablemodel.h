@@ -7,11 +7,16 @@
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
+#include "track/keyutils.h"
 #include "track/track_decl.h"
 #include "util/color/colorpalette.h"
 #include "util/datetime.h"
 
 class TrackCollectionManager;
+
+namespace mixxx {
+class KeyHighlightManager;
+} // namespace mixxx
 
 /// Base class for tabular track list views.
 ///
@@ -129,6 +134,12 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static void setKeyColorsEnabled(bool keyColorsEnabled);
 
     static void setKeyColorPalette(const ColorPalette& palette);
+
+    /// Sets the process-wide harmonic key highlighter coordinator consulted by
+    /// data() to tint rows. Owned by Library; may be nullptr (highlighter off).
+    /// Must be called before track table models are constructed so they can
+    /// connect to its highlightChanged() signal.
+    static void setKeyHighlightManager(mixxx::KeyHighlightManager* pManager);
 
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
@@ -270,6 +281,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     void slotRefreshAllRows();
 
+    /// Repaints the visible rows when the key highlighter classification
+    /// changes. Emits dataChanged() for the Background/Foreground roles only;
+    /// it does not re-query the database.
+    void slotKeyHighlightChanged();
+
     void slotTracksRemoved(const QSet<TrackId>& trackIds);
 
     void slotCoverFound(
@@ -281,6 +297,12 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QVariant rawSiblingValue(
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
+
+    // Returns the harmonic highlight class for the track at the given index
+    // against the currently active decks, or None if the highlighter is
+    // inactive or the track has no key.
+    KeyUtils::KeyHighlightClass keyHighlightClassForIndex(
+            const QModelIndex& index) const;
 
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
@@ -320,6 +342,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     // The value need to be left uninitialized (std::nullopt) to avoid static
     // initialization order issues
     static std::optional<ColorPalette> s_keyColorPalette;
+
+    // Process-wide harmonic key highlighter coordinator (owned by Library).
+    // nullptr when no Library has installed one.
+    static mixxx::KeyHighlightManager* s_pKeyHighlightManager;
 
     static bool s_bApplyPlayedTrackColor;
     static QString s_dateFormat;
