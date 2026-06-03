@@ -699,10 +699,25 @@ void CoreServices::initialize(QGuiApplication* pApp) {
         } else {
             qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
         }
-        fd = "/storage/emulated/0/Music/";
+        // Scan the whole primary shared storage instead of only the Music/
+        // sub-folder. Users keep their tracks in many places (Download/,
+        // Music/, app-specific folders, the SD-card root, ...), so restricting
+        // the initial library to /storage/emulated/0/Music/ meant most songs
+        // already present on the device never showed up. With
+        // MANAGE_EXTERNAL_STORAGE granted (requested above) the whole volume is
+        // readable; the scanner silently skips any sub-directory it cannot read
+        // (e.g. Android/data, Android/obb). Advanced users can still narrow the
+        // library down later in Preferences > Library.
+        fd = QStringLiteral("/storage/emulated/0");
         QDir dir = fd;
         if (!dir.exists()) {
-            dir.mkpath(".");
+            // Fall back to the standard Music location if the primary shared
+            // storage root is not present (unusual, but keeps a sane default).
+            fd = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+            dir = fd;
+            if (!fd.isEmpty() && !dir.exists()) {
+                dir.mkpath(QStringLiteral("."));
+            }
         }
 #else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
