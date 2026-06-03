@@ -823,6 +823,39 @@ void CoreServices::initialize(QGuiApplication* pApp) {
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             supportedFileSuffixes.join(","));
 
+#if defined(Q_OS_ANDROID)
+    // The MANAGE_EXTERNAL_STORAGE grant requested above is asynchronous: on the
+    // very first launch the storage scan below starts *before* the user has
+    // granted all-files access, so it reads nothing and the library shows up
+    // empty. On every subsequent launch loadRootDirs() is no longer empty, so
+    // without this block the dirs would never be rescanned and the library
+    // would stay empty forever even after the user grants the permission.
+    //
+    // Whenever all-files access is (now) granted, make sure the primary
+    // shared-storage volume is registered and force an incremental rescan so
+    // the music that only became readable after the grant finally appears.
+    {
+        const bool hasAllFilesAccess = QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+        if (hasAllFilesAccess) {
+            if (m_pTrackCollectionManager->internalCollection()
+                            ->loadRootDirs()
+                            .isEmpty()) {
+                const QString primaryStorage =
+                        QStringLiteral("/storage/emulated/0");
+                if (QFileInfo::exists(primaryStorage) &&
+                        m_pLibrary->requestAddDir(primaryStorage)) {
+                    musicDirAdded = true;
+                }
+            }
+            // Force a rescan so storage that became readable only after the
+            // permission grant is picked up. The scanner is incremental, so
+            // this stays cheap once the first successful scan has completed.
+            rescan = true;
+        }
+    }
+#endif
+
     // Forward the scanner signal so MixxxMainWindow can display a summary popup.
     connect(m_pTrackCollectionManager.get(),
             &TrackCollectionManager::libraryScanSummary,

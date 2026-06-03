@@ -82,37 +82,60 @@ struct InnerTubeClient {
     const char* clientName;
     const char* clientVersion;
     const char* clientNameId; // numeric X-YouTube-Client-Name
-    const char* apiKey;
+    const char* apiKey;       // optional, empty when not needed
     const char* userAgent;
-    const char* deviceModel; // optional, empty when not applicable
+    const char* deviceMake;       // optional, empty when not applicable
+    const char* deviceModel;      // optional, empty when not applicable
+    int androidSdkVersion;        // 0 = omit
+    const char* osName;           // optional, empty when not applicable
+    const char* osVersion;        // optional, empty when not applicable
 };
 
 const QVector<InnerTubeClient>& innerTubeClients() {
     static const QVector<InnerTubeClient> kClients = {
-            // iOS YouTube app — returns unsigned URLs, no poToken required.
+            // ANDROID_VR (Oculus Quest) — as of 2026 this is the only widely
+            // reliable client that still returns plain, directly-downloadable
+            // adaptive audio URLs WITHOUT a poToken. It mirrors yt-dlp's
+            // current default `android_vr` client context exactly. The other
+            // mobile clients (IOS/ANDROID) now require a GVS poToken and reply
+            // with HTTP 400 / 403, so this MUST be tried first. Caveat: it
+            // cannot access "made for kids" videos, hence the fallbacks below.
+            {"ANDROID_VR",
+                    "1.65.10",
+                    "28",
+                    "", // no API key needed; the client context is sufficient
+                    "com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; "
+                    "U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+                    "Oculus",
+                    "Quest 3",
+                    32,
+                    "Android",
+                    "12L"},
+            // iOS YouTube app — kept as a fallback for videos ANDROID_VR can't
+            // serve. May require a poToken (and then fail over), but still
+            // succeeds for many videos.
             {"IOS",
-                    "19.45.4",
+                    "21.02.3",
                     "5",
-                    "AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc",
-                    "com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 18_1_0 "
-                    "like Mac OS X)",
-                    "iPhone16,2"},
-            // Android YouTube app — historically reliable, kept as a fallback.
-            {"ANDROID",
-                    "19.44.38",
-                    "3",
-                    "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM394",
-                    "com.google.android.youtube/19.44.38 (Linux; U; Android 14) "
-                    "gzip",
-                    ""},
-            // TV HTML5 client — another unsigned-URL path, useful when the
-            // mobile clients are throttled.
+                    "",
+                    "com.google.ios.youtube/21.02.3 (iPhone16,2; U; CPU iOS "
+                    "18_3_2 like Mac OS X;)",
+                    "Apple",
+                    "iPhone16,2",
+                    0,
+                    "iPhone",
+                    "18.3.2.22D82"},
+            // TV HTML5 client — last-resort unsigned-URL path.
             {"TVHTML5_SIMPLY_EMBEDDED_PLAYER",
                     "2.0",
                     "85",
                     "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
                     "Mozilla/5.0 (PlayStation; PlayStation 4/12.00) AppleWebKit/"
                     "605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
+                    "",
+                    "",
+                    0,
+                    "",
                     ""},
     };
     return kClients;
@@ -858,21 +881,37 @@ void YouTubeService::downloadViaInnerTubeClient(
     };
 
     QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/player"));
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
-    reqUrl.setQuery(query);
+    // The API key is optional for these endpoints — the client context is what
+    // identifies the request. Only append it when one is configured, and never
+    // for clients (e.g. ANDROID_VR) that authenticate purely via context.
+    if (c.apiKey[0] != '\0') {
+        QUrlQuery query;
+        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
+        reqUrl.setQuery(query);
+    }
 
     QJsonObject client;
     client.insert(QStringLiteral("clientName"), clientName);
     client.insert(QStringLiteral("clientVersion"), clientVersion);
     client.insert(QStringLiteral("hl"), QStringLiteral("en"));
     client.insert(QStringLiteral("gl"), QStringLiteral("US"));
-    if (clientName == QStringLiteral("ANDROID")) {
-        client.insert(QStringLiteral("androidSdkVersion"), 34);
+    if (c.androidSdkVersion > 0) {
+        client.insert(QStringLiteral("androidSdkVersion"), c.androidSdkVersion);
+    }
+    if (c.deviceMake[0] != '\0') {
+        client.insert(QStringLiteral("deviceMake"),
+                QString::fromLatin1(c.deviceMake));
     }
     if (c.deviceModel[0] != '\0') {
         client.insert(QStringLiteral("deviceModel"),
                 QString::fromLatin1(c.deviceModel));
+    }
+    if (c.osName[0] != '\0') {
+        client.insert(QStringLiteral("osName"), QString::fromLatin1(c.osName));
+    }
+    if (c.osVersion[0] != '\0') {
+        client.insert(QStringLiteral("osVersion"),
+                QString::fromLatin1(c.osVersion));
     }
     QJsonObject context;
     context.insert(QStringLiteral("client"), client);
