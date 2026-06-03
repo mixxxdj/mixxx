@@ -44,10 +44,12 @@ struct YouTubeVideoInfo {
 ///
 ///   2. **YouTube InnerTube API** (secondary, all platforms incl. Android).
 ///      The same internal API used by yt-dlp and ytdlnis. We POST to
-///      `https://www.youtube.com/youtubei/v1/player` with an Android client
-///      context, which returns non-cipher adaptive stream URLs valid for ~6h.
-///      Pure Qt/HTTPS — no external dependencies, no third-party proxy.
-///      Used when all Piped instances are unreachable.
+///      `https://www.youtube.com/youtubei/v1/player` with a sequence of
+///      mobile/embedded client contexts (iOS, Android, embedded TV), each of
+///      which can return non-cipher adaptive stream URLs valid for ~6h. We
+///      fail over across clients so a single client being throttled does not
+///      break downloads. Pure Qt/HTTPS — no external dependencies, no
+///      third-party proxy. Used when all Piped instances are unreachable.
 ///
 ///   3. **Bundled yt-dlp** (last resort). Desktop: ships the official
 ///      self-contained PyInstaller binary. Android: bundles the
@@ -155,15 +157,26 @@ class YouTubeService : public QObject {
     void downloadAudioStream(const QString& videoId,
             const QString& cacheDir,
             const QJsonArray& audioStreams,
-            const std::function<void(const QString&)>& onFailure);
+            const std::function<void(const QString&)>& onFailure,
+            const QString& streamUserAgent = QString());
 
     /// Try the YouTube InnerTube player API as a secondary download backend.
-    /// POSTs to /youtubei/v1/player with an Android client context, which
-    /// returns non-cipher stream URLs. Works on all platforms including Android.
-    /// Called when all Piped instances fail; invokes onAllFailed when it too
-    /// cannot produce a usable stream.
+    /// POSTs to /youtubei/v1/player with a sequence of mobile/embedded client
+    /// contexts (Android, iOS, ...), which return non-cipher stream URLs.
+    /// Works on all platforms including Android. Called when all Piped
+    /// instances fail; invokes onAllFailed when every client fails to produce
+    /// a usable stream.
     void downloadViaInnerTube(const QString& videoId,
             const QString& cacheDir,
+            const std::function<void(const QString& lastError)>& onAllFailed);
+
+    /// Attempt a single InnerTube client (indexed into the internal client
+    /// table). On per-client failure — request error, unplayable status, no
+    /// audio streams, or a failed stream download — recurses to the next
+    /// client. When every client is exhausted, calls onAllFailed(lastError).
+    void downloadViaInnerTubeClient(const QString& videoId,
+            const QString& cacheDir,
+            int clientIdx,
             const std::function<void(const QString& lastError)>& onAllFailed);
 
     // ----- yt-dlp (binary fallback — desktop and Termux-on-Android) -----

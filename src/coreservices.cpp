@@ -699,24 +699,58 @@ void CoreServices::initialize(QGuiApplication* pApp) {
         } else {
             qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
         }
-        // Scan the whole primary shared storage instead of only the Music/
-        // sub-folder. Users keep their tracks in many places (Download/,
-        // Music/, app-specific folders, the SD-card root, ...), so restricting
-        // the initial library to /storage/emulated/0/Music/ meant most songs
-        // already present on the device never showed up. With
-        // MANAGE_EXTERNAL_STORAGE granted (requested above) the whole volume is
-        // readable; the scanner silently skips any sub-directory it cannot read
-        // (e.g. Android/data, Android/obb). Advanced users can still narrow the
-        // library down later in Preferences > Library.
-        fd = QStringLiteral("/storage/emulated/0");
-        QDir dir = fd;
-        if (!dir.exists()) {
-            // Fall back to the standard Music location if the primary shared
-            // storage root is not present (unusual, but keeps a sane default).
-            fd = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-            dir = fd;
-            if (!fd.isEmpty() && !dir.exists()) {
-                dir.mkpath(QStringLiteral("."));
+        // Scan the whole device instead of only the Music/ sub-folder. Users
+        // keep their tracks in many places (Download/, Music/, app-specific
+        // folders, the SD-card root, ...), so restricting the initial library
+        // to /storage/emulated/0/Music/ meant most songs already present on the
+        // device never showed up. With MANAGE_EXTERNAL_STORAGE granted
+        // (requested above) the whole volume is readable; the scanner silently
+        // skips any sub-directory it cannot read (e.g. Android/data,
+        // Android/obb). Advanced users can still narrow the library down later
+        // in Preferences > Library.
+        //
+        // Android exposes every mounted volume as a directory under /storage:
+        //   * /storage/emulated/0      -> primary shared (internal) storage
+        //   * /storage/<UUID>          -> removable SD cards / USB-OTG drives
+        // We import the primary volume plus every additional readable volume so
+        // that music on external storage is picked up too. Pseudo-entries like
+        // "self" and "emulated" are not real volumes and are skipped.
+        QStringList androidRoots;
+        const QString primaryStorage = QStringLiteral("/storage/emulated/0");
+        if (QFileInfo::exists(primaryStorage)) {
+            androidRoots.append(primaryStorage);
+        }
+        const QDir storageDir(QStringLiteral("/storage"));
+        const QStringList volumes = storageDir.entryList(
+                QDir::Dirs | QDir::NoDotAndDotDot);
+        for (const QString& vol : volumes) {
+            if (vol == QStringLiteral("emulated") ||
+                    vol == QStringLiteral("self")) {
+                continue;
+            }
+            const QString volPath = storageDir.absoluteFilePath(vol);
+            // Only add volumes we can actually enter and read; unreadable
+            // mounts (e.g. a locked or encrypted adoptable card) would just
+            // error out during the scan.
+            const QFileInfo volInfo(volPath);
+            if (volInfo.isDir() && volInfo.isReadable() &&
+                    !androidRoots.contains(volPath)) {
+                androidRoots.append(volPath);
+            }
+        }
+        if (androidRoots.isEmpty()) {
+            // Fall back to the standard Music location if no shared storage
+            // volume is present (unusual, but keeps a sane default).
+            const QString musicDir = QStandardPaths::writableLocation(
+                    QStandardPaths::MusicLocation);
+            if (!musicDir.isEmpty()) {
+                QDir(musicDir).mkpath(QStringLiteral("."));
+                androidRoots.append(musicDir);
+            }
+        }
+        for (const QString& root : androidRoots) {
+            if (m_pLibrary->requestAddDir(root)) {
+                musicDirAdded = true;
             }
         }
 #else
@@ -733,10 +767,13 @@ void CoreServices::initialize(QGuiApplication* pApp) {
                         QStandardPaths::MusicLocation),
                 QFileDialog::ShowDirsOnly);
 #endif
-        // request to add directory to database.
+#if !defined(Q_OS_ANDROID)
+        // request to add directory to database. On Android the directories are
+        // added above (potentially several volumes), so this is skipped there.
         if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
             musicDirAdded = true;
         }
+#endif
     }
 
     emit initializationProgressUpdate(60, tr("controllers"));
