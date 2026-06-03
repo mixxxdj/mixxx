@@ -1114,32 +1114,54 @@ void LoopingControl::slotReloopToggle(double val) {
         // NearestLoop mode: toggle the loop under or ahead of the playhead
         const auto currentPosition = m_currentPosition.getValue();
 
-        QList<CuePointer> cues = m_pTrack->getCuePoints();
-        // Filter to only loop cues with valid positions, then sort by position
-        cues.erase(
-                std::remove_if(cues.begin(), cues.end(), [](const CuePointer& pCue) {
+        QList<CuePointer> trackCues = m_pTrack->getCuePoints();
+        // Filter to only loop cues with valid positions and a hotcue number
+        trackCues.erase(
+                std::remove_if(trackCues.begin(), trackCues.end(), [](const CuePointer& pCue) {
                     return pCue->getType() != mixxx::CueType::Loop ||
                             !pCue->getPosition().isValid() ||
-                            !pCue->getEndPosition().isValid();
+                            !pCue->getEndPosition().isValid() ||
+                            pCue->getHotCue() == Cue::kNoHotCue;
                 }),
-                cues.end());
-        std::sort(cues.begin(), cues.end(), [](const CuePointer& a, const CuePointer& b) {
-            return a->getEndPosition() < b->getEndPosition();
-        });
+                trackCues.end());
+
+        struct NearestLoopCandidate {
+            mixxx::audio::FramePos endPosition;
+            CuePointer cue;
+        };
+
+        QList<NearestLoopCandidate> loopCandidates;
+        loopCandidates.reserve(trackCues.size() + 1);
+        for (const auto& pCue : trackCues) {
+            loopCandidates.append({pCue->getEndPosition(), pCue});
+        }
+
+        LoopInfo loopInfo = m_loopInfo.getValue();
+        if (!m_bLoopingEnabled && loopInfo.endPosition.isValid()) {
+            loopCandidates.append({loopInfo.endPosition, CuePointer()});
+        }
+
+        std::sort(loopCandidates.begin(),
+                loopCandidates.end(),
+                [](const NearestLoopCandidate& a,
+                        const NearestLoopCandidate& b) {
+                    return a.endPosition < b.endPosition;
+                });
 
         // Find the nearest loop ahead by position
-        for (int i = 0; i < cues.size(); ++i) {
-            if (cues[i]->getEndPosition() >= currentPosition) {
-                if (m_bLoopingEnabled) {
+        for (int i = 0; i < loopCandidates.size(); ++i) {
+            if (loopCandidates[i].endPosition >= currentPosition) {
+                CuePointer pCue = loopCandidates[i].cue;
+                if (!pCue) {
+                    // Runtime active loop: positions are already in m_loopInfo
+                    setLoopingEnabled(true);
+                } else if (m_bLoopingEnabled) {
                     setLoopingEnabled(false);
-                } else if (cues[i]->getHotCue() != Cue::kNoHotCue) {
+                } else {
                     ConfigKey key(getGroup(),
                             QStringLiteral("hotcue_%1_cueloop")
-                                    .arg(cues[i]->getHotCue() + 1));
+                                    .arg(pCue->getHotCue() + 1));
                     ControlObject::set(key, 1.0);
-                } else {
-                    emit loopReset();
-                    setLoop(cues[i]->getPosition(), cues[i]->getEndPosition(), true);
                 }
                 return;
             }
