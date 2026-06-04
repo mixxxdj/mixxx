@@ -106,8 +106,8 @@ LibraryScanner::LibraryScanner(
           m_state(IDLE),
           m_numRelocatedTracks(0),
           m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
-          m_manualScan(true),
-          m_canceled(false) {
+          m_canceled(false),
+          m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
     moveToThread(this);
