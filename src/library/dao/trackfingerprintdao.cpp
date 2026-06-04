@@ -1154,3 +1154,95 @@ bool TrackFingerprintDao::deleteExpiredCacheEntries() const {
     }
     return true;
 }
+
+QList<UnmatchedTrackInfo> TrackFingerprintDao::getUnmatchedTracks() const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getUnmatchedTracks] -> entry";
+    }
+
+    if (!m_database.isOpen()) {
+        qDebug() << "TrackFingerprintDao -> [getUnmatchedTracks] -> "
+                    "aborting: database not open";
+        return {};
+    }
+
+    // LEFT JOIN acoustid_queue so tracks that were never enqueued still appear
+    // in the view — their status and attempts columns will be NULL.
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT l.id, l.title, l.artist, l.duration, "
+            "aq.status, aq.attempts, fm.fingerprint_valid "
+            "FROM library l "
+            "JOIN fingerprint_metadata fm ON l.id = fm.track_id "
+            "LEFT JOIN acoustid_queue aq ON l.id = aq.track_id "
+            "WHERE l.acoustid_id IS NULL "
+            "AND fm.fingerprint_valid = 1 "
+            "ORDER BY l.artist, l.title");
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch unmatched tracks";
+        return {};
+    }
+
+    QList<UnmatchedTrackInfo> results;
+    QSqlRecord record = query.record();
+    while (query.next()) {
+        UnmatchedTrackInfo info;
+        info.trackId = TrackId(query.value(record.indexOf("id")));
+        info.title = query.value(record.indexOf("title")).toString();
+        info.artist = query.value(record.indexOf("artist")).toString();
+        info.duration = query.value(record.indexOf("duration")).toDouble();
+
+        QVariant statusVar = query.value(record.indexOf("status"));
+        info.queueStatus = statusVar.isNull() ? QString() : statusVar.toString();
+
+        QVariant attemptsVar = query.value(record.indexOf("attempts"));
+        info.attempts = attemptsVar.isNull() ? 0 : attemptsVar.toInt();
+
+        info.fingerprintValid =
+                query.value(record.indexOf("fingerprint_valid")).toBool();
+
+        results.append(info);
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getUnmatchedTracks] -> found"
+                 << results.size() << "unmatched tracks";
+    }
+    return results;
+}
+
+bool TrackFingerprintDao::reQueueJob(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [reQueueJob] -> entry"
+                 << "trackId:" << trackId;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [reQueueJob] -> "
+                    "aborting: database not open or invalid trackId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "UPDATE %1 SET "
+            "status='queued', attempts=0, "
+            "error_message=NULL, last_attempt=NULL "
+            "WHERE track_id=:track_id")
+                    .arg(kAcoustIdQueueTableName));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't re-queue job for track" << trackId;
+        return false;
+    }
+
+    const bool affected = query.numRowsAffected() > 0;
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [reQueueJob] ->"
+                 << (affected ? "re-queued" : "no row found")
+                 << "trackId:" << trackId;
+    }
+    return affected;
+}
