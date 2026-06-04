@@ -24,7 +24,8 @@
 // - 0x60 is not bpm_tap; it is Pad 1 in pad mode 3.
 // - Shift + Headphone (CUE) buttons: asymmetric functions. Left deck handles
 //   universal Load/Eject via Cross-Shift logic, Right deck handles FX selection.
-const DDJFLX2 = {
+// eslint-disable-next-line no-var
+var DDJFLX2 = {
     // Custom Mixxx layer mode:
     // false = physical decks control virtual decks 1 and 2
     // true  = physical decks control virtual decks 3 and 4
