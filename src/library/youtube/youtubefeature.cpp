@@ -7,6 +7,8 @@
 #include <QLocale>
 #include <QMenu>
 #include <QMessageBox>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QRegularExpression>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -58,6 +60,13 @@ constexpr int kTrendingMaxDurationSec = 15 * 60; // 15 minutes
 const QString kSearchPrefix = QStringLiteral("yt-search:");
 const QString kCachedPrefix = QStringLiteral("yt-cached:");
 const QString kGenrePrefix = QStringLiteral("yt-genre:");
+// Sidebar nodes in the Samples section:
+//   kSampleQueryPrefix  → fires a YouTube search so the user can pick a version
+//   kMyInstantFetch     → triggers a live fetch of the Greek myinstants.com page
+//   kMyInstantPrefix    → downloads the MP3 at this CDN URL from myinstants.com
+const QString kSampleQueryPrefix = QStringLiteral("yt-sample-query:");
+const QString kMyInstantFetch = QStringLiteral("myinstant-fetch");
+const QString kMyInstantPrefix = QStringLiteral("myinstant:");
 
 // URL schemes used by the clickable links rendered into the home-pane HTML.
 // Plain `<li>title</li>` would only render text — the user reported "songs..
@@ -878,6 +887,19 @@ void YouTubeFeature::activateChild(const QModelIndex& index) {
         const QString query = genre + QStringLiteral(" songs ") +
                 QString::number(QDate::currentDate().year());
         searchAndActivate(query);
+    } else if (payload.startsWith(kSampleQueryPrefix)) {
+        // User clicked a DJ sample: fire a YouTube search so results land in
+        // the main track table. The user can then download whichever version
+        // they like or drag it straight to a sampler pad.
+        searchAndActivate(payload.mid(kSampleQueryPrefix.size()));
+    } else if (payload == kMyInstantFetch) {
+        // First-time expand of Greek Memes: start the live fetch.
+        fetchMyInstantsSounds();
+    } else if (payload.startsWith(kMyInstantPrefix)) {
+        // User clicked a Greek meme sound: download its MP3 and load it.
+        const QString mp3Url = payload.mid(kMyInstantPrefix.size());
+        const QString name = pItem->getLabel();
+        downloadMyInstant(mp3Url, name);
     } else if (payload.startsWith(kSearchPrefix)) {
         // User clicked a search result: download (or use cache) and analyze.
         const QString videoId = payload.mid(kSearchPrefix.size());
@@ -1383,6 +1405,74 @@ void YouTubeFeature::rebuildSidebar() {
     // replaceTrackTable() and surfaced via showTrackModel(); the sidebar only
     // carries navigation/toggle nodes.
 
+    // Samples node — contains two sub-sections:
+    //   • "DJ Tools": curated classic DJ sound effects searched via YouTube.
+    //     Clicking an entry fires a YouTube search so the user can pick any
+    //     version, then drag/download it to their sampler pads.
+    //   • "Greek Memes": sound clips fetched live from myinstants.com/gr.
+    //     Clicking an entry downloads the MP3 directly and loads it.
+    {
+        // Curated DJ sample searches — (search query, display label) pairs.
+        // The query is sent verbatim to YouTube; results appear in the main
+        // track table just like any manual search.
+        static const QList<QPair<QString, QString>> kDJSamples = {
+                {QStringLiteral("dj air horn sound effect short"),
+                        tr("Air Horn")},
+                {QStringLiteral("vinyl record scratch dj sound effect"),
+                        tr("Record Scratch")},
+                {QStringLiteral("dj vinyl rewind turntable effect"),
+                        tr("Vinyl Rewind")},
+                {QStringLiteral("bass drop sound effect edm"),
+                        tr("Bass Drop")},
+                {QStringLiteral("crowd cheering applause sound effect"),
+                        tr("Crowd Cheer")},
+                {QStringLiteral("rimshot drum comedy sound effect"),
+                        tr("Rimshot")},
+                {QStringLiteral("dj siren sound effect"),
+                        tr("DJ Siren")},
+                {QStringLiteral("whoosh transition swoosh sound effect"),
+                        tr("Whoosh FX")},
+                {QStringLiteral("orchestra hit stab sound effect"),
+                        tr("Orchestra Hit")},
+                {QStringLiteral("sad trombone wah wah sound effect"),
+                        tr("Sad Trombone")},
+                {QStringLiteral("foghorn sound effect short"),
+                        tr("Foghorn")},
+                {QStringLiteral("reggae airhorn dancehall sound effect"),
+                        tr("Reggae Horn")},
+                {QStringLiteral("dj laser sound effect"),
+                        tr("Laser FX")},
+                {QStringLiteral("big room edm drop build sound effect"),
+                        tr("Big Room Drop")},
+                {QStringLiteral("trap 808 clap snare sound effect"),
+                        tr("Trap Clap")},
+                {QStringLiteral("dj rewind reverse effect"),
+                        tr("Rewind FX")},
+        };
+
+        TreeItem* pSamplesNode = pRoot->appendChild(tr("Samples"));
+        TreeItem* pDJNode = pSamplesNode->appendChild(tr("🎛 DJ Tools"));
+        for (const auto& [query, label] : kDJSamples) {
+            pDJNode->appendChild(label, kSampleQueryPrefix + query);
+        }
+
+        TreeItem* pMemesNode = pSamplesNode->appendChild(tr("😂 Greek Memes"));
+        if (m_myInstantsFetchInFlight) {
+            // Spinner placeholder while the network request is in flight.
+            pMemesNode->appendChild(tr("Loading…"));
+        } else if (m_myInstantSounds.isEmpty()) {
+            // First visit: show a single click-to-fetch entry.
+            pMemesNode->appendChild(tr("Fetch sounds from myinstants.com"),
+                    kMyInstantFetch);
+        } else {
+            // Sounds loaded — list them. The payload carries the CDN URL so
+            // activateChild() knows where to download from.
+            for (const auto& sound : m_myInstantSounds) {
+                pMemesNode->appendChild(sound.name, kMyInstantPrefix + sound.mp3Url);
+            }
+        }
+    }
+
     if (!m_downloadedTracks.isEmpty()) {
         TreeItem* pCachedNode = pRoot->appendChild(tr("Downloaded"));
         const QDir dir(cacheDir());
@@ -1804,6 +1894,31 @@ void YouTubeFeature::slotCleanCache() {
     kLogger.info() << "YouTube cache clean: removed" << cleaned << "of"
                    << files.size() << "cached files";
 
+    // Also clean downloaded myinstants samples.
+    int myInstantsCleaned = 0;
+    const QDir myDir(myInstantsCacheDir());
+    if (myDir.exists()) {
+        const QStringList myFiles = myDir.entryList(
+                {QStringLiteral("*.mp3")},
+                QDir::Files | QDir::NoDotAndDotDot);
+        for (const QString& f : myFiles) {
+            const QString loc = myDir.filePath(f);
+            bool inUse = false;
+            for (auto it = loaded.cbegin(); it != loaded.cend(); ++it) {
+                if (it.value() && it.value()->getLocation() == loc) {
+                    inUse = true;
+                    break;
+                }
+            }
+            if (!inUse && QFile::remove(loc)) {
+                ++myInstantsCleaned;
+            }
+        }
+    }
+    if (myInstantsCleaned > 0) {
+        kLogger.info() << "Removed" << myInstantsCleaned << "myinstants sample(s)";
+    }
+
     // Clean up stale youtube_library rows whose local files are gone
     // (non-placeholder rows where the file was already deleted above).
     if (m_pTrackCollection) {
@@ -1841,7 +1956,182 @@ void YouTubeFeature::slotCleanCache() {
 
     QMessageBox::information(m_pSidebarWidget,
             tr("YouTube Cache"),
-            tr("Removed %n downloaded track(s) from the cache.", "", cleaned));
+            tr("Removed %n downloaded track(s) from the cache.", "",
+                    cleaned + myInstantsCleaned));
+}
+
+// =============================================================================
+// Samples section — DJ Tools (YouTube searches) + Greek Memes (myinstants.com)
+// =============================================================================
+
+QString YouTubeFeature::myInstantsCacheDir() const {
+    return cacheDir() + QStringLiteral("/myinstants");
+}
+
+void YouTubeFeature::fetchMyInstantsSounds() {
+    if (m_myInstantsFetchInFlight) {
+        return;
+    }
+    m_myInstantsFetchInFlight = true;
+    rebuildSidebar(); // show "Loading…" placeholder
+
+    // Lazy-create a NAM dedicated to the Samples section.
+    if (!m_pSamplesNam) {
+        m_pSamplesNam = new QNetworkAccessManager(this);
+    }
+
+    QNetworkRequest req(QUrl(QStringLiteral("https://www.myinstants.com/en/index/gr/")));
+    // Use a browser-like UA so myinstants.com doesn't serve a 403 to the app.
+    req.setRawHeader("User-Agent",
+            "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36");
+    req.setRawHeader("Accept", "text/html,application/xhtml+xml");
+    req.setTransferTimeout(10000); // 10 s — generous but bounded
+    QNetworkReply* reply = m_pSamplesNam->get(req);
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        reply->deleteLater();
+        m_myInstantsFetchInFlight = false;
+
+        if (reply->error() != QNetworkReply::NoError) {
+            kLogger.warning() << "myinstants.com fetch failed:"
+                              << reply->errorString();
+            rebuildSidebar();
+            return;
+        }
+
+        const QString html = QString::fromUtf8(reply->readAll());
+        QList<MyInstantSound> sounds;
+        QSet<QString> seen; // dedup by CDN path
+
+        // myinstants.com HTML patterns (cope with minor version changes):
+        //   onclick="play('/media/sounds/FILE.mp3', …)">TITLE<
+        // or data-url="/media/sounds/FILE.mp3"
+        static const QRegularExpression reOnclick(
+                QStringLiteral(R"(onclick="play\('(/media/sounds/[^']+\.mp3)'[^>]*>\s*([^<]+?)\s*<)"),
+                QRegularExpression::CaseInsensitiveOption);
+        static const QRegularExpression reDataUrl(
+                QStringLiteral(R"(data-url="(/media/sounds/[^"]+\.mp3)"[^>]*>\s*([^<]+?)\s*<)"),
+                QRegularExpression::CaseInsensitiveOption);
+
+        auto parse = [&](const QRegularExpression& re) {
+            auto it = re.globalMatch(html);
+            while (it.hasNext() && sounds.size() < 80) {
+                const auto m = it.next();
+                const QString path = m.captured(1).trimmed();
+                const QString name = m.captured(2).trimmed();
+                if (name.isEmpty() || seen.contains(path)) {
+                    continue;
+                }
+                seen.insert(path);
+                sounds.append({name,
+                        QStringLiteral("https://www.myinstants.com") + path});
+            }
+        };
+
+        parse(reOnclick);
+        if (sounds.isEmpty()) {
+            parse(reDataUrl);
+        }
+
+        if (sounds.isEmpty()) {
+            kLogger.warning()
+                    << "myinstants.com: page fetched but no sounds found "
+                       "(HTML structure may have changed)";
+        } else {
+            kLogger.info() << "myinstants.com: loaded" << sounds.size()
+                           << "Greek meme sounds";
+        }
+
+        m_myInstantSounds = sounds;
+        rebuildSidebar();
+    });
+}
+
+void YouTubeFeature::downloadMyInstant(
+        const QString& mp3Url, const QString& displayName) {
+    const QString dir = myInstantsCacheDir();
+    QDir().mkpath(dir);
+
+    const QString filename = QUrl(mp3Url).fileName();
+    if (filename.isEmpty()) {
+        kLogger.warning() << "Cannot derive filename from myinstants URL:" << mp3Url;
+        return;
+    }
+    const QString localPath = dir + QStringLiteral("/") + filename;
+
+    // If already on disk, just load it immediately — no network needed.
+    if (QFileInfo::exists(localPath)) {
+        TrackRef ref = TrackRef::fromFilePath(localPath);
+        TrackPointer pTrack =
+                m_pLibrary->trackCollectionManager()->getOrAddTrack(ref);
+        if (pTrack) {
+            if (pTrack->getTitle().isEmpty()) {
+                pTrack->setTitle(displayName);
+            }
+            Q_EMIT loadTrack(pTrack);
+        }
+        return;
+    }
+
+    if (m_myInstantsDownloading.contains(mp3Url)) {
+        return; // already in-flight
+    }
+    m_myInstantsDownloading.insert(mp3Url);
+
+    if (!m_pSamplesNam) {
+        m_pSamplesNam = new QNetworkAccessManager(this);
+    }
+
+    kLogger.info() << "Downloading myinstants sample:" << displayName
+                   << "from" << mp3Url;
+
+    QNetworkRequest req(QUrl(mp3Url));
+    req.setRawHeader("User-Agent",
+            "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36");
+    req.setRawHeader("Referer", "https://www.myinstants.com/");
+    req.setTransferTimeout(15000);
+    QNetworkReply* reply = m_pSamplesNam->get(req);
+
+    connect(reply,
+            &QNetworkReply::finished,
+            this,
+            [this, reply, mp3Url, localPath, displayName]() {
+                reply->deleteLater();
+                m_myInstantsDownloading.remove(mp3Url);
+
+                if (reply->error() != QNetworkReply::NoError) {
+                    kLogger.warning()
+                            << "myinstants download failed for" << displayName
+                            << ":" << reply->errorString();
+                    return;
+                }
+
+                QFile file(localPath);
+                if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                    kLogger.warning() << "Cannot write myinstants sample to"
+                                      << localPath;
+                    return;
+                }
+                file.write(reply->readAll());
+                file.close();
+
+                kLogger.info() << "myinstants sample saved:" << localPath;
+
+                TrackRef ref = TrackRef::fromFilePath(localPath);
+                TrackPointer pTrack =
+                        m_pLibrary->trackCollectionManager()->getOrAddTrack(ref);
+                if (pTrack) {
+                    if (pTrack->getTitle().isEmpty()) {
+                        pTrack->setTitle(displayName);
+                    }
+                    if (pTrack->getGenre().isEmpty()) {
+                        pTrack->setGenre(QStringLiteral("Meme Sound"));
+                    }
+                    Q_EMIT loadTrack(pTrack);
+                }
+            });
 }
 
 #include "moc_youtubefeature.cpp"

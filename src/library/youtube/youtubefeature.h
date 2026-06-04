@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QHash>
+#include <QNetworkAccessManager>
 #include <QPointer>
 #include <QSet>
 #include <QSharedPointer>
@@ -154,4 +155,30 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// repeated activations don't fire duplicate trending requests. Cleared
     /// when results arrive, the fetch fails, or a user search supersedes it.
     bool m_trendingFetchInFlight = false;
+
+    // ----- Samples section (DJ Tools + Greek Memes from myinstants.com) -----
+
+    /// A sound scraped from myinstants.com (name + CDN MP3 URL).
+    struct MyInstantSound {
+        QString name;
+        QString mp3Url; // full CDN URL: https://www.myinstants.com/media/sounds/…
+    };
+
+    /// Fetched list of Greek meme sounds. Populated async on first expand.
+    QList<MyInstantSound> m_myInstantSounds;
+    /// True while a myinstants.com fetch is in-flight.
+    bool m_myInstantsFetchInFlight = false;
+    /// NAM used only for the Samples section (myinstants fetches + MP3
+    /// downloads). Kept separate from YouTubeService's NAM so cookie jars
+    /// and rate-limiting for YouTube are not shared with an unrelated host.
+    QNetworkAccessManager* m_pSamplesNam = nullptr;
+    /// Set of myinstants CDN URLs currently being downloaded (prevent dupes).
+    QSet<QString> m_myInstantsDownloading;
+
+    /// Fetch the Greek myinstants.com page and populate m_myInstantSounds.
+    void fetchMyInstantsSounds();
+    /// Download a single myinstants MP3 to myInstantsCacheDir() and load it.
+    void downloadMyInstant(const QString& mp3Url, const QString& displayName);
+    /// Subdirectory of cacheDir() used for myinstants MP3 files.
+    QString myInstantsCacheDir() const;
 };
