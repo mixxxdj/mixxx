@@ -3,9 +3,11 @@
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
+#include <algorithm>
 
 #include "library/trackmodel.h"
 #include "moc_keydelegate.cpp"
+#include "track/keyutils.h"
 
 namespace {
 // Unicode symbols for tuning indicators
@@ -20,6 +22,15 @@ constexpr double kStandardTuningLowHz = kStandardTuningHz - kTuningToleranceHz;
 constexpr double kStandardTuningHighHz = kStandardTuningHz + kTuningToleranceHz;
 constexpr double k432LowHz = k432Hz - kTuningToleranceHz;
 constexpr double k432HighHz = k432Hz + kTuningToleranceHz;
+
+// Harmonic key-highlight transpose-direction arrows, shown on Yellow Key cells:
+// the track must be pitched up (+1), down (-1), or either way by one semitone to
+// become mixable with the highlighted deck. Drawn just left of any tuning
+// symbol. The glyphs mirror KeyUtils::YellowShift (None/Up/Down/Both).
+const QString kShiftArrowUp = QStringLiteral("↑");   // up arrow, pitch +1
+const QString kShiftArrowDown = QStringLiteral("↓"); // down arrow, pitch -1
+const QString kShiftArrowBoth = QStringLiteral("↕"); // up-down arrow, either
+constexpr int kShiftArrowWidth = 14;
 } // namespace
 
 void KeyDelegate::paintItem(
@@ -31,6 +42,8 @@ void KeyDelegate::paintItem(
     const QString keyText = index.data().value<QString>();
     const QVariantMap colorRect = index.data(Qt::DecorationRole).value<QVariantMap>();
     const double tuningFrequencyHz = index.data(TrackModel::kTuningFrequencyRole).toDouble();
+    const auto shiftDirection = static_cast<KeyUtils::YellowShift>(
+            index.data(TrackModel::kKeyShiftDirectionRole).toInt());
     int leftMargin = 0;
 
     const QColor colorTop = colorRect["top"].value<QColor>();
@@ -84,25 +97,52 @@ void KeyDelegate::paintItem(
         symbolColor = QColor(255, 99, 71); // Tomato red
     }
 
-    // Reserve space for tuning symbol if needed
-    int rightMargin = !tuningSymbol.isEmpty() ? kTuningSymbolWidth : 0;
+    // Pick the harmonic transpose-direction arrow (Yellow cells only). It sits
+    // just left of the tuning symbol, so reserve space for both independently.
+    QString shiftArrow;
+    switch (shiftDirection) {
+    case KeyUtils::YellowShift::Up:
+        shiftArrow = kShiftArrowUp;
+        break;
+    case KeyUtils::YellowShift::Down:
+        shiftArrow = kShiftArrowDown;
+        break;
+    case KeyUtils::YellowShift::Both:
+        shiftArrow = kShiftArrowBoth;
+        break;
+    case KeyUtils::YellowShift::None:
+        break;
+    }
 
-    // Display the key text with the user-provided notation
+    // Reserve space for the tuning symbol (far right) and, inside it, the
+    // harmonic arrow if present.
+    const int tuningMargin = !tuningSymbol.isEmpty() ? kTuningSymbolWidth : 0;
+    const int shiftMargin = !shiftArrow.isEmpty() ? kShiftArrowWidth : 0;
+    int rightMargin = tuningMargin + shiftMargin;
+
+    // Display the key text with the user-provided notation. Clamp the available
+    // width to >= 0: with both a swatch and two right-edge glyphs a narrow Key
+    // column could otherwise pass a negative width to elidedText.
+    const int textWidth =
+            std::max(0, columnWidth(index) - leftMargin - rightMargin);
     QString elidedText = option.fontMetrics.elidedText(
             keyText,
             Qt::ElideRight,
-            columnWidth(index) - leftMargin - rightMargin);
+            textWidth);
 
     // This is not picking up the 'missing' or 'played' text color via
     // ForegroundRole from BaseTrackTableModel::data().
     // Set the palette colors manually and select the appropriate one.
     QStyleOptionViewItem opt = option;
     setTextColor(opt, index);
-    if (opt.state & QStyle::State_Selected) {
-        painter->setPen(QPen(opt.palette.highlightedText().color()));
-    } else {
-        painter->setPen(QPen(opt.palette.text().color()));
-    }
+    // The colour the key glyph is drawn in. Reused for the direction arrow below
+    // so the arrow is always exactly as legible as the key text beside it, on
+    // any background the highlighter produces - a fixed colour could otherwise
+    // vanish (e.g. a dark arrow on the played dark-blue cell).
+    const QColor textColor = (opt.state & QStyle::State_Selected)
+            ? opt.palette.highlightedText().color()
+            : opt.palette.text().color();
+    painter->setPen(QPen(textColor));
 
     painter->drawText(option.rect.x() + leftMargin,
             option.rect.y(),
@@ -129,6 +169,27 @@ void KeyDelegate::paintItem(
                 option.rect.height(),
                 Qt::AlignVCenter | Qt::AlignRight,
                 tuningSymbol);
+        painter->restore();
+    }
+
+    // Draw the harmonic transpose-direction arrow just left of the tuning
+    // symbol (the tuning symbol stays anchored at the far-right edge). It uses
+    // the same colour as the key text, so it stays legible against whatever
+    // background the highlighter painted for this cell.
+    if (!shiftArrow.isEmpty()) {
+        painter->save();
+        painter->setPen(textColor);
+        QFont arrowFont = option.font;
+        arrowFont.setBold(true);
+        painter->setFont(arrowFont);
+        painter->drawText(
+                option.rect.x() + option.rect.width() - tuningMargin -
+                        kShiftArrowWidth,
+                option.rect.y(),
+                kShiftArrowWidth,
+                option.rect.height(),
+                Qt::AlignVCenter | Qt::AlignRight,
+                shiftArrow);
         painter->restore();
     }
 

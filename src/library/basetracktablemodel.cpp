@@ -470,10 +470,14 @@ QVariant BaseTrackTableModel::data(
     }
 
     if (role == Qt::BackgroundRole) {
-        // While the harmonic key highlighter is active it tints the whole row,
-        // overriding the per-track colour label. Played tracks take precedence
-        // and get a dark blue (you usually don't want to replay them).
-        if (s_pKeyHighlightManager && s_pKeyHighlightManager->isActive()) {
+        // While the harmonic key highlighter is active it tints only the Key
+        // cell (Rekordbox-style), overriding the per-track colour label there.
+        // Played tracks take precedence and get a dark blue (you usually don't
+        // want to replay them). Non-key cells fall through to the normal
+        // per-track-colour background below.
+        if (s_pKeyHighlightManager && s_pKeyHighlightManager->isActive() &&
+                mapColumn(index.column()) ==
+                        ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
             // A missing file is a more important warning than the harmonic hint;
             // fall through to the default background so it doesn't get a green
             // tint fighting the red "missing" text set in the ForegroundRole
@@ -543,10 +547,14 @@ QVariant BaseTrackTableModel::data(
             played = !playedRaw.isNull() &&
                     playedRaw.canConvert<bool>() && playedRaw.toBool();
         }
-        // When the key highlighter paints a row background, pick a contrasting
-        // text colour. Played tracks get a dark blue background, so use light
-        // text there too.
-        if (s_pKeyHighlightManager && s_pKeyHighlightManager->isActive()) {
+        // When the key highlighter paints the Key cell background, pick a
+        // contrasting text colour there. Played tracks get a dark blue
+        // background, so use light text too. This is scoped to the Key column to
+        // match the cell-only background; non-key cells keep their normal text
+        // colour (played/track colour) handled below.
+        if (s_pKeyHighlightManager && s_pKeyHighlightManager->isActive() &&
+                mapColumn(index.column()) ==
+                        ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
             if (played) {
                 return QVariant::fromValue(QColor(Qt::white));
             }
@@ -585,6 +593,17 @@ QVariant BaseTrackTableModel::data(
         return QVariant();
     }
 
+    // Handle the harmonic key-highlight transpose-direction role for the key
+    // column. Only Yellow tracks carry a non-None direction; the delegate uses
+    // this to draw an up/down arrow beside the key.
+    if (role == kKeyShiftDirectionRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            return static_cast<int>(keyShiftDirectionForIndex(index));
+        }
+        return QVariant();
+    }
+
     // Only retrieve a value for supported roles
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
@@ -618,27 +637,44 @@ QVariant BaseTrackTableModel::rawSiblingValue(
     return rawValue(siblingIndex);
 }
 
+mixxx::track::io::key::ChromaticKey BaseTrackTableModel::keyFromIndex(
+        const QModelIndex& index) const {
+    const QVariant keyCodeValue = rawSiblingValue(
+            index,
+            ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+    if (keyCodeValue.isNull()) {
+        return mixxx::track::io::key::INVALID;
+    }
+    bool ok;
+    const int keyCode = keyCodeValue.toInt(&ok);
+    if (!ok) {
+        return mixxx::track::io::key::INVALID;
+    }
+    return KeyUtils::keyFromNumericValue(keyCode);
+}
+
 KeyUtils::KeyHighlightClass BaseTrackTableModel::keyHighlightClassForIndex(
         const QModelIndex& index) const {
     if (!s_pKeyHighlightManager || !s_pKeyHighlightManager->isActive()) {
         return KeyUtils::KeyHighlightClass::None;
     }
-    const QVariant keyCodeValue = rawSiblingValue(
-            index,
-            ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-    if (keyCodeValue.isNull()) {
-        return KeyUtils::KeyHighlightClass::None;
-    }
-    bool ok;
-    const int keyCode = keyCodeValue.toInt(&ok);
-    if (!ok) {
-        return KeyUtils::KeyHighlightClass::None;
-    }
-    const auto key = KeyUtils::keyFromNumericValue(keyCode);
+    const auto key = keyFromIndex(index);
     if (key == mixxx::track::io::key::INVALID) {
         return KeyUtils::KeyHighlightClass::None;
     }
     return s_pKeyHighlightManager->classOf(key);
+}
+
+KeyUtils::YellowShift BaseTrackTableModel::keyShiftDirectionForIndex(
+        const QModelIndex& index) const {
+    if (!s_pKeyHighlightManager || !s_pKeyHighlightManager->isActive()) {
+        return KeyUtils::YellowShift::None;
+    }
+    const auto key = keyFromIndex(index);
+    if (key == mixxx::track::io::key::INVALID) {
+        return KeyUtils::YellowShift::None;
+    }
+    return s_pKeyHighlightManager->directionOf(key);
 }
 
 bool BaseTrackTableModel::setData(
@@ -1277,17 +1313,20 @@ void BaseTrackTableModel::slotRefreshAllRows() {
 
 void BaseTrackTableModel::slotKeyHighlightChanged() {
     const int rows = rowCount();
-    const int columns = columnCount();
-    if (rows <= 0 || columns <= 0) {
+    if (rows <= 0) {
         return;
     }
-    // The highlighter tints the whole row, so repaint every visible cell. We
-    // only changed how the background/foreground are derived, so restrict the
-    // notification to those roles to avoid unnecessary re-layout. This does not
-    // re-query the database.
-    emit dataChanged(index(0, 0),
-            index(rows - 1, columns - 1),
-            {Qt::BackgroundRole, Qt::ForegroundRole});
+    // The highlighter now tints only the Key cell, so repaint just that column.
+    // We only changed how the background/foreground and the shift-direction
+    // arrow are derived, so restrict the notification to those roles to avoid
+    // unnecessary re-layout. This does not re-query the database.
+    const int keyColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    if (keyColumn < 0) {
+        return;
+    }
+    emit dataChanged(index(0, keyColumn),
+            index(rows - 1, keyColumn),
+            {Qt::BackgroundRole, Qt::ForegroundRole, kKeyShiftDirectionRole});
 }
 
 void BaseTrackTableModel::slotTracksRemoved(const QSet<TrackId>& trackIds) {

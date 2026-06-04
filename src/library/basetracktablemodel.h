@@ -298,10 +298,21 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
 
+    // Decodes the track's discrete key at the given index from its KEY_ID
+    // sibling column, or INVALID if absent/unparsable. Shared by the highlight
+    // class and shift-direction lookups.
+    mixxx::track::io::key::ChromaticKey keyFromIndex(
+            const QModelIndex& index) const;
+
     // Returns the harmonic highlight class for the track at the given index
     // against the currently active decks, or None if the highlighter is
     // inactive or the track has no key.
     KeyUtils::KeyHighlightClass keyHighlightClassForIndex(
+            const QModelIndex& index) const;
+
+    // Returns the semitone transpose direction for a Yellow track at the given
+    // index, or None if the highlighter is inactive or the track is not Yellow.
+    KeyUtils::YellowShift keyShiftDirectionForIndex(
             const QModelIndex& index) const;
 
     // Track models may reference tracks by an external id

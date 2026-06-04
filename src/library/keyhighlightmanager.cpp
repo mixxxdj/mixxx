@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <algorithm>
+#include <utility>
 
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
@@ -17,6 +18,7 @@ KeyHighlightManager::KeyHighlightManager(QObject* pParent)
                   QStringLiteral("num_decks"),
                   this)) {
     m_table.fill(KeyUtils::KeyHighlightClass::None);
+    m_directionTable.fill(KeyUtils::YellowShift::None);
     m_pNumDecks->connectValueChanged(
             this, &KeyHighlightManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
@@ -32,6 +34,18 @@ KeyUtils::KeyHighlightClass KeyHighlightManager::classOf(
         return KeyUtils::KeyHighlightClass::None;
     }
     return m_table[index];
+}
+
+KeyUtils::YellowShift KeyHighlightManager::directionOf(
+        mixxx::track::io::key::ChromaticKey trackKey) const {
+    if (!m_active) {
+        return KeyUtils::YellowShift::None;
+    }
+    const int index = static_cast<int>(trackKey);
+    if (index < 0 || index >= static_cast<int>(m_directionTable.size())) {
+        return KeyUtils::YellowShift::None;
+    }
+    return m_directionTable[index];
 }
 
 void KeyHighlightManager::slotNumDecksChanged(double dNumDecks) {
@@ -117,7 +131,7 @@ void KeyHighlightManager::recompute() {
 
     // Collect the reference keys of all enabled decks with a valid key.
     QList<mixxx::track::io::key::ChromaticKey> refKeys;
-    for (const DeckState& deck : m_decks) {
+    for (const DeckState& deck : std::as_const(m_decks)) {
         if (deck.enabled && deck.key != mixxx::track::io::key::INVALID) {
             refKeys.append(deck.key);
         }
@@ -127,18 +141,30 @@ void KeyHighlightManager::recompute() {
 
     // Rebuild the table: for each possible track key, take the best (lowest
     // severity) class across all reference keys. KeyHighlightClass is ordered
-    // so that the numerically smallest value is the most mixable.
+    // so that the numerically smallest value is the most mixable. We also track
+    // which reference key produced that best class, so the transpose direction
+    // we store corresponds to the same deck whose colour the track gets (the
+    // direction is meaningless otherwise). Today mutual exclusion guarantees a
+    // single reference key, but capturing the winner keeps this correct if that
+    // is ever relaxed.
     for (int i = 0; i < static_cast<int>(m_table.size()); ++i) {
         const auto trackKey =
                 static_cast<mixxx::track::io::key::ChromaticKey>(i);
         KeyUtils::KeyHighlightClass best = KeyUtils::KeyHighlightClass::None;
+        auto winningRefKey = mixxx::track::io::key::INVALID;
         for (const auto refKey : refKeys) {
             const auto c = KeyUtils::classifyAgainst(trackKey, refKey);
             if (static_cast<int>(c) < static_cast<int>(best)) {
                 best = c;
+                winningRefKey = refKey;
             }
         }
         m_table[i] = best;
+        // Only Yellow tracks carry a direction; force None for everything else
+        // so a stale arrow never leaks onto a green or red cell.
+        m_directionTable[i] = (best == KeyUtils::KeyHighlightClass::Yellow)
+                ? KeyUtils::yellowShiftDirection(trackKey, winningRefKey)
+                : KeyUtils::YellowShift::None;
     }
 
     m_active = active;

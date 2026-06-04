@@ -40,6 +40,14 @@ class KeyHighlightManager : public QObject {
     KeyUtils::KeyHighlightClass classOf(
             mixxx::track::io::key::ChromaticKey trackKey) const;
 
+    /// For a track key classified Yellow, the direction it must be transposed by
+    /// one semitone to become compatible. O(1) table lookup; the stored value
+    /// comes from the same reference key that produced classOf()'s class, so the
+    /// hint always matches the colour. Returns None for non-Yellow keys or when
+    /// inactive.
+    KeyUtils::YellowShift directionOf(
+            mixxx::track::io::key::ChromaticKey trackKey) const;
+
   signals:
     /// Emitted whenever the classification table or the active state changes,
     /// so observers (the track table models) can repaint.
@@ -76,6 +84,12 @@ class KeyHighlightManager : public QObject {
     std::array<KeyUtils::KeyHighlightClass,
             mixxx::track::io::key::ChromaticKey_ARRAYSIZE>
             m_table;
+    // Parallel table of transpose directions, only meaningful for keys whose
+    // m_table entry is Yellow; None elsewhere. Filled from the reference key
+    // that won the best-class comparison in recompute().
+    std::array<KeyUtils::YellowShift,
+            mixxx::track::io::key::ChromaticKey_ARRAYSIZE>
+            m_directionTable;
     bool m_active = false;
     // Re-entrancy guard for recompute(): enforcing single-active-deck writes to
     // other decks' key_highlight controls, which loop back into recompute().
