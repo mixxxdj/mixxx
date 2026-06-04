@@ -467,10 +467,15 @@ void YouTubeFeature::onSearchFailed(const QString& query, const QString& error) 
     kLogger.warning() << "YouTube search failed:" << error;
     m_lastSearchError = error;
     rebuildHomeHtml();
+#if !defined(Q_OS_ANDROID)
     // Switch to the HTML pane so the user can see the error message.
     // Without this, the main area stays on the empty track table and the
     // user has no feedback at all — the "blank YouTube tab" symptom.
+    // On Android we keep the track table view (the user explicitly does not
+    // want a "browser view" — the error is still visible in the sidebar HTML
+    // if they navigate there, and in the log file).
     Q_EMIT switchToView(QStringLiteral("YOUTUBE_HOME"));
+#endif
 }
 
 void YouTubeFeature::requestDownload(const QString& videoId) {
@@ -932,14 +937,12 @@ void YouTubeFeature::rebuildHomeHtml() {
                     m_lastSearchError.toHtmlEscaped() +
                     QStringLiteral("</p>");
             // Help the user find the log file for further diagnosis. On Android
-            // the logs are in the app's internal storage which is not browseable
-            // from a normal file manager — point them to logcat or the path.
+            // the logs are in the app's documents folder which is browseable
+            // from a file manager at data/data/org.mixxx.Mixxx/files/documents/Mixxx.
             const QString logDir =
-                    QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+                    QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
             html += QStringLiteral("<p><small>") +
-                    tr("Logs: %1/mixxx.log — on Android use "
-                       "<code>adb logcat -s Mixxx</code> or a logcat viewer app "
-                       "to see diagnostic output.")
+                    tr("Logs: %1/Mixxx/mixxx.log")
                             .arg(logDir.toHtmlEscaped()) +
                     QStringLiteral("</small></p>");
         } else if (m_lastResults.isEmpty()) {
