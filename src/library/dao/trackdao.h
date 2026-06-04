@@ -80,6 +80,18 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Only used by friend class TrackCollection, but public for testing!
     bool saveTrack(Track* pTrack) const;
 
+    // Writes AcoustID lookup results back to the library table.
+    // Called by the AcoustID worker after a successful lookup or submission.
+    // Passing empty strings for any MBID field leaves that column unchanged.
+    bool updateAcoustIdResult(
+            TrackId trackId,
+            const QString& acoustidId,
+            const QString& acoustidLookupStatus,
+            const QString& musicbrainzRecordingId,
+            const QString& musicbrainzReleaseId,
+            const QString& musicbrainzTrackId,
+            const QString& musicbrainzArtistId) const;
+
     /// Update the play counter properties according to the corresponding
     /// aggregated properties obtained from the played history.
     bool updatePlayCounterFromPlayedHistory(
