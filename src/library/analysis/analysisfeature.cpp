@@ -7,6 +7,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/analysis/dlganalysis.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
