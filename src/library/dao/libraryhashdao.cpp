@@ -101,6 +101,26 @@ void LibraryHashDAO::updateDirectoryHash(const QString& dirPath,
     //qDebug() << getDirectoryHash(dirPath);
 }
 
+void LibraryHashDAO::clearDirectoryHash(const QString& dirPath) {
+    // qDebug() << "LibraryHashDAO::clearDirectoryHash" <<
+    // QThread::currentThread() << m_database.connectionName();
+    QSqlQuery query(m_database);
+    query.prepare(
+            "UPDATE LibraryHashes "
+            "SET hash=:hash, needs_verification=1 "
+            "WHERE directory_path=:directory_path");
+    query.bindValue(":directory_path", dirPath);
+    query.bindValue(":hash", mixxx::invalidCacheKey());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "Clearing existing dirhash for" << dirPath << "failed.";
+    }
+    // qDebug() << "cleared existing hash for" << dirPath;
+
+    // DEBUG: Print out the directory hash we just saved to verify...
+    // qDebug() << "--> test hash:" << getDirectoryHash(dirPath);
+}
+
 void LibraryHashDAO::updateDirectoryStatuses(const QStringList& dirPaths,
                                              const bool deleted,
                                              const bool verified) {
