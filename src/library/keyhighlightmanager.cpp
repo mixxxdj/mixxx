@@ -5,8 +5,10 @@
 #include <utility>
 
 #include "control/controlproxy.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_keyhighlightmanager.cpp"
+#include "track/track.h"
 #include "util/defs.h"
 
 namespace mixxx {
@@ -21,6 +23,12 @@ KeyHighlightManager::KeyHighlightManager(QObject* pParent)
     m_directionTable.fill(KeyUtils::YellowShift::None);
     m_pNumDecks->connectValueChanged(
             this, &KeyHighlightManager::slotNumDecksChanged);
+    // Follow track load/eject on every deck so the playing-key suffix can be
+    // scoped to the loaded deck's row(s).
+    connect(&PlayerInfo::instance(),
+            &PlayerInfo::trackChanged,
+            this,
+            &KeyHighlightManager::slotTrackChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }
 
@@ -48,6 +56,30 @@ KeyUtils::YellowShift KeyHighlightManager::directionOf(
     return m_directionTable[index];
 }
 
+mixxx::track::io::key::ChromaticKey KeyHighlightManager::playingKeyForTrack(
+        TrackId trackId) const {
+    using mixxx::track::io::key::INVALID;
+    // The suffix is part of the highlighter feature: only show it while a deck
+    // is actively highlighting, and only for a track loaded on an enabled deck.
+    if (!m_active || !trackId.isValid()) {
+        return INVALID;
+    }
+    for (const DeckState& deck : std::as_const(m_decks)) {
+        if (!deck.enabled || deck.loadedTrackId != trackId) {
+            continue;
+        }
+        // Only a discrete pitch shift (playing key differs from the stored key)
+        // warrants the parenthetical; an unpitched deck shows just the key.
+        if (deck.key != INVALID && deck.fileKey != INVALID &&
+                deck.key != deck.fileKey) {
+            return deck.key;
+        }
+        // Mutual exclusion: at most one enabled deck, and it holds this track.
+        return INVALID;
+    }
+    return INVALID;
+}
+
 void KeyHighlightManager::slotNumDecksChanged(double dNumDecks) {
     int numDecks = static_cast<int>(dNumDecks);
     if (numDecks > kMaxNumberOfDecks) {
@@ -65,13 +97,41 @@ void KeyHighlightManager::slotNumDecksChanged(double dNumDecks) {
                 group, QStringLiteral("key_highlight"), this);
         deck.pKey = new ControlProxy(
                 group, QStringLiteral("key"), this);
+        deck.pFileKey = new ControlProxy(
+                group, QStringLiteral("file_key"), this);
         deck.pHighlight->connectValueChanged(
                 this, [this] { recompute(); });
         deck.pKey->connectValueChanged(
                 this, [this] { recompute(); });
+        // file_key changes on (re)analysis; keep the stored-key snapshot fresh.
+        deck.pFileKey->connectValueChanged(
+                this, [this] { recompute(); });
         m_decks.append(deck);
     }
     recompute();
+}
+
+void KeyHighlightManager::slotTrackChanged(
+        const QString& group,
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
+    Q_UNUSED(pOldTrack);
+    int deckNumber = -1;
+    if (!PlayerManager::isDeckGroup(group, &deckNumber)) {
+        return;
+    }
+    // isDeckGroup() yields a 1-based deck number; DeckState is 0-indexed.
+    const int deckIndex = deckNumber - 1;
+    if (deckIndex < 0 || deckIndex >= m_decks.size()) {
+        return;
+    }
+    const TrackId newTrackId = pNewTrack ? pNewTrack->getId() : TrackId();
+    if (m_decks[deckIndex].loadedTrackId == newTrackId) {
+        return;
+    }
+    m_decks[deckIndex].loadedTrackId = newTrackId;
+    // The set of pitched/loaded rows changed; refresh so the suffix follows.
+    emit highlightChanged();
 }
 
 void KeyHighlightManager::recompute() {
@@ -118,10 +178,14 @@ void KeyHighlightManager::recompute() {
         DeckState& deck = m_decks[i];
         const bool enabled = i < activeDecks && deck.pHighlight->toBool();
         const auto key = KeyUtils::keyFromNumericValue(deck.pKey->get());
-        if (enabled != deck.enabled || key != deck.key) {
+        const auto fileKey =
+                KeyUtils::keyFromNumericValue(deck.pFileKey->get());
+        if (enabled != deck.enabled || key != deck.key ||
+                fileKey != deck.fileKey) {
             discreteChanged = true;
             deck.enabled = enabled;
             deck.key = key;
+            deck.fileKey = fileKey;
         }
     }
     if (!discreteChanged) {

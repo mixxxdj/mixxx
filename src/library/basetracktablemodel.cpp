@@ -639,6 +639,26 @@ QVariant BaseTrackTableModel::rawSiblingValue(
 
 mixxx::track::io::key::ChromaticKey BaseTrackTableModel::keyFromIndex(
         const QModelIndex& index) const {
+    // If this row's track is loaded on a pitched, highlighting deck, classify it
+    // by the key it is *currently playing*, not its stored key. The playing key
+    // is the highlighter's reference key, so a self-comparison yields
+    // GreenPerfect with no transpose arrow - a deck is perfectly mixable with
+    // itself. Using the stored key here would mislabel the pitched row as
+    // Yellow with a "pitch me one semitone" arrow it is already playing past.
+    //
+    // This substitution is exercised indirectly by
+    // KeyHighlightManagerTest.LoadedPitchedRowMatchesItself, which asserts the
+    // manager invariant it relies on (classOf(playingKey) == GreenPerfect,
+    // directionOf(playingKey) == None). A direct model-level data() test would
+    // need a TrackCollection/SQL fixture that does not yet exist for this model;
+    // see the PR follow-up note.
+    if (s_pKeyHighlightManager) {
+        const auto playingKey =
+                s_pKeyHighlightManager->playingKeyForTrack(getTrackId(index));
+        if (playingKey != mixxx::track::io::key::INVALID) {
+            return playingKey;
+        }
+    }
     const QVariant keyCodeValue = rawSiblingValue(
             index,
             ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
@@ -961,12 +981,29 @@ QVariant BaseTrackTableModel::roleValue(
             }
             return freq;
         }
-        case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // The Key value is determined by either the KEY_ID or KEY column
-            return KeyUtils::keyFromKeyTextAndIdFields(
+            const QVariant keyValue = KeyUtils::keyFromKeyTextAndIdFields(
                     rawValue,
                     rawSiblingValue(
                             index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID));
+            // When this track is loaded on a deck whose harmonic highlighter is
+            // on and whose pitch shifts the playing key away from the stored
+            // key, append the currently playing key in parentheses, e.g.
+            // "8A (9A)". Display only - tooltip and CSV export keep the plain
+            // stored key (they fall through to this case, so gate on the role).
+            if (role == Qt::DisplayRole && s_pKeyHighlightManager) {
+                const auto playingKey =
+                        s_pKeyHighlightManager->playingKeyForTrack(
+                                getTrackId(index));
+                if (playingKey != mixxx::track::io::key::INVALID) {
+                    return QVariant(keyValue.toString() +
+                            QStringLiteral(" (") +
+                            KeyUtils::keyToString(playingKey) + QChar(')'));
+                }
+            }
+            return keyValue;
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
             if (rawValue.isNull()) {
                 return QVariant();
@@ -1317,16 +1354,20 @@ void BaseTrackTableModel::slotKeyHighlightChanged() {
         return;
     }
     // The highlighter now tints only the Key cell, so repaint just that column.
-    // We only changed how the background/foreground and the shift-direction
-    // arrow are derived, so restrict the notification to those roles to avoid
-    // unnecessary re-layout. This does not re-query the database.
+    // We only changed how the background/foreground, the shift-direction arrow
+    // and the displayed key text (the pitched "(playing key)" suffix) are
+    // derived, so restrict the notification to those roles to avoid unnecessary
+    // re-layout. This does not re-query the database.
     const int keyColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     if (keyColumn < 0) {
         return;
     }
     emit dataChanged(index(0, keyColumn),
             index(rows - 1, keyColumn),
-            {Qt::BackgroundRole, Qt::ForegroundRole, kKeyShiftDirectionRole});
+            {Qt::BackgroundRole,
+                    Qt::ForegroundRole,
+                    Qt::DisplayRole,
+                    kKeyShiftDirectionRole});
 }
 
 void BaseTrackTableModel::slotTracksRemoved(const QSet<TrackId>& trackIds) {
