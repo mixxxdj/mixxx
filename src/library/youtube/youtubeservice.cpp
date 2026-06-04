@@ -334,11 +334,15 @@ bool isYtDlpLiveStream(const QJsonObject& obj) {
 }
 
 QString countryDisplayName(const QString& code) {
+    // Returns the English name of a country given its ISO 3166-1 alpha-2 code.
+    // Used for constructing YouTube API queries that must be in English.
+    // QLocale::territoryToString / countryToString always returns the Qt built-in
+    // English name (not affected by the user's locale).
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     const QLocale forCountry(QStringLiteral("en_") + code);
     const QString name = QLocale::countryToString(forCountry.country());
 #else
-    const QLocale forCountry(QLocale::AnyLanguage,
+    const QLocale forCountry(QLocale::English,
             QLocale::codeToTerritory(code));
     const QString name = QLocale::territoryToString(forCountry.territory());
 #endif
