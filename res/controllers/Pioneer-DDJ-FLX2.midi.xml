@@ -1,0 +1,1174 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.0.0+">
+    <info>
+        <name>Pioneer DDJ-FLX2</name>
+        <author>CupoMeridio, RaduTek</author>
+        <description>2-deck USB and Bluetooth MIDI controller. This mapping implements a custom 4-deck layer mode, manual soft takeover for faders, and asymmetric shift functions.</description>
+        <forum>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forum>
+        <manual>pioneer_ddj_flx2</manual>
+    </info>
+    <controller id="DDJ-FLX2">
+        <scriptfiles>
+            <file functionprefix="DDJFLX2" filename="Pioneer-DDJ-FLX2-scripts.js"/>
+        </scriptfiles>
+        <!--
+            MIDI reference:
+            https://assets.pioneerdjhub.com/DDJ-FLX2_MIDI_Message_List_E1.pdf
+
+            Implemented from the Pioneer DDJ-FLX2 MIDI message list:
+            - Deck transport: play/pause, cue, Shift, Beat Sync short press,
+              Beat Sync long press, Shift + Sync pad-mode selection, tempo,
+              platter/outer jog rotation, platter touch and Shift + touch.
+            - Mixer: channel faders, crossfader, EQ high/mid/low, CFX,
+              headphone cue master/channel, master level and headphones level.
+            - Performance pads: pad mode 1 hotcues, pad mode 2 Pad FX,
+              pad mode 3 beat loops / loop rolls, pad mode 4 samplers /
+              sampler stop, including shifted pad MIDI channels (0x97-0x9A).
+            - Illumination: 4-deck loaded LEDs, play/cue/sync/PFL LEDs,
+              pad LEDs, loop pad LEDs (blinking when active), Smart Fader
+              LED echo, and Vinyl mode setting.
+
+            Intentional Mixxx-specific behavior:
+            - Custom 4-Deck Layer: The mapping adds a virtual 4-deck mode
+              (Shift + Headphones Master) that reuses the physical decks
+              for virtual decks 3 and 4.
+            - Manual Soft Takeover: Since Mixxx's XML soft-takeover is
+              bypassed for script-bound controls, a custom "catch-up" logic
+              is implemented for volume, rate, EQ, and CFX to prevent jumps
+              when switching deck layers.
+            - Shift + Jog/Platter: Navigates the library (MoveUp/MoveDown)
+              without affecting track playback or scratch/pitch-bend.
+            - Smart Fader (0x96/0x01): Claims the button to implement
+              software-side fader-start by monitoring volume faders.
+              Hardware fader-start messages (0x66/0x5D/0x52) are ignored.
+            - Asymmetric Shift + Headphone (CUE):
+               Left button: Universal Load (Short) / Eject (Long). Cross-Shift
+               logic allows targeting Deck 1 (Left Shift) or Deck 2 (Right Shift).
+               Right button: Cycles effects in the primary FX unit.
+            - Synchronized Blinking: A global timer ensures all blinking LEDs
+              (playing samplers, active loops) pulse in perfect unison.
+
+            Deliberately not mapped:
+            - No BPM TAP control is assigned to 0x60 (Pad 1 in pad mode 3).
+            - Smart CFX (0x96/0x09) is unused as Mixxx lacks a direct equivalent.
+        -->
+        <controls>
+            <!-- Master Controls -->
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Master crossfader</description>
+                <status>0xB6</status>
+                <midino>0x1F</midino>
+                <options>
+                    <soft-takeover/>
+                    <fourteen-bit-msb/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Master crossfader</description>
+                <status>0xB6</status>
+                <midino>0x3F</midino>
+                <options>
+                    <soft-takeover/>
+                    <fourteen-bit-lsb/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Master]</group>
+                <key>DDJFLX2.headmix</key>
+                <description>Headphones master as headMix knob</description>
+                <status>0x96</status>
+                <midino>0x63</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DDJFLX2.toggleFourDeckMode</key>
+                <description>Headphones master + shift</description>
+                <status>0x96</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>Master level MSB</description>
+                <status>0xB6</status>
+                <midino>0x08</midino>
+                <options>
+                    <soft-takeover/>
+                    <fourteen-bit-msb/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>Master level LSB</description>
+                <status>0xB6</status>
+                <midino>0x28</midino>
+                <options>
+                    <soft-takeover/>
+                    <fourteen-bit-lsb/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>Headphones level MSB</description>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options>
+                    <soft-takeover/>
+                    <fourteen-bit-msb/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>Headphones level LSB</description>
+                <status>0xB6</status>
+                <midino>0x2D</midino>
+                <options>
+                    <soft-takeover/>
+                    <fourteen-bit-lsb/>
+                </options>
+            </control>
+
+            <!-- Deck Controls -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.shiftLeft</key>
+                <description>Deck 1: Shift pressed</description>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.shiftRight</key>
+                <description>Deck 2: Shift pressed</description>
+                <status>0x91</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.pfl</key>
+                <description>Deck 1: Headphone listen (pfl) button</description>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.loadEject</key>
+                <description>Deck 1: Shift + Headphone: short press loads selected track, long press ejects</description>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.pfl</key>
+                <description>Deck 2: Headphone listen (pfl) button</description>
+                <status>0x91</status>
+                <midino>0x54</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.fxSelect</key>
+                <description>Deck 2: Shift + Headphone: cycle effects in the primary FX unit</description>
+                <status>0x91</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.syncShort</key>
+                <description>Deck 1: Tap to sync tempo</description>
+                <status>0x90</status>
+                <midino>0x58</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.syncShort</key>
+                <description>Deck 2: Tap to sync tempo</description>
+                <status>0x91</status>
+                <midino>0x58</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.syncLong</key>
+                <description>Deck 1: Hold to enable permanent sync</description>
+                <status>0x90</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.syncLong</key>
+                <description>Deck 2: Hold to enable permanent sync</description>
+                <status>0x91</status>
+                <midino>0x2A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.padModeSelect</key>
+                <description>Deck 1: Pad mode selection with Shift + Sync</description>
+                <status>0x90</status>
+                <midino>0x5C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.padModeSelect</key>
+                <description>Deck 2: Pad mode selection with Shift + Sync</description>
+                <status>0x91</status>
+                <midino>0x5C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.platterJog</key>
+                <description>Deck 2: Jog Platter (high sensitivity)</description>
+                <status>0xB1</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.platterJog</key>
+                <description>Deck 1: Jog Platter (high sensitivity)</description>
+                <status>0xB0</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.platterJog</key>
+                <description>Deck 2: Jog Platter rotation, vinyl off</description>
+                <status>0xB1</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.platterJog</key>
+                <description>Deck 1: Jog Platter rotation, vinyl off</description>
+                <status>0xB0</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.platterJogShift</key>
+                <description>Deck 2: Jog Platter + Shift (high sensitivity)</description>
+                <status>0xB1</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.platterJogShift</key>
+                <description>Deck 1: Jog Platter + Shift (high sensitivity)</description>
+                <status>0xB0</status>
+                <midino>0x29</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Master]</group>
+                <key>DDJFLX2.smartFader</key>
+                <description>Smart Fader</description>
+                <status>0x96</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.touch</key>
+                <description>Deck 2: Touch</description>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.touch</key>
+                <description>Deck 1: Touch</description>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.touchShift</key>
+                <description>Deck 2: Touch + Shift</description>
+                <status>0x91</status>
+                <midino>0x67</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.touchShift</key>
+                <description>Deck 1: Touch + Shift</description>
+                <status>0x90</status>
+                <midino>0x67</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DDJFLX2.eqMSB</key>
+                <description>Deck 1: High EQ MSB</description>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DDJFLX2.eqMSB</key>
+                <description>Deck 1: Mid EQ MSB</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DDJFLX2.eqMSB</key>
+                <description>Deck 1: Low EQ MSB</description>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DDJFLX2.eqLSB</key>
+                <description>Deck 1: High EQ LSB</description>
+                <status>0xB0</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DDJFLX2.eqLSB</key>
+                <description>Deck 1: Mid EQ LSB</description>
+                <status>0xB0</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>DDJFLX2.eqLSB</key>
+                <description>Deck 1: Low EQ LSB</description>
+                <status>0xB0</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>DDJFLX2.super1MSB</key>
+                <description>CFX Deck 1 MSB</description>
+                <status>0xB6</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>DDJFLX2.super1LSB</key>
+                <description>CFX Deck 1 LSB</description>
+                <status>0xB6</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DDJFLX2.eqMSB</key>
+                <description>Deck 2: High EQ MSB</description>
+                <status>0xB1</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DDJFLX2.eqMSB</key>
+                <description>Deck 2: Mid EQ MSB</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DDJFLX2.eqMSB</key>
+                <description>Deck 2: Low EQ MSB</description>
+                <status>0xB1</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DDJFLX2.eqLSB</key>
+                <description>Deck 2: High EQ LSB</description>
+                <status>0xB1</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DDJFLX2.eqLSB</key>
+                <description>Deck 2: Mid EQ LSB</description>
+                <status>0xB1</status>
+                <midino>0x2B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>DDJFLX2.eqLSB</key>
+                <description>Deck 2: Low EQ LSB</description>
+                <status>0xB1</status>
+                <midino>0x2F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>DDJFLX2.super1MSB</key>
+                <description>CFX Deck 2 MSB</description>
+                <status>0xB6</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>DDJFLX2.super1LSB</key>
+                <description>CFX Deck 2 LSB</description>
+                <status>0xB6</status>
+                <midino>0x38</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.volumeMSB</key>
+                <description>Deck 1: Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.volumeLSB</key>
+                <description>Deck 1: Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.volumeMSB</key>
+                <description>Deck 2: Volume Fader</description>
+                <status>0xB1</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.volumeLSB</key>
+                <description>Deck 2: Volume Fader</description>
+                <status>0xB1</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <!-- Smart Fader Controls -->
+            <!-- Active only when Smart Fader is enabled (smartFaderEnabled = true). -->
+            <!-- Channel fader movements trigger play/pause/sync via volumeLSB monitoring in JS. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.play</key>
+                <description>Deck 1: Play button</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.play</key>
+                <description>Deck 2: Play button</description>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.cueDefault</key>
+                <description>Deck 1: Cue button</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.cueDefault</key>
+                <description>Deck 2: Cue button</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.cueGotoandstop</key>
+                <description>Deck 1: Go to cue point and stop</description>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.cueGotoandstop</key>
+                <description>Deck 2: Go to cue point and stop</description>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.rateMSB</key>
+                <description>Deck 1: Playback speed control</description>
+                <status>0xB0</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.rateLSB</key>
+                <description>Deck 1: Playback speed control</description>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options>
+                    <soft-takeover/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.rateMSB</key>
+                <description>Deck 2: Playback speed control</description>
+                <status>0xB1</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.rateLSB</key>
+                <description>Deck 2: Playback speed control</description>
+                <status>0xB1</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.jogWheel</key>
+                <description>Deck 2: Jog Wheel (outer ring - low sensitivity)</description>
+                <status>0xB1</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.jogWheel</key>
+                <description>Deck 1: Jog Wheel (outer ring - low sensitivity)</description>
+                <status>0xB0</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_set</key>
+                <description>Deck 2: Set cue point</description>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>cue_set</key>
+                <description>Deck 1: Set cue point</description>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+
+            <!-- Hotcue Controls - Activate -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 1, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 2, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 3, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 4, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 5, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 6, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 7, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 8, Deck 1: Set, preview, jump to</description>
+                <status>0x97</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 1, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 2, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 3, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 4, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 5, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 6, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 7, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNActivate</key>
+                <description>Hotcue 8, Deck 2: Set, preview, jump to</description>
+                <status>0x99</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <!-- Hotcue Controls - Clear -->
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 1, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 2, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 3, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 4, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 5, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 6, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 7, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 8, Deck 1: Clear</description>
+                <status>0x98</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 1, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 2, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 3, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 4, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 5, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 6, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 7, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DDJFLX2.hotcueNClear</key>
+                <description>Hotcue 8, Deck 2: Clear</description>
+                <status>0x9A</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <!-- Pad FX Controls - Pad mode 2 -->
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect A, Deck 1</description><status>0x97</status><midino>0x10</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect B, Deck 1</description><status>0x97</status><midino>0x11</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect C, Deck 1</description><status>0x97</status><midino>0x12</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect D, Deck 1</description><status>0x97</status><midino>0x13</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect E, Deck 1</description><status>0x97</status><midino>0x14</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect F, Deck 1</description><status>0x97</status><midino>0x15</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect G, Deck 1</description><status>0x97</status><midino>0x16</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect H, Deck 1</description><status>0x97</status><midino>0x17</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect I, Deck 1</description><status>0x98</status><midino>0x10</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect J, Deck 1</description><status>0x98</status><midino>0x11</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect K, Deck 1</description><status>0x98</status><midino>0x12</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect L, Deck 1</description><status>0x98</status><midino>0x13</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect M, Deck 1</description><status>0x98</status><midino>0x14</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect N, Deck 1</description><status>0x98</status><midino>0x15</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect O, Deck 1</description><status>0x98</status><midino>0x16</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect P, Deck 1</description><status>0x98</status><midino>0x17</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect A, Deck 2</description><status>0x99</status><midino>0x10</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect B, Deck 2</description><status>0x99</status><midino>0x11</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect C, Deck 2</description><status>0x99</status><midino>0x12</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect D, Deck 2</description><status>0x99</status><midino>0x13</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect E, Deck 2</description><status>0x99</status><midino>0x14</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect F, Deck 2</description><status>0x99</status><midino>0x15</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect G, Deck 2</description><status>0x99</status><midino>0x16</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFx</key><description>Pad FX Effect H, Deck 2</description><status>0x99</status><midino>0x17</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect I, Deck 2</description><status>0x9A</status><midino>0x10</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect J, Deck 2</description><status>0x9A</status><midino>0x11</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect K, Deck 2</description><status>0x9A</status><midino>0x12</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect L, Deck 2</description><status>0x9A</status><midino>0x13</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect M, Deck 2</description><status>0x9A</status><midino>0x14</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect N, Deck 2</description><status>0x9A</status><midino>0x15</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect O, Deck 2</description><status>0x9A</status><midino>0x16</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.padFxShift</key><description>Pad FX Effect P, Deck 2</description><status>0x9A</status><midino>0x17</midino><options><script-binding/></options></control>
+
+            <!-- Loop Controls - Pad mode 3 -->
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1/8, Deck 1</description><status>0x97</status><midino>0x60</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1/4, Deck 1</description><status>0x97</status><midino>0x61</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1/2, Deck 1</description><status>0x97</status><midino>0x62</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1, Deck 1</description><status>0x97</status><midino>0x63</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 2, Deck 1</description><status>0x97</status><midino>0x64</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 4, Deck 1</description><status>0x97</status><midino>0x65</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 8, Deck 1</description><status>0x97</status><midino>0x66</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopPad</key><description>Beatloop 16, Deck 1</description><status>0x97</status><midino>0x67</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1/8, Deck 2</description><status>0x99</status><midino>0x60</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1/4, Deck 2</description><status>0x99</status><midino>0x61</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1/2, Deck 2</description><status>0x99</status><midino>0x62</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 1, Deck 2</description><status>0x99</status><midino>0x63</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 2, Deck 2</description><status>0x99</status><midino>0x64</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 4, Deck 2</description><status>0x99</status><midino>0x65</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 8, Deck 2</description><status>0x99</status><midino>0x66</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopPad</key><description>Beatloop 16, Deck 2</description><status>0x99</status><midino>0x67</midino><options><script-binding/></options></control>
+
+            <!-- Loop Roll Controls - Pad mode 3 + Shift -->
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1/8, Deck 1</description><status>0x98</status><midino>0x60</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1/4, Deck 1</description><status>0x98</status><midino>0x61</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1/2, Deck 1</description><status>0x98</status><midino>0x62</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1, Deck 1</description><status>0x98</status><midino>0x63</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 2, Deck 1</description><status>0x98</status><midino>0x64</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 4, Deck 1</description><status>0x98</status><midino>0x65</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 8, Deck 1</description><status>0x98</status><midino>0x66</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 16, Deck 1</description><status>0x98</status><midino>0x67</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1/8, Deck 2</description><status>0x9A</status><midino>0x60</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1/4, Deck 2</description><status>0x9A</status><midino>0x61</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1/2, Deck 2</description><status>0x9A</status><midino>0x62</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 1, Deck 2</description><status>0x9A</status><midino>0x63</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 2, Deck 2</description><status>0x9A</status><midino>0x64</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 4, Deck 2</description><status>0x9A</status><midino>0x65</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 8, Deck 2</description><status>0x9A</status><midino>0x66</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.loopRollPad</key><description>Beatloop Roll 16, Deck 2</description><status>0x9A</status><midino>0x67</midino><options><script-binding/></options></control>
+
+            <!-- Sampler Controls - Pad mode 4 -->
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 1, Deck 1</description><status>0x97</status><midino>0x30</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 2, Deck 1</description><status>0x97</status><midino>0x31</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 3, Deck 1</description><status>0x97</status><midino>0x32</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 4, Deck 1</description><status>0x97</status><midino>0x33</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 5, Deck 1</description><status>0x97</status><midino>0x34</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 6, Deck 1</description><status>0x97</status><midino>0x35</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 7, Deck 1</description><status>0x97</status><midino>0x36</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerPad</key><description>Sampler 8, Deck 1</description><status>0x97</status><midino>0x37</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 9, Deck 2</description><status>0x99</status><midino>0x30</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 10, Deck 2</description><status>0x99</status><midino>0x31</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 11, Deck 2</description><status>0x99</status><midino>0x32</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 12, Deck 2</description><status>0x99</status><midino>0x33</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 13, Deck 2</description><status>0x99</status><midino>0x34</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 14, Deck 2</description><status>0x99</status><midino>0x35</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 15, Deck 2</description><status>0x99</status><midino>0x36</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerPad</key><description>Sampler 16, Deck 2</description><status>0x99</status><midino>0x37</midino><options><script-binding/></options></control>
+
+            <!-- Sampler Stop Controls - Pad mode 4 + Shift -->
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 1 Stop, Deck 1</description><status>0x98</status><midino>0x30</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 2 Stop, Deck 1</description><status>0x98</status><midino>0x31</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 3 Stop, Deck 1</description><status>0x98</status><midino>0x32</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 4 Stop, Deck 1</description><status>0x98</status><midino>0x33</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 5 Stop, Deck 1</description><status>0x98</status><midino>0x34</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 6 Stop, Deck 1</description><status>0x98</status><midino>0x35</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 7 Stop, Deck 1</description><status>0x98</status><midino>0x36</midino><options><script-binding/></options></control>
+            <control><group>[Channel1]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 8 Stop, Deck 1</description><status>0x98</status><midino>0x37</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 9 Stop, Deck 2</description><status>0x9A</status><midino>0x30</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 10 Stop, Deck 2</description><status>0x9A</status><midino>0x31</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 11 Stop, Deck 2</description><status>0x9A</status><midino>0x32</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 12 Stop, Deck 2</description><status>0x9A</status><midino>0x33</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 13 Stop, Deck 2</description><status>0x9A</status><midino>0x34</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 14 Stop, Deck 2</description><status>0x9A</status><midino>0x35</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 15 Stop, Deck 2</description><status>0x9A</status><midino>0x36</midino><options><script-binding/></options></control>
+            <control><group>[Channel2]</group><key>DDJFLX2.samplerStopPad</key><description>Sampler 16 Stop, Deck 2</description><status>0x9A</status><midino>0x37</midino><options><script-binding/></options></control>
+        </controls>
+
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
