@@ -340,6 +340,19 @@ class YouTubeService : public QObject {
 
     /// Persistent cookie jar path for YouTube session cookies.
     QString m_cookieJarPath;
+
+    // ----- SponsorBlock prefetch cache -----
+
+    /// Segments that were prefetched while the audio download was in flight.
+    /// Keyed by videoId. Entries are consumed once by finalizeDownload() and
+    /// then removed so the map stays small.
+    QHash<QString, QList<SponsorSegment>> m_sponsorPrefetchCache;
+
+    /// Callbacks registered by finalizeDownload() that are waiting for a
+    /// SponsorBlock prefetch to complete. When the prefetch callback fires it
+    /// calls all registered waiters and removes the entry.
+    QHash<QString, QList<std::function<void(const QList<SponsorSegment>&)>>>
+            m_sponsorPrefetchWaiters;
 };
 
 } // namespace mixxx

@@ -713,6 +713,31 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
                    << "ytDlpPath=" << m_ytDlpPath;
 #endif
     QDir().mkpath(cacheDir);
+
+    // Prefetch SponsorBlock segments NOW, in parallel with the audio download.
+    // By the time the audio file lands on disk the segments are (usually) ready
+    // so finalizeDownload() can skip the sequential SponsorBlock round-trip and
+    // proceed directly to cut → emit downloadFinished. This removes the 0–8s
+    // wait that made downloads feel slow.
+    if (!m_sponsorPrefetchCache.contains(videoId) &&
+            !m_sponsorPrefetchWaiters.contains(videoId)) {
+        // Insert an empty entry so a second downloadVideo() call for the same
+        // id (e.g. retry) doesn't launch a duplicate fetch.
+        m_sponsorPrefetchWaiters.insert(videoId, {});
+        fetchSponsorSegmentsInternal(videoId,
+                [this, videoId](const QList<SponsorSegment>& segments) {
+                    // Store segments whether or not anyone is waiting yet.
+                    m_sponsorPrefetchCache.insert(videoId, segments);
+                    // Notify any finalizeDownload() that arrived while we
+                    // were still fetching.
+                    const auto waiters =
+                            m_sponsorPrefetchWaiters.take(videoId);
+                    for (const auto& cb : waiters) {
+                        cb(segments);
+                    }
+                });
+    }
+
     // Primary: the YouTube InnerTube player API (same reliable, proxy-free path
     // used for search). The Android client context returns plain (non-cipher)
     // stream URLs valid for ~6 hours with no external dependencies. We only fall
@@ -1824,6 +1849,11 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             QStringLiteral("--no-cache-dir"),
             QStringLiteral("--ignore-config"),
             QStringLiteral("--no-mtime"),
+            // Download audio in parallel fragments for faster throughput on
+            // good connections (yt-dlp splits the stream into 4 concurrent
+            // range requests and reassembles on disk).
+            QStringLiteral("--concurrent-fragments"),
+            QStringLiteral("4"),
             QStringLiteral("-o"),
             outTemplate,
             QStringLiteral("--print"),
@@ -1857,7 +1887,7 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
                                     QDir::Files | QDir::NoDotAndDotDot);
                     for (const QString& f : existing) {
                         if (f.endsWith(QStringLiteral(".info.json")) ||
-                                f.endsWith(QStringLiteral(".sponsor.json")) ||
+                                f.endsWith(QStringLiteral(".sponsorblock.json")) ||
                                 f.endsWith(QStringLiteral(".part"))) {
                             continue;
                         }
@@ -2411,40 +2441,88 @@ void YouTubeService::maybeUpdateDesktopYtDlp() {
 // =============================================================================
 
 void YouTubeService::finalizeDownload(const QString& videoId, const QString& outPath) {
-    // Fetch SponsorBlock segments, physically cut them out of the file (so
-    // duration / BPM / waveform all reflect the music-only length), THEN
-    // tell consumers the file is ready. We deliberately do this ourselves
-    // rather than via yt-dlp's --sponsorblock-remove because the latter
-    // requires a re-encode pass through ffmpeg and can drop quality.
-    fetchSponsorSegmentsInternal(videoId,
-            [this, videoId, outPath](const QList<SponsorSegment>& segments) {
-                if (!segments.isEmpty()) {
-                    const bool cut = cutAudioRanges(outPath, segments);
-                    if (!cut) {
-                        // Cutting failed (e.g. mid-file in the middle of a
-                        // packet boundary on opus). Write the sidecar so
-                        // SponsorBlockController can fall back to skip-at-
-                        // playback during deck use.
-                        QFile sidecar(outPath +
-                                QStringLiteral(".sponsor.json"));
-                        if (sidecar.open(QIODevice::WriteOnly |
-                                    QIODevice::Truncate)) {
-                            QJsonArray arr;
-                            for (const auto& s : segments) {
-                                QJsonObject o;
-                                o.insert(QStringLiteral("start"), s.start);
-                                o.insert(QStringLiteral("end"), s.end);
-                                o.insert(QStringLiteral("category"),
-                                        s.category);
-                                arr.append(o);
-                            }
-                            sidecar.write(QJsonDocument(arr).toJson(
-                                    QJsonDocument::Compact));
+    // Helper lambda: given segments (possibly empty), do the cut on a
+    // background thread and emit downloadFinished when done. We run
+    // cutAudioRanges() off the UI thread so the app stays responsive while
+    // FFmpeg rewrites the audio file (can take 1–3 s for a long track).
+    auto doFinalize = [this, videoId, outPath](const QList<SponsorSegment>& segments) {
+        // Capture a copy of segments for the worker thread (QList is CoW).
+        QThread* thread = QThread::create([this, videoId, outPath, segments]() {
+            if (!segments.isEmpty()) {
+                // Physically cut non-music segments out of the file so that
+                // duration, BPM, and waveform all reflect the clean music
+                // length. This is strongly preferred over skip-at-playback
+                // because it works correctly with waveform zoom, looping, and
+                // cue points.
+                const bool cut = cutAudioRanges(outPath, segments);
+                if (!cut) {
+                    // Cutting failed (e.g. mid-file packet boundary on opus).
+                    // Write a sidecar in the canonical SponsorBlockController
+                    // format so it can fall back to skip-at-playback. The file
+                    // must be named VIDEOID.sponsorblock.json and use the
+                    // {"segment":[start,end], "category":"..."} schema — NOT
+                    // the old {start,end} format that was written as
+                    // VIDEOID.m4a.sponsor.json (those were silently ignored).
+                    const QString sidecarPath = QDir(QFileInfo(outPath).absolutePath())
+                                    .filePath(videoId +
+                                            QStringLiteral(".sponsorblock.json"));
+                    QFile sidecar(sidecarPath);
+                    if (sidecar.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                        QJsonArray arr;
+                        for (const auto& s : segments) {
+                            QJsonObject o;
+                            QJsonArray seg;
+                            seg.append(s.start);
+                            seg.append(s.end);
+                            o.insert(QStringLiteral("segment"), seg);
+                            o.insert(QStringLiteral("category"), s.category);
+                            arr.append(o);
                         }
+                        sidecar.write(
+                                QJsonDocument(arr).toJson(QJsonDocument::Compact));
+                        kLogger.info()
+                                << "Wrote SponsorBlock sidecar for" << videoId
+                                << "with" << segments.size() << "segment(s)";
                     }
+                } else {
+                    kLogger.info() << "SponsorBlock: cut" << segments.size()
+                                   << "non-music segment(s) from" << videoId;
                 }
-                Q_EMIT downloadFinished(videoId, outPath);
-            });
+            }
+            // Signal from the worker — Qt queues it to the main thread
+            // automatically because the signal target lives there.
+            QMetaObject::invokeMethod(
+                    this,
+                    [this, videoId, outPath]() {
+                        // Clean up the prefetch cache entry now that
+                        // finalization is complete.
+                        m_sponsorPrefetchCache.remove(videoId);
+                        Q_EMIT downloadFinished(videoId, outPath);
+                    },
+                    Qt::QueuedConnection);
+        });
+        thread->setObjectName(
+                QStringLiteral("SponsorBlockCut-") + videoId.left(11));
+        connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+        thread->start();
+    };
+
+    // If we started a SponsorBlock prefetch in downloadVideo() the result may
+    // already be sitting in the cache — use it immediately without any extra
+    // network round-trip. Otherwise, if the prefetch is still in-flight,
+    // register as a waiter so we get called as soon as it completes. If there
+    // was no prefetch at all (e.g. a path that bypassed downloadVideo) fall
+    // back to a direct fetch.
+    if (m_sponsorPrefetchCache.contains(videoId)) {
+        // Segments arrived before the download finished — zero wait.
+        doFinalize(m_sponsorPrefetchCache.value(videoId));
+    } else if (m_sponsorPrefetchWaiters.contains(videoId)) {
+        // Prefetch is still in-flight; queue ourselves behind it.
+        m_sponsorPrefetchWaiters[videoId].append(doFinalize);
+    } else {
+        // No prefetch was started — fetch now (legacy / direct path).
+        fetchSponsorSegmentsInternal(videoId, doFinalize);
+    }
 }
 
 void YouTubeService::fetchSponsorSegments(const QString& videoId) {

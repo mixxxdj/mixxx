@@ -57,6 +57,7 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
   protected:
     void appendTrackIdsFromRightClickIndex(
             QList<TrackId>* trackIds, QString* pPlaylist) override;
+    void onRightClick(const QPoint& globalPos) override;
 
   private slots:
     void onSearchResultsReady(
@@ -65,6 +66,7 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     void onDownloadFinished(const QString& videoId, const QString& localPath);
     void onDownloadFailed(const QString& videoId, const QString& error);
     void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void slotCleanCache();
     /// Dispatch clicks on links rendered in the home pane HTML.
     /// `ytplay:VIDEOID`     → download/cache/analyze the track.
     /// `ytcached:LOCALPATH` → refresh the already-downloaded row.

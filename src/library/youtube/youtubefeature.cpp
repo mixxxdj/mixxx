@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QLocale>
+#include <QMenu>
+#include <QMessageBox>
 #include <QRegularExpression>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -481,11 +483,11 @@ QString inferGenreFromQuery(const QString& query) {
 
 /// Returns true for sidecar files that accompany a downloaded YouTube audio
 /// file and should be excluded when looking for the actual audio bytes.
-/// Matches: .info.json (yt-dlp metadata), .sponsor.json (SponsorBlock data),
-///          .part (incomplete download temp file).
+/// Matches: .info.json (yt-dlp metadata), .sponsorblock.json (SponsorBlock
+/// fallback sidecar), .part (incomplete download temp file).
 bool isYouTubeSidecarFile(const QString& name) {
     return name.endsWith(QStringLiteral(".info.json")) ||
-            name.endsWith(QStringLiteral(".sponsor.json")) ||
+            name.endsWith(QStringLiteral(".sponsorblock.json")) ||
             name.endsWith(QStringLiteral(".part"));
 }
 
@@ -950,6 +952,14 @@ void YouTubeFeature::onSearchResultsReady(
     // no actual results" symptom. Showing the model switches the main pane to
     // the freshly-filled table and clears any stale search-box filter.
     Q_EMIT showTrackModel(m_pTrackModel);
+    // Restore the search box text that was cleared by setSearch("") inside
+    // replaceTrackTable(). Library::slotShowTrackModel emits restoreSearch("")
+    // (currentSearch() is now empty), which blanks the search box. Re-emit
+    // the actual query so the user sees what they typed.
+    if (!m_lastQuery.isEmpty() &&
+            !m_lastQuery.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {
+        Q_EMIT restoreSearch(m_lastQuery);
+    }
     if (autoAnalyzeResultsEnabled()) {
         autoAnalyzeCurrentResults();
     }
@@ -1068,7 +1078,7 @@ void YouTubeFeature::onDownloadFinished(
         return;
     }
     // SponsorBlock cuts have already been physically applied to the file by
-    // YouTubeService at this point (or, on cut failure, a .sponsor.json
+    // YouTubeService at this point (or, on cut failure, a .sponsorblock.json
     // sidecar has been written so SponsorBlockController can fall back to
     // skip-at-playback). Either way, the file we hand to the analyzer here
     // already represents the music-only timeline.
@@ -1280,9 +1290,11 @@ void YouTubeFeature::maybeReleaseCachedTrack(const TrackPointer& pTrack) {
         if (QFile::remove(location)) {
             kLogger.info() << "Released cached YouTube track" << videoId;
         }
-        // SponsorBlock sidecar lives next to the audio file.
-        const QString sidecar = QFileInfo(location).absoluteFilePath() +
-                QStringLiteral(".sponsor.json");
+        // SponsorBlock sidecar: canonical name is VIDEOID.sponsorblock.json
+        // (same as what SponsorBlockController reads). Remove it alongside
+        // the audio file.
+        const QString sidecar = QDir(QFileInfo(location).absolutePath())
+                .filePath(videoId + QStringLiteral(".sponsorblock.json"));
         QFile::remove(sidecar);
         if (trackId.isValid()) {
             m_pLibrary->trackCollectionManager()->purgeTracks(
@@ -1383,9 +1395,10 @@ void YouTubeFeature::rebuildSidebar() {
             QString localPath;
             for (const QString& f : files) {
                 // Skip both yt-dlp's metadata sidecar (.info.json) and our
-                // SponsorBlock sidecar (.sponsor.json) — only the audio file
-                // is loadable. Without this guard, depending on filesystem
-                // sort order we could wire the sidebar entry to a JSON file.
+                // SponsorBlock sidecar (.sponsorblock.json) — only the audio
+                // file is loadable. Without this guard, depending on
+                // filesystem sort order we could wire the sidebar entry to a
+                // JSON file.
                 if (isYouTubeSidecarFile(f)) {
                     continue;
                 }
@@ -1583,9 +1596,10 @@ void YouTubeFeature::replaceTrackTable(
     QSqlQuery ins(db);
     ins.prepare(QStringLiteral(
             "INSERT INTO youtube_library "
-            "(artist, title, album, location, comment, duration) "
-            "VALUES (:artist, :title, :album, :location, :comment, :duration)"));
+            "(artist, title, album, genre, location, comment, duration) "
+            "VALUES (:artist, :title, :album, :genre, :location, :comment, :duration)"));
 
+    const QString detectedGenre = inferGenreFromQuery(m_lastQuery);
     const QDir dir(cacheDir());
     for (const mixxx::YouTubeVideoInfo& info : videos) {
         if (info.id.isEmpty()) {
@@ -1614,6 +1628,7 @@ void YouTubeFeature::replaceTrackTable(
         ins.bindValue(QStringLiteral(":artist"), metadata.artist);
         ins.bindValue(QStringLiteral(":title"), metadata.title);
         ins.bindValue(QStringLiteral(":album"), QStringLiteral("YouTube"));
+        ins.bindValue(QStringLiteral(":genre"), detectedGenre);
         ins.bindValue(QStringLiteral(":location"), location);
         ins.bindValue(QStringLiteral(":comment"), info.id);
         ins.bindValue(QStringLiteral(":duration"), info.durationSec);
@@ -1698,6 +1713,135 @@ void YouTubeFeature::upsertDownloadedRow(const QString& videoId,
     }
     m_pTrackCache->buildIndex();
     m_pTrackModel->select();
+}
+
+void YouTubeFeature::onRightClick(const QPoint& globalPos) {
+    BaseExternalLibraryFeature::onRightClick(globalPos);
+    QMenu menu(m_pSidebarWidget);
+    QAction cleanAction(tr("Clean YouTube cache…"), &menu);
+    menu.addAction(&cleanAction);
+    const QAction* chosen = menu.exec(globalPos);
+    if (chosen == &cleanAction) {
+        slotCleanCache();
+    }
+}
+
+void YouTubeFeature::slotCleanCache() {
+    const QDir cache(cacheDir());
+    if (!cache.exists()) {
+        return;
+    }
+    // Collect all audio files (not sidecars or .part temps) in the cache dir.
+    const QStringList files = cache.entryList(
+            {QStringLiteral("*.m4a"),
+                    QStringLiteral("*.webm"),
+                    QStringLiteral("*.mp4"),
+                    QStringLiteral("*.ogg"),
+                    QStringLiteral("*.opus")},
+            QDir::Files | QDir::NoDotAndDotDot);
+
+    auto* pTcm = m_pLibrary ? m_pLibrary->trackCollectionManager() : nullptr;
+    auto* pInternal = pTcm ? pTcm->internalCollection() : nullptr;
+    const auto loaded = PlayerInfo::instance().getLoadedTracks();
+
+    int cleaned = 0;
+    for (const QString& fileName : files) {
+        const QString location = cache.filePath(fileName);
+
+        // Skip files still loaded on a deck.
+        bool onDeck = false;
+        for (auto it = loaded.cbegin(); it != loaded.cend(); ++it) {
+            if (it.value() && it.value()->getLocation() == location) {
+                onDeck = true;
+                break;
+            }
+        }
+        if (onDeck) {
+            continue;
+        }
+
+        // Skip files referenced by a playlist or crate.
+        if (pInternal) {
+            const TrackId trackId =
+                    pInternal->getTrackDAO().getTrackIdByLocation(location);
+            if (trackId.isValid()) {
+                QSet<int> playlistSet;
+                pInternal->getPlaylistDAO().getPlaylistsTrackIsIn(
+                        trackId, &playlistSet);
+                if (!playlistSet.isEmpty()) {
+                    continue;
+                }
+                if (pInternal->crates()
+                                .selectTrackCratesSorted(trackId)
+                                .next()) {
+                    continue;
+                }
+            }
+        }
+
+        // Safe to delete.
+        if (QFile::remove(location)) {
+            ++cleaned;
+            const QString videoId = QFileInfo(location).completeBaseName();
+            kLogger.info() << "Cache clean: removed" << videoId;
+            // Remove sidecar if present (canonical name: VIDEOID.sponsorblock.json).
+            QFile::remove(QDir(QFileInfo(location).absolutePath())
+                                  .filePath(videoId +
+                                          QStringLiteral(".sponsorblock.json")));
+            m_downloadedTracks.remove(videoId);
+            // Purge from main library DB.
+            if (pTcm && pInternal) {
+                const TrackId trackId =
+                        pInternal->getTrackDAO().getTrackIdByLocation(
+                                location);
+                if (trackId.isValid()) {
+                    pTcm->purgeTracks({TrackRef::fromFilePath(location, trackId)});
+                }
+            }
+        }
+    }
+
+    kLogger.info() << "YouTube cache clean: removed" << cleaned << "of"
+                   << files.size() << "cached files";
+
+    // Clean up stale youtube_library rows whose local files are gone
+    // (non-placeholder rows where the file was already deleted above).
+    if (m_pTrackCollection) {
+        QSqlDatabase db = m_pTrackCollection->database();
+        QSqlQuery rows(db);
+        rows.prepare(QStringLiteral(
+                "SELECT id, location FROM youtube_library "
+                "WHERE location NOT LIKE 'youtube://%'"));
+        if (rows.exec()) {
+            QList<int> toDelete;
+            while (rows.next()) {
+                const QString loc = rows.value(1).toString();
+                if (!QFileInfo::exists(loc)) {
+                    toDelete.append(rows.value(0).toInt());
+                }
+            }
+            for (int rowId : toDelete) {
+                QSqlQuery del(db);
+                del.prepare(QStringLiteral(
+                        "DELETE FROM youtube_library WHERE id = :id"));
+                del.bindValue(QStringLiteral(":id"), rowId);
+                del.exec();
+            }
+        }
+    }
+
+    rebuildSidebar();
+    rebuildHomeHtml();
+    if (m_pTrackCache) {
+        m_pTrackCache->buildIndex();
+    }
+    if (m_pTrackModel) {
+        m_pTrackModel->select();
+    }
+
+    QMessageBox::information(m_pSidebarWidget,
+            tr("YouTube Cache"),
+            tr("Removed %n downloaded track(s) from the cache.", "", cleaned));
 }
 
 #include "moc_youtubefeature.cpp"
