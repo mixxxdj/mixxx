@@ -1,7 +1,7 @@
 #include "library/youtube/youtubefeature.h"
 
-#include <QDir>
 #include <QDate>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QLocale>
@@ -1125,7 +1125,7 @@ void YouTubeFeature::onDownloadFinished(
     if (pTrack->getGenre().isEmpty() && !m_lastQuery.isEmpty()) {
         const QString detectedGenre = inferGenreFromQuery(m_lastQuery);
         if (!detectedGenre.isEmpty()) {
-            pTrack->setGenre(detectedGenre);
+            pTrack->updateGenre(detectedGenre);
         }
     }
     if (pTrack->getId().isValid()) {
@@ -1360,7 +1360,7 @@ void YouTubeFeature::rebuildSidebar() {
             : m_discoveredGenres;
     TreeItem* pGenresNode = pRoot->appendChild(tr("Genres"));
     for (const QString& genre : genres) {
-        pGenresNode->appendChild(genre, kGenrePrefix + genre);
+        pGenresNode->appendChild(genre, QString(kGenrePrefix + genre));
     }
 
     // Note: search/trending results are intentionally NOT listed as sidebar

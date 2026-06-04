@@ -2483,10 +2483,9 @@ if(QT6)
     # because NEON auto-vectorization still fires, but the binary shrinks
     # ~15-25 %. -ffunction-sections + -fdata-sections allow the linker to
     # discard unreachable code/data via --gc-sections.
-    target_compile_options(mixxx-lib PUBLIC
-      -Oz
-      -ffunction-sections
-      -fdata-sections
+    target_compile_options(
+      mixxx-lib
+      PUBLIC -Oz -ffunction-sections -fdata-sections
     )
     # Enable Link-Time Optimization (Thin LTO) — provides cross-TU inlining
     # and dead-code elimination with much lower memory/time cost than full

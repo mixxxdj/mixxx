@@ -125,7 +125,8 @@ CmdlineArgs::CmdlineArgs()
           // The user confirmed they can browse this location with a file
           // manager, so logs (mixxx.log) and configuration are accessible
           // without needing adb or a logcat viewer.
-          , m_settingsPath(
+          ,
+          m_settingsPath(
                   QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
                           .append("/Mixxx/"))
 #else

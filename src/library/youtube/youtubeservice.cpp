@@ -875,8 +875,8 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                                     // musicNavigationButtonRenderer has a
                                     // buttonText.runs[0].text with the genre name.
                                     const QJsonObject navBtn = obj.value(
-                                            QStringLiteral("musicNavigationButtonRenderer"))
-                                                                          .toObject();
+                                                                          QStringLiteral("musicNavigationButtonRenderer"))
+                                                                       .toObject();
                                     if (!navBtn.isEmpty()) {
                                         const QJsonArray runs =
                                                 navBtn.value(QStringLiteral("buttonText"))

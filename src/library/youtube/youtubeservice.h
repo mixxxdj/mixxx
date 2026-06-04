@@ -329,9 +329,9 @@ class YouTubeService : public QObject {
 
     // Bot-flag state with exponential backoff cooldown.
     bool m_botFlagActive = false;
-    int m_botFlagBackoffMs = 0;       // current backoff duration
-    qint64 m_botFlagTimestamp = 0;    // when the flag was last set (elapsed ms)
-    int m_botFlagCount = 0;           // consecutive bot-flag events this session
+    int m_botFlagBackoffMs = 0;    // current backoff duration
+    qint64 m_botFlagTimestamp = 0; // when the flag was last set (elapsed ms)
+    int m_botFlagCount = 0;        // consecutive bot-flag events this session
 
     /// Visitor data token obtained from InnerTube responses. YouTube returns a
     /// visitorData field in some responses; echoing it back reduces bot
