@@ -54,6 +54,7 @@ constexpr int kTrendingMaxDurationSec = 15 * 60; // 15 minutes
 // "search result the user wants to load" from "already-downloaded track".
 const QString kSearchPrefix = QStringLiteral("yt-search:");
 const QString kCachedPrefix = QStringLiteral("yt-cached:");
+const QString kGenrePrefix = QStringLiteral("yt-genre:");
 
 // URL schemes used by the clickable links rendered into the home-pane HTML.
 // Plain `<li>title</li>` would only render text — the user reported "songs..
@@ -63,7 +64,42 @@ const QString kCachedPrefix = QStringLiteral("yt-cached:");
 const QString kHomePlayScheme = QStringLiteral("ytplay");
 const QString kHomeCachedScheme = QStringLiteral("ytcached");
 const QString kHomeAutoAnalyzeScheme = QStringLiteral("ytautoanalyze");
+const QString kHomeGenreScheme = QStringLiteral("ytgenre");
 const QString kAutoAnalyzePayload = QStringLiteral("yt-auto-analyze");
+
+// DJ-oriented music genres shown in the sidebar "Genres" node as a fallback
+// when auto-discovery from YouTube Music fails. Includes both international
+// electronic/dance genres and Greek-specific categories the user explicitly
+// requested. These are replaced at runtime by fetchMusicGenres() results.
+const QStringList kDefaultGenres = {
+        // Greek genres
+        QStringLiteral("Καψούρα"),
+        QStringLiteral("Τραπίλες"),
+        QStringLiteral("Ελληνικά τραγούδια"),
+        QStringLiteral("Λαϊκά"),
+        QStringLiteral("Ρεμπέτικα"),
+        QStringLiteral("Έντεχνα"),
+        QStringLiteral("Ελληνικό ραπ"),
+        QStringLiteral("Σκυλάδικα"),
+        QStringLiteral("Ζεϊμπέκικα"),
+        QStringLiteral("Νησιώτικα"),
+        // International DJ genres
+        QStringLiteral("House"),
+        QStringLiteral("Deep House"),
+        QStringLiteral("Tech House"),
+        QStringLiteral("Techno"),
+        QStringLiteral("Trance"),
+        QStringLiteral("Drum & Bass"),
+        QStringLiteral("Hip Hop"),
+        QStringLiteral("R&B"),
+        QStringLiteral("Pop"),
+        QStringLiteral("Reggaeton"),
+        QStringLiteral("Afrobeats"),
+        QStringLiteral("Amapiano"),
+        QStringLiteral("Latin"),
+        QStringLiteral("Lo-Fi"),
+        QStringLiteral("EDM"),
+};
 
 /// Returns true for sidecar files that accompany a downloaded YouTube audio
 /// file and should be excluded when looking for the actual audio bytes.
@@ -251,6 +287,29 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &mixxx::YouTubeService::downloadFailed,
             this,
             &YouTubeFeature::onDownloadFailed);
+    connect(&m_service,
+            &mixxx::YouTubeService::botFlagged,
+            this,
+            [this](const QString& detail) {
+                kLogger.warning() << "Bot flagging detected:" << detail;
+                // Surface bot-detection warnings in the home HTML pane so
+                // the user knows why results might be degraded or downloads
+                // are falling back to yt-dlp.
+                m_lastSearchError = detail;
+                rebuildHomeHtml();
+            });
+    connect(&m_service,
+            &mixxx::YouTubeService::genresReady,
+            this,
+            [this](const QStringList& genres) {
+                if (!genres.isEmpty()) {
+                    m_discoveredGenres = genres;
+                    kLogger.info() << "Auto-discovered" << genres.size()
+                                   << "genres from YouTube Music";
+                    rebuildSidebar();
+                    rebuildHomeHtml();
+                }
+            });
 
     // Auto-cleanup: when a YouTube-cached track is ejected from a deck (i.e.
     // replaced by a new one or unloaded), and no other deck still has it
@@ -364,6 +423,12 @@ void YouTubeFeature::activate() {
         kLogger.info() << "Fetching YouTube trending for region" << country;
         m_service.fetchTrending(country, kSearchResultsMax);
     }
+    // Auto-discover genres from YouTube Music for the user's region. Only
+    // fetched once per session — the results are cached in m_discoveredGenres.
+    if (m_discoveredGenres.isEmpty()) {
+        const QString country = resolvedTrendingRegion();
+        m_service.fetchMusicGenres(country);
+    }
 }
 
 void YouTubeFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
@@ -393,6 +458,15 @@ void YouTubeFeature::onHomeAnchorClicked(const QUrl& url) {
         setAutoAnalyzeResultsEnabled(!autoAnalyzeResultsEnabled());
         return;
     }
+    // Genre links: "ytgenre:House" → search for "House songs 2024"
+    if (scheme == kHomeGenreScheme) {
+        const QString genre = url.path();
+        if (!genre.isEmpty()) {
+            const QString query = genre + QStringLiteral(" songs 2024");
+            searchAndActivate(query);
+        }
+        return;
+    }
     // Both schemes carry the YouTube video id as their path component (the
     // 11-char `[A-Za-z0-9_-]+` token). Both paths ensure the track is cached,
     // registered with the library, and queued for analysis without
@@ -416,6 +490,12 @@ void YouTubeFeature::activateChild(const QModelIndex& index) {
     const QString payload = pItem->getData().toString();
     if (payload == kAutoAnalyzePayload) {
         setAutoAnalyzeResultsEnabled(!autoAnalyzeResultsEnabled());
+    } else if (payload.startsWith(kGenrePrefix)) {
+        // User clicked a genre: run a search for that genre's top songs.
+        // Use a natural search query that works well with YouTube's algorithm.
+        const QString genre = payload.mid(kGenrePrefix.size());
+        const QString query = genre + QStringLiteral(" songs 2024");
+        searchAndActivate(query);
     } else if (payload.startsWith(kSearchPrefix)) {
         // User clicked a search result: download (or use cache) and analyze.
         const QString videoId = payload.mid(kSearchPrefix.size());
@@ -882,6 +962,17 @@ void YouTubeFeature::rebuildSidebar() {
                     : tr("Auto Analyze: Off"),
             kAutoAnalyzePayload);
 
+    // Genres node — contains DJ-oriented genre shortcuts that trigger a
+    // YouTube search for that genre's top songs. Uses auto-discovered genres
+    // from YouTube Music when available, otherwise falls back to defaults.
+    const QStringList& genres = m_discoveredGenres.isEmpty()
+            ? kDefaultGenres
+            : m_discoveredGenres;
+    TreeItem* pGenresNode = pRoot->appendChild(tr("Genres"));
+    for (const QString& genre : genres) {
+        pGenresNode->appendChild(genre, kGenrePrefix + genre);
+    }
+
     // Note: search/trending results are intentionally NOT listed as sidebar
     // tree children. They belong in the main track table (the right-hand
     // pane), exactly like every other library source — listing each song in
@@ -947,6 +1038,25 @@ void YouTubeFeature::rebuildHomeHtml() {
                "automatically. Leave it off for best performance and storage "
                "usage.") +
             QStringLiteral("</p>");
+
+    // Genre quick-links — rendered as a horizontal flow of clickable tags
+    // so the user can browse by genre without manually typing a search.
+    // Uses auto-discovered genres when available, otherwise defaults.
+    const QStringList& genres = m_discoveredGenres.isEmpty()
+            ? kDefaultGenres
+            : m_discoveredGenres;
+    html += QStringLiteral("<h3>") + tr("Browse by Genre") + QStringLiteral("</h3>");
+    html += QStringLiteral("<p>");
+    for (int i = 0; i < genres.size(); ++i) {
+        if (i > 0) {
+            html += QStringLiteral(" &middot; ");
+        }
+        html += QStringLiteral("<a href=\"") + kHomeGenreScheme +
+                QStringLiteral(":") + genres.at(i) +
+                QStringLiteral("\">") + genres.at(i).toHtmlEscaped() +
+                QStringLiteral("</a>");
+    }
+    html += QStringLiteral("</p>");
 
     if (!m_lastQuery.isEmpty()) {
         // Trending sentinel query — render a friendly "Trending in <Country>"

@@ -9,9 +9,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
+#include <QMutexLocker>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QPointer>
 #include <QProcess>
 #include <QRegularExpression>
 #include <QSet>
@@ -55,6 +57,21 @@ constexpr int kSponsorBlockTimeoutMs = 8 * 1000;
 // Project default for this fork: the requested first-open YouTube feed is Greek
 // top songs, not generic global/United States YouTube trends.
 const QString kDefaultRegion = QStringLiteral("GR");
+
+// Rate-limiting constants for InnerTube requests.
+// We allow at most kRateLimitBurst requests within any kRateLimitWindowMs
+// sliding window. When the limit is hit, the request is deferred (or the
+// caller skips straight to yt-dlp). These values are conservative — YouTube's
+// actual threshold is unknown but empirical testing shows 10+ rapid requests
+// within a few seconds can trigger a 429.
+constexpr int kRateLimitWindowMs = 10 * 1000; // 10 second window
+constexpr int kRateLimitBurst = 8;            // max 8 requests per window
+// Minimum inter-request gap in milliseconds. Even under burst we space
+// requests by this much to avoid looking like a bot.
+constexpr int kMinRequestGapMs = 300;
+// Desktop yt-dlp self-update timeout — generous because it downloads a ~40 MB
+// binary from GitHub Releases.
+constexpr int kYtDlpUpdateTimeoutMs = 120 * 1000; // 2 min
 
 // Apply the request attributes every YouTube/Piped/SponsorBlock call needs.
 //
@@ -540,6 +557,7 @@ YouTubeService::YouTubeService(QObject* parent)
           m_pNam(new QNetworkAccessManager(this)),
           m_ytDlpPath(locateYtDlp()),
           m_pipedInstances(kPipedInstances) {
+    m_rateLimitTimer.start();
     if (!m_ytDlpPath.isEmpty()) {
         kLogger.info() << "yt-dlp fallback available at" << m_ytDlpPath;
     } else {
@@ -763,6 +781,121 @@ void YouTubeService::fetchTrending(const QString& region, int cap) {
             /*regionOverride=*/r);
 }
 
+void YouTubeService::fetchMusicGenres(const QString& region) {
+    // YouTube Music's "Moods & Genres" page is served by InnerTube's /browse
+    // endpoint with browseId "FEmusic_moods_and_genres". This returns localized
+    // genre/mood category names (e.g. Greek names for gl=GR) that we surface
+    // in the sidebar. We use the ANDROID_VR client (same as search) and parse
+    // the category titles from the response.
+    const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
+    if (clients.isEmpty()) {
+        Q_EMIT genresReady({});
+        return;
+    }
+    const InnerTubeClient& c = clients.first();
+
+    QUrl reqUrl(QStringLiteral("https://music.youtube.com/youtubei/v1/browse"));
+    if (c.apiKey[0] != '\0') {
+        QUrlQuery query;
+        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
+        reqUrl.setQuery(query);
+    }
+
+    QJsonObject clientCtx = innerTubeClientContext(c, region);
+    if (!m_visitorData.isEmpty()) {
+        clientCtx.insert(QStringLiteral("visitorData"), m_visitorData);
+    }
+    // Override client for YouTube Music browse (YTM uses different client name).
+    clientCtx.insert(QStringLiteral("clientName"), QStringLiteral("WEB_REMIX"));
+    clientCtx.insert(QStringLiteral("clientVersion"), QStringLiteral("1.20240101.01.00"));
+
+    QJsonObject context;
+    context.insert(QStringLiteral("client"), clientCtx);
+    QJsonObject body;
+    body.insert(QStringLiteral("context"), context);
+    body.insert(QStringLiteral("browseId"), QStringLiteral("FEmusic_moods_and_genres"));
+
+    QNetworkRequest req(reqUrl);
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+            QStringLiteral("application/json"));
+    req.setRawHeader("User-Agent", QByteArray(c.userAgent));
+    if (!m_visitorData.isEmpty()) {
+        req.setRawHeader("X-Goog-Visitor-Id", m_visitorData.toUtf8());
+    }
+    req.setTransferTimeout(kSearchTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
+
+    recordRequest();
+
+    QNetworkReply* reply = m_pNam->post(
+            req, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    connect(reply,
+            &QNetworkReply::finished,
+            this,
+            [this, reply, region]() {
+                reply->deleteLater();
+                QStringList genres;
+                if (reply->error() == QNetworkReply::NoError) {
+                    const QJsonObject root =
+                            QJsonDocument::fromJson(reply->readAll()).object();
+                    // Parse genre titles from the browse response. YouTube Music
+                    // returns them nested in grid/shelf renderers under various
+                    // paths. We recursively walk the JSON looking for
+                    // "musicNavigationButtonRenderer" items which carry the
+                    // genre/mood display text.
+                    std::function<void(const QJsonValue&)> extract =
+                            [&genres, &extract](const QJsonValue& node) {
+                                if (genres.size() >= 50) {
+                                    return; // cap at 50 genres
+                                }
+                                if (node.isObject()) {
+                                    const QJsonObject obj = node.toObject();
+                                    // musicNavigationButtonRenderer has a
+                                    // buttonText.runs[0].text with the genre name.
+                                    const QJsonObject navBtn = obj.value(
+                                            QStringLiteral("musicNavigationButtonRenderer"))
+                                                                       .toObject();
+                                    if (!navBtn.isEmpty()) {
+                                        const QJsonArray runs =
+                                                navBtn.value(QStringLiteral("buttonText"))
+                                                        .toObject()
+                                                        .value(QStringLiteral("runs"))
+                                                        .toArray();
+                                        if (!runs.isEmpty()) {
+                                            const QString text =
+                                                    runs.first()
+                                                            .toObject()
+                                                            .value(QStringLiteral("text"))
+                                                            .toString()
+                                                            .trimmed();
+                                            if (!text.isEmpty() &&
+                                                    !genres.contains(text)) {
+                                                genres.append(text);
+                                            }
+                                        }
+                                        return; // don't descend into matched renderer
+                                    }
+                                    for (const QJsonValue& v : obj) {
+                                        extract(v);
+                                    }
+                                } else if (node.isArray()) {
+                                    const QJsonArray arr = node.toArray();
+                                    for (const QJsonValue& v : arr) {
+                                        extract(v);
+                                    }
+                                }
+                            };
+                    extract(QJsonValue(root));
+                    kLogger.info() << "Fetched" << genres.size()
+                                   << "music genres for region" << region;
+                } else {
+                    kLogger.warning() << "Genre fetch failed:"
+                                      << reply->errorString();
+                }
+                Q_EMIT genresReady(genres);
+            });
+}
+
 // =============================================================================
 // Piped (primary backend, works on every Qt platform incl. Android)
 // =============================================================================
@@ -814,7 +947,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     }
 
     QJsonObject context;
-    context.insert(QStringLiteral("client"), innerTubeClientContext(c, regionOverride));
+    QJsonObject clientCtx = innerTubeClientContext(c, regionOverride);
+    // Include visitorData in the client context to maintain session continuity.
+    // This mirrors what yt-dlp does — YouTube uses it to track a "session" and
+    // is less likely to flag subsequent requests as bot traffic when it's present.
+    if (!m_visitorData.isEmpty()) {
+        clientCtx.insert(QStringLiteral("visitorData"), m_visitorData);
+    }
+    context.insert(QStringLiteral("client"), clientCtx);
     QJsonObject body;
     body.insert(QStringLiteral("context"), context);
     body.insert(QStringLiteral("query"), requestQuery);
@@ -833,8 +973,23 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     req.setRawHeader("User-Agent", QByteArray(c.userAgent));
     req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
     req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
+    // Echo back visitorData from a previous response to maintain session
+    // continuity and reduce the chance of YouTube flagging us as a bot.
+    if (!m_visitorData.isEmpty()) {
+        req.setRawHeader("X-Goog-Visitor-Id", m_visitorData.toUtf8());
+    }
     req.setTransferTimeout(kSearchTimeoutMs);
     applyYouTubeRequestAttributes(&req);
+
+    // Rate-limit: if we've been sending too many requests, skip straight to
+    // fallback to avoid triggering a 429 that would flag the whole IP.
+    if (m_botFlagActive || shouldThrottleRequest()) {
+        kLogger.info() << "Throttled/bot-flagged: skipping InnerTube search, "
+                          "falling through to fallback";
+        tryNext(tr("Request throttled (bot-flag active or rate limit)"));
+        return;
+    }
+    recordRequest();
 
     QNetworkReply* reply = m_pNam->post(
             req, QJsonDocument(body).toJson(QJsonDocument::Compact));
@@ -843,9 +998,19 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
             this,
             [this, reply, emittedQuery, requestQuery, cap, tryNext]() {
                 reply->deleteLater();
+                const int httpStatus = reply->attribute(
+                        QNetworkRequest::HttpStatusCodeAttribute).toInt();
                 if (reply->error() != QNetworkReply::NoError) {
-                    const int httpStatus = reply->attribute(
-                            QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                    // Check for bot flagging before generic error handling.
+                    const QByteArray rawBody = reply->readAll();
+                    const QJsonObject errRoot =
+                            QJsonDocument::fromJson(rawBody).object();
+                    if (detectBotFlagging(httpStatus, errRoot, rawBody)) {
+                        // Bot flagged — skip all remaining InnerTube clients.
+                        tryNext(tr("Bot detection triggered (HTTP %1)")
+                                        .arg(httpStatus));
+                        return;
+                    }
                     const QString detail = tr("InnerTube search request failed: %1 (HTTP %2)")
                                     .arg(reply->errorString())
                                     .arg(httpStatus);
@@ -854,10 +1019,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                     return;
                 }
                 const QByteArray rawBody = reply->readAll();
-                const int httpStatus = reply->attribute(
-                        QNetworkRequest::HttpStatusCodeAttribute).toInt();
                 const QJsonObject root =
                         QJsonDocument::fromJson(rawBody).object();
+                // Check for bot flagging even on HTTP 200 (YouTube sometimes
+                // returns 200 with a LOGIN_REQUIRED playability status).
+                if (detectBotFlagging(httpStatus, root, rawBody)) {
+                    tryNext(tr("Bot detection triggered on search response"));
+                    return;
+                }
                 const QList<YouTubeVideoInfo> results =
                         parseInnerTubeSearch(root, cap);
                 if (results.isEmpty()) {
@@ -1339,23 +1508,58 @@ void YouTubeService::downloadViaInnerTubeClient(
     req.setRawHeader("User-Agent", userAgent.toUtf8());
     req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
     req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
+    if (!m_visitorData.isEmpty()) {
+        req.setRawHeader("X-Goog-Visitor-Id", m_visitorData.toUtf8());
+    }
     req.setTransferTimeout(kDownloadTimeoutMs);
     applyYouTubeRequestAttributes(&req);
+
+    // If we've been bot-flagged, skip InnerTube entirely and go straight to
+    // yt-dlp which has its own sophisticated anti-detection mechanisms.
+    if (m_botFlagActive) {
+        kLogger.info() << "Bot flag active — skipping InnerTube download for"
+                       << videoId;
+        onAllFailed(tr("Bot detection active — using yt-dlp fallback"));
+        return;
+    }
+    if (shouldThrottleRequest()) {
+        // Defer to next client rather than hammering YouTube.
+        tryNext(tr("Rate limit — deferring to next client"));
+        return;
+    }
+    recordRequest();
 
     QNetworkReply* reply = m_pNam->post(
             req, QJsonDocument(body).toJson(QJsonDocument::Compact));
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, videoId, cacheDir, userAgent, tryNext]() {
+            [this, reply, videoId, cacheDir, userAgent, tryNext, onAllFailed]() {
                 reply->deleteLater();
+                const int httpStatus = reply->attribute(
+                        QNetworkRequest::HttpStatusCodeAttribute).toInt();
                 if (reply->error() != QNetworkReply::NoError) {
+                    const QByteArray rawBody = reply->readAll();
+                    const QJsonObject errRoot =
+                            QJsonDocument::fromJson(rawBody).object();
+                    if (detectBotFlagging(httpStatus, errRoot, rawBody)) {
+                        // Bot flagged — skip all remaining clients, go to yt-dlp.
+                        onAllFailed(tr("Bot detection triggered (HTTP %1)")
+                                            .arg(httpStatus));
+                        return;
+                    }
                     tryNext(tr("InnerTube API failed: %1")
                                     .arg(reply->errorString()));
                     return;
                 }
+                const QByteArray rawBody = reply->readAll();
                 const QJsonObject root =
-                        QJsonDocument::fromJson(reply->readAll()).object();
+                        QJsonDocument::fromJson(rawBody).object();
+                // Check for bot flagging before processing the response.
+                if (detectBotFlagging(httpStatus, root, rawBody)) {
+                    onAllFailed(tr("Bot detection triggered on player response"));
+                    return;
+                }
                 // Check playability before touching streamingData.
                 const QJsonObject playability =
                         root.value(QStringLiteral("playabilityStatus")).toObject();
@@ -1553,6 +1757,12 @@ void YouTubeService::searchViaYtDlp(const QString& query, int cap) {
 }
 
 void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cacheDir) {
+    // Attempt a one-shot self-update of the bundled yt-dlp binary (desktop only).
+    // This keeps the extractor current when YouTube rotates their API. The update
+    // is fire-and-forget and only runs once per process — it does not block this
+    // download (yt-dlp's self-update is atomic and fast on a good connection).
+    maybeUpdateDesktopYtDlp();
+
     const QString outTemplate =
             QDir(cacheDir).filePath(QStringLiteral("%(id)s.%(ext)s"));
     const bool isPythonInterpreter =
@@ -1828,6 +2038,158 @@ void YouTubeService::downloadViaAndroidBundled(
     thread->start();
 }
 #endif // Q_OS_ANDROID && HAVE_YTDLP_ANDROID
+
+// =============================================================================
+// Bot-detection, rate limiting, and desktop yt-dlp self-update
+// =============================================================================
+
+bool YouTubeService::detectBotFlagging(int httpStatus,
+        const QJsonObject& root,
+        const QByteArray& rawBody) {
+    // HTTP 429 — explicit rate limit.
+    if (httpStatus == 429) {
+        m_botFlagActive = true;
+        const QString detail = tr("YouTube rate limit (HTTP 429) — switching to yt-dlp");
+        kLogger.warning() << detail;
+        Q_EMIT botFlagged(detail);
+        return true;
+    }
+
+    // Check playabilityStatus for bot indicators.
+    const QJsonObject playability =
+            root.value(QStringLiteral("playabilityStatus")).toObject();
+    const QString status = playability.value(QStringLiteral("status")).toString();
+    const QString reason = playability.value(QStringLiteral("reason")).toString();
+
+    // LOGIN_REQUIRED — YouTube wants authentication, typically bot-flagging.
+    if (status == QStringLiteral("LOGIN_REQUIRED")) {
+        m_botFlagActive = true;
+        const QString detail = tr("YouTube requires login (bot detection) — switching to yt-dlp");
+        kLogger.warning() << detail;
+        Q_EMIT botFlagged(detail);
+        return true;
+    }
+
+    // Check reason text for common bot-detection phrases.
+    const QString reasonLower = reason.toLower();
+    if (reasonLower.contains(QStringLiteral("sign in")) ||
+            reasonLower.contains(QStringLiteral("bot")) ||
+            reasonLower.contains(QStringLiteral("unusual traffic")) ||
+            reasonLower.contains(QStringLiteral("automated"))) {
+        m_botFlagActive = true;
+        const QString detail =
+                tr("YouTube bot detection: %1 — switching to yt-dlp").arg(reason);
+        kLogger.warning() << detail;
+        Q_EMIT botFlagged(detail);
+        return true;
+    }
+
+    // Check for consent/captcha challenge in raw HTML body (can happen when
+    // YouTube serves a web consent page instead of JSON).
+    if (root.isEmpty() && rawBody.size() > 100) {
+        const QByteArray lower = rawBody.toLower();
+        if (lower.contains("consent.youtube") ||
+                lower.contains("recaptcha") ||
+                lower.contains("captcha") ||
+                lower.contains("before you continue")) {
+            m_botFlagActive = true;
+            const QString detail =
+                    tr("YouTube consent/captcha challenge — switching to yt-dlp");
+            kLogger.warning() << detail;
+            Q_EMIT botFlagged(detail);
+            return true;
+        }
+    }
+
+    // Extract visitorData from response for future requests (reduces bot flagging).
+    const QJsonObject responseContext =
+            root.value(QStringLiteral("responseContext")).toObject();
+    const QString visitorData =
+            responseContext.value(QStringLiteral("visitorData")).toString();
+    if (!visitorData.isEmpty() && visitorData != m_visitorData) {
+        m_visitorData = visitorData;
+        kLogger.debug() << "Updated visitorData from InnerTube response";
+    }
+
+    return false;
+}
+
+bool YouTubeService::shouldThrottleRequest() {
+    QMutexLocker locker(&m_rateLimitMutex);
+    const qint64 now = m_rateLimitTimer.elapsed();
+
+    // Evict timestamps older than the window.
+    while (!m_requestTimestamps.isEmpty() &&
+            (now - m_requestTimestamps.first()) > kRateLimitWindowMs) {
+        m_requestTimestamps.removeFirst();
+    }
+
+    // Check burst limit.
+    if (m_requestTimestamps.size() >= kRateLimitBurst) {
+        kLogger.info() << "Rate limit: burst limit reached ("
+                       << m_requestTimestamps.size() << "/" << kRateLimitBurst
+                       << " in " << kRateLimitWindowMs << "ms window)";
+        return true;
+    }
+
+    // Check minimum inter-request gap.
+    if (!m_requestTimestamps.isEmpty() &&
+            (now - m_requestTimestamps.last()) < kMinRequestGapMs) {
+        return true;
+    }
+
+    return false;
+}
+
+void YouTubeService::recordRequest() {
+    QMutexLocker locker(&m_rateLimitMutex);
+    m_requestTimestamps.append(m_rateLimitTimer.elapsed());
+}
+
+// Desktop yt-dlp self-update: runs `yt-dlp --update-to stable` once per process.
+// This keeps the bundled binary current so downloads don't break when YouTube
+// rotates their extractor API — the same problem the Android path solves via
+// youtubedl-android's updateYoutubeDL(). On desktop the PyInstaller binary
+// supports in-place self-update, so we just shell out to it.
+namespace {
+std::atomic<bool> s_desktopYtdlpUpdateAttempted{false};
+} // namespace
+
+void YouTubeService::maybeUpdateDesktopYtDlp() {
+#if defined(Q_OS_ANDROID)
+    return; // Android uses the JNI path in downloadViaAndroidBundled()
+#endif
+    if (m_ytDlpPath.isEmpty() ||
+            m_ytDlpPath == QStringLiteral("android-bundled")) {
+        return;
+    }
+    if (s_desktopYtdlpUpdateAttempted.exchange(true)) {
+        return; // Already attempted this process lifetime.
+    }
+
+    kLogger.info() << "Attempting one-shot yt-dlp self-update from"
+                   << m_ytDlpPath;
+
+    // Fire-and-forget: we don't block the download on the update completing.
+    // If it succeeds, subsequent downloads benefit. If it fails, we still
+    // proceed with the existing binary version.
+    const QStringList args = {
+            QStringLiteral("--update-to"),
+            QStringLiteral("stable"),
+            QStringLiteral("--no-cache-dir"),
+    };
+    runYtDlp(
+            args,
+            kYtDlpUpdateTimeoutMs,
+            [](const QByteArray& out) {
+                kLogger.info() << "yt-dlp self-update completed:"
+                               << QString::fromUtf8(out).trimmed().left(200);
+            },
+            [](const QString& err) {
+                kLogger.warning() << "yt-dlp self-update failed (non-fatal):"
+                                  << err;
+            });
+}
 
 // =============================================================================
 // Shared post-download chain: SponsorBlock fetch → in-place cut → emit

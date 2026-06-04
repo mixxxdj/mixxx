@@ -1,7 +1,9 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QHash>
 #include <QList>
+#include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -72,6 +74,12 @@ class YouTubeService : public QObject {
     /// "Results for: ...". This keeps the signal surface small.
     void fetchTrending(const QString& region, int cap = 25);
 
+    /// Fetch music genres/moods from YouTube Music's browse API for the given
+    /// region. Emits genresReady(genres) with a list of genre display names
+    /// (localized to the region, e.g. Greek genre names for "GR"). Falls back
+    /// to a hardcoded default list on failure.
+    void fetchMusicGenres(const QString& region);
+
     /// Sentinel `query` value prefix used for trending results. Anything
     /// emitted on searchResultsReady whose query starts with this prefix is
     /// the trending feed for the region given after the colon.
@@ -102,6 +110,14 @@ class YouTubeService : public QObject {
     void downloadFailed(const QString& videoId, const QString& error);
     void sponsorSegmentsFetched(
             const QString& videoId, const QList<mixxx::SponsorSegment>& segments);
+    /// Emitted when YouTube returns a response indicating automated access
+    /// detection (HTTP 429, LOGIN_REQUIRED, consent challenge). The UI can
+    /// surface this as a non-fatal warning so the user knows why results are
+    /// degraded or downloads are falling back to yt-dlp.
+    void botFlagged(const QString& detail);
+    /// Emitted when genre auto-discovery completes. The list contains display
+    /// names (potentially localized, e.g. Greek genre names for region "GR").
+    void genresReady(const QStringList& genres);
 
   private:
     /// Locate the bundled (or user-installed) yt-dlp binary. Cached in
@@ -210,6 +226,12 @@ class YouTubeService : public QObject {
     void searchViaYtDlp(const QString& query, int cap);
     void downloadViaYtDlp(const QString& videoId, const QString& cacheDir);
 
+    /// Attempt to self-update the bundled yt-dlp binary on desktop. This runs
+    /// `yt-dlp --update-to stable` in the background at most once per process
+    /// lifetime. A failed update is non-fatal (we proceed with the existing
+    /// binary). Called lazily on first yt-dlp download attempt.
+    void maybeUpdateDesktopYtDlp();
+
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
     // ----- bundled youtubedl-android (Android only, no external deps) -----
 
@@ -231,12 +253,51 @@ class YouTubeService : public QObject {
     /// cut segments in-place, then emit downloadFinished(videoId, outPath).
     void finalizeDownload(const QString& videoId, const QString& outPath);
 
+    // ----- bot-detection & rate limiting -----
+
+    /// Inspect an InnerTube player/search HTTP response for signs that YouTube
+    /// has flagged us as a bot. Returns true (and emits botFlagged) when any
+    /// of the following are detected:
+    ///   - HTTP 429 (Too Many Requests)
+    ///   - playabilityStatus.status == "LOGIN_REQUIRED"
+    ///   - playabilityStatus.reason contains "Sign in" / "bot" / "unusual"
+    ///   - Response body contains a consent/captcha challenge page
+    /// When true, callers should skip directly to yt-dlp rather than cycling
+    /// through remaining InnerTube/Piped clients (which will all be flagged on
+    /// the same IP).
+    bool detectBotFlagging(int httpStatus,
+            const QJsonObject& root,
+            const QByteArray& rawBody);
+
+    /// Per-request rate limiter: enforces a minimum inter-request delay to
+    /// YouTube endpoints to reduce the probability of triggering bot detection.
+    /// Returns true if the request should proceed; false if too many requests
+    /// have been made recently (caller should defer or skip).
+    bool shouldThrottleRequest();
+
+    /// Record that a request was just sent (updates the rate-limiter state).
+    void recordRequest();
+
     QNetworkAccessManager* m_pNam;
     QString m_ytDlpPath;
     /// Hardcoded fallback list of Piped API instances. Tried in order on
     /// per-request failure. The expanded list provides better resilience
     /// against community-maintained instances going offline.
     QStringList m_pipedInstances;
+
+    // Rate-limiting state: track timestamps of recent InnerTube requests to
+    // self-throttle and avoid triggering YouTube's bot detection. The window
+    // and burst limits are conservative defaults tuned to avoid 429s while
+    // still allowing snappy search/download workflows.
+    QMutex m_rateLimitMutex;
+    QList<qint64> m_requestTimestamps; // msecsSinceEpoch of recent requests
+    QElapsedTimer m_rateLimitTimer;
+    bool m_botFlagActive = false; // true after first bot detection this session
+
+    /// Visitor data token obtained from InnerTube responses. YouTube returns a
+    /// visitorData field in some responses; echoing it back reduces bot
+    /// detection likelihood by maintaining session continuity.
+    QString m_visitorData;
 };
 
 } // namespace mixxx

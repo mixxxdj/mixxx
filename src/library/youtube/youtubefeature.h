@@ -144,6 +144,10 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// results arrive successfully. When non-empty, the home pane shows the
     /// error in place of the perpetual "Searching…" placeholder.
     QString m_lastSearchError;
+    /// Auto-discovered music genres from YouTube Music's browse API. Populated
+    /// asynchronously on first activate(); falls back to kDefaultGenres when
+    /// empty (fetch failed or hasn't completed yet).
+    QStringList m_discoveredGenres;
     /// True while a trending fetch issued from activate() is in flight, so
     /// repeated activations don't fire duplicate trending requests. Cleared
     /// when results arrive, the fetch fails, or a user search supersedes it.
