@@ -381,6 +381,66 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
     return true;
 }
 
+bool TrackDAO::updateAcoustIdResult(
+        TrackId trackId,
+        const QString& acoustidId,
+        const QString& acoustidLookupStatus,
+        const QString& musicbrainzRecordingId,
+        const QString& musicbrainzReleaseId,
+        const QString& musicbrainzTrackId,
+        const QString& musicbrainzArtistId) const {
+    kLogger.debug() << "Updating AcoustID result for track" << trackId;
+    if (!trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            "UPDATE library SET "
+            "acoustid_id=:acoustid_id, "
+            "acoustid_lookup_status=:acoustid_status, "
+            "musicbrainz_recording_id=:mbid_recording, "
+            "musicbrainz_release_id=:mbid_release, "
+            "musicbrainz_track_id=:mbid_track, "
+            "musicbrainz_artist_id=:mbid_artist "
+            "WHERE id=:track_id");
+
+    query.bindValue(":track_id", trackId.toVariant());
+    // Bind NULL for empty strings — don't overwrite existing data with blanks
+    query.bindValue(":acoustid_id",
+            acoustidId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : acoustidId);
+    query.bindValue(":acoustid_status",
+            acoustidLookupStatus.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : acoustidLookupStatus);
+    query.bindValue(":mbid_recording",
+            musicbrainzRecordingId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzRecordingId);
+    query.bindValue(":mbid_release",
+            musicbrainzReleaseId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzReleaseId);
+    query.bindValue(":mbid_track",
+            musicbrainzTrackId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzTrackId);
+    query.bindValue(":mbid_artist",
+            musicbrainzArtistId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzArtistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't update AcoustID result for track" << trackId;
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
+}
+
 void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
     if (!changedTrackIds.isEmpty()) {
         emit tracksChanged(changedTrackIds);
