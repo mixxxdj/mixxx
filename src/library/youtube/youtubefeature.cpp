@@ -83,23 +83,400 @@ const QStringList kDefaultGenres = {
         QStringLiteral("Σκυλάδικα"),
         QStringLiteral("Ζεϊμπέκικα"),
         QStringLiteral("Νησιώτικα"),
-        // International DJ genres
+        QStringLiteral("Δημοτικά"),
+        QStringLiteral("Κρητικά"),
+        QStringLiteral("Ποντιακά"),
+        QStringLiteral("Ελληνικό ροκ"),
+        QStringLiteral("Greek trap"),
+        QStringLiteral("Ελληνική ποπ"),
+        QStringLiteral("Ελληνική ντίσκο"),
+        // House & derivatives
         QStringLiteral("House"),
         QStringLiteral("Deep House"),
         QStringLiteral("Tech House"),
+        QStringLiteral("Progressive House"),
+        QStringLiteral("Afro House"),
+        QStringLiteral("Acid House"),
+        QStringLiteral("Funky House"),
+        QStringLiteral("Electro House"),
+        QStringLiteral("Bass House"),
+        QStringLiteral("Future House"),
+        QStringLiteral("Tribal House"),
+        QStringLiteral("Jackin House"),
+        QStringLiteral("Minimal House"),
+        QStringLiteral("Soulful House"),
+        QStringLiteral("Latin House"),
+        // Techno & derivatives
         QStringLiteral("Techno"),
+        QStringLiteral("Hard Techno"),
+        QStringLiteral("Dark Techno"),
+        QStringLiteral("Acid Techno"),
+        QStringLiteral("Industrial Techno"),
+        QStringLiteral("Melodic Techno"),
+        QStringLiteral("Minimal Techno"),
+        QStringLiteral("Detroit Techno"),
+        QStringLiteral("Dub Techno"),
+        QStringLiteral("Peak Time Techno"),
+        QStringLiteral("Hypnotic Techno"),
+        QStringLiteral("Raw Techno"),
+        // Trance & derivatives
         QStringLiteral("Trance"),
+        QStringLiteral("Psytrance"),
+        QStringLiteral("Hard Trance"),
+        QStringLiteral("Progressive Trance"),
+        QStringLiteral("Uplifting Trance"),
+        QStringLiteral("Goa Trance"),
+        QStringLiteral("Vocal Trance"),
+        QStringLiteral("Dark Psytrance"),
+        QStringLiteral("Full-On"),
+        QStringLiteral("Hi-Tech"),
+        // Drum & Bass / Jungle
         QStringLiteral("Drum & Bass"),
-        QStringLiteral("Hip Hop"),
-        QStringLiteral("R&B"),
+        QStringLiteral("Liquid DnB"),
+        QStringLiteral("Neurofunk"),
+        QStringLiteral("Jump Up"),
+        QStringLiteral("Jungle"),
+        QStringLiteral("Darkstep"),
+        QStringLiteral("Ragga Jungle"),
+        // Hardcore & hard dance
+        QStringLiteral("Hardcore"),
+        QStringLiteral("Frenchcore"),
+        QStringLiteral("Speedcore"),
+        QStringLiteral("Lolicore"),
+        QStringLiteral("Gabber"),
+        QStringLiteral("Hardstyle"),
+        QStringLiteral("Rawstyle"),
+        QStringLiteral("Happy Hardcore"),
+        QStringLiteral("Breakcore"),
+        QStringLiteral("Terrorcore"),
+        QStringLiteral("Uptempo Hardcore"),
+        QStringLiteral("Industrial Hardcore"),
+        QStringLiteral("J-Core"),
+        QStringLiteral("UK Hardcore"),
+        QStringLiteral("Hard Dance"),
+        QStringLiteral("Hard Bounce"),
+        // Bass music
+        QStringLiteral("Dubstep"),
+        QStringLiteral("Riddim"),
+        QStringLiteral("Brostep"),
+        QStringLiteral("Tearout"),
+        QStringLiteral("UK Garage"),
+        QStringLiteral("Bassline"),
+        QStringLiteral("Future Bass"),
+        QStringLiteral("Trap (EDM)"),
+        QStringLiteral("Wave"),
+        QStringLiteral("Colour Bass"),
+        // Breakbeat & electro
+        QStringLiteral("Breakbeat"),
+        QStringLiteral("Big Beat"),
+        QStringLiteral("Electro"),
+        QStringLiteral("Electroclash"),
+        QStringLiteral("Nu-Disco"),
+        QStringLiteral("Disco"),
+        QStringLiteral("Italo Disco"),
+        QStringLiteral("Space Disco"),
+        // Dark / industrial / EBM
+        QStringLiteral("EBM"),
+        QStringLiteral("Darkwave"),
+        QStringLiteral("Synthwave"),
+        QStringLiteral("Retrowave"),
+        QStringLiteral("Cyberpunk"),
+        QStringLiteral("Industrial"),
+        QStringLiteral("Dark Electro"),
+        QStringLiteral("Aggrotech"),
+        QStringLiteral("Witch House"),
+        // Ambient / downtempo
+        QStringLiteral("Ambient"),
+        QStringLiteral("Dark Ambient"),
+        QStringLiteral("Downtempo"),
+        QStringLiteral("Chillout"),
+        QStringLiteral("Lo-Fi"),
+        QStringLiteral("Trip Hop"),
+        QStringLiteral("Dub"),
+        // Pop / mainstream
         QStringLiteral("Pop"),
+        QStringLiteral("Electropop"),
+        QStringLiteral("Synthpop"),
+        QStringLiteral("K-Pop"),
+        QStringLiteral("J-Pop"),
+        QStringLiteral("Indie Pop"),
+        QStringLiteral("Dream Pop"),
+        // Hip Hop / Rap
+        QStringLiteral("Hip Hop"),
+        QStringLiteral("Trap"),
+        QStringLiteral("Drill"),
+        QStringLiteral("Phonk"),
+        QStringLiteral("Boom Bap"),
+        QStringLiteral("Lo-Fi Hip Hop"),
+        QStringLiteral("Grime"),
+        QStringLiteral("Cloud Rap"),
+        // R&B / Soul
+        QStringLiteral("R&B"),
+        QStringLiteral("Soul"),
+        QStringLiteral("Neo-Soul"),
+        QStringLiteral("Funk"),
+        // Latin
         QStringLiteral("Reggaeton"),
+        QStringLiteral("Latin"),
+        QStringLiteral("Dembow"),
+        QStringLiteral("Baile Funk"),
+        QStringLiteral("Cumbia"),
+        QStringLiteral("Salsa"),
+        QStringLiteral("Bachata"),
+        QStringLiteral("Merengue"),
+        // African
         QStringLiteral("Afrobeats"),
         QStringLiteral("Amapiano"),
-        QStringLiteral("Latin"),
+        QStringLiteral("Afro Tech"),
+        QStringLiteral("Gqom"),
+        QStringLiteral("Kwaito"),
+        // Asian & fusion
+        QStringLiteral("Kawaii Metal"),
+        QStringLiteral("Kawaii Future Bass"),
+        QStringLiteral("City Pop"),
+        QStringLiteral("Vaporwave"),
+        QStringLiteral("Future Funk"),
+        // Rock / Metal / Alternative
+        QStringLiteral("Rock"),
+        QStringLiteral("Metal"),
+        QStringLiteral("Punk"),
+        QStringLiteral("Post-Punk"),
+        QStringLiteral("Shoegaze"),
+        QStringLiteral("Grunge"),
+        QStringLiteral("Emo"),
+        QStringLiteral("Screamo"),
+        QStringLiteral("Metalcore"),
+        QStringLiteral("Deathcore"),
+        // Reggae / Caribbean
+        QStringLiteral("Reggae"),
+        QStringLiteral("Dancehall"),
+        QStringLiteral("Soca"),
+        // Misc / EDM
+        QStringLiteral("EDM"),
+        QStringLiteral("Minimal"),
+        QStringLiteral("Glitch"),
+        QStringLiteral("IDM"),
+        QStringLiteral("Footwork"),
+        QStringLiteral("Jersey Club"),
+        QStringLiteral("Baltimore Club"),
+        QStringLiteral("Bounce"),
+        QStringLiteral("Moombahton"),
+        QStringLiteral("Tropical House"),
+};
+
+/// Master list of known genre names used for auto-detecting the genre of a
+/// downloaded track from the search query that found it. Each entry is matched
+/// case-insensitively against the query string. The list is intentionally
+/// exhaustive: it covers electronic, Greek, global and niche genres so that a
+/// search like "frenchcore 2024" or "Λαϊκά τραγούδια" correctly tags the track.
+/// The list is ordered longest-first within each category so that more specific
+/// genres match before their parent (e.g. "Deep House" before "House").
+const QStringList kGenreMatchList = {
+        // Greek
+        QStringLiteral("Ελληνική ντίσκο"),
+        QStringLiteral("Ελληνικά τραγούδια"),
+        QStringLiteral("Ελληνικό ραπ"),
+        QStringLiteral("Ελληνικό ροκ"),
+        QStringLiteral("Ελληνική ποπ"),
+        QStringLiteral("Ρεμπέτικα"),
+        QStringLiteral("Σκυλάδικα"),
+        QStringLiteral("Ζεϊμπέκικα"),
+        QStringLiteral("Νησιώτικα"),
+        QStringLiteral("Δημοτικά"),
+        QStringLiteral("Καψούρα"),
+        QStringLiteral("Τραπίλες"),
+        QStringLiteral("Ποντιακά"),
+        QStringLiteral("Κρητικά"),
+        QStringLiteral("Έντεχνα"),
+        QStringLiteral("Λαϊκά"),
+        QStringLiteral("Greek trap"),
+        // House — most specific first
+        QStringLiteral("Progressive House"),
+        QStringLiteral("Soulful House"),
+        QStringLiteral("Minimal House"),
+        QStringLiteral("Jackin House"),
+        QStringLiteral("Tribal House"),
+        QStringLiteral("Future House"),
+        QStringLiteral("Electro House"),
+        QStringLiteral("Funky House"),
+        QStringLiteral("Latin House"),
+        QStringLiteral("Afro House"),
+        QStringLiteral("Acid House"),
+        QStringLiteral("Bass House"),
+        QStringLiteral("Deep House"),
+        QStringLiteral("Tech House"),
+        QStringLiteral("Tropical House"),
+        QStringLiteral("House"),
+        // Techno
+        QStringLiteral("Industrial Techno"),
+        QStringLiteral("Peak Time Techno"),
+        QStringLiteral("Hypnotic Techno"),
+        QStringLiteral("Melodic Techno"),
+        QStringLiteral("Minimal Techno"),
+        QStringLiteral("Detroit Techno"),
+        QStringLiteral("Hard Techno"),
+        QStringLiteral("Dark Techno"),
+        QStringLiteral("Acid Techno"),
+        QStringLiteral("Raw Techno"),
+        QStringLiteral("Dub Techno"),
+        QStringLiteral("Techno"),
+        // Trance
+        QStringLiteral("Progressive Trance"),
+        QStringLiteral("Uplifting Trance"),
+        QStringLiteral("Dark Psytrance"),
+        QStringLiteral("Vocal Trance"),
+        QStringLiteral("Hard Trance"),
+        QStringLiteral("Goa Trance"),
+        QStringLiteral("Psytrance"),
+        QStringLiteral("Full-On"),
+        QStringLiteral("Hi-Tech"),
+        QStringLiteral("Trance"),
+        // DnB / Jungle
+        QStringLiteral("Liquid DnB"),
+        QStringLiteral("Ragga Jungle"),
+        QStringLiteral("Neurofunk"),
+        QStringLiteral("Drum & Bass"),
+        QStringLiteral("Jump Up"),
+        QStringLiteral("Darkstep"),
+        QStringLiteral("Jungle"),
+        // Hardcore / hard dance
+        QStringLiteral("Industrial Hardcore"),
+        QStringLiteral("Uptempo Hardcore"),
+        QStringLiteral("Happy Hardcore"),
+        QStringLiteral("UK Hardcore"),
+        QStringLiteral("Hard Bounce"),
+        QStringLiteral("Hard Dance"),
+        QStringLiteral("Frenchcore"),
+        QStringLiteral("Speedcore"),
+        QStringLiteral("Terrorcore"),
+        QStringLiteral("Breakcore"),
+        QStringLiteral("Lolicore"),
+        QStringLiteral("Hardstyle"),
+        QStringLiteral("Rawstyle"),
+        QStringLiteral("Hardcore"),
+        QStringLiteral("Gabber"),
+        QStringLiteral("J-Core"),
+        // Bass music
+        QStringLiteral("Colour Bass"),
+        QStringLiteral("Future Bass"),
+        QStringLiteral("Trap (EDM)"),
+        QStringLiteral("UK Garage"),
+        QStringLiteral("Bassline"),
+        QStringLiteral("Brostep"),
+        QStringLiteral("Tearout"),
+        QStringLiteral("Dubstep"),
+        QStringLiteral("Riddim"),
+        QStringLiteral("Wave"),
+        // Breakbeat / electro / disco
+        QStringLiteral("Electroclash"),
+        QStringLiteral("Space Disco"),
+        QStringLiteral("Italo Disco"),
+        QStringLiteral("Breakbeat"),
+        QStringLiteral("Nu-Disco"),
+        QStringLiteral("Big Beat"),
+        QStringLiteral("Electro"),
+        QStringLiteral("Disco"),
+        // Dark / EBM / industrial
+        QStringLiteral("Dark Electro"),
+        QStringLiteral("Witch House"),
+        QStringLiteral("Aggrotech"),
+        QStringLiteral("Retrowave"),
+        QStringLiteral("Synthwave"),
+        QStringLiteral("Darkwave"),
+        QStringLiteral("Cyberpunk"),
+        QStringLiteral("Industrial"),
+        QStringLiteral("EBM"),
+        // Ambient / downtempo
+        QStringLiteral("Dark Ambient"),
+        QStringLiteral("Downtempo"),
+        QStringLiteral("Chillout"),
+        QStringLiteral("Trip Hop"),
+        QStringLiteral("Ambient"),
         QStringLiteral("Lo-Fi"),
+        QStringLiteral("Dub"),
+        // Pop
+        QStringLiteral("Electropop"),
+        QStringLiteral("Dream Pop"),
+        QStringLiteral("Indie Pop"),
+        QStringLiteral("Synthpop"),
+        QStringLiteral("K-Pop"),
+        QStringLiteral("J-Pop"),
+        QStringLiteral("Pop"),
+        // Hip Hop / Rap
+        QStringLiteral("Lo-Fi Hip Hop"),
+        QStringLiteral("Cloud Rap"),
+        QStringLiteral("Boom Bap"),
+        QStringLiteral("Hip Hop"),
+        QStringLiteral("Phonk"),
+        QStringLiteral("Drill"),
+        QStringLiteral("Grime"),
+        QStringLiteral("Trap"),
+        // R&B / Soul / Funk
+        QStringLiteral("Neo-Soul"),
+        QStringLiteral("Soul"),
+        QStringLiteral("Funk"),
+        QStringLiteral("R&B"),
+        // Latin
+        QStringLiteral("Baile Funk"),
+        QStringLiteral("Reggaeton"),
+        QStringLiteral("Merengue"),
+        QStringLiteral("Bachata"),
+        QStringLiteral("Dembow"),
+        QStringLiteral("Cumbia"),
+        QStringLiteral("Salsa"),
+        QStringLiteral("Latin"),
+        // African
+        QStringLiteral("Afrobeats"),
+        QStringLiteral("Afro Tech"),
+        QStringLiteral("Amapiano"),
+        QStringLiteral("Kwaito"),
+        QStringLiteral("Gqom"),
+        // Asian & fusion
+        QStringLiteral("Kawaii Future Bass"),
+        QStringLiteral("Kawaii Metal"),
+        QStringLiteral("Future Funk"),
+        QStringLiteral("Vaporwave"),
+        QStringLiteral("City Pop"),
+        // Rock / Metal
+        QStringLiteral("Post-Punk"),
+        QStringLiteral("Metalcore"),
+        QStringLiteral("Deathcore"),
+        QStringLiteral("Shoegaze"),
+        QStringLiteral("Screamo"),
+        QStringLiteral("Grunge"),
+        QStringLiteral("Metal"),
+        QStringLiteral("Punk"),
+        QStringLiteral("Rock"),
+        QStringLiteral("Emo"),
+        // Reggae / Caribbean
+        QStringLiteral("Dancehall"),
+        QStringLiteral("Reggae"),
+        QStringLiteral("Soca"),
+        // Misc
+        QStringLiteral("Jersey Club"),
+        QStringLiteral("Baltimore Club"),
+        QStringLiteral("Moombahton"),
+        QStringLiteral("Footwork"),
+        QStringLiteral("Minimal"),
+        QStringLiteral("Bounce"),
+        QStringLiteral("Glitch"),
+        QStringLiteral("IDM"),
         QStringLiteral("EDM"),
 };
+
+/// Try to infer a genre from the given search query by matching against
+/// kGenreMatchList. Returns the first (most specific) genre whose name appears
+/// as a substring (case-insensitive) in the query, or an empty string if no
+/// match is found.
+QString inferGenreFromQuery(const QString& query) {
+    const QString lower = query.toLower();
+    for (const QString& genre : kGenreMatchList) {
+        if (lower.contains(genre.toLower())) {
+            return genre;
+        }
+    }
+    return {};
+}
 
 /// Returns true for sidecar files that accompany a downloaded YouTube audio
 /// file and should be excluded when looking for the actual audio bytes.
@@ -738,6 +1115,16 @@ void YouTubeFeature::onDownloadFinished(
     pTrack->setTitle(title.isEmpty() ? videoId : title);
     pTrack->setAlbum(QStringLiteral("YouTube"));
     pTrack->setComment(videoId);
+    // Auto-detect genre from the search query that found this track. If the
+    // user searched for "frenchcore 2024" or clicked the "Hard Techno" genre
+    // shortcut, the track gets tagged automatically so the library's genre
+    // column is useful without manual tagging.
+    if (pTrack->getGenre().isEmpty() && !m_lastQuery.isEmpty()) {
+        const QString detectedGenre = inferGenreFromQuery(m_lastQuery);
+        if (!detectedGenre.isEmpty()) {
+            pTrack->setGenre(detectedGenre);
+        }
+    }
     if (pTrack->getId().isValid()) {
         if (pTrack->getBpm() > 0) {
             syncAnalyzedTrackMetadata(pTrack);
@@ -1083,7 +1470,7 @@ void YouTubeFeature::rebuildHomeHtml() {
                     m_lastSearchError.toHtmlEscaped() +
                     QStringLiteral("</p>");
             // Help the user find the log file for further diagnosis. On Android
-            // the logs are in the app's documents folder which is browseable
+            // the logs are in the app's documents folder which is browsable
             // from a file manager at data/data/org.mixxx.Mixxx/files/documents/Mixxx.
             const QString logDir =
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);

@@ -15,6 +15,7 @@
 class QNetworkAccessManager;
 class QNetworkCookieJar;
 class QNetworkReply;
+class QNetworkRequest;
 class QProcess;
 
 namespace mixxx {

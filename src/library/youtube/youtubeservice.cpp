@@ -81,8 +81,8 @@ constexpr int kMaxJitterMs = 1500;
 constexpr int kYtDlpUpdateTimeoutMs = 120 * 1000; // 2 min
 // Bot-flag exponential backoff: initial, max, and multiplier.
 // After first flag: wait 30s. Each subsequent flag doubles the wait up to 10min.
-constexpr int kBotFlagInitialBackoffMs = 30 * 1000;   // 30 seconds
-constexpr int kBotFlagMaxBackoffMs = 10 * 60 * 1000;  // 10 minutes
+constexpr int kBotFlagInitialBackoffMs = 30 * 1000;  // 30 seconds
+constexpr int kBotFlagMaxBackoffMs = 10 * 60 * 1000; // 10 minutes
 constexpr int kBotFlagBackoffMultiplier = 2;
 // QSettings keys for persisted session state.
 const QString kSettingsGroupYouTube = QStringLiteral("YouTube");
@@ -867,8 +867,8 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                     // genre/mood display text.
                     std::function<void(const QJsonValue&)> extract =
                             [&genres, &extract](const QJsonValue& node) {
-                                if (genres.size() >= 50) {
-                                    return; // cap at 50 genres
+                                if (genres.size() >= 100) {
+                                    return; // cap at 100 genres
                                 }
                                 if (node.isObject()) {
                                     const QJsonObject obj = node.toObject();
@@ -876,7 +876,7 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                                     // buttonText.runs[0].text with the genre name.
                                     const QJsonObject navBtn = obj.value(
                                             QStringLiteral("musicNavigationButtonRenderer"))
-                                                                       .toObject();
+                                                                          .toObject();
                                     if (!navBtn.isEmpty()) {
                                         const QJsonArray runs =
                                                 navBtn.value(QStringLiteral("buttonText"))
@@ -1025,7 +1025,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
             [this, reply, emittedQuery, requestQuery, cap, tryNext]() {
                 reply->deleteLater();
                 const int httpStatus = reply->attribute(
-                        QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                                                    QNetworkRequest::HttpStatusCodeAttribute)
+                                               .toInt();
                 if (reply->error() != QNetworkReply::NoError) {
                     // Check for bot flagging before generic error handling.
                     const QByteArray rawBody = reply->readAll();
@@ -1038,8 +1039,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                         return;
                     }
                     const QString detail = tr("InnerTube search request failed: %1 (HTTP %2)")
-                                    .arg(reply->errorString())
-                                    .arg(httpStatus);
+                                                   .arg(reply->errorString())
+                                                   .arg(httpStatus);
                     kLogger.warning() << detail;
                     tryNext(detail);
                     return;
@@ -1567,7 +1568,8 @@ void YouTubeService::downloadViaInnerTubeClient(
             [this, reply, videoId, cacheDir, userAgent, tryNext, onAllFailed]() {
                 reply->deleteLater();
                 const int httpStatus = reply->attribute(
-                        QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                                                    QNetworkRequest::HttpStatusCodeAttribute)
+                                               .toInt();
                 if (reply->error() != QNetworkReply::NoError) {
                     const QByteArray rawBody = reply->readAll();
                     const QJsonObject errRoot =
@@ -1575,7 +1577,7 @@ void YouTubeService::downloadViaInnerTubeClient(
                     if (detectBotFlagging(httpStatus, errRoot, rawBody)) {
                         // Bot flagged — skip all remaining clients, go to yt-dlp.
                         onAllFailed(tr("Bot detection triggered (HTTP %1)")
-                                            .arg(httpStatus));
+                                        .arg(httpStatus));
                         return;
                     }
                     tryNext(tr("InnerTube API failed: %1")
@@ -2347,9 +2349,10 @@ QStringList YouTubeService::ytDlpAntiBotArgs() const {
     // 5. User-agent override: use a recent Chrome UA to avoid being flagged
     //    by the default yt-dlp UA string.
     args << QStringLiteral("--user-agent")
-         << QStringLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                           "AppleWebKit/537.36 (KHTML, like Gecko) "
-                           "Chrome/126.0.0.0 Safari/537.36");
+         << QStringLiteral(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/126.0.0.0 Safari/537.36");
 
     // 6. Retry on HTTP errors (including 429). yt-dlp will wait and retry.
     args << QStringLiteral("--retries") << QStringLiteral("3");
