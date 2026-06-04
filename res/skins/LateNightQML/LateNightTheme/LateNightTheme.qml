@@ -18,6 +18,29 @@ QtObject {
     readonly property int toolbarButtonWidth: 52
     readonly property color white: "#D9D9D9"
 
+    readonly property url assetDeckBeatjumpLeftButton: buttonAsset("btn__beatjump_left.svg")
+    readonly property url assetDeckBeatjumpRightButton: buttonAsset("btn__beatjump_right.svg")
+    readonly property url assetDeckCoverDefault: styleAsset("cover_default.svg")
+    readonly property url assetDeckCueButton: buttonAsset("btn__cue_deck.svg")
+    readonly property url assetDeckKeylockButton: buttonAsset("btn__keylock.svg")
+    readonly property url assetDeckLoopButton: buttonAsset("btn__loop.svg")
+    readonly property url assetDeckPlayButton: buttonAsset("btn__play_deck.svg")
+    readonly property url assetDeckRateSliderBackground: sliderAsset("slider_pitch_deck.svg")
+    readonly property url assetDeckRateSliderHandle: sliderAsset("knob_pitch_deck.svg")
+    readonly property url assetDeckReverseButton: buttonAsset("btn__reverse.svg")
+    readonly property url assetDeckSpinnyBackground: styleAsset("spinny_bg.svg")
+    readonly property url assetDeckSpinnyGhostIndicator: styleAsset("spinny_indicator_ghost.svg")
+    readonly property url assetDeckSpinnyIndicator: styleAsset("spinny_indicator.svg")
+    readonly property url assetDeckSpinnyMask12: styleAsset("spinny_mask_12.svg")
+    readonly property url assetDeckSpinnyMask34: styleAsset("spinny_mask_34.svg")
+    readonly property url assetDeckSyncButton: buttonAsset("btn__sync_deck.svg")
+    readonly property url assetDeckVolumeSliderBackground: sliderAsset("slider_volume_deck.svg")
+    readonly property url assetDeckVolumeSliderHandle: sliderAsset("knob_volume_deck.svg")
+    readonly property url assetFxKnobBackground: knobAsset("knob_bg_fx.svg")
+    readonly property url assetMainKnobBackground: knobAsset("knob_bg_main.svg")
+    readonly property url assetRegularKnobBackground: knobAsset("knob_bg_regular.svg")
+    readonly property url assetSmallKnobBackground: knobAsset("knob_bg_small.svg")
+
     function colorSchemeAsset(kind, fileName) {
         return Qt.resolvedUrl("../../LateNight/" + ColorScheme.name + "/" + kind + "/" + fileName);
     }
