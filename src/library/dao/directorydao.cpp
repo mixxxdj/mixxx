@@ -6,12 +6,39 @@
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
 
+#if defined(Q_OS_ANDROID)
+#include <QJniObject>
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("DirectoryDAO");
 
 const QString kTable = QStringLiteral("directories");
 const QString kLocationColumn = QStringLiteral("directory");
+
+// Returns whether the directory can actually be read. On Android 11+ (API 30+)
+// QFileInfo::isReadable() (a POSIX access() call under the hood) returns false
+// for shared-storage paths such as /storage/emulated/0 even when the app holds
+// MANAGE_EXTERNAL_STORAGE ("all files access") and can read them just fine
+// through the FUSE layer. Relying on QFileInfo alone therefore rejected the
+// primary storage volume and left the library permanently empty. Fall back to
+// Java's java.io.File.canRead(), which reflects the real access state.
+bool isDirectoryReadable(const mixxx::FileInfo& dir) {
+    if (dir.isReadable()) {
+        return true;
+    }
+#if defined(Q_OS_ANDROID)
+    const QJniObject jPath = QJniObject::fromString(dir.location());
+    QJniObject jFile("java/io/File",
+            "(Ljava/lang/String;)V",
+            jPath.object<jstring>());
+    if (jFile.isValid() && jFile.callMethod<jboolean>("canRead")) {
+        return true;
+    }
+#endif
+    return false;
+}
 
 } // anonymous namespace
 
@@ -83,9 +110,9 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
                 << ": Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
     }
-    if (!newDir.isReadable()) {
+    if (!isDirectoryReadable(newDir)) {
         kLogger.warning()
-                << "Aborting to to add"
+                << "Aborting to add"
                 << newDir.location()
                 << ": Directory can not be read";
         return AddResult::UnreadableDirectory;
@@ -189,7 +216,7 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
                 << "does not exist or is inaccessible";
         return {RelocateResult::InvalidOrMissingDirectory, {}};
     }
-    if (!newFileInfo.isReadable()) {
+    if (!isDirectoryReadable(newFileInfo)) {
         kLogger.warning()
                 << "Aborting to relocate"
                 << oldDirectory

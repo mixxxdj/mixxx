@@ -22,6 +22,7 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QVector>
+#include <atomic>
 #include <utility>
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
@@ -593,6 +594,20 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     downloadViaInnerTube(videoId,
             cacheDir,
             [this, videoId, cacheDir](const QString& innerTubeError) {
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+                // On Android, skip the Piped detour entirely: the community
+                // instances are mostly dead, so cycling 5×10s through them only
+                // adds ~50s of lag before the download finally fails. The
+                // bundled yt-dlp (real Python yt-dlp via JNI) is the reliable
+                // path that actually downloads the song, so go straight to it.
+                if (m_ytDlpPath == QStringLiteral("android-bundled")) {
+                    kLogger.warning() << "InnerTube download failed for"
+                                      << videoId << ":" << innerTubeError
+                                      << "— falling back to bundled yt-dlp (JNI)";
+                    downloadViaAndroidBundled(videoId, cacheDir);
+                    return;
+                }
+#endif
                 kLogger.warning() << "InnerTube download failed for" << videoId
                                   << ":" << innerTubeError
                                   << "— falling back to Piped";
@@ -601,19 +616,10 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
                         /*instanceIdx=*/0,
                         [this, videoId, cacheDir, innerTubeError](
                                 const QString& pipedError) {
-                            // Piped also failed — last resort: yt-dlp binary /
-                            // android-bundled JNI runtime (when compiled in).
+                            // Piped also failed — last resort: yt-dlp binary.
                             kLogger.warning()
                                     << "All Piped instances failed for download"
                                     << videoId << ":" << pipedError;
-#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
-                            if (m_ytDlpPath == QStringLiteral("android-bundled")) {
-                                kLogger.warning()
-                                        << "Falling back to bundled yt-dlp (JNI)";
-                                downloadViaAndroidBundled(videoId, cacheDir);
-                                return;
-                            }
-#endif
                             if (!m_ytDlpPath.isEmpty()) {
                                 kLogger.warning() << "Falling back to yt-dlp binary";
                                 downloadViaYtDlp(videoId, cacheDir);
@@ -1485,6 +1491,13 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
 // Bundled youtubedl-android (JNI-based, no external dependencies)
 // =============================================================================
 
+// Whether we've already attempted to self-update the bundled yt-dlp this
+// process. The update is a one-shot best-effort network call; we don't want to
+// repeat it on every download.
+namespace {
+std::atomic<bool> s_ytdlpUpdateAttempted{false};
+} // namespace
+
 void YouTubeService::downloadViaAndroidBundled(
         const QString& videoId, const QString& cacheDir) {
     // Run the JNI download on a worker thread so we don't block the UI.
@@ -1512,10 +1525,43 @@ void YouTubeService::downloadViaAndroidBundled(
             return;
         }
 
-        // Initialize with the Android context (required before first exec).
+        // Initialize with the Android context (required before first download).
+        QJniEnvironment env;
         ytdl.callMethod<void>("init",
                 "(Landroid/content/Context;)V",
                 context.object());
+        if (env.checkAndClearExceptions()) {
+            if (guard)
+                Q_EMIT guard->downloadFailed(
+                        videoId, "yt-dlp init failed (youtubedl-android)");
+            return;
+        }
+
+        // The yt-dlp packaged inside the AAR is whatever version was bundled at
+        // the library's build time and goes stale quickly — YouTube regularly
+        // breaks older extractors, which is the usual reason downloads stop
+        // working ("gave us songs at some point and now nothing"). Update to the
+        // latest stable yt-dlp release before downloading. Best-effort and
+        // one-shot per process: if there's no network or GitHub is unreachable
+        // we simply proceed with the bundled version.
+        if (!s_ytdlpUpdateAttempted.exchange(true)) {
+            QJniObject channel = QJniObject::getStaticObjectField(
+                    "com/yausername/youtubedl_android/YoutubeDL$UpdateChannel$STABLE",
+                    "INSTANCE",
+                    "Lcom/yausername/youtubedl_android/YoutubeDL$UpdateChannel$STABLE;");
+            if (channel.isValid()) {
+                kLogger.info() << "Updating bundled yt-dlp to latest stable…";
+                ytdl.callObjectMethod("updateYoutubeDL",
+                        "(Landroid/content/Context;"
+                        "Lcom/yausername/youtubedl_android/YoutubeDL$UpdateChannel;)"
+                        "Lcom/yausername/youtubedl_android/YoutubeDL$UpdateStatus;",
+                        context.object(),
+                        channel.object());
+            }
+            // A failed update (network/rate-limit/parse) must not block the
+            // download — clear any pending Java exception and carry on.
+            env.checkAndClearExceptions();
+        }
 
         // Build the request: URL + options.
         QString videoUrl = "https://www.youtube.com/watch?v=" + videoId;
@@ -1552,36 +1598,47 @@ void YouTubeService::downloadViaAndroidBundled(
                 "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
                 QJniObject::fromString("--no-mtime").object());
 
-        // Execute the download (blocks this thread until complete).
-        QJniEnvironment env;
+        // Execute the download (blocks this thread until complete). The
+        // youtubedl-android API method is execute(YoutubeDLRequest) (with a
+        // YoutubeDLResponse return) — the previous code called a non-existent
+        // "exec" method, so every bundled download threw NoSuchMethodError and
+        // silently failed. This is the core download fix.
         QJniObject response = ytdl.callObjectMethod(
-                "exec",
+                "execute",
                 "(Lcom/yausername/youtubedl_android/YoutubeDLRequest;)"
                 "Lcom/yausername/youtubedl_android/YoutubeDLResponse;",
                 request.object());
 
-        if (!response.isValid()) {
+        if (env.checkAndClearExceptions() || !response.isValid()) {
             if (guard)
-                Q_EMIT guard->downloadFailed(videoId, "yt-dlp exec returned null");
+                Q_EMIT guard->downloadFailed(videoId,
+                        "yt-dlp download failed (youtubedl-android)");
             return;
         }
 
-        // Extract the output file path from the response.
-        jstring outStr = response.callObjectMethod<jstring>(
-                "getOut",
-                "()Ljava/lang/String;");
-        if (!outStr) {
-            if (guard)
-                Q_EMIT guard->downloadFailed(videoId, "yt-dlp produced no output");
-            return;
-        }
-
-        const char* outChars = env->GetStringUTFChars(outStr, nullptr);
-        QString outputPath = QString::fromUtf8(outChars);
-        env->ReleaseStringUTFChars(outStr, outChars);
-
+        // Extract the output file path. yt-dlp wrote it as "<videoId>.<ext>"
+        // inside cacheDir (the -o template above). The exact extension depends
+        // on the chosen bestaudio format (m4a / webm / opus / …), so locate the
+        // file by id rather than trusting the process stdout — getOut() returns
+        // yt-dlp's log text, not a path, which is why downloads that did run
+        // were still reported as "file not found".
         if (!guard)
             return; // Service destroyed, nothing more to do
+
+        QString outputPath;
+        const QFileInfoList matches = QDir(cacheDir).entryInfoList(
+                QStringList{videoId + QStringLiteral(".*")}, QDir::Files);
+        for (const QFileInfo& fi : matches) {
+            const QString suffix = fi.suffix().toLower();
+            // Skip yt-dlp's transient/sidecar artefacts; keep the real audio.
+            if (suffix == QStringLiteral("part") ||
+                    suffix == QStringLiteral("ytdl") ||
+                    suffix == QStringLiteral("json")) {
+                continue;
+            }
+            outputPath = fi.absoluteFilePath();
+            break;
+        }
 
         if (!outputPath.isEmpty() && QFileInfo::exists(outputPath)) {
             // Route through finalizeDownload for SponsorBlock/post-processing,
@@ -1591,7 +1648,7 @@ void YouTubeService::downloadViaAndroidBundled(
                 if (guard) guard->finalizeDownload(videoId, outputPath); }, Qt::QueuedConnection);
         } else {
             Q_EMIT guard->downloadFailed(videoId,
-                    "yt-dlp finished but file not found: " + outputPath);
+                    "yt-dlp finished but output file not found in cache");
         }
     });
 
