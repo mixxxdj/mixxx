@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QSet>
 #include <QSharedPointer>
+#include <QTimer>
 
 #include "analyzer/analyzerprogress.h"
 #include "library/baseexternallibraryfeature.h"
@@ -148,6 +149,13 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     parented_ptr<TreeItemModel> m_pSidebarModel;
     QPointer<WLibraryTextBrowser> m_pHomeView;
     mixxx::YouTubeService m_service;
+    /// Debounce timer for rebuildSidebar() + rebuildHomeHtml() — coalesces
+    /// rapid-fire calls (e.g. during batch auto-analyze downloads) so the UI
+    /// thread is not churning HTML on every individual download completion.
+    QTimer* m_rebuildTimer = nullptr;
+    /// Schedule a deferred rebuildSidebar() + rebuildHomeHtml(). Calling this
+    /// multiple times within the debounce window triggers only one rebuild.
+    void scheduleRebuild();
     QString m_lastQuery;
     QList<mixxx::YouTubeVideoInfo> m_lastResults;
     // videoId -> human-readable label (used for the "Downloaded" branch).

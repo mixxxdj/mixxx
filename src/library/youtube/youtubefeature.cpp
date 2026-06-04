@@ -608,6 +608,17 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, "youtube"),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_service(this) {
+    // Debounce timer for sidebar + home HTML rebuilds. Rapid-fire download
+    // completions (e.g. batch auto-analyze) each want to rebuild; coalescing
+    // them to a single repaint 120 ms after the last event keeps the UI
+    // thread free during the download burst.
+    m_rebuildTimer = new QTimer(this);
+    m_rebuildTimer->setSingleShot(true);
+    m_rebuildTimer->setInterval(120);
+    connect(m_rebuildTimer, &QTimer::timeout, this, [this]() {
+        rebuildSidebar();
+        rebuildHomeHtml();
+    });
     // Build the persistent track model that backs the right-hand pane.
     // Mirrors ITunesFeature ctor exactly — same column set, same cache
     // wiring — so the standard WTrackTableView UI works out of the box
@@ -1231,8 +1242,10 @@ void YouTubeFeature::onDownloadFinished(
         }
     }
     m_downloadedTracks.insert(videoId, label);
-    rebuildSidebar();
-    rebuildHomeHtml();
+    // Batch downloads (auto-analyze) each emit onDownloadFinished; debounce
+    // the paired sidebar+home rebuild so the UI thread isn't churning HTML
+    // after every individual file lands.
+    scheduleRebuild();
     // Update the corresponding youtube_library row (or insert a new one if
     // this download wasn't part of the current search) so the track table
     // reflects the new on-disk path. Without this the row's location would
@@ -1439,8 +1452,7 @@ void YouTubeFeature::maybeReleaseCachedTrack(const TrackPointer& pTrack) {
                     {TrackRef::fromFilePath(location, trackId)});
         }
         m_downloadedTracks.remove(videoId);
-        rebuildSidebar();
-        rebuildHomeHtml();
+        scheduleRebuild();
     });
 }
 
@@ -1756,7 +1768,11 @@ void YouTubeFeature::rebuildHomeHtml() {
     m_pHomeView->setHtml(html);
 }
 
-void YouTubeFeature::replaceTrackTable(
+void YouTubeFeature::scheduleRebuild() {
+    // Restart the timer on every call — fires 120 ms after the last request,
+    // coalescing N calls within the window into a single rebuild pair.
+    m_rebuildTimer->start();
+}
         const QList<mixxx::YouTubeVideoInfo>& videos, int attempt) {
     if (!m_pTrackModel || !m_pTrackCache) {
         return;

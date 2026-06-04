@@ -24,6 +24,7 @@
 #include <QStandardPaths>
 #include <QStringList>
 #include <QThread>
+#include <QThreadPool>
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
@@ -49,12 +50,20 @@ const Logger kLogger("YouTubeService");
 // page-parse both finish well under a second on a healthy network. Downloads
 // can be larger, but bestaudio for a song is typically <10 MB; the ceiling
 // is generous so a slow connection or long mix doesn't get killed.
-constexpr int kSearchTimeoutMs = 30 * 1000;        // 30 s
+// 15 s is enough for InnerTube (typically <1s); a faster fail means the
+// yt-dlp fallback kicks in sooner on flaky connections.
+constexpr int kSearchTimeoutMs = 15 * 1000;
 constexpr int kDownloadTimeoutMs = 10 * 60 * 1000; // 10 min
 // Piped HTTP requests get a tighter ceiling — each instance failure should
 // surface fast so we can fail over to the next one without burning too long
 // per dead instance. With 10 instances at 10s each, worst case is ~100s.
 constexpr int kPipedHttpTimeoutMs = 10 * 1000;
+// Minimum file size before we switch from a single-connection download to 4
+// parallel Range requests. Below this threshold the connection-setup overhead
+// outweighs the gain; above it, 4 TCP streams typically deliver 2-4x higher
+// throughput on cellular links where a single window saturates slowly.
+constexpr qint64 kChunkedDownloadThresholdBytes = 2LL * 1024 * 1024; // 2 MB
+constexpr int kParallelDownloadChunks = 4;
 constexpr int kMaxPipedSearchPages = 5;
 // SponsorBlock API timeout — prevents indefinite hangs if the service is slow.
 constexpr int kSponsorBlockTimeoutMs = 8 * 1000;
@@ -1577,6 +1586,18 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
     const QString outPath =
             QDir(cacheDir).filePath(videoId + QLatin1Char('.') + ext);
 
+    // Use parallel Range requests when InnerTube told us the file size upfront.
+    // On cellular links a single TCP stream saturates its congestion window
+    // slowly; 4 concurrent streams typically deliver 2-4x higher throughput.
+    const qint64 contentLength =
+            best.value(QStringLiteral("contentLength")).toVariant().toLongLong();
+    if (contentLength >= kChunkedDownloadThresholdBytes) {
+        downloadAudioStreamChunked(
+                videoId, outPath, streamUrl, contentLength, streamUserAgent, onFailure);
+        return;
+    }
+
+    // --- single-connection fallback (Piped, or InnerTube without contentLength) ---
     // Stream straight to disk via a temp file we rename on completion. A
     // partial file left behind from a kill/crash would otherwise look like
     // a complete download to the next launch's library scanner.
@@ -1639,6 +1660,185 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
                 kLogger.info() << "Downloaded" << videoId << "→" << outPath;
                 finalizeDownload(videoId, outPath);
             });
+}
+
+// Split the download into kParallelDownloadChunks concurrent Range requests.
+// All Qt network signals fire on the UI thread so the QFile seek+write
+// sequence is safe without any locking even when readyRead callbacks for
+// different chunks interleave inside the event loop.
+void YouTubeService::downloadAudioStreamChunked(
+        const QString& videoId,
+        const QString& outPath,
+        const QString& streamUrl,
+        qint64 contentLength,
+        const QString& streamUserAgent,
+        const std::function<void(const QString&)>& onFailure) {
+    kLogger.info() << "Chunked download:" << videoId
+                   << contentLength << "bytes in" << kParallelDownloadChunks
+                   << "chunks";
+
+    const QString partPath = outPath + QStringLiteral(".part");
+    auto* outFile = new QFile(partPath);
+    if (!outFile->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        const QString err = outFile->errorString();
+        delete outFile;
+        onFailure(tr("Cannot open %1: %2").arg(outPath, err));
+        return;
+    }
+    // Pre-allocate so each chunk can seek and write at its offset without
+    // the OS needing to extend the file on every write.
+    if (!outFile->resize(contentLength)) {
+        // Out of space or filesystem limitation — fall back to single stream.
+        outFile->close();
+        delete outFile;
+        kLogger.warning() << "Chunked pre-alloc failed for" << videoId
+                          << "— falling back to single stream";
+        // Re-enter the single-connection path by pretending contentLength==0.
+        // Build a minimal audioStreams array with just the URL and no length.
+        QJsonObject fakeStream;
+        fakeStream.insert(QStringLiteral("url"), streamUrl);
+        QNetworkRequest req((QUrl(streamUrl)));
+        req.setRawHeader("User-Agent",
+                streamUserAgent.isEmpty() ? QByteArray("Mixxx/YouTube")
+                                          : streamUserAgent.toUtf8());
+        req.setTransferTimeout(kDownloadTimeoutMs);
+        applyYouTubeRequestAttributes(&req);
+        QNetworkReply* reply = m_pNam->get(req);
+        auto* fb = new QFile(outPath + QStringLiteral(".part"));
+        if (!fb->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            delete fb;
+            onFailure(tr("Cannot open %1").arg(outPath));
+            return;
+        }
+        connect(reply, &QNetworkReply::readyRead, this, [reply, fb]() {
+            fb->write(reply->readAll());
+        });
+        connect(reply, &QNetworkReply::finished, this,
+                [this, reply, fb, outPath, videoId, onFailure]() {
+                    reply->deleteLater();
+                    fb->write(reply->readAll());
+                    fb->close();
+                    if (reply->error() != QNetworkReply::NoError) {
+                        QFile::remove(fb->fileName());
+                        delete fb;
+                        onFailure(reply->errorString());
+                        return;
+                    }
+                    QFile::remove(outPath);
+                    if (!fb->rename(outPath)) {
+                        QFile::remove(fb->fileName());
+                        delete fb;
+                        onFailure(tr("Cannot finalize %1").arg(outPath));
+                        return;
+                    }
+                    delete fb;
+                    finalizeDownload(videoId, outPath);
+                });
+        return;
+    }
+
+    // Shared completion state — plain pointer, lifetime guarded by the
+    // `remaining == 0` check in the last finished handler. All accesses are
+    // on the UI thread so no lock is needed.
+    struct ChunkState {
+        int remaining;
+        bool failed = false;
+        QString error;
+    };
+    auto* state = new ChunkState{kParallelDownloadChunks};
+
+    const QByteArray ua = streamUserAgent.isEmpty()
+            ? QByteArray("Mixxx/YouTube")
+            : streamUserAgent.toUtf8();
+
+    const qint64 chunkSize =
+            (contentLength + kParallelDownloadChunks - 1) / kParallelDownloadChunks;
+
+    for (int i = 0; i < kParallelDownloadChunks; i++) {
+        const qint64 start = i * chunkSize;
+        const qint64 end = qMin(start + chunkSize - 1, contentLength - 1);
+
+        // Per-chunk write cursor — starts at `start` and advances as data
+        // arrives. Heap-allocated so the lambda can capture a stable pointer.
+        auto* writePos = new qint64(start);
+
+        QNetworkRequest req((QUrl(streamUrl)));
+        req.setRawHeader("User-Agent", ua);
+        req.setRawHeader("Range",
+                "bytes=" + QByteArray::number(start) + "-" +
+                        QByteArray::number(end));
+        req.setTransferTimeout(kDownloadTimeoutMs);
+        applyYouTubeRequestAttributes(&req);
+
+        QNetworkReply* reply = m_pNam->get(req);
+
+        // Write each batch of incoming bytes at the correct file offset.
+        // seek() is O(1) and safe to call interleaved with other chunks
+        // because all readyRead signals fire serially on the UI thread.
+        connect(reply, &QNetworkReply::readyRead, this,
+                [reply, outFile, writePos, state]() {
+                    if (state->failed) {
+                        return;
+                    }
+                    const QByteArray data = reply->readAll();
+                    if (!data.isEmpty()) {
+                        outFile->seek(*writePos);
+                        outFile->write(data);
+                        *writePos += data.size();
+                    }
+                });
+
+        connect(reply, &QNetworkReply::finished, this,
+                [this, reply, outFile, writePos, state, outPath, videoId,
+                        onFailure]() {
+                    reply->deleteLater();
+
+                    // Drain any bytes that didn't trigger a readyRead.
+                    if (!state->failed) {
+                        const QByteArray tail = reply->readAll();
+                        if (!tail.isEmpty()) {
+                            outFile->seek(*writePos);
+                            outFile->write(tail);
+                            *writePos += tail.size();
+                        }
+                    }
+                    delete writePos;
+
+                    if (reply->error() != QNetworkReply::NoError &&
+                            !state->failed) {
+                        state->failed = true;
+                        state->error = reply->errorString();
+                    }
+
+                    if (--state->remaining == 0) {
+                        // Last chunk — finalize.
+                        const bool ok = !state->failed;
+                        const QString err = state->error;
+                        delete state;
+
+                        outFile->close();
+                        if (!ok) {
+                            QFile::remove(outFile->fileName());
+                            delete outFile;
+                            onFailure(tr("Chunked download failed: %1").arg(err));
+                            return;
+                        }
+                        QFile::remove(outPath);
+                        if (!outFile->rename(outPath)) {
+                            const QString renErr = outFile->errorString();
+                            QFile::remove(outFile->fileName());
+                            delete outFile;
+                            onFailure(tr("Cannot finalize %1: %2")
+                                              .arg(outPath, renErr));
+                            return;
+                        }
+                        delete outFile;
+                        kLogger.info() << "Chunked download completed:" << videoId
+                                       << "→" << outPath;
+                        finalizeDownload(videoId, outPath);
+                    }
+                });
+    }
 }
 
 // =============================================================================
@@ -1830,6 +2030,15 @@ void YouTubeService::downloadViaInnerTubeClient(
                     stream.insert(QStringLiteral("codec"), codec);
                     stream.insert(QStringLiteral("bitrate"),
                             f.value(QStringLiteral("bitrate")).toInt());
+                    // Forward the content length so downloadAudioStream() can
+                    // decide whether to use parallel Range requests. InnerTube
+                    // exposes this as a decimal string; store as a JSON number.
+                    const QString clStr =
+                            f.value(QStringLiteral("contentLength")).toString();
+                    if (!clStr.isEmpty()) {
+                        stream.insert(QStringLiteral("contentLength"),
+                                QJsonValue(clStr.toLongLong()));
+                    }
                     audioStreams.append(stream);
                 }
                 if (audioStreams.isEmpty()) {
@@ -2602,66 +2811,69 @@ void YouTubeService::finalizeDownload(const QString& videoId, const QString& out
     // background thread and emit downloadFinished when done. We run
     // cutAudioRanges() off the UI thread so the app stays responsive while
     // FFmpeg rewrites the audio file (can take 1–3 s for a long track).
+    // QThreadPool::globalInstance() reuses pre-warmed OS threads, eliminating
+    // the ~5-20 ms thread-creation overhead of the previous QThread::create().
     auto doFinalize = [this, videoId, outPath](const QList<SponsorSegment>& segments) {
-        // Capture a copy of segments for the worker thread (QList is CoW).
-        QThread* thread = QThread::create([this, videoId, outPath, segments]() {
-            if (!segments.isEmpty()) {
-                // Physically cut non-music segments out of the file so that
-                // duration, BPM, and waveform all reflect the clean music
-                // length. This is strongly preferred over skip-at-playback
-                // because it works correctly with waveform zoom, looping, and
-                // cue points.
-                const bool cut = cutAudioRanges(outPath, segments);
-                if (!cut) {
-                    // Cutting failed (e.g. mid-file packet boundary on opus).
-                    // Write a sidecar in the canonical SponsorBlockController
-                    // format so it can fall back to skip-at-playback. The file
-                    // must be named VIDEOID.sponsorblock.json and use the
-                    // {"segment":[start,end], "category":"..."} schema — NOT
-                    // the old {start,end} format that was written as
-                    // VIDEOID.m4a.sponsor.json (those were silently ignored).
-                    const QString sidecarPath = QDir(QFileInfo(outPath).absolutePath())
-                                    .filePath(videoId +
-                                            QStringLiteral(".sponsorblock.json"));
-                    QFile sidecar(sidecarPath);
-                    if (sidecar.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-                        QJsonArray arr;
-                        for (const auto& s : segments) {
-                            QJsonObject o;
-                            QJsonArray seg;
-                            seg.append(s.start);
-                            seg.append(s.end);
-                            o.insert(QStringLiteral("segment"), seg);
-                            o.insert(QStringLiteral("category"), s.category);
-                            arr.append(o);
+        // Capture a copy of segments for the worker (QList is CoW, cheap).
+        QThreadPool::globalInstance()->start(
+                [this, videoId, outPath, segments]() {
+                    if (!segments.isEmpty()) {
+                        // Physically cut non-music segments out of the file so that
+                        // duration, BPM, and waveform all reflect the clean music
+                        // length. This is strongly preferred over skip-at-playback
+                        // because it works correctly with waveform zoom, looping, and
+                        // cue points.
+                        const bool cut = cutAudioRanges(outPath, segments);
+                        if (!cut) {
+                            // Cutting failed (e.g. mid-file packet boundary on opus).
+                            // Write a sidecar in the canonical SponsorBlockController
+                            // format so it can fall back to skip-at-playback. The file
+                            // must be named VIDEOID.sponsorblock.json and use the
+                            // {"segment":[start,end], "category":"..."} schema — NOT
+                            // the old {start,end} format that was written as
+                            // VIDEOID.m4a.sponsor.json (those were silently ignored).
+                            const QString sidecarPath =
+                                    QDir(QFileInfo(outPath).absolutePath())
+                                            .filePath(videoId +
+                                                    QStringLiteral(
+                                                            ".sponsorblock.json"));
+                            QFile sidecar(sidecarPath);
+                            if (sidecar.open(
+                                        QIODevice::WriteOnly | QIODevice::Truncate)) {
+                                QJsonArray arr;
+                                for (const auto& s : segments) {
+                                    QJsonObject o;
+                                    QJsonArray seg;
+                                    seg.append(s.start);
+                                    seg.append(s.end);
+                                    o.insert(QStringLiteral("segment"), seg);
+                                    o.insert(QStringLiteral("category"), s.category);
+                                    arr.append(o);
+                                }
+                                sidecar.write(QJsonDocument(arr).toJson(
+                                        QJsonDocument::Compact));
+                                kLogger.info()
+                                        << "Wrote SponsorBlock sidecar for"
+                                        << videoId << "with" << segments.size()
+                                        << "segment(s)";
+                            }
+                        } else {
+                            kLogger.info() << "SponsorBlock: cut" << segments.size()
+                                           << "non-music segment(s) from" << videoId;
                         }
-                        sidecar.write(
-                                QJsonDocument(arr).toJson(QJsonDocument::Compact));
-                        kLogger.info()
-                                << "Wrote SponsorBlock sidecar for" << videoId
-                                << "with" << segments.size() << "segment(s)";
                     }
-                } else {
-                    kLogger.info() << "SponsorBlock: cut" << segments.size()
-                                   << "non-music segment(s) from" << videoId;
-                }
-            }
-            // Signal from the worker — Qt queues it to the main thread
-            // automatically because the signal target lives there.
-            QMetaObject::invokeMethod(
-                    this,
-                    [this, videoId, outPath]() {
-                        // Clean up the prefetch cache entry now that
-                        // finalization is complete.
-                        m_sponsorPrefetchCache.remove(videoId);
-                        Q_EMIT downloadFinished(videoId, outPath);
-                    },
-                    Qt::QueuedConnection);
-        });
-        thread->setObjectName(
-                QStringLiteral("SponsorBlockCut-") + videoId.left(11));
-        connect(thread, &QThread::finished, thread, &QObject::deleteLater);
-        thread->start();
+                    // Signal from the worker — Qt queues it to the main thread
+                    // automatically because the signal target lives there.
+                    QMetaObject::invokeMethod(
+                            this,
+                            [this, videoId, outPath]() {
+                                // Clean up the prefetch cache entry now that
+                                // finalization is complete.
+                                m_sponsorPrefetchCache.remove(videoId);
+                                Q_EMIT downloadFinished(videoId, outPath);
+                            },
+                            Qt::QueuedConnection);
+                });
     };
 
     // If we started a SponsorBlock prefetch in downloadVideo() the result may
