@@ -593,6 +593,11 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
         Q_EMIT searchResultsReady(query, {});
         return;
     }
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] searchVideos: query=" << query
+                   << "cap=" << cap
+                   << "ytDlpPath=" << m_ytDlpPath;
+#endif
     // Primary backend: the YouTube InnerTube /search endpoint. It is hit
     // directly (no third-party Piped proxy), so it does not depend on the
     // health of community-run instances — which is why search used to return
@@ -662,6 +667,11 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
         Q_EMIT downloadFailed(videoId, tr("Invalid YouTube video id"));
         return;
     }
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] downloadVideo: videoId=" << videoId
+                   << "cacheDir=" << cacheDir
+                   << "ytDlpPath=" << m_ytDlpPath;
+#endif
     QDir().mkpath(cacheDir);
     // Primary: the YouTube InnerTube player API (same reliable, proxy-free path
     // used for search). The Android client context returns plain (non-cipher)
@@ -709,6 +719,10 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
 }
 
 void YouTubeService::fetchTrending(const QString& region, int cap) {
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] fetchTrending: region=" << region
+                   << "cap=" << cap;
+#endif
     // Empty / malformed region: fall back to the project default ("GR") rather
     // than failing, because an empty pane is the worst possible UX for a
     // freshly-opened YouTube tab.
@@ -725,9 +739,7 @@ void YouTubeService::fetchTrending(const QString& region, int cap) {
     // the region so YouTubeFeature renders a "Trending in <Country>" header.
     const QString sentinelQuery = kTrendingQueryPrefix + r;
     const QString requestQuery = countryTopSongsCategoryQuery(r);
-    searchViaInnerTube(sentinelQuery,
-            requestQuery,
-            cap,
+    searchViaInnerTube(sentinelQuery, requestQuery, cap,
             /*clientIdx=*/0,
             [this, r, cap](const QString& innerTubeError) {
 #if defined(Q_OS_ANDROID)
@@ -771,6 +783,12 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
         return;
     }
     const InnerTubeClient& c = clients.at(clientIdx);
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] searchViaInnerTube: client="
+                   << c.clientName << "clientIdx=" << clientIdx
+                   << "query=" << requestQuery
+                   << "region=" << regionOverride;
+#endif
 
     // Advance to the next client on any per-client failure (network error or a
     // response we could not parse a single video out of).
@@ -1118,6 +1136,11 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
         const QJsonArray& audioStreams,
         const std::function<void(const QString&)>& onFailure,
         const QString& streamUserAgent) {
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] downloadAudioStream: videoId=" << videoId
+                   << "streams=" << audioStreams.size()
+                   << "cacheDir=" << cacheDir;
+#endif
     // Pick the highest-bitrate M4A/AAC stream first because Mixxx already
     // supports this container everywhere the YouTube feature is built. Fall
     // back to WebM/Opus only if Piped does not expose an M4A stream.
@@ -1245,6 +1268,11 @@ void YouTubeService::downloadViaInnerTubeClient(
     }
     const InnerTubeClient& c = clients.at(clientIdx);
     const QString userAgent = QString::fromLatin1(c.userAgent);
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] downloadViaInnerTubeClient: videoId=" << videoId
+                   << "client=" << c.clientName
+                   << "clientIdx=" << clientIdx;
+#endif
 
     // Helper to advance to the next client on any per-client failure.
     auto tryNext = [this, videoId, cacheDir, clientIdx, onAllFailed](
@@ -1594,6 +1622,8 @@ std::atomic<bool> s_ytdlpUpdateAttempted{false};
 
 void YouTubeService::downloadViaAndroidBundled(
         const QString& videoId, const QString& cacheDir) {
+    kLogger.info() << "[Android] downloadViaAndroidBundled: videoId=" << videoId
+                   << "cacheDir=" << cacheDir;
     // Run the JNI download on a worker thread so we don't block the UI.
     // Use a QPointer to guard against YouTubeService being destroyed
     // before the thread completes.
@@ -1601,6 +1631,9 @@ void YouTubeService::downloadViaAndroidBundled(
     QThread* thread = QThread::create([guard, videoId, cacheDir]() {
         QJniObject context = QNativeInterface::QAndroidApplication::context();
         if (!context.isValid()) {
+            kLogger.warning() << "[Android] downloadViaAndroidBundled:"
+                              << "QAndroidApplication::context() invalid for"
+                              << videoId;
             if (guard)
                 Q_EMIT guard->downloadFailed(videoId, "No Android context");
             return;
@@ -1613,6 +1646,9 @@ void YouTubeService::downloadViaAndroidBundled(
                 "()Lcom/yausername/youtubedl_android/YoutubeDL;");
 
         if (!ytdl.isValid()) {
+            kLogger.warning() << "[Android] downloadViaAndroidBundled:"
+                              << "YoutubeDL.getInstance() returned invalid for"
+                              << videoId;
             if (guard)
                 Q_EMIT guard->downloadFailed(
                         videoId, "Bundled yt-dlp (youtubedl-android) not available");
@@ -1620,11 +1656,16 @@ void YouTubeService::downloadViaAndroidBundled(
         }
 
         // Initialize with the Android context (required before first download).
+        kLogger.info() << "[Android] downloadViaAndroidBundled:"
+                       << "initializing YoutubeDL for" << videoId;
         QJniEnvironment env;
         ytdl.callMethod<void>("init",
                 "(Landroid/content/Context;)V",
                 context.object());
         if (env.checkAndClearExceptions()) {
+            kLogger.warning() << "[Android] downloadViaAndroidBundled:"
+                              << "YoutubeDL.init() threw exception for"
+                              << videoId;
             if (guard)
                 Q_EMIT guard->downloadFailed(
                         videoId, "yt-dlp init failed (youtubedl-android)");
@@ -1697,6 +1738,8 @@ void YouTubeService::downloadViaAndroidBundled(
         // YoutubeDLResponse return) — the previous code called a non-existent
         // "exec" method, so every bundled download threw NoSuchMethodError and
         // silently failed. This is the core download fix.
+        kLogger.info() << "[Android] downloadViaAndroidBundled:"
+                       << "executing yt-dlp request for" << videoId;
         QJniObject response = ytdl.callObjectMethod(
                 "execute",
                 "(Lcom/yausername/youtubedl_android/YoutubeDLRequest;)"
@@ -1704,6 +1747,9 @@ void YouTubeService::downloadViaAndroidBundled(
                 request.object());
 
         if (env.checkAndClearExceptions() || !response.isValid()) {
+            kLogger.warning() << "[Android] downloadViaAndroidBundled:"
+                              << "execute() failed or returned invalid for"
+                              << videoId;
             if (guard)
                 Q_EMIT guard->downloadFailed(videoId,
                         "yt-dlp download failed (youtubedl-android)");
@@ -1735,12 +1781,19 @@ void YouTubeService::downloadViaAndroidBundled(
         }
 
         if (!outputPath.isEmpty() && QFileInfo::exists(outputPath)) {
+            kLogger.info() << "[Android] downloadViaAndroidBundled:"
+                           << "download complete for" << videoId
+                           << "→" << outputPath;
             // Route through finalizeDownload for SponsorBlock/post-processing,
             // same as the desktop path. Use invokeMethod to marshal back to
             // the object's thread.
             QMetaObject::invokeMethod(guard, [guard, videoId, outputPath]() {
                 if (guard) guard->finalizeDownload(videoId, outputPath); }, Qt::QueuedConnection);
         } else {
+            kLogger.warning() << "[Android] downloadViaAndroidBundled:"
+                              << "output file not found for" << videoId
+                              << "in" << cacheDir
+                              << "(matched" << matches.size() << "files)";
             Q_EMIT guard->downloadFailed(videoId,
                     "yt-dlp finished but output file not found in cache");
         }
