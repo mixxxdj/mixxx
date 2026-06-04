@@ -55,6 +55,27 @@ constexpr int kSponsorBlockTimeoutMs = 8 * 1000;
 // top songs, not generic global/United States YouTube trends.
 const QString kDefaultRegion = QStringLiteral("GR");
 
+// Apply the request attributes every YouTube/Piped/SponsorBlock call needs.
+//
+// The critical one is disabling HTTP/2 on Android: Qt's HTTP/2 stack is
+// unreliable against YouTube's (HTTP/2 + QUIC) endpoints on Android — POST and
+// sometimes GET requests stall until the transfer timeout fires and then fail,
+// which is exactly the "clicking YouTube lags for ~10s and then shows no
+// results" symptom (the request never completes, so search/trending fall all
+// the way through every fallback and surface nothing). Forcing HTTP/1.1 makes
+// these requests complete reliably. Desktop platforms keep HTTP/2 (where it
+// works fine), so behaviour there is unchanged. See QTBUG-100016.
+//
+// We also opt into safe redirect following so a 30x from any endpoint is
+// transparently chased instead of being parsed as an empty body.
+void applyYouTubeRequestAttributes(QNetworkRequest* req) {
+#if defined(Q_OS_ANDROID)
+    req->setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
+#endif
+    req->setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+            QNetworkRequest::NoLessSafeRedirectPolicy);
+}
+
 // Hardcoded list of Piped API instances tried in order on per-request
 // failure. Instances verified as working (both /search and /streams return
 // 200) as of 2026-05-29. Piped community instances are ephemeral — the
@@ -687,6 +708,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
     req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
     req.setTransferTimeout(kPipedHttpTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->post(
             req, QJsonDocument(body).toJson(QJsonDocument::Compact));
@@ -774,6 +796,7 @@ void YouTubeService::searchViaPipedWithFilter(const QString& emittedQuery,
     req.setRawHeader("User-Agent", "Mixxx/YouTube");
     req.setRawHeader("Accept", "application/json");
     req.setTransferTimeout(kPipedHttpTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->get(req);
     connect(reply,
@@ -873,6 +896,7 @@ void YouTubeService::fetchNextPipedSearchPage(const QString& emittedQuery,
     req.setRawHeader("User-Agent", "Mixxx/YouTube");
     req.setRawHeader("Accept", "application/json");
     req.setTransferTimeout(kPipedHttpTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->get(req);
     connect(reply,
@@ -947,6 +971,7 @@ void YouTubeService::downloadViaPiped(const QString& videoId,
     req.setRawHeader("User-Agent", "Mixxx/YouTube");
     req.setRawHeader("Accept", "application/json");
     req.setTransferTimeout(kPipedHttpTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->get(req);
     connect(reply,
@@ -1051,6 +1076,7 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
     // googlevideo CDN is generally fast; a transfer timeout of 10 min mirrors
     // the yt-dlp watchdog and matches kDownloadTimeoutMs.
     req.setTransferTimeout(kDownloadTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->get(req);
 
@@ -1162,6 +1188,7 @@ void YouTubeService::downloadViaInnerTubeClient(
     req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
     req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
     req.setTransferTimeout(kPipedHttpTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->post(
             req, QJsonDocument(body).toJson(QJsonDocument::Compact));
@@ -1640,6 +1667,7 @@ void YouTubeService::fetchSponsorSegmentsInternal(
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", "Mixxx/SponsorBlock");
     request.setTransferTimeout(kSponsorBlockTimeoutMs);
+    applyYouTubeRequestAttributes(&request);
     QNetworkReply* reply = m_pNam->get(request);
     connect(reply, &QNetworkReply::finished, this, [reply, cb]() {
         reply->deleteLater();

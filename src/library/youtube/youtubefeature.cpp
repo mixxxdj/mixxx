@@ -316,11 +316,25 @@ void YouTubeFeature::activate() {
     // Prime the pane with Greek top songs from YouTube Music's songs category
     // on first open so a DJ sees music, not YouTube's generic live/gaming/news
     // trending page.
-    if (m_lastQuery.isEmpty() && m_lastResults.isEmpty()) {
+    //
+    // Re-fetch whenever we still have no results AND the last thing we showed
+    // was the trending feed (or nothing yet). The first trending fetch can fail
+    // — e.g. a transient network error on startup before connectivity settles —
+    // and previously that left m_lastQuery set to the trending sentinel with an
+    // empty result list, so this guard was permanently false and clicking the
+    // YouTube node again did nothing (the pane stayed blank forever). Retrying
+    // on each activation makes the node self-heal once the network recovers. A
+    // genuine user search is left untouched (its sentinel doesn't match), and an
+    // in-flight fetch is not duplicated.
+    const bool showingTrendingOrNothing = m_lastQuery.isEmpty() ||
+            m_lastQuery.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix);
+    if (m_lastResults.isEmpty() && showingTrendingOrNothing &&
+            !m_trendingFetchInFlight) {
         const QString country = resolvedTrendingRegion();
         m_lastQuery = mixxx::YouTubeService::kTrendingQueryPrefix + country;
         m_lastResults.clear();
         m_lastSearchError.clear();
+        m_trendingFetchInFlight = true;
         rebuildSidebar();
         rebuildHomeHtml();
         replaceTrackTable(QList<mixxx::YouTubeVideoInfo>());
@@ -403,6 +417,7 @@ void YouTubeFeature::searchAndActivate(const QString& query) {
     m_lastQuery = query;
     m_lastResults.clear();
     m_lastSearchError.clear();
+    m_trendingFetchInFlight = false;
     rebuildSidebar();
     rebuildHomeHtml();
     replaceTrackTable(QList<mixxx::YouTubeVideoInfo>());
@@ -414,6 +429,7 @@ void YouTubeFeature::onSearchResultsReady(
     if (query != m_lastQuery) {
         return; // a newer search has superseded this one
     }
+    m_trendingFetchInFlight = false;
     m_lastResults = results;
     m_lastSearchError.clear();
     rebuildSidebar();
@@ -431,6 +447,7 @@ void YouTubeFeature::onSearchFailed(const QString& query, const QString& error) 
     if (query != m_lastQuery) {
         return;
     }
+    m_trendingFetchInFlight = false;
     kLogger.warning() << "YouTube search failed:" << error;
     m_lastSearchError = error;
     rebuildHomeHtml();

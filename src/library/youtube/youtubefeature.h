@@ -141,4 +141,8 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// results arrive successfully. When non-empty, the home pane shows the
     /// error in place of the perpetual "Searching…" placeholder.
     QString m_lastSearchError;
+    /// True while a trending fetch issued from activate() is in flight, so
+    /// repeated activations don't fire duplicate trending requests. Cleared
+    /// when results arrive, the fetch fails, or a user search supersedes it.
+    bool m_trendingFetchInFlight = false;
 };
