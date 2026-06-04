@@ -142,6 +142,31 @@ void AnalysisFeature::activate() {
 
 void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks) {
     if (!m_pTrackAnalysisScheduler) {
+        // Determine mode flags from the incoming batch. If every track has
+        // fingerprintOnly set (e.g. right-click "Analyze fingerprint"), run
+        // only the fingerprint analyzer at low priority so beats and waveform
+        // are not re-triggered on an already-analyzed library.
+        //
+        // Note: this selection only applies when no scheduler is currently
+        // active. If a normal analysis is already running and fingerprint-only
+        // tracks are added, they will be processed with the existing scheduler's
+        // flags (WithBeats | WithWaveform). Fixing that would require either
+        // stopping the active scheduler or maintaining a separate scheduler for
+        // fingerprint-only jobs — deferred to a later PR.
+
+        bool allFingerprintOnly = !tracks.isEmpty();
+        for (const auto& t : tracks) {
+            if (!t.getOptions().fingerprintOnly) {
+                allFingerprintOnly = false;
+                break;
+            }
+        }
+        const AnalyzerModeFlags modeFlags = allFingerprintOnly
+                ? static_cast<AnalyzerModeFlags>(
+                          AnalyzerModeFlags::WithFingerprint |
+                          AnalyzerModeFlags::LowPriority)
+                : getAnalyzerModeFlags(m_pConfig);
+
         const int numAnalyzerThreads = numberOfAnalyzerThreads();
         kLogger.info()
                 << "Starting analysis using"
@@ -149,7 +174,7 @@ void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks)
                 << "analyzer threads";
         m_pTrackAnalysisScheduler = m_pLibrary->createTrackAnalysisScheduler(
                 numAnalyzerThreads,
-                getAnalyzerModeFlags(m_pConfig));
+                modeFlags);
 
         connect(m_pTrackAnalysisScheduler.get(),
                 &TrackAnalysisScheduler::progress,
