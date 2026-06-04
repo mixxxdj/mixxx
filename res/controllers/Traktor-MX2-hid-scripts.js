@@ -13,6 +13,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // Constants used to scale raw velocity (tick delta / time delta) to the appropriate scratch2 value.
+const JOGWHEEL_TICKS_MAX_VAL = 2 ** 32;
 const TICKS_PER_REV = 1024;
 const JOGWHEEL_CLOCK_HZ = 100000000;
 const TARGET_RPM = 33 + 1 / 3;
@@ -957,12 +958,12 @@ class TraktorMX2Class {
 
         let tickDelta = tickval - prevTick;
         // Check if we looped around
-        if (tickDelta > TICKS_PER_REV / 2) {
+        if (tickDelta > JOGWHEEL_TICKS_MAX_VAL / 2) {
             // Looped around from 0 to max
-            tickDelta -= TICKS_PER_REV;
-        } else if (tickDelta < -TICKS_PER_REV / 2) {
+            tickDelta -= JOGWHEEL_TICKS_MAX_VAL;
+        } else if (tickDelta < -JOGWHEEL_TICKS_MAX_VAL / 2) {
             // Looped around from max to 0
-            tickDelta += TICKS_PER_REV;
+            tickDelta += JOGWHEEL_TICKS_MAX_VAL;
         }
 
         // Velocity smoothing
