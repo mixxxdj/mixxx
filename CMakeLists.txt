@@ -1536,6 +1536,8 @@ add_library(
   src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
+  src/preferences/dialog/dlgpreffingerprint.cpp
+  src/preferences/dialog/dlgpreffingerprint.ui
   src/preferences/dialog/dlgprefinterface.cpp
   src/preferences/dialog/dlgprefinterfacedlg.ui
   src/preferences/dialog/dlgprefkey.cpp
