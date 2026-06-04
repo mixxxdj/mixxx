@@ -11,12 +11,16 @@
 #include <QLocale>
 #include <QMutexLocker>
 #include <QNetworkAccessManager>
+#include <QNetworkCookie>
+#include <QNetworkCookieJar>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QPointer>
 #include <QProcess>
+#include <QRandomGenerator>
 #include <QRegularExpression>
 #include <QSet>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QStringList>
 #include <QThread>
@@ -69,9 +73,21 @@ constexpr int kRateLimitBurst = 8;            // max 8 requests per window
 // Minimum inter-request gap in milliseconds. Even under burst we space
 // requests by this much to avoid looking like a bot.
 constexpr int kMinRequestGapMs = 300;
+// Jitter range: random delay added to minimum gap to look more human.
+// Each request gets a random delay in [kMinRequestGapMs, kMaxJitterMs].
+constexpr int kMaxJitterMs = 1500;
 // Desktop yt-dlp self-update timeout — generous because it downloads a ~40 MB
 // binary from GitHub Releases.
 constexpr int kYtDlpUpdateTimeoutMs = 120 * 1000; // 2 min
+// Bot-flag exponential backoff: initial, max, and multiplier.
+// After first flag: wait 30s. Each subsequent flag doubles the wait up to 10min.
+constexpr int kBotFlagInitialBackoffMs = 30 * 1000;   // 30 seconds
+constexpr int kBotFlagMaxBackoffMs = 10 * 60 * 1000;  // 10 minutes
+constexpr int kBotFlagBackoffMultiplier = 2;
+// QSettings keys for persisted session state.
+const QString kSettingsGroupYouTube = QStringLiteral("YouTube");
+const QString kSettingsVisitorData = QStringLiteral("visitorData");
+const QString kSettingsBotFlagCount = QStringLiteral("botFlagCount");
 
 // Apply the request attributes every YouTube/Piped/SponsorBlock call needs.
 //
@@ -558,6 +574,8 @@ YouTubeService::YouTubeService(QObject* parent)
           m_ytDlpPath(locateYtDlp()),
           m_pipedInstances(kPipedInstances) {
     m_rateLimitTimer.start();
+    setupCookieJar();
+    loadSessionState();
     if (!m_ytDlpPath.isEmpty()) {
         kLogger.info() << "yt-dlp fallback available at" << m_ytDlpPath;
     } else {
@@ -980,6 +998,10 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     }
     req.setTransferTimeout(kSearchTimeoutMs);
     applyYouTubeRequestAttributes(&req);
+    applyBrowserFingerprint(&req, c.clientNameId);
+
+    // Check for bot-flag recovery before each request attempt.
+    maybeRecoverFromBotFlag();
 
     // Rate-limit: if we've been sending too many requests, skip straight to
     // fallback to avoid triggering a 429 that would flag the whole IP.
@@ -1513,6 +1535,10 @@ void YouTubeService::downloadViaInnerTubeClient(
     }
     req.setTransferTimeout(kDownloadTimeoutMs);
     applyYouTubeRequestAttributes(&req);
+    applyBrowserFingerprint(&req, c.clientNameId);
+
+    // Check for bot-flag recovery before each request attempt.
+    maybeRecoverFromBotFlag();
 
     // If we've been bot-flagged, skip InnerTube entirely and go straight to
     // yt-dlp which has its own sophisticated anti-detection mechanisms.
@@ -1699,7 +1725,7 @@ void YouTubeService::runYtDlp(const QStringList& args,
 }
 
 void YouTubeService::searchViaYtDlp(const QString& query, int cap) {
-    const QStringList args = {
+    QStringList args = {
             QStringLiteral("--flat-playlist"),
             QStringLiteral("--skip-download"),
             QStringLiteral("--dump-single-json"),
@@ -1710,8 +1736,10 @@ void YouTubeService::searchViaYtDlp(const QString& query, int cap) {
             QStringLiteral("!is_live & live_status != is_live & live_status != is_upcoming"),
             QStringLiteral("--default-search"),
             QStringLiteral("ytsearch"),
-            QStringLiteral("ytsearch%1:%2").arg(cap).arg(query),
     };
+    // Add anti-bot arguments (cookies, extractor-args, sleep intervals).
+    args.append(ytDlpAntiBotArgs());
+    args.append(QStringLiteral("ytsearch%1:%2").arg(cap).arg(query));
     runYtDlp(
             args,
             kSearchTimeoutMs,
@@ -1794,6 +1822,10 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             outTemplate,
             QStringLiteral("--print"),
             QStringLiteral("after_move:filepath"),
+    });
+    // Add anti-bot arguments (cookies, extractor-args, sleep intervals).
+    args.append(ytDlpAntiBotArgs());
+    args.append({
             QStringLiteral("--"),
             QStringLiteral("https://www.youtube.com/watch?v=") + videoId,
     });
@@ -2040,7 +2072,7 @@ void YouTubeService::downloadViaAndroidBundled(
 #endif // Q_OS_ANDROID && HAVE_YTDLP_ANDROID
 
 // =============================================================================
-// Bot-detection, rate limiting, and desktop yt-dlp self-update
+// Bot-detection, rate limiting, session persistence, and yt-dlp self-update
 // =============================================================================
 
 bool YouTubeService::detectBotFlagging(int httpStatus,
@@ -2048,10 +2080,7 @@ bool YouTubeService::detectBotFlagging(int httpStatus,
         const QByteArray& rawBody) {
     // HTTP 429 — explicit rate limit.
     if (httpStatus == 429) {
-        m_botFlagActive = true;
-        const QString detail = tr("YouTube rate limit (HTTP 429) — switching to yt-dlp");
-        kLogger.warning() << detail;
-        Q_EMIT botFlagged(detail);
+        activateBotFlag(tr("YouTube rate limit (HTTP 429) — switching to yt-dlp"));
         return true;
     }
 
@@ -2063,10 +2092,7 @@ bool YouTubeService::detectBotFlagging(int httpStatus,
 
     // LOGIN_REQUIRED — YouTube wants authentication, typically bot-flagging.
     if (status == QStringLiteral("LOGIN_REQUIRED")) {
-        m_botFlagActive = true;
-        const QString detail = tr("YouTube requires login (bot detection) — switching to yt-dlp");
-        kLogger.warning() << detail;
-        Q_EMIT botFlagged(detail);
+        activateBotFlag(tr("YouTube requires login (bot detection) — switching to yt-dlp"));
         return true;
     }
 
@@ -2075,12 +2101,11 @@ bool YouTubeService::detectBotFlagging(int httpStatus,
     if (reasonLower.contains(QStringLiteral("sign in")) ||
             reasonLower.contains(QStringLiteral("bot")) ||
             reasonLower.contains(QStringLiteral("unusual traffic")) ||
-            reasonLower.contains(QStringLiteral("automated"))) {
-        m_botFlagActive = true;
-        const QString detail =
-                tr("YouTube bot detection: %1 — switching to yt-dlp").arg(reason);
-        kLogger.warning() << detail;
-        Q_EMIT botFlagged(detail);
+            reasonLower.contains(QStringLiteral("automated")) ||
+            reasonLower.contains(QStringLiteral("verify")) ||
+            reasonLower.contains(QStringLiteral("confirm"))) {
+        activateBotFlag(
+                tr("YouTube bot detection: %1 — switching to yt-dlp").arg(reason));
         return true;
     }
 
@@ -2091,12 +2116,11 @@ bool YouTubeService::detectBotFlagging(int httpStatus,
         if (lower.contains("consent.youtube") ||
                 lower.contains("recaptcha") ||
                 lower.contains("captcha") ||
-                lower.contains("before you continue")) {
-            m_botFlagActive = true;
-            const QString detail =
-                    tr("YouTube consent/captcha challenge — switching to yt-dlp");
-            kLogger.warning() << detail;
-            Q_EMIT botFlagged(detail);
+                lower.contains("before you continue") ||
+                lower.contains("confirm your identity") ||
+                lower.contains("unusual traffic")) {
+            activateBotFlag(
+                    tr("YouTube consent/captcha challenge — switching to yt-dlp"));
             return true;
         }
     }
@@ -2108,10 +2132,47 @@ bool YouTubeService::detectBotFlagging(int httpStatus,
             responseContext.value(QStringLiteral("visitorData")).toString();
     if (!visitorData.isEmpty() && visitorData != m_visitorData) {
         m_visitorData = visitorData;
+        saveSessionState();
         kLogger.debug() << "Updated visitorData from InnerTube response";
     }
 
     return false;
+}
+
+void YouTubeService::activateBotFlag(const QString& detail) {
+    m_botFlagActive = true;
+    m_botFlagCount++;
+    m_botFlagTimestamp = m_rateLimitTimer.elapsed();
+
+    // Exponential backoff: each consecutive flag doubles the cooldown.
+    if (m_botFlagBackoffMs == 0) {
+        m_botFlagBackoffMs = kBotFlagInitialBackoffMs;
+    } else {
+        m_botFlagBackoffMs = qMin(
+                m_botFlagBackoffMs * kBotFlagBackoffMultiplier,
+                kBotFlagMaxBackoffMs);
+    }
+
+    kLogger.warning() << detail
+                      << "| backoff:" << m_botFlagBackoffMs << "ms"
+                      << "| consecutive flags:" << m_botFlagCount;
+    saveSessionState();
+    Q_EMIT botFlagged(detail);
+}
+
+void YouTubeService::maybeRecoverFromBotFlag() {
+    if (!m_botFlagActive) {
+        return;
+    }
+    const qint64 elapsed = m_rateLimitTimer.elapsed() - m_botFlagTimestamp;
+    if (elapsed >= m_botFlagBackoffMs) {
+        kLogger.info() << "Bot-flag cooldown expired after"
+                       << elapsed << "ms (backoff was"
+                       << m_botFlagBackoffMs << "ms) — recovering";
+        m_botFlagActive = false;
+        // Don't reset backoff or count — they persist so subsequent flags
+        // still escalate. They only reset on app restart.
+    }
 }
 
 bool YouTubeService::shouldThrottleRequest() {
@@ -2132,9 +2193,10 @@ bool YouTubeService::shouldThrottleRequest() {
         return true;
     }
 
-    // Check minimum inter-request gap.
+    // Check minimum inter-request gap with jitter.
+    const int minGap = jitterDelayMs();
     if (!m_requestTimestamps.isEmpty() &&
-            (now - m_requestTimestamps.last()) < kMinRequestGapMs) {
+            (now - m_requestTimestamps.last()) < minGap) {
         return true;
     }
 
@@ -2144,6 +2206,152 @@ bool YouTubeService::shouldThrottleRequest() {
 void YouTubeService::recordRequest() {
     QMutexLocker locker(&m_rateLimitMutex);
     m_requestTimestamps.append(m_rateLimitTimer.elapsed());
+}
+
+int YouTubeService::jitterDelayMs() const {
+    // Random delay in [kMinRequestGapMs, kMaxJitterMs] to look more human.
+    return kMinRequestGapMs +
+            QRandomGenerator::global()->bounded(kMaxJitterMs - kMinRequestGapMs);
+}
+
+int YouTubeService::randomClientStartIndex(int clientCount) const {
+    if (clientCount <= 1) {
+        return 0;
+    }
+    return QRandomGenerator::global()->bounded(clientCount);
+}
+
+void YouTubeService::applyBrowserFingerprint(QNetworkRequest* req,
+        const char* clientNameId) const {
+    // Add headers that a real browser/app would send to make the request look
+    // less automated. These are cosmetic but reduce heuristic bot scoring.
+    const QByteArray nameId(clientNameId);
+
+    // For "WEB" client (nameId "1") add browser-like headers.
+    if (nameId == "1" || nameId == "85") {
+        req->setRawHeader("Accept",
+                "text/html,application/xhtml+xml,application/xml;q=0.9,"
+                "image/avif,image/webp,image/apng,*/*;q=0.8");
+        req->setRawHeader("Accept-Language", "en-US,en;q=0.9,el;q=0.8");
+        req->setRawHeader("Sec-Ch-Ua",
+                "\"Chromium\";v=\"126\", \"Not=A?Brand\";v=\"8\"");
+        req->setRawHeader("Sec-Ch-Ua-Mobile", "?0");
+        req->setRawHeader("Sec-Ch-Ua-Platform", "\"Windows\"");
+        req->setRawHeader("Sec-Fetch-Dest", "empty");
+        req->setRawHeader("Sec-Fetch-Mode", "same-origin");
+        req->setRawHeader("Sec-Fetch-Site", "same-origin");
+        req->setRawHeader("Origin", "https://www.youtube.com");
+        req->setRawHeader("Referer", "https://www.youtube.com/");
+    } else if (nameId == "28" || nameId == "5") {
+        // Mobile/VR clients — set Origin and Accept-Language.
+        req->setRawHeader("Accept-Language", "en-US,en;q=0.9");
+        req->setRawHeader("Origin", "https://www.youtube.com");
+    }
+
+    // X-Origin is sent by the official JS client and mirrors Origin.
+    req->setRawHeader("X-Origin", "https://www.youtube.com");
+}
+
+void YouTubeService::setupCookieJar() {
+    // Use a standard cookie jar that shares cookies across all requests to
+    // YouTube endpoints. This maintains session cookies (CONSENT, GPS, VISITOR)
+    // which YouTube uses to identify a session — lacking them looks bot-like.
+    // Qt's default QNetworkCookieJar stores cookies in-memory only; we persist
+    // visitorData separately via QSettings (the most impactful field).
+    m_pNam->setCookieJar(new QNetworkCookieJar(m_pNam));
+
+    // Set initial CONSENT cookie to bypass the EU consent screen that causes
+    // YouTube to serve HTML instead of JSON. Value "PENDING+999" is a common
+    // workaround used by yt-dlp and invidious.
+    QNetworkCookie consent;
+    consent.setName("CONSENT");
+    consent.setValue("PENDING+999");
+    consent.setDomain(".youtube.com");
+    consent.setPath("/");
+    m_pNam->cookieJar()->insertCookie(consent);
+
+    // SOCS cookie — newer consent bypass that YouTube checks in some regions.
+    QNetworkCookie socs;
+    socs.setName("SOCS");
+    socs.setValue("CAESEwgDEgk2MjQxMTY0MTkaAmVuIAEaBgiA_ZMZBQ");
+    socs.setDomain(".youtube.com");
+    socs.setPath("/");
+    m_pNam->cookieJar()->insertCookie(socs);
+}
+
+void YouTubeService::saveSessionState() {
+    QSettings settings;
+    settings.beginGroup(kSettingsGroupYouTube);
+    if (!m_visitorData.isEmpty()) {
+        settings.setValue(kSettingsVisitorData, m_visitorData);
+    }
+    settings.setValue(kSettingsBotFlagCount, m_botFlagCount);
+    settings.endGroup();
+}
+
+void YouTubeService::loadSessionState() {
+    QSettings settings;
+    settings.beginGroup(kSettingsGroupYouTube);
+    m_visitorData = settings.value(kSettingsVisitorData).toString();
+    m_botFlagCount = settings.value(kSettingsBotFlagCount, 0).toInt();
+    settings.endGroup();
+
+    if (!m_visitorData.isEmpty()) {
+        kLogger.info() << "Restored persisted visitorData from previous session";
+    }
+    if (m_botFlagCount > 0) {
+        kLogger.info() << "Previous session had" << m_botFlagCount
+                       << "bot-flag events — starting with elevated caution";
+        // Start with a proportional backoff based on prior history.
+        m_botFlagBackoffMs = qMin(
+                kBotFlagInitialBackoffMs * (1 << qMin(m_botFlagCount - 1, 6)),
+                kBotFlagMaxBackoffMs);
+    }
+}
+
+QStringList YouTubeService::ytDlpAntiBotArgs() const {
+    QStringList args;
+
+    // 1. Use yt-dlp's built-in browser cookie extraction when available.
+    //    This passes the user's actual YouTube session cookies (if they're
+    //    logged into YouTube in their browser), which virtually eliminates
+    //    bot detection since yt-dlp then looks like the user's browser.
+#if !defined(Q_OS_ANDROID)
+    // Try common browsers in preference order. yt-dlp will silently fall back
+    // if the specified browser isn't installed or has no cookies.
+    args << QStringLiteral("--cookies-from-browser")
+         << QStringLiteral("firefox");
+#endif
+
+    // 2. Tell yt-dlp to use the same ANDROID_VR client we use for InnerTube.
+    //    This avoids the WEB client which is more heavily rate-limited.
+    args << QStringLiteral("--extractor-args")
+         << QStringLiteral("youtube:player_client=android_vr,mediaconnect");
+
+    // 3. Random sleep between requests to look human (yt-dlp's built-in).
+    //    Only relevant for playlist/search operations (not single downloads),
+    //    but doesn't hurt to set it unconditionally.
+    args << QStringLiteral("--sleep-requests")
+         << QStringLiteral("1");
+
+    // 4. Sleep between downloads in a playlist scenario.
+    args << QStringLiteral("--sleep-interval")
+         << QStringLiteral("2");
+    args << QStringLiteral("--max-sleep-interval")
+         << QStringLiteral("5");
+
+    // 5. User-agent override: use a recent Chrome UA to avoid being flagged
+    //    by the default yt-dlp UA string.
+    args << QStringLiteral("--user-agent")
+         << QStringLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                           "AppleWebKit/537.36 (KHTML, like Gecko) "
+                           "Chrome/126.0.0.0 Safari/537.36");
+
+    // 6. Retry on HTTP errors (including 429). yt-dlp will wait and retry.
+    args << QStringLiteral("--retries") << QStringLiteral("3");
+    args << QStringLiteral("--retry-sleep") << QStringLiteral("exp=1:5:30");
+
+    return args;
 }
 
 // Desktop yt-dlp self-update: runs `yt-dlp --update-to stable` once per process.

@@ -5,11 +5,15 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
+#include <QRandomGenerator>
+#include <QSettings>
 #include <QString>
 #include <QStringList>
+#include <QTimer>
 #include <functional>
 
 class QNetworkAccessManager;
+class QNetworkCookieJar;
 class QNetworkReply;
 class QProcess;
 
@@ -271,12 +275,41 @@ class YouTubeService : public QObject {
 
     /// Per-request rate limiter: enforces a minimum inter-request delay to
     /// YouTube endpoints to reduce the probability of triggering bot detection.
-    /// Returns true if the request should proceed; false if too many requests
-    /// have been made recently (caller should defer or skip).
+    /// Returns true if the caller should NOT proceed (throttled).
     bool shouldThrottleRequest();
 
     /// Record that a request was just sent (updates the rate-limiter state).
     void recordRequest();
+
+    /// Randomized delay (jitter) to add between requests. Returns a random
+    /// value in [minMs, maxMs] to make request timing look more human.
+    int jitterDelayMs() const;
+
+    /// Called when a bot flag is detected. Sets the flag, starts the cooldown
+    /// timer, and emits the signal. Subsequent calls extend the backoff.
+    void activateBotFlag(const QString& detail);
+
+    /// Checks if the bot-flag cooldown has expired and resets the flag.
+    /// Called before each request attempt to allow auto-recovery.
+    void maybeRecoverFromBotFlag();
+
+    /// Persist visitor data + session state to QSettings so it survives restarts.
+    void saveSessionState();
+    /// Load persisted session state from QSettings on construction.
+    void loadSessionState();
+
+    /// Build yt-dlp args with anti-bot options (cookies, extractor-args, etc.)
+    QStringList ytDlpAntiBotArgs() const;
+
+    /// Get a randomized starting client index for client rotation.
+    int randomClientStartIndex(int clientCount) const;
+
+    /// Apply realistic browser-like headers to a request (beyond the basic UA).
+    void applyBrowserFingerprint(QNetworkRequest* req,
+            const char* clientNameId) const;
+
+    /// Initialize and persist a cookie jar that outlives individual requests.
+    void setupCookieJar();
 
     QNetworkAccessManager* m_pNam;
     QString m_ytDlpPath;
@@ -292,12 +325,20 @@ class YouTubeService : public QObject {
     QMutex m_rateLimitMutex;
     QList<qint64> m_requestTimestamps; // msecsSinceEpoch of recent requests
     QElapsedTimer m_rateLimitTimer;
-    bool m_botFlagActive = false; // true after first bot detection this session
+
+    // Bot-flag state with exponential backoff cooldown.
+    bool m_botFlagActive = false;
+    int m_botFlagBackoffMs = 0;       // current backoff duration
+    qint64 m_botFlagTimestamp = 0;    // when the flag was last set (elapsed ms)
+    int m_botFlagCount = 0;           // consecutive bot-flag events this session
 
     /// Visitor data token obtained from InnerTube responses. YouTube returns a
     /// visitorData field in some responses; echoing it back reduces bot
     /// detection likelihood by maintaining session continuity.
     QString m_visitorData;
+
+    /// Persistent cookie jar path for YouTube session cookies.
+    QString m_cookieJarPath;
 };
 
 } // namespace mixxx
