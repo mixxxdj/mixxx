@@ -571,6 +571,12 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotReanalyzeWithVariableTempo);
+
+        m_pAnalyzeFingerprintAction = make_parented<QAction>(tr("Analyze fingerprint"), this);
+        connect(m_pAnalyzeFingerprintAction.get(),
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotAnalyzeFingerprint);
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -746,6 +752,8 @@ void WTrackMenu::setupActions() {
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pAnalyzeFingerprintAction.get());
         addMenu(m_pAnalyzeMenu);
     }
 
@@ -3033,4 +3041,14 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         DEBUG_ASSERT(!"unreachable");
         return false;
     }
+}
+
+void WTrackMenu::slotAnalyzeFingerprint() {
+    // Schedule selected tracks for fingerprint-only analysis.
+    // WithFingerprint | LowPriority — does not re-run beats, waveform, or
+    // any other analyzer. Useful for back-filling fingerprints on a library
+    // that was fully analyzed before fingerprinting was enabled.
+    AnalyzerTrack::Options options;
+    options.fingerprintOnly = true;
+    addToAnalysis(options);
 }
