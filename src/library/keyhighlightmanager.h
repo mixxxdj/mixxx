@@ -2,10 +2,13 @@
 
 #include <QList>
 #include <QObject>
+#include <QString>
 #include <array>
 
 #include "proto/keys.pb.h"
 #include "track/keyutils.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 
 class ControlProxy;
 
@@ -13,10 +16,12 @@ namespace mixxx {
 
 /// Coordinates the per-deck "harmonic key highlighter" for the library track
 /// table. It watches `[App],num_decks` and, for each deck, the
-/// `[ChannelN],key_highlight` toggle and the `[ChannelN],key` engine key. From
-/// the set of enabled decks it precomputes a lookup table mapping every
-/// ChromaticKey to a KeyUtils::KeyHighlightClass, so the model can colour each
-/// row with an O(1) lookup.
+/// `[ChannelN],key_highlight` toggle, the `[ChannelN],key` engine (playing) key
+/// and the `[ChannelN],file_key` stored key. From the set of enabled decks it
+/// precomputes a lookup table mapping every ChromaticKey to a
+/// KeyUtils::KeyHighlightClass, so the model can colour each row with an O(1)
+/// lookup. It also tracks each deck's loaded track so the model can show the
+/// pitched playing key beside the stored key on that track's row.
 ///
 /// Recomputation is debounced on the *discrete* key: the engine key control
 /// updates continuously as the pitch changes, but the classification only
@@ -48,6 +53,16 @@ class KeyHighlightManager : public QObject {
     KeyUtils::YellowShift directionOf(
             mixxx::track::io::key::ChromaticKey trackKey) const;
 
+    /// The currently playing (pitch-shifted) key to display in parentheses next
+    /// to a track's stored key, or INVALID when no suffix should be shown.
+    /// Returns a valid key only when the highlighter is active, an enabled deck
+    /// has this track loaded, and that deck's discrete playing key differs from
+    /// the track's stored (file) key - i.e. the deck is pitched far enough to
+    /// change the discrete key. Mutual exclusion means at most one enabled deck
+    /// today, so the first match wins.
+    mixxx::track::io::key::ChromaticKey playingKeyForTrack(
+            TrackId trackId) const;
+
   signals:
     /// Emitted whenever the classification table or the active state changes,
     /// so observers (the track table models) can repaint.
@@ -55,6 +70,12 @@ class KeyHighlightManager : public QObject {
 
   private slots:
     void slotNumDecksChanged(double dNumDecks);
+    /// Tracks which track is loaded on each deck so playingKeyForTrack() can
+    /// scope the "(playing key)" suffix to the loaded deck's row(s).
+    void slotTrackChanged(
+            const QString& group,
+            TrackPointer pNewTrack,
+            TrackPointer pOldTrack);
 
   private:
     /// Per-deck state, snapshotted to debounce continuous key changes. The
@@ -63,9 +84,17 @@ class KeyHighlightManager : public QObject {
     struct DeckState {
         ControlProxy* pHighlight = nullptr;
         ControlProxy* pKey = nullptr;
+        ControlProxy* pFileKey = nullptr;
         bool enabled = false;
         mixxx::track::io::key::ChromaticKey key =
                 mixxx::track::io::key::INVALID;
+        // The loaded track's stored/analysed key, snapshotted alongside `key`.
+        // Compared against `key` to detect a pitch shift worth displaying.
+        mixxx::track::io::key::ChromaticKey fileKey =
+                mixxx::track::io::key::INVALID;
+        // The track currently loaded on this deck (invalid if none), updated by
+        // slotTrackChanged(). Used to map a library row to a pitched deck.
+        TrackId loadedTrackId;
     };
 
     /// Re-reads every deck's enable flag and discrete key. If anything discrete
