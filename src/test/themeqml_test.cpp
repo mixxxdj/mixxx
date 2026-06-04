@@ -12,6 +12,7 @@
 #include <QVariant>
 #include <memory>
 
+#include "qml/qmlconfigproxy.h"
 #include "test/mixxxtest.h"
 
 namespace {
@@ -19,6 +20,7 @@ namespace {
 class ThemeQmlTest : public MixxxTest {
   protected:
     QObject* loadTheme() {
+        mixxx::qml::QmlConfigProxy::registerUserSettings(config());
         m_engine.addImportPath(QStringLiteral(RESOURCE_FOLDER "/qml"));
 
         QQmlComponent component(&m_engine);

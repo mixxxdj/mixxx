@@ -224,6 +224,18 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     //    and QML palette bindings once the library panel is ported to QML.
     applyLegacyStylesheet();
     repolishEmbeddedWidgets();
+
+    if (QmlConfigProxyBase::s_pInstance) {
+        connect(QmlConfigProxyBase::s_pInstance,
+                &QmlConfigProxyBase::configSchemeChanged,
+                this,
+                [this]() {
+                    applyLegacyStylesheet();
+                    repolishEmbeddedWidgets();
+                    repaintEmbeddedViews();
+                });
+    }
+
     enableEmbeddedWidgetInputTracking();
     applyLegacyScrollbarStyles();
     applyLegacyTableViewBridgeOptions();

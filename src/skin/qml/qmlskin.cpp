@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QScreen>
 #include <QSettings>
+#include <QtDebug>
 
 namespace {
 
@@ -46,17 +47,20 @@ QFileInfo QmlSkin::path() const {
 }
 
 QPixmap QmlSkin::preview(const QString& schemeName) const {
+    QString effectiveSchemeName = schemeName;
+    if (effectiveSchemeName.isEmpty()) {
+        qWarning() << "QmlSkin::preview called without a color scheme. Falling "
+                      "back to the default 'PaleMoon'.";
+        effectiveSchemeName = QStringLiteral("PaleMoon");
+    }
+
     QPixmap preview;
-    if (!schemeName.isEmpty()) {
-        QString schemeNameFormatted(schemeName);
-        schemeNameFormatted.replace(QChar(' '), QChar('_'));
-        preview.load(m_path.absoluteFilePath() +
-                QStringLiteral("/skin_preview_") + schemeNameFormatted +
-                QStringLiteral(".png"));
-    }
-    if (preview.isNull()) {
-        preview.load(m_path.absoluteFilePath() + QStringLiteral("/skin_preview.png"));
-    }
+    QString schemeNameFormatted(effectiveSchemeName);
+    schemeNameFormatted.replace(QChar(' '), QChar('_'));
+    preview.load(m_path.absoluteFilePath() +
+            QStringLiteral("/skin_preview_") + schemeNameFormatted +
+            QStringLiteral(".png"));
+
     if (!preview.isNull()) {
         return preview;
     }

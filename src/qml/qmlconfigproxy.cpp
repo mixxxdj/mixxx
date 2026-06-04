@@ -102,6 +102,7 @@ const QString kKeyColorPaletteKey = QStringLiteral("KeyColorPalette");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kKeyColorsEnabledKey = QStringLiteral("key_colors_enabled");
 const QString kSchemeKey = QStringLiteral("Scheme");
+const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 
 // BPM group
 const QString kSyncLockAlgorithmKey = QStringLiteral("sync_lock_algorithm");
@@ -113,8 +114,15 @@ namespace qml {
 
 QmlConfigProxy::QmlConfigProxy(
         UserSettingsPointer pConfig, QObject* pParent)
-        : QObject(pParent),
+        : QmlConfigProxyBase(pParent),
           m_pConfig(pConfig) {
+    QmlConfigProxyBase::s_pInstance = this;
+}
+
+QmlConfigProxy::~QmlConfigProxy() {
+    if (QmlConfigProxyBase::s_pInstance == this) {
+        QmlConfigProxyBase::s_pInstance = nullptr;
+    }
 }
 
 QVariantList QmlConfigProxy::hotcueColorPalette() const {
@@ -354,6 +362,11 @@ PROPERTY_IMPL(kConfigGroup,
         QString,
         configScheme,
         QStringLiteral("PaleMoon"));
+PROPERTY_IMPL(kConfigGroup,
+        kResizableSkinKey,
+        QString,
+        configSkin,
+        QString());
 PROPERTY_IMPL(kBpmGroup,
         kSyncLockAlgorithmKey,
         EngineSync::SyncLockAlgorithm,
