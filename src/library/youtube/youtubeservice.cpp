@@ -313,14 +313,16 @@ QString countryDisplayName(const QString& code) {
 }
 
 QString countryTopSongsCategoryQuery(const QString& region) {
-    // Piped exposes YouTube Music's Songs category via `filter=music_songs`,
-    // but the endpoint still expects a short category seed. Use the local music
-    // adjective where it matters for this fork's default region so the feed is
-    // Greek songs, not English-language videos about Greece.
+    // IMPORTANT: Do NOT use tr() here — this string is sent as a YouTube
+    // InnerTube API search query and must always be in English regardless of the
+    // user's locale. Previously this was wrapped in QObject::tr(), so on
+    // non-English locales (e.g. Greek) the query got translated into the local
+    // language and YouTube's API returned zero results — surfacing as a
+    // permanently-blank YouTube tab on first open.
     if (region.compare(QStringLiteral("GR"), Qt::CaseInsensitive) == 0) {
-        return QObject::tr("Greek top songs");
+        return QStringLiteral("Greek top songs");
     }
-    return QObject::tr("%1 top songs").arg(countryDisplayName(region));
+    return QStringLiteral("%1 top songs").arg(countryDisplayName(region));
 }
 
 void appendUniqueVideos(
@@ -497,14 +499,18 @@ QList<YouTubeVideoInfo> parseInnerTubeSearch(const QJsonObject& root, int cap) {
 
 // Build the InnerTube `context.client` object for the given client descriptor.
 // Shared by the player (download) and search request paths so both speak the
-// exact same client identity to YouTube.
-QJsonObject innerTubeClientContext(const InnerTubeClient& c) {
+// exact same client identity to YouTube. When `regionOverride` is non-empty it
+// replaces the default "US" geo-location hint, which is needed so that trending
+// queries for e.g. Greece get Greek results instead of American ones.
+QJsonObject innerTubeClientContext(const InnerTubeClient& c,
+        const QString& regionOverride = QString()) {
     QJsonObject client;
     client.insert(QStringLiteral("clientName"), QString::fromLatin1(c.clientName));
     client.insert(QStringLiteral("clientVersion"),
             QString::fromLatin1(c.clientVersion));
     client.insert(QStringLiteral("hl"), QStringLiteral("en"));
-    client.insert(QStringLiteral("gl"), QStringLiteral("US"));
+    client.insert(QStringLiteral("gl"),
+            regionOverride.isEmpty() ? QStringLiteral("US") : regionOverride);
     if (c.androidSdkVersion > 0) {
         client.insert(QStringLiteral("androidSdkVersion"), c.androidSdkVersion);
     }
@@ -741,7 +747,8 @@ void YouTubeService::fetchTrending(const QString& region, int cap) {
                                   << innerTubeError << "— falling back to Piped";
                 fetchTrendingViaPiped(r, cap, /*instanceIdx=*/0);
 #endif
-            });
+            },
+            /*regionOverride=*/r);
 }
 
 // =============================================================================
@@ -756,7 +763,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
         const QString& requestQuery,
         int cap,
         int clientIdx,
-        const std::function<void(const QString&)>& onAllFailed) {
+        const std::function<void(const QString&)>& onAllFailed,
+        const QString& regionOverride) {
     const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
     if (clientIdx < 0 || clientIdx >= clients.size()) {
         onAllFailed(tr("All InnerTube clients failed for search"));
@@ -766,7 +774,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
 
     // Advance to the next client on any per-client failure (network error or a
     // response we could not parse a single video out of).
-    auto tryNext = [this, emittedQuery, requestQuery, cap, clientIdx, onAllFailed](
+    auto tryNext = [this, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride](
                            const QString& err) {
         const QVector<InnerTubeClient>& cl = innerTubeSearchClients();
         if (clientIdx + 1 < cl.size()) {
@@ -774,7 +782,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                            << cl.at(clientIdx).clientName << "failed:" << err
                            << "— trying next client";
             searchViaInnerTube(
-                    emittedQuery, requestQuery, cap, clientIdx + 1, onAllFailed);
+                    emittedQuery, requestQuery, cap, clientIdx + 1, onAllFailed, regionOverride);
         } else {
             onAllFailed(err);
         }
@@ -788,7 +796,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     }
 
     QJsonObject context;
-    context.insert(QStringLiteral("client"), innerTubeClientContext(c));
+    context.insert(QStringLiteral("client"), innerTubeClientContext(c, regionOverride));
     QJsonObject body;
     body.insert(QStringLiteral("context"), context);
     body.insert(QStringLiteral("query"), requestQuery);
@@ -799,7 +807,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     req.setRawHeader("User-Agent", QByteArray(c.userAgent));
     req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
     req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
-    req.setTransferTimeout(kPipedHttpTimeoutMs);
+    req.setTransferTimeout(kSearchTimeoutMs);
     applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->post(
@@ -1279,7 +1287,7 @@ void YouTubeService::downloadViaInnerTubeClient(
     req.setRawHeader("User-Agent", userAgent.toUtf8());
     req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
     req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
-    req.setTransferTimeout(kPipedHttpTimeoutMs);
+    req.setTransferTimeout(kDownloadTimeoutMs);
     applyYouTubeRequestAttributes(&req);
 
     QNetworkReply* reply = m_pNam->post(

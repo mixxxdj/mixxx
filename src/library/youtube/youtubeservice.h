@@ -123,7 +123,8 @@ class YouTubeService : public QObject {
             const QString& requestQuery,
             int cap,
             int clientIdx,
-            const std::function<void(const QString& lastError)>& onAllFailed);
+            const std::function<void(const QString& lastError)>& onAllFailed,
+            const QString& regionOverride = QString());
 
     // ----- Piped (search/download fallback) -----
 
