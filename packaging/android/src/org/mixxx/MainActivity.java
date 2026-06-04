@@ -139,10 +139,6 @@ public class MainActivity extends QtActivityBase {
         // Let hardware keyboard events bypass IME entirely when the soft
         // keyboard is not visible. This reduces per-keystroke latency by
         // ~2-5 ms on most devices.
-        if (event.getDeviceId() != KeyEvent.DEVICE_ID_VIRTUAL) {
-            // Physical device — pass directly to the Qt activity
-            return super.dispatchKeyEvent(event);
-        }
         return super.dispatchKeyEvent(event);
     }
 

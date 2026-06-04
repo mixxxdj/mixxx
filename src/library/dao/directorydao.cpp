@@ -135,7 +135,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     }
     if (!isDirectoryReadable(newDir)) {
         kLogger.warning()
-                << "Aborting to add"
+                << "Aborting attempt to add"
                 << newDir.location()
                 << ": Directory can not be read";
         return AddResult::UnreadableDirectory;
