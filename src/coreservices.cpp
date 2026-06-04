@@ -750,8 +750,15 @@ void CoreServices::initialize(QGuiApplication* pApp) {
                 androidRoots.append(musicDir);
             }
         }
+        qInfo() << "Android library bootstrap: candidate storage roots ="
+                << androidRoots;
         for (const QString& root : androidRoots) {
-            if (m_pLibrary->requestAddDir(root)) {
+            // silent=true: this runs automatically at startup, so a failure
+            // (typically before the all-files-access grant propagates) must
+            // not pop a modal dialog. CoreServices re-adds + rescans once the
+            // permission is granted (see the post-grant block below).
+            if (m_pLibrary->requestAddDir(root, /*silent=*/true)) {
+                qInfo() << "Android library bootstrap: registered root" << root;
                 musicDirAdded = true;
             }
         }
@@ -859,13 +866,21 @@ void CoreServices::initialize(QGuiApplication* pApp) {
                 }
             }
             if (!primaryCovered && QFileInfo::exists(primaryStorage) &&
-                    m_pLibrary->requestAddDir(primaryStorage)) {
+                    m_pLibrary->requestAddDir(primaryStorage, /*silent=*/true)) {
+                qInfo() << "Android library: registered primary storage after "
+                           "all-files-access grant"
+                        << primaryStorage;
                 musicDirAdded = true;
             }
             // Force a rescan so storage that became readable only after the
             // permission grant is picked up. The scanner is incremental, so
             // this stays cheap once the first successful scan has completed.
             rescan = true;
+        } else {
+            qWarning() << "Android library: all-files-access NOT granted yet; "
+                          "shared storage is unreadable so the library may "
+                          "appear empty until the permission is granted and the "
+                          "app is restarted.";
         }
     }
 #endif
@@ -879,7 +894,16 @@ void CoreServices::initialize(QGuiApplication* pApp) {
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
+        qInfo() << "Starting library auto-scan (rescan=" << rescan
+                << ", musicDirAdded=" << musicDirAdded
+                << ", roots=" << m_pTrackCollectionManager->internalCollection()
+                        ->getRootDirStrings()
+                << ")";
         m_pTrackCollectionManager->startLibraryAutoScan();
+    } else {
+        qInfo() << "Skipping library auto-scan; watched roots ="
+                << m_pTrackCollectionManager->internalCollection()
+                        ->getRootDirStrings();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
