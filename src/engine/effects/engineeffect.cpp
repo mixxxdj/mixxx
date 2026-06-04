@@ -53,7 +53,7 @@ EngineEffect::~EngineEffect() {
     }
 }
 
-void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
+void EngineEffect::initializeInputChannel(ChannelHandle inputChannel) {
     if (m_pProcessor->hasStatesForInputChannel(inputChannel)) {
         // already initialized for this input channel
         return;

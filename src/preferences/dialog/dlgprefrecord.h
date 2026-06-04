@@ -53,6 +53,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void saveSplitSize();
     void loadChannelMode();
     void saveChannelMode();
+    void updateSplitNoneItem();
 
     // Pointer to config object
     UserSettingsPointer m_pConfig;

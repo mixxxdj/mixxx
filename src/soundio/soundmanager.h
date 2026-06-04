@@ -116,6 +116,10 @@ class SoundManager : public QObject {
         return m_pConfig;
     }
 
+    void resetUnderflowCount() {
+        m_audioLatencyOverloadCount.set(0);
+    }
+
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up

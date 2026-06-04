@@ -299,6 +299,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
         comboBox_dateFormat->setCurrentIndex(0);
     }
 
+    spinBox_sidebar_hover_expand_delay->setValue(kSidebarHoverExpandDelayDefault);
+
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
@@ -453,9 +455,15 @@ void DlgPrefLibrary::slotUpdate() {
 
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
-                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     checkbox_played_track_color->setChecked(applyPlayedTrackColor);
+
+    const auto sidebarHoverExpandDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverExpandDelayConfigKey,
+                    kSidebarHoverExpandDelayDefault);
+    spinBox_sidebar_hover_expand_delay->setValue(sidebarHoverExpandDelay);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -469,9 +477,11 @@ void DlgPrefLibrary::resetLibraryFont() {
 }
 
 void DlgPrefLibrary::slotAddDir() {
-    QString fd = QFileDialog::getExistingDirectory(this,
+    QString fd = QFileDialog::getExistingDirectory(
+            this,
             tr("Choose a music directory"),
-            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
+            QFileDialog::ShowDirsOnly);
     if (!fd.isEmpty()) {
         if (m_pLibrary->requestAddDir(fd)) {
             populateDirList();
@@ -553,7 +563,10 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Relink music directory to new location"), startDir);
+            this,
+            tr("Relink music directory to new location"),
+            startDir,
+            QFileDialog::ShowDirsOnly);
 
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
@@ -667,8 +680,12 @@ void DlgPrefLibrary::slotApply() {
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
     m_pConfig->set(
-            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+    int sidebarHoverExpandDelay = spinBox_sidebar_hover_expand_delay->value();
+    m_pConfig->setValue(kSidebarHoverExpandDelayConfigKey, sidebarHoverExpandDelay);
+    emit m_pLibrary->setSidebarHoverExpandDelay(sidebarHoverExpandDelay);
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

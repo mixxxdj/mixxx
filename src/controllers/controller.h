@@ -210,7 +210,7 @@ class Controller : public QObject {
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;
     // For testing
-    friend class LegacyControllerMappingValidationTest;
+    friend class MappingTestFixture;
     friend class MidiControllerTest;
 };
 

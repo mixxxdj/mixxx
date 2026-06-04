@@ -318,42 +318,55 @@ void SoundManager::queryDevicesPortaudio() {
                             "android/media/AudioManager",
                             "GET_DEVICES_OUTPUTS");
 
-            auto const isSupported = [](int type) {
+            auto const supportedFriendlyName = [](int type) -> std::optional<QString> {
                 switch (type) {
                 case 1:  // AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
+                    return tr("Earpiece");
                 case 2:  // AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
+                    return tr("Speaker");
+                case 4: // AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                    return tr("Wired headphones");
                 case 3:  // AudioDeviceInfo.TYPE_WIRED_HEADSET
+                    return tr("Wired headset");
+                case 9: // AudioDeviceInfo.TYPE_HDMI
+                    return tr("HDMI");
+                case 10: // AudioDeviceInfo.TYPE_HDMI_ARC
+                    return tr("HDMI audio return channel");
+                case 15: // AudioDeviceInfo.TYPE_BUILTIN_MIC
+                    return tr("Microphone");
+                case 25: // AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
+                    return tr("Mixed");
                 case 8:  // AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
                 case 11: // AudioDeviceInfo.TYPE_USB_DEVICE
                 case 22: // AudioDeviceInfo.TYPE_USB_HEADSET
-                case 9:  // AudioDeviceInfo.TYPE_HDMI
-                case 10: // AudioDeviceInfo.TYPE_HDMI_ARC
                 case 13: // AudioDeviceInfo.TYPE_DOCK
-                case 15: // AudioDeviceInfo.TYPE_BUILTIN_MIC
                 case 12: // AudioDeviceInfo.TYPE_USB_ACCESSORY
                 case 26: // AudioDeviceInfo.TYPE_BLE_HEADSET
                 case 27: // AudioDeviceInfo.TYPE_BLE_SPEAKER
                 case 23: // AudioDeviceInfo.TYPE_HEARING_AID
-                case 25: // AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
-                    // supported
-                    return true;
+                    // supported, but no friendly name
+                    return QStringLiteral();
                 default:
                     // unsupported
                     break;
                 }
-                return false;
+                return std::nullopt;
             };
 
-            auto const parse = [isSupported](PaOboe_Direction direction,
+            auto const parse = [supportedFriendlyName](PaOboe_Direction direction,
                                        QJniArray<QJniObject>& devices) {
                 for (const auto& device : devices) {
                     jint type = device->callMethod<jint>("getType");
-                    if (!isSupported(type)) {
+                    auto maybeName = supportedFriendlyName(type);
+                    if (!maybeName.has_value()) {
                         continue;
                     }
                     QString name = device->callObjectMethod("getProductName",
                                                  "()Ljava/lang/CharSequence;")
                                            .toString();
+                    if (!maybeName.value().isEmpty()) {
+                        name.append(QStringLiteral(": %1").arg(maybeName.value()));
+                    }
                     int32_t id = device->callMethod<jint>("getId");
                     auto channelCounts = device->callMethod<QJniArray<jint>>("getChannelCounts");
                     int channelCount = *std::max_element(

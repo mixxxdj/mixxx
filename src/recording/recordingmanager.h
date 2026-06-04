@@ -61,8 +61,8 @@ class RecordingManager : public QObject {
     std::unique_ptr<ControlObject> m_pCoRecStatus;
     std::unique_ptr<ControlPushButton> m_pToggleRecording;
 
-    quint64 getFileSplitSize();
-    unsigned int getFileSplitSeconds();
+    quint64 getFileSplitSize(const QString& fileSizeStr);
+    unsigned int getFileSplitSeconds(const QString& fileSizeStr);
     qint64 getFreeSpace();
 
     UserSettingsPointer m_pConfig;

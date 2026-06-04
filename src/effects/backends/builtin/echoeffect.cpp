@@ -167,13 +167,13 @@ void EchoEffect::processChannel(
     int read_position = pGroupState->write_position;
     decrementRing(&read_position, delay_samples, pGroupState->delay_buf.size());
 
-    RampingValue<CSAMPLE_GAIN> send(send_current,
-            pGroupState->prev_send,
+    RampingValue<CSAMPLE_GAIN> send(pGroupState->prev_send,
+            send_current,
             engineParameters.framesPerBuffer());
     // Feedback the delay buffer and then add the new input.
 
-    RampingValue<CSAMPLE_GAIN> feedback(feedback_current,
-            pGroupState->prev_feedback,
+    RampingValue<CSAMPLE_GAIN> feedback(pGroupState->prev_feedback,
+            feedback_current,
             engineParameters.framesPerBuffer());
 
     int rampIndex = 0;

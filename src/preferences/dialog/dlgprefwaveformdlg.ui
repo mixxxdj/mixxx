@@ -359,7 +359,7 @@ Select from different types of displays for the waveform, which differ primarily
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
-          <cstring>allVisualGain</cstring>
+          <cstring>lowVisualGain</cstring>
          </property>
         </widget>
        </item>
@@ -372,7 +372,7 @@ Select from different types of displays for the waveform, which differ primarily
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
-          <cstring>allVisualGain</cstring>
+          <cstring>midVisualGain</cstring>
          </property>
         </widget>
        </item>
@@ -385,7 +385,7 @@ Select from different types of displays for the waveform, which differ primarily
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
-          <cstring>allVisualGain</cstring>
+          <cstring>highVisualGain</cstring>
          </property>
         </widget>
        </item>
@@ -598,7 +598,7 @@ Select from different types of displays for the waveform, which differ primarily
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
        <property name="buddy">
-        <cstring>stemOpacityMainLabel</cstring>
+        <cstring>stemOpacitySpinBox</cstring>
        </property>
       </widget>
      </item>
@@ -613,7 +613,7 @@ Select from different types of displays for the waveform, which differ primarily
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
-          <cstring>stemOpacityMainLabel</cstring>
+          <cstring>stemOpacitySpinBox</cstring>
          </property>
         </widget>
        </item>
@@ -626,7 +626,7 @@ Select from different types of displays for the waveform, which differ primarily
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
          <property name="buddy">
-          <cstring>stemOpacityMainLabel</cstring>
+          <cstring>stemOutlineOpacitySpinBox</cstring>
          </property>
         </widget>
        </item>

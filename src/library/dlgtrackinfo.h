@@ -60,6 +60,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
+    void slotBpmLockClicked();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     void slotBpmConstChanged(Qt::CheckState state);
 #else
@@ -69,6 +70,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotSpinBpmValueChanged(double value);
 
     void slotKeyTextChanged();
+    void slotTuningValueChanged(double value);
     void slotRatingChanged(int rating);
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();
@@ -100,6 +102,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void updateKeyText();
     void displayKeyText();
+    void displayTuningFields();
 
     void updateFromTrack(const Track& track);
 
@@ -114,6 +117,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
+    void updateBpmEditControls();
+    void updateBpmScaleButtonLabels();
 
     const UserSettingsPointer m_pUserSettings;
 
@@ -128,6 +133,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     mixxx::BeatsPointer m_pBeatsClone;
     bool m_trackHasBeatMap;
 
+    bool m_bpmLocked;
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 

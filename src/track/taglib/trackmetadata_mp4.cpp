@@ -404,8 +404,14 @@ void importStemInfo(TrackMetadata* pTrackMetadata,
                         TagLib::Variant::Type::ByteVector) {
             return;
         }
-        auto stemDetail = mixxx::StemInfoImporter::importStemInfos(
-                toQByteArray(stems.front().find("manifest")->second.toByteVector()));
+        auto manifest = toQByteArray(stems.front().find("manifest")->second.toByteVector());
+        // Though most MP4 atoms are usually not null-terminated, it looks like the
+        // STEM sometime is, resulting in extra null character(s) preventing JSON
+        // deserialization
+        while (manifest.endsWith('\0')) {
+            manifest.chop(1);
+        }
+        auto stemDetail = mixxx::StemInfoImporter::importStemInfos(manifest);
         pTrackMetadata->setStemInfo(stemDetail);
     }
 }

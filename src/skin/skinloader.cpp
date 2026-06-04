@@ -11,6 +11,10 @@
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
+#ifdef MIXXX_USE_QML
+#include "skin/qml/qmlskin.h"
+#endif
+#include "util/cmdlineargs.h"
 #include "util/debug.h"
 #include "util/timer.h"
 
@@ -20,6 +24,9 @@ namespace mixxx {
 namespace skin {
 
 using legacy::LegacySkin;
+#ifdef MIXXX_USE_QML
+using qml::QmlSkin;
+#endif
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
@@ -104,6 +111,7 @@ SkinPointer SkinLoader::getSkin(const QString& skinName) const {
             }
         }
     }
+
     return nullptr;
 }
 
@@ -130,7 +138,13 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
     if (pSkin && pSkin->isValid()) {
         return pSkin;
     }
-    qWarning() << "Failed to find configured skin" << configSkin;
+
+    if (isDeveloperOnlyQmlSkin(configSkin)) {
+        qDebug() << "Configured QML skin" << configSkin
+                 << "is unavailable outside developer mode";
+    } else {
+        qWarning() << "Failed to find configured skin" << configSkin;
+    }
 
     // Fallback to default skin as last resort
     const QString defaultSkinName = getDefaultSkinName();
@@ -238,7 +252,38 @@ SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
         return pSkin;
     }
 
+#ifdef MIXXX_USE_QML
+    // This getDeveloper() check is technically redundant because the callers
+    // (getSystemSkins, getSkin) already check it before scanning QML paths.
+    // Kept here for defense-in-depth in case future callers forget the guard.
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        pSkin = qml::QmlSkin::fromDirectory(dir);
+        if (pSkin && pSkin->isValid()) {
+            return pSkin;
+        }
+    }
+#endif
+
     return nullptr;
+}
+
+bool SkinLoader::isDeveloperOnlyQmlSkin([[maybe_unused]] const QString& skinName) const {
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        return false;
+    }
+    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+    for (QDir dir : skinSearchPaths) {
+        if (!dir.cd(skinName)) {
+            continue;
+        }
+        SkinPointer pSkin = QmlSkin::fromDirectory(dir);
+        if (pSkin && pSkin->isValid()) {
+            return true;
+        }
+    }
+#endif
+    return false;
 }
 
 void SkinLoader::setupSpinnyCoverControls() {

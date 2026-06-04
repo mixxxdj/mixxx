@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "sources/soundsourceffmpeg.h"
 #include "sources/soundsourceproxy.cpp"
 #include "test/mixxxtest.h"
 #include "track/taglib/trackmetadata_mp4.h"
@@ -107,10 +108,8 @@ TEST_P(StemFixture, ReadEachStem) {
     for (const auto& stem : kStemFiles) {
         SoundSourceFFmpeg sourceStandaloneStem(
                 QUrl::fromLocalFile(getTestDir().filePath("stems/" + stem)));
-        SoundSourceSingleSTEM sourceStem(
-                QUrl::fromLocalFile(
-                        getTestDir().filePath(STEM_FILE)),
-                stemIdx++);
+        SoundSourceFFmpeg sourceStem(
+                QUrl::fromLocalFile(getTestDir().filePath(STEM_FILE)), stemIdx++);
 
         mixxx::AudioSource::OpenParams config;
         config.setChannelCount(mixxx::audio::ChannelCount(2));
