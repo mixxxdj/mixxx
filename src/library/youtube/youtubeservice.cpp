@@ -162,6 +162,58 @@ const QVector<InnerTubeClient>& innerTubeClients() {
     };
     return kClients;
 }
+
+// Client order used specifically for the InnerTube /search endpoint.
+//
+// This is deliberately NOT innerTubeClients(): the download client list has
+// the iOS client second, but for *search* the iOS client replies with a huge
+// (~5 MB) `elementRenderer` payload that collectInnerTubeVideos() cannot parse
+// — so it always counts as "no usable results" and fails over anyway, after
+// wasting bandwidth and time downloading megabytes on mobile. We skip it here.
+//
+// ANDROID_VR and TVHTML5 both return the compactVideoRenderer shape we parse;
+// WEB returns videoRenderer (also parsed) and is a very reliable last resort
+// that needs no poToken for search. All three were verified live (2026-06) to
+// return HTTP 200 with parseable results. Ordering puts the lightest responses
+// first (ANDROID_VR/TVHTML5 are ~130 KB / ~400 KB; WEB is ~1.3 MB).
+const QVector<InnerTubeClient>& innerTubeSearchClients() {
+    static const QVector<InnerTubeClient> kClients = {
+            {"ANDROID_VR",
+                    "1.65.10",
+                    "28",
+                    "",
+                    "com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; "
+                    "U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+                    "Oculus",
+                    "Quest 3",
+                    32,
+                    "Android",
+                    "12L"},
+            {"TVHTML5_SIMPLY_EMBEDDED_PLAYER",
+                    "2.0",
+                    "85",
+                    "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+                    "Mozilla/5.0 (PlayStation; PlayStation 4/12.00) AppleWebKit/"
+                    "605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
+                    "",
+                    "",
+                    0,
+                    "",
+                    ""},
+            {"WEB",
+                    "2.20240620.05.00",
+                    "1",
+                    "",
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/"
+                    "537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+                    "",
+                    "",
+                    0,
+                    "",
+                    ""},
+    };
+    return kClients;
+}
 } // anonymous namespace
 
 // Locations to probe for yt-dlp when it is not on PATH. Order matters:
@@ -545,18 +597,37 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
             cap,
             /*clientIdx=*/0,
             [this, query, cap](const QString& innerTubeError) {
+                const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
+#if defined(Q_OS_ANDROID)
+                // On Android the community Piped instances are almost always
+                // dead, so cascading through all of them (5 instances × 3
+                // filters, ~10 s each) only adds ~100 s of stalling before
+                // search finally fails — the user-reported "clicking YouTube
+                // lags then shows nothing" symptom. InnerTube (ANDROID_VR →
+                // TVHTML5 → WEB) is the reliable search path on Android, so when
+                // it fails we go straight to the bundled/Termux yt-dlp if one is
+                // usable, otherwise surface the error immediately. The bundled
+                // ("android-bundled") runtime is download-only — it can't run a
+                // search — so it does not count here.
+                const bool canSearchViaYtDlp = hasYtDlpFallback &&
+                        (m_ytDlpPath != QStringLiteral("android-bundled"));
+                if (canSearchViaYtDlp) {
+                    kLogger.warning()
+                            << "InnerTube search failed for" << query << ":"
+                            << innerTubeError << "— falling back to yt-dlp";
+                    searchViaYtDlp(query, cap);
+                } else {
+                    kLogger.warning()
+                            << "InnerTube search failed for" << query << ":"
+                            << innerTubeError
+                            << "— no usable fallback on Android, surfacing error";
+                    Q_EMIT searchFailed(query, innerTubeError);
+                }
+#else
                 kLogger.warning()
                         << "InnerTube search failed for" << query << ":"
                         << innerTubeError << "— falling back to Piped";
-                const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
-#if defined(Q_OS_ANDROID)
-                // On Android, the bundled yt-dlp is accessed via JNI, not
-                // QProcess. searchViaYtDlp only works with a real binary path.
-                const bool canSearchViaYtDlp = hasYtDlpFallback &&
-                        (m_ytDlpPath != QStringLiteral("android-bundled"));
-#else
                 const bool canSearchViaYtDlp = hasYtDlpFallback;
-#endif
                 searchViaPiped(query,
                         cap,
                         /*instanceIdx=*/0,
@@ -576,6 +647,7 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
                                 Q_EMIT searchFailed(query, lastError);
                             }
                         });
+#endif
             });
 }
 
@@ -652,9 +724,23 @@ void YouTubeService::fetchTrending(const QString& region, int cap) {
             cap,
             /*clientIdx=*/0,
             [this, r, cap](const QString& innerTubeError) {
+#if defined(Q_OS_ANDROID)
+                // See searchVideos(): the Piped instances are effectively dead
+                // on Android and cycling through them only stalls the YouTube
+                // tab for ~100 s before showing nothing. InnerTube is the
+                // reliable trending path here, so surface the failure quickly
+                // and let YouTubeFeature::activate() self-heal by retrying on
+                // the next activation once connectivity recovers.
+                Q_UNUSED(cap);
+                kLogger.warning() << "InnerTube trending failed for" << r << ":"
+                                  << innerTubeError
+                                  << "— no Piped fallback on Android";
+                Q_EMIT searchFailed(kTrendingQueryPrefix + r, innerTubeError);
+#else
                 kLogger.warning() << "InnerTube trending failed for" << r << ":"
                                   << innerTubeError << "— falling back to Piped";
                 fetchTrendingViaPiped(r, cap, /*instanceIdx=*/0);
+#endif
             });
 }
 
@@ -671,7 +757,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
         int cap,
         int clientIdx,
         const std::function<void(const QString&)>& onAllFailed) {
-    const QVector<InnerTubeClient>& clients = innerTubeClients();
+    const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
     if (clientIdx < 0 || clientIdx >= clients.size()) {
         onAllFailed(tr("All InnerTube clients failed for search"));
         return;
@@ -682,7 +768,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     // response we could not parse a single video out of).
     auto tryNext = [this, emittedQuery, requestQuery, cap, clientIdx, onAllFailed](
                            const QString& err) {
-        const QVector<InnerTubeClient>& cl = innerTubeClients();
+        const QVector<InnerTubeClient>& cl = innerTubeSearchClients();
         if (clientIdx + 1 < cl.size()) {
             kLogger.info() << "InnerTube search client"
                            << cl.at(clientIdx).clientName << "failed:" << err
