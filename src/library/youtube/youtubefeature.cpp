@@ -1,6 +1,7 @@
 #include "library/youtube/youtubefeature.h"
 
 #include <QDir>
+#include <QDate>
 #include <QFile>
 #include <QFileInfo>
 #include <QLocale>
@@ -835,11 +836,12 @@ void YouTubeFeature::onHomeAnchorClicked(const QUrl& url) {
         setAutoAnalyzeResultsEnabled(!autoAnalyzeResultsEnabled());
         return;
     }
-    // Genre links: "ytgenre:House" → search for "House songs 2024"
+    // Genre links: "ytgenre:House" → search for "House songs <year>"
     if (scheme == kHomeGenreScheme) {
         const QString genre = url.path();
         if (!genre.isEmpty()) {
-            const QString query = genre + QStringLiteral(" songs 2024");
+            const QString query = genre + QStringLiteral(" songs ") +
+                    QString::number(QDate::currentDate().year());
             searchAndActivate(query);
         }
         return;
@@ -871,7 +873,8 @@ void YouTubeFeature::activateChild(const QModelIndex& index) {
         // User clicked a genre: run a search for that genre's top songs.
         // Use a natural search query that works well with YouTube's algorithm.
         const QString genre = payload.mid(kGenrePrefix.size());
-        const QString query = genre + QStringLiteral(" songs 2024");
+        const QString query = genre + QStringLiteral(" songs ") +
+                QString::number(QDate::currentDate().year());
         searchAndActivate(query);
     } else if (payload.startsWith(kSearchPrefix)) {
         // User clicked a search result: download (or use cache) and analyze.
