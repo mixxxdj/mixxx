@@ -197,8 +197,8 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     QList<MyInstantSound> m_myInstantSounds;
     /// True while a myinstants.com fetch is in-flight.
     bool m_myInstantsFetchInFlight = false;
-    /// NAM used only for the Samples section (myinstants fetches + MP3
-    /// downloads). Kept separate from YouTubeService's NAM so cookie jars
+    /// QNetworkAccessManager used only for the Samples section (myinstants fetches + MP3
+    /// downloads). Kept separate from YouTubeService's QNetworkAccessManager so cookie jars
     /// and rate-limiting for YouTube are not shared with an unrelated host.
     QNetworkAccessManager* m_pSamplesNam = nullptr;
     /// Set of myinstants CDN URLs currently being downloaded (prevent dupes).

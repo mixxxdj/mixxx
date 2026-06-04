@@ -2161,7 +2161,7 @@ void YouTubeFeature::fetchMyInstantsSounds() {
     m_myInstantsFetchInFlight = true;
     rebuildSidebar(); // show "Loading…" placeholder
 
-    // Lazy-create a NAM dedicated to the Samples section.
+    // Lazy-create a QNetworkAccessManager dedicated to the Samples section.
     if (!m_pSamplesNam) {
         m_pSamplesNam = new QNetworkAccessManager(this);
     }
@@ -2194,10 +2194,12 @@ void YouTubeFeature::fetchMyInstantsSounds() {
         //   onclick="play('/media/sounds/FILE.mp3', …)">TITLE<
         // or data-url="/media/sounds/FILE.mp3"
         static const QRegularExpression reOnclick(
-                QStringLiteral(R"(onclick="play\('(/media/sounds/[^']+\.mp3)'[^>]*>\s*([^<]+?)\s*<)"),
+                QStringLiteral(
+                        R"(onclick="play\('(/media/sounds/[^']+\.mp3)'[^>]*>\s*([^<]+?)\s*<)"),
                 QRegularExpression::CaseInsensitiveOption);
         static const QRegularExpression reDataUrl(
-                QStringLiteral(R"(data-url="(/media/sounds/[^"]+\.mp3)"[^>]*>\s*([^<]+?)\s*<)"),
+                QStringLiteral(
+                        R"re(data-url="(/media/sounds/[^"]+\.mp3)"[^>]*>\s*([^<]+?)\s*<)re"),
                 QRegularExpression::CaseInsensitiveOption);
 
         auto parse = [&](const QRegularExpression& re) {
@@ -2272,7 +2274,7 @@ void YouTubeFeature::downloadMyInstant(
     kLogger.info() << "Downloading myinstants sample:" << displayName
                    << "from" << mp3Url;
 
-    QNetworkRequest req(QUrl(mp3Url));
+    QNetworkRequest req{QUrl(mp3Url)};
     req.setRawHeader("User-Agent",
             "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 "
             "(KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36");
@@ -2313,7 +2315,7 @@ void YouTubeFeature::downloadMyInstant(
                         pTrack->setTitle(displayName);
                     }
                     if (pTrack->getGenre().isEmpty()) {
-                        pTrack->setGenre(QStringLiteral("Meme Sound"));
+                        pTrack->updateGenre(QStringLiteral("Meme Sound"));
                     }
                     Q_EMIT loadTrack(pTrack);
                 }
