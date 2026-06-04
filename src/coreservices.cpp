@@ -893,17 +893,15 @@ void CoreServices::initialize(QGuiApplication* pApp) {
             Qt::UniqueConnection);
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
+    const QStringList watchedRoots =
+            m_pTrackCollectionManager->internalCollection()->getRootDirStrings();
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
         qInfo() << "Starting library auto-scan (rescan=" << rescan
                 << ", musicDirAdded=" << musicDirAdded
-                << ", roots=" << m_pTrackCollectionManager->internalCollection()
-                        ->getRootDirStrings()
-                << ")";
+                << ", roots=" << watchedRoots << ")";
         m_pTrackCollectionManager->startLibraryAutoScan();
     } else {
-        qInfo() << "Skipping library auto-scan; watched roots ="
-                << m_pTrackCollectionManager->internalCollection()
-                        ->getRootDirStrings();
+        qInfo() << "Skipping library auto-scan; watched roots =" << watchedRoots;
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
