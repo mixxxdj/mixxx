@@ -81,6 +81,17 @@ struct AcoustIdCacheEntry {
     QDateTime expiresAt; // isValid() == false if no TTL
 };
 
+struct UnmatchedTrackInfo {
+    TrackId trackId;
+    QString title;
+    QString artist;
+    double duration{0.0};
+    // Empty if the track has not been enqueued yet
+    QString queueStatus; // 'queued' | 'processing' | 'failed' | ''
+    int attempts{0};
+    bool fingerprintValid{false};
+};
+
 class TrackFingerprintDao : public DAO {
   public:
     explicit TrackFingerprintDao(UserSettingsPointer pConfig);
@@ -144,6 +155,17 @@ class TrackFingerprintDao : public DAO {
     // Removes entries whose expires_at has passed.
     // Call periodically to prevent unbounded cache growth.
     bool deleteExpiredCacheEntries() const;
+
+    // MusicBrainzQueue view support
+
+    // Returns all tracks that have a valid fingerprint but no AcoustID
+    // yet, along with their current queue status. Used to populate the
+    // MusicBrainzQueue sidebar.
+    QList<UnmatchedTrackInfo> getUnmatchedTracks() const;
+
+    // Resets a failed job back to queued state so the worker retries it.
+    // Sets status='queued', attempts=0, error_message=NULL, last_attempt=NULL.
+    bool reQueueJob(TrackId trackId) const;
 
   private:
     // Returns ~/.mixxx/fingerprints/ — creates the directory on first call.
