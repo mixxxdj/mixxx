@@ -15,6 +15,7 @@ namespace {
 
 using mixxx::KeyHighlightManager;
 using Class = KeyUtils::KeyHighlightClass;
+using Shift = KeyUtils::YellowShift;
 namespace key = mixxx::track::io::key;
 
 class KeyHighlightManagerTest : public MixxxTest {
@@ -75,6 +76,73 @@ TEST_F(KeyHighlightManagerTest, SingleDeckClassification) {
     }
     // INVALID is never highlighted.
     EXPECT_EQ(Class::None, manager.classOf(key::INVALID));
+}
+
+TEST_F(KeyHighlightManagerTest, DirectionMatchesClassifier) {
+    const auto ref = key::A_MINOR;
+    setDeckKey(0, ref);
+    setHighlight(0, true);
+
+    KeyHighlightManager manager;
+    ASSERT_TRUE(manager.isActive());
+
+    // directionOf must agree with the pure classifier for every valid key, and
+    // be None for any non-Yellow key (the table only carries directions on
+    // Yellow cells).
+    for (int i = static_cast<int>(key::C_MAJOR);
+            i <= static_cast<int>(key::B_MINOR);
+            ++i) {
+        const auto trackKey = static_cast<key::ChromaticKey>(i);
+        EXPECT_EQ(KeyUtils::yellowShiftDirection(trackKey, ref),
+                manager.directionOf(trackKey))
+                << "track=" << i;
+        if (manager.classOf(trackKey) != Class::Yellow) {
+            EXPECT_EQ(Shift::None, manager.directionOf(trackKey))
+                    << "non-yellow track=" << i;
+        }
+    }
+    // INVALID never carries a direction.
+    EXPECT_EQ(Shift::None, manager.directionOf(key::INVALID));
+}
+
+TEST_F(KeyHighlightManagerTest, DirectionInactiveIsNone) {
+    setDeckKey(0, key::A_MINOR);
+    KeyHighlightManager manager;
+    ASSERT_FALSE(manager.isActive());
+
+    // With the highlighter off, no key carries a direction.
+    for (int i = static_cast<int>(key::C_MAJOR);
+            i <= static_cast<int>(key::B_MINOR);
+            ++i) {
+        EXPECT_EQ(Shift::None,
+                manager.directionOf(static_cast<key::ChromaticKey>(i)))
+                << "track=" << i;
+    }
+}
+
+TEST_F(KeyHighlightManagerTest, DirectionConsistentWithChosenClass) {
+    // After a deck switch, the surviving reference key must drive the direction,
+    // not a stale one. Mirrors MutuallyExclusiveAcrossDecks but checks the
+    // direction table.
+    const auto ref1 = key::F_SHARP_MAJOR;
+    setDeckKey(0, key::A_MINOR);
+    setDeckKey(1, ref1);
+
+    KeyHighlightManager manager;
+    setHighlight(0, true);
+    setHighlight(1, true); // clears deck 0; F# major is now the sole reference
+
+    ASSERT_TRUE(manager.isActive());
+    EXPECT_DOUBLE_EQ(0.0, m_highlight[0]->get());
+
+    for (int i = static_cast<int>(key::C_MAJOR);
+            i <= static_cast<int>(key::B_MINOR);
+            ++i) {
+        const auto trackKey = static_cast<key::ChromaticKey>(i);
+        EXPECT_EQ(KeyUtils::yellowShiftDirection(trackKey, ref1),
+                manager.directionOf(trackKey))
+                << "track=" << i;
+    }
 }
 
 TEST_F(KeyHighlightManagerTest, ToggleOnOff) {

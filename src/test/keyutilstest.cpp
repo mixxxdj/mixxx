@@ -321,6 +321,7 @@ namespace {
 
 using mixxx::track::io::key::ChromaticKey;
 using Class = KeyUtils::KeyHighlightClass;
+using Shift = KeyUtils::YellowShift;
 
 // The first and last valid (non-INVALID) ChromaticKey values.
 constexpr ChromaticKey kFirstKey = mixxx::track::io::key::C_MAJOR; // 1
@@ -488,9 +489,11 @@ TEST_F(KeyUtilsTest, ClassifyExhaustiveConsistency) {
 
             // Yellow <=> not compatible AND +/-1 semitone is compatible
             // (mutual exclusivity with green is implied).
-            const bool semitoneReachable =
-                    compatible.contains(KeyUtils::scaleKeySteps(track, 1)) ||
+            const bool up =
+                    compatible.contains(KeyUtils::scaleKeySteps(track, 1));
+            const bool down =
                     compatible.contains(KeyUtils::scaleKeySteps(track, -1));
+            const bool semitoneReachable = up || down;
             if (c == Class::Yellow) {
                 EXPECT_FALSE(inCompatible);
                 EXPECT_TRUE(semitoneReachable);
@@ -501,8 +504,94 @@ TEST_F(KeyUtilsTest, ClassifyExhaustiveConsistency) {
                 EXPECT_FALSE(inCompatible);
                 EXPECT_FALSE(semitoneReachable);
             }
+
+            // yellowShiftDirection() must agree with the class: non-None exactly
+            // when Yellow, and its Up/Down bits must match per-sign
+            // reachability. This keeps the direction channel from ever drifting
+            // from the classifier.
+            const Shift shift = KeyUtils::yellowShiftDirection(track, ref);
+            EXPECT_EQ(c == Class::Yellow, shift != Shift::None)
+                    << "track=" << static_cast<int>(track)
+                    << " ref=" << static_cast<int>(ref);
+            if (c == Class::Yellow) {
+                const Shift expected = (up && down) ? Shift::Both
+                        : up                        ? Shift::Up
+                                                    : Shift::Down;
+                EXPECT_EQ(expected, shift)
+                        << "track=" << static_cast<int>(track)
+                        << " ref=" << static_cast<int>(ref);
+            }
         }
     }
+}
+
+TEST_F(KeyUtilsTest, YellowShiftDirectionInvalidInputs) {
+    // INVALID on either side is always None, mirroring classifyAgainst().
+    EXPECT_EQ(Shift::None,
+            KeyUtils::yellowShiftDirection(mixxx::track::io::key::INVALID,
+                    mixxx::track::io::key::INVALID));
+    for (ChromaticKey k = kFirstKey; k <= kLastKey; k = incrementKey(k)) {
+        EXPECT_EQ(Shift::None,
+                KeyUtils::yellowShiftDirection(
+                        mixxx::track::io::key::INVALID, k))
+                << "ref=" << static_cast<int>(k);
+        EXPECT_EQ(Shift::None,
+                KeyUtils::yellowShiftDirection(
+                        k, mixxx::track::io::key::INVALID))
+                << "track=" << static_cast<int>(k);
+    }
+}
+
+TEST_F(KeyUtilsTest, YellowShiftDirectionMatchesReachability) {
+    // Against A minor, every Yellow track's reported direction must match the
+    // raw +1/-1 membership test, and every non-Yellow track must be None.
+    const auto ref = mixxx::track::io::key::A_MINOR;
+    const QList<ChromaticKey> compatible = KeyUtils::getCompatibleKeys(ref);
+    bool sawUp = false;
+    bool sawDown = false;
+    for (ChromaticKey track = kFirstKey; track <= kLastKey;
+            track = incrementKey(track)) {
+        const Shift shift = KeyUtils::yellowShiftDirection(track, ref);
+        if (compatible.contains(track)) {
+            EXPECT_EQ(Shift::None, shift)
+                    << "compatible track=" << static_cast<int>(track);
+            continue;
+        }
+        const bool up = compatible.contains(KeyUtils::scaleKeySteps(track, 1));
+        const bool down = compatible.contains(KeyUtils::scaleKeySteps(track, -1));
+        if (up && down) {
+            EXPECT_EQ(Shift::Both, shift) << "track=" << static_cast<int>(track);
+        } else if (up) {
+            EXPECT_EQ(Shift::Up, shift) << "track=" << static_cast<int>(track);
+            sawUp = true;
+        } else if (down) {
+            EXPECT_EQ(Shift::Down, shift) << "track=" << static_cast<int>(track);
+            sawDown = true;
+        } else {
+            EXPECT_EQ(Shift::None, shift) << "track=" << static_cast<int>(track);
+        }
+    }
+    EXPECT_TRUE(sawUp) << "expected at least one Up-only case for A minor";
+    EXPECT_TRUE(sawDown) << "expected at least one Down-only case for A minor";
+}
+
+TEST_F(KeyUtilsTest, YellowShiftDirectionBothExists) {
+    // Somewhere in the 24x24 space a track is reachable by BOTH +1 and -1, and
+    // must report Both. Asserting it exists guards the Both branch from being
+    // collapsed into a single direction by an over-eager else-if chain.
+    bool sawBoth = false;
+    for (ChromaticKey ref = kFirstKey; ref <= kLastKey && !sawBoth;
+            ref = incrementKey(ref)) {
+        for (ChromaticKey track = kFirstKey; track <= kLastKey;
+                track = incrementKey(track)) {
+            if (KeyUtils::yellowShiftDirection(track, ref) == Shift::Both) {
+                sawBoth = true;
+                break;
+            }
+        }
+    }
+    EXPECT_TRUE(sawBoth)
+            << "expected at least one Both (up+down reachable) pair";
 }
 
 TEST_F(KeyUtilsTest, ClassifyIsNotationIndependent) {
