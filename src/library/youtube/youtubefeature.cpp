@@ -41,6 +41,15 @@ constexpr int kSearchResultsMax = 50;
 constexpr int kSearchResultsMax = 100;
 #endif
 
+// Upper duration bound (seconds) for items shown in the trending/home feed.
+// The Greek "top songs" feed otherwise mixes in hour-long "megamix" / "best
+// of" compilations the user explicitly does not want — a DJ wants individual
+// tracks, not a 1:47:00 mix. Items longer than this are dropped from the home
+// feed only; an explicit user search is left untouched so long sets remain
+// findable. Items with an unknown duration (0) are kept so we never hide a
+// genuine song just because its length failed to parse.
+constexpr int kTrendingMaxDurationSec = 15 * 60; // 15 minutes
+
 // We tag the TreeItem `data` payload so activateChild() can tell apart
 // "search result the user wants to load" from "already-downloaded track".
 const QString kSearchPrefix = QStringLiteral("yt-search:");
@@ -344,7 +353,14 @@ void YouTubeFeature::activate() {
         m_trendingFetchInFlight = true;
         rebuildSidebar();
         rebuildHomeHtml();
-        replaceTrackTable(QList<mixxx::YouTubeVideoInfo>());
+        // NOTE: we deliberately do NOT clear the youtube_library table here.
+        // The clear is a synchronous SQLite write on the UI thread; during the
+        // first-run device scan the LibraryScanner holds the write lock, so the
+        // DELETE blocked the main thread for several seconds (the "clicking
+        // YouTube lags" symptom) before failing anyway. The freshly-fetched
+        // results replace the table in onSearchResultsReady() once they arrive;
+        // until then the previous batch (or an empty table on first open) stays
+        // visible, which is strictly better than a frozen UI.
         kLogger.info() << "Fetching YouTube trending for region" << country;
         m_service.fetchTrending(country, kSearchResultsMax);
     }
@@ -427,7 +443,12 @@ void YouTubeFeature::searchAndActivate(const QString& query) {
     m_trendingFetchInFlight = false;
     rebuildSidebar();
     rebuildHomeHtml();
-    replaceTrackTable(QList<mixxx::YouTubeVideoInfo>());
+    // Do NOT clear youtube_library synchronously here — that DELETE on the UI
+    // thread stalls for seconds behind the LibraryScanner's write lock during
+    // the initial device scan (the "searching lags" symptom) and would fail
+    // under contention anyway. onSearchResultsReady() replaces the rows with
+    // the network results when they land; the previous batch stays visible in
+    // the meantime instead of freezing the UI on an empty clear.
     m_service.searchVideos(query, kSearchResultsMax);
 }
 
@@ -437,14 +458,29 @@ void YouTubeFeature::onSearchResultsReady(
         return; // a newer search has superseded this one
     }
     m_trendingFetchInFlight = false;
-    m_lastResults = results;
+    // For the trending/home feed, drop hour-long "megamix"/"best of"
+    // compilations so the DJ sees individual songs, not giant mixes. A genuine
+    // user search (non-trending sentinel) is shown verbatim so long sets stay
+    // findable. Unknown-duration items (0) are kept to avoid hiding real songs.
+    QList<mixxx::YouTubeVideoInfo> filtered = results;
+    if (query.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {
+        filtered.clear();
+        filtered.reserve(results.size());
+        for (const mixxx::YouTubeVideoInfo& info : results) {
+            if (info.durationSec > kTrendingMaxDurationSec) {
+                continue;
+            }
+            filtered.append(info);
+        }
+    }
+    m_lastResults = filtered;
     m_lastSearchError.clear();
     rebuildSidebar();
     rebuildHomeHtml();
     // Real fix: replace the rows in youtube_library so the user sees a
     // proper Title/Artist/Duration table, sortable, draggable, double-
     // clickable — not an HTML link list.
-    replaceTrackTable(results);
+    replaceTrackTable(filtered);
     // Bring the populated track table to the foreground. Without this the
     // results only ever land in the model: if the visible pane was something
     // else when the (asynchronous) network reply arrived — e.g. the local
@@ -1002,7 +1038,7 @@ void YouTubeFeature::rebuildHomeHtml() {
 }
 
 void YouTubeFeature::replaceTrackTable(
-        const QList<mixxx::YouTubeVideoInfo>& videos) {
+        const QList<mixxx::YouTubeVideoInfo>& videos, int attempt) {
     if (!m_pTrackModel || !m_pTrackCache) {
         return;
     }
@@ -1017,8 +1053,30 @@ void YouTubeFeature::replaceTrackTable(
     QSqlQuery del(db);
     del.prepare(QStringLiteral("DELETE FROM youtube_library"));
     if (!del.exec()) {
-        kLogger.warning() << "youtube_library DELETE failed:"
-                          << del.lastError().text();
+        // During the initial full-device library scan the LibraryScanner
+        // thread holds the SQLite write lock for long stretches, so this
+        // DELETE on the main thread fails with "database is locked". Aborting
+        // here used to silently drop the freshly-fetched results — the user's
+        // "search shows nothing / just the old small list" symptom. Instead of
+        // blocking the UI thread on the lock, reschedule the write on the event
+        // loop so the table is populated as soon as the scanner yields.
+        const QString errText = del.lastError().text();
+        const bool locked = errText.contains(
+                QStringLiteral("locked"), Qt::CaseInsensitive);
+        // Retry on the event loop (non-blocking) for up to ~10 s, which
+        // comfortably outlasts the per-track lock the scanner holds.
+        constexpr int kRetryIntervalMs = 250;
+        constexpr int kRetryTimeoutMs = 10 * 1000;
+        constexpr int kMaxAttempts = kRetryTimeoutMs / kRetryIntervalMs;
+        if (locked && attempt < kMaxAttempts) {
+            transaction.rollback();
+            const QList<mixxx::YouTubeVideoInfo> pending = videos;
+            QTimer::singleShot(kRetryIntervalMs, this, [this, pending, attempt]() {
+                replaceTrackTable(pending, attempt + 1);
+            });
+            return;
+        }
+        kLogger.warning() << "youtube_library DELETE failed:" << errText;
         return;
     }
 

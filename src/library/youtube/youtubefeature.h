@@ -108,7 +108,10 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// `videos` may include both downloaded (file present in cacheDir())
     /// and not-yet-downloaded entries; we resolve which is which row by
     /// row when building the INSERT.
-    void replaceTrackTable(const QList<mixxx::YouTubeVideoInfo>& videos);
+    /// `attempt` is used internally to bound the deferred retries triggered
+    /// when the write loses the SQLite lock to the library scanner.
+    void replaceTrackTable(
+            const QList<mixxx::YouTubeVideoInfo>& videos, int attempt = 0);
     /// Append a single downloaded entry (or update its row to point at the
     /// real file path) so the "Downloaded" column reflects the new file
     /// without a full table rebuild.

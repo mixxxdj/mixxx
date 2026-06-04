@@ -818,6 +818,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     QJsonObject body;
     body.insert(QStringLiteral("context"), context);
     body.insert(QStringLiteral("query"), requestQuery);
+    // Restrict results to the "Video" type only (protobuf search filter
+    // sp=EgIQAQ%3D%3D). Without it the InnerTube /search endpoint returns a
+    // mix of playlists, channels and a handful of videos — e.g. the Greek home
+    // feed came back with only ~5 playable videos drowned in 15 playlist
+    // entries we cannot play. The filter both removes the unplayable
+    // playlist/channel cards and surfaces a much larger set of actual songs
+    // (verified live 2026-06: "Greek top songs" 5 → 20 video results).
+    body.insert(QStringLiteral("params"), QStringLiteral("EgIQAQ=="));
 
     QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,
