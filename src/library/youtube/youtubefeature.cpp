@@ -1059,6 +1059,16 @@ void YouTubeFeature::replaceTrackTable(
     transaction.commit();
 
     m_pTrackCache->buildIndex();
+    // Clear any residual per-view search filter before re-selecting. When the
+    // user types a query in the library search box, YouTubeTrackModel::search()
+    // applies that text as a local SQL filter (for instant feedback) *and*
+    // fires the network search. Once the network results land here, the rows we
+    // just inserted ARE the answer for that query — re-applying the same text as
+    // a local filter would hide every result that doesn't literally contain the
+    // query string in its artist/title/album/comment, leaving the right-hand
+    // pane empty even though the sidebar listed results. Resetting the filter
+    // guarantees the full fetched result set is shown.
+    m_pTrackModel->setSearch(QString());
     // select() re-runs the SELECT against the underlying SQL view so the
     // WTrackTableView picks up the fresh row set.
     m_pTrackModel->select();

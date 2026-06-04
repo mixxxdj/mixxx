@@ -106,11 +106,11 @@ struct InnerTubeClient {
     const char* clientNameId; // numeric X-YouTube-Client-Name
     const char* apiKey;       // optional, empty when not needed
     const char* userAgent;
-    const char* deviceMake;       // optional, empty when not applicable
-    const char* deviceModel;      // optional, empty when not applicable
-    int androidSdkVersion;        // 0 = omit
-    const char* osName;           // optional, empty when not applicable
-    const char* osVersion;        // optional, empty when not applicable
+    const char* deviceMake;  // optional, empty when not applicable
+    const char* deviceModel; // optional, empty when not applicable
+    int androidSdkVersion;   // 0 = omit
+    const char* osName;      // optional, empty when not applicable
+    const char* osVersion;   // optional, empty when not applicable
 };
 
 const QVector<InnerTubeClient>& innerTubeClients() {
