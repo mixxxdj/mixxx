@@ -467,6 +467,10 @@ void YouTubeFeature::onSearchFailed(const QString& query, const QString& error) 
     kLogger.warning() << "YouTube search failed:" << error;
     m_lastSearchError = error;
     rebuildHomeHtml();
+    // Switch to the HTML pane so the user can see the error message.
+    // Without this, the main area stays on the empty track table and the
+    // user has no feedback at all — the "blank YouTube tab" symptom.
+    Q_EMIT switchToView(QStringLiteral("YOUTUBE_HOME"));
 }
 
 void YouTubeFeature::requestDownload(const QString& videoId) {
@@ -927,6 +931,17 @@ void YouTubeFeature::rebuildHomeHtml() {
                     QStringLiteral(":</b> ") +
                     m_lastSearchError.toHtmlEscaped() +
                     QStringLiteral("</p>");
+            // Help the user find the log file for further diagnosis. On Android
+            // the logs are in the app's internal storage which is not browseable
+            // from a normal file manager — point them to logcat or the path.
+            const QString logDir =
+                    QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+            html += QStringLiteral("<p><small>") +
+                    tr("Logs: %1/mixxx.log — on Android use "
+                       "<code>adb logcat -s Mixxx</code> or a logcat viewer app "
+                       "to see diagnostic output.")
+                            .arg(logDir.toHtmlEscaped()) +
+                    QStringLiteral("</small></p>");
         } else if (m_lastResults.isEmpty()) {
             html += QStringLiteral("<p><i>") +
                     (isTrending ? tr("Loading trending…") : tr("Searching…")) +

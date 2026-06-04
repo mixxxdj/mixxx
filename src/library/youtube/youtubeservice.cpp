@@ -836,19 +836,35 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
             [this, reply, emittedQuery, requestQuery, cap, tryNext]() {
                 reply->deleteLater();
                 if (reply->error() != QNetworkReply::NoError) {
-                    tryNext(tr("InnerTube search request failed: %1")
-                                    .arg(reply->errorString()));
+                    const int httpStatus = reply->attribute(
+                            QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                    const QString detail = tr("InnerTube search request failed: %1 (HTTP %2)")
+                                    .arg(reply->errorString())
+                                    .arg(httpStatus);
+                    kLogger.warning() << detail;
+                    tryNext(detail);
                     return;
                 }
+                const QByteArray rawBody = reply->readAll();
+                const int httpStatus = reply->attribute(
+                        QNetworkRequest::HttpStatusCodeAttribute).toInt();
                 const QJsonObject root =
-                        QJsonDocument::fromJson(reply->readAll()).object();
+                        QJsonDocument::fromJson(rawBody).object();
                 const QList<YouTubeVideoInfo> results =
                         parseInnerTubeSearch(root, cap);
                 if (results.isEmpty()) {
                     // A 200 with no parseable videos usually means this client
                     // returned a renderer shape we don't handle (e.g. the iOS
                     // elementRenderer). Fail over to the next client.
-                    tryNext(tr("InnerTube search returned no usable results"));
+                    kLogger.warning()
+                            << "InnerTube search returned HTTP" << httpStatus
+                            << "but 0 parseable results for" << requestQuery
+                            << "— response size:" << rawBody.size() << "bytes"
+                            << "— first 200 chars:"
+                            << QString::fromUtf8(rawBody.left(200));
+                    tryNext(tr("InnerTube search returned no usable results (HTTP %1, %2 bytes)")
+                                    .arg(httpStatus)
+                                    .arg(rawBody.size()));
                     return;
                 }
                 kLogger.info() << "InnerTube search returned" << results.size()
