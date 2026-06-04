@@ -312,6 +312,13 @@ void YouTubeFeature::activate() {
     // skin/back-compat reasons but never switch to it from here.
     Q_EMIT showTrackModel(m_pTrackModel);
     Q_EMIT enableCoverArtDisplay(false);
+    // Force a fresh SELECT so the table reflects the current contents of
+    // youtube_library even if the model state went stale while another
+    // feature was in the foreground (e.g. results landed in the background
+    // after a combined library/YouTube search).
+    if (m_pTrackModel) {
+        m_pTrackModel->select();
+    }
     rebuildHomeHtml();
     // Prime the pane with Greek top songs from YouTube Music's songs category
     // on first open so a DJ sees music, not YouTube's generic live/gaming/news
@@ -438,6 +445,15 @@ void YouTubeFeature::onSearchResultsReady(
     // proper Title/Artist/Duration table, sortable, draggable, double-
     // clickable — not an HTML link list.
     replaceTrackTable(results);
+    // Bring the populated track table to the foreground. Without this the
+    // results only ever land in the model: if the visible pane was something
+    // else when the (asynchronous) network reply arrived — e.g. the local
+    // library after a combined search, or the YouTube node before the reply —
+    // the user saw an empty main area and the results "stuck" in the sidebar
+    // tree only. This is the user-reported "I have YouTube on the left bar but
+    // no actual results" symptom. Showing the model switches the main pane to
+    // the freshly-filled table and clears any stale search-box filter.
+    Q_EMIT showTrackModel(m_pTrackModel);
     if (autoAnalyzeResultsEnabled()) {
         autoAnalyzeCurrentResults();
     }
@@ -821,36 +837,13 @@ void YouTubeFeature::rebuildSidebar() {
                     : tr("Auto Analyze: Off"),
             kAutoAnalyzePayload);
 
-    if (!m_lastQuery.isEmpty()) {
-        // Show a friendly "Trending in <Country>" label for the trending
-        // sentinel rather than the raw `__trending__:US` token.
-        QString headerLabel;
-        if (m_lastQuery.startsWith(
-                    mixxx::YouTubeService::kTrendingQueryPrefix)) {
-            const QString region = m_lastQuery.mid(
-                    mixxx::YouTubeService::kTrendingQueryPrefix.size());
-            headerLabel = tr("Trending in %1").arg(countryDisplayName(region));
-        } else {
-            headerLabel = tr("Search: %1").arg(m_lastQuery);
-        }
-        TreeItem* pSearchNode = pRoot->appendChild(headerLabel);
-        for (const auto& info : std::as_const(m_lastResults)) {
-            const QString durationText = info.durationSec > 0
-                    ? QString::fromLatin1("%1:%2")
-                              .arg(info.durationSec / 60)
-                              .arg(info.durationSec % 60, 2, 10, QLatin1Char('0'))
-                    : QString();
-            const TrackDisplayMetadata metadata = displayMetadataForVideo(info);
-            QString label = metadata.title;
-            if (!metadata.artist.isEmpty()) {
-                label += QStringLiteral(" — ") + metadata.artist;
-            }
-            if (!durationText.isEmpty()) {
-                label += QStringLiteral(" [") + durationText + QStringLiteral("]");
-            }
-            pSearchNode->appendChild(label, QString(kSearchPrefix + info.id));
-        }
-    }
+    // Note: search/trending results are intentionally NOT listed as sidebar
+    // tree children. They belong in the main track table (the right-hand
+    // pane), exactly like every other library source — listing each song in
+    // the left sidebar instead confused users ("why do I have YouTube on the
+    // left bar and not actual results?"). The table is populated by
+    // replaceTrackTable() and surfaced via showTrackModel(); the sidebar only
+    // carries navigation/toggle nodes.
 
     if (!m_downloadedTracks.isEmpty()) {
         TreeItem* pCachedNode = pRoot->appendChild(tr("Downloaded"));
