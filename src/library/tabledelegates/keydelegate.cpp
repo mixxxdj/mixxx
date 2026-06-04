@@ -39,6 +39,27 @@ void KeyDelegate::paintItem(
         const QModelIndex& index) const {
     paintItemBackground(painter, option, index);
 
+    // The harmonic key highlighter tints this cell via the model's
+    // BackgroundRole. Capture it once: it both has to survive row selection
+    // (below) and signals that the text colour must come from the model's
+    // contrasting ForegroundRole rather than the skin default (further down).
+    const QVariant bgValue = index.data(Qt::BackgroundRole);
+    const QColor highlightBg = bgValue.canConvert<QBrush>()
+            ? qvariant_cast<QBrush>(bgValue).color()
+            : QColor();
+
+    // paintItemBackground() deliberately skips selected rows so the standard
+    // selection highlight shows through. The harmonic key tint, however, is the
+    // whole point of this column and must survive selection - otherwise the cell
+    // reverts to the plain selection colour and the DJ loses the harmonic hint on
+    // the row they just clicked. Re-apply the tint on top of the selection,
+    // semi-transparent so the selection is still legible underneath.
+    if ((option.state & QStyle::State_Selected) && highlightBg.isValid()) {
+        QColor tint = highlightBg;
+        tint.setAlphaF(0.65f);
+        painter->fillRect(option.rect, tint);
+    }
+
     const QString keyText = index.data().value<QString>();
     const QVariantMap colorRect = index.data(Qt::DecorationRole).value<QVariantMap>();
     const double tuningFrequencyHz = index.data(TrackModel::kTuningFrequencyRole).toDouble();
@@ -130,18 +151,33 @@ void KeyDelegate::paintItem(
             Qt::ElideRight,
             textWidth);
 
-    // This is not picking up the 'missing' or 'played' text color via
-    // ForegroundRole from BaseTrackTableModel::data().
-    // Set the palette colors manually and select the appropriate one.
+    // Set the palette colours manually and select the appropriate one.
     QStyleOptionViewItem opt = option;
     setTextColor(opt, index);
     // The colour the key glyph is drawn in. Reused for the direction arrow below
     // so the arrow is always exactly as legible as the key text beside it, on
     // any background the highlighter produces - a fixed colour could otherwise
     // vanish (e.g. a dark arrow on the played dark-blue cell).
-    const QColor textColor = (opt.state & QStyle::State_Selected)
+    QColor textColor = (opt.state & QStyle::State_Selected)
             ? opt.palette.highlightedText().color()
             : opt.palette.text().color();
+    // When the harmonic highlighter tinted this cell, draw the key in the
+    // model's contrasting ForegroundRole (black on the light yellow/green tiers,
+    // white on the dark ones) instead of the skin default. The KeyDelegate paints
+    // the text itself rather than through the style, so the skin's default Text
+    // colour would otherwise win and render light text invisible on a light tint.
+    // Since the tint now persists under selection too, this applies in both
+    // states. Gated on a real highlight background so non-highlighted cells keep
+    // their normal played/selected text colour from setTextColor() above.
+    if (highlightBg.isValid()) {
+        const auto fgData = index.data(Qt::ForegroundRole);
+        if (fgData.canConvert<QColor>()) {
+            const QColor fgColor = fgData.value<QColor>();
+            if (fgColor.isValid()) {
+                textColor = fgColor;
+            }
+        }
+    }
     painter->setPen(QPen(textColor));
 
     painter->drawText(option.rect.x() + leftMargin,
