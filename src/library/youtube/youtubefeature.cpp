@@ -647,6 +647,9 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
     // SELECT — without this the first activate() shows an empty pane even
     // when youtube_library has rows from a previous session.
     m_pTrackModel->setSearch(QString());
+    // Tell the model where thumbnail images live so getCoverInfo() can
+    // serve them without a schema change.
+    m_pTrackModel->setThumbnailDir(thumbnailDir());
 
     // Per-view search box: typing in the search bar while the YouTube
     // pane is active fires YouTubeTrackModel::searchRequested → here →
@@ -655,6 +658,17 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &YouTubeTrackModel::searchRequested,
             this,
             &YouTubeFeature::searchAndActivate);
+    // Infinite scroll: when the user scrolls to the bottom and the model
+    // emits fetchMoreRequested(), ask the service for the next page.
+    connect(m_pTrackModel,
+            &YouTubeTrackModel::fetchMoreRequested,
+            this,
+            [this]() {
+                if (!m_lastQuery.isEmpty()) {
+                    m_service.fetchMoreSearchResults(
+                            m_lastQuery, kSearchResultsMax);
+                }
+            });
     connect(m_pLibrary,
             &Library::onTrackAnalyzerProgress,
             this,
@@ -676,6 +690,10 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &mixxx::YouTubeService::downloadFailed,
             this,
             &YouTubeFeature::onDownloadFailed);
+    connect(&m_service,
+            &mixxx::YouTubeService::searchMoreReady,
+            this,
+            &YouTubeFeature::onSearchMoreReady);
     connect(&m_service,
             &mixxx::YouTubeService::botFlagged,
             this,
@@ -745,6 +763,71 @@ QString YouTubeFeature::cacheDir() const {
     return dir;
 }
 
+QString YouTubeFeature::thumbnailDir() const {
+    const QString dir = QDir(cacheDir()).filePath(QStringLiteral("thumbnails"));
+    QDir().mkpath(dir);
+    return dir;
+}
+
+void YouTubeFeature::fetchThumbnails(
+        const QList<mixxx::YouTubeVideoInfo>& videos) {
+    if (!m_pSamplesNam) {
+        m_pSamplesNam = new QNetworkAccessManager(this);
+    }
+    const QString tDir = thumbnailDir();
+    for (const mixxx::YouTubeVideoInfo& info : videos) {
+        if (info.id.isEmpty()) {
+            continue;
+        }
+        const QString destPath =
+                tDir + QLatin1Char('/') + info.id + QStringLiteral(".jpg");
+        if (QFileInfo::exists(destPath)) {
+            continue; // already on disk
+        }
+        if (m_thumbnailsDownloading.contains(info.id)) {
+            continue; // in flight
+        }
+        m_thumbnailsDownloading.insert(info.id);
+        // mqdefault.jpg (320×180) is a good balance of visual quality and
+        // download size. hqdefault.jpg (480×360) sometimes has black bars.
+        const QUrl url(QStringLiteral("https://i.ytimg.com/vi/") + info.id +
+                QStringLiteral("/mqdefault.jpg"));
+        QNetworkRequest req(url);
+        req.setTransferTimeout(10 * 1000); // 10 s
+        QNetworkReply* reply = m_pSamplesNam->get(req);
+        connect(reply,
+                &QNetworkReply::finished,
+                this,
+                [this, reply, destPath, videoId = info.id]() {
+                    reply->deleteLater();
+                    m_thumbnailsDownloading.remove(videoId);
+                    if (reply->error() != QNetworkReply::NoError) {
+                        return; // non-fatal: no thumbnail is fine
+                    }
+                    QFile f(destPath);
+                    if (f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                        f.write(reply->readAll());
+                        f.close();
+                        // Tell the model that cover art is now available for
+                        // this video so the delegate repaints without waiting
+                        // for the next scroll/resize event.
+                        if (m_pTrackModel) {
+                            const int rows = m_pTrackModel->rowCount();
+                            if (rows > 0) {
+                                // Emit dataChanged for all rows — the model is
+                                // small (≤100 rows) so this is cheap.
+                                emit m_pTrackModel->dataChanged(
+                                        m_pTrackModel->index(0, 0),
+                                        m_pTrackModel->index(rows - 1,
+                                                m_pTrackModel->columnCount() -
+                                                        1));
+                            }
+                        }
+                    }
+                });
+    }
+}
+
 QString YouTubeFeature::resolvedTrendingRegion() const {
     // 1. Explicit user override (e.g. set from Preferences). Wins over
     //    everything so a user can opt into a different country's feed.
@@ -768,7 +851,7 @@ void YouTubeFeature::activate() {
     // still keep the registration in bindLibraryWidget() as a fallback for
     // skin/back-compat reasons but never switch to it from here.
     Q_EMIT showTrackModel(m_pTrackModel);
-    Q_EMIT enableCoverArtDisplay(false);
+    Q_EMIT enableCoverArtDisplay(true);  // show YouTube thumbnail cover art
     // Force a fresh SELECT so the table reflects the current contents of
     // youtube_library even if the model state went stale while another
     // feature was in the foreground (e.g. results landed in the background
@@ -965,6 +1048,15 @@ void YouTubeFeature::onSearchResultsReady(
     // proper Title/Artist/Duration table, sortable, draggable, double-
     // clickable — not an HTML link list.
     replaceTrackTable(filtered);
+    // Tell the model whether the service has more results to offer.
+    // canFetchMore() / fetchMore() use this to trigger the next page when
+    // the user scrolls to the bottom.
+    if (m_pTrackModel) {
+        m_pTrackModel->setHasMore(m_service.hasMoreSearchResults());
+    }
+    // Fetch thumbnails for all results so the cover-art column shows
+    // YouTube thumbnail images instead of the generic placeholder.
+    fetchThumbnails(filtered);
     // Bring the populated track table to the foreground. Without this the
     // results only ever land in the model: if the visible pane was something
     // else when the (asynchronous) network reply arrived — e.g. the local
@@ -985,6 +1077,30 @@ void YouTubeFeature::onSearchResultsReady(
     if (autoAnalyzeResultsEnabled()) {
         autoAnalyzeCurrentResults();
     }
+}
+
+void YouTubeFeature::onSearchMoreReady(
+        const QString& query, const QList<mixxx::YouTubeVideoInfo>& results) {
+    if (query != m_lastQuery) {
+        return; // superseded by a newer search
+    }
+    if (results.isEmpty()) {
+        if (m_pTrackModel) {
+            m_pTrackModel->setHasMore(false);
+        }
+        return;
+    }
+    // Append the new batch below the existing results.
+    appendToTrackTable(results);
+    // Accumulate into m_lastResults so rebuildSidebar() shows full count.
+    m_lastResults.append(results);
+    rebuildSidebar();
+    // Update hasMore for the freshly-fetched page.
+    if (m_pTrackModel) {
+        m_pTrackModel->setHasMore(m_service.hasMoreSearchResults());
+    }
+    // Pre-fetch thumbnails for the new batch.
+    fetchThumbnails(results);
 }
 
 void YouTubeFeature::onSearchFailed(const QString& query, const QString& error) {
@@ -1745,6 +1861,60 @@ void YouTubeFeature::replaceTrackTable(
     m_pTrackModel->setSearch(QString());
     // select() re-runs the SELECT against the underlying SQL view so the
     // WTrackTableView picks up the fresh row set.
+    m_pTrackModel->select();
+}
+
+void YouTubeFeature::appendToTrackTable(
+        const QList<mixxx::YouTubeVideoInfo>& videos) {
+    if (!m_pTrackModel || !m_pTrackCache) {
+        return;
+    }
+    QSqlDatabase db = m_pTrackCollection->database();
+    ScopedTransaction transaction(db);
+
+    QSqlQuery ins(db);
+    ins.prepare(QStringLiteral(
+            "INSERT OR IGNORE INTO youtube_library "
+            "(artist, title, album, genre, location, comment, duration) "
+            "VALUES (:artist, :title, :album, :genre, :location, :comment, :duration)"));
+
+    const QString detectedGenre = inferGenreFromQuery(m_lastQuery);
+    const QDir dir(cacheDir());
+    for (const mixxx::YouTubeVideoInfo& info : videos) {
+        if (info.id.isEmpty()) {
+            continue;
+        }
+        // Resolve the location same way as replaceTrackTable().
+        QString location;
+        const QStringList existing =
+                dir.entryList({info.id + QStringLiteral(".*")},
+                        QDir::Files | QDir::NoDotAndDotDot);
+        for (const QString& f : existing) {
+            if (isYouTubeSidecarFile(f)) {
+                continue;
+            }
+            location = dir.filePath(f);
+            break;
+        }
+        if (location.isEmpty()) {
+            location = YouTubeTrackModel::kPlaceholderScheme + info.id;
+        }
+        const TrackDisplayMetadata metadata = displayMetadataForVideo(info);
+        ins.bindValue(QStringLiteral(":artist"), metadata.artist);
+        ins.bindValue(QStringLiteral(":title"), metadata.title);
+        ins.bindValue(QStringLiteral(":album"), QStringLiteral("YouTube"));
+        ins.bindValue(QStringLiteral(":genre"), detectedGenre);
+        ins.bindValue(QStringLiteral(":location"), location);
+        ins.bindValue(QStringLiteral(":comment"), info.id);
+        ins.bindValue(QStringLiteral(":duration"), info.durationSec);
+        if (!ins.exec()) {
+            kLogger.debug() << "youtube_library append INSERT skipped:"
+                            << ins.lastError().text();
+        }
+    }
+    transaction.commit();
+
+    m_pTrackCache->buildIndex();
     m_pTrackModel->select();
 }
 

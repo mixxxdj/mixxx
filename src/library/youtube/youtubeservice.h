@@ -71,6 +71,19 @@ class YouTubeService : public QObject {
     /// `cap` is the max number of results returned to the caller.
     void searchVideos(const QString& query, int cap = 25);
 
+    /// Fetch the next page of results for the most recent search() call.
+    /// Uses the InnerTube continuation token stored from the last successful
+    /// search response. Emits searchMoreReady(query, results) on success, or
+    /// does nothing when no continuation is available or bot-flagged.
+    /// The feature calls this from YouTubeTrackModel::fetchMore().
+    void fetchMoreSearchResults(const QString& emittedQuery, int cap = 25);
+
+    /// True when the last InnerTube search response included a continuation
+    /// token, i.e. there are more results the user can scroll to.
+    bool hasMoreSearchResults() const {
+        return !m_searchContinuationToken.isEmpty();
+    }
+
     /// Fetch country-specific trending music for the given ISO 3166-1 alpha-2
     /// country code (e.g. "US", "DE", "BR"). Results are surfaced via the
     /// existing searchResultsReady signal with `query` set to the sentinel
@@ -110,6 +123,11 @@ class YouTubeService : public QObject {
 
   signals:
     void searchResultsReady(const QString& query, const QList<mixxx::YouTubeVideoInfo>& results);
+    /// Emitted when an InnerTube continuation fetch returns more results.
+    /// The feature appends these to the existing track table (vs replacing
+    /// for a fresh search). The `query` is the same emittedQuery passed to
+    /// fetchMoreSearchResults().
+    void searchMoreReady(const QString& query, const QList<mixxx::YouTubeVideoInfo>& results);
     void searchFailed(const QString& query, const QString& error);
     void downloadFinished(const QString& videoId, const QString& localPath);
     void downloadFailed(const QString& videoId, const QString& error);
@@ -314,6 +332,10 @@ class YouTubeService : public QObject {
 
     QNetworkAccessManager* m_pNam;
     QString m_ytDlpPath;
+    /// Continuation token from the most recent InnerTube /search response.
+    /// Non-empty when there are more results to fetch via fetchMoreSearchResults().
+    /// Cleared at the start of every new searchVideos() call.
+    QString m_searchContinuationToken;
     /// Hardcoded fallback list of Piped API instances. Tried in order on
     /// per-request failure. The expanded list provides better resilience
     /// against community-maintained instances going offline.

@@ -534,6 +534,76 @@ QList<YouTubeVideoInfo> parseInnerTubeSearch(const QJsonObject& root, int cap) {
     return results;
 }
 
+// Extract a continuation token from an InnerTube search response, if present.
+// The token is embedded inside a continuationItemRenderer node and is needed
+// to fetch the next page of results. Returns an empty string when no
+// continuation is available (end of results).
+//
+// YouTube embeds continuation data in two places depending on whether this is
+// an initial search or a continuation response:
+//
+//   Initial:  root.contents.sectionListRenderer.continuations[0]
+//             .nextContinuationData.continuation
+//
+//   Continuation: root.onResponseReceivedCommands[0]
+//             .appendContinuationItemsAction.continuationItems[N]
+//             .continuationItemRenderer.continuationEndpoint
+//             .continuationCommand.token
+//
+// Extracting recursively is simpler and handles both shapes.
+void extractContinuationTokens(const QJsonValue& node, QStringList* out) {
+    if (out->size() >= 1) {
+        return; // one token is enough
+    }
+    if (node.isObject()) {
+        const QJsonObject obj = node.toObject();
+        // nextContinuationData.continuation (initial search shape)
+        {
+            const QJsonObject ncd =
+                    obj.value(QStringLiteral("nextContinuationData")).toObject();
+            if (!ncd.isEmpty()) {
+                const QString tok =
+                        ncd.value(QStringLiteral("continuation")).toString();
+                if (!tok.isEmpty()) {
+                    out->append(tok);
+                    return;
+                }
+            }
+        }
+        // continuationCommand.token (continuation response shape)
+        {
+            const QJsonObject cc =
+                    obj.value(QStringLiteral("continuationCommand")).toObject();
+            if (!cc.isEmpty()) {
+                const QString tok = cc.value(QStringLiteral("token")).toString();
+                if (!tok.isEmpty()) {
+                    out->append(tok);
+                    return;
+                }
+            }
+        }
+        for (const QJsonValue& v : obj) {
+            extractContinuationTokens(v, out);
+            if (out->size() >= 1) {
+                return;
+            }
+        }
+    } else if (node.isArray()) {
+        for (const QJsonValue& v : node.toArray()) {
+            extractContinuationTokens(v, out);
+            if (out->size() >= 1) {
+                return;
+            }
+        }
+    }
+}
+
+QString extractContinuationToken(const QJsonObject& root) {
+    QStringList tokens;
+    extractContinuationTokens(QJsonValue(root), &tokens);
+    return tokens.isEmpty() ? QString() : tokens.first();
+}
+
 // Build the InnerTube `context.client` object for the given client descriptor.
 // Shared by the player (download) and search request paths so both speak the
 // exact same client identity to YouTube. When `regionOverride` is non-empty it
@@ -638,6 +708,8 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
                    << "cap=" << cap
                    << "ytDlpPath=" << m_ytDlpPath;
 #endif
+    // A new search invalidates any continuation from a previous search.
+    m_searchContinuationToken.clear();
     // Primary backend: the YouTube InnerTube /search endpoint. It is hit
     // directly (no third-party Piped proxy), so it does not depend on the
     // health of community-run instances — which is why search used to return
@@ -1098,7 +1170,92 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                 }
                 kLogger.info() << "InnerTube search returned" << results.size()
                                << "results for" << requestQuery;
+                // Store continuation token for fetchMoreSearchResults().
+                m_searchContinuationToken = extractContinuationToken(root);
                 Q_EMIT searchResultsReady(emittedQuery, results);
+            });
+}
+
+void YouTubeService::fetchMoreSearchResults(
+        const QString& emittedQuery, int cap) {
+    if (m_searchContinuationToken.isEmpty()) {
+        kLogger.debug() << "fetchMoreSearchResults: no continuation token";
+        return;
+    }
+    const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
+    if (clients.isEmpty()) {
+        return;
+    }
+    const InnerTubeClient& c = clients.at(0);
+    const QString token = m_searchContinuationToken;
+
+    QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/search"));
+    if (c.apiKey[0] != '\0') {
+        QUrlQuery query;
+        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
+        reqUrl.setQuery(query);
+    }
+
+    QJsonObject context;
+    QJsonObject clientCtx = innerTubeClientContext(c);
+    if (!m_visitorData.isEmpty()) {
+        clientCtx.insert(QStringLiteral("visitorData"), m_visitorData);
+    }
+    context.insert(QStringLiteral("client"), clientCtx);
+    QJsonObject body;
+    body.insert(QStringLiteral("context"), context);
+    body.insert(QStringLiteral("continuation"), token);
+
+    QNetworkRequest req(reqUrl);
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+            QStringLiteral("application/json"));
+    req.setRawHeader("User-Agent", QByteArray(c.userAgent));
+    req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
+    req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
+    if (!m_visitorData.isEmpty()) {
+        req.setRawHeader("X-Goog-Visitor-Id", m_visitorData.toUtf8());
+    }
+    req.setTransferTimeout(kSearchTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
+    applyBrowserFingerprint(&req, c.clientNameId);
+
+    maybeRecoverFromBotFlag();
+    if (m_botFlagActive || shouldThrottleRequest()) {
+        kLogger.info() << "Throttled/bot-flagged: skipping continuation fetch";
+        return;
+    }
+    recordRequest();
+
+    kLogger.info() << "Fetching more search results for" << emittedQuery;
+    QNetworkReply* reply = m_pNam->post(
+            req, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    connect(reply,
+            &QNetworkReply::finished,
+            this,
+            [this, reply, emittedQuery, cap]() {
+                reply->deleteLater();
+                if (reply->error() != QNetworkReply::NoError) {
+                    kLogger.warning()
+                            << "InnerTube continuation request failed:"
+                            << reply->errorString();
+                    m_searchContinuationToken.clear();
+                    return;
+                }
+                const QByteArray rawBody = reply->readAll();
+                const QJsonObject root =
+                        QJsonDocument::fromJson(rawBody).object();
+                const QList<YouTubeVideoInfo> results =
+                        parseInnerTubeSearch(root, cap);
+                if (results.isEmpty()) {
+                    kLogger.debug()
+                            << "InnerTube continuation returned 0 results";
+                    m_searchContinuationToken.clear();
+                    return;
+                }
+                kLogger.info() << "InnerTube continuation returned"
+                               << results.size() << "more results";
+                m_searchContinuationToken = extractContinuationToken(root);
+                Q_EMIT searchMoreReady(emittedQuery, results);
             });
 }
 

@@ -72,6 +72,10 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// `ytplay:VIDEOID`     → download/cache/analyze the track.
     /// `ytcached:LOCALPATH` → refresh the already-downloaded row.
     void onHomeAnchorClicked(const QUrl& url);
+    /// Append additional results to the track table (used when the user
+    /// scrolls to the bottom and fetchMore() fetches the next InnerTube page).
+    void onSearchMoreReady(
+            const QString& query, const QList<mixxx::YouTubeVideoInfo>& results);
 
   private:
     /// Rebuild the sidebar tree from the current search-result and
@@ -115,6 +119,11 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// when the write loses the SQLite lock to the library scanner.
     void replaceTrackTable(
             const QList<mixxx::YouTubeVideoInfo>& videos, int attempt = 0);
+    /// Append rows for `videos` to `youtube_library` without first wiping
+    /// the table. Used when InnerTube returns a continuation page so the
+    /// user sees the new batch below the existing results instead of the
+    /// whole list being replaced.
+    void appendToTrackTable(const QList<mixxx::YouTubeVideoInfo>& videos);
     /// Append a single downloaded entry (or update its row to point at the
     /// real file path) so the "Downloaded" column reflects the new file
     /// without a full table rebuild.
@@ -123,6 +132,18 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
             const QString& title,
             const QString& uploader,
             int durationSec);
+
+    // ----- Cover art (YouTube thumbnails) -----
+
+    /// Subdirectory of cacheDir() used for per-video thumbnail images.
+    QString thumbnailDir() const;
+    /// For each video in `videos`, download `hqdefault.jpg` from YouTube's
+    /// image CDN to `thumbnailDir()/<videoId>.jpg` if not already present.
+    /// On completion, fires a dataChanged() on the model so the cover-art
+    /// delegate repaints the newly-available thumbnail.
+    void fetchThumbnails(const QList<mixxx::YouTubeVideoInfo>& videos);
+    /// Set of videoIds whose thumbnails are currently being downloaded.
+    QSet<QString> m_thumbnailsDownloading;
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     QPointer<WLibraryTextBrowser> m_pHomeView;
