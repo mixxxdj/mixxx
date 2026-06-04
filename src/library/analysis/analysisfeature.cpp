@@ -40,6 +40,11 @@ AnalyzerModeFlags getAnalyzerModeFlags(
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
         modeFlags |= AnalyzerModeFlags::WithWaveform;
     }
+    // Fingerprint analysis is opt-in — disabled by default
+    if (pConfig->getValue(
+                mixxx::library::prefs::kFingerprintAnalysisEnabledConfigKey, false)) {
+        modeFlags |= AnalyzerModeFlags::WithFingerprint;
+    }
     return static_cast<AnalyzerModeFlags>(modeFlags);
 }
 
