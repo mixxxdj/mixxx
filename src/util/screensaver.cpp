@@ -21,6 +21,7 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #include <QtGlobal>
 
 #include "util/assert.h"
+#include "util/versionstore.h"
 
 #if defined(Q_OS_MACOS)
 #  include "util/mac.h"
@@ -381,7 +382,7 @@ void ScreenSaverHelper::inhibitInternal() {
                 powerService.callObjectMethod("newWakeLock",
                         "(ILjava/lang/String;)Landroid/os/PowerManager$WakeLock;",
                         FULL_WAKE_LOCK,
-                        QJniObject::fromString("Mixxx").object<jstring>());
+                        QJniObject::fromString(VersionStore::applicationName()).object<jstring>());
         if (!ScreenSaverHelper::s_wakeLock.isValid()) {
             __android_log_print(ANDROID_LOG_WARN, "mixxx", "powerService wakeLock invalid");
             qWarning() << "ScreenSaverHelper::inhibitInternal - wakeLock invalid";

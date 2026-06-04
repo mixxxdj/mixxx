@@ -27,6 +27,7 @@ using namespace QKeychain;
 #include "recording/defs_recording.h"
 #include "util/compatibility/qatomic.h"
 #include "util/logger.h"
+#include "util/versionstore.h"
 #include "util/xml.h"
 
 namespace {
@@ -81,7 +82,7 @@ constexpr bool kDefaultNoDelayFirstReconnect = true;
 constexpr bool kDefaultOggDynamicupdate = false;
 constexpr double kDefaultReconnectFirstDelay = 0.0;
 constexpr double kDefaultReconnectPeriod = 5.0;
-const QString kDefaultStreamName = QStringLiteral("Mixxx");
+const QString kDefaultStreamName = VersionStore::applicationName();
 const QString kDefaultStreamDesc =
         QObject::tr("This stream is online for testing purposes!");
 const QString kDefaultStreamGenre = QObject::tr("Live Mix");
