@@ -1749,7 +1749,7 @@ void YouTubeService::downloadAudioStreamChunked(
         bool failed = false;
         QString error;
     };
-    auto* state = new ChunkState{kParallelDownloadChunks};
+    auto* state = new ChunkState{kParallelDownloadChunks, false, {}};
 
     const QByteArray ua = streamUserAgent.isEmpty()
             ? QByteArray("Mixxx/YouTube")
