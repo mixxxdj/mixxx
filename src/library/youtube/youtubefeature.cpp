@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QPointer>
 #include <QRegularExpression>
 #include <QSqlError>
 #include <QSqlQuery>
@@ -1845,8 +1846,11 @@ void YouTubeFeature::replaceTrackTable(
         if (locked && attempt < kMaxAttempts) {
             transaction.rollback();
             const QList<mixxx::YouTubeVideoInfo> pending = videos;
-            QTimer::singleShot(kRetryIntervalMs, this, [this, pending, attempt]() {
-                replaceTrackTable(pending, attempt + 1);
+            QPointer<YouTubeFeature> guard(this);
+            QTimer::singleShot(kRetryIntervalMs, this, [guard, pending, attempt]() {
+                if (guard) {
+                    guard->replaceTrackTable(pending, attempt + 1);
+                }
             });
             return;
         }
