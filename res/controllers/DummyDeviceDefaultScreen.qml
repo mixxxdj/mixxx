@@ -91,7 +91,7 @@ Mixxx.ControllerScreen {
                 fillMode: Image.PreserveAspectFit
                 height: 100
                 source: deckPlayer.coverArtUrl ?? "../images/templates/logo_mixxx.png"
-                visible: deckPlayer.trackLocationUrl.toString().length !== 0
+                visible: deckPlayer.trackLocationUrl?.toString().length !== 0
                 width: 100
             }
             Text {
@@ -100,7 +100,7 @@ Mixxx.ControllerScreen {
                 font.letterSpacing: -1
                 font.pixelSize: 12
                 text: qsTr("No Track Loaded")
-                visible: deckPlayer.trackLocationUrl.toString().length === 0
+                visible: deckPlayer.trackLocationUrl?.toString().length === 0
             }
         }
     }
