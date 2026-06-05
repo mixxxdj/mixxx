@@ -35,11 +35,12 @@ DlgAbout::DlgAbout()
     }
 
     QString s_devTeam =
-            tr("Mixxx %1.%2 Development Team")
-                    .arg(QString::number(
-                                 VersionStore::versionNumber().majorVersion()),
+            tr("%1 %2.%3 Development Team")
+                    .arg(VersionStore::applicationName(),
+                            QString::number(
+                                    VersionStore::versionNumber().majorVersion()),
                             QString::number(VersionStore::versionNumber()
-                                                    .minorVersion()));
+                                            .minorVersion()));
     QString s_contributions = tr("With contributions from:");
     QString s_specialThanks = tr("And special thanks to:");
     QString s_pastDevs = tr("Past Developers");

@@ -667,91 +667,69 @@ void CoreServices::initialize(QGuiApplication* pApp) {
             dir.mkpath(".");
         }
 #elif defined(Q_OS_ANDROID)
-        // if(QOperatingSystemVersion::current() <
-        // QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
-        //     qDebug() << "it is less then Android 11 - ALL FILES permission
-        //     isn't possible!";
-        // }
-        QString fd;
-        jboolean value = QJniObject::callStaticMethod<jboolean>(
+        jboolean hasAllFilesAccess = QJniObject::callStaticMethod<jboolean>(
                 "android/os/Environment", "isExternalStorageManager");
-        if (value == false) {
-            qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
-            QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION =
-                    QJniObject::getStaticObjectField(
-                            "android/provider/Settings",
-                            "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
-                            "Ljava/lang/String;");
-            QJniObject intent("android/content/Intent",
-                    "(Ljava/lang/String;)V",
-                    ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
-            QJniObject jniPath = QJniObject::fromString(
-                    QStringLiteral("package:%1").arg(ANDROID_PACKAGE_NAME));
-            QJniObject jniUri =
-                    QJniObject::callStaticObjectMethod("android/net/Uri",
-                            "parse",
-                            "(Ljava/lang/String;)Landroid/net/Uri;",
-                            jniPath.object<jstring>());
-            QJniObject jniResult = intent.callObjectMethod("setData",
-                    "(Landroid/net/Uri;)Landroid/content/Intent;",
-                    jniUri.object<jobject>());
-            QtAndroidPrivate::startActivity(intent, 0);
-        } else {
+        if (hasAllFilesAccess) {
             qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+        } else {
+            // Do NOT open the system Settings activity — the user explicitly
+            // does not want the app to "open a browser view". Instead, log a
+            // message and work with whatever storage is already accessible.
+            qInfo() << "MANAGE_EXTERNAL_STORAGE not granted; scanning "
+                       "app-internal music folder and any readable external "
+                       "storage. Grant the permission manually via Android "
+                       "Settings > Apps > Mixxx > Permissions if you want the "
+                       "full device scan.";
         }
-        // Scan the whole device instead of only the Music/ sub-folder. Users
-        // keep their tracks in many places (Download/, Music/, app-specific
-        // folders, the SD-card root, ...), so restricting the initial library
-        // to /storage/emulated/0/Music/ meant most songs already present on the
-        // device never showed up. With MANAGE_EXTERNAL_STORAGE granted
-        // (requested above) the whole volume is readable; the scanner silently
-        // skips any sub-directory it cannot read (e.g. Android/data,
-        // Android/obb). Advanced users can still narrow the library down later
-        // in Preferences > Library.
-        //
-        // Android exposes every mounted volume as a directory under /storage:
-        //   * /storage/emulated/0      -> primary shared (internal) storage
-        //   * /storage/<UUID>          -> removable SD cards / USB-OTG drives
-        // We import the primary volume plus every additional readable volume so
-        // that music on external storage is picked up too. Pseudo-entries like
-        // "self" and "emulated" are not real volumes and are skipped.
+
+        // Build the list of directories to scan. Always include the app's
+        // own internal music folder (data/data/org.mixxx.Mixxx/files/music)
+        // as a guaranteed-accessible fallback — the user confirmed they can
+        // see and place files there.
         QStringList androidRoots;
-        const QString primaryStorage = QStringLiteral("/storage/emulated/0");
-        if (QFileInfo::exists(primaryStorage)) {
-            androidRoots.append(primaryStorage);
-        }
-        const QDir storageDir(QStringLiteral("/storage"));
-        const QStringList volumes = storageDir.entryList(
-                QDir::Dirs | QDir::NoDotAndDotDot);
-        for (const QString& vol : volumes) {
-            if (vol == QStringLiteral("emulated") ||
-                    vol == QStringLiteral("self")) {
-                continue;
+
+        // 1. App-internal music folder — always accessible, no permission
+        //    needed. This is where the user can drop songs via a file manager
+        //    and where YouTube downloads are cached.
+        const QString appMusicDir =
+                QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+        if (!appMusicDir.isEmpty()) {
+            QDir appMusicQDir(appMusicDir);
+            if (!appMusicQDir.exists()) {
+                appMusicQDir.mkpath(QStringLiteral("."));
             }
-            const QString volPath = storageDir.absoluteFilePath(vol);
-            // Only add volumes we can actually enter and read; unreadable
-            // mounts (e.g. a locked or encrypted adoptable card) would just
-            // error out during the scan.
-            const QFileInfo volInfo(volPath);
-            if (volInfo.isDir() && volInfo.isReadable() &&
-                    !androidRoots.contains(volPath)) {
-                androidRoots.append(volPath);
+            androidRoots.append(appMusicDir);
+        }
+
+        // 2. If we have broad storage access, also scan external volumes.
+        if (hasAllFilesAccess) {
+            const QString primaryStorage = QStringLiteral("/storage/emulated/0");
+            if (QFileInfo::exists(primaryStorage) &&
+                    !androidRoots.contains(primaryStorage)) {
+                androidRoots.append(primaryStorage);
+            }
+            const QDir storageDir(QStringLiteral("/storage"));
+            const QStringList volumes = storageDir.entryList(
+                    QDir::Dirs | QDir::NoDotAndDotDot);
+            for (const QString& vol : volumes) {
+                if (vol == QStringLiteral("emulated") ||
+                        vol == QStringLiteral("self")) {
+                    continue;
+                }
+                const QString volPath = storageDir.absoluteFilePath(vol);
+                const QFileInfo volInfo(volPath);
+                if (volInfo.isDir() && volInfo.isReadable() &&
+                        !androidRoots.contains(volPath)) {
+                    androidRoots.append(volPath);
+                }
             }
         }
-        if (androidRoots.isEmpty()) {
-            // Fall back to the standard Music location if no shared storage
-            // volume is present (unusual, but keeps a sane default).
-            const QString musicDir = QStandardPaths::writableLocation(
-                    QStandardPaths::MusicLocation);
-            QDir musicQDir(musicDir);
-            if (!musicDir.isEmpty() &&
-                    (musicQDir.exists() ||
-                            musicQDir.mkpath(QStringLiteral(".")))) {
-                androidRoots.append(musicDir);
-            }
-        }
+
+        qInfo() << "Android library bootstrap: candidate storage roots ="
+                << androidRoots;
         for (const QString& root : androidRoots) {
-            if (m_pLibrary->requestAddDir(root)) {
+            if (m_pLibrary->requestAddDir(root, /*silent=*/true)) {
+                qInfo() << "Android library bootstrap: registered root" << root;
                 musicDirAdded = true;
             }
         }
@@ -823,6 +801,61 @@ void CoreServices::initialize(QGuiApplication* pApp) {
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             supportedFileSuffixes.join(","));
 
+#if defined(Q_OS_ANDROID)
+    // The MANAGE_EXTERNAL_STORAGE grant requested above is asynchronous: on the
+    // very first launch the storage scan below starts *before* the user has
+    // granted all-files access. Every directory under shared storage is then
+    // unreadable, so requestAddDir() fails for /storage/emulated/0 and the
+    // library shows up empty. Worse, QStandardPaths::MusicLocation (an
+    // app-specific path that *is* readable without the grant) may get
+    // registered as the sole root, so on later launches loadRootDirs() is no
+    // longer empty and the real music volume never gets scanned — leaving the
+    // library permanently empty even after the user grants the permission.
+    //
+    // So: once all-files access is granted, make sure the primary shared-storage
+    // volume itself is registered (unless an existing root already covers it),
+    // then force a rescan so the music that only became readable after the grant
+    // finally appears. addDirectory() transparently replaces any now-redundant
+    // child roots (e.g. the app-specific fallback) when a parent is added.
+    {
+        const bool hasAllFilesAccess = QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+        if (hasAllFilesAccess) {
+            const QString primaryStorage = QStringLiteral("/storage/emulated/0");
+            // Is the primary volume already watched, either directly or via an
+            // ancestor root? If so, skip the add to avoid the "already in your
+            // library" dialog; the rescan below still picks up its contents.
+            bool primaryCovered = false;
+            const QStringList rootDirs =
+                    m_pTrackCollectionManager->internalCollection()
+                            ->getRootDirStrings();
+            for (const QString& root : rootDirs) {
+                if (primaryStorage == root ||
+                        primaryStorage.startsWith(root + QLatin1Char('/'))) {
+                    primaryCovered = true;
+                    break;
+                }
+            }
+            if (!primaryCovered && QFileInfo::exists(primaryStorage) &&
+                    m_pLibrary->requestAddDir(primaryStorage, /*silent=*/true)) {
+                qInfo() << "Android library: registered primary storage after "
+                           "all-files-access grant"
+                        << primaryStorage;
+                musicDirAdded = true;
+            }
+            // Force a rescan so storage that became readable only after the
+            // permission grant is picked up. The scanner is incremental, so
+            // this stays cheap once the first successful scan has completed.
+            rescan = true;
+        } else {
+            qInfo() << "Android library: all-files-access NOT granted; "
+                       "library will use app-internal music folder. "
+                       "Grant the permission via Settings > Apps > Mixxx "
+                       "> Permissions to scan the full device.";
+        }
+    }
+#endif
+
     // Forward the scanner signal so MixxxMainWindow can display a summary popup.
     connect(m_pTrackCollectionManager.get(),
             &TrackCollectionManager::libraryScanSummary,
@@ -831,8 +864,15 @@ void CoreServices::initialize(QGuiApplication* pApp) {
             Qt::UniqueConnection);
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
+    const QStringList watchedRoots =
+            m_pTrackCollectionManager->internalCollection()->getRootDirStrings();
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
+        qInfo() << "Starting library auto-scan (rescan=" << rescan
+                << ", musicDirAdded=" << musicDirAdded
+                << ", roots=" << watchedRoots << ")";
         m_pTrackCollectionManager->startLibraryAutoScan();
+    } else {
+        qInfo() << "Skipping library auto-scan; watched roots =" << watchedRoots;
     }
 
     // This has to be done before m_pSoundManager->setupDevices()

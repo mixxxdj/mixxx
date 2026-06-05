@@ -2,9 +2,10 @@
 <component type="desktop-application">
   <id>org.mixxx.Mixxx</id>
   <launchable type="desktop-id">org.mixxx.Mixxx.desktop</launchable>
+  <icon type="stock">mixxx</icon>
   <metadata_license>CC-BY-SA-3.0</metadata_license>
   <project_license>GPL-2.0</project_license>
-  <name>Mixxx DJ Software</name>
+  <name>DJ Sugar</name>
   <summary>Everything you need to perform live DJ mixes</summary>
   <description>
     <p>

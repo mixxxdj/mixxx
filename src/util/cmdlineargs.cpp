@@ -116,6 +116,19 @@ CmdlineArgs::CmdlineArgs()
           , m_settingsPath(
                   QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
                           .append("/Library/Application Support/Mixxx"))
+#elif defined(Q_OS_ANDROID)
+          // On Android we place settings (including logs) under the app's
+          // user-visible "documents" folder:
+          //
+          //     /data/data/org.mixxx.Mixxx/files/documents/Mixxx
+          //
+          // The user confirmed they can browse this location with a file
+          // manager, so logs (mixxx.log) and configuration are accessible
+          // without needing adb or a logcat viewer.
+          ,
+          m_settingsPath(
+                  QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+                          .append("/Mixxx/"))
 #else
 
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append

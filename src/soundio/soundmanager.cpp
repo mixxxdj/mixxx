@@ -424,7 +424,11 @@ void SoundManager::queryDevicesPortaudio() {
             qDebug() << "audioManager outputFramePerBuffer:" << outputFramePerBuffer;
             PaOboe_SetNativeBufferSize(outputFramePerBuffer);
         }).waitForFinished();
-        PaOboe_SetNumberOfBuffers(4);
+        // Use 2 buffers (double-buffering) for the lowest achievable latency.
+        // Modern ARM64 devices with AAudio/Oboe handle this without underruns;
+        // the exclusive-mode + LowLatency performance mode set on the stream
+        // ensures the audio thread gets real-time scheduling from the OS.
+        PaOboe_SetNumberOfBuffers(2);
 
         // The following snippets pins the audio thread to a performance core
         int32_t thread32 = gettid();

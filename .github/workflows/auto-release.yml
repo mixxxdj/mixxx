@@ -1,0 +1,380 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+# Auto-release workflow for winnerspiros/mixxx fork (DJ Sugar).
+#
+# Triggers:
+#   - Push to main → creates/updates a rolling "latest" pre-release.
+#   - Manual workflow_dispatch → create a versioned release (e.g. v2.7.0).
+#   - Push of a version tag (vX.Y.Z) → create a versioned release.
+#
+# Produces optimised release builds for:
+#   Ubuntu 24.04 (DEB), macOS x64 (DMG), macOS arm64 (DMG),
+#   Windows x64 (MSI), Windows ARM64 (MSI), Android (APK).
+#
+# Auto-versioning strategy:
+#   • If a vX.Y.Z tag is pushed or entered manually, that tag is used.
+#   • Otherwise the version is derived from `git describe --tags --always`
+#     which produces "<last-tag>-<N>-g<sha>" (or the tag itself when clean).
+#   • A "latest" pre-release is always updated on every main-branch push so
+#     users can grab the newest nightly build without hunting for a tag.
+
+name: Auto-Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: >
+          Release version (e.g. v2.7.0). Leave empty to auto-detect from git
+          describe.
+        required: false
+        default: ""
+      prerelease:
+        description: Mark as pre-release?
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: write   # needed to create/update GitHub Releases and upload assets
+
+jobs:
+  # ── 1. Determine the version string used everywhere ──────────────────────
+  version:
+    name: Determine version
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      is_prerelease: ${{ steps.ver.outputs.is_prerelease }}
+      release_name: ${{ steps.ver.outputs.release_name }}
+      tag_name: ${{ steps.ver.outputs.tag_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need full history for git describe
+
+      - name: Compute version
+        id: ver
+        run: |
+          set -euo pipefail
+
+          # Priority 1: explicit manual input
+          if [[ -n "${{ github.event.inputs.version }}" ]]; then
+            VER="${{ github.event.inputs.version }}"
+          # Priority 2: pushed version tag
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            VER="${{ github.ref_name }}"
+          # Priority 3: git describe (nightly / rolling build)
+          else
+            VER="$(git describe --tags --always --first-parent --dirty=-modified 2>/dev/null || echo "dev-$(git rev-parse --short HEAD)")"
+          fi
+
+          # Strip a leading 'v' for display; keep it in the tag name.
+          TAG="$VER"
+          [[ "$TAG" == v* ]] || TAG="v${TAG}"
+          DISPLAY="${TAG#v}"
+
+          # A release is a pre-release when it contains '-' after the semver
+          # core (e.g. "2.7.0-alpha") OR when it is a nightly/git-describe
+          # build (contains 'g' from git-describe or 'dev-').
+          IS_PRE="false"
+          if [[ "$DISPLAY" == *"-"* ]] || [[ "$DISPLAY" == *"g"* ]]; then
+            IS_PRE="true"
+          fi
+          # Manual override wins.
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            IS_PRE="${{ github.event.inputs.prerelease }}"
+          fi
+
+          echo "version=${DISPLAY}"      >> "$GITHUB_OUTPUT"
+          echo "tag_name=${TAG}"         >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=${IS_PRE}" >> "$GITHUB_OUTPUT"
+          echo "release_name=DJ Sugar ${DISPLAY}" >> "$GITHUB_OUTPUT"
+
+          echo "Version : ${DISPLAY}"
+          echo "Tag     : ${TAG}"
+          echo "PreRelease: ${IS_PRE}"
+
+  # ── 2. Build every platform ───────────────────────────────────────────────
+  build:
+    name: Build – ${{ matrix.name }}
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ── Ubuntu ─────────────────────────────────────────────────────────
+          - name: Ubuntu 24.04
+            os: ubuntu-24.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Ubuntu 24.04 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-24.04
+
+          # ── macOS x64 ──────────────────────────────────────────────────────
+          - name: macOS 15 x64
+            os: macos-15-intel
+            cmake_args: >-
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=OFF
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+              -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+            cpack_generator: DragNDrop
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_release_buildenv.sh
+            artifacts_name: macOS Intel DMG
+            artifacts_path: build/*.dmg
+            artifacts_slug: macos-x64
+
+          # ── macOS arm64 ────────────────────────────────────────────────────
+          - name: macOS 15 arm64
+            os: macos-15
+            cmake_args: >-
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=OFF
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
+              -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+            cpack_generator: DragNDrop
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_release_buildenv.sh
+            artifacts_name: macOS ARM64 DMG
+            artifacts_path: build/*.dmg
+            artifacts_slug: macos-arm64
+
+          # ── Windows x64 ────────────────────────────────────────────────────
+          - name: Windows x64
+            os: windows-latest
+            cmake_args: >-
+              -DBULK=ON
+              -DHSS1394=ON
+              -DCOREAUDIO=OFF
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=OFF
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-windows-release
+              -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+            cpack_generator: WIX
+            buildenv_basepath: C:/buildenv
+            buildenv_script: tools/windows_buildenv.bat
+            artifacts_name: Windows x64 MSI
+            artifacts_path: build/*.msi
+            artifacts_slug: windows-x64
+
+          # ── Windows ARM64 ──────────────────────────────────────────────────
+          - name: Windows ARM64
+            os: windows-latest
+            cmake_args: >-
+              -DBULK=ON
+              -DHSS1394=ON
+              -DCOREAUDIO=OFF
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DQML=OFF
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-windows-release
+              -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
+              -DCMAKE_SYSTEM_NAME=Windows
+              -DCMAKE_SYSTEM_PROCESSOR=ARM64
+            cpack_generator: WIX
+            buildenv_basepath: C:/buildenv
+            buildenv_script: tools/windows_buildenv.bat
+            artifacts_name: Windows ARM64 MSI
+            artifacts_path: build/*.msi
+            artifacts_slug: windows-arm64
+
+          # ── Android ────────────────────────────────────────────────────────
+          - name: Android APK
+            os: ubuntu-24.04
+            cmake_args: >-
+              -DANDROID=ON
+              -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a
+              -DANDROID_ABI=arm64-v8a
+              -DANDROID_PLATFORM=android-29
+              -DVCPKG_TARGET_TRIPLET=arm64-android
+              -DCMAKE_BUILD_TYPE=Release
+              -DANDROID_STL=c++_shared
+              -DCMAKE_CXX_FLAGS="-Oz -flto=thin -ffunction-sections -fdata-sections -fvisibility=hidden"
+              -DCMAKE_C_FLAGS="-Oz -flto=thin -ffunction-sections -fdata-sections -fvisibility=hidden"
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--gc-sections -Wl,--strip-all"
+              -DCMAKE_SHARED_LINKER_FLAGS="-Wl,--gc-sections"
+            cpack_generator: ""
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/android_buildenv.sh
+            artifacts_name: Android APK
+            artifacts_path: build/android-build/build/outputs/apk/release/*.apk
+            artifacts_slug: android
+
+    runs-on: ${{ matrix.os }}
+    env:
+      # Force all JavaScript actions to run on Node 24 (avoids Node 20 deprecation)
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+      MIXXX_VERSION: ${{ needs.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── Build environment (Linux / macOS / Android) ───────────────────────
+      - name: Set up build environment (non-Windows)
+        if: runner.os != 'Windows'
+        run: |
+          chmod +x "${{ matrix.buildenv_script }}"
+          "${{ matrix.buildenv_script }}" setup
+
+      # ── Build environment (Windows) ───────────────────────────────────────
+      - name: Set up build environment (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "${{ matrix.buildenv_script }}" setup
+
+      # ── Android: free disk space before large NDK install ─────────────────
+      - name: "[android] Free up disk space"
+        if: matrix.artifacts_slug == 'android'
+        run: |
+          sudo rm -rf /host/usr/local/lib/android || true
+          df -h
+
+      # ── Android: signing key setup ────────────────────────────────────────
+      - name: "[android] Setup signing key"
+        if: matrix.artifacts_slug == 'android'
+        env:
+          ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+          ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
+        run: |
+          if [ -z "${ANDROID_SIGNING_KEYSTORE_BASE64}" ]; then
+            keytool -genkey -v \
+              -keystore "${{ github.workspace }}/mixxx.keystore" \
+              -alias mixxx \
+              -keyalg RSA -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Mixxx, O=Mixxx, C=US" \
+              -keypass mixxxandroid \
+              -storepass mixxxandroid
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx"                                  >> "$GITHUB_ENV"
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=mixxxandroid"                        >> "$GITHUB_ENV"
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=mixxxandroid"                      >> "$GITHUB_ENV"
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore"  >> "$GITHUB_ENV"
+          else
+            echo "${ANDROID_SIGNING_KEYSTORE_BASE64}" | base64 -d > "${{ github.workspace }}/mixxx.keystore"
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx"                                        >> "$GITHUB_ENV"
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=${ANDROID_SIGNING_PASSWORD}"               >> "$GITHUB_ENV"
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=${ANDROID_SIGNING_PASSWORD}"             >> "$GITHUB_ENV"
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore"        >> "$GITHUB_ENV"
+          fi
+
+      # ── Configure ─────────────────────────────────────────────────────────
+      - name: Configure CMake
+        run: >
+          cmake -B build
+          -DCMAKE_PREFIX_PATH="${{ matrix.buildenv_basepath }}"
+          -DMIXXX_VERSION_OVERRIDE="${{ env.MIXXX_VERSION }}"
+          ${{ matrix.cmake_args }}
+
+      # ── Build ─────────────────────────────────────────────────────────────
+      - name: Build
+        run: cmake --build build --config Release --parallel $(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 2)
+
+      # ── Package ───────────────────────────────────────────────────────────
+      - name: Package
+        if: matrix.cpack_generator != ''
+        working-directory: build
+        run: cpack -G "${{ matrix.cpack_generator }}"
+
+      # ── Upload artifact ───────────────────────────────────────────────────
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifacts_name }}
+          path: ${{ matrix.artifacts_path }}
+          if-no-files-found: warn
+          retention-days: 7
+
+  # ── 3. Publish GitHub Release ─────────────────────────────────────────────
+  release:
+    name: Publish GitHub Release
+    needs:
+      - version
+      - build
+    runs-on: ubuntu-24.04
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    # Run even if some builds fail so we still get a release with partial assets.
+    if: always() && needs.version.result == 'success'
+    steps:
+      - uses: actions/checkout@v4
+
+      # Download every artifact produced above.
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      # Flatten — each artifact is in its own sub-directory.
+      - name: Flatten artifact directories
+        run: |
+          mkdir -p flat-assets
+          find release-assets -type f -exec mv {} flat-assets/ \;
+          ls -lh flat-assets/
+
+      # On main-branch pushes we keep a single rolling "latest" pre-release.
+      # On tags / manual runs we create a versioned release.
+      - name: Delete existing "latest" release (rolling update)
+        if: github.ref_name == 'main' && github.ref_type == 'branch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest --yes --repo "${{ github.repository }}" 2>/dev/null || true
+          git push --delete origin latest 2>/dev/null || true
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.version.outputs.tag_name }}
+          name: ${{ needs.version.outputs.release_name }}
+          prerelease: ${{ needs.version.outputs.is_prerelease }}
+          draft: false
+          generate_release_notes: true
+          files: flat-assets/**
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,11 +3,13 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <QTimer>
 #include <QUrl>
 #include <QVariant>
 
 #include "library/baseexternaltrackmodel.h"
 #include "library/basetrackcache.h"
+#include "library/coverart.h"
 #include "library/trackcollectionmanager.h"
 
 namespace mixxx {
@@ -58,12 +60,52 @@ class YouTubeTrackModel : public BaseExternalTrackModel {
     /// per-view search box.
     void search(const QString& searchText) override;
 
+    /// Override of BaseSqlTableModel::getCoverInfo — serves the YouTube
+    /// thumbnail (hqdefault.jpg) for each row instead of looking in the
+    /// `youtube_library` table (which has no coverart columns). Returns a
+    /// FILE-type CoverInfo pointing at `<thumbnailDir>/<videoId>.jpg` when
+    /// the thumbnail is present on disk, or an empty CoverInfo otherwise.
+    CoverInfo getCoverInfo(const QModelIndex& index) const override;
+
+    /// Set the directory where thumbnail images are stored. Must be called
+    /// before the view renders for cover art to appear.
+    void setThumbnailDir(const QString& dir);
+
+    /// Notify the model that more results are available (or not) for the
+    /// current search. Drives canFetchMore() / fetchMore().
+    void setHasMore(bool hasMore);
+
+    /// canFetchMore() / fetchMore() — when the user scrolls to the bottom
+    /// of the track table, Qt calls fetchMore() if canFetchMore() returns
+    /// true. We emit fetchMoreRequested() which the feature connects to
+    /// YouTubeService::fetchMoreSearchResults().
+    bool canFetchMore(const QModelIndex& parent) const override;
+    void fetchMore(const QModelIndex& parent) override;
+
   signals:
     /// Emitted from `search()` to ask the feature to dispatch a fresh
     /// `YouTubeService::searchVideos(query)`. The feature owns the
     /// service and the network/auth state so we keep that in one place.
     void searchRequested(const QString& query);
 
+    /// Emitted from fetchMore() when the view has scrolled to the end of
+    /// the current result set. The feature connects this to
+    /// YouTubeService::fetchMoreSearchResults() to load the next page.
+    void fetchMoreRequested();
+
   protected:
     QString resolveLocation(const QString& nativeLocation) const override;
+
+  private:
+    /// Directory containing per-video thumbnail images. Set by the feature.
+    QString m_thumbnailDir;
+    /// True when the service has reported a continuation token for the
+    /// current search (i.e. more results are available via fetchMore).
+    bool m_hasMore = false;
+    /// Debounce timer for the per-view search box. Keystroke search events
+    /// are delayed 400 ms so a full word is transmitted rather than one
+    /// YouTube request per character typed.
+    QTimer* m_searchDebounceTimer = nullptr;
+    /// Most recently typed (but not yet dispatched) search text.
+    QString m_pendingSearch;
 };

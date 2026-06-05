@@ -6,6 +6,10 @@
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
 
+#if defined(Q_OS_ANDROID)
+#include <QJniObject>
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("DirectoryDAO");
@@ -13,11 +17,48 @@ const mixxx::Logger kLogger("DirectoryDAO");
 const QString kTable = QStringLiteral("directories");
 const QString kLocationColumn = QStringLiteral("directory");
 
+// Returns whether the directory can actually be read. On Android 11+ (API 30+)
+// QFileInfo::isReadable() (a POSIX access() call under the hood) returns false
+// for shared-storage paths such as /storage/emulated/0 even when the app holds
+// MANAGE_EXTERNAL_STORAGE ("all files access") and can read them just fine
+// through the FUSE layer. Relying on QFileInfo alone therefore rejected the
+// primary storage volume and left the library permanently empty. Fall back to
+// Java's java.io.File.canRead(), which reflects the real access state.
+bool isDirectoryReadable(const mixxx::FileInfo& dir) {
+    if (dir.isReadable()) {
+        return true;
+    }
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] isDirectoryReadable:"
+                   << "QFileInfo::isReadable() returned false for"
+                   << dir.location()
+                   << "— trying Java File.canRead() fallback";
+    const QJniObject jPath = QJniObject::fromString(dir.location());
+    QJniObject jFile("java/io/File",
+            "(Ljava/lang/String;)V",
+            jPath.object<jstring>());
+    if (jFile.isValid() && jFile.callMethod<jboolean>("canRead")) {
+        kLogger.info() << "[Android] isDirectoryReadable:"
+                       << "Java File.canRead() returned true for"
+                       << dir.location();
+        return true;
+    }
+    kLogger.warning() << "[Android] isDirectoryReadable:"
+                      << "Java File.canRead() also returned false for"
+                      << dir.location();
+#endif
+    return false;
+}
+
 } // anonymous namespace
 
 QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
         bool skipInvalidOrMissing) const {
     DEBUG_ASSERT(m_database.isOpen());
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] loadAllDirectories:"
+                   << "skipInvalidOrMissing=" << skipInvalidOrMissing;
+#endif
     const auto statement =
             QStringLiteral("SELECT %1 FROM %2")
                     .arg(
@@ -46,6 +87,10 @@ QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
         }
         allDirs.append(std::move(fileInfo));
     }
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] loadAllDirectories: found"
+                   << allDirs.size() << "directories";
+#endif
     return allDirs;
 }
 
@@ -76,6 +121,11 @@ QStringList DirectoryDAO::getRootDirStrings() const {
 DirectoryDAO::AddResult DirectoryDAO::addDirectory(
         const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT(m_database.isOpen());
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] addDirectory: path=" << newDir.location()
+                   << "exists=" << newDir.exists()
+                   << "isDir=" << newDir.isDir();
+#endif
     if (!newDir.exists() || !newDir.isDir()) {
         kLogger.warning()
                 << "Failed to add"
@@ -83,13 +133,17 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
                 << ": Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
     }
-    if (!newDir.isReadable()) {
+    if (!isDirectoryReadable(newDir)) {
         kLogger.warning()
-                << "Aborting to to add"
+                << "Aborting attempt to add"
                 << newDir.location()
                 << ": Directory can not be read";
         return AddResult::UnreadableDirectory;
     }
+#if defined(Q_OS_ANDROID)
+    kLogger.info() << "[Android] addDirectory: directory readable, proceeding"
+                   << newDir.location();
+#endif
     const auto newCanonicalLocation = newDir.canonicalLocation();
     DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
     QList<mixxx::FileInfo> obsoleteChildDirs;
@@ -189,7 +243,7 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
                 << "does not exist or is inaccessible";
         return {RelocateResult::InvalidOrMissingDirectory, {}};
     }
-    if (!newFileInfo.isReadable()) {
+    if (!isDirectoryReadable(newFileInfo)) {
         kLogger.warning()
                 << "Aborting to relocate"
                 << oldDirectory

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="32"
+   height="32"
+   id="ic_library_youtube">
+  <!-- YouTube-style play button icon for the Mixxx library sidebar.
+       Rounded rectangle with a centered triangular play arrow.
+       Colors match the Mixxx orange icon family. -->
+  <defs>
+    <linearGradient id="ytGrad" x1="16" y1="4" x2="16" y2="28"
+        gradientUnits="userSpaceOnUse">
+      <stop offset="0" style="stop-color:#ff6600;stop-opacity:1;" />
+      <stop offset="1" style="stop-color:#de5800;stop-opacity:1;" />
+    </linearGradient>
+  </defs>
+  <!-- Rounded rectangle body -->
+  <rect x="3" y="7" width="26" height="18" rx="5" ry="5"
+        style="fill:url(#ytGrad);fill-opacity:1;stroke:none;" />
+  <!-- Play triangle (white) -->
+  <polygon points="13,11 13,21 22,16"
+           style="fill:#ffffff;fill-opacity:1;stroke:none;" />
+</svg>

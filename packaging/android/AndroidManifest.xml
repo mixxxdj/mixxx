@@ -21,6 +21,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"  />
     <uses-permission android:name="android.permission.USB_PERMISSION"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
@@ -47,7 +49,8 @@
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
             android:resizeableActivity="true"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -94,4 +97,13 @@
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="true" />
+    <!-- Declare that we benefit from low-latency audio hardware. This is not
+         required (app still works without it) but lets the system/Play Store
+         know we're optimized for pro-audio devices. -->
+    <uses-feature
+        android:name="android.hardware.audio.low_latency"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.audio.pro"
+        android:required="false" />
 </manifest>

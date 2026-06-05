@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QCompleter>
 #include <QFont>
+#include <QGuiApplication>
+#include <QInputMethod>
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QShortcut>
@@ -453,6 +455,15 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     QComboBox::focusInEvent(event);
     updateCompleter();
     updateClearAndDropdownButton(currentText());
+#ifdef Q_OS_ANDROID
+    // On Android the virtual keyboard does not appear automatically when a
+    // QComboBox (or its embedded QLineEdit) receives focus — Qt doesn't send
+    // the show-input-panel request for us. Explicitly requesting it here
+    // ensures the soft keyboard pops up whenever the search bar is tapped.
+    if (QGuiApplication::inputMethod()) {
+        QGuiApplication::inputMethod()->show();
+    }
+#endif
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {

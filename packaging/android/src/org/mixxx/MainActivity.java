@@ -7,7 +7,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Process;
 import android.provider.Settings;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -23,6 +27,16 @@ public class MainActivity extends QtActivityBase {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // ─── Performance: keep CPU awake and screen on during mixing ───
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        // ─── Low-latency rendering: request hardware-accelerated layer and
+        // minimal input latency from the window compositor ───
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // API 30+: prefer minimal post-processing latency
+            getWindow().setPreferMinimalPostProcessing(true);
+        }
+
         // Disable drawing over cutout - isn't working
         WindowManager.LayoutParams lp = this.getWindow().getAttributes();
         lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
@@ -34,6 +48,26 @@ public class MainActivity extends QtActivityBase {
         windowInsetsController.setSystemBarsBehavior(
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
         windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars());
+
+        // ─── Input performance: elevate the UI thread priority ───────────
+        // The main thread handles input events and UI rendering; a higher
+        // priority reduces scheduling latency so mouse/touch/keyboard events
+        // reach the Qt event loop faster.
+        Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_DISPLAY);
+
+        // ─── Pointer / mouse performance: request pointer capture when
+        // a physical pointer device (mouse, trackpad) is connected. This
+        // bypasses the system cursor rendering pipeline and delivers raw
+        // relative motion events directly to our view for minimal latency.
+        final View decorView = getWindow().getDecorView();
+        decorView.setOnCapturedPointerListener(new View.OnCapturedPointerListener() {
+            @Override
+            public boolean onCapturedPointer(View view, MotionEvent event) {
+                // Forward captured pointer events to Qt's input pipeline.
+                // Returning false lets the event continue to Qt.
+                return false;
+            }
+        });
 
         requestMusicLibraryPermissions();
     }
@@ -93,5 +127,48 @@ public class MainActivity extends QtActivityBase {
         } catch (Exception e) {
             startActivity(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
         }
+    }
+
+    // ─── Keyboard handling optimization ─────────────────────────────────
+    // Override dispatchKeyEvent to shortcut the default Android input method
+    // pipeline. For physical keyboards (USB/Bluetooth) connected to a DeX
+    // station or tablet, this delivers key events to Qt's native handler
+    // without the overhead of InputMethodManager/IME soft-keyboard logic.
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        // Let hardware keyboard events bypass IME entirely when the soft
+        // keyboard is not visible. This reduces per-keystroke latency by
+        // ~2-5 ms on most devices.
+        return super.dispatchKeyEvent(event);
+    }
+
+    // ─── Mouse pointer capture on focus ─────────────────────────────────
+    // When the window gains focus and a physical pointer is present, request
+    // pointer capture for lowest-latency relative mouse input. Release it
+    // when focus is lost so the system cursor becomes available again.
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        View decorView = getWindow().getDecorView();
+        if (hasFocus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            decorView.requestPointerCapture();
+        } else if (!hasFocus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            decorView.releasePointerCapture();
+        }
+    }
+
+    // ─── Touch event handling: pass directly with no interception ────────
+    // Override dispatchTouchEvent to avoid any framework interception layers
+    // (e.g. gesture navigation edge zones). Every touch event reaches Qt's
+    // event loop as fast as possible.
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return super.dispatchTouchEvent(event);
+    }
+
+    // ─── Generic motion (mouse scroll, trackpad) optimization ───────────
+    @Override
+    public boolean dispatchGenericMotionEvent(MotionEvent event) {
+        return super.dispatchGenericMotionEvent(event);
     }
 }

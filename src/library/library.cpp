@@ -1,6 +1,7 @@
 #include "library/library.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QDir>
 #include <QMessageBox>
 #include <QUrl>
@@ -693,7 +694,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-bool Library::requestAddDir(const QString& dir) {
+bool Library::requestAddDir(const QString& dir, bool silent) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -730,6 +731,16 @@ bool Library::requestAddDir(const QString& dir) {
         return false;
     }
     if (!error.isEmpty()) {
+        if (silent) {
+            // Automatic add (e.g. Android startup storage scan): never block
+            // startup with a modal dialog the user did not trigger. The most
+            // common case on Android is UnreadableDirectory before the
+            // all-files-access grant has propagated; CoreServices retries and
+            // forces a rescan once the permission is granted.
+            qWarning() << "requestAddDir: could not add"
+                       << directory.absolutePath() << "-" << error;
+            return false;
+        }
         QMessageBox::information(nullptr,
                 tr("Can't add Directory to Library"),
                 tr("Could not add <b>%1</b> to your library.\n\n%2")

@@ -76,7 +76,11 @@ class KnobEventHandler {
                 m_prevPos = m_startPos;
                 // Somehow using Qt::BlankCursor does not work on Windows
                 // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
+                // On Android/DeX the blank cursor hides the physical mouse
+                // pointer permanently, so we skip it there.
+#ifndef Q_OS_ANDROID
                 pWidget->setCursor(m_blankCursor);
+#endif
                 break;
             default:
                 break;
@@ -94,7 +98,11 @@ class KnobEventHandler {
         switch (e->button()) {
             case Qt::LeftButton:
             case Qt::MiddleButton:
+                // On Android/DeX skip the cursor warp — QCursor::setPos is a
+                // no-op on Android and is not needed with touch synthesis.
+#ifndef Q_OS_ANDROID
                 QCursor::setPos(m_startPos);
+#endif
                 pWidget->unsetCursor();
                 value = valueFromMouseEvent(pWidget, e);
                 pWidget->setControlParameterUp(value);
@@ -111,7 +119,10 @@ class KnobEventHandler {
     void wheelEvent(T* pWidget, QWheelEvent* e) {
         // Hide/blank the cursor so the parameter value below the knob is not obscured.
         // Restore the cursor when the timer runs out, or when the cursor leaves the widget.
+        // On Android/DeX the blank cursor hides the physical mouse permanently, skip it.
+#ifndef Q_OS_ANDROID
         pWidget->setCursor(m_blankCursor);
+#endif
         // For legacy (MIDI) reasons this is tuned to 127.
         double wheelDirection = e->angleDelta().y() / (120.0 * 127.0);
         double newValue = pWidget->getControlParameter() + wheelDirection;

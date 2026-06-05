@@ -130,7 +130,12 @@ class Library : public QObject {
 
     static const QString kAutoDJViewName;
 
-    bool requestAddDir(const QString& directory);
+    /// Adds @p directory to the library and returns whether it succeeded.
+    /// When @p silent is true (used for automatic, non-user-initiated adds
+    /// such as the Android startup storage scan) failures are logged instead
+    /// of shown in a modal QMessageBox, so startup is never blocked by a
+    /// dialog the user did not trigger.
+    bool requestAddDir(const QString& directory, bool silent = false);
     bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
 
