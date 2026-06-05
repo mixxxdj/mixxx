@@ -1,7 +1,5 @@
 #include "library/scanner/libraryscanner.h"
 
-#include <QStandardPaths>
-
 #include "library/coverartutils.h"
 #include "library/library_decl.h"
 #include "library/queryutil.h"

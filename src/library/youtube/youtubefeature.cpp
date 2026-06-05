@@ -2197,8 +2197,8 @@ void YouTubeFeature::slotCleanCache() {
             kLogger.info() << "Cache clean: removed" << videoId;
             // Remove sidecar if present (canonical name: VIDEOID.sponsorblock.json).
             QFile::remove(QDir(QFileInfo(location).absolutePath())
-                                  .filePath(videoId +
-                                          QStringLiteral(".sponsorblock.json")));
+                            .filePath(videoId +
+                                    QStringLiteral(".sponsorblock.json")));
             m_downloadedTracks.remove(videoId);
             // Purge from main library DB.
             if (pTcm && pInternal) {
