@@ -86,7 +86,10 @@ constexpr int kRateLimitBurst = 8;            // max 8 requests per window
 constexpr int kMinRequestGapMs = 300;
 // Jitter range: random delay added to minimum gap to look more human.
 // Each request gets a random delay in [kMinRequestGapMs, kMaxJitterMs].
-constexpr int kMaxJitterMs = 1500;
+// Capped at 800 ms (was 1500 ms) so normal user interactions — quick search
+// then scroll — are not unnecessarily delayed.  The bot-detection benefit of
+// larger jitter values is marginal for normal single-user usage patterns.
+constexpr int kMaxJitterMs = 800;
 // Desktop yt-dlp self-update timeout — generous because it downloads a ~40 MB
 // binary from GitHub Releases.
 constexpr int kYtDlpUpdateTimeoutMs = 120 * 1000; // 2 min
@@ -1230,8 +1233,26 @@ void YouTubeService::fetchMoreSearchResults(
     applyBrowserFingerprint(&req, c.clientNameId);
 
     maybeRecoverFromBotFlag();
-    if (m_botFlagActive || shouldThrottleRequest()) {
-        kLogger.info() << "Throttled/bot-flagged: skipping continuation fetch";
+    if (m_botFlagActive) {
+        kLogger.info() << "Bot-flagged: skipping continuation fetch";
+        return;
+    }
+    if (shouldThrottleRequest()) {
+        // Defer rather than drop: preserve the continuation token and retry
+        // after the jitter window. This prevents the scroll-to-load-more from
+        // silently breaking when the user scrolls quickly after the initial
+        // results arrive (the model's m_hasMore was already set to false by
+        // fetchMore() before emitting fetchMoreRequested, so without the retry
+        // the user would never see more results for this search).
+        const int delay = jitterDelayMs();
+        kLogger.info() << "Throttled: retrying continuation fetch in"
+                       << delay << "ms";
+        QPointer<YouTubeService> guard(this);
+        QTimer::singleShot(delay, this, [guard, emittedQuery, cap]() {
+            if (guard) {
+                guard->fetchMoreSearchResults(emittedQuery, cap);
+            }
+        });
         return;
     }
     recordRequest();

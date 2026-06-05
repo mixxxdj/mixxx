@@ -706,6 +706,11 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &YouTubeFeature::searchAndActivate);
     // Infinite scroll: when the user scrolls to the bottom and the model
     // emits fetchMoreRequested(), ask the service for the next page.
+    // After the call, restore m_hasMore based on whether the service still
+    // holds a continuation token: if the service was throttled it schedules
+    // a timer retry and the token is NOT consumed, so hasMoreSearchResults()
+    // remains true — allowing canFetchMore() to return true again so the
+    // auto-retry appends results without requiring another user scroll.
     connect(m_pTrackModel,
             &YouTubeTrackModel::fetchMoreRequested,
             this,
@@ -713,6 +718,8 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
                 if (!m_lastQuery.isEmpty()) {
                     m_service.fetchMoreSearchResults(
                             m_lastQuery, kSearchResultsMax);
+                    m_pTrackModel->setHasMore(
+                            m_service.hasMoreSearchResults());
                 }
             });
     connect(m_pLibrary,
@@ -1069,20 +1076,19 @@ void YouTubeFeature::onSearchResultsReady(
         return; // a newer search has superseded this one
     }
     m_trendingFetchInFlight = false;
-    // For the trending/home feed, drop hour-long "megamix"/"best of"
-    // compilations so the DJ sees individual songs, not giant mixes. A genuine
-    // user search (non-trending sentinel) is shown verbatim so long sets stay
-    // findable. Unknown-duration items (0) are kept to avoid hiding real songs.
-    QList<mixxx::YouTubeVideoInfo> filtered = results;
-    if (query.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {
-        filtered.clear();
-        filtered.reserve(results.size());
-        for (const mixxx::YouTubeVideoInfo& info : results) {
-            if (info.durationSec > kTrendingMaxDurationSec) {
-                continue;
-            }
-            filtered.append(info);
+    // Drop hour-long "megamix"/"best of" compilations from both the trending
+    // home feed AND explicit user searches — a DJ wants individual songs, not
+    // multi-hour continuous mixes. The same kTrendingMaxDurationSec threshold
+    // (15 min) applies in both cases. Items with unknown duration (0) are kept
+    // to avoid hiding genuine songs whose length failed to parse. Live streams
+    // are already excluded upstream by collectInnerTubeVideos().
+    QList<mixxx::YouTubeVideoInfo> filtered;
+    filtered.reserve(results.size());
+    for (const mixxx::YouTubeVideoInfo& info : results) {
+        if (info.durationSec > kTrendingMaxDurationSec) {
+            continue;
         }
+        filtered.append(info);
     }
     m_lastResults = filtered;
     m_lastSearchError.clear();
