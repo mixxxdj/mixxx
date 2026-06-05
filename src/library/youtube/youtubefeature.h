@@ -184,6 +184,11 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// repeated activations don't fire duplicate trending requests. Cleared
     /// when results arrive, the fetch fails, or a user search supersedes it.
     bool m_trendingFetchInFlight = false;
+    /// True when the most recent searchAndActivate() call came from the
+    /// sidebar Samples section (kSampleQueryPrefix). When set, the first
+    /// result from onSearchResultsReady() is auto-downloaded and loaded into
+    /// the next available sampler slot rather than just displayed in the table.
+    bool m_samplerTargetSearch = false;
 
     // ----- Samples section (DJ Tools + Greek Memes from myinstants.com) -----
 
@@ -210,4 +215,7 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     void downloadMyInstant(const QString& mp3Url, const QString& displayName);
     /// Subdirectory of cacheDir() used for myinstants MP3 files.
     QString myInstantsCacheDir() const;
+    /// Find the next empty sampler slot and emit loadTrackToPlayer() for it.
+    /// Falls back to loadTrack() (next available deck) when all 32 slots are full.
+    void loadTrackToNextSampler(const TrackPointer& pTrack);
 };

@@ -18,6 +18,7 @@
 #include <QUrl>
 
 #include "analyzer/analyzerscheduledtrack.h"
+#include "control/controlproxy.h"
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
@@ -979,9 +980,11 @@ void YouTubeFeature::activateChild(const QModelIndex& index) {
                 QString::number(QDate::currentDate().year());
         searchAndActivate(query);
     } else if (payload.startsWith(kSampleQueryPrefix)) {
-        // User clicked a DJ sample: fire a YouTube search so results land in
-        // the main track table. The user can then download whichever version
-        // they like or drag it straight to a sampler pad.
+        // User clicked a DJ sample from the sidebar Samples section. Fire a
+        // YouTube search so results appear in the main track table AND set the
+        // sampler-target flag so onSearchResultsReady() auto-downloads the
+        // first result and loads it into the next available sampler slot.
+        m_samplerTargetSearch = true;
         searchAndActivate(payload.mid(kSampleQueryPrefix.size()));
     } else if (payload == kMyInstantFetch) {
         // First-time expand of Greek Memes: start the live fetch.
@@ -1016,6 +1019,12 @@ void YouTubeFeature::searchAndActivate(const QString& query) {
     m_lastResults.clear();
     m_lastSearchError.clear();
     m_trendingFetchInFlight = false;
+    // If searchAndActivate() is called from anything other than a sidebar
+    // Samples click (genre click, search box, trending), clear the sampler
+    // intent so a coincidental search doesn't accidentally steal a sampler
+    // slot. The flag is set explicitly by activateChild(kSampleQueryPrefix).
+    // We do NOT clear it here because activateChild sets it BEFORE calling
+    // searchAndActivate(), so clearing it here would always wipe it.
     rebuildSidebar();
     // Clear the SQL model synchronously so the user does NOT see stale
     // results filtered by the new query. The old BaseExternalTrackModel::search()
@@ -1051,8 +1060,11 @@ void YouTubeFeature::onSearchResultsReady(
     }
     m_lastResults = filtered;
     m_lastSearchError.clear();
-    rebuildSidebar();
-    rebuildHomeHtml();
+    // Defer the sidebar rebuild — rebuildHomeHtml() is expensive (builds
+    // 200+ genre links + full result list HTML) and the track table is the
+    // primary view now, so there's no reason to block the UI thread here.
+    // scheduleRebuild() coalesces rapid calls within 120 ms.
+    scheduleRebuild();
     // Real fix: replace the rows in youtube_library so the user sees a
     // proper Title/Artist/Duration table, sortable, draggable, double-
     // clickable — not an HTML link list.
@@ -1086,6 +1098,31 @@ void YouTubeFeature::onSearchResultsReady(
     if (autoAnalyzeResultsEnabled()) {
         autoAnalyzeCurrentResults();
     }
+    // Auto-download the first result to the next available sampler when this
+    // search was triggered from the sidebar Samples section (DJ Tools).
+    if (m_samplerTargetSearch && !filtered.isEmpty()) {
+        m_samplerTargetSearch = false;
+        const QString firstId = filtered.first().id;
+        if (!firstId.isEmpty()) {
+            // Find the next empty sampler group — use ControlProxy for a
+            // lightweight one-shot read, no persistent connection needed.
+            QString samplerGroup;
+            for (int i = 1; i <= 32; ++i) {
+                const QString g = QStringLiteral("[Sampler%1]").arg(i);
+                ControlProxy cp(ConfigKey(g, QStringLiteral("track_loaded")));
+                if (cp.get() == 0.0) {
+                    samplerGroup = g;
+                    break;
+                }
+            }
+            if (!samplerGroup.isEmpty()) {
+                // Register the download intent so onDownloadFinished can load
+                // into this specific sampler slot.
+                m_pendingPlayerLoads[firstId].append({samplerGroup, false});
+                requestDownloadFile(firstId);
+            }
+        }
+    }
 }
 
 void YouTubeFeature::onSearchMoreReady(
@@ -1103,7 +1140,9 @@ void YouTubeFeature::onSearchMoreReady(
     appendToTrackTable(results);
     // Accumulate into m_lastResults so rebuildSidebar() shows full count.
     m_lastResults.append(results);
-    rebuildSidebar();
+    // Defer the sidebar / HTML rebuild — scheduleRebuild() coalesces rapid
+    // continuation-page arrivals into a single UI update 120 ms after the last.
+    scheduleRebuild();
     // Update hasMore for the freshly-fetched page.
     if (m_pTrackModel) {
         m_pTrackModel->setHasMore(m_service.hasMoreSearchResults());
@@ -1823,6 +1862,26 @@ void YouTubeFeature::replaceTrackTable(
 
     const QString detectedGenre = inferGenreFromQuery(m_lastQuery);
     const QDir dir(cacheDir());
+    // Pre-scan the cache directory ONCE so we don't pay one QDir::entryList()
+    // call per video (which on Android emulated storage was 10–50 ms × 50
+    // videos = up to 2.5 s of UI-thread stall — the "clicking YouTube freezes
+    // everything" symptom).
+    QHash<QString, QString> cachedFiles; // videoId → local path
+    const QStringList allFiles =
+            dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    for (const QString& f : allFiles) {
+        if (isYouTubeSidecarFile(f)) {
+            continue;
+        }
+        const int dotIdx = f.lastIndexOf(QLatin1Char('.'));
+        if (dotIdx > 0) {
+            const QString id = f.left(dotIdx);
+            if (!cachedFiles.contains(id)) {
+                cachedFiles.insert(id, dir.filePath(f));
+            }
+        }
+    }
+
     for (const mixxx::YouTubeVideoInfo& info : videos) {
         if (info.id.isEmpty()) {
             continue;
@@ -1832,20 +1891,8 @@ void YouTubeFeature::replaceTrackTable(
         // immediately via BaseExternalTrackModel::getTrack(). Otherwise
         // store the placeholder URI; YouTubeTrackModel::getTrack()
         // intercepts placeholders to kick off the download.
-        QString location;
-        const QStringList existing =
-                dir.entryList({info.id + QStringLiteral(".*")},
-                        QDir::Files | QDir::NoDotAndDotDot);
-        for (const QString& f : existing) {
-            if (isYouTubeSidecarFile(f)) {
-                continue;
-            }
-            location = dir.filePath(f);
-            break;
-        }
-        if (location.isEmpty()) {
-            location = YouTubeTrackModel::kPlaceholderScheme + info.id;
-        }
+        const QString location = cachedFiles.value(
+                info.id, YouTubeTrackModel::kPlaceholderScheme + info.id);
         const TrackDisplayMetadata metadata = displayMetadataForVideo(info);
         ins.bindValue(QStringLiteral(":artist"), metadata.artist);
         ins.bindValue(QStringLiteral(":title"), metadata.title);
@@ -1896,25 +1943,30 @@ void YouTubeFeature::appendToTrackTable(
 
     const QString detectedGenre = inferGenreFromQuery(m_lastQuery);
     const QDir dir(cacheDir());
+    // Pre-scan the cache directory once (same optimisation as replaceTrackTable).
+    QHash<QString, QString> cachedFiles;
+    const QStringList allFiles =
+            dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    for (const QString& f : allFiles) {
+        if (isYouTubeSidecarFile(f)) {
+            continue;
+        }
+        const int dotIdx = f.lastIndexOf(QLatin1Char('.'));
+        if (dotIdx > 0) {
+            const QString id = f.left(dotIdx);
+            if (!cachedFiles.contains(id)) {
+                cachedFiles.insert(id, dir.filePath(f));
+            }
+        }
+    }
+
     for (const mixxx::YouTubeVideoInfo& info : videos) {
         if (info.id.isEmpty()) {
             continue;
         }
         // Resolve the location same way as replaceTrackTable().
-        QString location;
-        const QStringList existing =
-                dir.entryList({info.id + QStringLiteral(".*")},
-                        QDir::Files | QDir::NoDotAndDotDot);
-        for (const QString& f : existing) {
-            if (isYouTubeSidecarFile(f)) {
-                continue;
-            }
-            location = dir.filePath(f);
-            break;
-        }
-        if (location.isEmpty()) {
-            location = YouTubeTrackModel::kPlaceholderScheme + info.id;
-        }
+        const QString location = cachedFiles.value(
+                info.id, YouTubeTrackModel::kPlaceholderScheme + info.id);
         const TrackDisplayMetadata metadata = displayMetadataForVideo(info);
         ins.bindValue(QStringLiteral(":artist"), metadata.artist);
         ins.bindValue(QStringLiteral(":title"), metadata.title);
@@ -2267,7 +2319,7 @@ void YouTubeFeature::downloadMyInstant(
             if (pTrack->getTitle().isEmpty()) {
                 pTrack->setTitle(displayName);
             }
-            Q_EMIT loadTrack(pTrack);
+            loadTrackToNextSampler(pTrack);
         }
         return;
     }
@@ -2327,9 +2379,43 @@ void YouTubeFeature::downloadMyInstant(
                     if (pTrack->getGenre().isEmpty()) {
                         pTrack->updateGenre(QStringLiteral("Meme Sound"));
                     }
-                    Q_EMIT loadTrack(pTrack);
+                    // Load into the next available sampler slot so the sound
+                    // lands in the SAMPLERS rack, not a main deck.
+                    loadTrackToNextSampler(pTrack);
                 }
             });
+}
+
+void YouTubeFeature::loadTrackToNextSampler(const TrackPointer& pTrack) {
+    if (!pTrack) {
+        return;
+    }
+    // Find the first empty sampler slot (1–32). A "one-shot" ControlProxy
+    // with no parent gives us a lightweight read without a persistent
+    // connection — we only need the current value.
+    QString samplerGroup;
+    for (int i = 1; i <= 32; ++i) {
+        const QString g = QStringLiteral("[Sampler%1]").arg(i);
+        ControlProxy cp(ConfigKey(g, QStringLiteral("track_loaded")));
+        if (cp.get() == 0.0) {
+            samplerGroup = g;
+            break;
+        }
+    }
+    if (samplerGroup.isEmpty()) {
+        // All samplers occupied — fall back to the default deck-load path
+        // so the user still gets the track rather than losing it silently.
+        kLogger.info() << "All sampler slots occupied — loading to next deck instead";
+        Q_EMIT loadTrack(pTrack);
+        return;
+    }
+    kLogger.info() << "Loading sample" << pTrack->getTitle()
+                   << "into sampler slot" << samplerGroup;
+#ifdef __STEM__
+    Q_EMIT loadTrackToPlayer(pTrack, samplerGroup, mixxx::StemChannelSelection(), false);
+#else
+    Q_EMIT loadTrackToPlayer(pTrack, samplerGroup, false);
+#endif
 }
 
 #include "moc_youtubefeature.cpp"

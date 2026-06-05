@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <QTimer>
 #include <QUrl>
 #include <QVariant>
 
@@ -101,4 +102,10 @@ class YouTubeTrackModel : public BaseExternalTrackModel {
     /// True when the service has reported a continuation token for the
     /// current search (i.e. more results are available via fetchMore).
     bool m_hasMore = false;
+    /// Debounce timer for the per-view search box. Keystroke search events
+    /// are delayed 400 ms so a full word is transmitted rather than one
+    /// YouTube request per character typed.
+    QTimer* m_searchDebounceTimer = nullptr;
+    /// Most recently typed (but not yet dispatched) search text.
+    QString m_pendingSearch;
 };

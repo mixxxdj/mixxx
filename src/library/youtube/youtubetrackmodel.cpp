@@ -78,13 +78,35 @@ void YouTubeTrackModel::search(const QString& searchText) {
     // Do NOT call BaseExternalTrackModel::search() here — that applies a SQL
     // filter on top of the existing rows, so the user sees stale results
     // filtered by the new query instead of a fresh YouTube search.
-    // Instead, just emit the signal so searchAndActivate() fires a new
-    // YouTubeService search and clears the old results first.
+    // Instead, debounce the keystrokes: wait 400 ms after the last character
+    // before firing the network search so we don't spam YouTube on every
+    // keystroke. The pending query is stored so the debounce timer always
+    // fires with the most-recently-typed text.
     const QString trimmed = searchText.trimmed();
     if (trimmed.isEmpty()) {
+        // Empty search — cancel any pending debounced request.
+        if (m_searchDebounceTimer) {
+            m_searchDebounceTimer->stop();
+        }
+        m_pendingSearch.clear();
         return;
     }
-    emit searchRequested(trimmed);
+    m_pendingSearch = trimmed;
+    if (!m_searchDebounceTimer) {
+        m_searchDebounceTimer = new QTimer(this);
+        m_searchDebounceTimer->setSingleShot(true);
+        m_searchDebounceTimer->setInterval(400);
+        connect(m_searchDebounceTimer,
+                &QTimer::timeout,
+                this,
+                [this]() {
+                    if (!m_pendingSearch.isEmpty()) {
+                        emit searchRequested(m_pendingSearch);
+                        m_pendingSearch.clear();
+                    }
+                });
+    }
+    m_searchDebounceTimer->start();
 }
 
 QString YouTubeTrackModel::resolveLocation(const QString& nativeLocation) const {
