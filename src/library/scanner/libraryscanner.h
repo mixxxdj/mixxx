@@ -115,6 +115,7 @@ class LibraryScanner : public QThread {
 
     // Global scanner state for scan currently in progress.
     ScannerGlobalPointer m_scannerGlobal;
+    UserSettingsPointer m_pConfig;
 
     // The Semaphore guards the state transitions queued to the
     // Qt even Queue in the way, that you cannot start a

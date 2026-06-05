@@ -628,9 +628,16 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             if (m_pTrackCache) {
                 m_pTrackCache->buildIndex();
             }
-            if (m_pTrackModel) {
-                m_pTrackModel->select();
-            }
+    // On Android, the background library scan frequently holds the SQLite
+    // write lock. BaseSqlTableModel::select() performs a synchronous read
+    // which can block the UI thread if the lock is held, causing the
+    // "YouTube lags when clicked" symptom. Defer the first select until
+    // the event loop is free.
+    QTimer::singleShot(0, this, [this]() {
+        if (m_pTrackModel) {
+            m_pTrackModel->select();
+        }
+    });
         }
     });
 
@@ -901,9 +908,16 @@ void YouTubeFeature::activate() {
     // youtube_library even if the model state went stale while another
     // feature was in the foreground (e.g. results landed in the background
     // after a combined library/YouTube search).
-    if (m_pTrackModel) {
-        m_pTrackModel->select();
-    }
+    // On Android, the background library scan frequently holds the SQLite
+    // write lock. BaseSqlTableModel::select() performs a synchronous read
+    // which can block the UI thread if the lock is held, causing the
+    // "YouTube lags when clicked" symptom. Defer the first select until
+    // the event loop is free.
+    QTimer::singleShot(0, this, [this]() {
+        if (m_pTrackModel) {
+            m_pTrackModel->select();
+        }
+    });
     // Defer the expensive rebuildHomeHtml() — it builds a massive HTML string
     // with all results, genres, etc. and blocks the UI thread. The track table
     // is the primary view now; the HTML pane is only a fallback.
@@ -2257,9 +2271,16 @@ void YouTubeFeature::slotCleanCache() {
     if (m_pTrackCache) {
         m_pTrackCache->buildIndex();
     }
-    if (m_pTrackModel) {
-        m_pTrackModel->select();
-    }
+    // On Android, the background library scan frequently holds the SQLite
+    // write lock. BaseSqlTableModel::select() performs a synchronous read
+    // which can block the UI thread if the lock is held, causing the
+    // "YouTube lags when clicked" symptom. Defer the first select until
+    // the event loop is free.
+    QTimer::singleShot(0, this, [this]() {
+        if (m_pTrackModel) {
+            m_pTrackModel->select();
+        }
+    });
 
     QMessageBox::information(nullptr,
             tr("YouTube Cache"),

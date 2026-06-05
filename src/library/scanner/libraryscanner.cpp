@@ -17,6 +17,7 @@
 #include "util/logger.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
+#include <QStandardPaths>
 #include "util/trace.h"
 
 namespace {
@@ -102,6 +103,7 @@ LibraryScanner::LibraryScanner(
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
+          m_pConfig(pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
           m_numRelocatedTracks(0),
@@ -199,6 +201,39 @@ void LibraryScanner::slotStartScan() {
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
+
+#ifdef Q_OS_ANDROID
+    // Performance fix for Android: restrict scanning to only the primary Music
+    // folder and our YouTube cache. Android storage (especially emulated or
+    // SD-card backups) is extremely slow to walk; a full scan can hold the
+    // SQLite write lock for long stretches, blocking the YouTube feature from saving
+    // search results (the user-reported "no results" / "lag" symptom).
+    {
+        QList<mixxx::FileInfo> filteredRoots;
+        const QString musicPath = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+        if (!musicPath.isEmpty()) {
+            filteredRoots.append(mixxx::FileInfo(musicPath));
+        }
+        if (m_pConfig) {
+            QString base = m_pConfig->getSettingsPath();
+            if (base.isEmpty()) {
+                base = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+            }
+            const QString ytCache = QDir(base).filePath(QStringLiteral("youtube_cache"));
+            filteredRoots.append(mixxx::FileInfo(ytCache));
+        }
+        QSet<QString> seen;
+        m_libraryRootDirs.clear();
+        for (const auto& fi : std::as_const(filteredRoots)) {
+            const QString loc = fi.location();
+            if (!loc.isEmpty() && !seen.contains(loc) && fi.asQFileInfo().exists()) {
+                seen.insert(loc);
+                m_libraryRootDirs.append(fi);
+            }
+        }
+        kLogger.info() << "Android: restricted library scan to" << seen.size() << "root(s):" << seen.values();
+    }
+#endif
     // If there are no directories then we still have to scan independently added tracks.
     QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
 
