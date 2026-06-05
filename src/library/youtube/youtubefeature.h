@@ -153,9 +153,19 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// rapid-fire calls (e.g. during batch auto-analyze downloads) so the UI
     /// thread is not churning HTML on every individual download completion.
     QTimer* m_rebuildTimer = nullptr;
+    /// When true, the next rebuildTimer fire also runs buildIndex()+select()
+    /// to pick up rows updated by upsertDownloadedRow() or analysis completion.
+    /// Set by those paths instead of calling buildIndex()+select() inline so N
+    /// rapid completions share a single rebuild instead of N.
+    bool m_pendingModelUpdate = false;
     /// Schedule a deferred rebuildSidebar() + rebuildHomeHtml(). Calling this
     /// multiple times within the debounce window triggers only one rebuild.
     void scheduleRebuild();
+    /// Debounce timer for thumbnail dataChanged() notifications. Coalesces N
+    /// simultaneous thumbnail arrivals into a single model repaint.
+    QTimer* m_thumbnailTimer = nullptr;
+    /// Set when at least one thumbnail arrived since the last repaint.
+    bool m_thumbnailsDirty = false;
     QString m_lastQuery;
     QList<mixxx::YouTubeVideoInfo> m_lastResults;
     // videoId -> human-readable label (used for the "Downloaded" branch).

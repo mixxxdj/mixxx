@@ -3,7 +3,6 @@
 #include <QElapsedTimer>
 #include <QHash>
 #include <QList>
-#include <QMutex>
 #include <QObject>
 #include <QRandomGenerator>
 #include <QSettings>
@@ -358,7 +357,7 @@ class YouTubeService : public QObject {
     // self-throttle and avoid triggering YouTube's bot detection. The window
     // and burst limits are conservative defaults tuned to avoid 429s while
     // still allowing snappy search/download workflows.
-    QMutex m_rateLimitMutex;
+    // NOTE: all accesses are on the main/UI thread so no mutex is needed.
     QList<qint64> m_requestTimestamps; // msecsSinceEpoch of recent requests
     QElapsedTimer m_rateLimitTimer;
 

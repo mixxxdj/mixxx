@@ -620,6 +620,39 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
     connect(m_rebuildTimer, &QTimer::timeout, this, [this]() {
         rebuildSidebar();
         rebuildHomeHtml();
+        // If upsertDownloadedRow() or syncAnalyzedTrackMetadata() deferred a
+        // model update, apply it now — after the sidebar/HTML rebuild so the
+        // user sees a consistent snapshot.
+        if (m_pendingModelUpdate) {
+            m_pendingModelUpdate = false;
+            if (m_pTrackCache) {
+                m_pTrackCache->buildIndex();
+            }
+            if (m_pTrackModel) {
+                m_pTrackModel->select();
+            }
+        }
+    });
+
+    // Debounce timer for thumbnail dataChanged() notifications. Up to 20
+    // thumbnails arrive in parallel; emitting dataChanged() on every arrival
+    // causes a full view repaint for each one. Coalescing them into a single
+    // emission 50 ms after the last arrival cuts repaints from N→1.
+    m_thumbnailTimer = new QTimer(this);
+    m_thumbnailTimer->setSingleShot(true);
+    m_thumbnailTimer->setInterval(50);
+    connect(m_thumbnailTimer, &QTimer::timeout, this, [this]() {
+        if (!m_thumbnailsDirty || !m_pTrackModel) {
+            return;
+        }
+        m_thumbnailsDirty = false;
+        const int rows = m_pTrackModel->rowCount();
+        if (rows > 0) {
+            emit m_pTrackModel->dataChanged(
+                    m_pTrackModel->index(0, 0),
+                    m_pTrackModel->index(
+                            rows - 1, m_pTrackModel->columnCount() - 1));
+        }
     });
     // Build the persistent track model that backs the right-hand pane.
     // Mirrors ITunesFeature ctor exactly — same column set, same cache
@@ -821,20 +854,12 @@ void YouTubeFeature::fetchThumbnails(
                     if (f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
                         f.write(reply->readAll());
                         f.close();
-                        // Tell the model that cover art is now available for
-                        // this video so the delegate repaints without waiting
-                        // for the next scroll/resize event.
-                        if (m_pTrackModel) {
-                            const int rows = m_pTrackModel->rowCount();
-                            if (rows > 0) {
-                                // Emit dataChanged for all rows — the model is
-                                // small (≤100 rows) so this is cheap.
-                                emit m_pTrackModel->dataChanged(
-                                        m_pTrackModel->index(0, 0),
-                                        m_pTrackModel->index(rows - 1,
-                                                m_pTrackModel->columnCount() -
-                                                        1));
-                            }
+                        // Schedule a batched dataChanged() notification so
+                        // N parallel thumbnail arrivals produce only one
+                        // full repaint (50 ms after the last arrival).
+                        m_thumbnailsDirty = true;
+                        if (m_thumbnailTimer) {
+                            m_thumbnailTimer->start();
                         }
                     }
                 });
@@ -1425,8 +1450,12 @@ void YouTubeFeature::syncAnalyzedTrackMetadata(const TrackPointer& pTrack) {
                           << query.lastError().text();
         return;
     }
-    m_pTrackCache->buildIndex();
-    m_pTrackModel->select();
+    // Defer buildIndex()+select() — analysis completion fires once per track,
+    // and during batch auto-analyze that can be many tracks in a short window.
+    // Coalescing into one rebuild via the 120 ms debounce timer avoids N heavy
+    // select() calls.
+    m_pendingModelUpdate = true;
+    scheduleRebuild();
 }
 
 void YouTubeFeature::maybeReleaseCachedTrack(const TrackPointer& pTrack) {
@@ -2057,8 +2086,11 @@ void YouTubeFeature::upsertDownloadedRow(const QString& videoId,
                             << ins.lastError().text();
         }
     }
-    m_pTrackCache->buildIndex();
-    m_pTrackModel->select();
+    // Defer buildIndex()+select() via the rebuild debounce timer. When N
+    // downloads complete in rapid succession (auto-analyze mode) this prevents
+    // N consecutive heavy rebuilds — only one fires 120 ms after the last.
+    m_pendingModelUpdate = true;
+    scheduleRebuild();
 }
 
 void YouTubeFeature::onRightClick(const QPoint& globalPos) {

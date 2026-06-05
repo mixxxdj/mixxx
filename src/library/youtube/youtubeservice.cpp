@@ -9,7 +9,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
-#include <QMutexLocker>
 #include <QNetworkAccessManager>
 #include <QNetworkCookie>
 #include <QNetworkCookieJar>
@@ -66,7 +65,10 @@ constexpr qint64 kChunkedDownloadThresholdBytes = 2LL * 1024 * 1024; // 2 MB
 constexpr int kParallelDownloadChunks = 4;
 constexpr int kMaxPipedSearchPages = 5;
 // SponsorBlock API timeout — prevents indefinite hangs if the service is slow.
-constexpr int kSponsorBlockTimeoutMs = 8 * 1000;
+// 4 s is generous for a single HTTP GET backed by a CDN; most responses arrive
+// in < 500 ms. Keeping it short prevents blocking track load on a slow or
+// unreachable SponsorBlock server.
+constexpr int kSponsorBlockTimeoutMs = 4 * 1000;
 // Project default for this fork: the requested first-open YouTube feed is Greek
 // top songs, not generic global/United States YouTube trends.
 const QString kDefaultRegion = QStringLiteral("GR");
@@ -1692,10 +1694,7 @@ void YouTubeService::downloadAudioStreamChunked(
         delete outFile;
         kLogger.warning() << "Chunked pre-alloc failed for" << videoId
                           << "— falling back to single stream";
-        // Re-enter the single-connection path by pretending contentLength==0.
-        // Build a minimal audioStreams array with just the URL and no length.
-        QJsonObject fakeStream;
-        fakeStream.insert(QStringLiteral("url"), streamUrl);
+        // Re-enter the single-connection path.
         QNetworkRequest req((QUrl(streamUrl)));
         req.setRawHeader("User-Agent",
                 streamUserAgent.isEmpty() ? QByteArray("Mixxx/YouTube")
@@ -2522,9 +2521,11 @@ bool YouTubeService::detectBotFlagging(int httpStatus,
     }
 
     // Check for consent/captcha challenge in raw HTML body (can happen when
-    // YouTube serves a web consent page instead of JSON).
+    // YouTube serves a web consent page instead of JSON). Only scan the first
+    // 4 KB — consent/captcha markers appear near the top of the page, and
+    // calling toLower() on a multi-MB response wastes time and memory.
     if (root.isEmpty() && rawBody.size() > 100) {
-        const QByteArray lower = rawBody.toLower();
+        const QByteArray lower = rawBody.left(4096).toLower();
         if (lower.contains("consent.youtube") ||
                 lower.contains("recaptcha") ||
                 lower.contains("captcha") ||
@@ -2588,7 +2589,7 @@ void YouTubeService::maybeRecoverFromBotFlag() {
 }
 
 bool YouTubeService::shouldThrottleRequest() {
-    QMutexLocker locker(&m_rateLimitMutex);
+    // All callers are on the main/UI thread — no mutex needed.
     const qint64 now = m_rateLimitTimer.elapsed();
 
     // Evict timestamps older than the window.
@@ -2616,7 +2617,7 @@ bool YouTubeService::shouldThrottleRequest() {
 }
 
 void YouTubeService::recordRequest() {
-    QMutexLocker locker(&m_rateLimitMutex);
+    // All callers are on the main/UI thread — no mutex needed.
     m_requestTimestamps.append(m_rateLimitTimer.elapsed());
 }
 
@@ -2740,19 +2741,17 @@ QStringList YouTubeService::ytDlpAntiBotArgs() const {
     args << QStringLiteral("--extractor-args")
          << QStringLiteral("youtube:player_client=android_vr,mediaconnect");
 
-    // 3. Random sleep between requests to look human (yt-dlp's built-in).
-    //    Only relevant for playlist/search operations (not single downloads),
-    //    but doesn't hurt to set it unconditionally.
-    args << QStringLiteral("--sleep-requests")
-         << QStringLiteral("1");
-
-    // 4. Sleep between downloads in a playlist scenario.
+    // 3. Sleep between downloads in a playlist scenario only. For single-video
+    //    downloads these are no-ops. Do NOT use --sleep-requests here: it
+    //    inserts a forced pause between every extraction API call (including
+    //    the initial video-info fetch), adding 1–3 s of latency to every
+    //    yt-dlp download for no bot-avoidance benefit on single-item requests.
     args << QStringLiteral("--sleep-interval")
          << QStringLiteral("2");
     args << QStringLiteral("--max-sleep-interval")
          << QStringLiteral("5");
 
-    // 5. User-agent override: use a recent Chrome UA to avoid being flagged
+    // 4. User-agent override: use a recent Chrome UA to avoid being flagged
     //    by the default yt-dlp UA string.
     args << QStringLiteral("--user-agent")
          << QStringLiteral(
@@ -2760,7 +2759,7 @@ QStringList YouTubeService::ytDlpAntiBotArgs() const {
                     "AppleWebKit/537.36 (KHTML, like Gecko) "
                     "Chrome/126.0.0.0 Safari/537.36");
 
-    // 6. Retry on HTTP errors (including 429). yt-dlp will wait and retry.
+    // 5. Retry on HTTP errors (including 429). yt-dlp will wait and retry.
     args << QStringLiteral("--retries") << QStringLiteral("3");
     args << QStringLiteral("--retry-sleep") << QStringLiteral("exp=1:5:30");
 
