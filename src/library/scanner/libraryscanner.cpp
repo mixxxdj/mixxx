@@ -232,7 +232,8 @@ void LibraryScanner::slotStartScan() {
                 m_libraryRootDirs.append(fi);
             }
         }
-        kLogger.info() << "Android: restricted library scan to" << seen.size() << "root(s):" << seen.values();
+        kLogger.info() << "Android: restricted library scan to" << seen.size()
+                       << "root(s):" << seen.values();
     }
 #endif
     // If there are no directories then we still have to scan independently added tracks.
