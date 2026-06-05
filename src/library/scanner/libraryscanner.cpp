@@ -1,5 +1,7 @@
 #include "library/scanner/libraryscanner.h"
 
+#include <QStandardPaths>
+
 #include "library/coverartutils.h"
 #include "library/library_decl.h"
 #include "library/queryutil.h"
@@ -17,7 +19,6 @@
 #include "util/logger.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
-#include <QStandardPaths>
 #include "util/trace.h"
 
 namespace {

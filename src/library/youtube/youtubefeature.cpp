@@ -628,16 +628,16 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             if (m_pTrackCache) {
                 m_pTrackCache->buildIndex();
             }
-    // On Android, the background library scan frequently holds the SQLite
-    // write lock. BaseSqlTableModel::select() performs a synchronous read
-    // which can block the UI thread if the lock is held, causing the
-    // "YouTube lags when clicked" symptom. Defer the first select until
-    // the event loop is free.
-    QTimer::singleShot(0, this, [this]() {
-        if (m_pTrackModel) {
-            m_pTrackModel->select();
-        }
-    });
+            // On Android, the background library scan frequently holds the SQLite
+            // write lock. BaseSqlTableModel::select() performs a synchronous read
+            // which can block the UI thread if the lock is held, causing the
+            // "YouTube lags when clicked" symptom. Defer the first select until
+            // the event loop is free.
+            QTimer::singleShot(0, this, [this]() {
+                if (m_pTrackModel) {
+                    m_pTrackModel->select();
+                }
+            });
         }
     });
 
@@ -2197,8 +2197,8 @@ void YouTubeFeature::slotCleanCache() {
             kLogger.info() << "Cache clean: removed" << videoId;
             // Remove sidecar if present (canonical name: VIDEOID.sponsorblock.json).
             QFile::remove(QDir(QFileInfo(location).absolutePath())
-                            .filePath(videoId +
-                                    QStringLiteral(".sponsorblock.json")));
+                                  .filePath(videoId +
+                                          QStringLiteral(".sponsorblock.json")));
             m_downloadedTracks.remove(videoId);
             // Purge from main library DB.
             if (pTcm && pInternal) {
