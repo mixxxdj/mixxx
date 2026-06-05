@@ -973,50 +973,50 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                     // "musicNavigationButtonRenderer" items which carry the
                     // genre/mood display text.
                     auto extract = [&genres](const QJsonValue& node, auto& self) -> void {
-                                if (genres.size() >= 100) {
-                                    return; // cap at 100 genres
-                                }
-                                if (node.isObject()) {
-                                    const QJsonObject obj = node.toObject();
-                                    // musicNavigationButtonRenderer has a
-                                    // buttonText.runs[0].text with the genre name.
-                                    const QJsonObject navBtn =
-                                            obj.value(QStringLiteral(
-                                                              "musicNavigationB"
-                                                              "uttonRenderer"))
-                                                    .toObject();
-                                    if (!navBtn.isEmpty()) {
-                                        const QJsonArray runs =
-                                                navBtn.value(QStringLiteral("buttonText"))
-                                                        .toObject()
-                                                        .value(QStringLiteral("runs"))
-                                                        .toArray();
-                                        if (!runs.isEmpty()) {
-                                            const QString text =
-                                                    runs.first()
-                                                            .toObject()
-                                                            .value(QStringLiteral("text"))
-                                                            .toString()
-                                                            .trimmed();
-                                            if (!text.isEmpty() &&
-                                                    !genres.contains(text)) {
-                                                genres.append(text);
-                                            }
-                                        }
-                                        return; // don't descend into matched renderer
-                                    }
-                                    const QJsonObject objCopy =
-                                            obj; // clazy:exclude=range-loop-detach
-                                    for (const QJsonValue& v : objCopy) {
-                                        self(v, self);
-                                    }
-                                } else if (node.isArray()) {
-                                    const QJsonArray arr = node.toArray();
-                                    for (const QJsonValue& v : arr) {
-                                        self(v, self);
+                        if (genres.size() >= 100) {
+                            return; // cap at 100 genres
+                        }
+                        if (node.isObject()) {
+                            const QJsonObject obj = node.toObject();
+                            // musicNavigationButtonRenderer has a
+                            // buttonText.runs[0].text with the genre name.
+                            const QJsonObject navBtn =
+                                    obj.value(QStringLiteral(
+                                                      "musicNavigationB"
+                                                      "uttonRenderer"))
+                                            .toObject();
+                            if (!navBtn.isEmpty()) {
+                                const QJsonArray runs =
+                                        navBtn.value(QStringLiteral("buttonText"))
+                                                .toObject()
+                                                .value(QStringLiteral("runs"))
+                                                .toArray();
+                                if (!runs.isEmpty()) {
+                                    const QString text =
+                                            runs.first()
+                                                    .toObject()
+                                                    .value(QStringLiteral("text"))
+                                                    .toString()
+                                                    .trimmed();
+                                    if (!text.isEmpty() &&
+                                            !genres.contains(text)) {
+                                        genres.append(text);
                                     }
                                 }
-                            };
+                                return; // don't descend into matched renderer
+                            }
+                            const QJsonObject objCopy =
+                                    obj; // clazy:exclude=range-loop-detach
+                            for (const QJsonValue& v : objCopy) {
+                                self(v, self);
+                            }
+                        } else if (node.isArray()) {
+                            const QJsonArray arr = node.toArray();
+                            for (const QJsonValue& v : arr) {
+                                self(v, self);
+                            }
+                        }
+                    };
                     extract(QJsonValue(root), extract);
                     kLogger.info() << "Fetched" << genres.size()
                                    << "music genres for region" << region;
