@@ -2205,8 +2205,7 @@ void YouTubeFeature::fetchMyInstantsSounds() {
                         R"re(data-url="(/media/sounds/[^"]+\.mp3)"[^>]*>\s*([^<]+?)\s*<)re"),
                 QRegularExpression::CaseInsensitiveOption);
 
-        // clazy:exclude=lambda-in-connect
-        auto parse = [&](const QRegularExpression& re) {
+        auto parse = [&sounds, &seen, html](const QRegularExpression& re) {
             auto it = re.globalMatch(html);
             while (it.hasNext() && sounds.size() < 80) {
                 const auto m = it.next();

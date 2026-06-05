@@ -972,9 +972,7 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                     // paths. We recursively walk the JSON looking for
                     // "musicNavigationButtonRenderer" items which carry the
                     // genre/mood display text.
-                    // clazy:exclude=lambda-in-connect
-                    std::function<void(const QJsonValue&)> extract =
-                            [&genres, &extract](const QJsonValue& node) {
+                    auto extract = [&genres](const QJsonValue& node, auto& self) -> void {
                                 if (genres.size() >= 100) {
                                     return; // cap at 100 genres
                                 }
@@ -1010,16 +1008,16 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                                     const QJsonObject objCopy =
                                             obj; // clazy:exclude=range-loop-detach
                                     for (const QJsonValue& v : objCopy) {
-                                        extract(v);
+                                        self(v, self);
                                     }
                                 } else if (node.isArray()) {
                                     const QJsonArray arr = node.toArray();
                                     for (const QJsonValue& v : arr) {
-                                        extract(v);
+                                        self(v, self);
                                     }
                                 }
                             };
-                    extract(QJsonValue(root));
+                    extract(QJsonValue(root), extract);
                     kLogger.info() << "Fetched" << genres.size()
                                    << "music genres for region" << region;
                 } else {
