@@ -1841,7 +1841,13 @@ void YouTubeFeature::replaceTrackTable(
         // Retry on the event loop (non-blocking) for up to ~10 s, which
         // comfortably outlasts the per-track lock the scanner holds.
         constexpr int kRetryIntervalMs = 250;
-        constexpr int kRetryTimeoutMs = 10 * 1000;
+        // The Android library scanner holds the SQLite write lock for the full
+        // duration of the initial scan, which can exceed 3 minutes on large
+        // libraries (Camera roll, SD-card backup, Downloads). 10 s was far too
+        // short — all YouTube search results silently disappeared whenever the
+        // user searched during startup. 300 s comfortably outlasts even a full
+        // first-run scan while still bounding the pending-results queue.
+        constexpr int kRetryTimeoutMs = 300 * 1000;
         constexpr int kMaxAttempts = kRetryTimeoutMs / kRetryIntervalMs;
         if (locked && attempt < kMaxAttempts) {
             transaction.rollback();

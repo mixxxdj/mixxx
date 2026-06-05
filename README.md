@@ -1,86 +1,68 @@
-# Mixxx
+# DJ Sugar
 
-[![GitHub latest tag](https://img.shields.io/github/tag/mixxxdj/mixxx.svg)](https://mixxx.org/download)
-[![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
-[![Build status](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml/badge.svg)](https://github.com/mixxxdj/mixxx/actions/workflows/build.yml)
-[![Coverage status](https://coveralls.io/repos/github/mixxxdj/mixxx/badge.svg)](https://coveralls.io/github/mixxxdj/mixxx)
-[![Zulip chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://mixxx.zulipchat.com)
-[![Donate](https://img.shields.io/opencollective/all/mixxx?label=Donate)](https://mixxx.org/donate)
+[![Build status](https://github.com/winnerspiros/mixxx/actions/workflows/build.yml/badge.svg)](https://github.com/winnerspiros/mixxx/actions/workflows/build.yml)
+[![License: GPL v2](https://img.shields.io/badge/License-GPLv2-blue.svg)](LICENSE)
 
-[Mixxx] is Free DJ software that gives you everything you need to perform live
-DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
+**DJ Sugar** is a free, open-source DJ application for Android (and desktop)
+that gives you everything you need to perform live DJ sets. Built on top of
+the [Mixxx] codebase, DJ Sugar adds first-class Android support, built-in
+YouTube search & streaming, SponsorBlock integration, and a streamlined
+mobile experience.
+
+## Features
+
+- 🎵 **YouTube integration** — search, stream, and mix YouTube audio directly
+  inside the app; no yt-dlp binary required on Android
+- 📱 **Android-first** — optimised for Samsung Galaxy and other ARM64 devices;
+  correct scaling, Oboe audio output, and MANAGE_EXTERNAL_STORAGE support
+- ⚡ **Performance** — InnerTube ANDROID_VR client for direct (no-cipher)
+  stream URLs; HTTP/1.1 forced on Android to avoid Qt HTTP/2 stalls
+- 🚫 **SponsorBlock** — automatically skips sponsored segments in YouTube
+  music videos
+- 🎛️ **4-deck mixing** — pitch, EQ, effects, looping, and hot cues
+- 🎚️ **External controller support** — MIDI and HID devices (USB permission
+  prompt on Android 13+)
+- 📦 **Local library** — scans device storage, SD card, and cloud-synced
+  folders; supports MP3, FLAC, OGG, OPUS, WAV, AAC, M4A, and more
 
 ## Quick Start
 
-To get started with Mixxx:
+### Android
 
-1. For live use, [download the latest stable version][download-stable].
-2. For experimentation and testing, [download a development release][download-testing].
-3. To live on the bleeding edge, clone the repo: `git clone https://github.com/mixxxdj/mixxx.git`
+Install the latest APK from the [Releases] page, grant storage and audio
+permissions when prompted, and tap the **YouTube** tab to start searching.
 
-## Bug tracker
+### Desktop (Linux / Windows / macOS)
 
-The Mixxx team uses [Github Issues][issues] to manage Mixxx development.
+Clone and build following the [upstream Mixxx build instructions][contrib]:
 
-Have a bug or feature request? [File a bug on Github][fileabug].
+```bash
+git clone https://github.com/winnerspiros/mixxx.git
+cd mixxx
+# Follow CONTRIBUTING.md for cmake/vcpkg setup
+```
 
-Want to get involved in Mixxx development? Assign yourself a bug from the [easy
-bug list][easybugs] and get started!
+## Bug Reports
 
-## Building Mixxx
+Found an issue? [Open a GitHub issue][issues]. Please attach your `mixxx.log`
+file — it lives at:
+
+- **Android**: `Android/data/org.mixxx/files/Documents/Mixxx/`
+- **Linux**: `~/.local/share/mixxx/`
+- **Windows**: `%LOCALAPPDATA%\Mixxx\`
+- **macOS**: `~/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx/`
+
+## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions, code style
 guidelines, and how to open a pull request.
 
-## Documentation
-
-For help using Mixxx, there are a variety of options:
-
-- [Mixxx manual][manual]
-- [Mixxx wiki][wiki]
-- [Hardware Compatibility]
-- [Creating Skins]
-
-## Translation
-
-Help to spread Mixxx with translations into more languages, as well as to update and ensure the accuracy of existing translations.
-
-- [Help translate content]
-- [Mixxx i18n wiki]
-- [Mixxx localization forum]
-- [Mixxx glossary]
-
-## Community
-
-Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
-development and community news:
-
-- Chat with us on [Zulip][zulip].
-- Follow us on [Mastodon], [Bluesky] and [Facebook].
-- Subscribe to the [Mixxx Blog][blog].
-- Post on the [Mixxx forums][discourse].
-
 ## License
 
-Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
-license.
+DJ Sugar is released under the GPLv2. See the [LICENSE](LICENSE) file for the
+full text. This project is a fork of [Mixxx], copyright the Mixxx contributors.
 
-[mixxx]: https://mixxx.org
-[download-stable]: https://mixxx.org/download/#stable
-[download-testing]: https://mixxx.org/download/#testing
-[issues]: https://github.com/mixxxdj/mixxx/issues
-[fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
-[mastodon]: https://floss.social/@mixxx
-[Bluesky]: https://bsky.app/profile/mixxx.bsky.social
-[facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
-[blog]: https://mixxx.org/news/
-[manual]: https://manual.mixxx.org/
-[wiki]: https://github.com/mixxxdj/mixxx/wiki
-[easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
-[creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
-[help translate content]: https://explore.transifex.com/mixxx-dj-software/
-[Mixxx i18n wiki]: https://github.com/mixxxdj/mixxx/wiki/Internationalization
-[Mixxx localization forum]: https://mixxx.discourse.group/c/translation/13
-[hardware compatibility]: https://manual.mixxx.org/2.3/en/hardware/manuals.html
-[zulip]: https://mixxx.zulipchat.com/
-[discourse]: https://mixxx.discourse.group/
+[Mixxx]: https://github.com/mixxxdj/mixxx
+[Releases]: https://github.com/winnerspiros/mixxx/releases
+[issues]: https://github.com/winnerspiros/mixxx/issues/new/choose
+[contrib]: https://github.com/mixxxdj/mixxx/blob/main/CONTRIBUTING.md
