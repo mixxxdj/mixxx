@@ -40,7 +40,7 @@ DlgAbout::DlgAbout()
                             QString::number(
                                     VersionStore::versionNumber().majorVersion()),
                             QString::number(VersionStore::versionNumber()
-                                                    .minorVersion()));
+                                            .minorVersion()));
     QString s_contributions = tr("With contributions from:");
     QString s_specialThanks = tr("And special thanks to:");
     QString s_pastDevs = tr("Past Developers");

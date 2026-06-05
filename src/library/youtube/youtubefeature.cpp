@@ -862,7 +862,7 @@ void YouTubeFeature::activate() {
     // still keep the registration in bindLibraryWidget() as a fallback for
     // skin/back-compat reasons but never switch to it from here.
     Q_EMIT showTrackModel(m_pTrackModel);
-    Q_EMIT enableCoverArtDisplay(true);  // show YouTube thumbnail cover art
+    Q_EMIT enableCoverArtDisplay(true); // show YouTube thumbnail cover art
     // Force a fresh SELECT so the table reflects the current contents of
     // youtube_library even if the model state went stale while another
     // feature was in the foreground (e.g. results landed in the background
@@ -1445,7 +1445,7 @@ void YouTubeFeature::maybeReleaseCachedTrack(const TrackPointer& pTrack) {
         // (same as what SponsorBlockController reads). Remove it alongside
         // the audio file.
         const QString sidecar = QDir(QFileInfo(location).absolutePath())
-                .filePath(videoId + QStringLiteral(".sponsorblock.json"));
+                                        .filePath(videoId + QStringLiteral(".sponsorblock.json"));
         QFile::remove(sidecar);
         if (trackId.isValid()) {
             m_pLibrary->trackCollectionManager()->purgeTracks(
@@ -1581,7 +1581,7 @@ void YouTubeFeature::rebuildSidebar() {
         TreeItem* pSamplesNode = pRoot->appendChild(tr("Samples"));
         TreeItem* pDJNode = pSamplesNode->appendChild(tr("🎛 DJ Tools"));
         for (const auto& [query, label] : kDJSamples) {
-            pDJNode->appendChild(label, kSampleQueryPrefix + query);
+            pDJNode->appendChild(label, QString(kSampleQueryPrefix + query));
         }
 
         TreeItem* pMemesNode = pSamplesNode->appendChild(tr("😂 Greek Memes"));
@@ -1596,7 +1596,7 @@ void YouTubeFeature::rebuildSidebar() {
             // Sounds loaded — list them. The payload carries the CDN URL so
             // activateChild() knows where to download from.
             for (const auto& sound : m_myInstantSounds) {
-                pMemesNode->appendChild(sound.name, kMyInstantPrefix + sound.mp3Url);
+                pMemesNode->appendChild(sound.name, QString(kMyInstantPrefix + sound.mp3Url));
             }
         }
     }
@@ -1773,6 +1773,8 @@ void YouTubeFeature::scheduleRebuild() {
     // coalescing N calls within the window into a single rebuild pair.
     m_rebuildTimer->start();
 }
+
+void YouTubeFeature::replaceTrackTable(
         const QList<mixxx::YouTubeVideoInfo>& videos, int attempt) {
     if (!m_pTrackModel || !m_pTrackCache) {
         return;
@@ -1993,7 +1995,7 @@ void YouTubeFeature::upsertDownloadedRow(const QString& videoId,
 
 void YouTubeFeature::onRightClick(const QPoint& globalPos) {
     BaseExternalLibraryFeature::onRightClick(globalPos);
-    QMenu menu(m_pSidebarWidget);
+    QMenu menu(nullptr);
     QAction cleanAction(tr("Clean YouTube cache…"), &menu);
     menu.addAction(&cleanAction);
     const QAction* chosen = menu.exec(globalPos);
@@ -2038,9 +2040,11 @@ void YouTubeFeature::slotCleanCache() {
 
         // Skip files referenced by a playlist or crate.
         if (pInternal) {
-            const TrackId trackId =
-                    pInternal->getTrackDAO().getTrackIdByLocation(location);
-            if (trackId.isValid()) {
+            const TrackPointer pTrack =
+                    pInternal->getTrackDAO().getTrackByRef(
+                            TrackRef::fromFilePath(location));
+            if (pTrack) {
+                const TrackId trackId = pTrack->getId();
                 QSet<int> playlistSet;
                 pInternal->getPlaylistDAO().getPlaylistsTrackIsIn(
                         trackId, &playlistSet);
@@ -2062,16 +2066,16 @@ void YouTubeFeature::slotCleanCache() {
             kLogger.info() << "Cache clean: removed" << videoId;
             // Remove sidecar if present (canonical name: VIDEOID.sponsorblock.json).
             QFile::remove(QDir(QFileInfo(location).absolutePath())
-                                  .filePath(videoId +
-                                          QStringLiteral(".sponsorblock.json")));
+                            .filePath(videoId +
+                                    QStringLiteral(".sponsorblock.json")));
             m_downloadedTracks.remove(videoId);
             // Purge from main library DB.
             if (pTcm && pInternal) {
-                const TrackId trackId =
-                        pInternal->getTrackDAO().getTrackIdByLocation(
-                                location);
-                if (trackId.isValid()) {
-                    pTcm->purgeTracks({TrackRef::fromFilePath(location, trackId)});
+                const TrackPointer pTrack =
+                        pInternal->getTrackDAO().getTrackByRef(
+                                TrackRef::fromFilePath(location));
+                if (pTrack) {
+                    pTcm->purgeTracks({TrackRef::fromFilePath(location, pTrack->getId())});
                 }
             }
         }
@@ -2140,10 +2144,9 @@ void YouTubeFeature::slotCleanCache() {
         m_pTrackModel->select();
     }
 
-    QMessageBox::information(m_pSidebarWidget,
+    QMessageBox::information(nullptr,
             tr("YouTube Cache"),
-            tr("Removed %n downloaded track(s) from the cache.", "",
-                    cleaned + myInstantsCleaned));
+            tr("Removed %n downloaded track(s) from the cache.", "", cleaned + myInstantsCleaned));
 }
 
 // =============================================================================
