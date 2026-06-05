@@ -1836,10 +1836,18 @@ void YouTubeFeature::replaceTrackTable(
         // blocking the UI thread on the lock, reschedule the write on the event
         // loop so the table is populated as soon as the scanner yields.
         const QString errText = del.lastError().text();
-        const bool locked = errText.contains(
-                QStringLiteral("locked"), Qt::CaseInsensitive);
-        // Retry on the event loop (non-blocking) for up to ~10 s, which
-        // comfortably outlasts the per-track lock the scanner holds.
+        // Use the native SQLite error code for a precise check:
+        //   SQLITE_BUSY (5)   — another connection holds a write lock
+        //   SQLITE_LOCKED (6) — intra-connection lock (same connection, rare)
+        // Falling back to substring matching only when the driver does not
+        // expose a numeric code (e.g. QPSQL shim in tests).
+        const QString nativeCode = del.lastError().nativeErrorCode();
+        const bool locked = (nativeCode == QLatin1String("5") ||
+                nativeCode == QLatin1String("6") ||
+                errText.contains(QStringLiteral("locked"),
+                        Qt::CaseInsensitive));
+        // Retry on the event loop (non-blocking) for up to ~300 s, which
+        // comfortably outlasts even a full first-run device scan.
         constexpr int kRetryIntervalMs = 250;
         // The Android library scanner holds the SQLite write lock for the full
         // duration of the initial scan, which can exceed 3 minutes on large
