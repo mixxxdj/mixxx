@@ -1595,8 +1595,8 @@ void YouTubeFeature::rebuildSidebar() {
         } else {
             // Sounds loaded — list them. The payload carries the CDN URL so
             // activateChild() knows where to download from.
-            for (const auto& sound : m_myInstantSounds) {
-                pMemesNode->appendChild(sound.name, QString(kMyInstantPrefix + sound.mp3Url));
+            for (auto it = m_myInstantSounds.cbegin(); it != m_myInstantSounds.cend(); ++it) {
+                pMemesNode->appendChild(it->name, QString(kMyInstantPrefix + it->mp3Url));
             }
         }
     }
@@ -2205,6 +2205,7 @@ void YouTubeFeature::fetchMyInstantsSounds() {
                         R"re(data-url="(/media/sounds/[^"]+\.mp3)"[^>]*>\s*([^<]+?)\s*<)re"),
                 QRegularExpression::CaseInsensitiveOption);
 
+        // clazy:exclude=lambda-in-connect
         auto parse = [&](const QRegularExpression& re) {
             auto it = re.globalMatch(html);
             while (it.hasNext() && sounds.size() < 80) {

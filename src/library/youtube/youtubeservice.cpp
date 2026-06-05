@@ -598,7 +598,8 @@ void extractContinuationTokens(const QJsonValue& node, QStringList* out) {
             }
         }
     } else if (node.isArray()) {
-        for (const QJsonValue& v : node.toArray()) {
+        const QJsonArray arr = node.toArray(); // clazy:exclude=range-loop-detach
+        for (const QJsonValue& v : arr) {
             extractContinuationTokens(v, out);
             if (out->size() >= 1) {
                 return;
@@ -971,6 +972,7 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                     // paths. We recursively walk the JSON looking for
                     // "musicNavigationButtonRenderer" items which carry the
                     // genre/mood display text.
+                    // clazy:exclude=lambda-in-connect
                     std::function<void(const QJsonValue&)> extract =
                             [&genres, &extract](const QJsonValue& node) {
                                 if (genres.size() >= 100) {
@@ -1005,7 +1007,8 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                                         }
                                         return; // don't descend into matched renderer
                                     }
-                                    for (const QJsonValue& v : obj) {
+                                    const QJsonObject objCopy = obj; // clazy:exclude=range-loop-detach
+                                    for (const QJsonValue& v : objCopy) {
                                         extract(v);
                                     }
                                 } else if (node.isArray()) {
