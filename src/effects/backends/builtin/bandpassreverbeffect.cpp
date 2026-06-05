@@ -88,14 +88,7 @@ EffectManifestPointer BandpassReverbEffect::getManifest() {
     bpQ->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     bpQ->setRange(0.1, 0.707, 10);
 
-    EffectManifestParameterPointer order = pManifest->addParameter();
-    order->setId("filter_order");
-    order->setName(QObject::tr("Filter Order"));
-    order->setShortName(QObject::tr("Order"));
-    order->setDescription(QObject::tr("Controls steepness of band-pass filter"));
-    order->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    order->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    order->setRange(1, 1, 4);
+    
 
     return pManifest;
 }
@@ -108,7 +101,7 @@ void BandpassReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
     m_pBPFreqParameter = parameters.value("bp_freq");
     m_pBPQParameter = parameters.value("bp_q");
-    m_pOrderParameter = parameters.value("filter_order");
+   
 }
 
 
@@ -163,27 +156,14 @@ void BandpassReverbEffect::processChannel(
 
 
  std::vector<CSAMPLE> filteredBuffer(engineParameters.samplesPerBuffer());
-std::vector<CSAMPLE> tempBuffer(engineParameters.samplesPerBuffer());
 
-const int order = static_cast<int>(m_pOrderParameter->value());
+
+
 
 pState->butterworthBP.process(
         pInput,
         filteredBuffer.data(),
         engineParameters.samplesPerBuffer());
-
-for (int stage = 1; stage < order; ++stage) {
-
-    pState->butterworthBP.process(
-            filteredBuffer.data(),
-            tempBuffer.data(),
-            engineParameters.samplesPerBuffer());
-
-    filteredBuffer.swap(tempBuffer);
-}
-
-
-
 
 
     pState->reverb.processBuffer(
