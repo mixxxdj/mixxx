@@ -2205,8 +2205,8 @@ void YouTubeFeature::fetchMyInstantsSounds() {
                         R"re(data-url="(/media/sounds/[^"]+\.mp3)"[^>]*>\s*([^<]+?)\s*<)re"),
                 QRegularExpression::CaseInsensitiveOption);
 
-        auto parse = [&sounds, &seen, html](const QRegularExpression& re) {
-            auto it = re.globalMatch(html);
+        {
+            auto it = reOnclick.globalMatch(html);
             while (it.hasNext() && sounds.size() < 80) {
                 const auto m = it.next();
                 const QString path = m.captured(1).trimmed();
@@ -2218,11 +2218,20 @@ void YouTubeFeature::fetchMyInstantsSounds() {
                 sounds.append({name,
                         QStringLiteral("https://www.myinstants.com") + path});
             }
-        };
-
-        parse(reOnclick);
+        }
         if (sounds.isEmpty()) {
-            parse(reDataUrl);
+            auto it = reDataUrl.globalMatch(html);
+            while (it.hasNext() && sounds.size() < 80) {
+                const auto m = it.next();
+                const QString path = m.captured(1).trimmed();
+                const QString name = m.captured(2).trimmed();
+                if (name.isEmpty() || seen.contains(path)) {
+                    continue;
+                }
+                seen.insert(path);
+                sounds.append({name,
+                        QStringLiteral("https://www.myinstants.com") + path});
+            }
         }
 
         if (sounds.isEmpty()) {

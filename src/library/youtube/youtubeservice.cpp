@@ -972,7 +972,7 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                     // paths. We recursively walk the JSON looking for
                     // "musicNavigationButtonRenderer" items which carry the
                     // genre/mood display text.
-                    auto extract = [&genres](const QJsonValue& node, auto& self) -> void {
+                    auto extract = [&genres](const QJsonValue& node, auto& self) -> void { // clazy:exclude=lambda-in-connect
                         if (genres.size() >= 100) {
                             return; // cap at 100 genres
                         }
