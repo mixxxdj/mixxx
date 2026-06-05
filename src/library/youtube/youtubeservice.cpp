@@ -87,7 +87,7 @@ constexpr int kMinRequestGapMs = 300;
 // Jitter range: random delay added to minimum gap to look more human.
 // Each request gets a random delay in [kMinRequestGapMs, kMaxJitterMs].
 // Capped at 800 ms (was 1500 ms) so normal user interactions — quick search
-// then scroll — are not unnecessarily delayed.  The bot-detection benefit of
+// then scroll — are not unnecessarily delayed. The bot-detection benefit of
 // larger jitter values is marginal for normal single-user usage patterns.
 constexpr int kMaxJitterMs = 800;
 // Desktop yt-dlp self-update timeout — generous because it downloads a ~40 MB
