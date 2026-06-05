@@ -959,7 +959,12 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
     req.setTransferTimeout(kSearchTimeoutMs);
     applyYouTubeRequestAttributes(&req);
 
-    recordRequest();
+    // Do NOT call recordRequest() here — fetchMusicGenres() is a background
+    // metadata fetch to music.youtube.com (a different endpoint from the
+    // /search calls the user triggers). Recording it in the shared rate-limit
+    // pool would consume one of the kRateLimitBurst slots that user searches
+    // need, causing the very first user-initiated search after app activation
+    // to be throttled and return no results.
 
     QNetworkReply* reply = m_pNam->post(
             req, QJsonDocument(body).toJson(QJsonDocument::Compact));
@@ -1041,7 +1046,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
         int cap,
         int clientIdx,
         const std::function<void(const QString&)>& onAllFailed,
-        const QString& regionOverride) {
+        const QString& regionOverride,
+        int retryCount) {
     const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
     if (clientIdx < 0 || clientIdx >= clients.size()) {
         onAllFailed(tr("All InnerTube clients failed for search"));
@@ -1117,12 +1123,50 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     // Check for bot-flag recovery before each request attempt.
     maybeRecoverFromBotFlag();
 
-    // Rate-limit: if we've been sending too many requests, skip straight to
-    // fallback to avoid triggering a 429 that would flag the whole IP.
-    if (m_botFlagActive || shouldThrottleRequest()) {
-        kLogger.info() << "Throttled/bot-flagged: skipping InnerTube search, "
+    // Rate-limit / bot-flag check.
+    //
+    // When bot-flagged, skip all InnerTube clients entirely.
+    //
+    // When merely rate-limited, do NOT call tryNext() immediately — that
+    // exhausts every client in < 1 ms (the window has not advanced at all)
+    // and surfaces "no results" to the user. Instead, defer this exact same
+    // client attempt by kMaxJitterMs+100 ms (long enough to guarantee the
+    // minimum-gap check clears regardless of the random jitter value). Allow
+    // one deferred retry per call; if we are still throttled after waiting,
+    // fall through to tryNext() as a last resort.
+    if (m_botFlagActive) {
+        kLogger.info() << "Bot-flagged: skipping InnerTube search, "
                           "falling through to fallback";
-        tryNext(tr("Request throttled (bot-flag active or rate limit)"));
+        tryNext(tr("Request throttled (bot detection active)"));
+        return;
+    }
+    if (shouldThrottleRequest()) {
+        if (retryCount == 0) {
+            const int retryMs = kMaxJitterMs + 100;
+            kLogger.info() << "Throttled: deferring InnerTube search for"
+                           << requestQuery << "by" << retryMs << "ms"
+                           << "(client" << clientIdx << ")";
+            QPointer<YouTubeService> guard(this);
+            QTimer::singleShot(retryMs,
+                    this,
+                    [guard, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride]() {
+                        if (!guard) {
+                            return;
+                        }
+                        guard->searchViaInnerTube(emittedQuery,
+                                requestQuery,
+                                cap,
+                                clientIdx,
+                                onAllFailed,
+                                regionOverride,
+                                /*retryCount=*/1);
+                    });
+            return;
+        }
+        // Already waited once and still throttled — let the caller fall
+        // through to the next client / fallback gracefully.
+        kLogger.info() << "Throttled after retry: falling through to fallback";
+        tryNext(tr("Request throttled (rate limit, already retried)"));
         return;
     }
     recordRequest();
@@ -1966,8 +2010,31 @@ void YouTubeService::downloadViaInnerTubeClient(
         return;
     }
     if (shouldThrottleRequest()) {
-        // Defer to next client rather than hammering YouTube.
-        tryNext(tr("Rate limit — deferring to next client"));
+        // Defer rather than immediately trying the next client — advancing to
+        // the next client is pointless while still rate-limited (the window
+        // has not moved at all). Wait for the minimum gap to clear, then retry
+        // the same client. Only one deferred retry per client; if still
+        // throttled after waiting, fall through to the next client.
+        const int retryMs = kMaxJitterMs + 100;
+        kLogger.info() << "Throttled: deferring InnerTube download for"
+                       << videoId << "by" << retryMs << "ms"
+                       << "(client" << clientIdx << ")";
+        QPointer<YouTubeService> guard(this);
+        QTimer::singleShot(retryMs,
+                this,
+                [guard, videoId, cacheDir, clientIdx, onAllFailed]() {
+                    if (!guard) {
+                        return;
+                    }
+                    // Retry same client once; if still throttled tryNext fires.
+                    if (guard->shouldThrottleRequest()) {
+                        guard->downloadViaInnerTubeClient(
+                                videoId, cacheDir, clientIdx + 1, onAllFailed);
+                    } else {
+                        guard->downloadViaInnerTubeClient(
+                                videoId, cacheDir, clientIdx, onAllFailed);
+                    }
+                });
         return;
     }
     recordRequest();
