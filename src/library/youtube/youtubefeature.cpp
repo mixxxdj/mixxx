@@ -870,7 +870,13 @@ void YouTubeFeature::activate() {
     if (m_pTrackModel) {
         m_pTrackModel->select();
     }
-    rebuildHomeHtml();
+    // Defer the expensive rebuildHomeHtml() — it builds a massive HTML string
+    // with all results, genres, etc. and blocks the UI thread. The track table
+    // is the primary view now; the HTML pane is only a fallback.
+    // rebuildHomeHtml() is still called from bindLibraryWidget() and
+    // onSearchResultsReady() when results actually change.
+    // rebuildHomeHtml();
+    rebuildSidebar();
     // Prime the pane with Greek top songs from YouTube Music's songs category
     // on first open so a DJ sees music, not YouTube's generic live/gaming/news
     // trending page.
@@ -894,15 +900,6 @@ void YouTubeFeature::activate() {
         m_lastSearchError.clear();
         m_trendingFetchInFlight = true;
         rebuildSidebar();
-        rebuildHomeHtml();
-        // NOTE: we deliberately do NOT clear the youtube_library table here.
-        // The clear is a synchronous SQLite write on the UI thread; during the
-        // first-run device scan the LibraryScanner holds the write lock, so the
-        // DELETE blocked the main thread for several seconds (the "clicking
-        // YouTube lags" symptom) before failing anyway. The freshly-fetched
-        // results replace the table in onSearchResultsReady() once they arrive;
-        // until then the previous batch (or an empty table on first open) stays
-        // visible, which is strictly better than a frozen UI.
         kLogger.info() << "Fetching YouTube trending for region" << country;
         m_service.fetchTrending(country, kSearchResultsMax);
     }
@@ -1020,13 +1017,14 @@ void YouTubeFeature::searchAndActivate(const QString& query) {
     m_lastSearchError.clear();
     m_trendingFetchInFlight = false;
     rebuildSidebar();
-    rebuildHomeHtml();
-    // Do NOT clear youtube_library synchronously here — that DELETE on the UI
-    // thread stalls for seconds behind the LibraryScanner's write lock during
-    // the initial device scan (the "searching lags" symptom) and would fail
-    // under contention anyway. onSearchResultsReady() replaces the rows with
-    // the network results when they land; the previous batch stays visible in
-    // the meantime instead of freezing the UI on an empty clear.
+    // Clear the SQL model synchronously so the user does NOT see stale
+    // results filtered by the new query. The old BaseExternalTrackModel::search()
+    // was applying a SQL filter on top of the old rows, making it look like
+    // "search just filters cached results" instead of doing a fresh YouTube search.
+    if (m_pTrackModel) {
+        m_pTrackModel->setSearch(QString());
+    }
+    replaceTrackTable({});
     m_service.searchVideos(query, kSearchResultsMax);
 }
 

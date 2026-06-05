@@ -75,12 +75,11 @@ TrackModel::Capabilities YouTubeTrackModel::getCapabilities() const {
 }
 
 void YouTubeTrackModel::search(const QString& searchText) {
-    // Forward filter to the SQL backing — narrows already-loaded rows so
-    // there's instant feedback even while the network call is in flight.
-    BaseExternalTrackModel::search(searchText);
-    // Then ask the feature to fire a fresh YouTube search with the same
-    // query. Empty queries are common (the search box clears when the user
-    // backspaces everything) — skip the network call in that case.
+    // Do NOT call BaseExternalTrackModel::search() here — that applies a SQL
+    // filter on top of the existing rows, so the user sees stale results
+    // filtered by the new query instead of a fresh YouTube search.
+    // Instead, just emit the signal so searchAndActivate() fires a new
+    // YouTubeService search and clears the old results first.
     const QString trimmed = searchText.trimmed();
     if (trimmed.isEmpty()) {
         return;
