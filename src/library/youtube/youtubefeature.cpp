@@ -1076,16 +1076,22 @@ void YouTubeFeature::onSearchResultsReady(
         return; // a newer search has superseded this one
     }
     m_trendingFetchInFlight = false;
-    // Drop hour-long "megamix"/"best of" compilations from both the trending
-    // home feed AND explicit user searches — a DJ wants individual songs, not
-    // multi-hour continuous mixes. The same kTrendingMaxDurationSec threshold
-    // (15 min) applies in both cases. Items with unknown duration (0) are kept
-    // to avoid hiding genuine songs whose length failed to parse. Live streams
-    // are already excluded upstream by collectInnerTubeVideos().
+    // For the trending/home feed, drop hour-long "megamix" / "best of"
+    // compilations — a DJ wants individual songs, not 1-hour continuous mixes.
+    // For an explicit user search the filter is intentionally NOT applied:
+    // the user may be searching for an extended version, a live set, or a
+    // DJ mix on purpose, so we must not silently hide results. The constant
+    // name "kTrendingMaxDurationSec" reflects this scope. Items with an
+    // unknown duration (0) are always kept to avoid hiding genuine songs
+    // whose length failed to parse. Live streams are excluded upstream by
+    // collectInnerTubeVideos().
+    const bool isTrendingQuery =
+            query.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix);
     QList<mixxx::YouTubeVideoInfo> filtered;
     filtered.reserve(results.size());
     for (const mixxx::YouTubeVideoInfo& info : results) {
-        if (info.durationSec > kTrendingMaxDurationSec) {
+        if (isTrendingQuery && info.durationSec > 0 &&
+                info.durationSec > kTrendingMaxDurationSec) {
             continue;
         }
         filtered.append(info);
@@ -1677,25 +1683,30 @@ void YouTubeFeature::rebuildSidebar() {
     if (!m_downloadedTracks.isEmpty()) {
         TreeItem* pCachedNode = pRoot->appendChild(tr("Downloaded"));
         const QDir dir(cacheDir());
+        // Pre-scan the cache directory ONCE so we don't pay one
+        // dir.entryList({id+".*"}) glob call per downloaded track (which on
+        // Android emulated storage was ~10-50 ms × N tracks of UI-thread
+        // stall — the "clicking YouTube freezes" symptom whenever a sidebar
+        // rebuild fires after a new download).
+        QHash<QString, QString> cachedFiles; // videoId → local path
+        const QStringList allFiles =
+                dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+        for (const QString& f : allFiles) {
+            if (isYouTubeSidecarFile(f)) {
+                continue;
+            }
+            const int dotIdx = f.lastIndexOf(QLatin1Char('.'));
+            if (dotIdx > 0) {
+                const QString id = f.left(dotIdx);
+                if (!cachedFiles.contains(id)) {
+                    cachedFiles.insert(id, dir.filePath(f));
+                }
+            }
+        }
         for (auto it = m_downloadedTracks.cbegin();
                 it != m_downloadedTracks.cend();
                 ++it) {
-            const QStringList files =
-                    dir.entryList({it.key() + QStringLiteral(".*")},
-                            QDir::Files | QDir::NoDotAndDotDot);
-            QString localPath;
-            for (const QString& f : files) {
-                // Skip both yt-dlp's metadata sidecar (.info.json) and our
-                // SponsorBlock sidecar (.sponsorblock.json) — only the audio
-                // file is loadable. Without this guard, depending on
-                // filesystem sort order we could wire the sidebar entry to a
-                // JSON file.
-                if (isYouTubeSidecarFile(f)) {
-                    continue;
-                }
-                localPath = dir.filePath(f);
-                break;
-            }
+            const QString localPath = cachedFiles.value(it.key());
             if (localPath.isEmpty()) {
                 continue;
             }
