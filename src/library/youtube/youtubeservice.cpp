@@ -1007,7 +1007,8 @@ void YouTubeService::fetchMusicGenres(const QString& region) {
                                         }
                                         return; // don't descend into matched renderer
                                     }
-                                    const QJsonObject objCopy = obj; // clazy:exclude=range-loop-detach
+                                    const QJsonObject objCopy =
+                                            obj; // clazy:exclude=range-loop-detach
                                     for (const QJsonValue& v : objCopy) {
                                         extract(v);
                                     }
