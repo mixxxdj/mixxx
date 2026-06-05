@@ -1715,26 +1715,29 @@ void YouTubeService::downloadAudioStreamChunked(
         connect(reply, &QNetworkReply::readyRead, this, [reply, fb]() {
             fb->write(reply->readAll());
         });
-        connect(reply, &QNetworkReply::finished, this, [this, reply, fb, outPath, videoId, onFailure]() {
-            reply->deleteLater();
-            fb->write(reply->readAll());
-            fb->close();
-            if (reply->error() != QNetworkReply::NoError) {
-                QFile::remove(fb->fileName());
-                delete fb;
-                onFailure(reply->errorString());
-                return;
-            }
-            QFile::remove(outPath);
-            if (!fb->rename(outPath)) {
-                QFile::remove(fb->fileName());
-                delete fb;
-                onFailure(tr("Cannot finalize %1").arg(outPath));
-                return;
-            }
-            delete fb;
-            finalizeDownload(videoId, outPath);
-        });
+        connect(reply,
+                &QNetworkReply::finished,
+                this,
+                [this, reply, fb, outPath, videoId, onFailure]() {
+                    reply->deleteLater();
+                    fb->write(reply->readAll());
+                    fb->close();
+                    if (reply->error() != QNetworkReply::NoError) {
+                        QFile::remove(fb->fileName());
+                        delete fb;
+                        onFailure(reply->errorString());
+                        return;
+                    }
+                    QFile::remove(outPath);
+                    if (!fb->rename(outPath)) {
+                        QFile::remove(fb->fileName());
+                        delete fb;
+                        onFailure(tr("Cannot finalize %1").arg(outPath));
+                        return;
+                    }
+                    delete fb;
+                    finalizeDownload(videoId, outPath);
+                });
         return;
     }
 
@@ -1788,54 +1791,66 @@ void YouTubeService::downloadAudioStreamChunked(
             }
         });
 
-        connect(reply, &QNetworkReply::finished, this, [this, reply, outFile, writePos, state, outPath, videoId, onFailure]() {
-            reply->deleteLater();
+        connect(reply,
+                &QNetworkReply::finished,
+                this,
+                [this,
+                        reply,
+                        outFile,
+                        writePos,
+                        state,
+                        outPath,
+                        videoId,
+                        onFailure]() {
+                    reply->deleteLater();
 
-            // Drain any bytes that didn't trigger a readyRead.
-            if (!state->failed) {
-                const QByteArray tail = reply->readAll();
-                if (!tail.isEmpty()) {
-                    outFile->seek(*writePos);
-                    outFile->write(tail);
-                    *writePos += tail.size();
-                }
-            }
-            delete writePos;
+                    // Drain any bytes that didn't trigger a readyRead.
+                    if (!state->failed) {
+                        const QByteArray tail = reply->readAll();
+                        if (!tail.isEmpty()) {
+                            outFile->seek(*writePos);
+                            outFile->write(tail);
+                            *writePos += tail.size();
+                        }
+                    }
+                    delete writePos;
 
-            if (reply->error() != QNetworkReply::NoError &&
-                    !state->failed) {
-                state->failed = true;
-                state->error = reply->errorString();
-            }
+                    if (reply->error() != QNetworkReply::NoError &&
+                            !state->failed) {
+                        state->failed = true;
+                        state->error = reply->errorString();
+                    }
 
-            if (--state->remaining == 0) {
-                // Last chunk — finalize.
-                const bool ok = !state->failed;
-                const QString err = state->error;
-                delete state;
+                    if (--state->remaining == 0) {
+                        // Last chunk — finalize.
+                        const bool ok = !state->failed;
+                        const QString err = state->error;
+                        delete state;
 
-                outFile->close();
-                if (!ok) {
-                    QFile::remove(outFile->fileName());
-                    delete outFile;
-                    onFailure(tr("Chunked download failed: %1").arg(err));
-                    return;
-                }
-                QFile::remove(outPath);
-                if (!outFile->rename(outPath)) {
-                    const QString renErr = outFile->errorString();
-                    QFile::remove(outFile->fileName());
-                    delete outFile;
-                    onFailure(tr("Cannot finalize %1: %2")
-                                      .arg(outPath, renErr));
-                    return;
-                }
-                delete outFile;
-                kLogger.info() << "Chunked download completed:" << videoId
-                               << "→" << outPath;
-                finalizeDownload(videoId, outPath);
-            }
-        });
+                        outFile->close();
+                        if (!ok) {
+                            QFile::remove(outFile->fileName());
+                            delete outFile;
+                            onFailure(
+                                    tr("Chunked download failed: %1").arg(err));
+                            return;
+                        }
+                        QFile::remove(outPath);
+                        if (!outFile->rename(outPath)) {
+                            const QString renErr = outFile->errorString();
+                            QFile::remove(outFile->fileName());
+                            delete outFile;
+                            onFailure(tr("Cannot finalize %1: %2")
+                                            .arg(outPath, renErr));
+                            return;
+                        }
+                        delete outFile;
+                        kLogger.info()
+                                << "Chunked download completed:" << videoId
+                                << "→" << outPath;
+                        finalizeDownload(videoId, outPath);
+                    }
+                });
     }
 }
 
