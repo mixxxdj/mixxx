@@ -5,6 +5,8 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/dao/trackfingerprintdao.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
+#include "library/musicbrainzqueue/dlgacoustidsubmit.h"
 #include "library/musicbrainzqueue/musicbrainzqueuetablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -28,7 +30,8 @@ DlgMusicBrainzQueue::DlgMusicBrainzQueue(
                           pLibrary,
                           parent->getTrackTableBackgroundColorOpacity())),
           m_pQueueTableModel(nullptr),
-          m_pLibrary(pLibrary) {
+          m_pLibrary(pLibrary),
+          m_pConfig(pConfig) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -136,6 +139,39 @@ bool DlgMusicBrainzQueue::restoreCurrentViewState() {
     return m_pTrackTableView->restoreCurrentViewState();
 }
 
+bool DlgMusicBrainzQueue::confirmSubmitOrShowDialog(int trackCount) {
+    using namespace mixxx::library::prefs;
+
+    const QString savedKey = m_pConfig->getValue(
+            kAcoustIdUserApiKeyConfigKey, QString());
+    const bool autoSubmit = m_pConfig->getValue(
+            kAcoustIdAutoSubmitConfigKey, false);
+
+    if (!savedKey.isEmpty() && autoSubmit) {
+        return true;
+    }
+
+    DlgAcoustIdSubmit dlg(this, m_pConfig, trackCount);
+    if (dlg.exec() != QDialog::Accepted) {
+        return false;
+    }
+
+    if (dlg.rememberKey()) {
+        m_pConfig->set(
+                kAcoustIdUserApiKeyConfigKey,
+                ConfigValue{dlg.apiKey()});
+        m_pConfig->set(
+                kAcoustIdAutoSubmitConfigKey,
+                ConfigValue{true});
+    } else {
+        m_pConfig->set(
+                kAcoustIdUserApiKeyConfigKey,
+                ConfigValue{dlg.apiKey()});
+    }
+
+    return true;
+}
+
 void DlgMusicBrainzQueue::enqueueAndWake(const QList<TrackId>& trackIds) {
     if (trackIds.isEmpty()) {
         return;
@@ -173,6 +209,10 @@ void DlgMusicBrainzQueue::slotSubmitSelected() {
             trackIds.append(trackId);
         }
     }
+
+    if (!confirmSubmitOrShowDialog(trackIds.size())) {
+        return;
+    }
     enqueueAndWake(trackIds);
 }
 
@@ -185,6 +225,10 @@ void DlgMusicBrainzQueue::slotSubmitAll() {
         if (trackId.isValid()) {
             trackIds.append(trackId);
         }
+    }
+
+    if (!confirmSubmitOrShowDialog(trackIds.size())) {
+        return;
     }
     enqueueAndWake(trackIds);
 }
