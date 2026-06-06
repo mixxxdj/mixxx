@@ -155,6 +155,17 @@ TrackCollectionManager::TrackCollectionManager(
 }
 
 TrackCollectionManager::~TrackCollectionManager() {
+    // Stop AcoustID worker first
+    // The worker holds a thread-local DB connection. We must stop it before
+    // disconnectDatabase() closes the connection pool underneath it.
+    if (m_pAcoustIdWorker) {
+        kLogger.info() << "Stopping AcoustID worker thread";
+        m_pAcoustIdWorker->stop();
+        m_pAcoustIdWorker->wait();
+        kLogger.info() << "Stopped AcoustID worker thread";
+        m_pAcoustIdWorker.reset();
+    }
+
     if (m_pScanner) {
         while (m_pScanner->isRunning()) {
             kLogger.info() << "Stopping library scanner thread";
