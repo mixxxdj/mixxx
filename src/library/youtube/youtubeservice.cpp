@@ -1426,13 +1426,9 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
         const int delay = jitterDelayMs();
         kLogger.info() << "Throttled: retrying auto-fetch in" << delay << "ms";
         QPointer<YouTubeService> guard(this);
-        QTimer::singleShot(delay, this,
-                [guard, emittedQuery, cap, minResults,
-                 accumulated, clientIdx]() {
+        QTimer::singleShot(delay, this, [guard, emittedQuery, cap, minResults, accumulated, clientIdx]() {
                     if (guard) {
-                        guard->autoFetchContinuationPages(emittedQuery,
-                                cap, minResults,
-                                accumulated, clientIdx);
+                        guard->autoFetchContinuationPages(emittedQuery, cap, minResults, accumulated, clientIdx);
                     }
                 });
         return;
@@ -1444,9 +1440,7 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
     QNetworkReply* reply = m_pNam->post(
             req, QJsonDocument(body).toJson(QJsonDocument::Compact));
     QPointer<YouTubeService> guard(this);
-    connect(reply, &QNetworkReply::finished, this,
-            [this, reply, guard, emittedQuery, requestQuery, cap, minResults,
-             accumulated, clientIdx]() {
+    connect(reply, &QNetworkReply::finished, this, [this, reply, guard, emittedQuery, cap, minResults, accumulated, clientIdx]() {
         if (!guard) {
             return;
         }
@@ -1491,8 +1485,7 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                        << "results, total now" << accumulated.size();
         m_searchContinuationToken = extractContinuationToken(root);
         // Recurse if we still need more and there are more pages.
-        autoFetchContinuationPages(emittedQuery, cap,
-                minResults, accumulated, clientIdx);
+        autoFetchContinuationPages(emittedQuery, cap, minResults, accumulated, clientIdx);
     });
 }
 

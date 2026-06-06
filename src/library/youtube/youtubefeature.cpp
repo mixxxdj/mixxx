@@ -1151,12 +1151,10 @@ void YouTubeFeature::onSearchResultsReady(
     // the user saw an empty main area and the results "stuck" in the sidebar
     // tree only. This is the user-reported "I have YouTube on the left bar but
     // no actual results" symptom. Showing the model switches the main pane to
-    // the freshly-filled table and clears any stale search-box filter.
+    // the freshly-filled table. Re-emit the query so the search box shows
+    // what the user typed (setSearch(query) already set it on the model,
+    // but the view may not have picked it up yet).
     Q_EMIT showTrackModel(m_pTrackModel);
-    // Restore the search box text that was cleared by setSearch("") inside
-    // replaceTrackTable(). Library::slotShowTrackModel emits restoreSearch("")
-    // (currentSearch() is now empty), which blanks the search box. Re-emit
-    // the actual query so the user sees what they typed.
     if (!m_lastQuery.isEmpty() &&
             !m_lastQuery.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {
         Q_EMIT restoreSearch(m_lastQuery);
