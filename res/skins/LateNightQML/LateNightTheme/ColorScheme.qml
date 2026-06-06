@@ -6,24 +6,22 @@ QtObject {
     id: root
 
     readonly property string configScheme: Mixxx.Config.configScheme
-
-    readonly property string displayName: {
-        if (configScheme === "PaleMoon") {
-            return "PaleMoon";
-        } else if (configScheme === "Classic") {
-            return "Classic";
-        } else {
-            return "PaleMoon";
+    readonly property var schemes: ({
+        "PaleMoon": {
+            name: "palemoon",
+            displayName: "PaleMoon",
+            accentColor: "#d9b28c"
+        },
+        "Classic": {
+            name: "classic",
+            displayName: "Classic",
+            accentColor: "#e7c413"
         }
-    }
+    })
 
-    readonly property string name: {
-        if (configScheme === "PaleMoon") {
-            return "palemoon";
-        } else if (configScheme === "Classic") {
-            return "classic";
-        } else {
-            return "palemoon";
-        }
-    }
+    readonly property var activeScheme: schemes[configScheme] || schemes["PaleMoon"]
+
+    readonly property color accentColor: activeScheme.accentColor
+    readonly property string displayName: activeScheme.displayName
+    readonly property string name: activeScheme.name
 }

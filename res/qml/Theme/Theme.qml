@@ -1,18 +1,11 @@
 pragma Singleton
 import QtQuick 2.12
-import Mixxx 1.0 as Mixxx
 
 QtObject {
-    readonly property bool isLateNight: Mixxx.Config.configSkin === "LateNight QML (Experimental)"
-    readonly property string configScheme: Mixxx.Config.configScheme
-    readonly property color activeAccentColor: isLateNight
-        ? (configScheme === "Classic" ? "#e7c413" : "#d9b28c")
-        : "#3a60be"
-
-    property color accent: isLateNight ? activeAccentColor : "#2D4EA1"
-    property color accentColor: activeAccentColor
+    property color accent: "#2D4EA1"
+    property color accentColor: "#3a60be"
     property color backgroundColor: "#1e1e1e"
-    property color blue: isLateNight ? activeAccentColor : "#01dcfc"
+    property color blue: "#01dcfc"
     property color bpmSliderBarColor: blue
     property color buttonActiveColor: white
     property color buttonDisableColor: lightGray
