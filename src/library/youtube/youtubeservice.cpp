@@ -1493,10 +1493,10 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                         parseInnerTubeSearch(root, cap);
                 // Merge, deduplicating by video id.
                 QSet<QString> seen;
-                for (const auto& v : accumulated) {
+                for (const auto& v : qAsConst(accumulated)) {
                     seen.insert(v.id);
                 }
-                for (const auto& v : pageResults) {
+                for (const auto& v : qAsConst(pageResults)) {
                     if (!seen.contains(v.id)) {
                         accumulated.append(v);
                         seen.insert(v.id);
