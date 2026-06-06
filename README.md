@@ -1,8 +1,8 @@
+# DJ Sugar
+
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/winnerspiros/djsugar/main/res/images/icons/scalable/apps/mixxx.svg" width="128" height="128" alt="DJ Sugar logo">
-
-# DJ Sugar
 
 **Free, open-source DJ software for everybody.**
 
