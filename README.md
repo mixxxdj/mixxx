@@ -1,19 +1,8 @@
 # DJ Sugar
 
-<div align="center">
-
-<img src="https://raw.githubusercontent.com/winnerspiros/djsugar/main/res/images/icons/scalable/apps/mixxx.svg" width="128" height="128" alt="DJ Sugar logo">
+![DJ Sugar logo](https://raw.githubusercontent.com/winnerspiros/djsugar/main/res/images/icons/scalable/apps/mixxx.svg)
 
 **Free, open-source DJ software for everybody.**
-
-[![CI](https://img.shields.io/github/actions/workflow/status/winnerspiros/djsugar/build.yml?branch=main&label=build&logo=github)](https://github.com/winnerspiros/djsugar/actions/workflows/build.yml)
-[![Auto-Release](https://img.shields.io/github/actions/workflow/status/winnerspiros/djsugar/auto-release.yml?branch=main&label=release&logo=github)](https://github.com/winnerspiros/djsugar/actions/workflows/auto-release.yml)
-[![License](https://img.shields.io/badge/license-GPLv2-blue.svg)](LICENSE)
-[![Latest Release](https://img.shields.io/github/v/release/winnerspiros/djsugar?include_prereleases&label=release&logo=github)](https://github.com/winnerspiros/djsugar/releases)
-
-[Download](#downloads) · [Features](#features) · [Building](#building) · [Contributing](#contributing)
-
-</div>
 
 ---
 
@@ -27,12 +16,12 @@ Available on **Android**, **Linux**, **macOS**, and **Windows**.
 
 Grab the latest builds from the [Releases](https://github.com/winnerspiros/djsugar/releases) page. Every push to `main` publishes a new pre-release automatically.
 
-| Platform | File | Notes |
-|----------|------|-------|
-| **Android** | `*.apk` | ARM64, side-load & play |
-| **Windows** | `*.msi` | x64 + ARM64 |
-| **macOS** | `*.dmg` | Intel + Apple Silicon |
-| **Ubuntu** | `*.deb` | 24.04 LTS |
+| Platform  | File    | Notes                  |
+|-----------|---------|------------------------|
+| Android   | `*.apk` | ARM64, side-load & play |
+| Windows   | `*.msi` | x64 + ARM64            |
+| macOS     | `*.dmg` | Intel + Apple Silicon  |
+| Ubuntu    | `*.deb` | 24.04 LTS              |
 
 > Nightly builds are marked as pre-release. Tag a commit with `vX.Y.Z` for a stable release.
 
@@ -80,12 +69,12 @@ cd djsugar
 Found a bug? [Open an issue](https://github.com/winnerspiros/djsugar/issues/new/choose).
 Attach `mixxx.log` from your device:
 
-| Platform | Log location |
-|----------|-------------|
-| Android | `Android/data/org.mixxx/files/Documents/Mixxx/` |
-| Linux | `~/.local/share/mixxx/` |
-| Windows | `%LOCALAPPDATA%\Mixxx\` |
-| macOS | `~/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx/` |
+| Platform | Log location                                                                 |
+|----------|------------------------------------------------------------------------------|
+| Android  | `Android/data/org.mixxx/files/Documents/Mixxx/`                               |
+| Linux    | `~/.local/share/mixxx/`                                                       |
+| Windows  | `%LOCALAPPDATA%\Mixxx\`                                                      |
+| macOS    | `~/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx/` |
 
 ## License
 
