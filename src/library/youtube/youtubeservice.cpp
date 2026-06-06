@@ -1462,57 +1462,57 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                     minResults,
                     accumulated,
                     clientIdx]() {
-        if (!guard) {
-            return;
-        }
-        reply->deleteLater();
-        if (reply->error() != QNetworkReply::NoError) {
-            kLogger.warning()
-                    << "Auto-fetch continuation failed:"
-                    << reply->errorString()
-                    << "— emitting" << accumulated.size() << "results so far";
-            m_searchMinResults = 0;
-            Q_EMIT searchResultsReady(emittedQuery, accumulated);
-            return;
-        }
-        const QByteArray rawBody = reply->readAll();
-        const QJsonObject root =
-                QJsonDocument::fromJson(rawBody).object();
-        if (detectBotFlagging(
-                    reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
-                            .toInt(),
-                    root,
-                    rawBody)) {
-            kLogger.info() << "Bot-flagged during auto-fetch: emitting"
-                           << accumulated.size() << "results so far";
-            m_searchMinResults = 0;
-            Q_EMIT searchResultsReady(emittedQuery, accumulated);
-            return;
-        }
-        const QList<YouTubeVideoInfo> pageResults =
-                parseInnerTubeSearch(root, cap);
-        // Merge, deduplicating by video id.
-        QSet<QString> seen;
-        for (const auto& v : accumulated) {
-            seen.insert(v.id);
-        }
-        for (const auto& v : pageResults) {
-            if (!seen.contains(v.id)) {
-                accumulated.append(v);
-                seen.insert(v.id);
-            }
-        }
-        kLogger.info()
-                << "Auto-fetch page returned" << pageResults.size()
-                << "results, total now" << accumulated.size();
-        m_searchContinuationToken = extractContinuationToken(root);
-        // Recurse if we still need more and there are more pages.
-        autoFetchContinuationPages(emittedQuery,
-                cap,
-                minResults,
-                accumulated,
-                clientIdx);
-    });
+                if (!guard) {
+                    return;
+                }
+                reply->deleteLater();
+                if (reply->error() != QNetworkReply::NoError) {
+                    kLogger.warning()
+                            << "Auto-fetch continuation failed:"
+                            << reply->errorString()
+                            << "— emitting" << accumulated.size() << "results so far";
+                    m_searchMinResults = 0;
+                    Q_EMIT searchResultsReady(emittedQuery, accumulated);
+                    return;
+                }
+                const QByteArray rawBody = reply->readAll();
+                const QJsonObject root =
+                        QJsonDocument::fromJson(rawBody).object();
+                if (detectBotFlagging(
+                            reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                                    .toInt(),
+                            root,
+                            rawBody)) {
+                    kLogger.info() << "Bot-flagged during auto-fetch: emitting"
+                                   << accumulated.size() << "results so far";
+                    m_searchMinResults = 0;
+                    Q_EMIT searchResultsReady(emittedQuery, accumulated);
+                    return;
+                }
+                const QList<YouTubeVideoInfo> pageResults =
+                        parseInnerTubeSearch(root, cap);
+                // Merge, deduplicating by video id.
+                QSet<QString> seen;
+                for (const auto& v : accumulated) {
+                    seen.insert(v.id);
+                }
+                for (const auto& v : pageResults) {
+                    if (!seen.contains(v.id)) {
+                        accumulated.append(v);
+                        seen.insert(v.id);
+                    }
+                }
+                kLogger.info()
+                        << "Auto-fetch page returned" << pageResults.size()
+                        << "results, total now" << accumulated.size();
+                m_searchContinuationToken = extractContinuationToken(root);
+                // Recurse if we still need more and there are more pages.
+                autoFetchContinuationPages(emittedQuery,
+                        cap,
+                        minResults,
+                        accumulated,
+                        clientIdx);
+            });
 }
 
 void YouTubeService::searchViaPiped(const QString& query,
