@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   DJ Sugar adaptive icon foreground.
-
-  A top-down view of a turntable that IS a donut:
-   * Outer ring is the chocolate-frosted donut body.
-   * Center hole shows the slipmat / record disc through it.
-   * Sprinkles ride the donut.
-   * A tonearm pivots in from the top-right and a cartridge sits near the
-     "groove".
-
-  Layout note: the adaptive-icon safe zone is the central 72x72 dp; everything
-  meaningful is kept inside that. The tonearm is allowed to extend slightly
-  outside so it survives most launcher mask shapes (square, rounded, circle).
+  A frosted donut on a turntable: chocolate donut with colorful sprinkles,
+  dark slipmat visible through the hole, tonearm from top-right.
+  Fits the standard 108x108 dp adaptive-icon canvas; all meaningful
+  graphics inside the 72x72 dp safe zone.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -19,12 +12,11 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Slipmat / record visible through the donut hole. Sits behind the
-         donut so the donut's hole reveals it. -->
+    <!-- Slipmat / record visible through the donut hole. -->
     <path
         android:pathData="M54,54 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0"
         android:fillColor="#FF1F1A18"/>
-    <!-- Record label disc (the central spindle area). -->
+    <!-- Record label disc. -->
     <path
         android:pathData="M54,54 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
         android:fillColor="#FFE4467F"/>
@@ -33,23 +25,19 @@
         android:pathData="M54,54 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
         android:fillColor="#FFFFFFFF"/>
 
-    <!-- Donut body (chocolate frosting) — drawn as a thick ring using the
-         even-odd fill rule on a path that has both an outer and an inner
-         circle. -->
+    <!-- Donut body (chocolate frosting) — even-odd ring. -->
     <path
         android:pathData="M54,54 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0 M54,54 m-15,0 a15,15 0 1,1 30,0 a15,15 0 1,1 -30,0"
         android:fillType="evenOdd"
         android:fillColor="#FF5A2E1B"/>
 
-    <!-- Frosting drip / highlight along the outer top edge for that "freshly
-         glazed" look. -->
+    <!-- Frosting drip highlight along outer top edge. -->
     <path
         android:pathData="M30,52 a24,24 0 0,1 48,0 a24,24 0 0,0 -48,0 z"
         android:fillColor="#FF7B4326"
         android:fillAlpha="0.9"/>
 
-    <!-- Sprinkles. Each is a small rotated capsule, scattered around the
-         donut. Colors deliberately use Mixxx's existing accent palette. -->
+    <!-- Sprinkles. -->
     <group android:pivotX="54" android:pivotY="54" android:rotation="-25">
         <path android:pathData="M50,28 h6 v2 h-6 z" android:fillColor="#FF01DCFC"/>
     </group>
@@ -75,7 +63,7 @@
         <path android:pathData="M28,58 h6 v2 h-6 z" android:fillColor="#FFFFE066"/>
     </group>
 
-    <!-- Tonearm pivot block (upper-right corner of the safe zone). -->
+    <!-- Tonearm pivot block (upper-right). -->
     <path
         android:pathData="M86,22 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
         android:fillColor="#FFC0C0C8"/>
@@ -83,8 +71,7 @@
         android:pathData="M86,22 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
         android:fillColor="#FF6E6E76"/>
 
-    <!-- Tonearm, pivoting from the block to a cartridge sitting just inside
-         the donut groove. -->
+    <!-- Tonearm. -->
     <path
         android:pathData="M85,23 L65,46"
         android:strokeColor="#FFE6E6EE"

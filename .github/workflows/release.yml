@@ -3,29 +3,15 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
-      - "[0-9].[0-9]"
     tags:
       - "[0-9].[0-9].[0-9]"
       - "[0-9].[0-9]-*"
   workflow_dispatch:
 
-# Global allowed scopes for all actions
 permissions:
-  contents: write # to sync branches
-  pull-requests: write # to sync branches
-  checks: write #  to create new checks (coverallsapp/github-action)
+  contents: write
 
 jobs:
-  checks:
-    uses: ./.github/workflows/checks.yml
-
-  changelog:
-    uses: ./.github/workflows/changelog.yml
-    secrets:
-      MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT: ${{ secrets.MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT }}
-
   build:
     uses: ./.github/workflows/build.yml
     with:
@@ -45,28 +31,3 @@ jobs:
       ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
       NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
       RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
-
-  benchmark:
-    uses: ./.github/workflows/benchmark.yml
-    with:
-      branch: ${{ github.head_ref || github.ref_name }}
-
-  publish:
-    needs:
-      - build
-    uses: ./.github/workflows/flatpak.yml
-    # Flatpak repo only support stable (non-beta tag release), beta and alpha release publication
-    if: ${{ (github.ref_type == 'tag' && !contains('-', github.ref_name)) || github.ref_name == '2.6' || github.ref_name == 'main' }}
-    with:
-      ref: ${{ github.ref }}
-      update_repo: ${{ github.ref_name == 'main' }}
-      run_id: ${{ github.run_id }}
-    secrets:
-      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
-
-  sync:
-    if: ${{ github.ref_type != 'tag' && github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}
-    uses: ./.github/workflows/sync_branches.yml
-    secrets:
-      MIXXX_BRANCH_SYNC_PAT: ${{ secrets.MIXXX_BRANCH_SYNC_PAT }}
