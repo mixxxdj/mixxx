@@ -201,6 +201,18 @@ void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks)
                 this,
                 &AnalysisFeature::trackProgress);
 
+        // Wake the AcoustID worker when a batch finishes
+        // AnalyzerChromaprint::storeResults() enqueues tracks into acoustid_queue
+        // during analysis. Once the batch is done, wake the worker so it picks
+        // up those jobs without waiting for its next natural poll cycle.
+        auto* pWorker = m_pLibrary->trackCollectionManager()->acoustIdWorker();
+        if (pWorker) {
+            connect(m_pTrackAnalysisScheduler.get(),
+                    &TrackAnalysisScheduler::finished,
+                    pWorker,
+                    &mixxx::AcoustIdWorker::slotWakeUp);
+        }
+
         emit analysisActive(true);
     }
 
