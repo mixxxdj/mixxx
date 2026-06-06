@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
-#include <QTimer>
 #include <QUrl>
 #include <QVariant>
 

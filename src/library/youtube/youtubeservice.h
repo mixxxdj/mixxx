@@ -272,7 +272,6 @@ class YouTubeService : public QObject {
     /// emits searchResultsReady once the threshold is met or no more pages
     /// are available.
     void autoFetchContinuationPages(const QString& emittedQuery,
-            const QString& requestQuery,
             int cap,
             int minResults,
             QList<mixxx::YouTubeVideoInfo> accumulated,

@@ -153,6 +153,7 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     QPointer<WLibraryTextBrowser> m_pHomeView;
+    QPointer<WSearchLineEdit> m_pSearchbox;
     mixxx::YouTubeService m_service;
     /// Debounce timer for rebuildSidebar() + rebuildHomeHtml() — coalesces
     /// rapid-fire calls (e.g. during batch auto-analyze downloads) so the UI

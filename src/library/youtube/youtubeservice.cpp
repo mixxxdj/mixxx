@@ -1243,7 +1243,6 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                             << "Auto-fetching continuation pages: have"
                             << results.size() << "need" << m_searchMinResults;
                     autoFetchContinuationPages(emittedQuery,
-                            requestQuery,
                             cap,
                             m_searchMinResults,
                             results,
@@ -1357,7 +1356,6 @@ void YouTubeService::fetchMoreSearchResults(
 }
 
 void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
-        const QString& requestQuery,
         int cap,
         int minResults,
         QList<mixxx::YouTubeVideoInfo> accumulated,
@@ -1429,11 +1427,11 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
         kLogger.info() << "Throttled: retrying auto-fetch in" << delay << "ms";
         QPointer<YouTubeService> guard(this);
         QTimer::singleShot(delay, this,
-                [guard, emittedQuery, requestQuery, cap, minResults,
+                [guard, emittedQuery, cap, minResults,
                  accumulated, clientIdx]() {
                     if (guard) {
                         guard->autoFetchContinuationPages(emittedQuery,
-                                requestQuery, cap, minResults,
+                                cap, minResults,
                                 accumulated, clientIdx);
                     }
                 });
@@ -1493,7 +1491,7 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                        << "results, total now" << accumulated.size();
         m_searchContinuationToken = extractContinuationToken(root);
         // Recurse if we still need more and there are more pages.
-        autoFetchContinuationPages(emittedQuery, requestQuery, cap,
+        autoFetchContinuationPages(emittedQuery, cap,
                 minResults, accumulated, clientIdx);
     });
 }
