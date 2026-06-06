@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "library/dao/directorydao.h"
+#include "musicbrainz/acoustidworker.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -139,4 +140,6 @@ class TrackCollectionManager: public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+
+    std::unique_ptr<mixxx::AcoustIdWorker> m_pAcoustIdWorker;
 };
