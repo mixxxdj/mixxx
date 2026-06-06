@@ -7,6 +7,12 @@
   <project_license>GPL-2.0</project_license>
   <name>DJ Sugar</name>
   <summary>Everything you need to perform live DJ mixes</summary>
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Music</category>
+    <category>Player</category>
+  </categories>
   <description>
     <p>
       Mixxx is free DJ software that gives you everything you need to perform
