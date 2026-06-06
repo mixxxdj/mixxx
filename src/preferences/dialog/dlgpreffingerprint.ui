@@ -7,14 +7,15 @@
     <x>0</x>
     <y>0</y>
     <width>576</width>
-    <height>200</height>
+    <height>280</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Fingerprint Analysis Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
+
+   <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="checkBoxFingerprintEnabled">
      <property name="toolTip">
       <string>Compute Chromaprint fingerprints during track analysis. Fingerprints enable AcoustID identification and MusicBrainz metadata lookup. Disabled by default because fingerprinting reads the full audio file and is significantly slower than beat and key analysis.</string>
@@ -24,7 +25,67 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxAcoustId">
+     <property name="title">
+      <string>AcoustID Submission</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayoutAcoustId">
+
+      <!-- API key label and link -->
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="labelApiKeyInfo">
+        <property name="text">
+         <string>AcoustID User API Key (required for submission):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="lineEditAcoustIdApiKey">
+        <property name="toolTip">
+         <string>Your personal AcoustID API key. Required to submit unmatched fingerprints. Get yours at acoustid.org after linking your MusicBrainz account.</string>
+        </property>
+        <property name="placeholderText">
+         <string>Paste your API key here</string>
+        </property>
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelAcoustIdApiKeyLink">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAcoustIdAutoSubmit">
+        <property name="toolTip">
+         <string>Automatically submit unmatched fingerprints to AcoustID after lookup. Requires an API key. Only the Chromaprint fingerprint, track title, artist, duration, and MusicBrainz recording ID (if tagged) are sent — no audio is uploaded.</string>
+        </property>
+        <property name="text">
+         <string>Auto-submit unmatched fingerprints to AcoustID</string>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <item row="2" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
