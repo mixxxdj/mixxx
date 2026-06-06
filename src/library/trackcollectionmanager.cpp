@@ -67,6 +67,26 @@ TrackCollectionManager::TrackCollectionManager(
         externalCollection->establishConnection();
     }
 
+    // AcoustID background worker
+    // Disabled in test mode — tests do not have a real database connection pool
+    // that would satisfy the worker's thread-local connection requirement.
+    if (!deleteTrackForTestingFn) {
+        kLogger.info() << "Starting AcoustID worker thread";
+        m_pAcoustIdWorker = std::make_unique<mixxx::AcoustIdWorker>(
+                pConfig, pDbConnectionPool);
+
+        // The worker emits acoustidResultReady from its own thread.
+        // TrackDAO's m_database belongs to this (main) thread, so we use
+        // a queued connection — Qt will safely marshal the call across threads.
+        connect(m_pAcoustIdWorker.get(),
+                &mixxx::AcoustIdWorker::acoustidResultReady,
+                &m_pInternalCollection->getTrackDAO(),
+                &TrackDAO::updateAcoustIdResult,
+                Qt::QueuedConnection);
+
+        m_pAcoustIdWorker->start(QThread::LowPriority);
+    }
+
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     if (deleteTrackForTestingFn) {
         // Exclude the library scanner from tests
