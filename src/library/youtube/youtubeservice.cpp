@@ -736,7 +736,7 @@ void YouTubeService::searchVideos(const QString& query, int cap, int minResults)
             query,
             cap,
             /*clientIdx=*/0,
-            [this, query, cap, minResults](const QString& innerTubeError) {
+            [this, query, cap](const QString& innerTubeError) {
                 const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
 #if defined(Q_OS_ANDROID)
                 // On Android the community Piped instances are almost always
@@ -897,7 +897,7 @@ void YouTubeService::fetchTrending(const QString& region, int cap, int minResult
     m_searchMinResults = minResults;
     searchViaInnerTube(sentinelQuery, requestQuery, cap,
             /*clientIdx=*/0,
-            [this, r, cap, minResults](const QString& innerTubeError) {
+            [this, r, cap](const QString& innerTubeError) {
 #if defined(Q_OS_ANDROID)
                 // See searchVideos(): the Piped instances are effectively dead
                 // on Android and cycling through them only stalls the YouTube
@@ -1180,7 +1180,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, emittedQuery, requestQuery, cap, tryNext]() {
+            [this, reply, emittedQuery, requestQuery, cap, tryNext, clientIdx]() {
                 reply->deleteLater();
                 const int httpStatus = reply->attribute(
                                                     QNetworkRequest::HttpStatusCodeAttribute)
@@ -1461,7 +1461,7 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                     cap,
                     minResults,
                     accumulated,
-                    clientIdx]() {
+                    clientIdx]() mutable {
                 if (!guard) {
                     return;
                 }
