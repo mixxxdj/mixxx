@@ -388,7 +388,7 @@ bool TrackDAO::updateAcoustIdResult(
         const QString& musicbrainzRecordingId,
         const QString& musicbrainzReleaseId,
         const QString& musicbrainzTrackId,
-        const QString& musicbrainzArtistId) const {
+        const QString& musicbrainzArtistId) {
     kLogger.debug() << "Updating AcoustID result for track" << trackId;
     if (!trackId.isValid()) {
         return false;
