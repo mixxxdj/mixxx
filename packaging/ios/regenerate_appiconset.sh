@@ -8,7 +8,7 @@ if ! command -v inkscape &> /dev/null; then
     exit 1
 fi
 
-input_svg="res/images/icons/scalable/apps/mixxx_ios.svg"
+input_svg="res/images/icons/scalable/apps/mixxx.svg"
 output_dir="packaging/ios/Assets.xcassets/AppIcon.appiconset"
 
 echo "==> Generating icons from $input_svg..."
