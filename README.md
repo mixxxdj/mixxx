@@ -16,12 +16,10 @@ Available on **Android**, **Linux**, **macOS**, and **Windows**.
 
 Grab the latest builds from the [Releases](https://github.com/winnerspiros/djsugar/releases) page. Every push to `main` publishes a new pre-release automatically.
 
-| Platform  | File    | Notes                  |
-|-----------|---------|------------------------|
-| Android   | `*.apk` | ARM64, side-load & play |
-| Windows   | `*.msi` | x64 + ARM64            |
-| macOS     | `*.dmg` | Intel + Apple Silicon  |
-| Ubuntu    | `*.deb` | 24.04 LTS              |
+- **Android** — `*.apk` (ARM64, side-load & play)
+- **Windows** — `*.msi` (x64 + ARM64)
+- **macOS** — `*.dmg` (Intel + Apple Silicon)
+- **Ubuntu** — `*.deb` (24.04 LTS)
 
 > Nightly builds are marked as pre-release. Tag a commit with `vX.Y.Z` for a stable release.
 
@@ -69,12 +67,10 @@ cd djsugar
 Found a bug? [Open an issue](https://github.com/winnerspiros/djsugar/issues/new/choose).
 Attach `mixxx.log` from your device:
 
-| Platform | Log location                                                                 |
-|----------|------------------------------------------------------------------------------|
-| Android  | `Android/data/org.mixxx/files/Documents/Mixxx/`                               |
-| Linux    | `~/.local/share/mixxx/`                                                       |
-| Windows  | `%LOCALAPPDATA%\Mixxx\`                                                      |
-| macOS    | `~/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx/` |
+- **Android** — `Android/data/org.mixxx/files/Documents/Mixxx/`
+- **Linux** — `~/.local/share/mixxx/`
+- **Windows** — `%LOCALAPPDATA%\Mixxx\`
+- **macOS** — `~/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx/`
 
 ## License
 
