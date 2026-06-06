@@ -49,6 +49,12 @@ class TrackCollectionManager: public QObject,
         return m_externalCollections;
     }
 
+    /// Returns the AcoustID background worker, or nullptr in test mode.
+    /// Used by AnalysisFeature to wake the worker after a batch finishes.
+    mixxx::AcoustIdWorker* acoustIdWorker() const {
+        return m_pAcoustIdWorker.get();
+    }
+
     TrackPointer getTrackById(
             TrackId trackId) const;
     TrackPointer getTrackByRef(
