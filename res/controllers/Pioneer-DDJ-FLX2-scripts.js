@@ -788,6 +788,7 @@ DDJFLX2.toggleFourDeckMode = function(
         );
     }
 
+    DDJFLX2.updateAllBlinkingLEDs();
     DDJFLX2.updateSmartFaderLED();
 };
 
@@ -1338,15 +1339,15 @@ DDJFLX2.samplerPad = function(
     control,
     value,
     _status,
-    _group
+    group
 ) {
     if (!value) {
         return;
     }
 
     const pad = DDJFLX2.samplerPadFromControl(control);
-    const physicalDeck = channel + 1;
-    const samplerNo = pad + (physicalDeck - 1) * 8;
+    const deck = DDJFLX2.resolveDeck(group);
+    const samplerNo = pad + (deck.physicalDeck - 1) * 8;
     const samplerGroup = `[Sampler${  samplerNo  }]`;
 
     script.triggerControl(samplerGroup, "cue_gotoandplay");
@@ -1358,15 +1359,15 @@ DDJFLX2.samplerStopPad = function(
     control,
     value,
     _status,
-    _group
+    group
 ) {
     if (!value) {
         return;
     }
 
     const pad = DDJFLX2.samplerPadFromControl(control);
-    const physicalDeck = channel + 1;
-    const samplerNo = pad + (physicalDeck - 1) * 8;
+    const deck = DDJFLX2.resolveDeck(group);
+    const samplerNo = pad + (deck.physicalDeck - 1) * 8;
     const samplerGroup = `[Sampler${  samplerNo  }]`;
 
     script.triggerControl(samplerGroup, "stop");
@@ -1464,8 +1465,9 @@ DDJFLX2.switchCueLED = function(deck, enabled) {
 
 // Helper: turn off all loop pad LEDs for a specific physical deck.
 DDJFLX2.turnOffAllLoopPadLEDs = function(physicalDeck) {
+    const ledStatus = DDJFLX2.getPadLedStatus(physicalDeck, false);
     for (let pad = 1; pad <= 8; pad++) {
-        DDJFLX2.switchPadLED(physicalDeck, pad, false, false);
+        midi.sendShortMsg(ledStatus, 0x60 + (pad - 1), 0x00);
     }
 };
 
