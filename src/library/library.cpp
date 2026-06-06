@@ -19,6 +19,7 @@
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/mixxxlibraryfeature.h"
+#include "library/musicbrainzqueue/musicbrainzqueuefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
@@ -162,6 +163,14 @@ Library::Library(
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
+
+    // Fingerprint queue — shows tracks with a valid .chroma fingerprint that
+    // have not yet been matched to an AcoustID entry.  Always visible so users
+    // can monitor submission progress even when the auto-submit preference is off.
+    m_pMusicBrainzQueueFeature =
+            make_parented<MusicBrainzQueueFeature>(this, m_pConfig);
+    addFeature(m_pMusicBrainzQueueFeature);
+
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
     connect(pPlayerManager,
