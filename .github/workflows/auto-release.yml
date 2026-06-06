@@ -44,7 +44,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write   # needed to create/update GitHub Releases
+  contents: write  # needed to create/update GitHub Releases
 
 jobs:
   # ── 1. Determine the version string used everywhere ──────────────────────
@@ -57,9 +57,9 @@ jobs:
       release_name: ${{ steps.ver.outputs.release_name }}
       tag_name: ${{ steps.ver.outputs.tag_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          fetch-depth: 0   # need full history for git describe
+          fetch-depth: 0  # need full history for git describe
 
       - name: Compute version
         id: ver
@@ -140,12 +140,12 @@ jobs:
     # Run even if some builds fail so we still get a release with partial assets.
     if: always() && needs.version.result == 'success'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Download artifacts from each build by slug name (build.yml uses
       # artifacts_slug as the upload-artifact name).
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: release-assets
           pattern: "*-*"

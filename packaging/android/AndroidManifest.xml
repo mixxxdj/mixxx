@@ -50,7 +50,7 @@
             android:screenOrientation="sensorLandscape"
             android:resizeableActivity="true"
             android:exported="true"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
