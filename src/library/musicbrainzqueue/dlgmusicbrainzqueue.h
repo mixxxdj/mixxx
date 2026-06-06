@@ -49,10 +49,12 @@ class DlgMusicBrainzQueue : public QWidget,
   private:
     void activateButtons(bool enable);
     void enqueueAndWake(const QList<TrackId>& trackIds);
+    bool confirmSubmitOrShowDialog(int trackCount);
 
     // Note: m_pTrackTableView must be deleted before m_pQueueTableModel
     // because the view saves its header state through the model on destruction.
     WTrackTableView* m_pTrackTableView;
     MusicBrainzQueueTableModel* m_pQueueTableModel;
     Library* m_pLibrary;
+    UserSettingsPointer m_pConfig;
 };
