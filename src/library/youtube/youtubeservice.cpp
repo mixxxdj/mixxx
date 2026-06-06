@@ -29,6 +29,7 @@
 #include <QUrlQuery>
 #include <QVector>
 #include <atomic>
+#include <algorithm>
 #include <utility>
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
@@ -1493,10 +1494,10 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                         parseInnerTubeSearch(root, cap);
                 // Merge, deduplicating by video id.
                 QSet<QString> seen;
-                for (const auto& v : qAsConst(accumulated)) {
+                for (const auto& v : std::as_const(accumulated)) {
                     seen.insert(v.id);
                 }
-                for (const auto& v : qAsConst(pageResults)) {
+                for (const auto& v : std::as_const(pageResults)) {
                     if (!seen.contains(v.id)) {
                         accumulated.append(v);
                         seen.insert(v.id);
