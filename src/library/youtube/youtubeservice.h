@@ -68,7 +68,10 @@ class YouTubeService : public QObject {
 
     /// Run a search; emits searchResultsReady(query, results) on completion.
     /// `cap` is the max number of results returned to the caller.
-    void searchVideos(const QString& query, int cap = 25);
+    /// When the first page returns fewer than `minResults` and a continuation
+    /// token is available, additional pages are fetched automatically so the
+    /// initial result set is large enough for infinite scroll to work.
+    void searchVideos(const QString& query, int cap = 25, int minResults = 0);
 
     /// Fetch the next page of results for the most recent search() call.
     /// Uses the InnerTube continuation token stored from the last successful
@@ -89,7 +92,9 @@ class YouTubeService : public QObject {
     /// kTrendingQueryPrefix + region — YouTubeFeature recognizes that
     /// prefix and renders a "Trending in <Country>" header instead of
     /// "Results for: ...". This keeps the signal surface small.
-    void fetchTrending(const QString& region, int cap = 25);
+    /// When `minResults` > 0, continuation pages are fetched automatically
+    /// until at least that many results are available.
+    void fetchTrending(const QString& region, int cap = 25, int minResults = 0);
 
     /// Fetch music genres/moods from YouTube Music's browse API for the given
     /// region. Emits genresReady(genres) with a list of genre display names
@@ -262,6 +267,17 @@ class YouTubeService : public QObject {
     void searchViaYtDlp(const QString& query, int cap);
     void downloadViaYtDlp(const QString& videoId, const QString& cacheDir);
 
+    /// Auto-fetch continuation pages after an initial InnerTube search returns
+    /// fewer than `minResults` results. Accumulates results across pages and
+    /// emits searchResultsReady once the threshold is met or no more pages
+    /// are available.
+    void autoFetchContinuationPages(const QString& emittedQuery,
+            const QString& requestQuery,
+            int cap,
+            int minResults,
+            QList<mixxx::YouTubeVideoInfo> accumulated,
+            int clientIdx);
+
     /// Attempt to self-update the bundled yt-dlp binary on desktop. This runs
     /// `yt-dlp --update-to stable` in the background at most once per process
     /// lifetime. A failed update is non-fatal (we proceed with the existing
@@ -349,6 +365,10 @@ class YouTubeService : public QObject {
     /// Non-empty when there are more results to fetch via fetchMoreSearchResults().
     /// Cleared at the start of every new searchVideos() call.
     QString m_searchContinuationToken;
+    /// Minimum number of results to accumulate before emitting searchResultsReady.
+    /// When > 0, the service automatically fetches continuation pages until
+    /// this threshold is met or no more pages are available.
+    int m_searchMinResults = 0;
     /// Hardcoded fallback list of Piped API instances. Tried in order on
     /// per-request failure. The expanded list provides better resilience
     /// against community-maintained instances going offline.

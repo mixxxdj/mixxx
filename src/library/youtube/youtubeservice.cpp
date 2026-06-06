@@ -713,7 +713,7 @@ QString YouTubeService::locateYtDlp() {
 // Public API — InnerTube first (search + download), then Piped, then yt-dlp
 // =============================================================================
 
-void YouTubeService::searchVideos(const QString& query, int cap) {
+void YouTubeService::searchVideos(const QString& query, int cap, int minResults) {
     if (query.trimmed().isEmpty()) {
         Q_EMIT searchResultsReady(query, {});
         return;
@@ -721,10 +721,12 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
 #if defined(Q_OS_ANDROID)
     kLogger.info() << "[Android] searchVideos: query=" << query
                    << "cap=" << cap
+                   << "minResults=" << minResults
                    << "ytDlpPath=" << m_ytDlpPath;
 #endif
     // A new search invalidates any continuation from a previous search.
     m_searchContinuationToken.clear();
+    m_searchMinResults = minResults;
     // Primary backend: the YouTube InnerTube /search endpoint. It is hit
     // directly (no third-party Piped proxy), so it does not depend on the
     // health of community-run instances — which is why search used to return
@@ -734,7 +736,7 @@ void YouTubeService::searchVideos(const QString& query, int cap) {
             query,
             cap,
             /*clientIdx=*/0,
-            [this, query, cap](const QString& innerTubeError) {
+            [this, query, cap, minResults](const QString& innerTubeError) {
                 const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
 #if defined(Q_OS_ANDROID)
                 // On Android the community Piped instances are almost always
@@ -870,10 +872,11 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
             });
 }
 
-void YouTubeService::fetchTrending(const QString& region, int cap) {
+void YouTubeService::fetchTrending(const QString& region, int cap, int minResults) {
 #if defined(Q_OS_ANDROID)
     kLogger.info() << "[Android] fetchTrending: region=" << region
-                   << "cap=" << cap;
+                   << "cap=" << cap
+                   << "minResults=" << minResults;
 #endif
     // Empty / malformed region: fall back to the project default ("GR") rather
     // than failing, because an empty pane is the worst possible UX for a
@@ -891,9 +894,10 @@ void YouTubeService::fetchTrending(const QString& region, int cap) {
     // the region so YouTubeFeature renders a "Trending in <Country>" header.
     const QString sentinelQuery = kTrendingQueryPrefix + r;
     const QString requestQuery = countryTopSongsCategoryQuery(r);
+    m_searchMinResults = minResults;
     searchViaInnerTube(sentinelQuery, requestQuery, cap,
             /*clientIdx=*/0,
-            [this, r, cap](const QString& innerTubeError) {
+            [this, r, cap, minResults](const QString& innerTubeError) {
 #if defined(Q_OS_ANDROID)
                 // See searchVideos(): the Piped instances are effectively dead
                 // on Android and cycling through them only stalls the YouTube
@@ -1229,6 +1233,24 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                                << "results for" << requestQuery;
                 // Store continuation token for fetchMoreSearchResults().
                 m_searchContinuationToken = extractContinuationToken(root);
+                // If we need more results and a continuation token is available,
+                // auto-fetch additional pages before emitting. This ensures the
+                // initial result set is large enough for infinite scroll.
+                if (m_searchMinResults > 0 &&
+                        results.size() < m_searchMinResults &&
+                        !m_searchContinuationToken.isEmpty()) {
+                    kLogger.info()
+                            << "Auto-fetching continuation pages: have"
+                            << results.size() << "need" << m_searchMinResults;
+                    autoFetchContinuationPages(emittedQuery,
+                            requestQuery,
+                            cap,
+                            m_searchMinResults,
+                            results,
+                            clientIdx);
+                    return;
+                }
+                m_searchMinResults = 0;
                 Q_EMIT searchResultsReady(emittedQuery, results);
             });
 }
@@ -1332,6 +1354,148 @@ void YouTubeService::fetchMoreSearchResults(
                 m_searchContinuationToken = extractContinuationToken(root);
                 Q_EMIT searchMoreReady(emittedQuery, results);
             });
+}
+
+void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
+        const QString& requestQuery,
+        int cap,
+        int minResults,
+        QList<mixxx::YouTubeVideoInfo> accumulated,
+        int clientIdx) {
+    // Guard: no continuation token or already have enough.
+    if (m_searchContinuationToken.isEmpty() ||
+            accumulated.size() >= minResults) {
+        m_searchMinResults = 0;
+        Q_EMIT searchResultsReady(emittedQuery, accumulated);
+        return;
+    }
+    // Guard: cap is the hard upper bound — don't exceed it.
+    if (accumulated.size() >= cap) {
+        m_searchMinResults = 0;
+        Q_EMIT searchResultsReady(emittedQuery, accumulated);
+        return;
+    }
+
+    const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
+    if (clientIdx < 0 || clientIdx >= clients.size()) {
+        m_searchMinResults = 0;
+        Q_EMIT searchResultsReady(emittedQuery, accumulated);
+        return;
+    }
+    const InnerTubeClient& c = clients.at(clientIdx);
+    const QString token = m_searchContinuationToken;
+
+    QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/search"));
+    if (c.apiKey[0] != '\0') {
+        QUrlQuery query;
+        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
+        reqUrl.setQuery(query);
+    }
+
+    QJsonObject context;
+    QJsonObject clientCtx = innerTubeClientContext(c);
+    if (!m_visitorData.isEmpty()) {
+        clientCtx.insert(QStringLiteral("visitorData"), m_visitorData);
+    }
+    context.insert(QStringLiteral("client"), clientCtx);
+    QJsonObject body;
+    body.insert(QStringLiteral("context"), context);
+    body.insert(QStringLiteral("continuation"), token);
+
+    QNetworkRequest req(reqUrl);
+    req.setHeader(QNetworkRequest::ContentTypeHeader,
+            QStringLiteral("application/json"));
+    req.setRawHeader("User-Agent", QByteArray(c.userAgent));
+    req.setRawHeader("X-YouTube-Client-Name", QByteArray(c.clientNameId));
+    req.setRawHeader("X-YouTube-Client-Version", QByteArray(c.clientVersion));
+    if (!m_visitorData.isEmpty()) {
+        req.setRawHeader("X-Goog-Visitor-Id", m_visitorData.toUtf8());
+    }
+    req.setTransferTimeout(kSearchTimeoutMs);
+    applyYouTubeRequestAttributes(&req);
+    applyBrowserFingerprint(&req, c.clientNameId);
+
+    maybeRecoverFromBotFlag();
+    if (m_botFlagActive) {
+        kLogger.info() << "Bot-flagged: stopping auto-fetch, emitting"
+                       << accumulated.size() << "results";
+        m_searchMinResults = 0;
+        Q_EMIT searchResultsReady(emittedQuery, accumulated);
+        return;
+    }
+    if (shouldThrottleRequest()) {
+        // Defer: retry after jitter delay, preserving accumulated results.
+        const int delay = jitterDelayMs();
+        kLogger.info() << "Throttled: retrying auto-fetch in" << delay << "ms";
+        QPointer<YouTubeService> guard(this);
+        QTimer::singleShot(delay, this,
+                [guard, emittedQuery, requestQuery, cap, minResults,
+                 accumulated, clientIdx]() {
+                    if (guard) {
+                        guard->autoFetchContinuationPages(emittedQuery,
+                                requestQuery, cap, minResults,
+                                accumulated, clientIdx);
+                    }
+                });
+        return;
+    }
+    recordRequest();
+
+    kLogger.info() << "Auto-fetching continuation page: have"
+                   << accumulated.size() << "need" << minResults;
+    QNetworkReply* reply = m_pNam->post(
+            req, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    QPointer<YouTubeService> guard(this);
+    connect(reply, &QNetworkReply::finished, this,
+            [this, reply, guard, emittedQuery, requestQuery, cap, minResults,
+             accumulated, clientIdx]() {
+        if (!guard) {
+            return;
+        }
+        reply->deleteLater();
+        if (reply->error() != QNetworkReply::NoError) {
+            kLogger.warning()
+                    << "Auto-fetch continuation failed:"
+                    << reply->errorString()
+                    << "— emitting" << accumulated.size() << "results so far";
+            m_searchMinResults = 0;
+            Q_EMIT searchResultsReady(emittedQuery, accumulated);
+            return;
+        }
+        const QByteArray rawBody = reply->readAll();
+        const QJsonObject root =
+                QJsonDocument::fromJson(rawBody).object();
+        if (detectBotFlagging(
+                    reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                            .toInt(),
+                    root,
+                    rawBody)) {
+            kLogger.info() << "Bot-flagged during auto-fetch: emitting"
+                           << accumulated.size() << "results so far";
+            m_searchMinResults = 0;
+            Q_EMIT searchResultsReady(emittedQuery, accumulated);
+            return;
+        }
+        const QList<YouTubeVideoInfo> pageResults =
+                parseInnerTubeSearch(root, cap);
+        // Merge, deduplicating by video id.
+        QSet<QString> seen;
+        for (const auto& v : accumulated) {
+            seen.insert(v.id);
+        }
+        for (const auto& v : pageResults) {
+            if (!seen.contains(v.id)) {
+                accumulated.append(v);
+                seen.insert(v.id);
+            }
+        }
+        kLogger.info() << "Auto-fetch page returned" << pageResults.size()
+                       << "results, total now" << accumulated.size();
+        m_searchContinuationToken = extractContinuationToken(root);
+        // Recurse if we still need more and there are more pages.
+        autoFetchContinuationPages(emittedQuery, requestQuery, cap,
+                minResults, accumulated, clientIdx);
+    });
 }
 
 void YouTubeService::searchViaPiped(const QString& query,

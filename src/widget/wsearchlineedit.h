@@ -51,6 +51,10 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
   signals:
     void search(const QString& text);
+    /// Emitted only when the user presses Enter/Return in the search box,
+    /// not on keystroke-debounced searches. Use this for features that should
+    /// only search on explicit user action (e.g. YouTube).
+    void returnPressed(const QString& text);
     FocusWidget setLibraryFocus(FocusWidget newFocusWidget,
             Qt::FocusReason focusReason = Qt::OtherFocusReason);
 

@@ -38,6 +38,7 @@
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
+#include "widget/wsearchlineedit.h"
 
 namespace {
 const mixxx::Logger kLogger("YouTubeFeature");
@@ -949,7 +950,7 @@ void YouTubeFeature::activate() {
         m_trendingFetchInFlight = true;
         rebuildSidebar();
         kLogger.info() << "Fetching YouTube trending for region" << country;
-        m_service.fetchTrending(country, kSearchResultsMax);
+        m_service.fetchTrending(country, kSearchResultsMax, kSearchResultsMax);
     }
     // Auto-discover genres from YouTube Music for the user's region. Only
     // fetched once per session — the results are cached in m_discoveredGenres.
@@ -978,6 +979,19 @@ void YouTubeFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
     m_pHomeView = pBrowser.get();
     pLibraryWidget->registerView(QStringLiteral("YOUTUBE_HOME"), pBrowser);
     rebuildHomeHtml();
+}
+
+void YouTubeFeature::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
+    if (!pSearchboxWidget || !m_pTrackModel) {
+        return;
+    }
+    // Connect returnPressed (Enter key) to searchNow() so YouTube only
+    // searches when the user explicitly presses Enter, not on every
+    // keystroke-debounced signal.
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::returnPressed,
+            m_pTrackModel,
+            &YouTubeTrackModel::searchNow);
 }
 
 void YouTubeFeature::onHomeAnchorClicked(const QUrl& url) {
@@ -1074,14 +1088,13 @@ void YouTubeFeature::searchAndActivate(const QString& query) {
     // searchAndActivate(), so clearing it here would always wipe it.
     rebuildSidebar();
     // Clear the SQL model synchronously so the user does NOT see stale
-    // results filtered by the new query. The old BaseExternalTrackModel::search()
-    // was applying a SQL filter on top of the old rows, making it look like
-    // "search just filters cached results" instead of doing a fresh YouTube search.
+    // results filtered by the new query. Set the search to the query text
+    // (not empty) so the search box preserves what the user typed.
     if (m_pTrackModel) {
-        m_pTrackModel->setSearch(QString());
+        m_pTrackModel->setSearch(query);
     }
     replaceTrackTable({});
-    m_service.searchVideos(query, kSearchResultsMax);
+    m_service.searchVideos(query, kSearchResultsMax, kSearchResultsMax);
 }
 
 void YouTubeFeature::onSearchResultsReady(

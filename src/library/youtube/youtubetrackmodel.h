@@ -53,12 +53,19 @@ class YouTubeTrackModel : public BaseExternalTrackModel {
     QUrl getTrackUrl(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
     TrackModel::Capabilities getCapabilities() const override;
-    /// Override of BaseSqlTableModel::search — in addition to filtering the
-    /// existing rows (parent behaviour), dispatches a fresh
-    /// `YouTubeService::searchVideos(searchText)` request via the feature
-    /// so the table fills with live results as the user types in the
-    /// per-view search box.
+    /// Override of BaseSqlTableModel::search — does NOT dispatch a YouTube
+    /// search. This is intentional: YouTube searches are only triggered
+    /// explicitly via searchNow() (Enter key), not on every keystroke.
+    /// Keystroke searches are handled by the WSearchLineEdit debounce timer
+    /// which would fire a network request per typed character and clear the
+    /// search box text on every call. We only want to search when the user
+    /// presses Enter.
     void search(const QString& searchText) override;
+
+    /// Immediately emit searchRequested with the given query. Called when
+    /// the user presses Enter in the search box. Unlike search(), this does
+    /// NOT debounce — it fires the YouTube search right away.
+    void searchNow(const QString& query);
 
     /// Override of BaseSqlTableModel::getCoverInfo — serves the YouTube
     /// thumbnail (hqdefault.jpg) for each row instead of looking in the
@@ -102,10 +109,4 @@ class YouTubeTrackModel : public BaseExternalTrackModel {
     /// True when the service has reported a continuation token for the
     /// current search (i.e. more results are available via fetchMore).
     bool m_hasMore = false;
-    /// Debounce timer for the per-view search box. Keystroke search events
-    /// are delayed 400 ms so a full word is transmitted rather than one
-    /// YouTube request per character typed.
-    QTimer* m_searchDebounceTimer = nullptr;
-    /// Most recently typed (but not yet dispatched) search text.
-    QString m_pendingSearch;
 };
