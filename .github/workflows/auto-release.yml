@@ -145,7 +145,7 @@ jobs:
       # Download artifacts from each build by slug name (build.yml uses
       # artifacts_slug as the upload-artifact name).
       - name: Download all artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           path: release-assets
           pattern: "*-*"

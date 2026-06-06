@@ -141,7 +141,7 @@ jobs:
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
-        uses: ilammy/msvc-dev-cmd@v2
+        uses: ilammy/msvc-dev-cmd@v1
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
@@ -239,7 +239,7 @@ jobs:
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
-        uses: ammaraskar/msvc-problem-matcher@v0.3.1
+        uses: ammaraskar/msvc-problem-matcher@0.3.0
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
