@@ -18,6 +18,7 @@
 class AnalysisFeature;
 class AutoDJFeature;
 class BrowseFeature;
+class MusicBrainzQueueFeature;
 class ControlObject;
 class CrateFeature;
 class LibraryControl;
@@ -203,6 +204,7 @@ class Library: public QObject {
     parented_ptr<CrateFeature> m_pCrateFeature;
     parented_ptr<BrowseFeature> m_pBrowseFeature;
     parented_ptr<AnalysisFeature> m_pAnalysisFeature;
+    parented_ptr<MusicBrainzQueueFeature> m_pMusicBrainzQueueFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;
