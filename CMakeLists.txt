@@ -1436,6 +1436,9 @@ add_library(
   src/library/missing_hidden/hiddentablemodel.cpp
   src/library/missing_hidden/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/musicbrainzqueue/dlgmusicbrainzqueue.cpp
+  src/library/musicbrainzqueue/musicbrainzqueuefeature.cpp
+  src/library/musicbrainzqueue/musicbrainzqueuetablemodel.cpp
   src/library/overviewcache.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
