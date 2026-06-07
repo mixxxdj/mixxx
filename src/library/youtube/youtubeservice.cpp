@@ -28,8 +28,8 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QVector>
-#include <atomic>
 #include <algorithm>
+#include <atomic>
 #include <utility>
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
