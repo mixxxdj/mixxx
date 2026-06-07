@@ -10,8 +10,10 @@
 class QPaintEvent;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer) {
+        : WaveformRendererAbstract(waveformWidgetRenderer),
+          m_beatsPerBar(4) {
     m_beats.resize(128);
+    m_downbeats.resize(32);
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -20,6 +22,14 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
     m_beatColor = QColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
+
+    QString downbeatColorStr = context.selectString(node, "DownbeatColor");
+    if (downbeatColorStr.isEmpty()) {
+        m_downbeatColor = m_beatColor;
+    } else {
+        m_downbeatColor = QColor(downbeatColorStr);
+        m_downbeatColor = WSkinColor::getCorrectColor(m_downbeatColor).toRgb();
+    }
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -43,8 +53,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // drawing with QPainter on the QOpenGLWindow: instead of individual lines
     // a large rectangle encompassing all beatlines is drawn.
     m_beatColor.setAlphaF(1.f);
+    m_downbeatColor.setAlphaF(1.f);
 #else
     m_beatColor.setAlphaF(alpha/100.0);
+    m_downbeatColor.setAlphaF(alpha/100.0);
 #endif
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
@@ -78,15 +90,12 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->setRenderHint(QPainter::Antialiasing);
 
-    QPen beatPen(m_beatColor);
-    beatPen.setWidthF(std::max(1.0, scaleFactor()));
-    painter->setPen(beatPen);
-
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
     const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
 
     int beatCount = 0;
+    int downbeatCount = 0;
 
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
@@ -95,18 +104,54 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
-        // If we don't have enough space, double the size.
-        if (beatCount >= m_beats.size()) {
-            m_beats.resize(m_beats.size() * 2);
-        }
+        // Compute global beat index and normalize for negative values
+        int globalBeatIndex = it - trackBeats->cfirstmarker();
+        bool isDownbeat = ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar == 0;
 
-        if (orientation == Qt::Horizontal) {
-            m_beats[beatCount++].setLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+        if (isDownbeat) {
+            // If we don't have enough space, double the size.
+            if (downbeatCount >= m_downbeats.size()) {
+                m_downbeats.resize(m_downbeats.size() * 2);
+            }
+
+            if (orientation == Qt::Horizontal) {
+                m_downbeats[downbeatCount++].setLine(
+                        xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+            } else {
+                m_downbeats[downbeatCount++].setLine(
+                        0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+            }
         } else {
-            m_beats[beatCount++].setLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+            // If we don't have enough space, double the size.
+            if (beatCount >= m_beats.size()) {
+                m_beats.resize(m_beats.size() * 2);
+            }
+
+            if (orientation == Qt::Horizontal) {
+                m_beats[beatCount++].setLine(
+                        xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
+            } else {
+                m_beats[beatCount++].setLine(
+                        0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+            }
         }
     }
 
-    // Make sure to use constData to prevent detaches!
-    painter->drawLines(m_beats.constData(), beatCount);
+    // Draw regular beats with thin pen
+    if (beatCount > 0) {
+        QPen beatPen(m_beatColor);
+        beatPen.setWidthF(std::max(1.0, scaleFactor()));
+        painter->setPen(beatPen);
+        // Make sure to use constData to prevent detaches!
+        painter->drawLines(m_beats.constData(), beatCount);
+    }
+
+    // Draw downbeats with thick pen
+    if (downbeatCount > 0) {
+        QPen downbeatPen(m_downbeatColor);
+        downbeatPen.setWidthF(std::max(1.0, 2.0 * scaleFactor()));
+        painter->setPen(downbeatPen);
+        // Make sure to use constData to prevent detaches!
+        painter->drawLines(m_downbeats.constData(), downbeatCount);
+    }
 }
