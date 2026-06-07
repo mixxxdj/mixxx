@@ -154,6 +154,9 @@ AIBroFeature::AIBroFeature(Library* pLibrary,
           m_blendStep(0),
           m_blendFromDeck(-1),
           m_blendToDeck(-1),
+          m_manualTrackPath(),
+          m_manualTrackDeck(-1),
+          m_hasManualTrack(false),
           m_pLibrary(pLibrary),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
@@ -460,6 +463,8 @@ void AIBroFeature::findNextSong() {
 
     kLogger.info() << "AI Bro: discovering with" << queries.size()
                    << "queries";
+    // Snapshot current track locations so we can detect manual loads
+    m_searchTrackSnapshot = snapshotTrackLocations();
     m_downloading = true;
     for (const QString& q : queries) {
         if (m_pYouTubeFeature) {
@@ -473,6 +478,8 @@ void AIBroFeature::findNextSong() {
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::slotProgressTick() {
+    // Performance guard: minimal work per tick (1Hz)
+    // All operations are O(1) — no loops over large collections
     if (!isActive() || m_blending) {
         return;
     }
@@ -524,6 +531,18 @@ void AIBroFeature::slotSearchResultsReady(
     }
 
     kLogger.info() << "AI Bro: received" << results.size() << "results";
+
+    // --- Manual track override ---
+    // If user loaded a track manually while we were searching,
+    // use that instead of the YouTube result.
+    QString manualPath = findNewManualTrack();
+    if (!manualPath.isEmpty()) {
+        kLogger.info()
+                << "AI Bro: user loaded manual track, using that instead";
+        m_downloading = false;
+        loadAndBlend(manualPath);
+        return;
+    }
 
     auto candidate = pickBestCandidate(results);
     double score = scoreCandidate(candidate);
@@ -917,4 +936,56 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
                    << ", extended:" << isExtended << ")";
 
     return vocalStartPercent;
+}
+
+// ---------------------------------------------------------------------------
+// Manual track detection — user can load tracks while AI Bro runs
+// ---------------------------------------------------------------------------
+
+QMap<int, QString> AIBroFeature::snapshotTrackLocations() const {
+    QMap<int, QString> snapshot;
+    if (!m_pPlayerManager) {
+        return snapshot;
+    }
+    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
+        auto* pPlayer = m_pPlayerManager->getDeck(i);
+        if (!pPlayer) {
+            continue;
+        }
+        auto* pTrack = pPlayer->getLoadedTrack();
+        if (pTrack) {
+            snapshot[i] = pTrack->getLocation();
+        }
+    }
+    return snapshot;
+}
+
+QString AIBroFeature::findNewManualTrack() {
+    if (!m_pPlayerManager) {
+        return {};
+    }
+    QMap<int, QString> current = snapshotTrackLocations();
+    for (auto it = current.begin(); it != current.end(); ++it) {
+        int deck = it.key();
+        const QString& location = it.value();
+        // Check if this deck has a different track than when we started
+        // searching, and the deck is not currently playing (user loaded
+        // it to an inactive deck for us to mix in)
+        if (m_searchTrackSnapshot.contains(deck) &&
+                m_searchTrackSnapshot[deck] == location) {
+            continue;  // Same track as before
+        }
+        if (!m_searchTrackSnapshot.contains(deck) && location.isEmpty()) {
+            continue;  // Was empty, still empty
+        }
+        // Found a new track! But only use it if the deck is not already
+        // playing (user loaded it to an inactive deck)
+        if (!isDeckPlaying(deck)) {
+            kLogger.info()
+                    << "AI Bro: detected manual track on deck" << (deck + 1)
+                    << ":" << location;
+            return location;
+        }
+    }
+    return {};
 }

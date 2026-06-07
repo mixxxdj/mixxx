@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QList>
+#include <QMap>
 #include <QSet>
 #include <QTimer>
 
@@ -32,6 +33,8 @@ class YouTubeFeature;
 /// - Volume fader + crossfader combined transitions
 /// - BPM-aware sync and tempo matching
 /// - Vocal overlap avoidance
+/// - Semantic word scoring for lyrics similarity
+/// - Vocal sync via position seeking
 ///
 /// Control architecture (Mixxx control-based):
 /// - [Master]crossfader for crossfade position
@@ -41,6 +44,14 @@ class YouTubeFeature;
 /// - [ChannelN]volume for volume
 /// - [ChannelN]playposition for progress
 /// - PlayerManager::slotLoadToDeck for track loading
+///
+/// User interaction model:
+/// - AI Bro NEVER blocks user actions — you can load tracks manually
+///   and it will detect and use them instead of searching YouTube
+/// - All operations are non-blocking (timers, async signals)
+/// - CPU usage is minimal (1s timer ticks, no audio analysis)
+/// - If user loads a track while AI Bro is searching, the search
+///   result is discarded and the user's track is used instead
 class AIBroFeature : public QObject {
     Q_OBJECT
   public:
@@ -67,6 +78,7 @@ class AIBroFeature : public QObject {
     void slotDownloadFailed(
             const QString& videoId, const QString& error);
     void slotBlendTick();
+    void slotManualTrackLoaded(int deckNumber);
 
   private:
     // --- Song discovery ---
@@ -95,6 +107,10 @@ class AIBroFeature : public QObject {
     // --- Vocal sync helpers ---
     double estimateVocalStartPosition(int deckIndex) const;
 
+    // --- Manual track detection ---
+    QMap<int, QString> snapshotTrackLocations() const;
+    QString findNewManualTrack();
+
     // --- State ---
     QTimer* m_pProgressTimer;
     QTimer* m_pBlendTimer;
@@ -115,6 +131,15 @@ class AIBroFeature : public QObject {
     QSet<QString> m_playedVideoIds;
     /// Played song keys (title|uploader lowercased).
     QSet<QString> m_playedSongKeys;
+
+    /// If user manually loads a track while we're searching, store it here
+    /// and use it instead of the YouTube search result.
+    QString m_manualTrackPath;
+    int m_manualTrackDeck;
+    bool m_hasManualTrack;
+
+    /// Snapshot of track locations when search started (for manual override).
+    QMap<int, QString> m_searchTrackSnapshot;
 
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
