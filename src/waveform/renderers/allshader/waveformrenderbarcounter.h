@@ -1,8 +1,9 @@
 #pragma once
 
 #include <QColor>
+#include <QObject>
 
-#include "rendergraph/node.h"
+#include "rendergraph/geometrynode.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
@@ -10,7 +11,6 @@ class QDomNode;
 class SkinContext;
 
 namespace rendergraph {
-class GeometryNode;
 class Context;
 } // namespace rendergraph
 
@@ -21,7 +21,7 @@ class WaveformRenderBarCounter;
 class allshader::WaveformRenderBarCounter final
         : public QObject,
           public ::WaveformRendererAbstract,
-          public rendergraph::Node {
+          public rendergraph::GeometryNode {
     Q_OBJECT
   public:
     explicit WaveformRenderBarCounter(WaveformWidgetRenderer* waveformWidget,
