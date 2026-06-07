@@ -200,43 +200,6 @@ static const QSet<QString>& stopWords() {
 }
 
 // Camelot Wheel: compatible keys for harmonic mixing
-// Built at runtime to avoid clang-format issues with large initializers
-static QHash<QString, QStringList> buildCamelotMap() {
-    QHash<QString, QStringList> m;
-    // Major keys
-    m["C"] = {"C", "Am", "G", "F"};
-    m["G"] = {"G", "Em", "D", "C"};
-    m["D"] = {"D", "Bm", "A", "G"};
-    m["A"] = {"A", "F#m", "E", "D"};
-    m["E"] = {"E", "C#m", "B", "A"};
-    m["B"] = {"B", "G#m", "F#", "E"};
-    m["F#"] = {"F#", "D#m", "C#", "B"};
-    m["Db"] = {"Db", "Bbm", "Ab", "Gb"};
-    m["Ab"] = {"Ab", "Fm", "Eb", "Db"};
-    m["Eb"] = {"Eb", "Cm", "Bb", "Ab"};
-    m["Bb"] = {"Bb", "Gm", "F", "Eb"};
-    m["F"] = {"F", "Dm", "C", "Bb"};
-    // Minor keys
-    m["Am"] = {"Am", "C", "Em", "Dm"};
-    m["Em"] = {"Em", "G", "Bm", "Am"};
-    m["Bm"] = {"Bm", "D", "F#m", "Em"};
-    m["F#m"] = {"F#m", "A", "C#m", "Bm"};
-    m["C#m"] = {"C#m", "E", "G#m", "F#m"};
-    m["G#m"] = {"G#m", "B", "D#m", "C#m"};
-    m["D#m"] = {"D#m", "F#", "A#m", "G#m"};
-    m["Bbm"] = {"Bbm", "Db", "Fm", "Ebm"};
-    m["Fm"] = {"Fm", "Ab", "Cm", "Bbm"};
-    m["Cm"] = {"Cm", "Eb", "Gm", "Fm"};
-    m["Gm"] = {"Gm", "Bb", "Dm", "Cm"};
-    m["Dm"] = {"Dm", "F", "Am", "Gm"};
-    return m;
-}
-
-const QHash<QString, QStringList>& camelotMap() {
-    static const auto* m = new QHash<QString, QStringList>(buildCamelotMap());
-    return *m;
-}
-
 // Keywords indicating remix/extended (better for DJ mixing)
 static const QStringList& remixKeywords() {
     static const QStringList* k = []() {
@@ -264,66 +227,6 @@ static const QStringList& remixKeywords() {
         return list;
     }();
     return *k;
-}
-
-// Genre-specific mixing rules (from AI-DJ-Mixing-System)
-// Controls crossfade duration and EQ strength per genre
-struct MixingRule {
-    double overlapMultiplier; // 1.0 = 8s, 2.0 = 16s, 0.5 = 4s
-    double eqFilterStrength;  // 1.0 = normal, 1.5 = strong filtering
-    bool useBreakdown;        // Prefer breakdown transitions
-};
-
-static QHash<QString, MixingRule> buildMixingRules() {
-    QHash<QString, MixingRule> r;
-    r["edm"] = {2.0, 1.5, true};
-    r["house"] = {1.5, 1.2, true};
-    r["techno"] = {1.5, 1.3, true};
-    r["trance"] = {1.8, 1.4, true};
-    r["dubstep"] = {1.2, 1.3, false};
-    r["drum and bass"] = {1.2, 1.2, true};
-    r["hip hop"] = {0.5, 0.8, false};
-    r["rap"] = {0.5, 0.8, false};
-    r["r&b"] = {0.75, 0.9, false};
-    r["pop"] = {1.0, 1.0, false};
-    r["rock"] = {0.75, 0.9, false};
-    r["dancehall"] = {0.75, 0.9, false};
-    r["reggaeton"] = {0.75, 0.9, false};
-    return r;
-}
-
-const QHash<QString, MixingRule>& mixingRules() {
-    static const auto* r =
-            new QHash<QString, MixingRule>(buildMixingRules());
-    return *r;
-}
-
-// Genre-specific transition type preferences (for scoring)
-struct TransitionRule {
-    QString preferredTransition;
-    QString energyPref;
-    double crossfadeMultiplier;
-};
-
-static QHash<QString, TransitionRule> buildTransitionRules() {
-    QHash<QString, TransitionRule> r;
-    r["house"] = {"breakdown", "smooth", 1.0};
-    r["techno"] = {"breakdown", "energetic", 0.8};
-    r["trance"] = {"buildup", "energetic", 1.2};
-    r["dubstep"] = {"drop", "energetic", 0.7};
-    r["drum and bass"] = {"breakdown", "energetic", 0.8};
-    r["hip hop"] = {"verse_end", "smooth", 1.0};
-    r["r&b"] = {"verse_end", "smooth", 1.1};
-    r["pop"] = {"chorus_end", "energetic", 1.0};
-    r["edm"] = {"pre_drop", "energetic", 0.9};
-    r["dancehall"] = {"verse_end", "energetic", 0.9};
-    return r;
-}
-
-const QHash<QString, TransitionRule>& transitionRules() {
-    static const auto* r =
-            new QHash<QString, TransitionRule>(buildTransitionRules());
-    return *r;
 }
 
 } // namespace
@@ -486,10 +389,10 @@ double AIBroFeature::scoreCandidate(
     const QString videoU = candidate.uploader.toLower().trimmed();
 
     // --- 1. Title word overlap (Jaccard) ---
-    const QSet<QString> titleWords =
-            QSet<QString>::fromList(currentT.split(' ', Qt::SkipEmptyParts));
-    const QSet<QString> videoWords =
-            QSet<QString>::fromList(videoT.split(' ', Qt::SkipEmptyParts));
+    const QStringList titleList = currentT.split(' ', Qt::SkipEmptyParts);
+    const QSet<QString> titleWords(titleList.begin(), titleList.end());
+    const QStringList videoList = videoT.split(' ', Qt::SkipEmptyParts);
+    const QSet<QString> videoWords(videoList.begin(), videoList.end());
     if (!titleWords.isEmpty() && !videoWords.isEmpty()) {
         int common = 0;
         for (const QString& w : titleWords) {
@@ -1095,7 +998,7 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
     if (!pPlayer) {
         return 0.0;
     }
-    auto* pTrack = pPlayer->getLoadedTrack();
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (!pTrack) {
         return 0.0;
     }
@@ -1171,7 +1074,7 @@ QMap<int, QString> AIBroFeature::snapshotTrackLocations() const {
         if (!pPlayer) {
             continue;
         }
-        auto* pTrack = pPlayer->getLoadedTrack();
+        TrackPointer pTrack = pPlayer->getLoadedTrack();
         if (pTrack) {
             snapshot[i] = pTrack->getLocation();
         }
@@ -1226,7 +1129,7 @@ double AIBroFeature::getCurrentPlayingBPM() const {
         if (!pPlayer) {
             continue;
         }
-        auto* pTrack = pPlayer->getLoadedTrack();
+        TrackPointer pTrack = pPlayer->getLoadedTrack();
         if (pTrack) {
             double bpm = pTrack->getBpm();
             if (bpm > 0) {
