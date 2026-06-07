@@ -2248,7 +2248,9 @@ if(BUILD_TESTING)
 
   add_executable(mixxx-test ${src-mixxx-test})
 
-  target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+  if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+  endif()
   set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
   target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
 
