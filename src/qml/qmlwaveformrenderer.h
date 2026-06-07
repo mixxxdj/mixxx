@@ -299,6 +299,27 @@ class QmlWaveformRendererBeat
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
+class QmlWaveformRendererBarCounter
+        : public QmlWaveformRendererFactory {
+    Q_OBJECT
+    Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
+    Q_PROPERTY(int beatsPerBar MEMBER m_beatsPerBar NOTIFY beatsPerBarChanged)
+    QML_NAMED_ELEMENT(WaveformRendererBarCounter)
+
+  public:
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
+  signals:
+    void colorChanged(const QColor&);
+    void beatsPerBarChanged(int);
+
+  private:
+    QColor m_color{255, 255, 255, 180};
+    int m_beatsPerBar{4};
+    ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
+};
+
 class QmlWaveformMarkRange : public QObject {
     Q_OBJECT
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)

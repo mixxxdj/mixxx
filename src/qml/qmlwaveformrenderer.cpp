@@ -9,6 +9,7 @@
 
 #include "moc_qmlwaveformrenderer.cpp"
 #include "util/assert.h"
+#include "waveform/renderers/allshader/waveformrenderbarcounter.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
 #include "waveform/renderers/allshader/waveformrendererfiltered.h"
@@ -293,6 +294,28 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
             });
     connect(this,
             &QmlWaveformRendererBeat::beatsPerBarChanged,
+            pRenderer.get(),
+            [pRenderer = pRenderer.get()](int beatsPerBar) {
+                pRenderer->setBeatsPerBar(beatsPerBar);
+            });
+    return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererBarCounter::create(
+        WaveformWidgetRenderer* waveformWidget,
+        mixxx::qml::WaveformRendererSignalBaseOptions) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRenderBarCounter>(
+            waveformWidget, m_position);
+    pRenderer->setColor(m_color);
+    pRenderer->setBeatsPerBar(m_beatsPerBar);
+    connect(this,
+            &QmlWaveformRendererBarCounter::colorChanged,
+            pRenderer.get(),
+            [pRenderer = pRenderer.get()](const QColor& color) {
+                pRenderer->setColor(color);
+            });
+    connect(this,
+            &QmlWaveformRendererBarCounter::beatsPerBarChanged,
             pRenderer.get(),
             [pRenderer = pRenderer.get()](int beatsPerBar) {
                 pRenderer->setBeatsPerBar(beatsPerBar);
