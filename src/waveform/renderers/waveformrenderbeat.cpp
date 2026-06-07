@@ -71,10 +71,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const double lastDisplayedPosition =
             m_waveformRenderer->getLastDisplayedPosition();
 
-    // qDebug() << "trackSamples" << trackSamples
-    //          << "firstDisplayedPosition" << firstDisplayedPosition
-    //          << "lastDisplayedPosition" << lastDisplayedPosition;
-
     const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             firstDisplayedPosition * trackSamples);
     const auto endPosition = mixxx::audio::FramePos::fromEngineSamplePos(
@@ -97,6 +93,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int beatCount = 0;
     int downbeatCount = 0;
 
+    const auto firstMarker = trackBeats->cfirstmarker();
+
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
@@ -104,8 +102,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
-        // Compute global beat index and normalize for negative values
-        int globalBeatIndex = it - trackBeats->cfirstmarker();
+        int globalBeatIndex = it - firstMarker;
         bool isDownbeat = ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar == 0;
 
         if (isDownbeat) {
