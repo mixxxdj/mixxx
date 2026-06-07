@@ -269,8 +269,8 @@ static const QStringList& remixKeywords() {
 // Controls crossfade duration and EQ strength per genre
 struct MixingRule {
     double overlapMultiplier; // 1.0 = 8s, 2.0 = 16s, 0.5 = 4s
-    double eqFilterStrength; // 1.0 = normal, 1.5 = strong filtering
-    bool useBreakdown; // Prefer breakdown transitions
+    double eqFilterStrength;  // 1.0 = normal, 1.5 = strong filtering
+    bool useBreakdown;        // Prefer breakdown transitions
 };
 
 static QHash<QString, MixingRule> buildMixingRules() {
@@ -550,8 +550,18 @@ double AIBroFeature::scoreCandidate(
     }
 
     // --- 5. Genre/vibe heuristics ---
-    static const QStringList kEnergyWords = {
-            "remix", "mix", "edit", "extended", "club", "festival", "live", "session", "bootleg", "mashup", "flip", "rework"};
+    static const QStringList kEnergyWords = {"remix",
+            "mix",
+            "edit",
+            "extended",
+            "club",
+            "festival",
+            "live",
+            "session",
+            "bootleg",
+            "mashup",
+            "flip",
+            "rework"};
     int energyMatches = 0;
     for (const QString& ew : kEnergyWords) {
         if (videoT.contains(ew)) {
