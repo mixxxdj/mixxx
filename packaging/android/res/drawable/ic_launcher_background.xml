@@ -1,24 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   DJ Sugar adaptive icon background.
-  Deep purple gradient circle.
+  Solid black to match the logo design.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M54,54 m-54,0 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:centerX="54"
-                android:centerY="54"
-                android:gradientRadius="70"
-                android:type="radial">
-                <item android:offset="0" android:color="#FF2A1040"/>
-                <item android:offset="1" android:color="#FF0D0020"/>
-            </gradient>
-        </aapt:attr>
-    </path>
+    <path
+        android:pathData="M54,54 m-54,0 a54,54 0 1,0 108,0 a54,54 0 1,0 -108,0"
+        android:fillColor="#000000"/>
 </vector>

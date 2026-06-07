@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  DJ Sugar adaptive icon foreground — wordmark design.
-  "DJ" in white, "SUGAR" in cyan (#01DCFC).
+  DJ Sugar adaptive icon foreground.
+  Based on the official DJ Sugar logo SVG.
+  Vinyl record with pink accent, tonearm, and colorful streaks.
   Fits the standard 108x108 dp adaptive-icon canvas.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
@@ -10,24 +11,114 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- "DJ" — white bold text, left portion -->
+    <!-- Disc outer ring (metallic) -->
     <path
-        android:pathData="
-            M18,36 L18,56 L22,56 L22,44 L28,44 L28,56 L32,56 L32,36 L28,36 L28,40 L22,40 L22,36 Z
-            M36,36 L36,52 Q36,56 38,58 Q40,60 44,60 L48,60 L48,56 L44,56 Q42,56 42,54 L42,36 Z"
-        android:fillColor="#FFFFFF"/>
-
-    <!-- "SUGAR" — cyan text, right portion -->
-    <path
-        android:pathData="
-            M56,36 L60,36 L60,46 L68,46 L68,36 L72,36 L72,56 L68,56 L68,48 L60,48 L60,56 L56,56 Z
-            M76,36 L88,36 L88,40 L80,40 L80,44 L86,44 L86,48 L80,48 L80,56 L76,56 Z"
-        android:fillColor="#01DCFC"/>
-
-    <!-- Thin accent line -->
-    <path
-        android:pathData="M30,62 L78,62"
-        android:strokeColor="#E4467F"
+        android:pathData="M54,54 m-50,0 a50,50 0 1,0 100,0 a50,50 0 1,0 -100,0"
         android:strokeWidth="1.5"
+        android:strokeColor="#b0b0b0"
+        android:fillColor="#18191b"/>
+
+    <!-- Disc body (golden) -->
+    <path
+        android:pathData="M54,54 m-46,0 a46,46 0 1,0 92,0 a46,46 0 1,0 -92,0"
+        android:fillColor="#d5944a"/>
+
+    <!-- Inner disc shadow -->
+    <path
+        android:pathData="M54,54 m-44,0 a44,44 0 1,0 88,0 a44,44 0 1,0 -88,0"
+        android:fillColor="#b3722d"
+        android:fillAlpha="0.85"/>
+
+    <!-- Pink accent shape (donut frosting) -->
+    <path
+        android:pathData="M42,28 Q52,18 66,22 Q76,28 78,42 Q80,58 76,70 Q68,80 55,84 Q42,80 36,68 Q30,56 32,44 Q34,32 42,28 Z"
+        android:fillColor="#e63380"/>
+
+    <!-- Pink glow overlay -->
+    <path
+        android:pathData="M42,28 Q52,18 66,22 Q76,28 78,42 Q80,58 76,70 Q68,80 55,84"
+        android:strokeWidth="1.5"
+        android:strokeColor="#ff99ca"
+        android:fillColor="#00000000"
+        android:fillAlpha="0.0"/>
+
+    <!-- Center hole (dark) -->
+    <path
+        android:pathData="M54,54 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0"
+        android:fillColor="#252629"/>
+
+    <!-- Inner ring -->
+    <path
+        android:pathData="M54,54 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0"
+        android:fillColor="#1b1c1e"/>
+
+    <!-- Metallic ring around center -->
+    <path
+        android:pathData="M54,54 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0"
+        android:strokeWidth="1"
+        android:strokeColor="#b0b0b0"
+        android:fillColor="#00000000"/>
+
+    <!-- Spindle (metallic) -->
+    <path
+        android:pathData="M54,54 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:fillColor="#c0c0c0"/>
+
+    <!-- Center dot (white) -->
+    <path
+        android:pathData="M54,54 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"
+        android:fillColor="#ffffff"/>
+
+    <!-- Tonearm pivot (metallic, upper-right) -->
+    <path
+        android:pathData="M72,28 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0"
+        android:fillColor="#c0c0c8"/>
+
+    <!-- Tonearm pivot inner -->
+    <path
+        android:pathData="M72,28 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"
+        android:fillColor="#6e6e76"/>
+
+    <!-- Tonearm -->
+    <path
+        android:pathData="M71,29 L60,44"
+        android:strokeColor="#e6e6ee"
+        android:strokeWidth="2.5"
         android:strokeLineCap="round"/>
+
+    <!-- Cartridge / headshell -->
+    <path
+        android:pathData="M58,46 L66,42 L69,46 L61,50 Z"
+        android:fillColor="#ffffff"/>
+
+    <!-- Stylus tip (pink) -->
+    <path
+        android:pathData="M57,48 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
+        android:fillColor="#e63380"/>
+
+    <!-- Colorful streaks (simplified from original) -->
+    <!-- Blue streak -->
+    <path
+        android:pathData="M30,36 L36,34 L38,38 L32,40 Z"
+        android:fillColor="#0091ff"/>
+
+    <!-- White streak -->
+    <path
+        android:pathData="M68,28 L74,32 L72,36 L66,32 Z"
+        android:fillColor="#ffffff"/>
+
+    <!-- Yellow streak -->
+    <path
+        android:pathData="M72,60 L76,64 L72,68 L68,64 Z"
+        android:fillColor="#ffb300"/>
+
+    <!-- Red streak -->
+    <path
+        android:pathData="M28,52 L32,56 L28,60 L24,56 Z"
+        android:fillColor="#ff6b57"/>
+
+    <!-- Green streak -->
+    <path
+        android:pathData="M40,72 L44,76 L40,80 L36,76 Z"
+        android:fillColor="#7cfc00"/>
 </vector>
