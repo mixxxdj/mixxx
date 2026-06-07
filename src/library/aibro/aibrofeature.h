@@ -92,6 +92,9 @@ class AIBroFeature : public QObject {
     void setVolume(int deckIndex, double volume);
     void setPlay(int deckIndex, bool play);
 
+    // --- Vocal sync helpers ---
+    double estimateVocalStartPosition(int deckIndex) const;
+
     // --- State ---
     QTimer* m_pProgressTimer;
     QTimer* m_pBlendTimer;
