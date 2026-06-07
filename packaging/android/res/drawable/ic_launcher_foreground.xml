@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  DJ Sugar adaptive icon foreground.
-  A frosted donut on a turntable: chocolate donut with colorful sprinkles,
-  dark slipmat visible through the hole, tonearm from top-right.
-  Fits the standard 108x108 dp adaptive-icon canvas; all meaningful
-  graphics inside the 72x72 dp safe zone.
+  DJ Sugar adaptive icon foreground — wordmark design.
+  "DJ" in white, "SUGAR" in cyan (#01DCFC).
+  Fits the standard 108x108 dp adaptive-icon canvas.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -12,77 +10,24 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Slipmat / record visible through the donut hole. -->
+    <!-- "DJ" — white bold text, left portion -->
     <path
-        android:pathData="M54,54 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0"
-        android:fillColor="#FF1F1A18"/>
-    <!-- Record label disc. -->
-    <path
-        android:pathData="M54,54 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
-        android:fillColor="#FFE4467F"/>
-    <!-- Spindle. -->
-    <path
-        android:pathData="M54,54 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
-        android:fillColor="#FFFFFFFF"/>
+        android:pathData="
+            M18,36 L18,56 L22,56 L22,44 L28,44 L28,56 L32,56 L32,36 L28,36 L28,40 L22,40 L22,36 Z
+            M36,36 L36,52 Q36,56 38,58 Q40,60 44,60 L48,60 L48,56 L44,56 Q42,56 42,54 L42,36 Z"
+        android:fillColor="#FFFFFF"/>
 
-    <!-- Donut body (chocolate frosting) — even-odd ring. -->
+    <!-- "SUGAR" — cyan text, right portion -->
     <path
-        android:pathData="M54,54 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0 M54,54 m-15,0 a15,15 0 1,1 30,0 a15,15 0 1,1 -30,0"
-        android:fillType="evenOdd"
-        android:fillColor="#FF5A2E1B"/>
+        android:pathData="
+            M56,36 L60,36 L60,46 L68,46 L68,36 L72,36 L72,56 L68,56 L68,48 L60,48 L60,56 L56,56 Z
+            M76,36 L88,36 L88,40 L80,40 L80,44 L86,44 L86,48 L80,48 L80,56 L76,56 Z"
+        android:fillColor="#01DCFC"/>
 
-    <!-- Frosting drip highlight along outer top edge. -->
+    <!-- Thin accent line -->
     <path
-        android:pathData="M30,52 a24,24 0 0,1 48,0 a24,24 0 0,0 -48,0 z"
-        android:fillColor="#FF7B4326"
-        android:fillAlpha="0.9"/>
-
-    <!-- Sprinkles. -->
-    <group android:pivotX="54" android:pivotY="54" android:rotation="-25">
-        <path android:pathData="M50,28 h6 v2 h-6 z" android:fillColor="#FF01DCFC"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="40">
-        <path android:pathData="M76,52 h6 v2 h-6 z" android:fillColor="#FF85C85B"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="120">
-        <path android:pathData="M68,72 h6 v2 h-6 z" android:fillColor="#FFFFE066"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="-90">
-        <path android:pathData="M30,46 h6 v2 h-6 z" android:fillColor="#FFEA2A4E"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="170">
-        <path android:pathData="M44,76 h6 v2 h-6 z" android:fillColor="#FFFFFFFF"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="-150">
-        <path android:pathData="M34,68 h6 v2 h-6 z" android:fillColor="#FF85C85B"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="60">
-        <path android:pathData="M70,32 h6 v2 h-6 z" android:fillColor="#FF01DCFC"/>
-    </group>
-    <group android:pivotX="54" android:pivotY="54" android:rotation="200">
-        <path android:pathData="M28,58 h6 v2 h-6 z" android:fillColor="#FFFFE066"/>
-    </group>
-
-    <!-- Tonearm pivot block (upper-right). -->
-    <path
-        android:pathData="M86,22 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
-        android:fillColor="#FFC0C0C8"/>
-    <path
-        android:pathData="M86,22 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
-        android:fillColor="#FF6E6E76"/>
-
-    <!-- Tonearm. -->
-    <path
-        android:pathData="M85,23 L65,46"
-        android:strokeColor="#FFE6E6EE"
-        android:strokeWidth="2.4"
+        android:pathData="M30,62 L78,62"
+        android:strokeColor="#E4467F"
+        android:strokeWidth="1.5"
         android:strokeLineCap="round"/>
-    <!-- Cartridge / headshell. -->
-    <path
-        android:pathData="M62,49 l8,-4 l3,3 l-8,4 z"
-        android:fillColor="#FFFFFFFF"/>
-    <!-- Stylus tip. -->
-    <path
-        android:pathData="M61,50 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
-        android:fillColor="#FFEA2A4E"/>
 </vector>
