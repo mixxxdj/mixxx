@@ -1,7 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-var */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // Pioneer DDJ-SX2 mapping for Mixxx
 // Based on tildearrow's mapping for the DDJ-SX2
 // Modifications by Krafting, eXWoLL(+Assistant)
