@@ -351,6 +351,11 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::setLibraryFocus,
             m_pLibraryControl,
             &LibraryControl::setLibraryFocus);
+    // Let the YouTube feature connect its own Enter-key search so that
+    // YouTube searches only fire on explicit Enter, not keystroke debounce.
+    if (m_pYouTubeFeature) {
+        m_pYouTubeFeature->bindSearchboxWidget(pSearchboxWidget);
+    }
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

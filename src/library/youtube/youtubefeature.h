@@ -20,6 +20,7 @@ class QSqlDatabase;
 class TreeItem;
 class WLibrary;
 class WLibraryTextBrowser;
+class WSearchLineEdit;
 class YouTubeTrackModel;
 
 class YouTubeFeature : public BaseExternalLibraryFeature {
@@ -36,6 +37,10 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     TreeItemModel* sidebarModel() const override;
     void bindLibraryWidget(WLibrary* pLibraryWidget,
             KeyboardEventFilter* pKeyboard) override;
+
+    /// Connect the search box's returnPressed signal to our searchNow() slot
+    /// so that YouTube searches only fire on Enter, not on keystroke debounce.
+    void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
 
     void searchAndActivate(const QString& query);
 
@@ -148,6 +153,7 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     QPointer<WLibraryTextBrowser> m_pHomeView;
+    QPointer<WSearchLineEdit> m_pSearchbox;
     mixxx::YouTubeService m_service;
     /// Debounce timer for rebuildSidebar() + rebuildHomeHtml() — coalesces
     /// rapid-fire calls (e.g. during batch auto-analyze downloads) so the UI

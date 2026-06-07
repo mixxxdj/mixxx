@@ -407,6 +407,8 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         if (findCurrentTextIndex() == -1) {
             slotSaveSearch();
         }
+        // Emit returnPressed so features like YouTube can search on Enter only.
+        emit returnPressed(getSearchText());
         // Jump to tracks if search signal was already emitted
         if (!m_queryEmitted) {
             slotTriggerSearch();

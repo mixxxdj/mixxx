@@ -2644,6 +2644,9 @@ if(QT6)
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/skins/default-menu-styles-linux.qss
       # Translations: ship only the English source file (Mixxx falls back to
       # the in-source English strings if no .qm is found).
+      COMMAND
+        ${CMAKE_COMMAND} -E make_directory
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/translations
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
     add_dependencies(mixxx copy-resource-android android-strip-libomp)
