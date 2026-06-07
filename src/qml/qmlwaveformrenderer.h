@@ -279,6 +279,8 @@ class QmlWaveformRendererBeat
         : public QmlWaveformRendererFactory {
     Q_OBJECT
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged REQUIRED)
+    Q_PROPERTY(QColor downbeatColor MEMBER m_downbeatColor NOTIFY downbeatColorChanged)
+    Q_PROPERTY(int beatsPerBar MEMBER m_beatsPerBar NOTIFY beatsPerBarChanged)
     QML_NAMED_ELEMENT(WaveformRendererBeat)
 
   public:
@@ -287,9 +289,13 @@ class QmlWaveformRendererBeat
             const override;
   signals:
     void colorChanged(const QColor&);
+    void downbeatColorChanged(const QColor&);
+    void beatsPerBarChanged(int);
 
   private:
     QColor m_color;
+    QColor m_downbeatColor;
+    int m_beatsPerBar{4};
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
