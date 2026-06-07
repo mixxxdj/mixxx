@@ -268,9 +268,9 @@ static const QStringList& remixKeywords() {
 // Genre-specific mixing rules (from AI-DJ-Mixing-System)
 // Controls crossfade duration and EQ strength per genre
 struct MixingRule {
-    double overlapMultiplier;  // 1.0 = 8s, 2.0 = 16s, 0.5 = 4s
-    double eqFilterStrength;   // 1.0 = normal, 1.5 = strong filtering
-    bool useBreakdown;         // Prefer breakdown transitions
+    double overlapMultiplier; // 1.0 = 8s, 2.0 = 16s, 0.5 = 4s
+    double eqFilterStrength; // 1.0 = normal, 1.5 = strong filtering
+    bool useBreakdown; // Prefer breakdown transitions
 };
 
 static QHash<QString, MixingRule> buildMixingRules() {
@@ -325,7 +325,7 @@ const QHash<QString, TransitionRule>& transitionRules() {
     return *r;
 }
 
-}  // namespace
+} // namespace
 
 AIBroFeature::AIBroFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
@@ -551,9 +551,7 @@ double AIBroFeature::scoreCandidate(
 
     // --- 5. Genre/vibe heuristics ---
     static const QStringList kEnergyWords = {
-        "remix", "mix", "edit", "extended", "club", "festival",
-        "live", "session", "bootleg", "mashup", "flip", "rework"
-    };
+            "remix", "mix", "edit", "extended", "club", "festival", "live", "session", "bootleg", "mashup", "flip", "rework"};
     int energyMatches = 0;
     for (const QString& ew : kEnergyWords) {
         if (videoT.contains(ew)) {
@@ -868,7 +866,7 @@ void AIBroFeature::startBlend(int fromDeck, int toDeck) {
     {
         ConfigKey rangeKey(
                 QStringLiteral("[Channel%1]").arg(toDeck + 1), "rateRange");
-        ControlObject::set(rangeKey, 0.5);  // ±50% range
+        ControlObject::set(rangeKey, 0.5); // ±50% range
     }
 
     // DJ Technique 2: Start target deck playing (beat-synced)
@@ -1117,7 +1115,7 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
         }
     }
 
-    double vocalStartPercent = 0.15;  // Default: vocals at 15%
+    double vocalStartPercent = 0.15; // Default: vocals at 15%
 
     if (isExtended) {
         // Extended mixes: long instrumental intro (30-40%)
@@ -1183,10 +1181,10 @@ QString AIBroFeature::findNewManualTrack() {
         // it to an inactive deck for us to mix in)
         if (m_searchTrackSnapshot.contains(deck) &&
                 m_searchTrackSnapshot[deck] == location) {
-            continue;  // Same track as before
+            continue; // Same track as before
         }
         if (!m_searchTrackSnapshot.contains(deck) && location.isEmpty()) {
-            continue;  // Was empty, still empty
+            continue; // Was empty, still empty
         }
         // Found a new track! But only use it if the deck is not already
         // playing (user loaded it to an inactive deck)
