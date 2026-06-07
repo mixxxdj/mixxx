@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   DJ Sugar adaptive icon foreground.
-  Based on the official DJ Sugar logo SVG.
+  Based on the official DJ Sugar logo SVG (file.svg).
   Vinyl record with pink accent, tonearm, and colorful streaks.
   Fits the standard 108x108 dp adaptive-icon canvas.
+  All graphics inside the 72x72 dp safe zone.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
@@ -11,12 +12,27 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Disc outer ring (metallic) -->
+    <!-- Outer ring (metallic gradient approximated) -->
     <path
         android:pathData="M54,54 m-50,0 a50,50 0 1,0 100,0 a50,50 0 1,0 -100,0"
         android:strokeWidth="1.5"
-        android:strokeColor="#b0b0b0"
+        android:strokeColor="#888888"
         android:fillColor="#18191b"/>
+
+    <!-- Dark inner ring -->
+    <path
+        android:pathData="M54,54 m-48,0 a48,48 0 1,0 96,0 a48,48 0 1,0 -96,0"
+        android:strokeWidth="1"
+        android:strokeColor="#18191b"
+        android:fillColor="#18191b"/>
+
+    <!-- Subtle highlight ring -->
+    <path
+        android:pathData="M54,54 m-47,0 a47,47 0 1,0 94,0 a47,47 0 1,0 -94,0"
+        android:strokeWidth="0.5"
+        android:strokeColor="#ffffff"
+        android:fillAlpha="0.3"
+        android:fillColor="#00000000"/>
 
     <!-- Disc body (golden) -->
     <path
@@ -31,16 +47,26 @@
 
     <!-- Pink accent shape (donut frosting) -->
     <path
-        android:pathData="M42,28 Q52,18 66,22 Q76,28 78,42 Q80,58 76,70 Q68,80 55,84 Q42,80 36,68 Q30,56 32,44 Q34,32 42,28 Z"
+        android:pathData="M54,54 m-43,0 a43,43 0 1,0 86,0 a43,43 0 1,0 -86,0 M54,54 m-16,0 a16,16 0 1,1 32,0 a16,16 0 1,1 -32,0"
+        android:fillType="evenOdd"
         android:fillColor="#e63380"/>
 
-    <!-- Pink glow overlay -->
+    <!-- Pink glow stroke -->
     <path
-        android:pathData="M42,28 Q52,18 66,22 Q76,28 78,42 Q80,58 76,70 Q68,80 55,84"
+        android:pathData="M54,54 m-43,0 a43,43 0 1,0 86,0 a43,43 0 1,0 -86,0"
         android:strokeWidth="1.5"
         android:strokeColor="#ff99ca"
         android:fillColor="#00000000"
-        android:fillAlpha="0.0"/>
+        android:fillAlpha="0.8"/>
+
+    <!-- Dashed guide lines (simplified) -->
+    <path
+        android:pathData="M28,28a37,37 0 0,1 52,8m2,28a36,36 0 0,1 -44,24m-24-31a34,34 0 0,1 31-37m-19,12a31,31 0 0,1 44,44m2-32a26,26 0 0,1 -42,28"
+        android:strokeColor="#ba1b5c"
+        android:strokeWidth="0.5"
+        android:fillColor="#00000000"
+        android:fillAlpha="0.55"
+        android:strokeDasharray="1 1"/>
 
     <!-- Center hole (dark) -->
     <path
@@ -52,22 +78,70 @@
         android:pathData="M54,54 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0"
         android:fillColor="#1b1c1e"/>
 
-    <!-- Metallic ring around center -->
+    <!-- Center hole ring -->
     <path
         android:pathData="M54,54 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0"
+        android:strokeWidth="0.5"
+        android:strokeColor="#292a2d"
+        android:fillColor="#00000000"/>
+
+    <!-- Metallic ring around center -->
+    <path
+        android:pathData="M54,54 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
         android:strokeWidth="1"
-        android:strokeColor="#b0b0b0"
+        android:strokeColor="#888888"
         android:fillColor="#00000000"/>
 
     <!-- Spindle (metallic) -->
     <path
-        android:pathData="M54,54 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:pathData="M54,54 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"
         android:fillColor="#c0c0c0"/>
 
     <!-- Center dot (white) -->
     <path
-        android:pathData="M54,54 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"
+        android:pathData="M54,54 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
         android:fillColor="#ffffff"/>
+
+    <!-- Colorful streaks -->
+    <!-- Blue streaks -->
+    <path
+        android:pathData="M22,24 L26,22 L28,26 L24,28 Z"
+        android:fillColor="#0091ff"/>
+    <path
+        android:pathData="M66,18 L70,22 L68,26 L64,22 Z"
+        android:fillColor="#0091ff"/>
+    <path
+        android:pathData="M18,42 L22,40 L24,44 L20,46 Z"
+        android:fillColor="#0091ff"/>
+
+    <!-- White streaks -->
+    <path
+        android:pathData="M62,14 L68,18 L66,22 L60,18 Z"
+        android:fillColor="#ffffff"/>
+    <path
+        android:pathData="M30,68 L34,72 L32,76 L28,72 Z"
+        android:fillColor="#ffffff"/>
+
+    <!-- Yellow streaks -->
+    <path
+        android:pathData="M72,32 L76,36 L74,40 L70,36 Z"
+        android:fillColor="#ffb300"/>
+    <path
+        android:pathData="M42,76 L46,80 L44,84 L40,80 Z"
+        android:fillColor="#ffb300"/>
+
+    <!-- Red streaks -->
+    <path
+        android:pathData="M14,52 L18,56 L16,60 L12,56 Z"
+        android:fillColor="#ff6b57"/>
+    <path
+        android:pathData="M76,68 L80,72 L78,76 L74,72 Z"
+        android:fillColor="#ff6b57"/>
+
+    <!-- Green streaks -->
+    <path
+        android:pathData="M24,68 L28,72 L26,76 L22,72 Z"
+        android:fillColor="#7cfc00"/>
 
     <!-- Tonearm pivot (metallic, upper-right) -->
     <path
@@ -95,30 +169,4 @@
     <path
         android:pathData="M57,48 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"
         android:fillColor="#e63380"/>
-
-    <!-- Colorful streaks (simplified from original) -->
-    <!-- Blue streak -->
-    <path
-        android:pathData="M30,36 L36,34 L38,38 L32,40 Z"
-        android:fillColor="#0091ff"/>
-
-    <!-- White streak -->
-    <path
-        android:pathData="M68,28 L74,32 L72,36 L66,32 Z"
-        android:fillColor="#ffffff"/>
-
-    <!-- Yellow streak -->
-    <path
-        android:pathData="M72,60 L76,64 L72,68 L68,64 Z"
-        android:fillColor="#ffb300"/>
-
-    <!-- Red streak -->
-    <path
-        android:pathData="M28,52 L32,56 L28,60 L24,56 Z"
-        android:fillColor="#ff6b57"/>
-
-    <!-- Green streak -->
-    <path
-        android:pathData="M40,72 L44,76 L40,80 L36,76 Z"
-        android:fillColor="#7cfc00"/>
 </vector>
