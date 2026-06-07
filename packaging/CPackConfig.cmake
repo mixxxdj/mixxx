@@ -52,3 +52,18 @@ if(CPACK_GENERATOR STREQUAL "External")
     set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${CPACK_DEBIAN_UPLOAD_PPA_SCRIPT}")
   endif()
 endif()
+
+# WIX: shorten the package filename to avoid MAX_PATH issues on Windows.
+# The full git describe (e.g. v2.7-alpha-248-g5b8e35fb2c-1-g497deb81c8-...)
+# creates paths that exceed the 260-char Windows limit when combined with
+# the install directory, causing WiX heat/cabinet to fail with error 0x80070003.
+if(CPACK_GENERATOR STREQUAL "WIX")
+  # Extract just the short commit hash (7 chars after 'g') from the describe
+  string(REGEX MATCH "g([0-9a-f]+)" _ "${GIT_DESCRIBE}")
+  if(CMAKE_MATCH_1)
+    string(SUBSTRING "${CMAKE_MATCH_1}" 0 7 SHORT_HASH)
+  else()
+    string(SUBSTRING "${GIT_DESCRIBE}" 0 7 SHORT_HASH)
+  endif()
+  set(CPACK_PACKAGE_FILE_NAME "mixxx-${SHORT_HASH}-${CPACK_SYSTEM_PROCESSOR}")
+endif()
