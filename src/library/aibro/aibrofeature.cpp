@@ -7,6 +7,7 @@
 #include "control/controlproxy.h"
 #include "library/library.h"
 #include "library/youtube/youtubefeature.h"
+#include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
@@ -486,9 +487,9 @@ double AIBroFeature::scoreCandidate(
 
     // --- 1. Title word overlap (Jaccard) ---
     const QSet<QString> titleWords =
-            currentT.split(' ', Qt::SkipEmptyParts).toSet();
+            QSet<QString>::fromList(currentT.split(' ', Qt::SkipEmptyParts));
     const QSet<QString> videoWords =
-            videoT.split(' ', Qt::SkipEmptyParts).toSet();
+            QSet<QString>::fromList(videoT.split(' ', Qt::SkipEmptyParts));
     if (!titleWords.isEmpty() && !videoWords.isEmpty()) {
         int common = 0;
         for (const QString& w : titleWords) {
