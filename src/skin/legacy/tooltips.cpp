@@ -779,6 +779,10 @@ void Tooltips::addStandardTooltips() {
     add("autodj_status")
             << tr("Auto DJ is active");
 
+    // AI Bro status indicator
+    add("ai_bro_status")
+            << tr("AI Bro is active - auto-mixing similar songs from YouTube");
+
     add("passthrough_enabled")
             << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");

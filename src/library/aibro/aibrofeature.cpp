@@ -26,22 +26,24 @@ AIBroFeature::AIBroFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlayerManagerInterface* pPlayerManager,
         YouTubeFeature* pYouTubeFeature)
-    : m_pProgressTimer(new QTimer(this)),
-      m_controlEnabled(ConfigKey("[AIBro]", "enabled")),
-      m_downloading(false),
-      m_crossfading(false),
-      m_pLibrary(pLibrary),
-      m_pConfig(pConfig),
-      m_pPlayerManager(pPlayerManager),
-      m_pYouTubeFeature(pYouTubeFeature) {
+        : m_pProgressTimer(new QTimer(this)),
+          m_controlEnabled(ConfigKey("[AIBro]", "enabled")),
+          m_downloading(false),
+          m_crossfading(false),
+          m_pLibrary(pLibrary),
+          m_pConfig(pConfig),
+          m_pPlayerManager(pPlayerManager),
+          m_pYouTubeFeature(pYouTubeFeature) {
 }
 
 AIBroFeature::~AIBroFeature() = default;
 
 void AIBroFeature::init() {
     m_controlEnabled.connectValueChanged(this, &AIBroFeature::slotToggle);
-    connect(m_pProgressTimer, &QTimer::timeout,
-            this, &AIBroFeature::slotProgressTimer);
+    connect(m_pProgressTimer,
+            &QTimer::timeout,
+            this,
+            &AIBroFeature::slotProgressTimer);
     m_pProgressTimer->setInterval(kProgressIntervalMs);
 }
 
@@ -67,8 +69,12 @@ void AIBroFeature::slotToggle(bool enabled) {
 }
 
 QString AIBroFeature::buildSearchQuery() {
-    if (m_currentTrackTitle.isEmpty()) return {};
-    if (m_currentTrackArtist.isEmpty()) return m_currentTrackTitle;
+    if (m_currentTrackTitle.isEmpty()) {
+        return {};
+    }
+    if (m_currentTrackArtist.isEmpty()) {
+        return m_currentTrackTitle;
+    }
     return QStringLiteral("%1 %2").arg(m_currentTrackArtist, m_currentTrackTitle);
 }
 
@@ -77,7 +83,9 @@ QStringList AIBroFeature::buildSimilarityQueries() {
     queries.reserve(5);
     const QString title = m_currentTrackTitle;
     const QString artist = m_currentTrackArtist;
-    if (title.isEmpty()) return queries;
+    if (title.isEmpty()) {
+        return queries;
+    }
 
     if (!artist.isEmpty()) {
         queries << QStringLiteral("%1 %2").arg(artist, title);
@@ -104,8 +112,8 @@ double AIBroFeature::calculateSimilarity(
 
     // Skip if same title+artist combo was played (catches remixes)
     QString songKey = QStringLiteral("%1|%2")
-            .arg(candidate.title.toLower().trimmed(),
-                 candidate.uploader.toLower().trimmed());
+                              .arg(candidate.title.toLower().trimmed(),
+                                      candidate.uploader.toLower().trimmed());
     if (m_playedSongKeys.contains(songKey)) {
         return -1.0;
     }
@@ -125,7 +133,9 @@ double AIBroFeature::calculateSimilarity(
     if (!titleWords.isEmpty() && !videoWords.isEmpty()) {
         int common = 0;
         for (const QString& w : titleWords) {
-            if (videoWords.contains(w)) ++common;
+            if (videoWords.contains(w)) {
+                ++common;
+            }
         }
         score += 0.4 * static_cast<double>(common) /
                 qMax(titleWords.size(), videoWords.size());
@@ -151,7 +161,9 @@ double AIBroFeature::calculateSimilarity(
     }
 
     // Penalize live streams
-    if (candidate.isLive) score -= 0.3;
+    if (candidate.isLive) {
+        score -= 0.3;
+    }
 
     return qBound(0.0, score, 1.0);
 }
@@ -169,13 +181,19 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
         }
     }
 
-    if (bestIdx < 0 && !results.isEmpty()) bestIdx = 0;
+    if (bestIdx < 0 && !results.isEmpty()) {
+        bestIdx = 0;
+    }
     return results[bestIdx];
 }
 
 void AIBroFeature::findNextSong() {
-    if (!isActive()) return;
-    if (m_downloading) return;
+    if (!isActive()) {
+        return;
+    }
+    if (m_downloading) {
+        return;
+    }
 
     if (m_currentTrackTitle.isEmpty()) {
         // No track info - fetch trending as starting point
@@ -205,9 +223,15 @@ void AIBroFeature::findNextSong() {
 }
 
 void AIBroFeature::slotProgressTimer() {
-    if (!isActive()) return;
-    if (m_crossfading) return;
-    if (!m_pPlayerManager) return;
+    if (!isActive()) {
+        return;
+    }
+    if (m_crossfading) {
+        return;
+    }
+    if (!m_pPlayerManager) {
+        return;
+    }
 
     int playingCount = countPlayingDecks();
 
@@ -224,13 +248,18 @@ void AIBroFeature::slotProgressTimer() {
 
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer) continue;
+        if (!pPlayer) {
+            continue;
+        }
         const QString group = pPlayer->getGroup();
-        if (!isTrackPlaying(group)) continue;
+        if (!isTrackPlaying(group)) {
+            continue;
+        }
 
         double position = PlayerInfo::instance()->getEngineBuffer(group);
         if (position >= kLookAheadProgress && !m_downloading) {
-            kLogger.info() << "AI Bro: deck" << i << "at" << position << "- finding next";
+            kLogger.info() << "AI Bro: deck" << i << "at" << position
+                           << "- finding next";
             m_downloading = true;
             findNextSong();
             break;
@@ -242,8 +271,12 @@ void AIBroFeature::slotSearchResultsReady(
         const QString& query,
         const QList<mixxx::YouTubeVideoInfo>& results) {
     Q_UNUSED(query);
-    if (!isActive()) return;
-    if (results.isEmpty()) return;
+    if (!isActive()) {
+        return;
+    }
+    if (results.isEmpty()) {
+        return;
+    }
 
     kLogger.info() << "AI Bro: got" << results.size() << "results";
 
@@ -254,12 +287,14 @@ void AIBroFeature::slotSearchResultsReady(
 }
 
 void AIBroFeature::downloadCandidate(const mixxx::YouTubeVideoInfo& candidate) {
-    if (!m_pYouTubeFeature) return;
+    if (!m_pYouTubeFeature) {
+        return;
+    }
 
     m_playedVideoIds.insert(candidate.id);
     QString songKey = QStringLiteral("%1|%2")
-            .arg(candidate.title.toLower().trimmed(),
-                 candidate.uploader.toLower().trimmed());
+                              .arg(candidate.title.toLower().trimmed(),
+                                      candidate.uploader.toLower().trimmed());
     m_playedSongKeys.insert(songKey);
 
     kLogger.info() << "AI Bro: downloading" << candidate.id
@@ -270,7 +305,9 @@ void AIBroFeature::downloadCandidate(const mixxx::YouTubeVideoInfo& candidate) {
 
 void AIBroFeature::slotDownloadFinished(
         const QString& videoId, const QString& localPath) {
-    if (!isActive()) return;
+    if (!isActive()) {
+        return;
+    }
     Q_UNUSED(videoId);
     kLogger.info() << "AI Bro: download finished:" << localPath;
     loadAndCrossfade(localPath);
@@ -278,32 +315,49 @@ void AIBroFeature::slotDownloadFinished(
 
 void AIBroFeature::slotDownloadFailed(
         const QString& videoId, const QString& error) {
-    if (!isActive()) return;
+    if (!isActive()) {
+        return;
+    }
     Q_UNUSED(videoId);
     kLogger.warning() << "AI Bro: download failed:" << error;
     m_downloading = false;
     QTimer::singleShot(kRetryDelayMs, this, [this]() {
-        if (isActive()) findNextSong();
+        if (isActive()) {
+            findNextSong();
+        }
     });
 }
 
 void AIBroFeature::loadAndCrossfade(const QString& localPath) {
-    if (!m_pPlayerManager) return;
-    if (m_crossfading) return;
+    if (!m_pPlayerManager) {
+        return;
+    }
+    if (m_crossfading) {
+        return;
+    }
     m_crossfading = true;
 
-    int playingDeck = -1, nextDeck = -1;
+    int playingDeck = -1;
+    int nextDeck = -1;
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer) continue;
+        if (!pPlayer) {
+            continue;
+        }
         if (isTrackPlaying(pPlayer->getGroup())) {
-            if (playingDeck == -1) playingDeck = i;
-            else if (nextDeck == -1) nextDeck = i;
+            if (playingDeck == -1) {
+                playingDeck = i;
+            } else if (nextDeck == -1) {
+                nextDeck = i;
+            }
         }
     }
 
-    if (nextDeck == -1) nextDeck = (playingDeck == 0) ? 1 : 0;
-    if (nextDeck == -1 || nextDeck >= m_pPlayerManager->numberOfDecks()) {
+    if (nextDeck == -1) {
+        nextDeck = (playingDeck == 0) ? 1 : 0;
+    }
+    if (nextDeck == -1 ||
+            nextDeck >= m_pPlayerManager->numberOfDecks()) {
         kLogger.warning() << "AI Bro: no available deck";
         m_crossfading = false;
         m_downloading = false;
@@ -327,7 +381,9 @@ void AIBroFeature::startCrossfade() {
     const int stepMs = kCrossfadeDurationMs / kCrossfadeSteps;
     for (int i = 0; i <= kCrossfadeSteps; ++i) {
         QTimer::singleShot(i * stepMs, this, [this, i]() {
-            if (!isActive()) return;
+            if (!isActive()) {
+                return;
+            }
             double pos = static_cast<double>(i) / kCrossfadeSteps;
             if (m_pPlayerManager) {
                 m_pPlayerManager->setCrossfaderPosition(pos);
@@ -337,7 +393,9 @@ void AIBroFeature::startCrossfade() {
                 m_downloading = false;
                 kLogger.info() << "AI Bro: crossfade complete";
                 QTimer::singleShot(kCrossfadeToSearchDelayMs, this, [this]() {
-                    if (isActive()) findNextSong();
+                    if (isActive()) {
+                        findNextSong();
+                    }
                 });
             }
         });
@@ -345,17 +403,23 @@ void AIBroFeature::startCrossfade() {
 }
 
 bool AIBroFeature::isTrackPlaying(const QString& group) const {
-    if (!m_pPlayerManager) return false;
+    if (!m_pPlayerManager) {
+        return false;
+    }
     auto* pPlayer = m_pPlayerManager->getPlayer(group);
     return pPlayer && pPlayer->isPlaying();
 }
 
 int AIBroFeature::countPlayingDecks() const {
-    if (!m_pPlayerManager) return 0;
+    if (!m_pPlayerManager) {
+        return 0;
+    }
     int count = 0;
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (pPlayer && isTrackPlaying(pPlayer->getGroup())) ++count;
+        if (pPlayer && isTrackPlaying(pPlayer->getGroup())) {
+            ++count;
+        }
     }
     return count;
 }
