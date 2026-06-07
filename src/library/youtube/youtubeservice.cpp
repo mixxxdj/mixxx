@@ -727,15 +727,12 @@ void YouTubeService::searchVideos(const QString& query, int cap, int minResults)
 #endif
     // A new search invalidates any continuation from a previous search.
     m_searchContinuationToken.clear();
-    m_searchMinResults = minResults;
     // Primary backend: the YouTube InnerTube /search endpoint. It is hit
     // directly (no third-party Piped proxy), so it does not depend on the
     // health of community-run instances — which is why search used to return
     // nothing and lag for ~100s while cycling through dead Piped hosts. We fail
     // over to Piped and then yt-dlp only if InnerTube itself fails.
-    searchViaInnerTube(query,
-            query,
-            cap,
+    searchViaInnerTube(query, query, cap,
             /*clientIdx=*/0,
             [this, query, cap](const QString& innerTubeError) {
                 const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
@@ -789,7 +786,10 @@ void YouTubeService::searchVideos(const QString& query, int cap, int minResults)
                             }
                         });
 #endif
-            });
+            },
+            /*regionOverride=*/QString(),
+            /*retryCount=*/0,
+            minResults);
 }
 
 void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheDir) {
@@ -895,7 +895,6 @@ void YouTubeService::fetchTrending(const QString& region, int cap, int minResult
     // the region so YouTubeFeature renders a "Trending in <Country>" header.
     const QString sentinelQuery = kTrendingQueryPrefix + r;
     const QString requestQuery = countryTopSongsCategoryQuery(r);
-    m_searchMinResults = minResults;
     searchViaInnerTube(sentinelQuery, requestQuery, cap,
             /*clientIdx=*/0,
             [this, r, cap](const QString& innerTubeError) {
@@ -917,7 +916,9 @@ void YouTubeService::fetchTrending(const QString& region, int cap, int minResult
                 fetchTrendingViaPiped(r, cap, /*instanceIdx=*/0);
 #endif
             },
-            /*regionOverride=*/r);
+            /*regionOverride=*/r,
+            /*retryCount=*/0,
+            minResults);
 }
 
 void YouTubeService::fetchMusicGenres(const QString& region) {
@@ -1052,7 +1053,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
         int clientIdx,
         const std::function<void(const QString&)>& onAllFailed,
         const QString& regionOverride,
-        int retryCount) {
+        int retryCount,
+        int minResults) {
     const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
     if (clientIdx < 0 || clientIdx >= clients.size()) {
         onAllFailed(tr("All InnerTube clients failed for search"));
@@ -1068,15 +1070,27 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
 
     // Advance to the next client on any per-client failure (network error or a
     // response we could not parse a single video out of).
-    auto tryNext = [this, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride](
-                           const QString& err) {
+    auto tryNext = [this,
+                           emittedQuery,
+                           requestQuery,
+                           cap,
+                           clientIdx,
+                           onAllFailed,
+                           regionOverride,
+                           minResults](const QString& err) {
         const QVector<InnerTubeClient>& cl = innerTubeSearchClients();
         if (clientIdx + 1 < cl.size()) {
             kLogger.info() << "InnerTube search client"
                            << cl.at(clientIdx).clientName << "failed:" << err
                            << "— trying next client";
-            searchViaInnerTube(
-                    emittedQuery, requestQuery, cap, clientIdx + 1, onAllFailed, regionOverride);
+            searchViaInnerTube(emittedQuery,
+                    requestQuery,
+                    cap,
+                    clientIdx + 1,
+                    onAllFailed,
+                    regionOverride,
+                    /*retryCount=*/0,
+                    minResults);
         } else {
             onAllFailed(err);
         }
@@ -1154,7 +1168,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
             QPointer<YouTubeService> guard(this);
             QTimer::singleShot(retryMs,
                     this,
-                    [guard, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride]() {
+                    [guard,
+                            emittedQuery,
+                            requestQuery,
+                            cap,
+                            clientIdx,
+                            onAllFailed,
+                            regionOverride,
+                            minResults]() {
                         if (!guard) {
                             return;
                         }
@@ -1164,7 +1185,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                                 clientIdx,
                                 onAllFailed,
                                 regionOverride,
-                                /*retryCount=*/1);
+                                /*retryCount=*/1,
+                                minResults);
                     });
             return;
         }
@@ -1181,7 +1203,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, emittedQuery, requestQuery, cap, tryNext, clientIdx]() {
+            [this,
+                    reply,
+                    emittedQuery,
+                    requestQuery,
+                    cap,
+                    tryNext,
+                    clientIdx,
+                    minResults]() {
                 reply->deleteLater();
                 const int httpStatus = reply->attribute(
                                                     QNetworkRequest::HttpStatusCodeAttribute)
@@ -1237,20 +1266,22 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                 // If we need more results and a continuation token is available,
                 // auto-fetch additional pages before emitting. This ensures the
                 // initial result set is large enough for infinite scroll.
-                if (m_searchMinResults > 0 &&
-                        results.size() < m_searchMinResults &&
+                // Use the request-scoped minResults (captured from the caller)
+                // instead of the member variable to avoid races between
+                // concurrent searches.
+                if (minResults > 0 &&
+                        results.size() < minResults &&
                         !m_searchContinuationToken.isEmpty()) {
                     kLogger.info()
                             << "Auto-fetching continuation pages: have"
-                            << results.size() << "need" << m_searchMinResults;
+                            << results.size() << "need" << minResults;
                     autoFetchContinuationPages(emittedQuery,
                             cap,
-                            m_searchMinResults,
+                            minResults,
                             results,
                             clientIdx);
                     return;
                 }
-                m_searchMinResults = 0;
                 Q_EMIT searchResultsReady(emittedQuery, results);
             });
 }
@@ -1364,20 +1395,17 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
     // Guard: no continuation token or already have enough.
     if (m_searchContinuationToken.isEmpty() ||
             accumulated.size() >= minResults) {
-        m_searchMinResults = 0;
         Q_EMIT searchResultsReady(emittedQuery, accumulated);
         return;
     }
     // Guard: cap is the hard upper bound — don't exceed it.
     if (accumulated.size() >= cap) {
-        m_searchMinResults = 0;
         Q_EMIT searchResultsReady(emittedQuery, accumulated);
         return;
     }
 
     const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
     if (clientIdx < 0 || clientIdx >= clients.size()) {
-        m_searchMinResults = 0;
         Q_EMIT searchResultsReady(emittedQuery, accumulated);
         return;
     }
@@ -1418,7 +1446,6 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
     if (m_botFlagActive) {
         kLogger.info() << "Bot-flagged: stopping auto-fetch, emitting"
                        << accumulated.size() << "results";
-        m_searchMinResults = 0;
         Q_EMIT searchResultsReady(emittedQuery, accumulated);
         return;
     }
@@ -1472,7 +1499,6 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                             << "Auto-fetch continuation failed:"
                             << reply->errorString()
                             << "— emitting" << accumulated.size() << "results so far";
-                    m_searchMinResults = 0;
                     Q_EMIT searchResultsReady(emittedQuery, accumulated);
                     return;
                 }
@@ -1486,7 +1512,6 @@ void YouTubeService::autoFetchContinuationPages(const QString& emittedQuery,
                             rawBody)) {
                     kLogger.info() << "Bot-flagged during auto-fetch: emitting"
                                    << accumulated.size() << "results so far";
-                    m_searchMinResults = 0;
                     Q_EMIT searchResultsReady(emittedQuery, accumulated);
                     return;
                 }

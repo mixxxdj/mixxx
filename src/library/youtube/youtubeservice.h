@@ -168,7 +168,8 @@ class YouTubeService : public QObject {
             int clientIdx,
             const std::function<void(const QString& lastError)>& onAllFailed,
             const QString& regionOverride = QString(),
-            int retryCount = 0);
+            int retryCount = 0,
+            int minResults = 0);
 
     // ----- Piped (search/download fallback) -----
 
@@ -364,10 +365,6 @@ class YouTubeService : public QObject {
     /// Non-empty when there are more results to fetch via fetchMoreSearchResults().
     /// Cleared at the start of every new searchVideos() call.
     QString m_searchContinuationToken;
-    /// Minimum number of results to accumulate before emitting searchResultsReady.
-    /// When > 0, the service automatically fetches continuation pages until
-    /// this threshold is met or no more pages are available.
-    int m_searchMinResults = 0;
     /// Hardcoded fallback list of Piped API instances. Tried in order on
     /// per-request failure. The expanded list provides better resilience
     /// against community-maintained instances going offline.

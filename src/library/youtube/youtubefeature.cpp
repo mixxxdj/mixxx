@@ -712,14 +712,8 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &YouTubeTrackModel::searchRequested,
             this,
             &YouTubeFeature::searchAndActivate);
-    // Connect Enter key from search box to searchNow() so YouTube only
-    // searches when the user explicitly presses Enter, not on keystroke debounce.
-    if (m_pSearchbox) {
-        connect(m_pSearchbox,
-                &WSearchLineEdit::returnPressed,
-                m_pTrackModel,
-                &YouTubeTrackModel::searchNow);
-    }
+    // Note: returnPressed → searchNow connection is made in
+    // bindSearchboxWidget() where m_pSearchbox is available.
     // Infinite scroll: when the user scrolls to the bottom and the model
     // emits fetchMoreRequested(), ask the service for the next page.
     // After the call, restore m_hasMore based on whether the service still
@@ -990,9 +984,17 @@ void YouTubeFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 void YouTubeFeature::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
-    // Store the search box pointer. The actual signal connection is made
-    // in activate() when m_pTrackModel is available.
+    // Store the search box pointer and connect the Enter-key signal
+    // immediately so YouTube search works even if activate() hasn't been
+    // called yet (e.g. skin reloads, late initialization).
     m_pSearchbox = pSearchboxWidget;
+    if (m_pSearchbox && m_pTrackModel) {
+        connect(m_pSearchbox,
+                &WSearchLineEdit::returnPressed,
+                m_pTrackModel,
+                &YouTubeTrackModel::searchNow,
+                Qt::UniqueConnection);
+    }
 }
 
 void YouTubeFeature::onHomeAnchorClicked(const QUrl& url) {
