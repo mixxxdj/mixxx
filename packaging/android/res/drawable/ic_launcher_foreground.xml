@@ -65,8 +65,7 @@
         android:strokeColor="#ba1b5c"
         android:strokeWidth="0.5"
         android:fillColor="#00000000"
-        android:fillAlpha="0.55"
-        android:strokeDasharray="1 1"/>
+        android:fillAlpha="0.55"/>
 
     <!-- Center hole (dark) -->
     <path
