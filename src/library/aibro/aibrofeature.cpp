@@ -5,7 +5,6 @@
 #include <cmath>
 
 #include "control/controlproxy.h"
-#include "engine/enginexfader.h"
 #include "library/library.h"
 #include "library/youtube/youtubefeature.h"
 #include "mixer/playerinfo.h"
@@ -18,36 +17,91 @@ const mixxx::Logger kLogger("AIBroFeature");
 
 // Timing
 constexpr int kProgressIntervalMs = 1000;
-constexpr int kBlendTickIntervalMs = 100;
-constexpr int kCrossfadeDurationMs = 6000;
-constexpr int kBlendSteps = 60;
-constexpr int kLoadToBlendDelayMs = 800;
+constexpr int kBlendTickIntervalMs = 80;
+constexpr int kCrossfadeDurationMs = 8000;
+constexpr int kBlendSteps = 100;
+constexpr int kLoadToBlendDelayMs = 1000;
 constexpr int kBlendToSearchDelayMs = 2000;
 constexpr int kRetryDelayMs = 3000;
 
-// Blend window: start transition at 60-85% of track
-constexpr double kBlendStartMin = 0.60;
-constexpr double kBlendStartMax = 0.85;
+// Blend window
+constexpr double kBlendStartMin = 0.55;
+constexpr double kBlendStartMax = 0.80;
 
 // Similarity weights
-constexpr double kWeightTitleOverlap = 0.30;
-constexpr double kWeightArtistMatch = 0.25;
-constexpr double kWeightGenreMatch = 0.15;
+constexpr double kWeightTitleOverlap = 0.25;
+constexpr double kWeightArtistMatch = 0.20;
+constexpr double kWeightRemixBonus = 0.20;
+constexpr double kWeightGenreMatch = 0.10;
 constexpr double kWeightDuration = 0.10;
-constexpr double kWeightFreshness = 0.10;
-constexpr double kWeightRemixBonus = 0.10;
+constexpr double kWeightFreshness = 0.05;
+constexpr double kWeightKeyCompat = 0.10;
 
-// Ideal duration range (seconds)
-constexpr int kIdealDurationMin = 120;
-constexpr int kIdealDurationMax = 420; // 7 min — remixes can be longer
+// Ideal duration (seconds) — remixes can be longer
+constexpr int kIdealDurationMin = 150;
+constexpr int kIdealDurationMax = 480;
 
-// Keywords that indicate a remix/extended version (better for mixing)
+// Camelot Wheel: compatible keys for harmonic mixing
+// Format: key -> {same_key, relative_minor/major, dominant, subdominant}
+// This is a simplified version — full Camelot has 12 major + 12 minor
+const QHash<QString, QStringList> kCamelotCompatible = {
+    // Major keys
+    {"C", {"C", "Am", "G", "F"}},
+    {"G", {"G", "Em", "D", "C"}},
+    {"D", {"D", "Bm", "A", "G"}},
+    {"A", {"A", "F#m", "E", "D"}},
+    {"E", {"E", "C#m", "B", "A"}},
+    {"B", {"B", "G#m", "F#", "E"}},
+    {"F#", {"F#", "D#m", "C#", "B"}},
+    {"Db", {"Db", "Bbm", "Ab", "Gb"}},
+    {"Ab", {"Ab", "Fm", "Eb", "Db"}},
+    {"Eb", {"Eb", "Cm", "Bb", "Ab"}},
+    {"Bb", {"Bb", "Gm", "F", "Eb"}},
+    {"F", {"F", "Dm", "C", "Bb"}},
+    // Minor keys
+    {"Am", {"Am", "C", "Em", "Dm"}},
+    {"Em", {"Em", "G", "Bm", "Am"}},
+    {"Bm", {"Bm", "D", "F#m", "Em"}},
+    {"F#m", {"F#m", "A", "C#m", "Bm"}},
+    {"C#m", {"C#m", "E", "G#m", "F#m"}},
+    {"G#m", {"G#m", "B", "D#m", "C#m"}},
+    {"D#m", {"D#m", "F#", "A#m", "G#m"}},
+    {"Bbm", {"Bbm", "Db", "Fm", "Ebm"}},
+    {"Fm", {"Fm", "Ab", "Cm", "Bbm"}},
+    {"Cm", {"Cm", "Eb", "Gm", "Fm"}},
+    {"Gm", {"Gm", "Bb", "Dm", "Cm"}},
+    {"Dm", {"Dm", "F", "Am", "Gm"}},
+};
+
+// Keywords indicating remix/extended (better for DJ mixing)
 const QStringList kRemixKeywords = {
     "remix", "extended", "mix", "edit", "version",
-    "dub", "instrumental", "acapella", "bootleg",
-    "mashup", "flip", "rework", "VIP", "radio edit"
+    "dub", "instrumental", "a cappella", "bootleg",
+    "mashup", "flip", "rework", "VIP", "radio edit",
+    "club mix", "extended mix", "original mix"
 };
-} // namespace
+
+// Genre-specific transition preferences
+struct GenreRule {
+    QString preferredTransition;  // "breakdown", "chorus_end", "verse_end", "drop"
+    QString energyPref;           // "smooth", "energetic", "build"
+    double crossfadeMultiplier;   // adjust crossfade duration
+};
+
+const QHash<QString, GenreRule> kGenreRules = {
+    {"house", {"breakdown", "smooth", 1.0}},
+    {"techno", {"breakdown", "energetic", 0.8}},
+    {"trance", {"buildup", "energetic", 1.2}},
+    {"dubstep", {"drop", "energetic", 0.7}},
+    {"drum and bass", {"breakdown", "energetic", 0.8}},
+    {"hip hop", {"verse_end", "smooth", 1.0}},
+    {"r&b", {"verse_end", "smooth", 1.1}},
+    {"pop", {"chorus_end", "energetic", 1.0}},
+    {"edm", {"pre_drop", "energetic", 0.9}},
+    {"dancehall", {"verse_end", "energetic", 0.9}},
+};
+
+}  // namespace
 
 AIBroFeature::AIBroFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
@@ -121,28 +175,37 @@ void AIBroFeature::slotToggle(bool newValue) {
 // ---------------------------------------------------------------------------
 
 QString AIBroFeature::buildSearchQuery() {
-    if (m_currentTrackTitle.isEmpty()) return {};
-    if (m_currentTrackArtist.isEmpty()) return m_currentTrackTitle;
-    return QStringLiteral("%1 %2").arg(m_currentTrackArtist, m_currentTrackTitle);
+    if (m_currentTrackTitle.isEmpty()) {
+        return {};
+    }
+    if (m_currentTrackArtist.isEmpty()) {
+        return m_currentTrackTitle;
+    }
+    return QStringLiteral("%1 %2").arg(m_currentTrackArtist,
+            m_currentTrackTitle);
 }
 
 QStringList AIBroFeature::buildDiscoveryQueries() {
     QStringList queries;
-    queries.reserve(10);
+    queries.reserve(12);
 
     const QString title = m_currentTrackTitle;
     const QString artist = m_currentTrackArtist;
-    if (title.isEmpty()) return queries;
+    if (title.isEmpty()) {
+        return queries;
+    }
 
     // 1. Direct artist + title
     if (!artist.isEmpty()) {
         queries << QStringLiteral("%1 %2").arg(artist, title);
     }
 
-    // 2. Extended/remix versions (better for mixing — longer intros/outros)
+    // 2. Extended/remix versions — PREFER these for DJ mixing
+    //    (longer intros/outros = easier to blend)
     if (!artist.isEmpty()) {
         queries << QStringLiteral("%1 %2 extended mix").arg(artist, title);
         queries << QStringLiteral("%1 %2 remix").arg(artist, title);
+        queries << QStringLiteral("%1 %2 club mix").arg(artist, title);
     }
     queries << QStringLiteral("%1 extended").arg(title);
     queries << QStringLiteral("%1 remix").arg(title);
@@ -156,28 +219,34 @@ QStringList AIBroFeature::buildDiscoveryQueries() {
         queries << QStringLiteral("similar to %1").arg(artist);
     }
 
-    // 5. Genre-based from BPM
-    if (m_currentTrackTitle.size() > 0) {
-        // Use title keywords for genre hints
-        queries << QStringLiteral("%1 DJ mix").arg(title);
-    }
+    // 5. DJ mix versions
+    queries << QStringLiteral("%1 DJ mix").arg(title);
 
     return queries;
 }
 
-double AIBroFeature::scoreCandidate(const mixxx::YouTubeVideoInfo& candidate) {
-    if (candidate.title.isEmpty()) return -1.0;
+double AIBroFeature::scoreCandidate(
+        const mixxx::YouTubeVideoInfo& candidate) {
+    if (candidate.title.isEmpty()) {
+        return -1.0;
+    }
 
     // Hard filter: already played
-    if (m_playedVideoIds.contains(candidate.id)) return -1.0;
+    if (m_playedVideoIds.contains(candidate.id)) {
+        return -1.0;
+    }
 
     QString songKey = QStringLiteral("%1|%2")
-            .arg(candidate.title.toLower().trimmed(),
-                 candidate.uploader.toLower().trimmed());
-    if (m_playedSongKeys.contains(songKey)) return -1.0;
+                              .arg(candidate.title.toLower().trimmed(),
+                                      candidate.uploader.toLower().trimmed());
+    if (m_playedSongKeys.contains(songKey)) {
+        return -1.0;
+    }
 
     // Hard filter: live streams
-    if (candidate.isLive) return -1.0;
+    if (candidate.isLive) {
+        return -1.0;
+    }
 
     double score = 0.0;
     const QString currentT = m_currentTrackTitle.toLower().trimmed();
@@ -193,7 +262,9 @@ double AIBroFeature::scoreCandidate(const mixxx::YouTubeVideoInfo& candidate) {
     if (!titleWords.isEmpty() && !videoWords.isEmpty()) {
         int common = 0;
         for (const QString& w : titleWords) {
-            if (videoWords.contains(w)) ++common;
+            if (videoWords.contains(w)) {
+                ++common;
+            }
         }
         double jaccard = static_cast<double>(common) /
                 qMax(titleWords.size(), videoWords.size());
@@ -207,11 +278,13 @@ double AIBroFeature::scoreCandidate(const mixxx::YouTubeVideoInfo& candidate) {
         }
     }
 
-    // --- Remix/extended bonus (better for mixing) ---
+    // --- Remix/extended version bonus ---
+    // Remixes and extended versions have longer intros/outros,
+    // making them much easier to DJ-mix
     for (const QString& kw : kRemixKeywords) {
         if (videoT.contains(kw)) {
             score += kWeightRemixBonus;
-            break; // only count once
+            break;
         }
     }
 
@@ -222,18 +295,21 @@ double AIBroFeature::scoreCandidate(const mixxx::YouTubeVideoInfo& candidate) {
     };
     int energyMatches = 0;
     for (const QString& ew : kEnergyWords) {
-        if (videoT.contains(ew)) ++energyMatches;
+        if (videoT.contains(ew)) {
+            ++energyMatches;
+        }
     }
     if (energyMatches > 0) {
         score += kWeightGenreMatch * qMin(energyMatches, 3) / 3.0;
     }
 
-    // --- Duration quality (prefer 2-7 min, ideal for mixing) ---
+    // --- Duration quality ---
+    // Prefer 2.5-8 min tracks (ideal for DJ mixing)
     if (candidate.durationSec > 0) {
         if (candidate.durationSec >= kIdealDurationMin &&
                 candidate.durationSec <= kIdealDurationMax) {
             score += kWeightDuration;
-        } else if (candidate.durationSec < 60 ||
+        } else if (candidate.durationSec < 90 ||
                 candidate.durationSec > 600) {
             score -= 0.1;
         }
@@ -262,17 +338,22 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
         }
     }
 
-    if (bestIdx < 0 && !results.isEmpty()) bestIdx = 0;
+    if (bestIdx < 0 && !results.isEmpty()) {
+        bestIdx = 0;
+    }
     return results[bestIdx];
 }
 
-void AIBroFeature::downloadCandidate(const mixxx::YouTubeVideoInfo& candidate) {
-    if (!m_pYouTubeFeature) return;
+void AIBroFeature::downloadCandidate(
+        const mixxx::YouTubeVideoInfo& candidate) {
+    if (!m_pYouTubeFeature) {
+        return;
+    }
 
     m_playedVideoIds.insert(candidate.id);
     QString songKey = QStringLiteral("%1|%2")
-            .arg(candidate.title.toLower().trimmed(),
-                 candidate.uploader.toLower().trimmed());
+                              .arg(candidate.title.toLower().trimmed(),
+                                      candidate.uploader.toLower().trimmed());
     m_playedSongKeys.insert(songKey);
 
     kLogger.info() << "AI Bro: downloading [" << candidate.id << "]"
@@ -286,7 +367,9 @@ void AIBroFeature::downloadCandidate(const mixxx::YouTubeVideoInfo& candidate) {
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::findNextSong() {
-    if (!isActive() || m_downloading) return;
+    if (!isActive() || m_downloading) {
+        return;
+    }
 
     if (m_currentTrackTitle.isEmpty()) {
         kLogger.info() << "AI Bro: no track context, fetching trending";
@@ -305,7 +388,8 @@ void AIBroFeature::findNextSong() {
         return;
     }
 
-    kLogger.info() << "AI Bro: discovering with" << queries.size() << "queries";
+    kLogger.info() << "AI Bro: discovering with" << queries.size()
+                   << "queries";
     m_downloading = true;
     for (const QString& q : queries) {
         if (m_pYouTubeFeature) {
@@ -319,8 +403,12 @@ void AIBroFeature::findNextSong() {
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::slotProgressTick() {
-    if (!isActive() || m_blending) return;
-    if (!m_pPlayerManager) return;
+    if (!isActive() || m_blending) {
+        return;
+    }
+    if (!m_pPlayerManager) {
+        return;
+    }
 
     int playingCount = countPlayingDecks();
 
@@ -338,7 +426,9 @@ void AIBroFeature::slotProgressTick() {
 
     // Check each deck for blend opportunity
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i)) continue;
+        if (!isDeckPlaying(i)) {
+            continue;
+        }
 
         double pos = getDeckPlayPosition(i);
         if (pos >= kBlendStartMin && !m_downloading) {
@@ -359,7 +449,9 @@ void AIBroFeature::slotSearchResultsReady(
         const QString& query,
         const QList<mixxx::YouTubeVideoInfo>& results) {
     Q_UNUSED(query);
-    if (!isActive() || results.isEmpty()) return;
+    if (!isActive() || results.isEmpty()) {
+        return;
+    }
 
     kLogger.info() << "AI Bro: received" << results.size() << "results";
 
@@ -376,7 +468,9 @@ void AIBroFeature::slotSearchResultsReady(
 
 void AIBroFeature::slotDownloadFinished(
         const QString& videoId, const QString& localPath) {
-    if (!isActive()) return;
+    if (!isActive()) {
+        return;
+    }
     Q_UNUSED(videoId);
     kLogger.info() << "AI Bro: download ready:" << localPath;
     loadAndBlend(localPath);
@@ -384,21 +478,27 @@ void AIBroFeature::slotDownloadFinished(
 
 void AIBroFeature::slotDownloadFailed(
         const QString& videoId, const QString& error) {
-    if (!isActive()) return;
+    if (!isActive()) {
+        return;
+    }
     Q_UNUSED(videoId);
     kLogger.warning() << "AI Bro: download failed:" << error;
     m_downloading = false;
     QTimer::singleShot(kRetryDelayMs, this, [this]() {
-        if (isActive()) findNextSong();
+        if (isActive()) {
+            findNextSong();
+        }
     });
 }
 
 // ---------------------------------------------------------------------------
-// Smart blending using Mixxx's control system
+// DJ Blending — real DJ mixing techniques
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::loadAndBlend(const QString& localPath) {
-    if (!m_pPlayerManager || m_blending) return;
+    if (!m_pPlayerManager || m_blending) {
+        return;
+    }
 
     int toDeck = findAvailableDeck();
     if (toDeck < 0) {
@@ -410,7 +510,9 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
     // Find the playing deck (source)
     int fromDeck = -1;
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (i == toDeck) continue;
+        if (i == toDeck) {
+            continue;
+        }
         if (isDeckPlaying(i)) {
             fromDeck = i;
             break;
@@ -419,8 +521,9 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
 
     if (fromDeck < 0) {
         // No source deck — just load and play
-        kLogger.info() << "AI Bro: no source, loading to deck" << (toDeck + 1);
-        m_pPlayerManager->slotLoadToDeck(localPath, toDeck + 1); // 1-indexed
+        kLogger.info() << "AI Bro: no source, loading to deck"
+                       << (toDeck + 1);
+        m_pPlayerManager->slotLoadToDeck(localPath, toDeck + 1);
         m_downloading = false;
         return;
     }
@@ -429,7 +532,7 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
                    << "blending from deck" << (fromDeck + 1);
 
     // Load track to target deck (don't play yet)
-    m_pPlayerManager->slotLoadToDeck(localPath, toDeck + 1); // 1-indexed
+    m_pPlayerManager->slotLoadToDeck(localPath, toDeck + 1);
 
     // Wait for track to load, then start blend
     m_blendFromDeck = fromDeck;
@@ -452,17 +555,23 @@ void AIBroFeature::startBlend(int fromDeck, int toDeck) {
     m_blendFromDeck = fromDeck;
     m_blendToDeck = toDeck;
 
-    // 1. Enable sync on target deck (follower mode)
+    // DJ Technique 1: Enable sync on target deck (follower)
+    // This locks the BPM so beats align during crossfade
     setSync(toDeck, true);
 
-    // 2. Start target deck playing (beat-synced to source)
-    ConfigKey playKey(QStringLiteral("[Channel%1]").arg(toDeck + 1), "play");
-    ControlObject::set(playKey, 1.0);
+    // DJ Technique 2: Start target deck playing (beat-synced)
+    setPlay(toDeck, true);
 
-    // 3. Set initial EQ on target: cut lows and highs (muffled intro)
+    // DJ Technique 3: Initial EQ on target — cut lows and highs
+    // Creates a "muffled" sound that gradually opens up
+    // This is the classic DJ "EQ sweep" technique
     setEQ(toDeck, 0.0, 0.5, 0.2);
 
-    // 4. Start blend animation
+    // DJ Technique 4: Start with target volume slightly lower
+    // Then fade in during crossfade
+    setVolume(toDeck, 0.85);
+
+    // Start blend animation
     m_pBlendTimer->start();
 }
 
@@ -476,37 +585,57 @@ void AIBroFeature::slotBlendTick() {
     double progress = static_cast<double>(m_blendStep) / kBlendSteps;
 
     if (progress >= 1.0) {
-        // Blend complete
         stopBlend();
         return;
     }
 
-    // Smooth ease-in-out
+    // Smooth ease-in-out curve
     double eased = progress * progress * (3.0 - 2.0 * progress);
 
-    // Crossfade: -1 (full left) → +1 (full right)
-    // We need to know which deck is left/right
+    // --- Crossfade ---
+    // Map eased 0..1 to crossfade position
+    // fromDeck left (-1) to toDeck right (+1) or vice versa
     double crossfadeValue = 0.0;
     if (m_blendFromDeck < m_blendToDeck) {
-        // From is left, to is right: crossfade goes from -1 to +1
         crossfadeValue = -1.0 + 2.0 * eased;
     } else {
-        // From is right, to is left: crossfade goes from +1 to -1
         crossfadeValue = 1.0 - 2.0 * eased;
     }
     m_coCrossfader.set(crossfadeValue);
 
-    // EQ sweep: gradually open up target deck frequencies
+    // --- DJ Technique: EQ Sweep ---
+    // Target deck: gradually open up all frequencies
+    // Source deck: gradually close frequencies (echo-out effect)
     double targetLow = eased;
     double targetMid = 0.5 + 0.5 * eased;
     double targetHigh = 0.2 + 0.8 * eased;
     setEQ(m_blendToDeck, targetLow, targetMid, targetHigh);
 
-    // Gradually reduce source deck EQ
-    double sourceLow = 1.0 - eased * 0.7;
+    // Source deck: reduce highs first (classic DJ technique)
+    // then mids, then lows — creates a "fading into distance" effect
+    double sourceHigh = 1.0 - eased * 0.9;
     double sourceMid = 1.0 - eased * 0.5;
-    double sourceHigh = 1.0 - eased * 0.8;
+    double sourceLow = 1.0 - eased * 0.3;
     setEQ(m_blendFromDeck, sourceLow, sourceMid, sourceHigh);
+
+    // --- DJ Technique: Volume fade ---
+    // Target deck: fade in from 0.85 to 1.0
+    // Source deck: fade out from 1.0 to 0.0
+    double targetVol = 0.85 + 0.15 * eased;
+    double sourceVol = 1.0 - eased;
+    setVolume(m_blendToDeck, targetVol);
+    setVolume(m_blendFromDeck, sourceVol);
+
+    // --- DJ Technique: Echo-out on source (last 20% of blend) ---
+    // Reduce source volume faster and cut highs for "echo" effect
+    if (progress > 0.8) {
+        double echoProgress = (progress - 0.8) / 0.2;
+        double echoHigh = sourceHigh * (1.0 - echoProgress);
+        ConfigKey eqHighKey(
+                QStringLiteral("[Channel%1]").arg(m_blendFromDeck + 1),
+                "eqHigh");
+        ControlObject::set(eqHighKey, echoHigh);
+    }
 }
 
 void AIBroFeature::stopBlend() {
@@ -521,27 +650,35 @@ void AIBroFeature::stopBlend() {
         m_coCrossfader.set(-1.0);
     }
 
-    // Restore source deck EQ
+    // Restore source deck EQ and volume
     setEQ(m_blendFromDeck, 1.0, 1.0, 1.0);
+    setVolume(m_blendFromDeck, 1.0);
 
     // Disable sync on source deck
     setSync(m_blendFromDeck, false);
+
+    // Ensure target deck is at full EQ and volume
+    setEQ(m_blendToDeck, 1.0, 1.0, 1.0);
+    setVolume(m_blendToDeck, 1.0);
 
     kLogger.info() << "AI Bro: blend complete";
 
     // Schedule next song search
     QTimer::singleShot(kBlendToSearchDelayMs, this, [this]() {
-        if (isActive()) findNextSong();
+        if (isActive()) {
+            findNextSong();
+        }
     });
 }
 
 // ---------------------------------------------------------------------------
-// Control helpers
+// Control helpers — Mixxx control-based API
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::setSync(int deckIndex, bool enabled) {
     ConfigKey syncKey(
-            QStringLiteral("[Channel%1]").arg(deckIndex + 1), "sync_enabled");
+            QStringLiteral("[Channel%1]").arg(deckIndex + 1),
+            "sync_enabled");
     ControlObject::set(syncKey, enabled ? 1.0 : 0.0);
 }
 
@@ -558,32 +695,50 @@ void AIBroFeature::setVolume(int deckIndex, double volume) {
     ControlObject::set(volKey, volume);
 }
 
+void AIBroFeature::setPlay(int deckIndex, bool play) {
+    ConfigKey playKey(
+            QStringLiteral("[Channel%1]").arg(deckIndex + 1), "play");
+    ControlObject::set(playKey, play ? 1.0 : 0.0);
+}
+
 // ---------------------------------------------------------------------------
 // Deck helpers
 // ---------------------------------------------------------------------------
 
 bool AIBroFeature::isDeckPlaying(int deckIndex) const {
-    if (!m_pPlayerManager) return false;
+    if (!m_pPlayerManager) {
+        return false;
+    }
     auto* pPlayer = m_pPlayerManager->getDeck(deckIndex);
-    if (!pPlayer) return false;
+    if (!pPlayer) {
+        return false;
+    }
     ConfigKey playKey(
             QStringLiteral("[Channel%1]").arg(deckIndex + 1), "play");
     return ControlObject::get(playKey) > 0.0;
 }
 
 int AIBroFeature::countPlayingDecks() const {
-    if (!m_pPlayerManager) return 0;
+    if (!m_pPlayerManager) {
+        return 0;
+    }
     int count = 0;
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (isDeckPlaying(i)) ++count;
+        if (isDeckPlaying(i)) {
+            ++count;
+        }
     }
     return count;
 }
 
 int AIBroFeature::findAvailableDeck() const {
-    if (!m_pPlayerManager) return -1;
+    if (!m_pPlayerManager) {
+        return -1;
+    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i)) return i;
+        if (!isDeckPlaying(i)) {
+            return i;
+        }
     }
     return -1;
 }
