@@ -289,15 +289,11 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
     connect(this,
             &QmlWaveformRendererBeat::downbeatColorChanged,
             pRenderer.get(),
-            [pRenderer = pRenderer.get()](const QColor& color) {
-                pRenderer->setDownbeatColor(color);
-            });
+            &allshader::WaveformRenderBeat::setDownbeatColor);
     connect(this,
             &QmlWaveformRendererBeat::beatsPerBarChanged,
             pRenderer.get(),
-            [pRenderer = pRenderer.get()](int beatsPerBar) {
-                pRenderer->setBeatsPerBar(beatsPerBar);
-            });
+            &allshader::WaveformRenderBeat::setBeatsPerBar);
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 
@@ -311,15 +307,11 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBarCounter::create(
     connect(this,
             &QmlWaveformRendererBarCounter::colorChanged,
             pRenderer.get(),
-            [pRenderer = pRenderer.get()](const QColor& color) {
-                pRenderer->setColor(color);
-            });
+            &allshader::WaveformRenderBarCounter::setColor);
     connect(this,
             &QmlWaveformRendererBarCounter::beatsPerBarChanged,
             pRenderer.get(),
-            [pRenderer = pRenderer.get()](int beatsPerBar) {
-                pRenderer->setBeatsPerBar(beatsPerBar);
-            });
+            &allshader::WaveformRenderBarCounter::setBeatsPerBar);
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 

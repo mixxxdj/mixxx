@@ -23,7 +23,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
     m_beatColor = QColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 
-    QString downbeatColorStr = context.selectString(node, "DownbeatColor");
+    const QString downbeatColorStr = context.selectString(node, "DownbeatColor");
     if (downbeatColorStr.isEmpty()) {
         m_downbeatColor = m_beatColor;
     } else {
@@ -55,8 +55,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     m_beatColor.setAlphaF(1.f);
     m_downbeatColor.setAlphaF(1.f);
 #else
-    m_beatColor.setAlphaF(alpha/100.0);
-    m_downbeatColor.setAlphaF(alpha/100.0);
+    m_beatColor.setAlphaF(alpha / 100.0);
+    m_downbeatColor.setAlphaF(alpha / 100.0);
 #endif
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
