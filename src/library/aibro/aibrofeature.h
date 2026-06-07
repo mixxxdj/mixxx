@@ -5,8 +5,8 @@
 #include <QSet>
 #include <QTimer>
 
-#include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "library/youtube/youtubeservice.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
