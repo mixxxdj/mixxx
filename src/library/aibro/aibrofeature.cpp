@@ -41,35 +41,42 @@ constexpr double kWeightBPMProximity = 0.20;
 constexpr double kWeightKeyCompat = 0.10;
 
 // BPM tolerance for matching (percent)
-constexpr double kBPMTolerancePercent = 6.0;  // ±6% is mixable with pitch bend
-constexpr double kBPMToleranceMax = 15.0;     // ±15 BPM absolute max
+constexpr double kBPMTolerancePercent = 6.0; // ±6% is mixable with pitch bend
+constexpr double kBPMToleranceMax = 15.0; // ±15 BPM absolute max
 
 // Ideal duration (seconds) — remixes can be longer
 constexpr int kIdealDurationMin = 150;
 constexpr int kIdealDurationMax = 480;
 
 // Common words to exclude from semantic scoring (stop words)
-const QSet<QString> kStopWords = {
-    "the", "a", "an", "and", "or", "but", "in", "on", "at", "to",
-    "for", "of", "with", "by", "from", "is", "it", "this", "that",
-    "i", "you", "he", "she", "we", "they", "my", "your", "his",
-    "her", "our", "their", "me", "him", "us", "them", "be", "was",
-    "are", "been", "being", "have", "has", "had", "do", "does",
-    "did", "will", "would", "could", "should", "may", "might",
-    "can", "shall", "not", "no", "nor", "as", "if", "then",
-    "than", "too", "very", "just", "about", "above", "after",
-    "again", "all", "also", "am", "any", "because", "before",
-    "between", "both", "each", "few", "get", "got", "how",
-    "its", "let", "make", "more", "most", "much", "must",
-    "new", "now", "only", "other", "our", "out", "own",
-    "same", "so", "some", "still", "such", "take", "tell",
-    "through", "under", "up", "use", "want", "way", "well",
-    "what", "when", "where", "which", "while", "who", "why",
-    "feat", "ft", "vs", "remix", "edit", "mix", "version",
-    "official", "audio", "video", "lyrics", "lyric",
-    "explicit", "clean", "radio", "album", "single",
-    "cover", "live", "acoustic", "unplugged", "rework"
-};
+// Built at runtime to avoid clang-format issues with large initializers
+static QSet<QString> buildStopWords() {
+    return {
+        "the", "a", "an", "and", "or", "but", "in", "on", "at", "to",
+        "for", "of", "with", "by", "from", "is", "it", "this", "that",
+        "i", "you", "he", "she", "we", "they", "my", "your", "his",
+        "her", "our", "their", "me", "him", "us", "them", "be", "was",
+        "are", "been", "being", "have", "has", "had", "do", "does",
+        "did", "will", "would", "could", "should", "may", "might",
+        "can", "shall", "not", "no", "nor", "as", "if", "then",
+        "than", "too", "very", "just", "about", "above", "after",
+        "again", "all", "also", "am", "any", "because", "before",
+        "between", "both", "each", "few", "get", "got", "how",
+        "its", "let", "make", "more", "most", "much", "must",
+        "new", "now", "only", "other", "our", "out", "own",
+        "same", "so", "some", "still", "such", "take", "tell",
+        "through", "under", "up", "use", "want", "way", "well",
+        "what", "when", "where", "which", "while", "who", "why",
+        "feat", "ft", "vs", "remix", "edit", "mix", "version",
+        "official", "audio", "video", "lyrics", "lyric",
+        "explicit", "clean", "radio", "album", "single",
+        "cover", "live", "acoustic", "unplugged", "rework"};
+}
+
+const QSet<QString>& stopWords() {
+    static const auto* s = new QSet<QString>(buildStopWords());
+    return *s;
+}
 
 // Camelot Wheel: compatible keys for harmonic mixing
 // Built at runtime to avoid clang-format issues with large initializers
@@ -110,11 +117,19 @@ const QHash<QString, QStringList>& camelotMap() {
 }
 
 // Keywords indicating remix/extended (better for DJ mixing)
-const QStringList kRemixKeywords = {
-    "remix", "extended", "mix", "edit", "version", "dub",
-    "instrumental", "a cappella", "bootleg", "mashup", "flip",
-    "rework", "VIP", "radio edit", "club mix", "extended mix",
-    "original mix"};
+// Built at runtime to avoid clang-format issues with large initializers
+static QStringList buildRemixKeywords() {
+    return {
+        "remix", "extended", "mix", "edit", "version", "dub",
+        "instrumental", "a cappella", "bootleg", "mashup", "flip",
+        "rework", "VIP", "radio edit", "club mix", "extended mix",
+        "original mix"};
+}
+
+const QStringList& remixKeywords() {
+    static const auto* k = new QStringList(buildRemixKeywords());
+    return *k;
+}
 
 // Genre-specific mixing rules (from AI-DJ-Mixing-System)
 // Controls crossfade duration and EQ strength per genre
@@ -361,7 +376,7 @@ double AIBroFeature::scoreCandidate(
         double semanticScore = 0.0;
         int meaningfulWords = 0;
         for (const QString& w : titleWords) {
-            if (kStopWords.contains(w)) {
+            if (stopWords().contains(w)) {
                 continue;
             }
             ++meaningfulWords;
@@ -393,7 +408,7 @@ double AIBroFeature::scoreCandidate(
     }
 
     // --- 4. Remix/extended version bonus ---
-    for (const QString& kw : kRemixKeywords) {
+    for (const QString& kw : remixKeywords()) {
         if (videoT.contains(kw)) {
             score += kWeightRemixBonus;
             break;
@@ -957,7 +972,7 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
     // Typical structure: intro (25-40%) → verse → chorus → ...
     bool isRemix = false;
     bool isExtended = false;
-    for (const QString& kw : kRemixKeywords) {
+    for (const QString& kw : remixKeywords()) {
         if (title.contains(kw)) {
             isRemix = true;
             if (kw == "extended" || kw == "extended mix" ||
