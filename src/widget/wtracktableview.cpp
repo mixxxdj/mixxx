@@ -704,7 +704,13 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     }
     //qDebug() << "MouseMoveEvent";
 
-    if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+    // Don't start a track drag for touch input: on touchscreens this event
+    // is a synthesized mouse-move from a single-finger swipe, which is
+    // handled as kinetic scrolling (see QScroller::grabGesture() in the
+    // constructor). Starting a blocking QDrag here would race with and
+    // sometimes win over gesture recognition, hijacking swipes into drags.
+    if (pEvent->source() == Qt::MouseEventNotSynthesized &&
+            DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         // Iterate over selected rows and append each item's location url to a list.
         QList<QString> locations;
         const QModelIndexList indices = getSelectedRows();
