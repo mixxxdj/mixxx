@@ -164,8 +164,9 @@
         </Connection>
       </PushButton>
 
-      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+      <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
+        <Size>7f,1min</Size>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
