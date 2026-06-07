@@ -116,15 +116,47 @@ const QStringList kRemixKeywords = {
     "rework", "VIP", "radio edit", "club mix", "extended mix",
     "original mix"};
 
-// Genre-specific transition preferences
-struct GenreRule {
+// Genre-specific mixing rules (from AI-DJ-Mixing-System)
+// Controls crossfade duration and EQ strength per genre
+struct MixingRule {
+    double overlapMultiplier;  // 1.0 = 8s, 2.0 = 16s, 0.5 = 4s
+    double eqFilterStrength;   // 1.0 = normal, 1.5 = strong filtering
+    bool useBreakdown;         // Prefer breakdown transitions
+};
+
+static QHash<QString, MixingRule> buildMixingRules() {
+    QHash<QString, MixingRule> r;
+    r["edm"] = {2.0, 1.5, true};
+    r["house"] = {1.5, 1.2, true};
+    r["techno"] = {1.5, 1.3, true};
+    r["trance"] = {1.8, 1.4, true};
+    r["dubstep"] = {1.2, 1.3, false};
+    r["drum and bass"] = {1.2, 1.2, true};
+    r["hip hop"] = {0.5, 0.8, false};
+    r["rap"] = {0.5, 0.8, false};
+    r["r&b"] = {0.75, 0.9, false};
+    r["pop"] = {1.0, 1.0, false};
+    r["rock"] = {0.75, 0.9, false};
+    r["dancehall"] = {0.75, 0.9, false};
+    r["reggaeton"] = {0.75, 0.9, false};
+    return r;
+}
+
+const QHash<QString, MixingRule>& mixingRules() {
+    static const auto* r =
+            new QHash<QString, MixingRule>(buildMixingRules());
+    return *r;
+}
+
+// Genre-specific transition type preferences (for scoring)
+struct TransitionRule {
     QString preferredTransition;
     QString energyPref;
     double crossfadeMultiplier;
 };
 
-static QHash<QString, GenreRule> buildGenreRules() {
-    QHash<QString, GenreRule> r;
+static QHash<QString, TransitionRule> buildTransitionRules() {
+    QHash<QString, TransitionRule> r;
     r["house"] = {"breakdown", "smooth", 1.0};
     r["techno"] = {"breakdown", "energetic", 0.8};
     r["trance"] = {"buildup", "energetic", 1.2};
@@ -138,8 +170,9 @@ static QHash<QString, GenreRule> buildGenreRules() {
     return r;
 }
 
-const QHash<QString, GenreRule>& genreRules() {
-    static const auto* r = new QHash<QString, GenreRule>(buildGenreRules());
+const QHash<QString, TransitionRule>& transitionRules() {
+    static const auto* r =
+            new QHash<QString, TransitionRule>(buildTransitionRules());
     return *r;
 }
 
