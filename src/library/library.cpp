@@ -10,6 +10,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/analysis/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
+#include "library/aibro/aibrofeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #ifdef __ENGINEPRIME__
@@ -177,8 +178,13 @@ Library::Library(
     // lives as long as the player decks do.
     m_pSponsorBlockController = make_parented<mixxx::SponsorBlockController>(
             m_pYouTubeFeature->cacheDir(), this);
+
+    // AI Bro: intelligent Auto-DJ with YouTube similarity + auto-mix
+    m_pAIBroFeature = make_parented<AIBroFeature>(
+            this, m_pConfig, pPlayerManager, m_pYouTubeFeature);
+    m_pAIBroFeature->init();
+
     // Suspend a batch analysis while an ad-hoc analysis of
-    // loaded tracks is in progress and resume it afterwards.
     connect(pPlayerManager,
             &PlayerManager::trackAnalyzerProgress,
             this,

@@ -137,7 +137,34 @@
         </Connection>
       </StatusLight>
 
-      <WidgetGroup>
+      <!-- AI Bro: Auto-DJ with YouTube similarity + auto-mix -->
+      <PushButton>
+        <TooltipId>ai_bro_status</TooltipId>
+        <ObjectName>AiBroButton</ObjectName>
+        <Size>70f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Text>AI BRO</Text>
+          <Alignment>center</Alignment>
+          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>AI BRO</Text>
+          <Alignment>center</Alignment>
+          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+        </State>
+        <Connection>
+          <ConfigKey>[AIBro],enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>

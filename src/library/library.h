@@ -22,6 +22,7 @@ namespace mixxx {
 class SponsorBlockController;
 } // namespace mixxx
 class AutoDJFeature;
+class AIBroFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
@@ -236,6 +237,7 @@ class Library : public QObject {
     // deliberately omitted because its public API does not provide audio.
     parented_ptr<YouTubeFeature> m_pYouTubeFeature;
     parented_ptr<mixxx::SponsorBlockController> m_pSponsorBlockController;
+    parented_ptr<AIBroFeature> m_pAIBroFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;
