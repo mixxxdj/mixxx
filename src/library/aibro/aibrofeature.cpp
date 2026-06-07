@@ -18,8 +18,8 @@ namespace {
 const mixxx::Logger kLogger("AIBroFeature");
 
 // Timing constants
-constexpr int kProgressIntervalMs = 1000; // check every second
-constexpr int kBlendTickIntervalMs = 100; // blend animation tick
+constexpr int kProgressIntervalMs = 1000;  // check every second
+constexpr int kBlendTickIntervalMs = 100;  // blend animation tick
 constexpr int kCrossfadeDurationMs = 6000; // 6 second crossfade
 constexpr int kBlendSteps = 60;
 
