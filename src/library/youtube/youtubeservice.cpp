@@ -1168,7 +1168,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
             QPointer<YouTubeService> guard(this);
             QTimer::singleShot(retryMs,
                     this,
-                    [guard, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride, minResults]() {
+                    [guard,
+                            emittedQuery,
+                            requestQuery,
+                            cap,
+                            clientIdx,
+                            onAllFailed,
+                            regionOverride,
+                            minResults]() {
                         if (!guard) {
                             return;
                         }
@@ -1196,7 +1203,14 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, emittedQuery, requestQuery, cap, tryNext, clientIdx, minResults]() {
+            [this,
+                    reply,
+                    emittedQuery,
+                    requestQuery,
+                    cap,
+                    tryNext,
+                    clientIdx,
+                    minResults]() {
                 reply->deleteLater();
                 const int httpStatus = reply->attribute(
                                                     QNetworkRequest::HttpStatusCodeAttribute)
