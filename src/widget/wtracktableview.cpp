@@ -3,6 +3,7 @@
 #include <QDrag>
 #include <QModelIndex>
 #include <QScrollBar>
+#include <QScroller>
 #include <QShortcut>
 #include <QStylePainter>
 #include <QUrl>
@@ -58,6 +59,12 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false),
           m_dropRow(-1) {
+    // Enable kinetic scrolling via touch (single-finger swipe) on touchscreens.
+    // Without this, Qt's Windows platform plugin converts single-finger touch
+    // to mouse-press + mouse-move, which Mixxx interprets as drag-and-drop
+    // instead of scrolling.
+    QScroller::grabGesture(viewport(), QScroller::TouchGesture);
+
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
