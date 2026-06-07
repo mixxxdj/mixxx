@@ -6,7 +6,7 @@
 #include <QTimer>
 
 #include "control/controlpushbutton.h"
-#include "control/proxy/controlproxy.h"
+#include "control/controlproxy.h"
 #include "library/youtube/youtubeservice.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
