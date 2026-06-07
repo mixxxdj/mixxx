@@ -732,9 +732,7 @@ void YouTubeService::searchVideos(const QString& query, int cap, int minResults)
     // health of community-run instances — which is why search used to return
     // nothing and lag for ~100s while cycling through dead Piped hosts. We fail
     // over to Piped and then yt-dlp only if InnerTube itself fails.
-    searchViaInnerTube(query,
-            query,
-            cap,
+    searchViaInnerTube(query, query, cap,
             /*clientIdx=*/0,
             [this, query, cap](const QString& innerTubeError) {
                 const bool hasYtDlpFallback = !m_ytDlpPath.isEmpty();
@@ -1072,15 +1070,27 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
 
     // Advance to the next client on any per-client failure (network error or a
     // response we could not parse a single video out of).
-    auto tryNext = [this, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride, minResults](
-                           const QString& err) {
+    auto tryNext = [this,
+                           emittedQuery,
+                           requestQuery,
+                           cap,
+                           clientIdx,
+                           onAllFailed,
+                           regionOverride,
+                           minResults](const QString& err) {
         const QVector<InnerTubeClient>& cl = innerTubeSearchClients();
         if (clientIdx + 1 < cl.size()) {
             kLogger.info() << "InnerTube search client"
                            << cl.at(clientIdx).clientName << "failed:" << err
                            << "— trying next client";
-            searchViaInnerTube(
-                    emittedQuery, requestQuery, cap, clientIdx + 1, onAllFailed, regionOverride, /*retryCount=*/0, minResults);
+            searchViaInnerTube(emittedQuery,
+                    requestQuery,
+                    cap,
+                    clientIdx + 1,
+                    onAllFailed,
+                    regionOverride,
+                    /*retryCount=*/0,
+                    minResults);
         } else {
             onAllFailed(err);
         }
