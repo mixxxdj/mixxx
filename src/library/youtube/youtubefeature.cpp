@@ -712,17 +712,8 @@ YouTubeFeature::YouTubeFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &YouTubeTrackModel::searchRequested,
             this,
             &YouTubeFeature::searchAndActivate);
-    // Connect Enter key from search box to searchNow() so YouTube only
-    // searches when the user explicitly presses Enter, not on keystroke debounce.
-    // Use Qt::UniqueConnection to prevent duplicate connections if activate()
-    // is called multiple times (e.g. user clicks YouTube feature repeatedly).
-    if (m_pSearchbox) {
-        connect(m_pSearchbox,
-                &WSearchLineEdit::returnPressed,
-                m_pTrackModel,
-                &YouTubeTrackModel::searchNow,
-                Qt::UniqueConnection);
-    }
+    // Note: returnPressed → searchNow connection is made in
+    // bindSearchboxWidget() where m_pSearchbox is available.
     // Infinite scroll: when the user scrolls to the bottom and the model
     // emits fetchMoreRequested(), ask the service for the next page.
     // After the call, restore m_hasMore based on whether the service still

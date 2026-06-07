@@ -1158,7 +1158,7 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
             QPointer<YouTubeService> guard(this);
             QTimer::singleShot(retryMs,
                     this,
-                    [guard, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride]() {
+                    [guard, emittedQuery, requestQuery, cap, clientIdx, onAllFailed, regionOverride, minResults]() {
                         if (!guard) {
                             return;
                         }
@@ -1168,7 +1168,8 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
                                 clientIdx,
                                 onAllFailed,
                                 regionOverride,
-                                /*retryCount=*/1);
+                                /*retryCount=*/1,
+                                minResults);
                     });
             return;
         }
