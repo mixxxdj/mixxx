@@ -107,6 +107,10 @@ class AIBroFeature : public QObject {
     // --- Vocal sync helpers ---
     double estimateVocalStartPosition(int deckIndex) const;
 
+    // --- BPM helpers ---
+    double getCurrentPlayingBPM() const;
+    double getCandidateBPM(const mixxx::YouTubeVideoInfo& candidate) const;
+
     // --- Manual track detection ---
     QMap<int, QString> snapshotTrackLocations() const;
     QString findNewManualTrack();

@@ -30,14 +30,19 @@ constexpr double kBlendStartMax = 0.75;
 
 // Similarity weights (inspired by ai-remixmate hybrid ranking:
 // tempo 0.2 + audio 0.5 + lyrics 0.3, renormalized)
-constexpr double kWeightTitleOverlap = 0.20;
-constexpr double kWeightSemanticWords = 0.25;
-constexpr double kWeightArtistMatch = 0.15;
-constexpr double kWeightRemixBonus = 0.15;
-constexpr double kWeightGenreMatch = 0.10;
+constexpr double kWeightTitleOverlap = 0.15;
+constexpr double kWeightSemanticWords = 0.20;
+constexpr double kWeightArtistMatch = 0.10;
+constexpr double kWeightRemixBonus = 0.10;
+constexpr double kWeightGenreMatch = 0.05;
 constexpr double kWeightDuration = 0.05;
 constexpr double kWeightFreshness = 0.05;
-constexpr double kWeightKeyCompat = 0.05;
+constexpr double kWeightBPMProximity = 0.20;
+constexpr double kWeightKeyCompat = 0.10;
+
+// BPM tolerance for matching (percent)
+constexpr double kBPMTolerancePercent = 6.0;  // ±6% is mixable with pitch bend
+constexpr double kBPMToleranceMax = 15.0;     // ±15 BPM absolute max
 
 // Ideal duration (seconds) — remixes can be longer
 constexpr int kIdealDurationMin = 150;
@@ -395,6 +400,22 @@ double AIBroFeature::scoreCandidate(
         }
     }
 
+    // --- 8. BPM proximity (critical for DJ mixing) ---
+    double currentBPM = getCurrentPlayingBPM();
+    double candidateBPM = getCandidateBPM(candidate);
+    if (currentBPM > 0 && candidateBPM > 0) {
+        double bpmRatio = candidateBPM / currentBPM;
+        // Check for similar tempo (±6% is ideal)
+        // Also check for half/double tempo (0.5x or 2x)
+        double bpmDiff = std::abs(bpmRatio - 1.0);
+        double halfDiff = std::abs(bpmRatio - 0.5);
+        double doubleDiff = std::abs(bpmRatio - 2.0);
+        double bestDiff = std::min({bpmDiff, halfDiff, doubleDiff});
+        // Penalize based on difference: 0% diff = full score, >15% = 0
+        double bpmScore = 1.0 - (bestDiff / (kBPMToleranceMax / 100.0));
+        score += kWeightBPMProximity * qBound(0.0, bpmScore, 1.0);
+    }
+
     return qBound(0.0, score, 1.0);
 }
 
@@ -657,9 +678,16 @@ void AIBroFeature::startBlend(int fromDeck, int toDeck) {
     m_blendStep = 0;
     m_blendFromDeck = fromDeck;
     m_blendToDeck = toDeck;
-
     // DJ Technique 1: Enable sync on target deck (follower)
+    // This makes the target deck automatically match the source BPM
     setSync(toDeck, true);
+
+    // Set rate range to allow wide tempo matching (±50%)
+    {
+        ConfigKey rangeKey(
+                QStringLiteral("[Channel%1]").arg(toDeck + 1), "rateRange");
+        ControlObject::set(rangeKey, 0.5);  // ±50% range
+    }
 
     // DJ Technique 2: Start target deck playing (beat-synced)
     setPlay(toDeck, true);
@@ -988,4 +1016,112 @@ QString AIBroFeature::findNewManualTrack() {
         }
     }
     return {};
+}
+
+// ---------------------------------------------------------------------------
+// BPM detection and matching
+// ---------------------------------------------------------------------------
+
+double AIBroFeature::getCurrentPlayingBPM() const {
+    if (!m_pPlayerManager) {
+        return 0.0;
+    }
+    // Find the currently playing deck and get its track's BPM
+    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
+        if (!isDeckPlaying(i)) {
+            continue;
+        }
+        auto* pPlayer = m_pPlayerManager->getDeck(i);
+        if (!pPlayer) {
+            continue;
+        }
+        auto* pTrack = pPlayer->getLoadedTrack();
+        if (pTrack) {
+            double bpm = pTrack->getBpm();
+            if (bpm > 0) {
+                return bpm;
+            }
+        }
+    }
+    return 0.0;
+}
+
+double AIBroFeature::getCandidateBPM(
+        const mixxx::YouTubeVideoInfo& candidate) const {
+    // YouTube doesn't provide BPM directly, but we can estimate from
+    // genre keywords in the title (similar to AI-DJ-Mixing-System's
+    // genre detection approach)
+    QString title = candidate.title.toLower();
+
+    // Genre-based BPM estimation
+    if (title.contains("drum and bass") || title.contains("dnb") ||
+            title.contains("drum & bass")) {
+        return 174.0;
+    }
+    if (title.contains("dubstep") || title.contains("dub step")) {
+        return 140.0;
+    }
+    if (title.contains("techno")) {
+        return 130.0;
+    }
+    if (title.contains("trance")) {
+        return 138.0;
+    }
+    if (title.contains("house")) {
+        return 124.0;
+    }
+    if (title.contains("deep house")) {
+        return 122.0;
+    }
+    if (title.contains("tech house")) {
+        return 126.0;
+    }
+    if (title.contains("progressive")) {
+        return 128.0;
+    }
+    if (title.contains("electro")) {
+        return 128.0;
+    }
+    if (title.contains("hip hop") || title.contains("hip-hop") ||
+            title.contains("rap")) {
+        return 90.0;
+    }
+    if (title.contains("r&b") || title.contains("rnb") ||
+            title.contains("rhythm and blues")) {
+        return 85.0;
+    }
+    if (title.contains("pop")) {
+        return 120.0;
+    }
+    if (title.contains("reggaeton") || title.contains("reggae")) {
+        return 95.0;
+    }
+    if (title.contains("dancehall")) {
+        return 100.0;
+    }
+    if (title.contains("afrobeats")) {
+        return 110.0;
+    }
+    if (title.contains("ambient") || title.contains("chill")) {
+        return 90.0;
+    }
+    if (title.contains("downtempo")) {
+        return 85.0;
+    }
+    if (title.contains("breakbeat") || title.contains("breaks")) {
+        return 135.0;
+    }
+    if (title.contains("garage")) {
+        return 130.0;
+    }
+    if (title.contains("grime")) {
+        return 140.0;
+    }
+    if (title.contains("jungle")) {
+        return 170.0;
+    }
+
+    // Default: unknown BPM — return 0 so BPM scoring is skipped
+    // The sync system will handle tempo matching at blend time
+    return 0.0;
 }
