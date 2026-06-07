@@ -42,44 +42,49 @@ constexpr int kIdealDurationMin = 150;
 constexpr int kIdealDurationMax = 480;
 
 // Camelot Wheel: compatible keys for harmonic mixing
-// Format: key -> {same_key, relative_minor/major, dominant, subdominant}
-// This is a simplified version — full Camelot has 12 major + 12 minor
-const QHash<QString, QStringList> kCamelotCompatible = {
+// Built at runtime to avoid clang-format issues with large initializers
+static QHash<QString, QStringList> buildCamelotMap() {
+    QHash<QString, QStringList> m;
     // Major keys
-    {"C", {"C", "Am", "G", "F"}},
-    {"G", {"G", "Em", "D", "C"}},
-    {"D", {"D", "Bm", "A", "G"}},
-    {"A", {"A", "F#m", "E", "D"}},
-    {"E", {"E", "C#m", "B", "A"}},
-    {"B", {"B", "G#m", "F#", "E"}},
-    {"F#", {"F#", "D#m", "C#", "B"}},
-    {"Db", {"Db", "Bbm", "Ab", "Gb"}},
-    {"Ab", {"Ab", "Fm", "Eb", "Db"}},
-    {"Eb", {"Eb", "Cm", "Bb", "Ab"}},
-    {"Bb", {"Bb", "Gm", "F", "Eb"}},
-    {"F", {"F", "Dm", "C", "Bb"}},
+    m["C"] = {"C", "Am", "G", "F"};
+    m["G"] = {"G", "Em", "D", "C"};
+    m["D"] = {"D", "Bm", "A", "G"};
+    m["A"] = {"A", "F#m", "E", "D"};
+    m["E"] = {"E", "C#m", "B", "A"};
+    m["B"] = {"B", "G#m", "F#", "E"};
+    m["F#"] = {"F#", "D#m", "C#", "B"};
+    m["Db"] = {"Db", "Bbm", "Ab", "Gb"};
+    m["Ab"] = {"Ab", "Fm", "Eb", "Db"};
+    m["Eb"] = {"Eb", "Cm", "Bb", "Ab"};
+    m["Bb"] = {"Bb", "Gm", "F", "Eb"};
+    m["F"] = {"F", "Dm", "C", "Bb"};
     // Minor keys
-    {"Am", {"Am", "C", "Em", "Dm"}},
-    {"Em", {"Em", "G", "Bm", "Am"}},
-    {"Bm", {"Bm", "D", "F#m", "Em"}},
-    {"F#m", {"F#m", "A", "C#m", "Bm"}},
-    {"C#m", {"C#m", "E", "G#m", "F#m"}},
-    {"G#m", {"G#m", "B", "D#m", "C#m"}},
-    {"D#m", {"D#m", "F#", "A#m", "G#m"}},
-    {"Bbm", {"Bbm", "Db", "Fm", "Ebm"}},
-    {"Fm", {"Fm", "Ab", "Cm", "Bbm"}},
-    {"Cm", {"Cm", "Eb", "Gm", "Fm"}},
-    {"Gm", {"Gm", "Bb", "Dm", "Cm"}},
-    {"Dm", {"Dm", "F", "Am", "Gm"}},
-};
+    m["Am"] = {"Am", "C", "Em", "Dm"};
+    m["Em"] = {"Em", "G", "Bm", "Am"};
+    m["Bm"] = {"Bm", "D", "F#m", "Em"};
+    m["F#m"] = {"F#m", "A", "C#m", "Bm"};
+    m["C#m"] = {"C#m", "E", "G#m", "F#m"};
+    m["G#m"] = {"G#m", "B", "D#m", "C#m"};
+    m["D#m"] = {"D#m", "F#", "A#m", "G#m"};
+    m["Bbm"] = {"Bbm", "Db", "Fm", "Ebm"};
+    m["Fm"] = {"Fm", "Ab", "Cm", "Bbm"};
+    m["Cm"] = {"Cm", "Eb", "Gm", "Fm"};
+    m["Gm"] = {"Gm", "Bb", "Dm", "Cm"};
+    m["Dm"] = {"Dm", "F", "Am", "Gm"};
+    return m;
+}
+
+const QHash<QString, QStringList>& camelotMap() {
+    static const auto* m = new QHash<QString, QStringList>(buildCamelotMap());
+    return *m;
+}
 
 // Keywords indicating remix/extended (better for DJ mixing)
 const QStringList kRemixKeywords = {
-    "remix", "extended", "mix", "edit", "version",
-    "dub", "instrumental", "a cappella", "bootleg",
-    "mashup", "flip", "rework", "VIP", "radio edit",
-    "club mix", "extended mix", "original mix"
-};
+    "remix", "extended", "mix", "edit", "version", "dub",
+    "instrumental", "a cappella", "bootleg", "mashup", "flip",
+    "rework", "VIP", "radio edit", "club mix", "extended mix",
+    "original mix"};
 
 // Genre-specific transition preferences
 struct GenreRule {
@@ -88,18 +93,25 @@ struct GenreRule {
     double crossfadeMultiplier;   // adjust crossfade duration
 };
 
-const QHash<QString, GenreRule> kGenreRules = {
-    {"house", {"breakdown", "smooth", 1.0}},
-    {"techno", {"breakdown", "energetic", 0.8}},
-    {"trance", {"buildup", "energetic", 1.2}},
-    {"dubstep", {"drop", "energetic", 0.7}},
-    {"drum and bass", {"breakdown", "energetic", 0.8}},
-    {"hip hop", {"verse_end", "smooth", 1.0}},
-    {"r&b", {"verse_end", "smooth", 1.1}},
-    {"pop", {"chorus_end", "energetic", 1.0}},
-    {"edm", {"pre_drop", "energetic", 0.9}},
-    {"dancehall", {"verse_end", "energetic", 0.9}},
-};
+static QHash<QString, GenreRule> buildGenreRules() {
+    QHash<QString, GenreRule> r;
+    r["house"] = {"breakdown", "smooth", 1.0};
+    r["techno"] = {"breakdown", "energetic", 0.8};
+    r["trance"] = {"buildup", "energetic", 1.2};
+    r["dubstep"] = {"drop", "energetic", 0.7};
+    r["drum and bass"] = {"breakdown", "energetic", 0.8};
+    r["hip hop"] = {"verse_end", "smooth", 1.0};
+    r["r&b"] = {"verse_end", "smooth", 1.1};
+    r["pop"] = {"chorus_end", "energetic", 1.0};
+    r["edm"] = {"pre_drop", "energetic", 0.9};
+    r["dancehall"] = {"verse_end", "energetic", 0.9};
+    return r;
+}
+
+const QHash<QString, GenreRule>& genreRules() {
+    static const auto* r = new QHash<QString, GenreRule>(buildGenreRules());
+    return *r;
+}
 
 }  // namespace
 
