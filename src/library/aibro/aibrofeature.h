@@ -105,6 +105,9 @@ class AIBroFeature : public QObject {
     void setVolume(int deckIndex, double volume);
     void setPlay(int deckIndex, bool play);
 
+    // --- Current track tracking ---
+    void updateCurrentTrackInfo();
+
     // --- Vocal sync helpers ---
     double estimateVocalStartPosition(int deckIndex) const;
 

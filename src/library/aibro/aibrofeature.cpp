@@ -584,6 +584,9 @@ void AIBroFeature::findNextSong() {
         return;
     }
 
+    // Always refresh track info from the playing deck first
+    updateCurrentTrackInfo();
+
     if (m_currentTrackTitle.isEmpty()) {
         kLogger.info() << "AI Bro: no track context, fetching trending";
         m_downloading = true;
@@ -651,6 +654,8 @@ void AIBroFeature::slotProgressTick() {
         if (pos >= kBlendStartMin && !m_downloading) {
             kLogger.info() << "AI Bro: blend point at" << pos
                            << "on deck" << (i + 1);
+            // Update track info before searching for similar songs
+            updateCurrentTrackInfo();
             m_downloading = true;
             findNextSong();
             break;
@@ -1007,6 +1012,31 @@ int AIBroFeature::countPlayingDecks() const {
         }
     }
     return count;
+}
+
+void AIBroFeature::updateCurrentTrackInfo() {
+    m_currentTrackTitle.clear();
+    m_currentTrackArtist.clear();
+    if (!m_pPlayerManager) {
+        return;
+    }
+    // Find the first playing deck and read its track info
+    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
+        if (!isDeckPlaying(i)) {
+            continue;
+        }
+        auto* pPlayer = m_pPlayerManager->getDeck(i);
+        if (!pPlayer) {
+            continue;
+        }
+        TrackPointer pTrack = pPlayer->getLoadedTrack();
+        if (!pTrack) {
+            continue;
+        }
+        m_currentTrackTitle = pTrack->getTitle();
+        m_currentTrackArtist = pTrack->getArtist();
+        return;
+    }
 }
 
 int AIBroFeature::findAvailableDeck() const {
