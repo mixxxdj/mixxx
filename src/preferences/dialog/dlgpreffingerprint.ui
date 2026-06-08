@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>576</width>
-    <height>280</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,7 +85,37 @@
     </widget>
    </item>
 
-   <item row="2" column="0">
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxClearFingerprints">
+     <property name="title">
+      <string>Library-wide Fingerprint Cleanup</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutClear">
+      <item>
+       <widget class="QLabel" name="labelClearInfo">
+        <property name="text">
+         <string>Removes all stored Chromaprint fingerprints, AcoustID queue entries, and CMRT group memberships from the entire library. Individual tracks can also be cleared via the right-click context menu.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClearAllFingerprints">
+        <property name="toolTip">
+         <string>Deletes all .chroma files and removes all fingerprint metadata from the database. Tracks will be re-fingerprinted the next time fingerprint analysis runs.</string>
+        </property>
+        <property name="text">
+         <string>Clear All Fingerprints…</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item row="3" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
