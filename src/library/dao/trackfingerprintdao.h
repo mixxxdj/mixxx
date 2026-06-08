@@ -173,6 +173,18 @@ class TrackFingerprintDao : public DAO {
     // Sets status='queued', attempts=0, error_message=NULL, last_attempt=NULL.
     bool reQueueJob(TrackId trackId) const;
 
+    // Clears all fingerprint data for a single track:
+    // deletes the .chroma file, handles canonical reassignment or group
+    // deletion in cmrt_groups, removes cmrt_members, fingerprint_metadata,
+    // and acoustid_queue rows for this track.
+    // Returns true if the cleanup completed without errors.
+    bool clearFingerprintData(TrackId trackId) const;
+
+    // Calls clearFingerprintData() for every track that has a
+    // fingerprint_metadata row. Returns the number of tracks cleared.
+    // Used by the "Clear All Fingerprints" button in Preferences.
+    int clearAllFingerprintData() const;
+
   private:
     // Returns ~/.mixxx/fingerprints/ — creates the directory on first call.
     QDir getFingerprintStoragePath() const;
