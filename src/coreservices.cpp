@@ -33,8 +33,8 @@
 #include "moc_coreservices.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
-#ifdef __MODPLUG__
-#include "preferences/dialog/dlgprefmodplug.h"
+#ifdef __OPENMPT__
+#include "preferences/dialog/dlgprefopenmpt.h"
 #endif
 #include "skin/skincontrols.h"
 #include "skin/skinloader.h"
@@ -595,11 +595,11 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pVCManager->init();
 #endif
 
-#ifdef __MODPLUG__
-    // Restore the configuration for the modplug library before trying to load a module.
-    DlgPrefModplug modplugPrefs{nullptr, pConfig};
-    modplugPrefs.loadSettings();
-    modplugPrefs.applySettings();
+#ifdef __OPENMPT__
+    // Restore the libopenmpt decoder configuration before trying to load a module.
+    DlgPrefOpenMPT openmptPrefs{nullptr, pConfig};
+    openmptPrefs.loadSettings();
+    openmptPrefs.applySettings();
 #endif
 
     // Inhibit Screensaver

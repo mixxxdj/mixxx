@@ -41,9 +41,9 @@
 #include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
 
-#ifdef __MODPLUG__
-#include "preferences/dialog/dlgprefmodplug.h"
-#endif // __MODPLUG__
+#ifdef __OPENMPT__
+#include "preferences/dialog/dlgprefopenmpt.h"
+#endif // __OPENMPT__
 
 #ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
@@ -236,13 +236,13 @@ DlgPreferences::DlgPreferences(
             tr("Normalization"),
             "ic_preferences_replaygain.svg");
 
-#ifdef __MODPLUG__
+#ifdef __OPENMPT__
     addPageWidget(PreferencesPage(
-                          new DlgPrefModplug(this, m_pConfig),
+                          new DlgPrefOpenMPT(this, m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Modplug Decoder"),
-            "ic_preferences_modplug.svg");
-#endif // __MODPLUG__
+            tr("OpenMPT Decoder"),
+            "ic_preferences_openmpt.svg");
+#endif // __OPENMPT__
 
     // Find accept and apply buttons
     const auto buttons = buttonBox->buttons();

@@ -5091,25 +5091,27 @@ if(MEDIAFOUNDATION)
   )
 endif()
 
-# Modplug support
-find_package(Modplug)
-default_option(MODPLUG "Modplug module decoder support" "Modplug_FOUND")
-if(MODPLUG)
-  if(NOT Modplug_FOUND)
+# libopenmpt module/tracker decoder support (replaces the legacy libmodplug
+# decoder, which shared global decoding state and corrupted audio when more
+# than one module was loaded/analyzed at a time).
+find_package(OpenMPT)
+default_option(OPENMPT "libopenmpt module decoder support" "OpenMPT_FOUND")
+if(OPENMPT)
+  if(NOT OpenMPT_FOUND)
     message(
       FATAL_ERROR
-      "Modplug module decoder support requires libmodplug and its development headers."
+      "libopenmpt module decoder support requires libopenmpt and its development headers."
     )
   endif()
   target_sources(
     mixxx-lib
     PRIVATE
-      src/preferences/dialog/dlgprefmodplugdlg.ui
-      src/sources/soundsourcemodplug.cpp
-      src/preferences/dialog/dlgprefmodplug.cpp
+      src/preferences/dialog/dlgprefopenmptdlg.ui
+      src/sources/soundsourceopenmpt.cpp
+      src/preferences/dialog/dlgprefopenmpt.cpp
   )
-  target_compile_definitions(mixxx-lib PUBLIC __MODPLUG__)
-  target_link_libraries(mixxx-lib PRIVATE Modplug::Modplug)
+  target_compile_definitions(mixxx-lib PUBLIC __OPENMPT__)
+  target_link_libraries(mixxx-lib PRIVATE OpenMPT::OpenMPT)
 endif()
 
 find_package(Microsoft.GSL CONFIG)
