@@ -99,6 +99,7 @@ CueControl::CueControl(const QString& group,
           m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
+          m_disablePreRoll(group, "disable_preroll", ControlFlag::AllowMissingOrInvalid),
           m_pCurrentSavedLoopControl(nullptr),
           m_trackMutex(QT_RECURSIVE_MUTEX_INIT) {
     createControls();
@@ -699,7 +700,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
     DEBUG_ASSERT(seekOnLoadPosition.isValid());
     seekExact(seekOnLoadPosition);
-    m_usedSeekOnLoadPosition.setValue(seekOnLoadPosition);
+    // When pre-roll is disabled, EngineBuffer clamps the resulting position to
+    // track start. Record the effective position so trackAnalyzed() can correctly
+    // detect whether the user has manually repositioned the deck.
+    const auto effectivePosition =
+            (m_disablePreRoll.toBool() &&
+                    seekOnLoadPosition < mixxx::audio::kStartFramePos)
+            ? mixxx::audio::kStartFramePos
+            : seekOnLoadPosition;
+    m_usedSeekOnLoadPosition.setValue(effectivePosition);
 }
 
 void CueControl::slotCueModeChanged(double) {
@@ -2361,11 +2370,20 @@ CueControl::TrackAt CueControl::getTrackAt() const {
     if (info.trackEndPosition.isValid() && info.currentPosition >= info.trackEndPosition) {
         return TrackAt::End;
     }
-    const auto mainCuePosition =
+    auto mainCuePosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pCuePoint->get());
-    if (mainCuePosition.isValid() && fabs(info.currentPosition - mainCuePosition) < 0.5) {
-        return TrackAt::Cue;
+    if (mainCuePosition.isValid()) {
+        // When pre-roll is disabled, EngineBuffer clamps playback to track
+        // start. A cue stored in negative pre-roll space is effectively at
+        // position 0, so clamp our comparison target to match.
+        if (m_disablePreRoll.toBool() &&
+                mainCuePosition < mixxx::audio::kStartFramePos) {
+            mainCuePosition = mixxx::audio::kStartFramePos;
+        }
+        if (fabs(info.currentPosition - mainCuePosition) < 0.5) {
+            return TrackAt::Cue;
+        }
     }
     return TrackAt::ElseWhere;
 }
