@@ -398,7 +398,8 @@ std::optional<AcoustIdWorker::LookupResult> AcoustIdWorker::doLookup(
     // recordingids returns the MusicBrainz UUID for each match — sufficient
     // for our cache and library write. A separate MusicBrainz call is needed
     // for release IDs (deferred to a later PR).
-    params.addQueryItem(QStringLiteral("meta"), QStringLiteral("recordingids"));
+    params.addQueryItem(QStringLiteral("meta"),
+            QStringLiteral("recordings releases tracks"));
     params.addQueryItem(QStringLiteral("fingerprint"), fingerprint);
     params.addQueryItem(QStringLiteral("duration"), QString::number(durationSeconds));
 
@@ -489,9 +490,8 @@ std::optional<AcoustIdWorker::LookupResult> AcoustIdWorker::doLookup(
     const QJsonArray recordings =
             topResult.value(QStringLiteral("recordings")).toArray();
     for (const auto& rec : recordings) {
-        const QUuid id(rec.toObject()
-                        .value(QStringLiteral("id"))
-                        .toString());
+        const QJsonObject recObj = rec.toObject();
+        const QUuid id(recObj.value(QStringLiteral("id")).toString());
         if (!id.isNull()) {
             result.recordingIds.append(id);
         }
