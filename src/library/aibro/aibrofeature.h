@@ -78,6 +78,8 @@ class AIBroFeature : public QObject {
     void slotDownloadFailed(
             const QString& videoId, const QString& error);
     void slotBlendTick();
+    void slotSearchFailed(
+            const QString& query, const QString& error);
 
   private:
     // --- Song discovery ---

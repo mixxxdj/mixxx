@@ -271,6 +271,30 @@ void AIBroFeature::init() {
             this,
             &AIBroFeature::slotBlendTick);
     m_pBlendTimer->setInterval(kBlendTickIntervalMs);
+
+    // Connect to YouTubeService signals for download completion notification.
+    // Without this, AIBroFeature has no way to know when a download finishes.
+    if (m_pYouTubeFeature) {
+        mixxx::YouTubeService* pService = m_pYouTubeFeature->service();
+        if (pService) {
+            connect(pService,
+                    &mixxx::YouTubeService::downloadFinished,
+                    this,
+                    &AIBroFeature::slotDownloadFinished);
+            connect(pService,
+                    &mixxx::YouTubeService::downloadFailed,
+                    this,
+                    &AIBroFeature::slotDownloadFailed);
+            connect(pService,
+                    &mixxx::YouTubeService::searchResultsReady,
+                    this,
+                    &AIBroFeature::slotSearchResultsReady);
+            connect(pService,
+                    &mixxx::YouTubeService::searchFailed,
+                    this,
+                    &AIBroFeature::slotSearchFailed);
+        }
+    }
 }
 
 bool AIBroFeature::isActive() const {
@@ -688,6 +712,21 @@ void AIBroFeature::slotDownloadFailed(
     }
     Q_UNUSED(videoId);
     kLogger.warning() << "AI Bro: download failed:" << error;
+    m_downloading = false;
+    QTimer::singleShot(kRetryDelayMs, this, [this]() {
+        if (isActive()) {
+            findNextSong();
+        }
+    });
+}
+
+void AIBroFeature::slotSearchFailed(
+        const QString& query, const QString& error) {
+    if (!isActive()) {
+        return;
+    }
+    Q_UNUSED(query);
+    kLogger.warning() << "AI Bro: search failed:" << error;
     m_downloading = false;
     QTimer::singleShot(kRetryDelayMs, this, [this]() {
         if (isActive()) {
