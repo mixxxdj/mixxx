@@ -590,7 +590,11 @@ void AIBroFeature::downloadCandidate(
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::findNextSong() {
+    kLogger.info() << "AI Bro: findNextSong called, active=" << isActive()
+                   << " downloading=" << m_downloading;
     if (!isActive() || m_downloading) {
+        kLogger.info() << "AI Bro: findNextSong skipped (active=" << isActive()
+                       << " downloading=" << m_downloading << ")";
         return;
     }
 
@@ -641,6 +645,8 @@ void AIBroFeature::slotProgressTick() {
     }
 
     int playingCount = countPlayingDecks();
+    kLogger.info() << "AI Bro: progressTick, playing=" << playingCount
+                   << " downloading=" << m_downloading;
 
     // Nothing playing? Fetch trending
     if (playingCount == 0 && !m_downloading) {
