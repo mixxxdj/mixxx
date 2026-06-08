@@ -78,7 +78,6 @@ class AIBroFeature : public QObject {
     void slotDownloadFailed(
             const QString& videoId, const QString& error);
     void slotBlendTick();
-    void slotManualTrackLoaded(int deckNumber);
 
   private:
     // --- Song discovery ---
