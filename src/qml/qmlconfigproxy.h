@@ -13,6 +13,7 @@
 #include "preferences/constants.h"
 #include "preferences/interface.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlconfigproxybase.h"
 #include "qml/qmlwaveformdisplay.h"
 
 #define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                              \
@@ -29,7 +30,7 @@ namespace qml {
 typedef QmlWaveformDisplay::Type QmlWaveformDisplayType;
 typedef QmlWaveformDisplay::Options QmlWaveformDisplayOptions;
 
-class QmlConfigProxy : public QObject {
+class QmlConfigProxy : public QmlConfigProxyBase {
     Q_OBJECT
     QML_NAMED_ELEMENT(Config)
     QML_SINGLETON
@@ -208,6 +209,10 @@ class QmlConfigProxy : public QObject {
     Q_PROPERTY(bool configStartInFullscreenKey READ configStartInFullscreenKey
                     WRITE set_configStartInFullscreenKey NOTIFY
                             configStartInFullscreenKeyChanged);
+    Q_PROPERTY(QString configScheme READ configScheme WRITE set_configScheme
+                    NOTIFY configSchemeChanged);
+    Q_PROPERTY(QString configSkin READ configSkin WRITE set_configSkin
+                    NOTIFY configSkinChanged);
     // BPM group
     Q_PROPERTY(EngineSync::SyncLockAlgorithm bpmSyncLockAlgorithm READ
                     bpmSyncLockAlgorithm WRITE set_bpmSyncLockAlgorithm NOTIFY
@@ -226,6 +231,11 @@ class QmlConfigProxy : public QObject {
     explicit QmlConfigProxy(
             UserSettingsPointer pConfig,
             QObject* pParent = nullptr);
+    ~QmlConfigProxy() override;
+
+    void setConfigScheme(const QString& scheme) override {
+        set_configScheme(scheme);
+    }
 
     // with UserSettings, since there is no synchronisation upon mutations.
     QVariantList hotcueColorPalette() const;
@@ -325,6 +335,8 @@ class QmlConfigProxy : public QObject {
     PROPERTY_DECL_ACCESSOR(QString, configKeyColorPalette);
     PROPERTY_DECL_ACCESSOR(bool, configKeyColorsEnabled);
     PROPERTY_DECL_ACCESSOR(bool, configStartInFullscreenKey);
+    PROPERTY_DECL_ACCESSOR(QString, configScheme);
+    PROPERTY_DECL_ACCESSOR(QString, configSkin);
 
     // BPM group
     PROPERTY_DECL_ACCESSOR(EngineSync::SyncLockAlgorithm, bpmSyncLockAlgorithm);
@@ -389,6 +401,7 @@ class QmlConfigProxy : public QObject {
     void configKeyColorPaletteChanged();
     void configKeyColorsEnabledChanged();
     void configStartInFullscreenKeyChanged();
+    void configSkinChanged();
     void bpmSyncLockAlgorithmChanged();
 
   private:
@@ -401,9 +414,9 @@ class QmlConfigProxy : public QObject {
             Signal signal) {
         if (value == defaultValue) {
             m_pConfig->remove(ConfigKey(group, key));
-            return;
+        } else {
+            m_pConfig->setValue(ConfigKey(group, key), value);
         }
-        m_pConfig->setValue(ConfigKey(group, key), value);
         emit(this->*signal)();
     }
 

@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QScreen>
 #include <QSettings>
+#include <QtDebug>
 
 namespace {
 
@@ -45,8 +46,21 @@ QFileInfo QmlSkin::path() const {
     return m_path;
 }
 
-QPixmap QmlSkin::preview(const QString&) const {
-    QPixmap preview(m_path.absoluteFilePath() + QStringLiteral("/skin_preview.png"));
+QPixmap QmlSkin::preview(const QString& schemeName) const {
+    QString effectiveSchemeName = schemeName;
+    if (effectiveSchemeName.isEmpty()) {
+        qWarning() << "QmlSkin::preview called without a color scheme. Falling "
+                      "back to the default 'PaleMoon'.";
+        effectiveSchemeName = QStringLiteral("PaleMoon");
+    }
+
+    QPixmap preview;
+    QString schemeNameFormatted(effectiveSchemeName);
+    schemeNameFormatted.replace(QChar(' '), QChar('_'));
+    preview.load(m_path.absoluteFilePath() +
+            QStringLiteral("/skin_preview_") + schemeNameFormatted +
+            QStringLiteral(".png"));
+
     if (!preview.isNull()) {
         return preview;
     }
@@ -78,7 +92,28 @@ QString QmlSkin::description() const {
 }
 
 QList<QString> QmlSkin::colorschemes() const {
-    return {};
+    DEBUG_ASSERT(isValid());
+    QSettings skinSettings(skinIniFile().absoluteFilePath(), QSettings::IniFormat);
+    skinSettings.beginGroup(kSkinGroup);
+
+    // QSettings parses values with commas as a QStringList.
+    const QStringList schemesList =
+            skinSettings.value(QStringLiteral("color_schemes")).toStringList();
+    if (schemesList.isEmpty()) {
+        // Fallback in case there is only one scheme and no comma
+        const QString schemesStr = skinSettings.value(QStringLiteral("color_schemes")).toString();
+        if (!schemesStr.isEmpty()) {
+            return {schemesStr.trimmed()};
+        }
+        return {};
+    }
+
+    QList<QString> schemes;
+    schemes.reserve(schemesList.size());
+    for (const QString& scheme : schemesList) {
+        schemes.append(scheme.trimmed());
+    }
+    return schemes;
 }
 
 bool QmlSkin::fitsScreenSize(const QScreen& screen) const {

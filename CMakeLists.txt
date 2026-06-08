@@ -4131,6 +4131,14 @@ if(QML)
     endforeach()
   endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
+  set_source_files_properties(
+    res/qml/Mixxx/MathUtils.mjs
+    PROPERTIES QT_RESOURCE_ALIAS MathUtils.mjs
+  )
+  set_source_files_properties(
+    res/qml/Mixxx/PlayerDropArea.qml
+    PROPERTIES QT_RESOURCE_ALIAS PlayerDropArea.qml
+  )
   qt_add_qml_module(mixxx-qml-lib
     URI Mixxx
     VERSION 1.0
@@ -4190,6 +4198,7 @@ if(QML)
       src/qml/qmlbeatsmodel.cpp
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlconfigproxy.cpp
+      src/qml/qmlconfigproxybase.cpp
       src/qml/qmlcontrolproxy.cpp
       src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
