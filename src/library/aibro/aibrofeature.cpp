@@ -293,11 +293,12 @@ void AIBroFeature::init() {
                     &mixxx::YouTubeService::searchFailed,
                     this,
                     &AIBroFeature::slotSearchFailed);
-            kLogger.info() << "AI Bro: signal connections:"
-                    << "downloadFinished=" << ok1
-                    << "downloadFailed=" << ok2
-                    << "searchResultsReady=" << ok3
-                    << "searchFailed=" << ok4;
+            kLogger.info()
+                    << "AI Bro: signal connections:"
+                       "downloadFinished=" << ok1
+                       "downloadFailed=" << ok2
+                       "searchResultsReady=" << ok3
+                       "searchFailed=" << ok4;
         } else {
             kLogger.warning() << "AI Bro: YouTubeService is null, cannot connect signals!";
         }
