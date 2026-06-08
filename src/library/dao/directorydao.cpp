@@ -285,9 +285,10 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
             "UPDATE track_locations SET location=:newloc, directory=:newdir WHERE id=:id");
     FwdSqlQuery relocateTracksQuery(m_database, relocateTracksStatement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        relocateTracksQuery.bindValue(QStringLiteral(":newloc"),
-                relocatedTracks.at(i).updatedTrackRef().getLocation());
-        relocateTracksQuery.bindValue(QStringLiteral(":newdir"), newDirectory);
+        const QString newLoc = relocatedTracks.at(i).updatedTrackRef().getLocation();
+        relocateTracksQuery.bindValue(QStringLiteral(":newloc"), newLoc);
+        const QString newDir = newLoc.left(newLoc.lastIndexOf('/'));
+        relocateTracksQuery.bindValue(QStringLiteral(":newdir"), newDir);
         relocateTracksQuery.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
         if (!relocateTracksQuery.execPrepared()) {
             LOG_FAILED_QUERY(relocateTracksQuery) << "could not relocate path of track";
