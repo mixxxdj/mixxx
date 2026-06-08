@@ -1,27 +1,29 @@
 pragma Singleton
 import QtQuick
 import Mixxx 1.0 as Mixxx
+import "ColorSchemes"
 
 QtObject {
     id: root
 
     readonly property string configScheme: Mixxx.Config.configScheme
-    readonly property var schemes: ({
-        "PaleMoon": {
-            name: "palemoon",
-            displayName: "PaleMoon",
-            accentColor: "#d9b28c"
-        },
-        "Classic": {
-            name: "classic",
-            displayName: "Classic",
-            accentColor: "#e7c413"
-        }
-    })
-
-    readonly property var activeScheme: schemes[configScheme] || schemes["PaleMoon"]
+    readonly property QtObject activeScheme: isClassicScheme(configScheme)
+            ? classicScheme
+            : paleMoonScheme
 
     readonly property color accentColor: activeScheme.accentColor
     readonly property string displayName: activeScheme.displayName
     readonly property string name: activeScheme.name
+
+    function isClassicScheme(schemeName) {
+        return String(schemeName).toLowerCase() === "classic";
+    }
+
+    readonly property QtObject paleMoonScheme: PaleMoon {
+        id: paleMoonScheme
+    }
+
+    readonly property QtObject classicScheme: Classic {
+        id: classicScheme
+    }
 }
