@@ -2449,6 +2449,23 @@ void WTrackMenu::slotClearAllMetadata() {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+
+    // Also clear fingerprint data — this is not covered by TrackPointerOperation
+    // because clearFingerprintData works on TrackId + DAO directly (no Track object
+    // needed), and mixing the two paradigms inside a TrackPointerOperation would
+    // require injecting the DAO into it unnecessarily.
+    const TrackIdList trackIds = getTrackIds();
+    TrackFingerprintDao& dao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getTrackFingerprintDAO();
+
+    // TODO(XXX): This loop runs after the progress dialog closes. For very large
+    // selections it may block the main thread briefly (DB + file deletions, no
+    // audio). A future PR should fold this into a TrackPointerOperation so it
+    // stays inside the progress modal.
+    for (const TrackId& id : std::as_const(trackIds)) {
+        dao.clearFingerprintData(id);
+    }
 }
 
 void WTrackMenu::slotClearFingerprint() {
@@ -2461,9 +2478,6 @@ void WTrackMenu::slotClearFingerprint() {
                                        ->internalCollection()
                                        ->getTrackFingerprintDAO();
 
-    const auto progressLabelText =
-            tr("Clearing fingerprint data of %n track(s)", "", getTrackCount());
-
     // We use a simple loop here rather than TrackPointerOperation because
     // clearFingerprintData() works directly on TrackId and does not need an
     // in-memory TrackPointer — it only touches the DB and the .chroma file.
@@ -2475,7 +2489,10 @@ void WTrackMenu::slotClearFingerprint() {
             ++cleared;
         }
     }
-    Q_UNUSED(progressLabelText); // progress dialog not used for this simple loop
+
+    // TODO(XXX): Add a progress dialog when
+    // fingerprint clearing moves into a TrackPointerOperation.
+
     Q_UNUSED(cleared);
 }
 
