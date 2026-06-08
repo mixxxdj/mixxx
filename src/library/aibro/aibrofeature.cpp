@@ -1219,3 +1219,4 @@ double AIBroFeature::getCandidateBPM(
     // The sync system will handle tempo matching at blend time
     return 0.0;
 }
+#include "moc_aibrofeature.cpp"
