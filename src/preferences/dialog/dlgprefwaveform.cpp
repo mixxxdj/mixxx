@@ -21,6 +21,8 @@ const ConfigKey kWaveformOptionsKey(kWaveformGroup,
         QStringLiteral("waveform_options"));
 const ConfigKey kHardwareAccelerationKey(kWaveformGroup,
         QStringLiteral("use_hardware_acceleration"));
+const ConfigKey kPhraseAnalysisEnabled(kWaveformGroup,
+        QStringLiteral("PhraseAnalysisEnabled"));
 } // namespace
 
 // for OverviewType
@@ -394,7 +396,9 @@ void DlgPrefWaveform::slotUpdate() {
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
     enableWaveformGenerationWithAnalysis->setChecked(
-        waveformSettings.waveformGenerationWithAnalysisEnabled());
+            waveformSettings.waveformGenerationWithAnalysisEnabled());
+    enablePhraseAnalysis->setChecked(
+            m_pConfig->getValue(kPhraseAnalysisEnabled, false));
     calculateCachedWaveformDiskUsage();
 }
 
@@ -403,7 +407,9 @@ void DlgPrefWaveform::slotApply() {
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
-        enableWaveformGenerationWithAnalysis->isChecked());
+            enableWaveformGenerationWithAnalysis->isChecked());
+    m_pConfig->setValue(kPhraseAnalysisEnabled,
+            enablePhraseAnalysis->isChecked());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
@@ -463,6 +469,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Waveform caching enabled.
     enableWaveformCaching->setChecked(true);
     enableWaveformGenerationWithAnalysis->setChecked(false);
+    enablePhraseAnalysis->setChecked(false);
 
     // Beat grid alpha default is 90
     beatGridAlphaSlider->setValue(90);

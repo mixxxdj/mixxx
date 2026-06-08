@@ -6,6 +6,7 @@
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerkey.h"
+#include "analyzer/analyzerphrase.h"
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
@@ -55,7 +56,7 @@ AnalyzerThread::NullPointer::NullPointer()
         : Pointer(nullptr, [](AnalyzerThread*) {}) {
 }
 
-//static
+// static
 AnalyzerThread::Pointer AnalyzerThread::createInstance(
         int id,
         mixxx::DbConnectionPoolPtr dbConnectionPool,
@@ -75,8 +76,8 @@ AnalyzerThread::AnalyzerThread(
         UserSettingsPointer pConfig,
         AnalyzerModeFlags modeFlags)
         : WorkerThread(
-            QString("AnalyzerThread %1").arg(id),
-            (modeFlags & AnalyzerModeFlags::LowPriority ? QThread::LowPriority : QThread::InheritPriority)),
+                  QString("AnalyzerThread %1").arg(id),
+                  (modeFlags & AnalyzerModeFlags::LowPriority ? QThread::LowPriority : QThread::InheritPriority)),
           m_id(id),
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(pConfig),
@@ -115,6 +116,9 @@ void AnalyzerThread::doRun() {
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerKey>(m_pConfig)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerSilence>(m_pConfig)));
+    if (AnalyzerPhrase::isEnabled(m_pConfig)) {
+        m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerPhrase>(m_pConfig)));
+    }
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 

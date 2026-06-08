@@ -809,6 +809,16 @@ Select from different types of displays for the waveform overview, which differ 
       </widget>
      </item>
      <item>
+      <widget class="QCheckBox" name="enablePhraseAnalysis">
+       <property name="text">
+        <string>Detect phrases when analyzing library</string>
+       </property>
+       <property name="toolTip">
+        <string>Automatically detect phrase boundaries (intro, verse, chorus, drop, outro) based on energy changes in the track.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="waveformCachingInfo">
        <property name="text">
         <string>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</string>
@@ -935,6 +945,7 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>overview_scale_allReplayGain</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
   <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
+  <tabstop>enablePhraseAnalysis</tabstop>
   <tabstop>clearCachedWaveforms</tabstop>
  </tabstops>
  <buttongroups>
