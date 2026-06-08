@@ -63,6 +63,7 @@ void TrackCollection::repairDatabase(const QSqlDatabase& database) {
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
+    m_directoryDao.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(const QSqlDatabase& database) {

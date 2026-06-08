@@ -10,6 +10,8 @@ class DirectoryDAO : public DAO {
   public:
     ~DirectoryDAO() override = default;
 
+    void repairDatabase(const QSqlDatabase& database);
+
     QList<mixxx::FileInfo> loadAllDirectories(
             bool skipInvalidOrMissing = false) const;
     /// Same as loadAllDirectories() just with paths as QString.
