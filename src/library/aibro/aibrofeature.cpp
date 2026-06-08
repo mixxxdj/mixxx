@@ -581,7 +581,7 @@ void AIBroFeature::findNextSong() {
     // Snapshot current track locations so we can detect manual loads
     m_searchTrackSnapshot = snapshotTrackLocations();
     m_downloading = true;
-    for (const QString& q : queries) {
+    for (const QString& q : qAsConst(queries)) {
         if (m_pYouTubeFeature) {
             m_pYouTubeFeature->searchAndActivate(q);
         }
@@ -1012,7 +1012,6 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
     // Heuristic: estimate vocal start based on track title keywords
     // and duration. This is a proxy for actual lyrics analysis.
     QString title = pTrack->getTitle().toLower();
-    QString artist = pTrack->getArtist().toLower();
 
     // Extended/remix versions have longer intros (instrumental buildup)
     // Typical structure: intro (25-40%) → verse → chorus → ...
