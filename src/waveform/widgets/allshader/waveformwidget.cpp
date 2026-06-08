@@ -20,6 +20,7 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
+#include "waveform/renderers/allshader/waveformrenderphrase.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
@@ -60,6 +61,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         DEBUG_ASSERT(pNode);
         pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
     }
+    pOpacityNode->appendChildNode(addRendererNode<WaveformRenderPhrase>());
     pOpacityNode->appendChildNode(addRendererNode<WaveformRenderBeat>());
     pOpacityNode->appendChildNode(addRendererNode<WaveformRenderBarCounter>());
     m_pWaveformRenderMark = pOpacityNode->appendChildNode(addRendererNode<WaveformRenderMark>());
@@ -82,6 +84,9 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         auto* pNode = dynamic_cast<rendergraph::BaseNode*>(pSlipNode.release());
         DEBUG_ASSERT(pNode);
         pOpacityNode->appendChildNode(std::unique_ptr<rendergraph::BaseNode>(pNode));
+        pOpacityNode->appendChildNode(
+                addRendererNode<WaveformRenderPhrase>(
+                        ::WaveformRendererAbstract::Slip));
         pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderBeat>(
                         ::WaveformRendererAbstract::Slip));

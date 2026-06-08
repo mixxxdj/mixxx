@@ -11,6 +11,7 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#include "track/phrases.h"
 #ifdef __STEM__
 #include "track/steminfo.h"
 #include "track/steminfoimporter.h"
@@ -399,6 +400,9 @@ class Track : public QObject {
             bool lockBpmAfterSet);
     ImportStatus getBeatsImportStatus() const;
 
+    mixxx::PhrasesPointer getPhrases() const;
+    bool trySetPhrases(mixxx::PhrasesPointer pPhrases);
+
     void resetKeys();
     void setKeys(const Keys& keys);
     Keys getKeys() const;
@@ -488,6 +492,7 @@ class Track : public QObject {
     void waveformSummaryUpdated();
     void coverArtUpdated();
     void beatsUpdated();
+    void phrasesUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
     // This signal indicates that ReplayGain is being adjusted, and pregains should be
     // adjusted in the opposite direction to compensate (no audible change).
@@ -621,6 +626,9 @@ class Track : public QObject {
     // The list of stem info
     QList<StemInfo> m_stemInfo;
 #endif
+
+    // Storage for the track's phrases
+    mixxx::PhrasesPointer m_pPhrases;
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;

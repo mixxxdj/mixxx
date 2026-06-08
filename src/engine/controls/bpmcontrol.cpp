@@ -8,6 +8,7 @@
 #include "engine/enginebuffer.h"
 #include "moc_bpmcontrol.cpp"
 #include "track/beatutils.h"
+#include "track/phrases.h"
 #include "track/track.h"
 #include "util/duration.h"
 #include "util/logger.h"
@@ -299,6 +300,25 @@ BpmControl::BpmControl(const QString& group,
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotSetDownbeat,
+            Qt::DirectConnection);
+
+    m_pPhraseAdd = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "phrase_add"));
+    connect(m_pPhraseAdd.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotPhraseAdd,
+            Qt::DirectConnection);
+
+    m_pPhraseType = std::make_unique<ControlObject>(
+            ConfigKey(group, "phrase_type"));
+
+    m_pPhraseRemove = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "phrase_remove"));
+    connect(m_pPhraseRemove.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotPhraseRemove,
             Qt::DirectConnection);
 }
 
@@ -1413,4 +1433,77 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures, double speed
 
 double BpmControl::getRateRatio() const {
     return m_pRateRatio->get();
+}
+
+void BpmControl::slotPhraseAdd(double v) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto currentPosition = frameInfo().currentPosition;
+    const auto closestBeat = pBeats->findClosestBeat(currentPosition);
+    if (!closestBeat.isValid()) {
+        return;
+    }
+
+    const int typeValue = static_cast<int>(m_pPhraseType->get());
+    auto phraseType = mixxx::PhraseType::Other;
+    if (typeValue >= 0 && typeValue <= static_cast<int>(mixxx::PhraseType::Other)) {
+        phraseType = static_cast<mixxx::PhraseType>(typeValue);
+    }
+
+    const int beatsPerBar = 4;
+    const int barsPerPhrase = 8;
+    const int beatsPerPhrase = beatsPerBar * barsPerPhrase;
+    const auto firstMarker = pBeats->cfirstmarker();
+    auto startIt = pBeats->iteratorFrom(closestBeat);
+    auto endIt = startIt + beatsPerPhrase;
+    const auto endPos = *endIt;
+
+    mixxx::Phrase phrase(closestBeat, endPos, phraseType);
+    mixxx::PhrasesPointer pPhrases = pTrack->getPhrases();
+    if (!pPhrases) {
+        pPhrases = std::make_shared<const mixxx::Phrases>();
+    }
+    auto result = pPhrases->tryAddPhrase(std::move(phrase));
+    if (result) {
+        pTrack->trySetPhrases(*result);
+    }
+}
+
+void BpmControl::slotPhraseType(double v) {
+    Q_UNUSED(v);
+}
+
+void BpmControl::slotPhraseRemove(double v) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    mixxx::PhrasesPointer pPhrases = pTrack->getPhrases();
+    if (!pPhrases || pPhrases->isEmpty()) {
+        return;
+    }
+    const auto currentPosition = frameInfo().currentPosition;
+    const auto& phrases = pPhrases->phrases();
+    for (int i = 0; i < phrases.size(); ++i) {
+        if (currentPosition >= phrases[i].startPosition() &&
+                currentPosition < phrases[i].endPosition()) {
+            auto result = pPhrases->tryRemovePhrase(i);
+            if (result) {
+                pTrack->trySetPhrases(*result);
+            }
+            return;
+        }
+    }
 }

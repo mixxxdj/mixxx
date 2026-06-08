@@ -1606,6 +1606,7 @@ add_library(
   src/track/beatfactory.cpp
   src/track/beats.cpp
   src/track/beatutils.cpp
+  src/track/phrases.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
@@ -2024,6 +2025,7 @@ if(QOPENGL)
       src/waveform/renderers/allshader/waveformrenderbackground.cpp
       src/waveform/renderers/allshader/waveformrenderbarcounter.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderphrase.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererslipmode.cpp
@@ -3963,6 +3965,7 @@ if(QML)
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/waveformrenderbarcounter.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderphrase.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererpreroll.cpp

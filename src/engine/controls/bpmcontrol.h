@@ -118,6 +118,9 @@ class BpmControl : public EngineControl {
     void slotBeatsUndoAdjustment(double value);
     void slotSetDownbeat(double);
     void slotDownbeatOffsetChanged(double);
+    void slotPhraseAdd(double);
+    void slotPhraseType(double);
+    void slotPhraseRemove(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -183,6 +186,9 @@ class BpmControl : public EngineControl {
 
     std::unique_ptr<ControlObject> m_pDownbeatOffset;
     std::unique_ptr<ControlPushButton> m_pSetDownbeat;
+    std::unique_ptr<ControlPushButton> m_pPhraseAdd;
+    std::unique_ptr<ControlObject> m_pPhraseType;
+    std::unique_ptr<ControlPushButton> m_pPhraseRemove;
 
     PollingControlProxy m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
