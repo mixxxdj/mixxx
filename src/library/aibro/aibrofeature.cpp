@@ -277,23 +277,32 @@ void AIBroFeature::init() {
     if (m_pYouTubeFeature) {
         mixxx::YouTubeService* pService = m_pYouTubeFeature->service();
         if (pService) {
-            connect(pService,
+            bool ok1 = connect(pService,
                     &mixxx::YouTubeService::downloadFinished,
                     this,
                     &AIBroFeature::slotDownloadFinished);
-            connect(pService,
+            bool ok2 = connect(pService,
                     &mixxx::YouTubeService::downloadFailed,
                     this,
                     &AIBroFeature::slotDownloadFailed);
-            connect(pService,
+            bool ok3 = connect(pService,
                     &mixxx::YouTubeService::searchResultsReady,
                     this,
                     &AIBroFeature::slotSearchResultsReady);
-            connect(pService,
+            bool ok4 = connect(pService,
                     &mixxx::YouTubeService::searchFailed,
                     this,
                     &AIBroFeature::slotSearchFailed);
+            kLogger.info() << "AI Bro: signal connections:"
+                    << "downloadFinished=" << ok1
+                    << "downloadFailed=" << ok2
+                    << "searchResultsReady=" << ok3
+                    << "searchFailed=" << ok4;
+        } else {
+            kLogger.warning() << "AI Bro: YouTubeService is null, cannot connect signals!";
         }
+    } else {
+        kLogger.warning() << "AI Bro: YouTubeFeature is null, cannot connect signals!";
     }
 }
 
