@@ -13,6 +13,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
+#include "library/dao/trackfingerprintdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
@@ -461,6 +462,12 @@ void WTrackMenu::createActions() {
         m_pClearCommentAction = make_parented<QAction>(tr("Comment"), m_pClearMetadataMenu);
         connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
 
+        m_pClearFingerprintAction = make_parented<QAction>(tr("Fingerprint"), m_pClearMetadataMenu);
+        connect(m_pClearFingerprintAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearFingerprint);
+
         m_pClearAllMetadataAction = make_parented<QAction>(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
 
@@ -742,6 +749,7 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
         m_pClearMetadataMenu->addSeparator();
+        m_pClearMetadataMenu->addAction(m_pClearFingerprintAction);
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
@@ -2441,6 +2449,34 @@ void WTrackMenu::slotClearAllMetadata() {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+}
+
+void WTrackMenu::slotClearFingerprint() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.empty()) {
+        return;
+    }
+
+    TrackFingerprintDao& dao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getTrackFingerprintDAO();
+
+    const auto progressLabelText =
+            tr("Clearing fingerprint data of %n track(s)", "", getTrackCount());
+
+    // We use a simple loop here rather than TrackPointerOperation because
+    // clearFingerprintData() works directly on TrackId and does not need an
+    // in-memory TrackPointer — it only touches the DB and the .chroma file.
+    // Using applyTrackPointerOperation would load each track into memory
+    // unnecessarily and would not give us access to the DAO.
+    int cleared = 0;
+    for (const TrackId& id : std::as_const(trackIds)) {
+        if (dao.clearFingerprintData(id)) {
+            ++cleared;
+        }
+    }
+    Q_UNUSED(progressLabelText); // progress dialog not used for this simple loop
+    Q_UNUSED(cleared);
 }
 
 namespace {
