@@ -3,16 +3,12 @@
 #include <QColor>
 #include <QObject>
 
-#include "rendergraph/geometrynode.h"
+#include "rendergraph/node.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
 class QDomNode;
 class SkinContext;
-
-namespace rendergraph {
-class Context;
-} // namespace rendergraph
 
 namespace allshader {
 class WaveformRenderBarCounter;
@@ -21,7 +17,7 @@ class WaveformRenderBarCounter;
 class allshader::WaveformRenderBarCounter final
         : public QObject,
           public ::WaveformRendererAbstract,
-          public rendergraph::GeometryNode {
+          public rendergraph::Node {
     Q_OBJECT
   public:
     explicit WaveformRenderBarCounter(WaveformWidgetRenderer* waveformWidget,
@@ -43,6 +39,9 @@ class allshader::WaveformRenderBarCounter final
     void setBeatsPerBar(int beatsPerBar) {
         m_beatsPerBar = beatsPerBar;
     }
+    void setShowBarCounter(bool show) {
+        m_showBarCounter = show;
+    }
 
   private:
     bool preprocessInner();
@@ -50,6 +49,7 @@ class allshader::WaveformRenderBarCounter final
 
     QColor m_color;
     int m_beatsPerBar{4};
+    bool m_showBarCounter{true};
     bool m_isSlipRenderer;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBarCounter);

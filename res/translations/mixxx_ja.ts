@@ -8697,6 +8697,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"/>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>再生マーカーに現在の小節・拍の位置（例：「12.1」）を表示します。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>小節/拍カウンター</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

@@ -8746,6 +8746,17 @@ Wählen Sie aus verschiedenen Arten der Wellenform-Anzeige, welche sich in erste
         <source>Clear Cached Waveforms</source>
         <translation>Zwischengespeicherte Wellenformen löschen</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Zeigt die aktuelle Takt- und Beat-Position (z. B. „12.1") am Abspielmarker an.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Takt-/Beat-Zähler</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

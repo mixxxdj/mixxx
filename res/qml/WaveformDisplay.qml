@@ -83,6 +83,10 @@ Item {
         }
         Mixxx.WaveformRendererBeat {
             color: '#a1a1a1a1'
+            downbeatColor: '#cc8844'
+        }
+        Mixxx.WaveformRendererBarCounter {
+            color: '#b4ffffff'
         }
         Mixxx.WaveformRendererMark {
             playMarkerBackground: '#D9D9D9'

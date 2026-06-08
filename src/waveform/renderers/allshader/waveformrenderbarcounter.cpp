@@ -15,6 +15,7 @@
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
 using namespace rendergraph;
@@ -27,6 +28,13 @@ WaveformRenderBarCounter::WaveformRenderBarCounter(
         : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
     setUsePreprocess(true);
+
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    m_showBarCounter = pWaveformWidgetFactory->getShowBarCounter();
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::showBarCounterChanged,
+            this,
+            &WaveformRenderBarCounter::setShowBarCounter);
 }
 
 void WaveformRenderBarCounter::setup(
@@ -98,22 +106,45 @@ bool WaveformRenderBarCounter::preprocessInner() {
         return false;
     }
 
-    const float rendererBreadth = m_waveformRenderer->getBreadth();
     const auto firstMarker = trackBeats->cfirstmarker();
 
     // Remove previous frame's nodes
     removeAllChildNodes();
 
     rendergraph::Context* pContext = m_waveformRenderer->getContext();
-    if (!pContext) {
-        return false;
-    }
 
     // Font setup for bar number labels
     const int fontSize = static_cast<int>(10.0f * devicePixelRatio);
     QFont font;
     font.setPixelSize(fontSize);
     font.setBold(true);
+
+    const QFontMetrics metrics(font);
+    const float topPadding = 2.0f;
+
+    QColor textColor = m_color;
+    textColor.setAlpha(qMax(m_color.alpha(), 230));
+
+    // Find the current playback position for the beat counter
+    const double truePosSample = m_waveformRenderer->getTruePosSample(positionType);
+    const auto playFramePos = mixxx::audio::FramePos::fromEngineSamplePos(truePosSample);
+    int currentBarNumber = -1;
+    int currentBeatInBar = -1;
+
+    // Determine bar/beat at the playhead
+    if (playFramePos.isValid()) {
+        auto playIt = trackBeats->iteratorFrom(playFramePos);
+        if (playIt != trackBeats->cbegin()) {
+            --playIt;
+        }
+        const int playBeatIndex = playIt - firstMarker;
+        if (m_beatsPerBar > 0) {
+            currentBarNumber = (playBeatIndex / m_beatsPerBar) + 1;
+            currentBeatInBar = ((playBeatIndex % m_beatsPerBar) + m_beatsPerBar) %
+                            m_beatsPerBar +
+                    1;
+        }
+    }
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -135,23 +166,29 @@ bool WaveformRenderBarCounter::preprocessInner() {
                         beatPosition, positionType);
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
-        // Render the bar number text into a QImage
         const QString text = QString::number(barNumber);
-        QFontMetrics metrics(font);
-        const int textWidth = metrics.horizontalAdvance(text) + 4;
-        const int textHeight = metrics.height() + 2;
+        const int textWidth = metrics.horizontalAdvance(text) + 8;
+        const int textHeight = metrics.height() + 4;
 
         QImage image(textWidth, textHeight, QImage::Format_ARGB32_Premultiplied);
         image.fill(Qt::transparent);
         image.setDevicePixelRatio(devicePixelRatio);
 
         QPainter painter(&image);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const float bgPadX = 2.0f * devicePixelRatio;
+        const float bgPadY = 1.0f * devicePixelRatio;
+        QRectF bgRect(bgPadX, bgPadY, textWidth - 2.0f * bgPadX, textHeight - 2.0f * bgPadY);
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(QColor(0, 0, 0, 140));
+        painter.drawRoundedRect(bgRect, 2.0, 2.0);
+
         painter.setFont(font);
-        painter.setPen(m_color);
+        painter.setPen(textColor);
         painter.drawText(image.rect(), Qt::AlignCenter, text);
         painter.end();
 
-        // Create a textured GeometryNode for this label
         auto pNode = std::make_unique<GeometryNode>();
         pNode->initForRectangles<TextureMaterial>(1);
 
@@ -159,13 +196,12 @@ bool WaveformRenderBarCounter::preprocessInner() {
                 .setTexture(std::make_unique<Texture>(pContext, image));
         pNode->markDirtyMaterial();
 
-        // Position the label at the bottom of the waveform
-        const float x1 = static_cast<float>(xBeatPoint);
+        const float x1 = static_cast<float>(xBeatPoint) + 3.0f;
         const float labelWidth = static_cast<float>(textWidth) / devicePixelRatio;
         const float labelHeight = static_cast<float>(textHeight) / devicePixelRatio;
-        const float y1 = rendererBreadth - labelHeight;
+        const float y1 = topPadding;
         const float x2 = x1 + labelWidth;
-        const float y2 = rendererBreadth;
+        const float y2 = y1 + labelHeight;
 
         TexturedVertexUpdater updater{
                 pNode->geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
@@ -173,6 +209,73 @@ bool WaveformRenderBarCounter::preprocessInner() {
         pNode->markDirtyGeometry();
 
         appendChildNode(std::move(pNode));
+    }
+
+    // Beat counter at the playhead position (e.g. "12.1")
+    if (m_showBarCounter && currentBarNumber > 0 && currentBeatInBar > 0) {
+        const double playXPoint =
+                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                        truePosSample, positionType);
+        const float playX =
+                static_cast<float>(qRound(playXPoint * devicePixelRatio) /
+                        devicePixelRatio);
+
+        const QString counterText = QString::number(currentBarNumber) +
+                QStringLiteral(".") + QString::number(currentBeatInBar);
+
+        QFont counterFont;
+        const int counterFontSize = static_cast<int>(11.0f * devicePixelRatio);
+        counterFont.setPixelSize(counterFontSize);
+        counterFont.setBold(true);
+
+        const QFontMetrics counterMetrics(counterFont);
+        const int cTextWidth = counterMetrics.horizontalAdvance(counterText) + 8;
+        const int cTextHeight = counterMetrics.height() + 4;
+
+        QImage counterImage(
+                cTextWidth, cTextHeight, QImage::Format_ARGB32_Premultiplied);
+        counterImage.fill(Qt::transparent);
+        counterImage.setDevicePixelRatio(devicePixelRatio);
+
+        QPainter counterPainter(&counterImage);
+        counterPainter.setRenderHint(QPainter::Antialiasing);
+
+        const float bgPadX = 2.0f * devicePixelRatio;
+        const float bgPadY = 1.0f * devicePixelRatio;
+        QRectF bgRect(bgPadX, bgPadY, cTextWidth - 2.0f * bgPadX, cTextHeight - 2.0f * bgPadY);
+        counterPainter.setPen(Qt::NoPen);
+        counterPainter.setBrush(QColor(0, 0, 0, 160));
+        counterPainter.drawRoundedRect(bgRect, 3.0, 3.0);
+
+        counterPainter.setFont(counterFont);
+        counterPainter.setPen(textColor);
+        counterPainter.drawText(counterImage.rect(), Qt::AlignCenter, counterText);
+        counterPainter.end();
+
+        auto pCounterNode = std::make_unique<GeometryNode>();
+        pCounterNode->initForRectangles<TextureMaterial>(1);
+
+        dynamic_cast<TextureMaterial&>(pCounterNode->material())
+                .setTexture(std::make_unique<Texture>(pContext, counterImage));
+        pCounterNode->markDirtyMaterial();
+
+        const float cLabelWidth =
+                static_cast<float>(cTextWidth) / devicePixelRatio;
+        const float cLabelHeight =
+                static_cast<float>(cTextHeight) / devicePixelRatio;
+        const float cx1 = playX + 4.0f;
+        const float cy1 = topPadding;
+        const float cx2 = cx1 + cLabelWidth;
+        const float cy2 = cy1 + cLabelHeight;
+
+        TexturedVertexUpdater counterUpdater{
+                pCounterNode->geometry()
+                        .vertexDataAs<Geometry::TexturedPoint2D>()};
+        counterUpdater.addRectangle(
+                {cx1, cy1}, {cx2, cy2}, {0.f, 0.f}, {1.f, 1.f});
+        pCounterNode->markDirtyGeometry();
+
+        appendChildNode(std::move(pCounterNode));
     }
 
     return true;

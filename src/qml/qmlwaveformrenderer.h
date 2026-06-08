@@ -304,6 +304,7 @@ class QmlWaveformRendererBarCounter
     Q_OBJECT
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)
     Q_PROPERTY(int beatsPerBar MEMBER m_beatsPerBar NOTIFY beatsPerBarChanged)
+    Q_PROPERTY(bool showBarCounter MEMBER m_showBarCounter NOTIFY showBarCounterChanged)
     QML_NAMED_ELEMENT(WaveformRendererBarCounter)
 
   public:
@@ -313,10 +314,12 @@ class QmlWaveformRendererBarCounter
   signals:
     void colorChanged(const QColor&);
     void beatsPerBarChanged(int);
+    void showBarCounterChanged(bool);
 
   private:
     QColor m_color{255, 255, 255, 180};
     int m_beatsPerBar{4};
+    bool m_showBarCounter{true};
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 

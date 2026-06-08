@@ -8772,6 +8772,17 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
         <source>Clear Cached Waveforms</source>
         <translation>Pobriši predmonilnik valovnih oblik</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Prikazuje trenutni položaj takta in udarca (npr. «12.1») pri oznaki predvajanja.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Števec taktov/udarcev</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

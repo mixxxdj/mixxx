@@ -304,6 +304,7 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBarCounter::create(
             waveformWidget, m_position);
     pRenderer->setColor(m_color);
     pRenderer->setBeatsPerBar(m_beatsPerBar);
+    pRenderer->setShowBarCounter(m_showBarCounter);
     connect(this,
             &QmlWaveformRendererBarCounter::colorChanged,
             pRenderer.get(),
@@ -312,6 +313,10 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBarCounter::create(
             &QmlWaveformRendererBarCounter::beatsPerBarChanged,
             pRenderer.get(),
             &allshader::WaveformRenderBarCounter::setBeatsPerBar);
+    connect(this,
+            &QmlWaveformRendererBarCounter::showBarCounterChanged,
+            pRenderer.get(),
+            &allshader::WaveformRenderBarCounter::setShowBarCounter);
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 

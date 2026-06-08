@@ -134,6 +134,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_overviewNormalized(kOverviewNormalizedDefault),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
+          m_showBarCounter(true),
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextPointSize(24),
           m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(0)),
@@ -455,6 +456,17 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     } else {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")),
                 m_untilMarkShowTime);
+    }
+
+    int showBarCounter =
+            m_config->getValueString(
+                            ConfigKey(kWaveformGroup, QStringLiteral("ShowBarCounter")))
+                    .toInt(&ok);
+    if (ok) {
+        setShowBarCounter(static_cast<bool>(showBarCounter));
+    } else {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ShowBarCounter")),
+                m_showBarCounter);
     }
 
     setUntilMarkAlign(toUntilMarkAlign(
@@ -1454,6 +1466,15 @@ void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
                 m_untilMarkShowTime);
     }
     emit untilMarkShowTimeChanged(value);
+}
+
+void WaveformWidgetFactory::setShowBarCounter(bool value) {
+    m_showBarCounter = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ShowBarCounter")),
+                m_showBarCounter);
+    }
+    emit showBarCounterChanged(value);
 }
 
 void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {

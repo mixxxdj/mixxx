@@ -8749,6 +8749,17 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
         <source>Clear Cached Waveforms</source>
         <translation>Smazat průběhové křivky uložené do vyrovnávací paměti</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Zobrazí aktuální pozici taktu a doby (např. «12.1») u značky přehrávání.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Počítadlo taktů/dob</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

@@ -8697,6 +8697,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"/>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Visar aktuell takt- och slagposition (t.ex. «12.1») vid uppspelningsmarkören.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Takt/slag-räknare</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

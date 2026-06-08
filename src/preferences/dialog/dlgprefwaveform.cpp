@@ -228,6 +228,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetUntilMarkShowTime);
+    connect(showBarCounterCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetShowBarCounter);
     connect(untilMarkAlignComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -344,6 +348,7 @@ void DlgPrefWaveform::slotUpdate() {
 
     untilMarkShowBeatsCheckBox->setChecked(factory->getUntilMarkShowBeats());
     untilMarkShowTimeCheckBox->setChecked(factory->getUntilMarkShowTime());
+    showBarCounterCheckBox->setChecked(factory->getShowBarCounter());
     untilMarkAlignComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilMarkAlignIndex(
                     factory->getUntilMarkAlign()));
@@ -430,6 +435,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
     synchronizeZoomCheckBox->setChecked(true);
+    showBarCounterCheckBox->setChecked(true);
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(
@@ -624,6 +630,7 @@ void DlgPrefWaveform::updateEnableUntilMark() {
 #endif
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
+    showBarCounterCheckBox->setEnabled(enabled);
     // Disable the beats/time options if neither beats nor time is enabled
     bool beatsOrTimeEnabled = untilMarkShowBeatsCheckBox->isChecked() ||
             untilMarkShowTimeCheckBox->isChecked();
@@ -764,6 +771,10 @@ void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
 void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
     updateEnableUntilMark();
+}
+
+void DlgPrefWaveform::slotSetShowBarCounter(bool checked) {
+    WaveformWidgetFactory::instance()->setShowBarCounter(checked);
 }
 
 void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {

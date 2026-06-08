@@ -8139,6 +8139,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"/>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Rāda pašreizējo takts un sitiena pozīciju (piem. «12.1») pie atskaņošanas marķiera.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Takts/sitiens skaitītājs</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

@@ -178,6 +178,8 @@
             <SignalRGBMidColor></SignalRGBMidColor>
             <SignalRGBLowColor></SignalRGBLowColor>
             <BeatColor><Variable name="BeatColor"/></BeatColor>
+            <DownbeatColor><Variable name="DownbeatColor"/></DownbeatColor>
+            <BarCounterColor><Variable name="BeatColor"/></BarCounterColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>
             <PlayPosColor><Variable name="PlayPosColor"/></PlayPosColor>
