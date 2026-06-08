@@ -1371,3 +1371,209 @@ bool TrackFingerprintDao::reQueueJob(TrackId trackId) const {
     }
     return affected;
 }
+
+bool TrackFingerprintDao::clearFingerprintData(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> entry"
+                 << "trackId:" << trackId;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
+                    "aborting: database not open or invalid trackId";
+        return false;
+    }
+
+    // Step 1 — delete the .chroma file outside the transaction.
+    // File deletion is not transactional; doing it first means that if the
+    // DB steps later fail, the missing file is detected on the next analysis
+    // run and the fingerprint is recomputed. The reverse order would leave
+    // a valid DB row pointing at a missing file, which is harder to detect.
+    deleteChromaFile(trackId);
+
+    // Steps 2–5 run inside a ScopedTransaction so the DB is never left in a
+    // half-cleared state. ScopedTransaction stores its own QSqlDatabase copy
+    // and calls transaction()/commit()/rollback() on that copy — consistent
+    // with how TrackDAO uses ScopedTransaction for its write operations.
+    ScopedTransaction transaction(m_database);
+    if (!transaction.active()) {
+        qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
+                    "failed to start transaction for trackId:"
+                 << trackId;
+        return false;
+    }
+
+    // Step 2 — handle CMRT group membership.
+    // If this track was canonical in its group and other members exist,
+    // promote another member to canonical. If it was the sole member,
+    // delete the group row. Non-canonical tracks skip this step.
+    // TODO (XXX): Update this logic to select next canonical track
+    // is a canonical Track is deleted, instead of just promoting the
+    // first member found in the group.
+    {
+        auto pMetadata = getFingerprintMetadata(trackId);
+        if (pMetadata && pMetadata->isCanonical && pMetadata->cmrtGroupId >= 0) {
+            const int groupId = pMetadata->cmrtGroupId;
+
+            // Look for another member in this group.
+            QSqlQuery q(m_database);
+            q.prepare(QStringLiteral(
+                    "SELECT track_id FROM %1 "
+                    "WHERE group_id = :group_id AND track_id != :track_id "
+                    "LIMIT 1")
+                            .arg(kCmrtMembersTableName));
+            q.bindValue(QStringLiteral(":group_id"), groupId);
+            q.bindValue(QStringLiteral(":track_id"), trackId.toVariant());
+
+            if (q.exec() && q.next()) {
+                // Another member exists — promote it to canonical.
+                const TrackId newCanonical(q.value(0));
+
+                QSqlQuery updateGroup(m_database);
+                updateGroup.prepare(QStringLiteral(
+                        "UPDATE %1 SET canonical_track_id = :new_canonical "
+                        "WHERE group_id = :group_id")
+                                .arg(kCmrtGroupsTableName));
+                updateGroup.bindValue(QStringLiteral(":new_canonical"),
+                        newCanonical.toVariant());
+                updateGroup.bindValue(QStringLiteral(":group_id"), groupId);
+                if (!updateGroup.exec()) {
+                    LOG_FAILED_QUERY(updateGroup)
+                            << "couldn't reassign canonical for group" << groupId;
+                    return false; // ScopedTransaction destructor rolls back
+                }
+
+                QSqlQuery updateMeta(m_database);
+                updateMeta.prepare(QStringLiteral(
+                        "UPDATE %1 SET is_canonical = 1 "
+                        "WHERE track_id = :track_id")
+                                .arg(kFingerprintTableName));
+                updateMeta.bindValue(QStringLiteral(":track_id"),
+                        newCanonical.toVariant());
+                if (!updateMeta.exec()) {
+                    LOG_FAILED_QUERY(updateMeta)
+                            << "couldn't promote new canonical in fingerprint_metadata";
+                    return false; // ScopedTransaction destructor rolls back
+                }
+
+                if (sDebugTrackFingerprintDao) {
+                    qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
+                                "promoted new canonical"
+                             << newCanonical
+                             << "for group" << groupId;
+                }
+            } else {
+                // No other members — delete the now-empty group.
+                QSqlQuery deleteGroup(m_database);
+                deleteGroup.prepare(QStringLiteral(
+                        "DELETE FROM %1 WHERE group_id = :group_id")
+                                .arg(kCmrtGroupsTableName));
+                deleteGroup.bindValue(QStringLiteral(":group_id"), groupId);
+                if (!deleteGroup.exec()) {
+                    LOG_FAILED_QUERY(deleteGroup)
+                            << "couldn't delete empty cmrt_group" << groupId;
+                    return false; // ScopedTransaction destructor rolls back
+                }
+
+                if (sDebugTrackFingerprintDao) {
+                    qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
+                                "deleted empty group"
+                             << groupId;
+                }
+            }
+        }
+    }
+
+    // Step 3 — delete cmrt_members row.
+    {
+        QSqlQuery q(m_database);
+        q.prepare(QStringLiteral("DELETE FROM %1 WHERE track_id = :track_id")
+                        .arg(kCmrtMembersTableName));
+        q.bindValue(QStringLiteral(":track_id"), trackId.toVariant());
+        if (!q.exec()) {
+            LOG_FAILED_QUERY(q) << "couldn't delete cmrt_member for track" << trackId;
+            return false; // ScopedTransaction destructor rolls back
+        }
+    }
+
+    // Step 4 — delete fingerprint_metadata row.
+    {
+        QSqlQuery q(m_database);
+        q.prepare(QStringLiteral("DELETE FROM %1 WHERE track_id = :track_id")
+                        .arg(kFingerprintTableName));
+        q.bindValue(QStringLiteral(":track_id"), trackId.toVariant());
+        if (!q.exec()) {
+            LOG_FAILED_QUERY(q) << "couldn't delete fingerprint_metadata for track" << trackId;
+            return false; // ScopedTransaction destructor rolls back
+        }
+    }
+
+    // Step 5 — delete acoustid_queue row.
+    {
+        QSqlQuery q(m_database);
+        q.prepare(QStringLiteral("DELETE FROM %1 WHERE track_id = :track_id")
+                        .arg(kAcoustIdQueueTableName));
+        q.bindValue(QStringLiteral(":track_id"), trackId.toVariant());
+        if (!q.exec()) {
+            LOG_FAILED_QUERY(q)
+                    << "couldn't delete acoustid_queue entry for track" << trackId;
+            return false; // ScopedTransaction destructor rolls back
+        }
+    }
+
+    if (!transaction.commit()) {
+        qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
+                    "failed to commit transaction for trackId:"
+                 << trackId;
+        return false;
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> done"
+                 << "trackId:" << trackId;
+    }
+    return true;
+}
+
+int TrackFingerprintDao::clearAllFingerprintData() const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [clearAllFingerprintData] -> entry";
+    }
+
+    if (!m_database.isOpen()) {
+        qDebug() << "TrackFingerprintDao -> [clearAllFingerprintData] -> "
+                    "aborting: database not open";
+        return 0;
+    }
+
+    // Collect all track IDs with a fingerprint_metadata row first,
+    // then clear each one individually. Clearing inside the SELECT loop
+    // would mutate the table being iterated — unsafe with SQLite.
+    QSqlQuery q(m_database);
+    q.prepare(QStringLiteral("SELECT track_id FROM %1").arg(kFingerprintTableName));
+    if (!q.exec()) {
+        LOG_FAILED_QUERY(q) << "couldn't fetch fingerprinted track IDs";
+        return 0;
+    }
+
+    QList<TrackId> trackIds;
+    while (q.next()) {
+        const TrackId id(q.value(0));
+        if (id.isValid()) {
+            trackIds.append(id);
+        }
+    }
+
+    int cleared = 0;
+    for (const TrackId& id : std::as_const(trackIds)) {
+        if (clearFingerprintData(id)) {
+            ++cleared;
+        }
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [clearAllFingerprintData] -> done"
+                 << "cleared:" << cleared << "of" << trackIds.size();
+    }
+    return cleared;
+}
