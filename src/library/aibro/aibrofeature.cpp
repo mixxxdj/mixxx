@@ -32,6 +32,19 @@ constexpr double kWeightRemixBonus = 0.10;
 constexpr double kWeightGenreMatch = 0.05;
 constexpr double kWeightDuration = 0.05;
 constexpr double kWeightFreshness = 0.05;
+constexpr double kWeightBPMProximity = 0.20;
+
+// BPM tolerance for matching (percent)
+constexpr double kBPMToleranceMax = 15.0;     // ±15 BPM absolute max
+
+// Blend steps
+constexpr int kBlendSteps = 100;
+
+// Delays
+constexpr int kLoadToBlendDelayMs = 1000;
+constexpr int kBlendToSearchDelayMs = 2000;
+constexpr int kRetryDelayMs = 3000;
+
 // Ideal duration (seconds) — remixes can be longer
 constexpr int kIdealDurationMin = 150;
 constexpr int kIdealDurationMax = 480;
