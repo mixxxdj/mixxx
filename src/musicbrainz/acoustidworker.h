@@ -66,6 +66,10 @@ class AcoustIdWorker : public WorkerThread {
         QString acoustidId;        // AcoustID entry UUID (result.id field)
         double score{0.0};         // Confidence score 0.0–1.0
         QList<QUuid> recordingIds; // MusicBrainz recording UUIDs
+
+        QString musicbrainzReleaseId; // recordings[0].releases[0].id
+        QString musicbrainzArtistId;  // recordings[0].releases[0].artists[0].id
+        QString musicbrainzTrackId;   // recordings[0].releases[0].mediums[0].tracks[0].id
     };
 
     /// Returns true if api.acoustid.org responds to a HEAD request within
