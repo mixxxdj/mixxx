@@ -93,6 +93,9 @@ TEST_F(QmlKeyUtilsTest, KeyToStringUsesCustomNotation) {
 
     // INVALID key still returns empty string
     EXPECT_EQ(m_qmlKeyUtils->keyToString(0.0), QStringLiteral(""));
+
+    // Reset global KeyUtils state to avoid influencing other tests.
+    KeyUtils::setNotation({});
 }
 
 } // namespace
