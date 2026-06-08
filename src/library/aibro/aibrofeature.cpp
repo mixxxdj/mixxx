@@ -19,15 +19,9 @@ const mixxx::Logger kLogger("AIBroFeature");
 // Timing
 constexpr int kProgressIntervalMs = 1000;
 constexpr int kBlendTickIntervalMs = 80;
-constexpr int kCrossfadeDurationMs = 8000;
-constexpr int kBlendSteps = 100;
-constexpr int kLoadToBlendDelayMs = 1000;
-constexpr int kBlendToSearchDelayMs = 2000;
-constexpr int kRetryDelayMs = 3000;
 
 // Blend window
 constexpr double kBlendStartMin = 0.50;
-constexpr double kBlendStartMax = 0.75;
 
 // Similarity weights (inspired by ai-remixmate hybrid ranking:
 // tempo 0.2 + audio 0.5 + lyrics 0.3, renormalized)
@@ -38,13 +32,6 @@ constexpr double kWeightRemixBonus = 0.10;
 constexpr double kWeightGenreMatch = 0.05;
 constexpr double kWeightDuration = 0.05;
 constexpr double kWeightFreshness = 0.05;
-constexpr double kWeightBPMProximity = 0.20;
-constexpr double kWeightKeyCompat = 0.10;
-
-// BPM tolerance for matching (percent)
-constexpr double kBPMTolerancePercent = 6.0; // ±6% is mixable with pitch bend
-constexpr double kBPMToleranceMax = 15.0;    // ±15 BPM absolute max
-
 // Ideal duration (seconds) — remixes can be longer
 constexpr int kIdealDurationMin = 150;
 constexpr int kIdealDurationMax = 480;
