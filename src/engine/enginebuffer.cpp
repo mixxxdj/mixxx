@@ -85,6 +85,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_bSlipEnabledProcessing(false),
           m_slipModeState(SlipModeState::Disabled),
           m_quantize(ControlFlag::AllowMissingOrInvalid),
+          m_disablePreRoll(ControlFlag::AllowMissingOrInvalid),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -195,6 +196,10 @@ EngineBuffer::EngineBuffer(const QString& group,
     QuantizeControl* pQuantize_control = new QuantizeControl(group, pConfig);
     addControl(pQuantize_control);
     m_quantize = PollingControlProxy(ConfigKey(group, "quantize"));
+
+    m_pDisablePreRoll = new ControlPushButton(ConfigKey(group, "disable_preroll"));
+    m_pDisablePreRoll->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_disablePreRoll = PollingControlProxy(ConfigKey(group, "disable_preroll"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
@@ -324,6 +329,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_playposSlider;
 
     delete m_pSlipButton;
+    delete m_pDisablePreRoll;
     delete m_pRepeat;
     delete m_pSampleRate;
 
@@ -480,6 +486,10 @@ void EngineBuffer::readToCrossfadeBuffer(const std::size_t bufferSize) {
 void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "setNewPlaypos" << m_group << position;
+    }
+
+    if (m_disablePreRoll.toBool()) {
+        position = std::max(position, mixxx::audio::kStartFramePos);
     }
 
     m_playPos = position;
@@ -1138,6 +1148,10 @@ void EngineBuffer::processTrackLocked(
             // Adjust filepos_play by the amount we processed.
             m_playPos = m_pReadAheadManager->getFilePlaypositionFromLog(
                     m_playPos, framesRead, m_channelCount);
+        }
+
+        if (m_disablePreRoll.toBool()) {
+            m_playPos = std::max(m_playPos, mixxx::audio::kStartFramePos);
         }
         // Note: The last buffer of a track is padded with silence.
         // This silence is played together with the last samples in the last

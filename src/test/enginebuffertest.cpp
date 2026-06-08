@@ -571,6 +571,46 @@ TEST_F(EngineBufferTest, RateTempTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down_small"), 0);
 }
 
+// ---- disable_preroll tests ----
+
+TEST_F(EngineBufferTest, DisablePreRoll_SeekClampedAtStart) {
+    // When disable_preroll is on, seeking to a negative position must clamp to 0.
+    ControlObject::set(ConfigKey(m_sGroup1, "disable_preroll"), 1.0);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos(-500), EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, m_pChannel1->getEngineBuffer()->getPlayPos().value());
+}
+
+TEST_F(EngineBufferTest, DisablePreRoll_SeekAllowedWhenOff) {
+    // When disable_preroll is off (default), seeking to a negative position is
+    // permitted so the pre-roll region remains accessible.
+    ControlObject::set(ConfigKey(m_sGroup1, "disable_preroll"), 0.0);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos(-500), EngineBuffer::SEEK_EXACT);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(-500.0, m_pChannel1->getEngineBuffer()->getPlayPos().value());
+}
+
+TEST_F(EngineBufferTest, DisablePreRoll_ReverseHoldsAtStart) {
+    // When disable_preroll is on, reverse-scratching from position 0 must hold
+    // the deck at the start rather than entering negative (pre-roll) territory.
+    ControlObject::set(ConfigKey(m_sGroup1, "disable_preroll"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.0);
+    ProcessBuffer();
+    EXPECT_GE(m_pChannel1->getEngineBuffer()->getPlayPos().value(), 0.0);
+}
+
+TEST_F(EngineBufferTest, DisablePreRoll_ReverseAllowedWhenOff) {
+    // When disable_preroll is off, reverse-scratching past the start must be
+    // allowed (original pre-roll behaviour).
+    ControlObject::set(ConfigKey(m_sGroup1, "disable_preroll"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.0);
+    ProcessBuffer();
+    EXPECT_LT(m_pChannel1->getEngineBuffer()->getPlayPos().value(), 0.0);
+}
 
 TEST_F(EngineBufferTest, RatePermTest) {
     RateControl::setPermanentRateChangeCoarseAmount(4);
