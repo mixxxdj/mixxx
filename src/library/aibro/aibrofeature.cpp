@@ -3,6 +3,7 @@
 #include <QSet>
 #include <QTimer>
 #include <cmath>
+#include <utility>
 
 #include "control/controlproxy.h"
 #include "library/library.h"
@@ -1219,4 +1220,3 @@ double AIBroFeature::getCandidateBPM(
     return 0.0;
 }
 #include "moc_aibrofeature.cpp"
-#include <utility>
