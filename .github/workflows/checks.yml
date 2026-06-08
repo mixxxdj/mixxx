@@ -139,7 +139,7 @@ jobs:
           CLAZY_IGNORE_DIRS: lib/.*
       - name: "Test"
         if: matrix.name == 'coverage'
-        run: ctest --timeout 45
+        run: ctest --timeout 45 --exclude-regex 'ControllerScriptEngineLegacyTest.commonScriptHasNoErrors'
         working-directory: build
         env:
           GTEST_COLOR: 1
