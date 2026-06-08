@@ -220,4 +220,118 @@ TEST(BeatsBarTest, NonZeroStartPosition) {
     }
 }
 
+TEST(BeatsBarTest, DownbeatOffsetDefaultIsZero) {
+    EXPECT_EQ(kConstTempoBeats.downbeatOffset(), 0);
+}
+
+TEST(BeatsBarTest, DownbeatOffsetShiftsDownbeat) {
+    const int offset = 2;
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto pShifted = pBeats->trySetDownbeatOffset(offset);
+    ASSERT_TRUE(pShifted.has_value());
+    EXPECT_EQ((*pShifted)->downbeatOffset(), offset);
+
+    auto firstMarker = (*pShifted)->cfirstmarker();
+    auto it = firstMarker;
+    for (int i = 0; i < 16; ++i) {
+        const int globalIndex = it - firstMarker;
+        const int adjustedIndex = globalIndex - offset;
+        const int mod = ((adjustedIndex % kBeatsPerBar) + kBeatsPerBar) % kBeatsPerBar;
+        const bool isDownbeat = (mod == 0);
+        if ((i - offset) % kBeatsPerBar == 0 && i >= offset) {
+            EXPECT_TRUE(isDownbeat) << "Beat " << i << " with offset " << offset;
+        } else if (i < offset) {
+            EXPECT_FALSE(isDownbeat) << "Beat " << i << " before offset";
+        }
+        ++it;
+    }
+}
+
+TEST(BeatsBarTest, DownbeatOffsetPreservedAfterTranslate) {
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto pShifted = pBeats->trySetDownbeatOffset(3);
+    ASSERT_TRUE(pShifted.has_value());
+
+    auto pTranslated = (*pShifted)->tryTranslate(100.0);
+    ASSERT_TRUE(pTranslated.has_value());
+    EXPECT_EQ((*pTranslated)->downbeatOffset(), 3);
+}
+
+TEST(BeatsBarTest, DownbeatOffsetPreservedAfterScale) {
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto pShifted = pBeats->trySetDownbeatOffset(1);
+    ASSERT_TRUE(pShifted.has_value());
+
+    auto pScaled = (*pShifted)->tryScale(Beats::BpmScale::Double);
+    ASSERT_TRUE(pScaled.has_value());
+    EXPECT_EQ((*pScaled)->downbeatOffset(), 1);
+}
+
+TEST(BeatsBarTest, DownbeatOffsetPreservedAfterSetBpm) {
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto pShifted = pBeats->trySetDownbeatOffset(2);
+    ASSERT_TRUE(pShifted.has_value());
+
+    auto pNewBpm = (*pShifted)->trySetBpm(Bpm(130.0));
+    ASSERT_TRUE(pNewBpm.has_value());
+    EXPECT_EQ((*pNewBpm)->downbeatOffset(), 2);
+}
+
+TEST(BeatsBarTest, DownbeatOffsetSerializationRoundTrip) {
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto pShifted = pBeats->trySetDownbeatOffset(3);
+    ASSERT_TRUE(pShifted.has_value());
+
+    QByteArray serialized = (*pShifted)->toByteArray();
+    QString version = (*pShifted)->getVersion();
+    QString subVersion = (*pShifted)->getSubVersion();
+
+    auto pDeserialized = Beats::fromByteArray(kSampleRate, version, subVersion, serialized);
+    ASSERT_NE(pDeserialized, nullptr);
+    EXPECT_EQ(pDeserialized->downbeatOffset(), 3);
+}
+
+TEST(BeatsBarTest, DownbeatOffsetZeroNotSerialized) {
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    EXPECT_EQ(pBeats->downbeatOffset(), 0);
+
+    QByteArray serialized = pBeats->toByteArray();
+    auto pDeserialized = Beats::fromByteArray(
+            kSampleRate, pBeats->getVersion(), pBeats->getSubVersion(), serialized);
+    ASSERT_NE(pDeserialized, nullptr);
+    EXPECT_EQ(pDeserialized->downbeatOffset(), 0);
+}
+
+TEST(BeatsBarTest, DownbeatOffsetNegativeRejected) {
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto result = pBeats->trySetDownbeatOffset(-1);
+    EXPECT_FALSE(result.has_value());
+}
+
+TEST(BeatsBarTest, DownbeatOffsetBarNumberShift) {
+    const int offset = 2;
+    auto pBeats = Beats::fromConstTempo(kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    auto pShifted = pBeats->trySetDownbeatOffset(offset);
+    ASSERT_TRUE(pShifted.has_value());
+
+    auto firstMarker = (*pShifted)->cfirstmarker();
+    auto it = firstMarker;
+    for (int i = 0; i < 16; ++i) {
+        const int globalIndex = it - firstMarker;
+        const int adjustedIndex = globalIndex - offset;
+        const int barNumber = (adjustedIndex / kBeatsPerBar) + 1;
+        const int expectedBar = ((i - offset) / kBeatsPerBar) + 1;
+        EXPECT_EQ(barNumber, expectedBar) << "Beat " << i;
+        ++it;
+    }
+}
+
 } // namespace

@@ -94,6 +94,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int downbeatCount = 0;
 
     const auto firstMarker = trackBeats->cfirstmarker();
+    const int downbeatOffset = trackBeats->downbeatOffset();
 
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
@@ -102,8 +103,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
-        int globalBeatIndex = it - firstMarker;
-        bool isDownbeat = ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar == 0;
+        const int globalBeatIndex = it - firstMarker;
+        const int adjustedIndex = globalBeatIndex - downbeatOffset;
+        const bool isDownbeat = ((adjustedIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar == 0;
 
         if (isDownbeat) {
             // If we don't have enough space, double the size.

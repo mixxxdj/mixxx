@@ -115,18 +115,17 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const auto firstMarker = trackBeats->cfirstmarker();
 
-    // Count regular beats and downbeats separately to reserve geometry.
-    // The modulo operation must handle negative indices correctly (beats
-    // before the first marker). In C++, (-1 % 4) == -1, not 3, so we
-    // need to normalize.
+    const int downbeatOffset = trackBeats->downbeatOffset();
+
     int numRegularBeats = 0;
     int numDownbeats = 0;
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
             ++it) {
         const int globalBeatIndex = it - firstMarker;
+        const int adjustedIndex = globalBeatIndex - downbeatOffset;
         const int mod = m_beatsPerBar > 0
-                ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                ? ((adjustedIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
                 : 1;
         if (mod == 0) {
             numDownbeats++;
@@ -157,8 +156,9 @@ bool WaveformRenderBeat::preprocessInner() {
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
         const int globalBeatIndex = it - firstMarker;
+        const int adjustedIndex = globalBeatIndex - downbeatOffset;
         const int mod = m_beatsPerBar > 0
-                ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                ? ((adjustedIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
                 : 1;
         const bool isDownbeat = (mod == 0);
 

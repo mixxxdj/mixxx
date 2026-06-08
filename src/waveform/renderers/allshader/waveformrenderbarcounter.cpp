@@ -107,6 +107,7 @@ bool WaveformRenderBarCounter::preprocessInner() {
     }
 
     const auto firstMarker = trackBeats->cfirstmarker();
+    const int downbeatOffset = trackBeats->downbeatOffset();
 
     // Remove previous frame's nodes
     removeAllChildNodes();
@@ -141,9 +142,10 @@ bool WaveformRenderBarCounter::preprocessInner() {
             --playIt;
         }
         const int playBeatIndex = playIt - firstMarker;
+        const int adjustedPlayIndex = playBeatIndex - downbeatOffset;
         if (m_beatsPerBar > 0) {
-            currentBarNumber = (playBeatIndex / m_beatsPerBar) + 1;
-            currentBeatInBar = ((playBeatIndex % m_beatsPerBar) + m_beatsPerBar) %
+            currentBarNumber = (adjustedPlayIndex / m_beatsPerBar) + 1;
+            currentBeatInBar = ((adjustedPlayIndex % m_beatsPerBar) + m_beatsPerBar) %
                             m_beatsPerBar +
                     1;
         }
@@ -153,15 +155,16 @@ bool WaveformRenderBarCounter::preprocessInner() {
             it != trackBeats->cend() && *it <= endPosition;
             ++it) {
         const int globalBeatIndex = it - firstMarker;
+        const int adjustedIndex = globalBeatIndex - downbeatOffset;
         const int normalizedMod = m_beatsPerBar > 0
-                ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                ? ((adjustedIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
                 : 1;
 
         if (normalizedMod != 0) {
             continue;
         }
 
-        const int barNumber = (globalBeatIndex / m_beatsPerBar) + 1;
+        const int barNumber = (adjustedIndex / m_beatsPerBar) + 1;
 
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =

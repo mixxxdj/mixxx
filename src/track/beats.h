@@ -25,7 +25,8 @@ typedef std::shared_ptr<const Beats> BeatsPointer;
 class BeatMarker {
   public:
     BeatMarker(mixxx::audio::FramePos position, int beatsTillNextMarker)
-            : m_position(position), m_beatsTillNextMarker(beatsTillNextMarker) {
+            : m_position(position),
+              m_beatsTillNextMarker(beatsTillNextMarker) {
         DEBUG_ASSERT(m_position.isValid());
         DEBUG_ASSERT(!m_position.isFractional());
         DEBUG_ASSERT(m_beatsTillNextMarker > 0);
@@ -157,27 +158,32 @@ class Beats : private std::enable_shared_from_this<Beats> {
             mixxx::audio::FramePos lastMarkerPosition,
             mixxx::Bpm lastMarkerBpm,
             mixxx::audio::SampleRate sampleRate,
-            const QString& subVersion)
+            const QString& subVersion,
+            int downbeatOffset = 0)
             : m_markers(std::move(markers)),
               m_lastMarkerPosition(lastMarkerPosition),
               m_lastMarkerBpm(lastMarkerBpm),
               m_sampleRate(sampleRate),
-              m_subVersion(subVersion) {
+              m_subVersion(subVersion),
+              m_downbeatOffset(downbeatOffset) {
         DEBUG_ASSERT(m_lastMarkerPosition.isValid());
         DEBUG_ASSERT(!m_lastMarkerPosition.isFractional());
         DEBUG_ASSERT(m_lastMarkerBpm.isValid());
         DEBUG_ASSERT(m_sampleRate.isValid());
+        DEBUG_ASSERT(m_downbeatOffset >= 0);
     }
 
     Beats(mixxx::audio::FramePos lastMarkerPosition,
             mixxx::Bpm lastMarkerBpm,
             mixxx::audio::SampleRate sampleRate,
-            const QString& subVersion)
+            const QString& subVersion,
+            int downbeatOffset = 0)
             : Beats(std::vector<BeatMarker>(),
                       lastMarkerPosition,
                       lastMarkerBpm,
                       sampleRate,
-                      subVersion) {
+                      subVersion,
+                      downbeatOffset) {
     }
 
     ~Beats() = default;
@@ -216,8 +222,9 @@ class Beats : private std::enable_shared_from_this<Beats> {
     friend bool operator==(const Beats& lhs, const Beats& rhs) {
         return lhs.m_markers == rhs.m_markers &&
                 lhs.m_lastMarkerPosition == rhs.m_lastMarkerPosition &&
-                lhs.m_lastMarkerBpm == rhs.m_lastMarkerBpm && lhs.m_sampleRate &&
-                rhs.m_sampleRate;
+                lhs.m_lastMarkerBpm == rhs.m_lastMarkerBpm &&
+                lhs.m_sampleRate == rhs.m_sampleRate &&
+                lhs.m_downbeatOffset == rhs.m_downbeatOffset;
     }
 
     friend bool operator!=(const Beats& lhs, const Beats& rhs) {
@@ -387,6 +394,12 @@ class Beats : private std::enable_shared_from_this<Beats> {
         return m_lastMarkerBpm;
     }
 
+    /// Offset of the downbeat (beat 1) relative to the first beat marker.
+    /// 0 means the first beat is the downbeat (default).
+    int downbeatOffset() const {
+        return m_downbeatOffset;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
@@ -418,6 +431,10 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// failure.
     std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const;
 
+    /// Set the downbeat offset. The offset specifies how many beats after
+    /// the first beat marker the actual downbeat (beat 1 of the bar) falls.
+    std::optional<BeatsPointer> trySetDownbeatOffset(int offset) const;
+
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
     ///
@@ -445,6 +462,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     // The sub-version of this beatgrid.
     const QString m_subVersion;
+
+    int m_downbeatOffset{0};
 };
 
 } // namespace mixxx
