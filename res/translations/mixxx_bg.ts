@@ -8545,6 +8545,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Bar/beat counter</source>
         <translation>Брояч на тактове/удари</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Нормализира показването на вълновата форма до пиковата амплитуда на записа. Полезно за записи с нормализация на силата на звука, които иначе биха се показали като тънки линии.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Нормализиране на вълновата форма до пик</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

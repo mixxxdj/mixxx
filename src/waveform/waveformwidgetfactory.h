@@ -238,6 +238,11 @@ class WaveformWidgetFactory : public QObject,
     }
     static bool isOverviewNormalizedDefault();
 
+    void setNormalizeWaveform(bool normalize);
+    bool getNormalizeWaveform() const {
+        return m_normalizeWaveform;
+    }
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
@@ -268,6 +273,7 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkShowBeatsChanged(bool value);
     void untilMarkShowTimeChanged(bool value);
     void showBarCounterChanged(bool value);
+    void normalizeWaveformChanged(bool value);
     void untilMarkAlignChanged(Qt::Alignment align);
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
@@ -332,6 +338,7 @@ class WaveformWidgetFactory : public QObject,
     bool m_zoomSync;
     double m_visualGain[BandCount];
     bool m_overviewNormalized;
+    bool m_normalizeWaveform;
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;

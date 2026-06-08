@@ -8566,6 +8566,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Bar/beat counter</source>
         <translation>Ütem/ütés számláló</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normalizálja a hullámforma megjelenítését a szám csúcsamplitúdójára. Hasznos a hangerő-normalizált számokhoz, amelyek egyébként vékony vonalakként jelennének meg.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Hullámforma normalizálása csúcsértékre</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

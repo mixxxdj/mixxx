@@ -123,7 +123,10 @@ bool WaveformRenderBarCounter::preprocessInner() {
     const float topPadding = 2.0f;
 
     QColor textColor = m_color;
-    textColor.setAlpha(qMax(m_color.alpha(), 230));
+    if (textColor.lightnessF() < 0.65f) {
+        textColor = QColor(255, 255, 255);
+    }
+    textColor.setAlpha(245);
 
     // Find the current playback position for the beat counter
     const double truePosSample = m_waveformRenderer->getTruePosSample(positionType);
@@ -181,7 +184,7 @@ bool WaveformRenderBarCounter::preprocessInner() {
         const float bgPadY = 1.0f * devicePixelRatio;
         QRectF bgRect(bgPadX, bgPadY, textWidth - 2.0f * bgPadX, textHeight - 2.0f * bgPadY);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(0, 0, 0, 140));
+        painter.setBrush(QColor(0, 0, 0, 190));
         painter.drawRoundedRect(bgRect, 2.0, 2.0);
 
         painter.setFont(font);
@@ -244,7 +247,7 @@ bool WaveformRenderBarCounter::preprocessInner() {
         const float bgPadY = 1.0f * devicePixelRatio;
         QRectF bgRect(bgPadX, bgPadY, cTextWidth - 2.0f * bgPadX, cTextHeight - 2.0f * bgPadY);
         counterPainter.setPen(Qt::NoPen);
-        counterPainter.setBrush(QColor(0, 0, 0, 160));
+        counterPainter.setBrush(QColor(0, 0, 0, 200));
         counterPainter.drawRoundedRect(bgRect, 3.0, 3.0);
 
         counterPainter.setFont(counterFont);

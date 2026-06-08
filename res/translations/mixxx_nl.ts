@@ -8784,6 +8784,17 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <source>Bar/beat counter</source>
         <translation>Maat/tel-teller</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normaliseert de golfvormweergave naar de piekamplitude van de track. Handig voor loudness-genormaliseerde tracks die anders als dunne lijnen zouden verschijnen.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Golfvorm normaliseren naar piek</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

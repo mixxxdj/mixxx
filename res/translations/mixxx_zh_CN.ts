@@ -8753,6 +8753,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Bar/beat counter</source>
         <translation>小节/拍计数器</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>将波形显示归一化到音轨的峰值振幅。对于经过响度归一化处理后显示为细线的音轨很有用。</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>将波形归一化到峰值</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

@@ -1,7 +1,10 @@
 #include "waveformrenderersignalbase.h"
 
+#include <algorithm>
+
 #include "control/controlproxy.h"
 #include "moc_waveformrenderersignalbase.cpp"
+#include "track/track.h"
 #include "util/colorcomponents.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -20,6 +23,8 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_lowVisualGain(1),
           m_midVisualGain(1),
           m_highVisualGain(1),
+          m_normalizeWaveform(false),
+          m_cachedTrackPeak(0.0f),
           m_axesColor_r(0),
           m_axesColor_g(0),
           m_axesColor_b(0),
@@ -155,6 +160,12 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     setLowVisualGain(pWaveformFactory->getVisualGain(BandIndex::Low));
     setMidVisualGain(pWaveformFactory->getVisualGain(BandIndex::Mid));
     setHighVisualGain(pWaveformFactory->getVisualGain(BandIndex::High));
+
+    connect(pWaveformFactory,
+            &WaveformWidgetFactory::normalizeWaveformChanged,
+            this,
+            &WaveformRendererSignalBase::setNormalizeWaveform);
+    setNormalizeWaveform(pWaveformFactory->getNormalizeWaveform());
 }
 
 void WaveformRendererSignalBase::getGains(float* pAllGain,
@@ -162,10 +173,18 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         float* pMidGain,
         float* pHighGain) {
     if (pAllGain) {
-        *pAllGain = static_cast<CSAMPLE_GAIN>(
-                            m_waveformRenderer->getGain()) *
-                m_allChannelVisualGain;
-        ;
+        if (m_normalizeWaveform) {
+            constexpr float kNormalizationHeadroom = 0.85f;
+            const float peak = getTrackPeak();
+            *pAllGain = m_allChannelVisualGain * kNormalizationHeadroom;
+            if (peak > 1.0f) {
+                *pAllGain *= 255.0f / peak;
+            }
+        } else {
+            *pAllGain = static_cast<CSAMPLE_GAIN>(
+                                m_waveformRenderer->getGain()) *
+                    m_allChannelVisualGain;
+        }
     }
 
     if (pLowGain || pMidGain || pHighGain) {
@@ -209,4 +228,30 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
             *pHighGain = highVisualGain;
         }
     }
+}
+
+float WaveformRendererSignalBase::getTrackPeak() {
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
+        return 0.0f;
+    }
+    ConstWaveformPointer pWaveform = pTrack->getWaveform();
+    if (pWaveform.isNull()) {
+        return 0.0f;
+    }
+    if (pWaveform == m_pCachedPeakWaveform && m_cachedTrackPeak > 0.0f) {
+        return m_cachedTrackPeak;
+    }
+    const int dataSize = pWaveform->getDataSize();
+    if (dataSize <= 0) {
+        return 0.0f;
+    }
+    float peak = 1.0f;
+    for (int i = 0; i < dataSize; i += 2) {
+        peak = std::max(peak, static_cast<float>(pWaveform->getAll(i)));
+        peak = std::max(peak, static_cast<float>(pWaveform->getAll(i + 1)));
+    }
+    m_pCachedPeakWaveform = pWaveform;
+    m_cachedTrackPeak = peak;
+    return peak;
 }

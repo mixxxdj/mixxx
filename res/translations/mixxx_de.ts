@@ -8757,6 +8757,17 @@ Wählen Sie aus verschiedenen Arten der Wellenform-Anzeige, welche sich in erste
         <source>Bar/beat counter</source>
         <translation>Takt-/Beat-Zähler</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normalisiert die Wellenform-Anzeige auf die Spitzenamplitude des Tracks. Nützlich für lautheits-normalisierte Tracks, die sonst als dünne Linien erscheinen würden.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Wellenform auf Spitzenwert normalisieren</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

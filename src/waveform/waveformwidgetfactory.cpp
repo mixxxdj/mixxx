@@ -132,6 +132,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
           m_overviewNormalized(kOverviewNormalizedDefault),
+          m_normalizeWaveform(false),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_showBarCounter(true),
@@ -424,6 +425,17 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     m_overviewNormalized = m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
             kOverviewNormalizedDefault);
+
+    int normalizeWaveform =
+            m_config->getValueString(
+                            ConfigKey(kWaveformGroup, QStringLiteral("NormalizeWaveform")))
+                    .toInt(&ok);
+    if (ok) {
+        setNormalizeWaveform(static_cast<bool>(normalizeWaveform));
+    } else {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("NormalizeWaveform")),
+                m_normalizeWaveform);
+    }
 
     emit visualGainChanged(
             m_visualGain[BandIndex::AllBand],
@@ -1475,6 +1487,15 @@ void WaveformWidgetFactory::setShowBarCounter(bool value) {
                 m_showBarCounter);
     }
     emit showBarCounterChanged(value);
+}
+
+void WaveformWidgetFactory::setNormalizeWaveform(bool value) {
+    m_normalizeWaveform = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("NormalizeWaveform")),
+                m_normalizeWaveform);
+    }
+    emit normalizeWaveformChanged(value);
 }
 
 void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {

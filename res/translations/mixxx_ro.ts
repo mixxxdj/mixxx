@@ -8704,6 +8704,17 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Bar/beat counter</source>
         <translation>Contor măsură/timp</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normalizează afișarea formei de undă la amplitudinea de vârf a piesei. Util pentru piesele cu normalizare de volum care altfel ar apărea ca linii subțiri.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Normalizare formă de undă la vârf</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

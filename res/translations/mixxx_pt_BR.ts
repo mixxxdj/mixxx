@@ -8735,6 +8735,17 @@ Selecione entre tipos diferentes de visualizações da forma de onda, o que dife
         <source>Bar/beat counter</source>
         <translation>Contador de compasso/tempo</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normaliza a exibição da forma de onda pela amplitude de pico da faixa. Útil para faixas com normalização de loudness que de outra forma apareceriam como linhas finas.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Normalizar forma de onda pelo pico</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

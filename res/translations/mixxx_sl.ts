@@ -8783,6 +8783,17 @@ Izbirajte med različnimi vrstami prikaza valovne oblike, ki se primarno razliku
         <source>Bar/beat counter</source>
         <translation>Števec taktov/udarcev</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normalizira prikaz valovne oblike na vršno amplitudo posnetka. Uporabno za posnetke z normalizacijo glasnosti, ki bi sicer izgledali kot tanke črte.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Normaliziraj valovni prikaz na vrh</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>
