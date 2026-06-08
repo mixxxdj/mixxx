@@ -680,7 +680,11 @@ void AIBroFeature::slotSearchResultsReady(
         const QString& query,
         const QList<mixxx::YouTubeVideoInfo>& results) {
     Q_UNUSED(query);
-    if (!isActive() || results.isEmpty()) {
+    // Process results as long as we have an active session and results exist.
+    // Don't check isActive() here — user may have toggled the button while
+    // waiting for results, but we already started the search and should
+    // use the results.
+    if (!m_downloading || results.isEmpty()) {
         return;
     }
 
@@ -711,7 +715,9 @@ void AIBroFeature::slotSearchResultsReady(
 
 void AIBroFeature::slotDownloadFinished(
         const QString& videoId, const QString& localPath) {
-    if (!isActive()) {
+    // Accept download callbacks if we initiated the download, even if
+    // user toggled the button during download.
+    if (!m_downloading) {
         return;
     }
     Q_UNUSED(videoId);
@@ -721,7 +727,7 @@ void AIBroFeature::slotDownloadFinished(
 
 void AIBroFeature::slotDownloadFailed(
         const QString& videoId, const QString& error) {
-    if (!isActive()) {
+    if (!m_downloading) {
         return;
     }
     Q_UNUSED(videoId);
@@ -736,7 +742,7 @@ void AIBroFeature::slotDownloadFailed(
 
 void AIBroFeature::slotSearchFailed(
         const QString& query, const QString& error) {
-    if (!isActive()) {
+    if (!m_downloading) {
         return;
     }
     Q_UNUSED(query);

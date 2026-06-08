@@ -141,7 +141,7 @@
       <PushButton>
         <TooltipId>ai_bro_status</TooltipId>
         <ObjectName>AiBroButton</ObjectName>
-        <Size>80f,20f</Size>
+        <Size>50f,20f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
