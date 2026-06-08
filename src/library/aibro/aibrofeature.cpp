@@ -35,7 +35,7 @@ constexpr double kWeightFreshness = 0.05;
 constexpr double kWeightBPMProximity = 0.20;
 
 // BPM tolerance for matching (percent)
-constexpr double kBPMToleranceMax = 15.0;     // ±15 BPM absolute max
+constexpr double kBPMToleranceMax = 15.0; // ±15 BPM absolute max
 
 // Blend steps
 constexpr int kBlendSteps = 100;
