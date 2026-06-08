@@ -581,7 +581,7 @@ void AIBroFeature::findNextSong() {
     // Snapshot current track locations so we can detect manual loads
     m_searchTrackSnapshot = snapshotTrackLocations();
     m_downloading = true;
-    for (const QString& q : qAsConst(queries)) {
+    for (const QString& q : std::as_const(queries)) {
         if (m_pYouTubeFeature) {
             m_pYouTubeFeature->searchAndActivate(q);
         }
@@ -1219,3 +1219,4 @@ double AIBroFeature::getCandidateBPM(
     return 0.0;
 }
 #include "moc_aibrofeature.cpp"
+#include <utility>
