@@ -316,6 +316,11 @@ bool AIBroFeature::isActive() const {
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::slotToggle(bool newValue) {
+    // Confirm the control value change — without this, the control value
+    // is never actually set because connectValueChangeRequest puts the
+    // control in "confirm required" mode where set() only emits a request.
+    m_controlEnabled.setAndConfirm(newValue);
+
     if (newValue) {
         kLogger.info() << "AI Bro: activated";
         m_downloading = false;
