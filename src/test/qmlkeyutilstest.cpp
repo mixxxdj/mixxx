@@ -74,7 +74,7 @@ TEST_F(QmlKeyUtilsTest, KeyToStringWithExplicitNotation) {
     EXPECT_EQ(m_qmlKeyUtils->keyToString(22.0, traditionalNotation), QStringLiteral("Am"));
 
     // INVALID key returns empty string
-    EXPECT_EQ(m_qmlKeyUtils->keyToString(0.0, traditionalNotation), QStringLiteral(""));
+    EXPECT_EQ(m_qmlKeyUtils->keyToString(0.0, traditionalNotation), QString());
 }
 
 TEST_F(QmlKeyUtilsTest, KeyToStringUsesCustomNotation) {
@@ -92,7 +92,7 @@ TEST_F(QmlKeyUtilsTest, KeyToStringUsesCustomNotation) {
     EXPECT_EQ(m_qmlKeyUtils->keyToString(22.0), QStringLiteral("Custom22"));
 
     // INVALID key still returns empty string
-    EXPECT_EQ(m_qmlKeyUtils->keyToString(0.0), QStringLiteral(""));
+    EXPECT_EQ(m_qmlKeyUtils->keyToString(0.0), QString());
 
     // Reset global KeyUtils state to avoid influencing other tests.
     KeyUtils::setNotation({});
