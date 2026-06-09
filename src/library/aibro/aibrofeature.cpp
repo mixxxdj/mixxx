@@ -305,6 +305,7 @@ AIBroFeature::AIBroFeature(Library* pLibrary,
           m_blendStep(0),
           m_blendFromDeck(-1),
           m_blendToDeck(-1),
+          m_iCurrentDeck(0),
           m_manualTrackPath(),
           m_manualTrackDeck(-1),
           m_hasManualTrack(false),
@@ -702,12 +703,12 @@ void AIBroFeature::slotProgressTick() {
     if (!isActive() || m_blending || !m_pPlayerManager) {
         return;
     }
-    // Only check deck 1 (index 0) for blend point.
-    // When the track reaches 50%, find the next song to blend.
-    if (isDeckPlaying(0)) {
-        double pos = getDeckPlayPosition(0);
+    // Check the current active deck for blend point.
+    // When the track reaches the blend threshold, find the next song.
+    if (isDeckPlaying(m_iCurrentDeck)) {
+        double pos = getDeckPlayPosition(m_iCurrentDeck);
         if (pos >= kBlendStartMin && !m_downloading) {
-            kLogger.info() << "AI Bro: blend point at" << pos << "on deck 1";
+            kLogger.info() << "AI Bro: blend point at" << pos << "on deck" << (m_iCurrentDeck + 1);
             updateCurrentTrackInfo();
             m_downloading = true;
             findNextSong();
@@ -814,9 +815,9 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
         return;
     }
 
-    // Source is always deck 1 (index 0) — the user's deck
-    constexpr int kSourceDeck = 0;
-    int fromDeck = isDeckPlaying(kSourceDeck) ? kSourceDeck : -1;
+    // Source is always the current active deck
+    constexpr int kSourceDeck = -1;
+    int fromDeck = m_iCurrentDeck;
 
     if (fromDeck < 0) {
         // No source deck — just load and play
@@ -1004,7 +1005,9 @@ void AIBroFeature::stopBlend() {
 
     kLogger.info() << "AI Bro: blend complete";
 
-    // Schedule next song search
+    // Swap the current deck: the target deck becomes the new source.
+    // Next blend will go from this deck back to the other deck.
+    m_iCurrentDeck = m_blendToDeck;
     QTimer::singleShot(kBlendToSearchDelayMs, this, [this]() {
         if (isActive()) {
             findNextSong();
@@ -1078,36 +1081,29 @@ void AIBroFeature::updateCurrentTrackInfo() {
     if (!m_pPlayerManager) {
         return;
     }
-    // Find the first playing deck and read its track info
-    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i)) {
-            continue;
-        }
-        auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer) {
-            continue;
-        }
-        TrackPointer pTrack = pPlayer->getLoadedTrack();
-        if (!pTrack) {
-            continue;
-        }
-        m_currentTrackTitle = pTrack->getTitle();
-        m_currentTrackArtist = pTrack->getArtist();
+    // Read track info from the current active deck
+    auto* pPlayer = m_pPlayerManager->getDeck(m_iCurrentDeck);
+    if (!pPlayer) {
         return;
     }
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    m_currentTrackTitle = pTrack->getTitle();
+    m_currentTrackArtist = pTrack->getArtist();
 }
 
 int AIBroFeature::findAvailableDeck() const {
-    // Only use deck 2 (index 1) as the target deck for blending.
-    // Deck 1 (index 0) is the source deck that the user controls.
+    // Always return the opposite of the current deck.
+    // If current is deck 1 (index 0), return deck 2 (index 1), and vice versa.
+    // This creates the continuous back-and-forth loop:
+    //   deck1 -> deck2 -> deck1 -> deck2 -> ...
     if (!m_pPlayerManager) {
         return -1;
     }
-    constexpr int kTargetDeck = 1;
-    if (!isDeckPlaying(kTargetDeck)) {
-        return kTargetDeck;
-    }
-    return -1;
+    int otherDeck = (m_iCurrentDeck == 0) ? 1 : 0;
+    return otherDeck;
 }
 
 double AIBroFeature::getDeckPlayPosition(int deckIndex) const {

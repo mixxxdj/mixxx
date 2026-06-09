@@ -132,6 +132,10 @@ class AIBroFeature : public QObject {
     int m_blendFromDeck;
     int m_blendToDeck;
 
+    /// The deck index (0 or 1) that is currently the "active" playing deck.
+    /// AI Bro blends from this deck to the other deck, then swaps.
+    int m_iCurrentDeck;
+
     QString m_currentTrackTitle;
     QString m_currentTrackArtist;
 
