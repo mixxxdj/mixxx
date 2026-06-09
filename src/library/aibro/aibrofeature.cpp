@@ -517,6 +517,12 @@ double AIBroFeature::scoreCandidate(
         }
     }
 
+
+    // Determine if we are in trending mode (no valid current track).
+    // This must be declared early because several hard filters below
+    // need to know whether to skip current-track-dependent checks.
+    const bool trendingMode = m_currentTrackTitle.isEmpty() ||
+            m_currentTrackTitle.length() < 3;
     // Hard filter: same song as currently playing (don't play the same track)
     // Skip in trending mode — no current track to compare against.
     if (!trendingMode) {
@@ -576,8 +582,6 @@ double AIBroFeature::scoreCandidate(
     }
     // If current track is empty, we're in trending mode — skip all
     // current-track-dependent hard filters below this point.
-    const bool trendingMode = m_currentTrackTitle.isEmpty() ||
-            m_currentTrackTitle.length() < 3;
 
     double score = 0.0;
     const QString currentT = m_currentTrackTitle.toLower().trimmed();
