@@ -2,6 +2,7 @@
 
 #include <QSet>
 #include <QTimer>
+#include <QRegularExpression>
 #include <cmath>
 #include <utility>
 
@@ -198,6 +199,64 @@ static const QSet<QString>& stopWords() {
         return set;
     }();
     return *s;
+}
+
+// Normalize a song title for fuzzy comparison.
+// Strips remix/version/language suffixes and parenthetical content.
+static QString normalizeSongTitle(const QString& title) {
+    QString t = title.toLower().trimmed();
+    // Remove parenthetical content: (remix), (official), (live), etc.
+    static const QRegularExpression parenRe(
+            QStringLiteral("\\s*\\([^)]*\\)"),
+            QRegularExpression::CaseInsensitiveOption);
+    t.remove(parenRe);
+    // Remove common suffixes after dash/hyphen
+    static const QRegularExpression dashRe(
+            QStringLiteral("\\s*[-–—]\\s*(remix|edit|mix|version|cover|live|"
+                           "acoustic|instrumental|karaoke|lyrics?).*$"),
+            QRegularExpression::CaseInsensitiveOption);
+    t.remove(dashRe);
+    // Remove common keywords
+    static const QStringList keywords = {
+        "remix", "edit", "mix", "version", "cover", "live",
+        "acoustic", "instrumental", "karaoke", "lyrics", "lyric",
+        "official", "audio", "video", "hd", "4k", "extended",
+        "club", "radio", "original"
+    };
+    for (const QString& kw : keywords) {
+        t.remove(kw);
+    }
+    t = t.trimmed();
+    // Collapse multiple spaces
+    static const QRegularExpression spaceRe(QStringLiteral("\\s+"));
+    t.replace(spaceRe, " ");
+    return t;
+}
+
+// Simple word-overlap similarity between two normalized titles.
+// Returns 0.0 (completely different) to 1.0 (identical).
+static double titleSimilarity(const QString& a, const QString& b) {
+    if (a.isEmpty() || b.isEmpty()) {
+        return 0.0;
+    }
+    if (a == b) {
+        return 1.0;
+    }
+    QStringList wordsA = a.split(' ');
+    QStringList wordsB = b.split(' ');
+    if (wordsA.isEmpty() || wordsB.isEmpty()) {
+        return 0.0;
+    }
+    // Count matching words
+    int matches = 0;
+    for (const QString& w : wordsA) {
+        if (wordsB.contains(w)) {
+            matches++;
+        }
+    }
+    // Jaccard-like: matches / max(lenA, lenB)
+    return static_cast<double>(matches) /
+            qMax(wordsA.size(), wordsB.size());
 }
 
 // Camelot Wheel: compatible keys for harmonic mixing
@@ -400,16 +459,21 @@ double AIBroFeature::scoreCandidate(
         return -1.0;
     }
 
-    // Hard filter: already played
+    // Hard filter: already played (exact video ID)
     if (m_playedVideoIds.contains(candidate.id)) {
         return -1.0;
     }
 
-    QString songKey = QStringLiteral("%1|%2")
-                              .arg(candidate.title.toLower().trimmed(),
-                                      candidate.uploader.toLower().trimmed());
-    if (m_playedSongKeys.contains(songKey)) {
-        return -1.0;
+    // Hard filter: similar title already played (fuzzy match).
+    // Normalize titles by stripping remix/version/language suffixes
+    // to avoid playing "Nero", "Nero (Remix)", "Nero (Korean version)" etc.
+    QString normTitle = normalizeSongTitle(candidate.title);
+    for (const QString& playedKey : std::as_const(m_playedSongKeys)) {
+        QString playedNorm = normalizeSongTitle(playedKey);
+        // If the normalized titles share 60%+ of words, it's the same song
+        if (titleSimilarity(normTitle, playedNorm) > 0.6) {
+            return -1.0;
+        }
     }
 
     // Hard filter: live streams
@@ -574,10 +638,12 @@ void AIBroFeature::downloadCandidate(
     }
 
     m_playedVideoIds.insert(candidate.id);
+    // Store both exact and normalized titles for dedup
     QString songKey = QStringLiteral("%1|%2")
                               .arg(candidate.title.toLower().trimmed(),
                                       candidate.uploader.toLower().trimmed());
     m_playedSongKeys.insert(songKey);
+    m_playedSongKeys.insert(normalizeSongTitle(candidate.title));
 
     kLogger.info() << "AI Bro: downloading [" << candidate.id << "] " << candidate.title << " by " << candidate.uploader << " (session:" << m_playedVideoIds.size() << " played)";
     m_pYouTubeFeature->requestDownload(candidate.id);
@@ -917,16 +983,24 @@ void AIBroFeature::stopBlend() {
         m_coCrossfader.set(-1.0);
     }
 
-    // Restore source deck EQ and volume
+    // Restore source deck: EQ, volume, rate, pitch, sync
     setEQ(m_blendFromDeck, 1.0, 1.0, 1.0);
     setVolume(m_blendFromDeck, 1.0);
-
-    // Disable sync on source deck
     setSync(m_blendFromDeck, false);
+    {
+        QString group = QStringLiteral("[Channel%1]").arg(m_blendFromDeck + 1);
+        ControlObject::set(ConfigKey(group, "rate"), 0.0);
+        ControlObject::set(ConfigKey(group, "pitch"), 0.0);
+    }
 
-    // Ensure target deck is at full EQ and volume
+    // Ensure target deck is at full EQ, volume, and original rate
     setEQ(m_blendToDeck, 1.0, 1.0, 1.0);
     setVolume(m_blendToDeck, 1.0);
+    {
+        QString group = QStringLiteral("[Channel%1]").arg(m_blendToDeck + 1);
+        ControlObject::set(ConfigKey(group, "rate"), 0.0);
+        ControlObject::set(ConfigKey(group, "pitch"), 0.0);
+    }
 
     kLogger.info() << "AI Bro: blend complete";
 
