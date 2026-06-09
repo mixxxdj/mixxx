@@ -20,6 +20,8 @@ const ShiftCueButtonAction = "REWIND";
 const ButtonBrightnessOff = 0x00;
 const ButtonBrightnessOn = 0x1F;
 
+const ReasonableCalibrationThreshold = 200;
+
 const padModes = {
     "hotcue": 0,
     "introOutro": 1,
@@ -1277,7 +1279,36 @@ class TraktorS2MK1Class {
         this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
         this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD3)), 0x40);
         this.rawCalibration.jogWheels = new Uint8Array(controller.getFeatureReport(0xD4));
+        console.log("rawCalibration.knobs", this.rawCalibration.knobs);
+        console.log("rawCalibration.jogWheels", this.rawCalibration.jogWheels);
         this.calibration = this.parseRawCalibration();
+        if (!this.isCalibrationReasonable()) {
+            const defaultKnob = {min: 0x10, center: 0x7FF, max: 0xFEF};
+            const defaultFader = {min: 0x10, max: 0xFEF};
+            const defaultDeck = {
+                volume: defaultFader,
+                eq: {
+                    hi: defaultKnob,
+                    mid: defaultKnob,
+                    low: defaultKnob,
+                },
+                jogPress: 3328,
+            };
+            const defaultEffectUnit = {
+                mix: defaultKnob,
+                params: [
+                    defaultKnob,
+                    defaultKnob,
+                    defaultKnob,
+                ],
+            };
+            this.calibration = {
+                decks: [defaultDeck, defaultDeck],
+                effectUnits: [defaultEffectUnit, defaultEffectUnit],
+                crossfader: defaultFader,
+                sampler: defaultKnob,
+            };
+        }
         for (let i = 0; i < 2; i++) {
             this.decks[i].calibrate(this.calibration.decks[i]);
         }
@@ -1499,6 +1530,52 @@ class TraktorS2MK1Class {
     }
     parseUint16Be(data, index) {
         return (data[index]<<8) + data[index+1];
+    }
+    isCalibrationReasonable() {
+        // "disable" && short circuiting
+        return [
+            this.isDeckCalibrationReasonable(this.calibration.decks[0], 0),
+            this.isDeckCalibrationReasonable(this.calibration.decks[1], 1),
+            this.isEffectUnitCalibrationReasonable(this.calibration.effectUnits[0], 0),
+            this.isEffectUnitCalibrationReasonable(this.calibration.effectUnits[1], 1),
+            this.isFaderCalibrationReasonable(this.calibration.crossfader, "crossfader"),
+            this.isKnobCalibrationReasonable(this.calibration.sampler, "sampler"),
+        ].every(x=>x);
+    }
+    isDeckCalibrationReasonable(deck, index) {
+        return [
+            this.isFaderCalibrationReasonable(deck.volume, `deck[${index}].volume`),
+            this.isKnobCalibrationReasonable(deck.eq.hi, `deck[${index}].eq.hi`),
+            this.isKnobCalibrationReasonable(deck.eq.mid, `deck[${index}].eq.mid`),
+            this.isKnobCalibrationReasonable(deck.eq.low, `deck[${index}].eq.low`),
+            // I don’t know a reasonable value for jogpress
+        ].every(x=>x);
+    }
+    isEffectUnitCalibrationReasonable(effectUnit, index) {
+        return [
+            this.isKnobCalibrationReasonable(effectUnit.mix, `effectUnit[${index}].mix`),
+            this.isKnobCalibrationReasonable(effectUnit.params[0], `effectUnit[${index}].params[0]`),
+            this.isKnobCalibrationReasonable(effectUnit.params[1], `effectUnit[${index}].params[1]`),
+            this.isKnobCalibrationReasonable(effectUnit.params[2], `effectUnit[${index}].params[2]`)
+        ].every(x=>x);
+    }
+    isKnobCalibrationReasonable(knob, name) {
+        const valid = knob.min < ReasonableCalibrationThreshold
+              && knob.max > 0xFFF - ReasonableCalibrationThreshold
+              && knob.center > 0x7FF - ReasonableCalibrationThreshold
+              && knob.center < 0x7FF + ReasonableCalibrationThreshold;
+        if (!valid) {
+            console.log(`Calibration of ${  name  } is {min: ${knob.min}, center: ${knob.center}, max: ${knob.max}} and probably wrong`);
+        }
+        return valid;
+    }
+    isFaderCalibrationReasonable(fader, name) {
+        const valid = fader.min < ReasonableCalibrationThreshold
+              && fader.max > 0xFFF - ReasonableCalibrationThreshold;
+        if (!valid) {
+            console.log(`Calibration of ${  name  } is {min: ${fader.min}, max: ${fader.max}} and probably wrong`);
+        }
+        return valid;
     }
 
     shiftPressed() {
