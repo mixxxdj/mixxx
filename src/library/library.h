@@ -229,7 +229,7 @@ class Library : public QObject {
     WLibrary* m_pLibraryWidget;
     parented_ptr<MixxxLibraryFeature> m_pMixxxLibraryFeature;
     parented_ptr<AutoDJFeature> m_pAutoDJFeature;
-    std::unique_ptr<AIBroFeature> m_pAIBroFeature;
+    parented_ptr<AIBroFeature> m_pAIBroFeature;
     parented_ptr<PlaylistFeature> m_pPlaylistFeature;
     parented_ptr<CrateFeature> m_pCrateFeature;
     parented_ptr<BrowseFeature> m_pBrowseFeature;
