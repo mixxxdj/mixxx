@@ -367,7 +367,10 @@ void AIBroFeature::init() {
                     &mixxx::YouTubeService::searchFailed,
                     this,
                     &AIBroFeature::slotSearchFailed);
-            kLogger.info() << "AI Bro: signal connections: downloadFinished=" << ok1 << " downloadFailed=" << ok2 << " searchResultsReady=" << ok3 << " searchFailed=" << ok4;
+            kLogger.info() << "AI Bro: signal connections: downloadFinished="
+                           << ok1 << " downloadFailed=" << ok2
+                           << " searchResultsReady=" << ok3
+                           << " searchFailed=" << ok4;
         } else {
             kLogger.warning() << "AI Bro: YouTubeService is null, cannot connect signals!";
         }
@@ -660,7 +663,9 @@ void AIBroFeature::downloadCandidate(
     m_playedSongKeys.insert(songKey);
     m_playedSongKeys.insert(normalizeSongTitle(candidate.title));
 
-    kLogger.info() << "AI Bro: downloading [" << candidate.id << "] " << candidate.title << " by " << candidate.uploader << " (session:" << m_playedVideoIds.size() << " played)";
+    kLogger.info() << "AI Bro: downloading [" << candidate.id << "] "
+                   << candidate.title << " by " << candidate.uploader
+                   << " (session:" << m_playedVideoIds.size() << " played)";
     m_pYouTubeFeature->requestDownload(candidate.id);
 }
 
