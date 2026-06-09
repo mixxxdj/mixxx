@@ -517,7 +517,6 @@ double AIBroFeature::scoreCandidate(
         }
     }
 
-
     // Determine if we are in trending mode (no valid current track).
     // This must be declared early because several hard filters below
     // need to know whether to skip current-track-dependent checks.
