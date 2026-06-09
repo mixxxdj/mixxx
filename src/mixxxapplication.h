@@ -10,7 +10,7 @@ class MixxxApplication : public QApplication {
     Q_OBJECT
   public:
     MixxxApplication(int& argc, char** argv);
-    ~MixxxApplication() override = default;
+    ~MixxxApplication() override;
 
     bool notify(QObject*, QEvent*) override;
 
