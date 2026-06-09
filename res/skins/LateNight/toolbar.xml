@@ -141,7 +141,7 @@
       <PushButton>
         <TooltipId>ai_bro_status</TooltipId>
         <ObjectName>AiBroButton</ObjectName>
-        <Size>30f,20f</Size>
+        <Size>40f,20f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
@@ -153,7 +153,7 @@
         </State>
         <State>
           <Number>1</Number>
-          <Text>AI</Text>
+          <Text>●</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
@@ -163,6 +163,11 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarSeparator</ObjectName>
+        <Size>5f,9min</Size>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
