@@ -1,8 +1,8 @@
 #include "library/aibro/aibrofeature.h"
 
+#include <QRegularExpression>
 #include <QSet>
 #include <QTimer>
-#include <QRegularExpression>
 #include <cmath>
 #include <utility>
 
