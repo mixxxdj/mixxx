@@ -232,6 +232,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetShowBarCounter);
+    connect(beatsPerBarSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetBeatsPerBar);
+    connect(enableDownbeatCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetDownbeatsEnabled);
     connect(normalizeWaveformCheckBox,
             &QCheckBox::toggled,
             this,
@@ -353,6 +361,8 @@ void DlgPrefWaveform::slotUpdate() {
     untilMarkShowBeatsCheckBox->setChecked(factory->getUntilMarkShowBeats());
     untilMarkShowTimeCheckBox->setChecked(factory->getUntilMarkShowTime());
     showBarCounterCheckBox->setChecked(factory->getShowBarCounter());
+    beatsPerBarSpinBox->setValue(factory->getBeatsPerBar());
+    enableDownbeatCheckBox->setChecked(factory->getDownbeatsEnabled());
     normalizeWaveformCheckBox->setChecked(factory->getNormalizeWaveform());
     untilMarkAlignComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilMarkAlignIndex(
@@ -441,6 +451,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     synchronizeZoomCheckBox->setChecked(true);
     showBarCounterCheckBox->setChecked(true);
+    beatsPerBarSpinBox->setValue(4);
+    enableDownbeatCheckBox->setChecked(true);
     normalizeWaveformCheckBox->setChecked(false);
 
     // RGB overview.
@@ -782,6 +794,14 @@ void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
 
 void DlgPrefWaveform::slotSetShowBarCounter(bool checked) {
     WaveformWidgetFactory::instance()->setShowBarCounter(checked);
+}
+
+void DlgPrefWaveform::slotSetBeatsPerBar(int value) {
+    WaveformWidgetFactory::instance()->setBeatsPerBar(value);
+}
+
+void DlgPrefWaveform::slotSetDownbeatsEnabled(bool checked) {
+    WaveformWidgetFactory::instance()->setDownbeatsEnabled(checked);
 }
 
 void DlgPrefWaveform::slotSetNormalizeWaveform(bool checked) {

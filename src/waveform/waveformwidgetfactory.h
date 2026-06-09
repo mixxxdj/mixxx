@@ -170,6 +170,8 @@ class WaveformWidgetFactory : public QObject,
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setShowBarCounter(bool value);
+    void setBeatsPerBar(int value);
+    void setDownbeatsEnabled(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
@@ -186,6 +188,12 @@ class WaveformWidgetFactory : public QObject,
     }
     bool getShowBarCounter() const {
         return m_showBarCounter;
+    }
+    int getBeatsPerBar() const {
+        return m_beatsPerBar;
+    }
+    bool getDownbeatsEnabled() const {
+        return m_downbeatsEnabled;
     }
     Qt::Alignment getUntilMarkAlign() const {
         return m_untilMarkAlign;
@@ -273,6 +281,8 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkShowBeatsChanged(bool value);
     void untilMarkShowTimeChanged(bool value);
     void showBarCounterChanged(bool value);
+    void beatsPerBarChanged(int value);
+    void downbeatsEnabledChanged(bool value);
     void normalizeWaveformChanged(bool value);
     void untilMarkAlignChanged(Qt::Alignment align);
     void untilMarkTextPointSizeChanged(int value);
@@ -343,6 +353,8 @@ class WaveformWidgetFactory : public QObject,
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
     bool m_showBarCounter;
+    int m_beatsPerBar;
+    bool m_downbeatsEnabled;
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;

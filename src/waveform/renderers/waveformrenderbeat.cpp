@@ -5,15 +5,38 @@
 #include "track/track.h"
 #include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
 class QPaintEvent;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_beatsPerBar(4) {
+          m_introStartPosCO(m_waveformRenderer->getGroup(),
+                  QStringLiteral("intro_start_position")) {
     m_beats.resize(128);
     m_downbeats.resize(32);
+}
+
+int WaveformRenderBeat::computeAnchorBeatIndex(
+        const mixxx::BeatsPointer& pBeats) const {
+    const double introStartSample = m_introStartPosCO.get();
+    if (introStartSample <= 0.0) {
+        return 0;
+    }
+    const auto introPos = mixxx::audio::FramePos::fromEngineSamplePos(introStartSample);
+    if (!introPos.isValid()) {
+        return 0;
+    }
+    const auto closestBeat = pBeats->findClosestBeat(introPos);
+    if (!closestBeat.isValid()) {
+        return 0;
+    }
+    const auto anchorIt = pBeats->iteratorFrom(closestBeat);
+    if (anchorIt != pBeats->cend()) {
+        return anchorIt - pBeats->cfirstmarker();
+    }
+    return 0;
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
@@ -94,6 +117,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int downbeatCount = 0;
 
     const auto firstMarker = trackBeats->cfirstmarker();
+    const int anchorBeatIndex = computeAnchorBeatIndex(trackBeats);
+    auto* pFactory = WaveformWidgetFactory::instance();
+    const int beatsPerBar = pFactory->getBeatsPerBar();
+    const bool downbeatsEnabled = pFactory->getDownbeatsEnabled();
 
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
@@ -102,8 +129,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
-        int globalBeatIndex = it - firstMarker;
-        bool isDownbeat = ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar == 0;
+        bool isDownbeat = false;
+        if (downbeatsEnabled && beatsPerBar > 0) {
+            const int globalBeatIndex = (it - firstMarker) - anchorBeatIndex;
+            isDownbeat = ((globalBeatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar == 0;
+        }
 
         if (isDownbeat) {
             // If we don't have enough space, double the size.

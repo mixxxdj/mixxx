@@ -10,6 +10,7 @@
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
 using namespace rendergraph;
@@ -19,13 +20,91 @@ namespace allshader {
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRendererAbstract(waveformWidget),
-          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
+          m_introStartPosCO(m_waveformRenderer->getGroup(),
+                  QStringLiteral("intro_start_position")) {
     initForRectangles<UniColorMaterial>(0);
     setUsePreprocess(true);
 
     auto pDownbeatNode = std::make_unique<GeometryNode>();
     pDownbeatNode->initForRectangles<UniColorMaterial>(0);
     m_pDownbeatNode = appendChildNode(std::move(pDownbeatNode));
+
+    auto* pFactory = WaveformWidgetFactory::instance();
+    m_beatsPerBar = pFactory->getBeatsPerBar();
+    m_downbeatsEnabled = pFactory->getDownbeatsEnabled();
+    connect(pFactory,
+            &WaveformWidgetFactory::beatsPerBarChanged,
+            this,
+            &WaveformRenderBeat::setBeatsPerBar);
+    connect(pFactory,
+            &WaveformWidgetFactory::downbeatsEnabledChanged,
+            this,
+            &WaveformRenderBeat::setDownbeatsEnabled);
+}
+
+void WaveformRenderBeat::onSetTrack() {
+    if (m_pLoadedTrack) {
+        disconnect(m_pLoadedTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &WaveformRenderBeat::slotBeatsUpdated);
+        disconnect(m_pLoadedTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WaveformRenderBeat::slotCuesUpdated);
+    }
+
+    m_pLoadedTrack = m_waveformRenderer->getTrackInfo();
+    m_pTrackBeats.reset();
+    m_anchorBeatIndex = 0;
+
+    if (m_pLoadedTrack) {
+        m_pTrackBeats = m_pLoadedTrack->getBeats();
+        connect(m_pLoadedTrack.get(),
+                &Track::beatsUpdated,
+                this,
+                &WaveformRenderBeat::slotBeatsUpdated);
+        connect(m_pLoadedTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WaveformRenderBeat::slotCuesUpdated);
+        updateDownbeatAnchor();
+    }
+}
+
+void WaveformRenderBeat::slotBeatsUpdated() {
+    if (m_pLoadedTrack) {
+        m_pTrackBeats = m_pLoadedTrack->getBeats();
+    }
+    updateDownbeatAnchor();
+}
+
+void WaveformRenderBeat::slotCuesUpdated() {
+    updateDownbeatAnchor();
+}
+
+void WaveformRenderBeat::updateDownbeatAnchor() {
+    m_anchorBeatIndex = 0;
+    if (!m_pTrackBeats) {
+        return;
+    }
+    const double introStartSample = m_introStartPosCO.get();
+    if (introStartSample <= 0.0) {
+        return;
+    }
+    const auto introPos = mixxx::audio::FramePos::fromEngineSamplePos(introStartSample);
+    if (!introPos.isValid()) {
+        return;
+    }
+    const auto closestBeat = m_pTrackBeats->findClosestBeat(introPos);
+    if (!closestBeat.isValid()) {
+        return;
+    }
+    const auto anchorIt = m_pTrackBeats->iteratorFrom(closestBeat);
+    if (anchorIt != m_pTrackBeats->cend()) {
+        m_anchorBeatIndex = anchorIt - m_pTrackBeats->cfirstmarker();
+    }
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
@@ -57,19 +136,18 @@ void WaveformRenderBeat::preprocess() {
 }
 
 bool WaveformRenderBeat::preprocessInner() {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    if (!m_pTrackBeats ||
+            (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+        return false;
+    }
 
-    if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0.0) {
         return false;
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
                                          : ::WaveformRendererAbstract::Play;
-
-    mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
-    if (!trackBeats) {
-        return false;
-    }
 
     QColor beatColor = m_color;
     QColor downbeatColor = m_downbeatColor;
@@ -88,11 +166,6 @@ bool WaveformRenderBeat::preprocessInner() {
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
-    if (trackSamples <= 0.0) {
-        return false;
-    }
 
     const double firstDisplayedPosition =
             m_waveformRenderer->getFirstDisplayedPosition(positionType);
@@ -113,7 +186,7 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    const auto firstMarker = trackBeats->cfirstmarker();
+    const auto firstMarker = m_pTrackBeats->cfirstmarker();
 
     // Count regular beats and downbeats separately to reserve geometry.
     // The modulo operation must handle negative indices correctly (beats
@@ -121,15 +194,19 @@ bool WaveformRenderBeat::preprocessInner() {
     // need to normalize.
     int numRegularBeats = 0;
     int numDownbeats = 0;
-    for (auto it = trackBeats->iteratorFrom(startPosition);
-            it != trackBeats->cend() && *it <= endPosition;
+    for (auto it = m_pTrackBeats->iteratorFrom(startPosition);
+            it != m_pTrackBeats->cend() && *it <= endPosition;
             ++it) {
-        const int globalBeatIndex = it - firstMarker;
-        const int mod = m_beatsPerBar > 0
-                ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
-                : 1;
-        if (mod == 0) {
-            numDownbeats++;
+        if (m_downbeatsEnabled) {
+            const int globalBeatIndex = (it - firstMarker) - m_anchorBeatIndex;
+            const int mod = m_beatsPerBar > 0
+                    ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                    : 1;
+            if (mod == 0) {
+                numDownbeats++;
+            } else {
+                numRegularBeats++;
+            }
         } else {
             numRegularBeats++;
         }
@@ -146,8 +223,8 @@ bool WaveformRenderBeat::preprocessInner() {
     VertexUpdater downbeatUpdater{
             m_pDownbeatNode->geometry().vertexDataAs<Geometry::Point2D>()};
 
-    for (auto it = trackBeats->iteratorFrom(startPosition);
-            it != trackBeats->cend() && *it <= endPosition;
+    for (auto it = m_pTrackBeats->iteratorFrom(startPosition);
+            it != m_pTrackBeats->cend() && *it <= endPosition;
             ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
@@ -156,14 +233,16 @@ bool WaveformRenderBeat::preprocessInner() {
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
-        const int globalBeatIndex = it - firstMarker;
-        const int mod = m_beatsPerBar > 0
-                ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
-                : 1;
-        const bool isDownbeat = (mod == 0);
+        bool isDownbeat = false;
+        if (m_downbeatsEnabled) {
+            const int globalBeatIndex = (it - firstMarker) - m_anchorBeatIndex;
+            const int mod = m_beatsPerBar > 0
+                    ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                    : 1;
+            isDownbeat = (mod == 0);
+        }
 
         const float x1 = static_cast<float>(xBeatPoint);
-        // Downbeats are 2px wide, regular beats are 1px wide
         const float x2 = x1 + (isDownbeat ? 2.f : 1.f);
 
         if (isDownbeat) {

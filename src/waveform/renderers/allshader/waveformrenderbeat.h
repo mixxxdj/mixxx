@@ -2,7 +2,10 @@
 
 #include <QColor>
 
+#include "control/pollingcontrolproxy.h"
 #include "rendergraph/geometrynode.h"
+#include "track/beats.h"
+#include "track/track_decl.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
@@ -32,6 +35,8 @@ class allshader::WaveformRenderBeat final
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 
+    void onSetTrack() override;
+
     // Virtuals for rendergraph::Node
     void preprocess() override;
 
@@ -45,14 +50,27 @@ class allshader::WaveformRenderBeat final
     void setBeatsPerBar(int beatsPerBar) {
         m_beatsPerBar = beatsPerBar;
     }
+    void setDownbeatsEnabled(bool enabled) {
+        m_downbeatsEnabled = enabled;
+    }
+    void slotBeatsUpdated();
+    void slotCuesUpdated();
 
   private:
+    void updateDownbeatAnchor();
+
     QColor m_color;
     QColor m_downbeatColor;
     int m_beatsPerBar{4};
+    bool m_downbeatsEnabled{true};
     bool m_isSlipRenderer;
 
     rendergraph::GeometryNode* m_pDownbeatNode{};
+
+    TrackPointer m_pLoadedTrack;
+    mixxx::BeatsPointer m_pTrackBeats;
+    PollingControlProxy m_introStartPosCO;
+    int m_anchorBeatIndex{0};
 
     bool preprocessInner();
 
