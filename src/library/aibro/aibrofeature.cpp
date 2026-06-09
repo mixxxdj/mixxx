@@ -286,7 +286,7 @@ static double titleSimilarity(const QString& a, const QString& b) {
     }
     // Count matching words
     int matches = 0;
-    for (const QString& w : wordsA) {
+    for (const QString& w : std::as_const(wordsA)) {
         if (wordsB.contains(w)) {
             matches++;
         }
