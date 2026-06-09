@@ -22,12 +22,48 @@ const ButtonBrightnessOn = 0x1F;
 
 const ReasonableCalibrationThreshold = 200;
 
+
 const padModes = {
     "hotcue": 0,
     "introOutro": 1,
     "sampler": 2
 };
 
+const introOutroKeys = [
+    "intro_start",
+    "intro_end",
+    "outro_start",
+    "outro_end"
+];
+
+const introOutroColors = [
+    {green: 0x1F, blue: 0},
+    {green: 0x1F, blue: 0},
+    {green: 0, blue: 0x1F},
+    {green: 0, blue: 0x1F}
+];
+
+const introOutroColorsDim = [
+    {green: 0x05, blue: 0},
+    {green: 0x05, blue: 0},
+    {green: 0, blue: 0x05},
+    {green: 0, blue: 0x05}
+];
+
+const setFaderParameter = function(group, key, value, calibration) {
+    const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
+    engine.setParameter(group, key, calibratedValue);
+};
+
+const setKnobParameter = function(group, key, value, calibration) {
+    let calibratedValue;
+    if (value <= calibration.center) {
+        calibratedValue = script.absoluteLin(value, 0, 0.5, calibration.min, calibration.center);
+    } else {
+        calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
+    }
+    engine.setParameter(group, key, calibratedValue);
+};
 
 class DeckClass {
     constructor(parent, number) {
@@ -1605,43 +1641,6 @@ class Encoder {
         return dir;
     }
 }
-
-const introOutroKeys = [
-    "intro_start",
-    "intro_end",
-    "outro_start",
-    "outro_end"
-];
-
-const introOutroColors = [
-    {green: 0x1F, blue: 0},
-    {green: 0x1F, blue: 0},
-    {green: 0, blue: 0x1F},
-    {green: 0, blue: 0x1F}
-];
-
-const introOutroColorsDim = [
-    {green: 0x05, blue: 0},
-    {green: 0x05, blue: 0},
-    {green: 0, blue: 0x05},
-    {green: 0, blue: 0x05}
-];
-
-const setKnobParameter = function(group, key, value, calibration) {
-    let calibratedValue;
-    if (value <= calibration.center) {
-        calibratedValue = script.absoluteLin(value, 0, 0.5, calibration.min, calibration.center);
-    } else {
-        calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
-    }
-    engine.setParameter(group, key, calibratedValue);
-};
-
-const setFaderParameter = function(group, key, value, calibration) {
-    const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
-    engine.setParameter(group, key, calibratedValue);
-};
-
 
 var TraktorS2MK1 = new TraktorS2MK1Class(); // eslint-disable-line no-var, no-unused-vars
 
