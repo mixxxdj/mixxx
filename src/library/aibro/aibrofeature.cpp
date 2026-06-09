@@ -816,7 +816,6 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
     }
 
     // Source is always the current active deck
-    constexpr int kSourceDeck = -1;
     int fromDeck = m_iCurrentDeck;
 
     if (fromDeck < 0) {
@@ -1344,4 +1343,3 @@ double AIBroFeature::getCandidateBPM(
     return 0.0;
 }
 #include "moc_aibrofeature.cpp"
-
