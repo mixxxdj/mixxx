@@ -755,9 +755,9 @@ void AIBroFeature::findNextSong() {
         kLogger.info() << "AI Bro: no track context, fetching trending";
         m_downloading = true;
         if (m_pYouTubeFeature) {
-            QString region = m_pYouTubeFeature->resolvedTrendingRegion();
+            // Search for popular Greek music instead of generic trending
             m_pYouTubeFeature->searchAndActivate(
-                    QStringLiteral("trending music %1").arg(region));
+                    QStringLiteral("popular greek music 2024 2025"));
         }
         return;
     }
@@ -874,7 +874,21 @@ void AIBroFeature::slotDownloadFailed(
     Q_UNUSED(videoId);
     kLogger.warning() << "AI Bro: download failed:" << error;
     m_downloading = false;
-    QTimer::singleShot(kRetryDelayMs, this, [this]() {
+
+    // Check if current track is garbage — if so, clear it so next search
+    // uses a clean query
+    const QString currentLower = m_currentTrackTitle.toLower();
+    for (const QString& pattern : garbagePatterns()) {
+        if (currentLower.contains(pattern)) {
+            kLogger.warning() << "AI Bro: current track is garbage, clearing";
+            m_currentTrackTitle.clear();
+            m_currentTrackArtist.clear();
+            break;
+        }
+    }
+
+    // Retry with longer delay to avoid rate limiting
+    QTimer::singleShot(kRetryDelayMs * 2, this, [this]() {
         if (isActive()) {
             findNextSong();
         }
