@@ -105,6 +105,10 @@ void WaveformRenderBeat::updateDownbeatAnchor() {
     if (anchorIt != m_pTrackBeats->cend()) {
         m_anchorBeatIndex = anchorIt - m_pTrackBeats->cfirstmarker();
     }
+
+    if (m_pTrackBeats->downbeatOffset() > 0) {
+        m_anchorBeatIndex = m_pTrackBeats->downbeatOffset();
+    }
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
@@ -188,10 +192,10 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const auto firstMarker = m_pTrackBeats->cfirstmarker();
 
-    // Count regular beats and downbeats separately to reserve geometry.
-    // The modulo operation must handle negative indices correctly (beats
-    // before the first marker). In C++, (-1 % 4) == -1, not 3, so we
-    // need to normalize.
+    const int beatsPerBar = (m_pTrackBeats && m_pTrackBeats->beatsPerBar() > 0)
+            ? m_pTrackBeats->beatsPerBar()
+            : m_beatsPerBar;
+
     int numRegularBeats = 0;
     int numDownbeats = 0;
     for (auto it = m_pTrackBeats->iteratorFrom(startPosition);
@@ -199,8 +203,8 @@ bool WaveformRenderBeat::preprocessInner() {
             ++it) {
         if (m_downbeatsEnabled) {
             const int globalBeatIndex = (it - firstMarker) - m_anchorBeatIndex;
-            const int mod = m_beatsPerBar > 0
-                    ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+            const int mod = beatsPerBar > 0
+                    ? ((globalBeatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar
                     : 1;
             if (mod == 0) {
                 numDownbeats++;
@@ -236,8 +240,8 @@ bool WaveformRenderBeat::preprocessInner() {
         bool isDownbeat = false;
         if (m_downbeatsEnabled) {
             const int globalBeatIndex = (it - firstMarker) - m_anchorBeatIndex;
-            const int mod = m_beatsPerBar > 0
-                    ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+            const int mod = beatsPerBar > 0
+                    ? ((globalBeatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar
                     : 1;
             isDownbeat = (mod == 0);
         }

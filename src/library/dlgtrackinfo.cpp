@@ -501,6 +501,7 @@ void DlgTrackInfo::updateBpmEditControls() {
     bpmThreeHalves->setEnabled(!m_bpmLocked);
     bpmDouble->setEnabled(!m_bpmLocked);
     bpmClear->setEnabled(!m_bpmLocked);
+    spinBeatsPerBar->setEnabled(!m_bpmLocked);
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
@@ -509,6 +510,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     updateBpmScaleButtonLabels();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
+    spinBeatsPerBar->setValue(m_pBeatsClone ? m_pBeatsClone->beatsPerBar() : 0);
 
     // Store the lock state from the track into the local staging variable.
     // This will only be written back to the track on Apply/OK.
@@ -676,6 +678,16 @@ void DlgTrackInfo::saveTrack() {
 
     slotTuningValueChanged(spinTuning->value());
     m_trackRecord.setBpmLocked(m_bpmLocked);
+
+    if (m_pBeatsClone) {
+        const int newBpb = spinBeatsPerBar->value();
+        if (newBpb != m_pBeatsClone->beatsPerBar()) {
+            auto result = m_pBeatsClone->trySetBeatsPerBar(newBpb);
+            if (result.has_value()) {
+                m_pBeatsClone = *result;
+            }
+        }
+    }
 
     // Update the cached track
     //

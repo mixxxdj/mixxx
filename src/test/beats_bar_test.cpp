@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "audio/types.h"
+#include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/bpm.h"
 
@@ -218,6 +219,148 @@ TEST(BeatsBarTest, NonZeroStartPosition) {
         EXPECT_EQ(barNumber, expectedBar) << "Beat " << i;
         ++it;
     }
+}
+
+TEST(BeatsBarTest, DefaultBeatsPerBarIsZero) {
+    EXPECT_EQ(kConstTempoBeats.beatsPerBar(), 0);
+    EXPECT_EQ(kConstTempoBeats.downbeatOffset(), 0);
+}
+
+TEST(BeatsBarTest, TrySetBeatsPerBar) {
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+    EXPECT_EQ(pBeats->beatsPerBar(), 0);
+
+    auto result = pBeats->trySetBeatsPerBar(3);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ((*result)->beatsPerBar(), 3);
+    EXPECT_EQ(pBeats->beatsPerBar(), 0);
+}
+
+TEST(BeatsBarTest, TrySetDownbeatOffset) {
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+
+    auto result = pBeats->trySetDownbeatOffset(2);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ((*result)->downbeatOffset(), 2);
+    EXPECT_EQ(pBeats->downbeatOffset(), 0);
+}
+
+TEST(BeatsBarTest, SerializationRoundTripBeatGrid) {
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+
+    auto pWithTimeSig = pBeats->trySetBeatsPerBar(3);
+    ASSERT_TRUE(pWithTimeSig.has_value());
+    auto pWithBoth = (*pWithTimeSig)->trySetDownbeatOffset(1);
+    ASSERT_TRUE(pWithBoth.has_value());
+
+    QByteArray serialized = (*pWithBoth)->toByteArray();
+    auto pDeserialized = Beats::fromByteArray(
+            kSampleRate,
+            BEAT_GRID_2_VERSION,
+            QString(),
+            serialized);
+    ASSERT_NE(pDeserialized, nullptr);
+    EXPECT_EQ(pDeserialized->beatsPerBar(), 3);
+    EXPECT_EQ(pDeserialized->downbeatOffset(), 1);
+}
+
+TEST(BeatsBarTest, SerializationRoundTripBeatMap) {
+    QVector<audio::FramePos> positions;
+    double frame = 0.0;
+    for (int i = 0; i < 20; ++i) {
+        positions.append(audio::FramePos(frame));
+        frame += (i < 10) ? 22050.0 : 22100.0;
+    }
+    auto pBeats = Beats::fromBeatPositions(kSampleRate, positions);
+    ASSERT_NE(pBeats, nullptr);
+    ASSERT_FALSE(pBeats->hasConstantTempo());
+
+    auto pWithTimeSig = pBeats->trySetBeatsPerBar(6);
+    ASSERT_TRUE(pWithTimeSig.has_value());
+    auto pWithBoth = (*pWithTimeSig)->trySetDownbeatOffset(2);
+    ASSERT_TRUE(pWithBoth.has_value());
+
+    QByteArray serialized = (*pWithBoth)->toByteArray();
+    auto pDeserialized = Beats::fromByteArray(
+            kSampleRate,
+            BEAT_MAP_VERSION,
+            QString(),
+            serialized);
+    ASSERT_NE(pDeserialized, nullptr);
+    EXPECT_EQ(pDeserialized->beatsPerBar(), 6);
+    EXPECT_EQ(pDeserialized->downbeatOffset(), 2);
+}
+
+TEST(BeatsBarTest, BackwardCompatibilityNoTimeSig) {
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+
+    QByteArray serialized = pBeats->toByteArray();
+    auto pDeserialized = Beats::fromByteArray(
+            kSampleRate,
+            BEAT_GRID_2_VERSION,
+            QString(),
+            serialized);
+    ASSERT_NE(pDeserialized, nullptr);
+    EXPECT_EQ(pDeserialized->beatsPerBar(), 0);
+    EXPECT_EQ(pDeserialized->downbeatOffset(), 0);
+}
+
+TEST(BeatsBarTest, MutationsPreserveBeatsPerBar) {
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+
+    auto pWithBpb = pBeats->trySetBeatsPerBar(5);
+    ASSERT_TRUE(pWithBpb.has_value());
+
+    auto pTranslated = (*pWithBpb)->tryTranslate(100.0);
+    ASSERT_TRUE(pTranslated.has_value());
+    EXPECT_EQ((*pTranslated)->beatsPerBar(), 5);
+
+    auto pScaled = (*pWithBpb)->tryScale(Beats::BpmScale::Double);
+    ASSERT_TRUE(pScaled.has_value());
+    EXPECT_EQ((*pScaled)->beatsPerBar(), 5);
+
+    auto pNewBpm = (*pWithBpb)->trySetBpm(Bpm(140.0));
+    ASSERT_TRUE(pNewBpm.has_value());
+    EXPECT_EQ((*pNewBpm)->beatsPerBar(), 5);
+}
+
+TEST(BeatsBarTest, FactoryPreservesBeatsPerBar) {
+    QVector<audio::FramePos> beatPositions;
+    for (int i = 0; i < 100; ++i) {
+        beatPositions.append(audio::FramePos(i * 22050.0));
+    }
+
+    QHash<QString, QString> extraVersionInfo;
+    auto pBeats = BeatFactory::makePreferredBeats(
+            beatPositions,
+            extraVersionInfo,
+            true,
+            kSampleRate,
+            3,
+            1);
+    ASSERT_NE(pBeats, nullptr);
+    EXPECT_EQ(pBeats->beatsPerBar(), 3);
+    EXPECT_EQ(pBeats->downbeatOffset(), 1);
+
+    QByteArray serialized = pBeats->toByteArray();
+    auto pDeserialized = Beats::fromByteArray(
+            kSampleRate,
+            pBeats->getVersion(),
+            pBeats->getSubVersion(),
+            serialized);
+    ASSERT_NE(pDeserialized, nullptr);
+    EXPECT_EQ(pDeserialized->beatsPerBar(), 3);
+    EXPECT_EQ(pDeserialized->downbeatOffset(), 1);
 }
 
 } // namespace

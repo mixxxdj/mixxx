@@ -260,13 +260,17 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     mixxx::BeatsPointer pBeats;
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<mixxx::audio::FramePos> beats = m_pPlugin->getBeats();
+        const int beatsPerBar = m_pPlugin->getBeatsPerBar();
+        const int downbeatOffset = m_pPlugin->getDownbeatOffset();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(
                 beats,
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
-                m_sampleRate);
+                m_sampleRate,
+                beatsPerBar,
+                downbeatOffset);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
                  << "beats. Predominant BPM:"
                  << (pBeats ? pBeats->getBpmInRange(
@@ -274,7 +278,9 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                                       mixxx::audio::FramePos{
                                               pTrack->getDuration() *
                                               pBeats->getSampleRate()})
-                            : mixxx::Bpm());
+                            : mixxx::Bpm())
+                 << "beatsPerBar:" << beatsPerBar
+                 << "downbeatOffset:" << downbeatOffset;
     } else {
         mixxx::Bpm bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;

@@ -8,6 +8,7 @@
 #include "analyzer/plugins/buffering_utils.h"
 
 class DetectionFunction;
+class DownBeat;
 
 namespace mixxx {
 
@@ -42,6 +43,14 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return m_resultBeats;
     }
 
+    int getBeatsPerBar() const override {
+        return m_detectedBeatsPerBar;
+    }
+
+    int getDownbeatOffset() const override {
+        return m_detectedDownbeatOffset;
+    }
+
   private:
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
@@ -50,6 +59,11 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     int m_stepSizeFrames;
     std::vector<double> m_detectionResults;
     QVector<mixxx::audio::FramePos> m_resultBeats;
+
+    std::unique_ptr<DownBeat> m_pDownBeat;
+    std::vector<float> m_monoBuffer;
+    int m_detectedBeatsPerBar{0};
+    int m_detectedDownbeatOffset{0};
 };
 
 } // namespace mixxx

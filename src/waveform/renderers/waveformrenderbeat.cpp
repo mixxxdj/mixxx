@@ -119,7 +119,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const auto firstMarker = trackBeats->cfirstmarker();
     const int anchorBeatIndex = computeAnchorBeatIndex(trackBeats);
     auto* pFactory = WaveformWidgetFactory::instance();
-    const int beatsPerBar = pFactory->getBeatsPerBar();
+    const int factoryBpb = pFactory->getBeatsPerBar();
+    const int beatsPerBar = (trackBeats && trackBeats->beatsPerBar() > 0)
+            ? trackBeats->beatsPerBar()
+            : factoryBpb;
     const bool downbeatsEnabled = pFactory->getDownbeatsEnabled();
 
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {

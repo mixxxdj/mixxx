@@ -1,4 +1,5 @@
 #include <dsp/onsets/DetectionFunction.h>
+#include <dsp/tempotracking/DownBeat.h>
 #include <dsp/tempotracking/TempoTrackV2.h>
 
 // Class header comes after library includes here since our preprocessor
@@ -36,6 +37,8 @@ DFConfig makeDetectionFunctionConfig(int stepSizeFrames, int windowSize) {
     return config;
 }
 
+constexpr size_t kDecimationFactor = 16;
+
 } // namespace
 
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats()
@@ -62,6 +65,15 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
                         m_pDetectionFunction->processTimeDomain(pWindow));
                 return true;
             });
+
+    m_pDownBeat = std::make_unique<DownBeat>(
+            static_cast<float>(m_sampleRate),
+            kDecimationFactor,
+            static_cast<size_t>(m_stepSizeFrames));
+    m_monoBuffer.clear();
+    m_detectedBeatsPerBar = 0;
+    m_detectedDownbeatOffset = 0;
+
     return true;
 }
 
@@ -71,7 +83,22 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, SINT iLen) {
         return false;
     }
 
-    return m_helper.processStereoSamples(pIn, iLen);
+    bool result = m_helper.processStereoSamples(pIn, iLen);
+
+    if (m_pDownBeat) {
+        const SINT numFrames = iLen / kAnalysisChannels;
+        for (SINT i = 0; i < numFrames; ++i) {
+            float mono = (pIn[i * kAnalysisChannels] +
+                           pIn[i * kAnalysisChannels + 1]) * 0.5f;
+            m_monoBuffer.push_back(mono);
+            if (static_cast<int>(m_monoBuffer.size()) >= m_stepSizeFrames) {
+                m_pDownBeat->pushAudioBlock(m_monoBuffer.data());
+                m_monoBuffer.clear();
+            }
+        }
+    }
+
+    return result;
 }
 
 bool AnalyzerQueenMaryBeats::finalize() {
@@ -109,6 +136,58 @@ bool AnalyzerQueenMaryBeats::finalize() {
         m_resultBeats.push_back(result);
     }
 
+    if (m_pDownBeat && beats.size() > 8) {
+        size_t audioLength = 0;
+        const float* pAudio = m_pDownBeat->getBufferedAudio(audioLength);
+
+        if (pAudio && audioLength > 0) {
+            constexpr int kCandidates[] = {3, 4, 5, 6, 7};
+            double bestVariance = -1.0;
+            int bestBpb = 4;
+            int bestOffset = 0;
+
+            for (int bpb : kCandidates) {
+                m_pDownBeat->setBeatsPerBar(bpb);
+                std::vector<int> downbeats;
+                m_pDownBeat->findDownBeats(
+                        pAudio, audioLength, beats, downbeats);
+
+                std::vector<double> beatsd;
+                m_pDownBeat->getBeatSD(beatsd);
+
+                if (beatsd.empty()) {
+                    continue;
+                }
+
+                double sum = 0.0;
+                for (double v : beatsd) {
+                    sum += v;
+                }
+                double mean = sum / static_cast<double>(beatsd.size());
+                double variance = 0.0;
+                for (double v : beatsd) {
+                    double diff = v - mean;
+                    variance += diff * diff;
+                }
+                variance /= static_cast<double>(beatsd.size());
+
+                if (variance > bestVariance) {
+                    bestVariance = variance;
+                    bestBpb = bpb;
+                    bestOffset = downbeats.empty() ? 0 : downbeats.front();
+                }
+            }
+
+            m_detectedBeatsPerBar = bestBpb;
+            m_detectedDownbeatOffset = bestOffset;
+            qDebug() << "DownBeat analysis: detected"
+                     << m_detectedBeatsPerBar << "beats per bar,"
+                     << "downbeat offset" << m_detectedDownbeatOffset
+                     << "(variance:" << bestVariance << ")";
+        }
+    }
+
+    m_pDownBeat.reset();
     m_pDetectionFunction.reset();
     return true;
 }

@@ -111,6 +111,10 @@ void WaveformRenderBarCounter::updateDownbeatAnchor() {
     if (anchorIt != m_pTrackBeats->cend()) {
         m_anchorBeatIndex = anchorIt - m_pTrackBeats->cfirstmarker();
     }
+
+    if (m_pTrackBeats->downbeatOffset() > 0) {
+        m_anchorBeatIndex = m_pTrackBeats->downbeatOffset();
+    }
 }
 
 void WaveformRenderBarCounter::setup(
@@ -155,6 +159,10 @@ bool WaveformRenderBarCounter::preprocessInner() {
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
                                          : ::WaveformRendererAbstract::Play;
+
+    const int beatsPerBar = (m_pTrackBeats && m_pTrackBeats->beatsPerBar() > 0)
+            ? m_pTrackBeats->beatsPerBar()
+            : m_beatsPerBar;
 
     if (!m_color.alpha()) {
         return true;
@@ -211,10 +219,10 @@ bool WaveformRenderBarCounter::preprocessInner() {
             --playIt;
         }
         const int playBeatIndex = (playIt - firstMarker) - m_anchorBeatIndex;
-        if (m_beatsPerBar > 0) {
-            currentBarNumber = (playBeatIndex / m_beatsPerBar) + 1;
-            currentBeatInBar = ((playBeatIndex % m_beatsPerBar) + m_beatsPerBar) %
-                            m_beatsPerBar +
+        if (beatsPerBar > 0) {
+            currentBarNumber = (playBeatIndex / beatsPerBar) + 1;
+            currentBeatInBar = ((playBeatIndex % beatsPerBar) + beatsPerBar) %
+                            beatsPerBar +
                     1;
         }
     }
@@ -223,15 +231,15 @@ bool WaveformRenderBarCounter::preprocessInner() {
             it != m_pTrackBeats->cend() && *it <= endPosition;
             ++it) {
         const int globalBeatIndex = (it - firstMarker) - m_anchorBeatIndex;
-        const int normalizedMod = m_beatsPerBar > 0
-                ? ((globalBeatIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+        const int normalizedMod = beatsPerBar > 0
+                ? ((globalBeatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar
                 : 1;
 
         if (normalizedMod != 0) {
             continue;
         }
 
-        const int barNumber = (globalBeatIndex / m_beatsPerBar) + 1;
+        const int barNumber = (globalBeatIndex / beatsPerBar) + 1;
 
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
