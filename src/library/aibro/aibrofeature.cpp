@@ -1,5 +1,6 @@
 #include "library/aibro/aibrofeature.h"
 
+#include <QDateTime>
 #include <QRegularExpression>
 #include <QSet>
 #include <QTimer>
@@ -50,6 +51,29 @@ constexpr int kRetryDelayMs = 3000;
 // Ideal duration (seconds) — remixes can be longer
 constexpr int kIdealDurationMin = 150;
 constexpr int kIdealDurationMax = 480;
+
+// Minimum score threshold — reject candidates below this
+constexpr double kMinScoreThreshold = 0.15;
+
+// Search rate limiting
+constexpr int kMinSearchIntervalMs = 5000; // minimum 5s between searches
+constexpr int kMaxConcurrentDownloads = 1;
+
+// Garbage title patterns — reject results matching these
+static const QStringList& garbagePatterns() {
+    static const QStringList patterns = {
+        "😂", "🤣", "💀", "🔥", "😭", "🥺", "💯", "👏", "🙏", "💕",
+        "credit goes to", "not my", "fan edit", "fan made", "meme",
+        "reaction", "react to", "vs battle", "tier list", "ranking",
+        "top 10", "top 20", "top 50", "top 100", "compilation",
+        "mix #", "playlist", "full album", "album stream",
+        "anime", "amv", "edit #", "fancam", "mv reaction",
+        "lyrics video", "lyric video", "official lyrics",
+        "behind the scenes", "making of", "interview",
+        "live performance", "live at", "unplugged session"
+    };
+    return patterns;
+}
 
 // Common words to exclude from semantic scoring (stop words)
 static const QSet<QString>& stopWords() {
@@ -320,6 +344,7 @@ AIBroFeature::AIBroFeature(Library* pLibrary,
           m_blendFromDeck(-1),
           m_blendToDeck(-1),
           m_iCurrentDeck(0),
+          m_lastSearchTimeMs(0),
           m_manualTrackPath(),
           m_manualTrackDeck(-1),
           m_hasManualTrack(false),
@@ -430,39 +455,38 @@ QString AIBroFeature::buildSearchQuery() {
 
 QStringList AIBroFeature::buildDiscoveryQueries() {
     QStringList queries;
-    queries.reserve(12);
+    queries.reserve(4);
 
     const QString title = m_currentTrackTitle;
     const QString artist = m_currentTrackArtist;
-    if (title.isEmpty()) {
+    if (title.isEmpty() || title.length() < 3) {
         return queries;
     }
 
-    // 1. Direct artist + title
+    // Validate current track — don't search if title is garbage
+    const QString currentLower = title.toLower();
+    for (const QString& pattern : garbagePatterns()) {
+        if (currentLower.contains(pattern)) {
+            return queries;
+        }
+    }
+
+    // Build focused queries for Greek music discovery
     if (!artist.isEmpty()) {
+        // Primary: artist + title (most relevant)
         queries << QStringLiteral("%1 %2").arg(artist, title);
+        // Greek music context
+        queries << QStringLiteral("%1 %2 ελληνικά").arg(artist, title);
+        // Remix versions for DJ mixing
+        queries << QStringLiteral("%1 remix ελληνικά").arg(artist);
+        // Similar artists
+        queries << QStringLiteral("similar to %1 ελληνικά").arg(artist);
+    } else {
+        queries << title;
+        queries << QStringLiteral("%1 ελληνικά").arg(title);
+        queries << QStringLiteral("%1 remix").arg(title);
+        queries << QStringLiteral("songs like %1").arg(title);
     }
-
-    // 2. Extended/remix versions — PREFER these for DJ mixing
-    if (!artist.isEmpty()) {
-        queries << QStringLiteral("%1 %2 extended mix").arg(artist, title);
-        queries << QStringLiteral("%1 %2 remix").arg(artist, title);
-        queries << QStringLiteral("%1 %2 club mix").arg(artist, title);
-    }
-    queries << QStringLiteral("%1 extended").arg(title);
-    queries << QStringLiteral("%1 remix").arg(title);
-
-    // 3. Official audio for quality
-    queries << QStringLiteral("%1 official audio").arg(title);
-
-    // 4. Similar songs
-    queries << QStringLiteral("songs like %1").arg(title);
-    if (!artist.isEmpty()) {
-        queries << QStringLiteral("similar to %1").arg(artist);
-    }
-
-    // 5. DJ mix versions
-    queries << QStringLiteral("%1 DJ mix").arg(title);
 
     return queries;
 }
@@ -497,6 +521,43 @@ double AIBroFeature::scoreCandidate(
     // Hard filter: live streams
     if (candidate.isLive) {
         return -1.0;
+    }
+
+    // Hard filter: garbage titles (memes, anime, non-music content)
+    {
+        const QString lowerTitle = candidate.title.toLower();
+        for (const QString& pattern : garbagePatterns()) {
+            if (lowerTitle.contains(pattern)) {
+                return -1.0;
+            }
+        }
+        // Reject titles that are too short (< 3 chars) or too long (> 100 chars)
+        if (candidate.title.length() < 3 || candidate.title.length() > 100) {
+            return -1.0;
+        }
+        // Reject titles with excessive emoji or special characters
+        int specialCharCount = 0;
+        for (const QChar& c : candidate.title) {
+            if (c.unicode() > 127 && !c.isLetterOrNumber()) {
+                specialCharCount++;
+            }
+        }
+        if (specialCharCount > 3) {
+            return -1.0;
+        }
+    }
+
+    // Hard filter: current track title is garbage — don't search at all
+    {
+        const QString currentLower = m_currentTrackTitle.toLower();
+        for (const QString& pattern : garbagePatterns()) {
+            if (currentLower.contains(pattern)) {
+                return -1.0;
+            }
+        }
+        if (m_currentTrackTitle.length() < 3) {
+            return -1.0;
+        }
     }
 
     double score = 0.0;
@@ -643,8 +704,12 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
         }
     }
 
-    if (bestIdx < 0 && !results.isEmpty()) {
-        bestIdx = 0;
+    // Reject if best score is below threshold — no good candidates
+    if (bestIdx < 0 || bestScore < kMinScoreThreshold) {
+        kLogger.warning() << "AI Bro: no suitable candidate found (best score:"
+                           << bestScore << "threshold:" << kMinScoreThreshold
+                           << ")";
+        return {};
     }
     return results[bestIdx];
 }
@@ -655,14 +720,15 @@ void AIBroFeature::downloadCandidate(
         return;
     }
 
-    m_playedVideoIds.insert(candidate.id);
-    // Store both exact and normalized titles for dedup
-    QString songKey = QStringLiteral("%1|%2")
-                              .arg(candidate.title.toLower().trimmed(),
-                                      candidate.uploader.toLower().trimmed());
-    m_playedSongKeys.insert(songKey);
-    m_playedSongKeys.insert(normalizeSongTitle(candidate.title));
+    // Rate limiting: don't search too frequently
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    if (now - m_lastSearchTimeMs < kMinSearchIntervalMs) {
+        kLogger.info() << "AI Bro: rate limited, skipping search";
+        return;
+    }
+    m_lastSearchTimeMs = now;
 
+    // Don't mark as played yet — only mark on successful download
     kLogger.info() << "AI Bro: downloading [" << candidate.id << "] "
                    << candidate.title << " by " << candidate.uploader
                    << " (session:" << m_playedVideoIds.size() << " played)";
@@ -766,6 +832,16 @@ void AIBroFeature::slotSearchResultsReady(
     }
 
     auto candidate = pickBestCandidate(results);
+    if (candidate.id.isEmpty()) {
+        kLogger.warning() << "AI Bro: no suitable candidate, will retry later";
+        m_downloading = false;
+        QTimer::singleShot(kRetryDelayMs, this, [this]() {
+            if (isActive()) {
+                findNextSong();
+            }
+        });
+        return;
+    }
     double score = scoreCandidate(candidate);
     kLogger.info() << "AI Bro: selected [" << candidate.id << "]"
                    << candidate.title << "score:" << score;
@@ -778,13 +854,15 @@ void AIBroFeature::slotSearchResultsReady(
 
 void AIBroFeature::slotDownloadFinished(
         const QString& videoId, const QString& localPath) {
-    // Accept download callbacks if we initiated the download, even if
-    // user toggled the button during download.
     if (!m_downloading) {
         return;
     }
     Q_UNUSED(videoId);
     kLogger.info() << "AI Bro: download ready:" << localPath;
+
+    // Mark as played ONLY on successful download
+    m_playedVideoIds.insert(videoId);
+
     loadAndBlend(localPath);
 }
 

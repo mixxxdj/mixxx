@@ -136,6 +136,9 @@ class AIBroFeature : public QObject {
     /// AI Bro blends from this deck to the other deck, then swaps.
     int m_iCurrentDeck;
 
+    /// Timestamp of last search (for rate limiting)
+    qint64 m_lastSearchTimeMs;
+
     QString m_currentTrackTitle;
     QString m_currentTrackArtist;
 
