@@ -574,8 +574,10 @@ TEST_F(EngineBufferTest, RateTempTest) {
 // ---- disable_preroll tests ----
 
 TEST_F(EngineBufferTest, DisablePreRoll_SeekClampedAtStart) {
-    // When disable_preroll is on, seeking to a negative position must clamp to 0.
+    // With limit=0 (hard clamp), any negative seek must land at exactly 0
+    // regardless of BPM or sample rate.
     ControlObject::set(ConfigKey(m_sGroup1, "disable_preroll"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "preroll_limit_beats"), 0.0);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos(-500), EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
@@ -593,9 +595,10 @@ TEST_F(EngineBufferTest, DisablePreRoll_SeekAllowedWhenOff) {
 }
 
 TEST_F(EngineBufferTest, DisablePreRoll_ReverseHoldsAtStart) {
-    // When disable_preroll is on, reverse-scratching from position 0 must hold
-    // the deck at the start rather than entering negative (pre-roll) territory.
+    // With limit=0 (hard clamp), reverse-scratching from position 0 must hold
+    // the deck at exactly the start.
     ControlObject::set(ConfigKey(m_sGroup1, "disable_preroll"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "preroll_limit_beats"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2_enable"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.0);
     ProcessBuffer();

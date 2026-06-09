@@ -86,6 +86,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_slipModeState(SlipModeState::Disabled),
           m_quantize(ControlFlag::AllowMissingOrInvalid),
           m_disablePreRoll(ControlFlag::AllowMissingOrInvalid),
+          m_preRollLimitBeats(ControlFlag::AllowMissingOrInvalid),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -200,6 +201,10 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pDisablePreRoll = new ControlPushButton(ConfigKey(group, "disable_preroll"));
     m_pDisablePreRoll->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_disablePreRoll = PollingControlProxy(ConfigKey(group, "disable_preroll"));
+
+    m_pPreRollLimitBeats = new ControlObject(ConfigKey(group, "preroll_limit_beats"));
+    m_pPreRollLimitBeats->set(4.0);
+    m_preRollLimitBeats = PollingControlProxy(ConfigKey(group, "preroll_limit_beats"));
 
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(group, pConfig);
@@ -330,6 +335,7 @@ EngineBuffer::~EngineBuffer() {
 
     delete m_pSlipButton;
     delete m_pDisablePreRoll;
+    delete m_pPreRollLimitBeats;
     delete m_pRepeat;
     delete m_pSampleRate;
 
@@ -489,7 +495,7 @@ void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     }
 
     if (m_disablePreRoll.toBool()) {
-        position = std::max(position, mixxx::audio::kStartFramePos);
+        position = std::max(position, preRollClampPos());
     }
 
     m_playPos = position;
@@ -1151,7 +1157,7 @@ void EngineBuffer::processTrackLocked(
         }
 
         if (m_disablePreRoll.toBool()) {
-            m_playPos = std::max(m_playPos, mixxx::audio::kStartFramePos);
+            m_playPos = std::max(m_playPos, preRollClampPos());
         }
         // Note: The last buffer of a track is padded with silence.
         // This silence is played together with the last samples in the last
@@ -1634,6 +1640,20 @@ bool EngineBuffer::isTrackLoaded() const {
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
     return m_pCurrentTrack;
+}
+
+mixxx::audio::FramePos EngineBuffer::preRollClampPos() const {
+    const double beats = m_preRollLimitBeats.get();
+    const double sampleRate = m_pSampleRate->get();
+    if (beats > 0 && sampleRate > 0) {
+        const double bpm = m_pBpmControl ? m_pBpmControl->getBpm().valueOr(0.0) : 0.0;
+        if (bpm > 0) {
+            return mixxx::audio::FramePos(-(beats * 60.0 / bpm) * sampleRate);
+        }
+        // No BPM available — fall back to 1 second of pre-roll.
+        return mixxx::audio::FramePos(-sampleRate);
+    }
+    return mixxx::audio::kStartFramePos;
 }
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {

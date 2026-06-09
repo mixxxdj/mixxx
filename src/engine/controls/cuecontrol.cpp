@@ -701,12 +701,12 @@ void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
     DEBUG_ASSERT(seekOnLoadPosition.isValid());
     seekExact(seekOnLoadPosition);
     // When pre-roll is disabled, EngineBuffer clamps the resulting position to
-    // track start. Record the effective position so trackAnalyzed() can correctly
-    // detect whether the user has manually repositioned the deck.
+    // the pre-roll limit. Record the effective position so trackAnalyzed() can
+    // correctly detect whether the user has manually repositioned the deck.
+    const auto clampPos = getEngineBuffer()->preRollClampPos();
     const auto effectivePosition =
-            (m_disablePreRoll.toBool() &&
-                    seekOnLoadPosition < mixxx::audio::kStartFramePos)
-            ? mixxx::audio::kStartFramePos
+            (m_disablePreRoll.toBool() && seekOnLoadPosition < clampPos)
+            ? clampPos
             : seekOnLoadPosition;
     m_usedSeekOnLoadPosition.setValue(effectivePosition);
 }
@@ -2374,12 +2374,13 @@ CueControl::TrackAt CueControl::getTrackAt() const {
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     m_pCuePoint->get());
     if (mainCuePosition.isValid()) {
-        // When pre-roll is disabled, EngineBuffer clamps playback to track
-        // start. A cue stored in negative pre-roll space is effectively at
-        // position 0, so clamp our comparison target to match.
-        if (m_disablePreRoll.toBool() &&
-                mainCuePosition < mixxx::audio::kStartFramePos) {
-            mainCuePosition = mixxx::audio::kStartFramePos;
+        // When pre-roll is disabled, a cue stored beyond the pre-roll limit is
+        // effectively at the limit, so clamp our comparison target to match.
+        if (m_disablePreRoll.toBool()) {
+            const auto clampPos = getEngineBuffer()->preRollClampPos();
+            if (mainCuePosition < clampPos) {
+                mainCuePosition = clampPos;
+            }
         }
         if (fabs(info.currentPosition - mainCuePosition) < 0.5) {
             return TrackAt::Cue;

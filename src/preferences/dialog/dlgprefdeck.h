@@ -54,6 +54,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex);
     void slotCloneDeckOnLoadDoubleTapCheckbox(bool);
     void slotDisablePreRollCheckbox(bool);
+    void slotPreRollLimitBeatsSpinBox(int);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 
@@ -86,6 +87,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     QList<ControlProxy*> m_cueControls;
     QList<ControlProxy*> m_rateControls;
     QList<ControlProxy*> m_disablePreRollControls;
+    QList<ControlProxy*> m_preRollLimitBeatsControls;
     QList<ControlProxy*> m_rateDirectionControls;
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;
@@ -101,6 +103,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_bSetIntroStartAtMainCue;
     bool m_bCloneDeckOnLoadDoubleTap;
     bool m_bDisablePreRoll;
+    int m_iPreRollLimitBeats;
 
     int m_iRateRangePercent;
     bool m_bRateDownIncreasesSpeed;
