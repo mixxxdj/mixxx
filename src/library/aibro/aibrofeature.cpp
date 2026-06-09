@@ -217,12 +217,7 @@ static QString normalizeSongTitle(const QString& title) {
             QRegularExpression::CaseInsensitiveOption);
     t.remove(dashRe);
     // Remove common keywords
-    static const QStringList keywords = {
-        "remix", "edit", "mix", "version", "cover", "live",
-        "acoustic", "instrumental", "karaoke", "lyrics", "lyric",
-        "official", "audio", "video", "hd", "4k", "extended",
-        "club", "radio", "original"
-    };
+    static const QStringList keywords = {"remix", "edit", "mix", "version", "cover", "live", "acoustic", "instrumental", "karaoke", "lyrics", "lyric", "official", "audio", "video", "hd", "4k", "extended", "club", "radio", "original"};
     for (const QString& kw : keywords) {
         t.remove(kw);
     }
