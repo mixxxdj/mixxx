@@ -517,6 +517,22 @@ double AIBroFeature::scoreCandidate(
         }
     }
 
+    // Hard filter: same song as currently playing (don't play the same track)
+    {
+        const QString candidateLower = candidate.title.toLower().trimmed();
+        const QString currentLower = m_currentTrackTitle.toLower().trimmed();
+        if (candidateLower == currentLower) {
+            return -1.0;
+        }
+        // Also filter if the candidate title contains the current title
+        // (avoids "Song X" vs "Song X (Official Video)" duplicates)
+        if (candidateLower.contains(currentLower) || currentLower.contains(candidateLower)) {
+            if (candidateLower.length() < currentLower.length() + 15) {
+                return -1.0;
+            }
+        }
+    }
+
     // Hard filter: live streams
     if (candidate.isLive) {
         return -1.0;
@@ -769,17 +785,21 @@ void AIBroFeature::findNextSong() {
         return;
     }
 
-    // Build a SINGLE, well-crafted search query for DJ mixing
-    // Focus on finding remixes/extended versions of the current artist
+    // Build a SINGLE search query focused on finding content by the same artist.
+    // YouTube's search is reliable for artist names but unreliable for
+    // "similar song" queries. So we search for the artist and let YouTube
+    // return its best results (popular songs, official videos, etc.).
     QString query;
     const QString& artist = m_currentTrackArtist;
     const QString& title = m_currentTrackTitle;
 
     if (!artist.isEmpty()) {
-        // Best query: artist name + "remix extended" for DJ-friendly versions
-        query = QStringLiteral("%1 remix extended").arg(artist);
+        // Search for the artist name — YouTube returns popular songs by them
+        // This is much more reliable than "similar to X" queries
+        query = artist;
     } else {
-        query = QStringLiteral("%1 remix").arg(title);
+        // No artist info — search for the title
+        query = title;
     }
 
     kLogger.info() << "AI Bro: searching for:" << query;
