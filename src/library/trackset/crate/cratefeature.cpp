@@ -108,6 +108,12 @@ void CrateFeature::initActions() {
             this,
             &CrateFeature::slotAnalyzeCrate);
 
+    m_pMarkTracksPlayedAction = make_parented<QAction>(tr("Mark all tracks played"), this);
+    connect(m_pMarkTracksPlayedAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::slotMarkTracksPlayed);
+
     m_pImportPlaylistAction = make_parented<QAction>(tr("Import Crate"), this);
     connect(m_pImportPlaylistAction.get(),
             &QAction::triggered,
@@ -405,6 +411,7 @@ void CrateFeature::onRightClickChild(
     menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction.get());
+    menu.addAction(m_pMarkTracksPlayedAction.get());
     menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction.get());
     menu.addAction(m_pExportPlaylistAction.get());
@@ -766,6 +773,32 @@ void CrateFeature::slotAnalyzeCrate() {
                 }
             }
             emit analyzeTracks(tracks);
+        }
+    }
+}
+
+void CrateFeature::slotMarkTracksPlayed() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+
+    CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+    if (!crateId.isValid()) {
+        return;
+    }
+
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
+    pCrateTableModel->selectCrate(crateId);
+    pCrateTableModel->select();
+    int rows = pCrateTableModel->rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pCrateTableModel->index(i, 0);
+        if (index.isValid()) {
+            TrackPointer pTrack = pCrateTableModel->getTrack(index);
+            if (pTrack) {
+                pTrack->updatePlayedStatusKeepPlayCount(true);
+            }
         }
     }
 }
