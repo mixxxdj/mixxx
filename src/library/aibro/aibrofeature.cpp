@@ -882,6 +882,16 @@ void AIBroFeature::findNextSong() {
         kLogger.info() << "AI Bro: fetching iTunes candidates for artist:" << artist;
         m_downloading = true;
         fetchITunesCandidates(artist);
+        // Fallback: if iTunes doesn't respond within 8s, search YouTube directly
+        QTimer::singleShot(8000, this, [this]() {
+            if (m_downloading && isActive()) {
+                kLogger.info() << "AI Bro: iTunes timeout, falling back to YouTube";
+                m_itunesSongTitles.clear();
+                if (m_pYouTubeFeature) {
+                    m_pYouTubeFeature->searchAndActivate(m_currentTrackArtist);
+                }
+            }
+        });
     } else {
         // No artist info — fall back to direct YouTube search
         kLogger.info() << "AI Bro: no artist info, searching YouTube directly";
