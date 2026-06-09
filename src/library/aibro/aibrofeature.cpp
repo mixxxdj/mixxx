@@ -518,7 +518,8 @@ double AIBroFeature::scoreCandidate(
     }
 
     // Hard filter: same song as currently playing (don't play the same track)
-    {
+    // Skip in trending mode — no current track to compare against.
+    if (!trendingMode) {
         const QString candidateLower = candidate.title.toLower().trimmed();
         const QString currentLower = m_currentTrackTitle.toLower().trimmed();
         if (candidateLower == currentLower) {
@@ -562,18 +563,21 @@ double AIBroFeature::scoreCandidate(
         }
     }
 
-    // Hard filter: current track title is garbage — don't search at all
-    {
+    // Hard filter: current track title is garbage — skip similarity scoring
+    // but still allow trending results through. When current track is empty
+    // (trending mode), we can't compare against it, so skip this check entirely.
+    if (!m_currentTrackTitle.isEmpty() && m_currentTrackTitle.length() >= 3) {
         const QString currentLower = m_currentTrackTitle.toLower();
         for (const QString& pattern : garbagePatterns()) {
             if (currentLower.contains(pattern)) {
                 return -1.0;
             }
         }
-        if (m_currentTrackTitle.length() < 3) {
-            return -1.0;
-        }
     }
+    // If current track is empty, we're in trending mode — skip all
+    // current-track-dependent hard filters below this point.
+    const bool trendingMode = m_currentTrackTitle.isEmpty() ||
+            m_currentTrackTitle.length() < 3;
 
     double score = 0.0;
     const QString currentT = m_currentTrackTitle.toLower().trimmed();
@@ -701,6 +705,13 @@ double AIBroFeature::scoreCandidate(
         // Penalize based on difference: 0% diff = full score, >15% = 0
         double bpmScore = 1.0 - (bestDiff / (kBPMToleranceMax / 100.0));
         score += kWeightBPMProximity * qBound(0.0, bpmScore, 1.0);
+    }
+
+    // In trending mode (no current track), all current-track-dependent scores
+    // are zero. Give a base score so trending results can still be selected.
+    // The duration, freshness, remix, and genre bonuses still apply above.
+    if (trendingMode && score < kMinScoreThreshold) {
+        score = kMinScoreThreshold + 0.01;
     }
 
     return qBound(0.0, score, 1.0);
@@ -834,7 +845,6 @@ void AIBroFeature::slotProgressTick() {
         if (pos >= kBlendStartMin && !m_downloading) {
             kLogger.info() << "AI Bro: blend point at" << pos << "on deck" << (m_iCurrentDeck + 1);
             updateCurrentTrackInfo();
-            m_downloading = true;
             findNextSong();
         }
     }
