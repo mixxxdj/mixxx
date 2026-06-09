@@ -705,7 +705,9 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
 
     // Reject if best score is below threshold — no good candidates
     if (bestIdx < 0 || bestScore < kMinScoreThreshold) {
-        kLogger.warning() << "AI Bro: no suitable candidate found (best score:" << bestScore << "threshold:" << kMinScoreThreshold << ")";
+        kLogger.warning() << "AI Bro: no suitable candidate found (best score:"
+                          << bestScore << "threshold:" << kMinScoreThreshold
+                          << ")";
         return {};
     }
     return results[bestIdx];
