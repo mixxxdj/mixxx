@@ -794,12 +794,12 @@ void AIBroFeature::findNextSong() {
     const QString& title = m_currentTrackTitle;
 
     if (!artist.isEmpty()) {
-        // Search for the artist name — YouTube returns popular songs by them
-        // This is much more reliable than "similar to X" queries
-        query = artist;
+        // Search for artist + "official audio" to get high-quality music results
+        // This filters out memes, anime, reaction videos, etc.
+        // YouTube ranks official music content highly for these queries
+        query = QStringLiteral("%1 official audio").arg(artist);
     } else {
-        // No artist info — search for the title
-        query = title;
+        query = QStringLiteral("%1 official audio").arg(title);
     }
 
     kLogger.info() << "AI Bro: searching for:" << query;
