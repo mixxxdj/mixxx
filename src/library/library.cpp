@@ -8,8 +8,8 @@
 
 #include "control/controlobject.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/analysis/analysisfeature.h"
 #include "library/aibro/aibrofeature.h"
+#include "library/analysis/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
