@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QMap>
+#include <QNetworkAccessManager>
 #include <QSet>
 #include <QTimer>
 
@@ -108,6 +109,9 @@ class AIBroFeature : public QObject {
     // --- Current track tracking ---
     void updateCurrentTrackInfo();
 
+    // --- iTunes API candidate search ---
+    void fetchITunesCandidates(const QString& artist);
+
     // --- Vocal sync helpers ---
     double estimateVocalStartPosition(int deckIndex) const;
 
@@ -138,6 +142,13 @@ class AIBroFeature : public QObject {
 
     /// Timestamp of last search (for rate limiting)
     qint64 m_lastSearchTimeMs;
+
+    /// Network manager for iTunes API requests
+    QNetworkAccessManager* m_pNetworkManager;
+
+    /// Candidate songs from iTunes API (used to find good YouTube queries)
+    QStringList m_itunesSongTitles;
+    int m_itunesSongIndex;
 
     QString m_currentTrackTitle;
     QString m_currentTrackArtist;

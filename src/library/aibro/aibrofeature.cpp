@@ -1,9 +1,17 @@
 #include "library/aibro/aibrofeature.h"
 
 #include <QDateTime>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QRegularExpression>
 #include <QSet>
 #include <QTimer>
+#include <QUrl>
+#include <QUrlQuery>
 #include <cmath>
 #include <utility>
 
@@ -344,6 +352,8 @@ AIBroFeature::AIBroFeature(Library* pLibrary,
           m_blendToDeck(-1),
           m_iCurrentDeck(0),
           m_lastSearchTimeMs(0),
+          m_pNetworkManager(new QNetworkAccessManager(this)),
+          m_itunesSongIndex(0),
           m_manualTrackPath(),
           m_manualTrackDeck(-1),
           m_hasManualTrack(false),
@@ -751,6 +761,80 @@ void AIBroFeature::downloadCandidate(
 }
 
 // ---------------------------------------------------------------------------
+// iTunes API — free, no auth required
+// ---------------------------------------------------------------------------
+
+void AIBroFeature::fetchITunesCandidates(const QString& artist) {
+    if (!m_pNetworkManager) {
+        return;
+    }
+    QString term = artist.trimmed();
+    if (term.isEmpty()) {
+        term = m_currentTrackTitle.trimmed();
+    }
+    if (term.isEmpty()) {
+        return;
+    }
+    QUrl url("https://itunes.apple.com/search");
+    QUrlQuery query;
+    query.addQueryItem("term", term);
+    query.addQueryItem("entity", "song");
+    query.addQueryItem("limit", "15");
+    query.addQueryItem("media", "music");
+    url.setQuery(query);
+    kLogger.info() << "API: fetching iTunes candidates for:" << term;
+    QNetworkReply* reply = m_pNetworkManager->get(QNetworkRequest(url));
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        reply->deleteLater();
+        if (reply->error() != QNetworkReply::NoError) {
+            kLogger.warning() << "API: iTunes request failed:"
+                              << reply->errorString();
+            return;
+        }
+        QJsonDocument doc =
+                QJsonDocument::fromJson(reply->readAll());
+        if (!doc.isObject()) {
+            return;
+        }
+        QJsonObject obj = doc.object();
+        int count = obj.value("resultCount").toInt(0);
+        if (count == 0) {
+            kLogger.info() << "API: iTunes returned 0 results";
+            return;
+        }
+        m_itunesSongTitles.clear();
+        m_itunesSongIndex = 0;
+        QJsonArray results = obj.value("results").toArray();
+        for (const QJsonValue& val : results) {
+            QJsonObject track = val.toObject();
+            QString trackName =
+                    track.value("trackName").toString();
+            if (!trackName.isEmpty()) {
+                m_itunesSongTitles << trackName;
+            }
+        }
+        kLogger.info() << "API: iTunes returned" << m_itunesSongTitles.size()
+                       << "song titles";
+        if (!m_itunesSongTitles.isEmpty() && m_downloading) {
+            // Pick a random song from the list (skip first few to avoid
+            // the exact same song that's currently playing)
+            int idx = 2 + (qrand() % qMax(1, m_itunesSongTitles.size() - 2));
+            if (idx >= m_itunesSongTitles.size()) {
+                idx = m_itunesSongTitles.size() - 1;
+            }
+            QString songTitle = m_itunesSongTitles.at(idx);
+            kLogger.info()
+                    << "AI Bro: iTunes selected song:" << songTitle;
+            // Now search YouTube for this specific song title
+            if (m_pYouTubeFeature) {
+                m_pYouTubeFeature->searchAndActivate(
+                        songTitle);
+            }
+        }
+    });
+}
+
+// ---------------------------------------------------------------------------
 // Song finding orchestration
 // ---------------------------------------------------------------------------
 
@@ -785,28 +869,27 @@ void AIBroFeature::findNextSong() {
         return;
     }
 
-    // Build a SINGLE search query focused on finding content by the same artist.
-    // YouTube's search is reliable for artist names but unreliable for
-    // "similar song" queries. So we search for the artist and let YouTube
-    // return its best results (popular songs, official videos, etc.).
-    QString query;
+    // Strategy: Use iTunes API to find candidate songs by the artist,
+    // then search YouTube for a specific song title.
+    // This is much more reliable than searching YouTube for "similar songs"
+    // because YouTube's search is good at finding specific songs but bad
+    // at understanding "similarity".
     const QString& artist = m_currentTrackArtist;
     const QString& title = m_currentTrackTitle;
 
     if (!artist.isEmpty()) {
-        // Search for artist + "official audio" to get high-quality music results
-        // This filters out memes, anime, reaction videos, etc.
-        // YouTube ranks official music content highly for these queries
-        query = QStringLiteral("%1 official audio").arg(artist);
+        // Fetch song list from iTunes API (free, no auth required)
+        kLogger.info() << "AI Bro: fetching iTunes candidates for artist:" << artist;
+        m_downloading = true;
+        fetchITunesCandidates(artist);
     } else {
-        query = QStringLiteral("%1 official audio").arg(title);
-    }
-
-    kLogger.info() << "AI Bro: searching for:" << query;
-    m_searchTrackSnapshot = snapshotTrackLocations();
-    m_downloading = true;
-    if (m_pYouTubeFeature) {
-        m_pYouTubeFeature->searchAndActivate(query);
+        // No artist info — fall back to direct YouTube search
+        kLogger.info() << "AI Bro: no artist info, searching YouTube directly";
+        m_downloading = true;
+        m_searchTrackSnapshot = snapshotTrackLocations();
+        if (m_pYouTubeFeature) {
+            m_pYouTubeFeature->searchAndActivate(title);
+        }
     }
 }
 
