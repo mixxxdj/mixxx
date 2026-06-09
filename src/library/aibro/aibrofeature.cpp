@@ -1344,3 +1344,4 @@ double AIBroFeature::getCandidateBPM(
     return 0.0;
 }
 #include "moc_aibrofeature.cpp"
+
