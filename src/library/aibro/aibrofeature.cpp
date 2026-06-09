@@ -1116,11 +1116,12 @@ void AIBroFeature::stopBlend() {
     // Swap the current deck: the target deck becomes the new source.
     // Next blend will go from this deck back to the other deck.
     m_iCurrentDeck = m_blendToDeck;
-    QTimer::singleShot(kBlendToSearchDelayMs, this, [this]() {
-        if (isActive()) {
-            findNextSong();
-        }
-    });
+    kLogger.info() << "AI Bro: swapped current deck to" << (m_iCurrentDeck + 1);
+
+    // Don't call findNextSong() here — let slotProgressTick() handle it
+    // when the new current track reaches the blend point (50%).
+    // This ensures proper timing: we wait for the current track to play
+    // before searching for the next one.
 }
 
 // ---------------------------------------------------------------------------
