@@ -45,7 +45,6 @@ constexpr int kBlendSteps = 100;
 
 // Delays
 constexpr int kLoadToBlendDelayMs = 1000;
-constexpr int kBlendToSearchDelayMs = 2000;
 constexpr int kRetryDelayMs = 3000;
 
 // Ideal duration (seconds) — remixes can be longer
@@ -60,7 +59,18 @@ constexpr int kMinSearchIntervalMs = 5000; // minimum 5s between searches
 
 // Garbage title patterns — reject results matching these
 static const QStringList& garbagePatterns() {
-    static const QStringList patterns = {"😂", "🤣", "💀", "🔥", "😭", "🥺", "💯", "👏", "🙏", "💕", "credit goes to", "not my", "fan edit", "fan made", "meme", "reaction", "react to", "vs battle", "tier list", "ranking", "top 10", "top 20", "top 50", "top 100", "compilation", "playlist", "full album", "album stream", "anime", "amv", "fancam", "lyrics video", "lyric video", "behind the scenes", "making of", "interview", "live performance", "unplugged session"};
+    static const QStringList patterns = []() {
+        QStringList list;
+        list << "😂" << "🤣" << "💀" << "🔥" << "😭" << "🥺" << "💯" << "👏" << "🙏" << "💕";
+        list << "credit goes to" << "not my" << "fan edit" << "fan made" << "meme";
+        list << "reaction" << "react to" << "vs battle" << "tier list" << "ranking";
+        list << "top 10" << "top 20" << "top 50" << "top 100" << "compilation";
+        list << "playlist" << "full album" << "album stream" << "anime" << "amv";
+        list << "fancam" << "lyrics video" << "lyric video";
+        list << "behind the scenes" << "making of" << "interview";
+        list << "live performance" << "unplugged session";
+        return list;
+    }();
     return patterns;
 }
 
