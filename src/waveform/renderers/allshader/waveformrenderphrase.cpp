@@ -3,6 +3,7 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/geometrynode.h"
 #include "rendergraph/material/unicolormaterial.h"
+#include "rendergraph/node.h"
 #include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "track/phrases.h"
 #include "track/track.h"
@@ -17,6 +18,7 @@ WaveformRenderPhrase::WaveformRenderPhrase(
         ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRendererAbstract(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+    setUsePreprocess(true);
 }
 
 void WaveformRenderPhrase::draw(QPainter* painter, QPaintEvent* event) {

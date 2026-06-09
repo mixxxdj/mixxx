@@ -5,6 +5,7 @@
 
 #include "track/beats.h"
 #include "track/track.h"
+#include "util/logger.h"
 
 namespace {
 

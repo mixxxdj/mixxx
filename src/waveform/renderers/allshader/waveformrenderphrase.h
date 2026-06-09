@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rendergraph/geometrynode.h"
+#include "rendergraph/node.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 
@@ -10,7 +10,7 @@ class WaveformRenderPhrase;
 
 class allshader::WaveformRenderPhrase final
         : public ::WaveformRendererAbstract,
-          public rendergraph::GeometryNode {
+          public rendergraph::Node {
   public:
     explicit WaveformRenderPhrase(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
