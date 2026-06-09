@@ -431,7 +431,9 @@ void AIBroFeature::slotToggle(bool newValue) {
         m_pProgressTimer->stop();
         m_pBlendTimer->stop();
         m_blending = false;
-        m_downloading = false;
+        // Don't clear m_downloading here - if a download is in progress,
+        // let it complete and slotDownloadFinished will handle it.
+        // Just clear the played IDs so next activation starts fresh.
         m_playedVideoIds.clear();
         m_playedSongKeys.clear();
     }
@@ -906,23 +908,25 @@ void AIBroFeature::slotSearchResultsReady(
 
 void AIBroFeature::slotDownloadFinished(
         const QString& videoId, const QString& localPath) {
-    if (!m_downloading) {
-        return;
-    }
     Q_UNUSED(videoId);
     kLogger.info() << "AI Bro: download ready:" << localPath;
 
     // Mark as played ONLY on successful download
     m_playedVideoIds.insert(videoId);
+    m_playedSongKeys.insert(normalizeSongTitle(videoId));
+
+    m_downloading = false;
+
+    if (!isActive()) {
+        kLogger.info() << "AI Bro: download finished but AI Bro deactivated, ignoring";
+        return;
+    }
 
     loadAndBlend(localPath);
 }
 
 void AIBroFeature::slotDownloadFailed(
         const QString& videoId, const QString& error) {
-    if (!m_downloading) {
-        return;
-    }
     Q_UNUSED(videoId);
     kLogger.warning() << "AI Bro: download failed:" << error;
     m_downloading = false;
