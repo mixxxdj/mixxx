@@ -293,12 +293,7 @@ void AIBroFeature::init() {
                     &mixxx::YouTubeService::searchFailed,
                     this,
                     &AIBroFeature::slotSearchFailed);
-            kLogger.info()
-                    << "AI Bro: signal connections:"
-                    << "downloadFinished=" << ok1
-                    << "downloadFailed=" << ok2
-                    << "searchResultsReady=" << ok3
-                    << "searchFailed=" << ok4;
+            kLogger.info() << "AI Bro: signal connections: downloadFinished=" << ok1 << " downloadFailed=" << ok2 << " searchResultsReady=" << ok3 << " searchFailed=" << ok4;
         } else {
             kLogger.warning() << "AI Bro: YouTubeService is null, cannot connect signals!";
         }
@@ -584,9 +579,7 @@ void AIBroFeature::downloadCandidate(
                                       candidate.uploader.toLower().trimmed());
     m_playedSongKeys.insert(songKey);
 
-    kLogger.info() << "AI Bro: downloading [" << candidate.id << "]"
-                   << candidate.title << "by" << candidate.uploader
-                   << "(session:" << m_playedVideoIds.size() << "played)";
+    kLogger.info() << "AI Bro: downloading [" << candidate.id << "] " << candidate.title << " by " << candidate.uploader << " (session:" << m_playedVideoIds.size() << " played)";
     m_pYouTubeFeature->requestDownload(candidate.id);
 }
 
@@ -640,46 +633,18 @@ void AIBroFeature::findNextSong() {
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::slotProgressTick() {
-    // Performance guard: minimal work per tick (1Hz)
-    // All operations are O(1) — no loops over large collections
-    if (!isActive() || m_blending) {
+    if (!isActive() || m_blending || !m_pPlayerManager) {
         return;
     }
-    if (!m_pPlayerManager) {
-        return;
-    }
-
-    int playingCount = countPlayingDecks();
-    kLogger.info() << "AI Bro: progressTick, playing=" << playingCount
-                   << " downloading=" << m_downloading;
-
-    // Nothing playing? Fetch trending
-    if (playingCount == 0 && !m_downloading) {
-        kLogger.info() << "AI Bro: idle, fetching trending";
-        m_downloading = true;
-        if (m_pYouTubeFeature) {
-            QString region = m_pYouTubeFeature->resolvedTrendingRegion();
-            m_pYouTubeFeature->searchAndActivate(
-                    QStringLiteral("trending music %1").arg(region));
-        }
-        return;
-    }
-
-    // Check each deck for blend opportunity
-    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i)) {
-            continue;
-        }
-
-        double pos = getDeckPlayPosition(i);
+    // Only check deck 1 (index 0) for blend point.
+    // When the track reaches 50%, find the next song to blend.
+    if (isDeckPlaying(0)) {
+        double pos = getDeckPlayPosition(0);
         if (pos >= kBlendStartMin && !m_downloading) {
-            kLogger.info() << "AI Bro: blend point at" << pos
-                           << "on deck" << (i + 1);
-            // Update track info before searching for similar songs
+            kLogger.info() << "AI Bro: blend point at" << pos << "on deck 1";
             updateCurrentTrackInfo();
             m_downloading = true;
             findNextSong();
-            break;
         }
     }
 }
@@ -783,17 +748,9 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
         return;
     }
 
-    // Find the playing deck (source)
-    int fromDeck = -1;
-    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (i == toDeck) {
-            continue;
-        }
-        if (isDeckPlaying(i)) {
-            fromDeck = i;
-            break;
-        }
-    }
+    // Source is always deck 1 (index 0) — the user's deck
+    constexpr int kSourceDeck = 0;
+    int fromDeck = isDeckPlaying(kSourceDeck) ? kSourceDeck : -1;
 
     if (fromDeck < 0) {
         // No source deck — just load and play
@@ -1067,13 +1024,14 @@ void AIBroFeature::updateCurrentTrackInfo() {
 }
 
 int AIBroFeature::findAvailableDeck() const {
+    // Only use deck 2 (index 1) as the target deck for blending.
+    // Deck 1 (index 0) is the source deck that the user controls.
     if (!m_pPlayerManager) {
         return -1;
     }
-    for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i)) {
-            return i;
-        }
+    constexpr int kTargetDeck = 1;
+    if (!isDeckPlaying(kTargetDeck)) {
+        return kTargetDeck;
     }
     return -1;
 }
