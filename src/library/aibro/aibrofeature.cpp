@@ -57,21 +57,10 @@ constexpr double kMinScoreThreshold = 0.15;
 
 // Search rate limiting
 constexpr int kMinSearchIntervalMs = 5000; // minimum 5s between searches
-constexpr int kMaxConcurrentDownloads = 1;
 
 // Garbage title patterns — reject results matching these
 static const QStringList& garbagePatterns() {
-    static const QStringList patterns = {
-        "😂", "🤣", "💀", "🔥", "😭", "🥺", "💯", "👏", "🙏", "💕",
-        "credit goes to", "not my", "fan edit", "fan made", "meme",
-        "reaction", "react to", "vs battle", "tier list", "ranking",
-        "top 10", "top 20", "top 50", "top 100", "compilation",
-        "mix #", "playlist", "full album", "album stream",
-        "anime", "amv", "edit #", "fancam", "mv reaction",
-        "lyrics video", "lyric video", "official lyrics",
-        "behind the scenes", "making of", "interview",
-        "live performance", "live at", "unplugged session"
-    };
+    static const QStringList patterns = {"😂", "🤣", "💀", "🔥", "😭", "🥺", "💯", "👏", "🙏", "💕", "credit goes to", "not my", "fan edit", "fan made", "meme", "reaction", "react to", "vs battle", "tier list", "ranking", "top 10", "top 20", "top 50", "top 100", "compilation", "playlist", "full album", "album stream", "anime", "amv", "fancam", "lyrics video", "lyric video", "behind the scenes", "making of", "interview", "live performance", "unplugged session"};
     return patterns;
 }
 
@@ -706,9 +695,7 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
 
     // Reject if best score is below threshold — no good candidates
     if (bestIdx < 0 || bestScore < kMinScoreThreshold) {
-        kLogger.warning() << "AI Bro: no suitable candidate found (best score:"
-                           << bestScore << "threshold:" << kMinScoreThreshold
-                           << ")";
+        kLogger.warning() << "AI Bro: no suitable candidate found (best score:" << bestScore << "threshold:" << kMinScoreThreshold << ")";
         return {};
     }
     return results[bestIdx];
