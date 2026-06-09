@@ -740,43 +740,54 @@ void AIBroFeature::downloadCandidate(
 // ---------------------------------------------------------------------------
 
 void AIBroFeature::findNextSong() {
-    kLogger.info() << "AI Bro: findNextSong called, active=" << isActive()
-                   << " downloading=" << m_downloading;
     if (!isActive() || m_downloading) {
-        kLogger.info() << "AI Bro: findNextSong skipped (active=" << isActive()
-                       << " downloading=" << m_downloading << ")";
         return;
     }
 
-    // Always refresh track info from the playing deck first
+    // Always refresh track info from the current active deck
     updateCurrentTrackInfo();
 
-    if (m_currentTrackTitle.isEmpty()) {
-        kLogger.info() << "AI Bro: no track context, fetching trending";
+    // Validate current track — don't search if title is garbage
+    const QString currentLower = m_currentTrackTitle.toLower();
+    bool currentIsGarbage = m_currentTrackTitle.isEmpty() ||
+            m_currentTrackTitle.length() < 3;
+    if (!currentIsGarbage) {
+        for (const QString& pattern : garbagePatterns()) {
+            if (currentLower.contains(pattern)) {
+                currentIsGarbage = true;
+                break;
+            }
+        }
+    }
+
+    if (currentIsGarbage) {
+        kLogger.info() << "AI Bro: current track empty or garbage, fetching trending";
         m_downloading = true;
         if (m_pYouTubeFeature) {
-            // Search for popular Greek music instead of generic trending
             m_pYouTubeFeature->searchAndActivate(
                     QStringLiteral("popular greek music 2024 2025"));
         }
         return;
     }
 
-    QStringList queries = buildDiscoveryQueries();
-    if (queries.isEmpty()) {
-        kLogger.warning() << "AI Bro: no discovery queries built";
-        return;
+    // Build a SINGLE, well-crafted search query for DJ mixing
+    // Focus on finding remixes/extended versions of the current artist
+    QString query;
+    const QString& artist = m_currentTrackArtist;
+    const QString& title = m_currentTrackTitle;
+
+    if (!artist.isEmpty()) {
+        // Best query: artist name + "remix extended" for DJ-friendly versions
+        query = QStringLiteral("%1 remix extended").arg(artist);
+    } else {
+        query = QStringLiteral("%1 remix").arg(title);
     }
 
-    kLogger.info() << "AI Bro: discovering with" << queries.size()
-                   << "queries";
-    // Snapshot current track locations so we can detect manual loads
+    kLogger.info() << "AI Bro: searching for:" << query;
     m_searchTrackSnapshot = snapshotTrackLocations();
     m_downloading = true;
-    for (const QString& q : std::as_const(queries)) {
-        if (m_pYouTubeFeature) {
-            m_pYouTubeFeature->searchAndActivate(q);
-        }
+    if (m_pYouTubeFeature) {
+        m_pYouTubeFeature->searchAndActivate(query);
     }
 }
 
