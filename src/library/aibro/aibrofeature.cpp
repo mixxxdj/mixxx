@@ -25,8 +25,8 @@ const mixxx::Logger kLogger("AIBroFeature");
 constexpr int kProgressIntervalMs = 1000;
 constexpr int kBlendTickIntervalMs = 80;
 
-// Blend window — start blend at 50% of track
-constexpr double kBlendStartMin = 0.50;
+// Blend window — start blend at 80% of track
+constexpr double kBlendStartMin = 0.80;
 
 // Base blend duration: 8 seconds (genre rules multiply this)
 // Used by kBlendTickIntervalMs to compute total blend steps

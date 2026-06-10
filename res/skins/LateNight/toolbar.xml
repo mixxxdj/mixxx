@@ -141,19 +141,19 @@
       <PushButton>
         <TooltipId>ai_bro_status</TooltipId>
         <ObjectName>AiBroButton</ObjectName>
-        <Size>40f,20f</Size>
+        <Size>50f,20f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Text>AI</Text>
+          <Text>AI Bro \xF0\x9F\x98\x8E</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
-          <Text>●</Text>
+          <Text>AI Bro \xF0\x9F\x98\x8E</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
@@ -163,6 +163,10 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
+
+      <WidgetGroup>
+        <Size>20f,1min</Size>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>ToolbarSeparator</ObjectName>
