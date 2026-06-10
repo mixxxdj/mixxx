@@ -109,6 +109,22 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
     // will be used for loading external libraries and other tasks.
     QThreadPool::globalInstance()->setMaxThreadCount(
             math_max(4, QThreadPool::globalInstance()->maxThreadCount()));
+
+    // On Android, enable mouse cursor support. QApplication on Android
+    // doesn't show a cursor by default for external mice/trackpads.
+    // Setting an arrow cursor makes the pointer visible.
+#ifdef Q_OS_ANDROID
+    // On Android, enable mouse cursor support. QApplication on Android
+    // doesn't show a cursor by default for external mice/trackpads.
+    // Setting a visible cursor makes the pointer usable.
+    setOverrideCursor(QCursor(Qt::ArrowCursor));
+#endif
+}
+
+MixxxApplication::~MixxxApplication() {
+#ifdef Q_OS_ANDROID
+    restoreOverrideCursor();
+#endif
 }
 
 void MixxxApplication::registerMetaTypes() {

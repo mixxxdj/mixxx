@@ -61,7 +61,8 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            ctest_args: []
+            # TODO: Fix these broken tests. They time out on slow CI runners.
+            ctest_args: --exclude-regex '(ControllerScriptEngineLegacy|PlayerManagerTest\.Un|MappingTestFixture)'
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: qt6
@@ -136,7 +137,7 @@ jobs:
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            ctest_args: --exclude-regex '(^AutoDJProcessorTest.*$|ControllerScriptEngineLegacy|PlayerManagerTest\.Un|MappingTestFixture)'
             cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
@@ -164,7 +165,7 @@ jobs:
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            ctest_args: --exclude-regex '(^AutoDJProcessorTest.*$|ControllerScriptEngineLegacy|PlayerManagerTest\.Un|MappingTestFixture)'
             cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat

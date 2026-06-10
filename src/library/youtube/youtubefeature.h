@@ -50,6 +50,12 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     void requestDownloadToAutoDJ(
             const QString& videoId, PlaylistDAO::AutoDJSendLoc loc);
 
+    /// Expose the underlying service so other features can connect to its
+    /// signals (e.g. AIBroFeature needs downloadFinished/downloadFailed).
+    mixxx::YouTubeService* service() {
+        return &m_service;
+    }
+
     /// Absolute path to the per-user yt-dlp cache directory. Created on demand.
     QString cacheDir() const;
 
