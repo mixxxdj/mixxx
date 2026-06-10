@@ -1605,6 +1605,7 @@ class TraktorS2MK1Class {
     isKnobCalibrationReasonable(knob, name) {
         const valid = knob.min < ReasonableCalibrationThreshold
               && knob.max > 0xFFF - ReasonableCalibrationThreshold
+              && knob.max <= 0xFFF
               && knob.center > 0x7FF - ReasonableCalibrationThreshold
               && knob.center < 0x7FF + ReasonableCalibrationThreshold;
         if (!valid) {
@@ -1614,7 +1615,8 @@ class TraktorS2MK1Class {
     }
     isFaderCalibrationReasonable(fader, name) {
         const valid = fader.min < ReasonableCalibrationThreshold
-              && fader.max > 0xFFF - ReasonableCalibrationThreshold;
+              && fader.max > 0xFFF - ReasonableCalibrationThreshold
+              && fader.max <= 0xFFF;
         if (!valid) {
             console.log(`Calibration of ${name} is probably wrong. min: ${fader.min}, max: ${fader.max}`);
         }
