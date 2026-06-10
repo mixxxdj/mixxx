@@ -780,6 +780,18 @@ double AIBroFeature::scoreCandidate(
     if (candidate.isLive)
         return -1.0;
 
+    // Hard filter: remixes (often low quality)
+    {
+        const QString lowerTitle = candidate.title.toLower();
+        if (lowerTitle.contains("remix") ||
+                lowerTitle.contains("edit") ||
+                lowerTitle.contains("bootleg") ||
+                lowerTitle.contains("mashup") ||
+                lowerTitle.contains("rework")) {
+            return -1.0;
+        }
+    }
+
     // Hard filter: garbage titles
     {
         const QString lowerTitle = candidate.title.toLower();
@@ -1093,8 +1105,8 @@ void AIBroFeature::slotSearchResultsReady(
         QTimer::singleShot(kRetryDelayMs, this, [this]() {
             if (!isActive())
                 return;
-            // Fallback: search for genre terms to get variety
-            QString fallbackQuery = QStringLiteral("ελληνικά remix 2024 2025");
+            // Fallback: search for genre terms to get variety (no remixes)
+            QString fallbackQuery = QStringLiteral("ελληνικά 2024 2025");
             kLogger.info() << "AI Bro: fallback search:" << fallbackQuery;
             m_downloading = true;
             if (m_pYouTubeFeature) {
