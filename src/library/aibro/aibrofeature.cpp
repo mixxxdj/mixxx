@@ -35,7 +35,6 @@ constexpr int kBlendSteps = 100;
 // Similarity weights
 constexpr double kWeightTitleOverlap = 0.10;
 constexpr double kWeightSemanticWords = 0.15;
-constexpr double kWeightArtistMatch = 0.05;
 constexpr double kWeightRemixBonus = 0.10;
 constexpr double kWeightGenreMatch = 0.10;
 constexpr double kWeightDuration = 0.05;
