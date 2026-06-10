@@ -22,36 +22,26 @@ class YouTubeFeature;
 
 /// AI Bro: Intelligent Auto-DJ that finds similar songs on YouTube,
 /// auto-downloads them, and seamlessly blends them together using
-/// real DJ mixing techniques.
+/// professional DJ mixing techniques.
 ///
-/// DJ Techniques used (inspired by ai-remixmate + AI-DJ-Mixing-System):
-/// - Camelot Wheel harmonic mixing for key compatibility
-/// - Genre-aware transition point selection
-/// - Remix/extended version preference (longer intros/outros)
-/// - Echo-out transition (delay tail on outgoing track)
-/// - EQ sweep crossfade (low/mid/high frequency blending)
-/// - Volume fader + crossfader combined transitions
-/// - BPM-aware sync and tempo matching
-/// - Vocal overlap avoidance
-/// - Semantic word scoring for lyrics similarity
+/// DJ Techniques (inspired by ai-remixmate + AI-DJ-Mixing-System):
+/// - 3-band frequency-selective fade (bass/mid/high fade at different rates)
+/// - Genre-aware transition rules (overlap duration, EQ strength)
+/// - Stem-aware crossfade curves (similarity-based blend shapes)
+/// - Beat-synced echo-out (delay echoes timed to BPM)
+/// - BPM correction (double-time/half-time detection)
+/// - Energy arc (vary blend intensity over session)
+/// - Phrase-boundary alignment (8-beat phrase grid)
 /// - Vocal sync via position seeking
 ///
 /// Control architecture (Mixxx control-based):
 /// - [Master]crossfader for crossfade position
 /// - [ChannelN]play for play/stop
-/// - [ChannelN]sync_enabled for beat sync
 /// - [ChannelN]eqLow/Mid/High for EQ
 /// - [ChannelN]volume for volume
 /// - [ChannelN]playposition for progress
+/// - [ChannelN]rate/pitch for tempo
 /// - PlayerManager::slotLoadToDeck for track loading
-///
-/// User interaction model:
-/// - AI Bro NEVER blocks user actions — you can load tracks manually
-///   and it will detect and use them instead of searching YouTube
-/// - All operations are non-blocking (timers, async signals)
-/// - CPU usage is minimal (1s timer ticks, no audio analysis)
-/// - If user loads a track while AI Bro is searching, the search
-///   result is discarded and the user's track is used instead
 class AIBroFeature : public QObject {
     Q_OBJECT
   public:
@@ -95,6 +85,42 @@ class AIBroFeature : public QObject {
     void startBlend(int fromDeck, int toDeck);
     void stopBlend();
 
+    // --- Genre-aware mixing rules ---
+    struct MixingRules {
+        double overlapMultiplier; // Blend duration multiplier
+        double eqStrength;        // EQ filter strength
+        double echoDecay;         // Echo-out decay factor
+        int echoBeats;            // Number of echo beats
+    };
+    MixingRules getMixingRules() const;
+
+    // --- 3-band frequency-selective fade ---
+    // Returns per-band fade multipliers for a given progress (0-1)
+    struct BandFades {
+        double low;
+        double mid;
+        double high;
+    };
+    BandFades computeBandFades(double progress, bool outgoing) const;
+
+    // --- Stem-aware crossfade curves ---
+    // Returns fade-out and fade-in multipliers based on track similarity
+    struct CrossfadeCurve {
+        double fadeOut;
+        double fadeIn;
+    };
+    CrossfadeCurve computeCrossfadeCurve(double progress) const;
+
+    // --- Energy arc ---
+    // Returns blend intensity multiplier based on session progress (0-1)
+    double computeEnergyArc() const;
+
+    // --- BPM correction ---
+    double correctBPM(double detectedBPM, double expectedBPM) const;
+
+    // --- Phrase alignment ---
+    double alignToPhraseBoundary(double positionSec) const;
+
     // --- Control helpers (Mixxx control-based API) ---
     bool isDeckPlaying(int deckIndex) const;
     int countPlayingDecks() const;
@@ -133,7 +159,6 @@ class AIBroFeature : public QObject {
     int m_blendToDeck;
 
     /// The deck index (0 or 1) that is currently the "active" playing deck.
-    /// AI Bro blends from this deck to the other deck, then swaps.
     int m_iCurrentDeck;
 
     /// Timestamp of last search (for rate limiting)
@@ -144,17 +169,25 @@ class AIBroFeature : public QObject {
 
     /// Played video IDs this session.
     QSet<QString> m_playedVideoIds;
-    /// Played song keys (title|uploader lowercased).
+    /// Played song keys (title lowercased).
     QSet<QString> m_playedSongKeys;
 
-    /// If user manually loads a track while we're searching, store it here
-    /// and use it instead of the YouTube search result.
+    /// If user manually loads a track while we're searching
     QString m_manualTrackPath;
     int m_manualTrackDeck;
     bool m_hasManualTrack;
 
-    /// Snapshot of track locations when search started (for manual override).
+    /// Snapshot of track locations when search started.
     QMap<int, QString> m_searchTrackSnapshot;
+
+    QSet<QString> m_playedArtists;
+    QString m_downloadingTitle;
+    QString m_downloadingUploader;
+
+    /// Session blend count (for energy arc)
+    int m_blendCount;
+    /// Current session BPM (for beat-synced echo)
+    double m_sessionBPM;
 
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
