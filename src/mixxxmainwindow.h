@@ -109,6 +109,10 @@ class MixxxMainWindow : public QMainWindow {
     /// key event rather than QCloseEvent) so it collapses BIG LIBRARY etc.
     /// instead of immediately exiting the app.
     void keyPressEvent(QKeyEvent* event) override;
+    /// Ensure cursor is visible on Android DeX/external screen on first show.
+    void showEvent(QShowEvent* event) override;
+    /// Re-show cursor when window regains focus on Android.
+    void changeEvent(QEvent* event) override;
 #endif
 
   private:

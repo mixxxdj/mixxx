@@ -1620,6 +1620,28 @@ void MixxxMainWindow::keyPressEvent(QKeyEvent* event) {
     QMainWindow::keyPressEvent(event);
 }
 
+void MixxxMainWindow::showEvent(QShowEvent* event) {
+    QMainWindow::showEvent(event);
+#ifdef Q_OS_ANDROID
+    // On Android DeX/external screen, the cursor may be hidden until the window
+    // is explicitly focused. Force cursor visibility on first show.
+    setCursor(Qt::ArrowCursor);
+    activateWindow();
+    raise();
+#endif
+}
+
+#ifdef Q_OS_ANDROID
+void MixxxMainWindow::changeEvent(QEvent* event) {
+    QMainWindow::changeEvent(event);
+    if (event->type() == QEvent::ActivationChange) {
+        if (isActiveWindow()) {
+            setCursor(Qt::ArrowCursor);
+        }
+    }
+}
+#endif
+
 bool MixxxMainWindow::handleAndroidBack() {
     // Pop dialogs / menus first — Qt already sends them the Back event before
     // it reaches the main window, but defensively re-check here in case any
