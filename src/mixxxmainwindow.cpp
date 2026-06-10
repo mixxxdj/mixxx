@@ -26,8 +26,6 @@
 #include "widget/wsuggestionsbar.h"
 #endif
 
-#include "widget/wsearchlineedit.h"
-
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
 #include "defs_urls.h"
@@ -36,6 +34,7 @@
 #include "dialog/dlgkeywheel.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "widget/wsearchlineedit.h"
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
