@@ -766,6 +766,17 @@ double AIBroFeature::scoreCandidate(
         }
     }
 
+    // Hard filter: reject songs by the SAME artist (we want variety)
+    // Compare uploader name with current track artist
+    if (!m_currentTrackArtist.isEmpty() && !candidate.uploader.isEmpty()) {
+        const QString currArtLower = m_currentTrackArtist.toLower().trimmed();
+        const QString uploaderLower = candidate.uploader.toLower().trimmed();
+        // Check if uploader matches artist (handles "Artist", "Artist - Topic", etc.)
+        if (uploaderLower.contains(currArtLower) || currArtLower.contains(uploaderLower)) {
+            return -1.0;
+        }
+    }
+
     // Hard filter: live streams
     if (candidate.isLive)
         return -1.0;
@@ -843,18 +854,9 @@ double AIBroFeature::scoreCandidate(
         score += kWeightSemanticWords * semanticScore;
     }
 
-    // 3. Artist match (low weight — we want variety)
+    // 3. Different artist bonus (same artist songs are already filtered out above)
     if (!currentA.isEmpty() && !videoU.isEmpty()) {
-        if (videoU.contains(currentA) || currentA.contains(videoU)) {
-            score += kWeightArtistMatch;
-        }
-    }
-
-    // 3b. Different artist bonus
-    if (!currentA.isEmpty() && !videoU.isEmpty()) {
-        bool sameArtist = videoU.contains(currentA) || currentA.contains(videoU);
-        if (!sameArtist)
-            score += kWeightDifferentArtist;
+        score += kWeightDifferentArtist;
     }
 
     // 4. Remix/extended bonus
@@ -1007,35 +1009,24 @@ void AIBroFeature::findNextSong() {
     const QString& artist = m_currentTrackArtist;
     const QString& title = m_currentTrackTitle;
 
-    // Build a YouTube search query to find similar songs.
-    // Strategy: Use genre/mood queries to get variety, not just same artist.
-    // We rotate through different search strategies to avoid repetition.
+    // Find the next song that "flows" from the current one.
+    //
+    // Strategy: Search YouTube for the current artist name. YouTube's search
+    // algorithm naturally surfaces similar artists — when you search for an
+    // artist, results include that artist AND artists YouTube considers related
+    // (same genre, same scene, similar style).
+    //
+    // We then hard-filter out songs by the EXACT same artist (to avoid
+    // repetition) and pick the best-scoring song by a DIFFERENT artist.
+    // This gives natural "DJ flow" — similar vibe, same scene, different artist.
+    //
+    // If the current track has no artist info, fall back to genre search.
     QString query;
     if (!artist.isEmpty() && artist.length() >= 3) {
-        // Use genre-based search for variety — find similar vibe/style
-        // Rotate through different query styles based on blend count
-        int strategy = m_blendCount % 4;
-        switch (strategy) {
-        case 0:
-            // Genre-based: find songs in the same style
-            query = QStringLiteral("ελληνικά remix 2024 2025");
-            break;
-        case 1:
-            // Mood-based: find songs with similar energy
-            query = QStringLiteral("greek laiko remix 2024");
-            break;
-        case 2:
-            // Artist-adjacent: find songs by related artists
-            // Use artist name but with "similar to" prefix
-            query = QStringLiteral("similar to %1 greek remix").arg(artist);
-            break;
-        case 3:
-            // Broad genre search for maximum variety
-            query = QStringLiteral("greek pop remix 2024 2025");
-            break;
-        }
+        // Just search for the artist name — YouTube returns similar artists too
+        query = artist;
     } else if (!title.isEmpty() && title.length() >= 3) {
-        query = QStringLiteral("ελληνικά remix 2024 2025");
+        query = title;
     } else {
         query = QStringLiteral("popular greek music 2024 2025");
     }
