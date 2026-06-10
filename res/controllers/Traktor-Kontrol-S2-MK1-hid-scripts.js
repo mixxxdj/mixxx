@@ -1322,6 +1322,7 @@ class TraktorS2MK1Class {
         this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
         this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD3)), 0x40);
         this.rawCalibration.jogWheels = new Uint8Array(controller.getFeatureReport(0xD4));
+        console.log("rawCalibration.faders", this.rawCalibration.faders);
         console.log("rawCalibration.knobs", this.rawCalibration.knobs);
         console.log("rawCalibration.jogWheels", this.rawCalibration.jogWheels);
         this.calibration = this.parseRawCalibration();
