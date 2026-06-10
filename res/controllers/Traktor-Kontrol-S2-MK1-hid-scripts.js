@@ -20,11 +20,11 @@ const ShiftCueButtonAction = "REWIND";
 const ButtonBrightnessOff = 0x00;
 const ButtonBrightnessOn = 0x1F;
 
-// If the  difference of  one of  the calibration  values and  the corresponding
-// ideal  value is  larger than  the threshold,  then the  whole calibration  is
+// If the difference of one of the calibration values and the corresponding
+// ideal value is larger than the threshold, then the whole calibration is
 // discarded and default values will be used instead. Both knobs and faders have
-// values in  the range 0..4095. Both  have a calibration point  for minimum and
-// maximum. Knobs  additionally have a  calibration point for the  center. Ideal
+// values in the range 0..4095. Both have a calibration point for minimum and
+// maximum. Knobs additionally have a calibration point for the center. Ideal
 // values are 0 for minimum, 2047 for the center and 4095 for the maximum.
 const ReasonableCalibrationThreshold = 200;
 
