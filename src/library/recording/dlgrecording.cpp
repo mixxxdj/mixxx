@@ -100,6 +100,11 @@ DlgRecording::DlgRecording(
 }
 
 DlgRecording::~DlgRecording() {
+    qDebug() << "~DlgRecording()";
+
+    // Delete m_pTrackTableView before the table models. This is because the
+    // table view saves the header state using the model in its destructor.
+    delete m_pTrackTableView;
 }
 
 bool DlgRecording::hasFocus() const {
