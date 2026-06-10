@@ -1035,7 +1035,7 @@ void DlgPrefSound::addMainOutputClicked() {
     }
 
     // Create a new main output with the next available index
-    unsigned char channelBase = mainCount * 2; // stereo pairs
+    unsigned char channelBase = mainCount * 2;                                         // stereo pairs
     mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount::valueFromInt(2); // stereo
     AudioOutput output(AudioPathType::Main, channelBase, channels, mainCount);
 
