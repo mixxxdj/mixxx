@@ -20,8 +20,15 @@ const ShiftCueButtonAction = "REWIND";
 const ButtonBrightnessOff = 0x00;
 const ButtonBrightnessOn = 0x1F;
 
+// If the  difference of  one of  the calibration  values and  the corresponding
+// ideal  value is  larger than  the threshold,  then the  whole calibration  is
+// discarded and default values will be used instead. Both knobs and faders have
+// values in  the range 0..4095. Both  have a calibration point  for minimum and
+// maximum. Knobs  additionally have a  calibration point for the  center. Ideal
+// values are 0 for minimum, 2047 for the center and 4095 for the maximum.
 const ReasonableCalibrationThreshold = 200;
 
+// ==== End of User Configuration ====
 
 const padModes = {
     "hotcue": 0,
@@ -1601,7 +1608,7 @@ class TraktorS2MK1Class {
               && knob.center > 0x7FF - ReasonableCalibrationThreshold
               && knob.center < 0x7FF + ReasonableCalibrationThreshold;
         if (!valid) {
-            console.log(`Calibration of ${  name  } is {min: ${knob.min}, center: ${knob.center}, max: ${knob.max}} and probably wrong`);
+            console.log(`Calibration of ${name} is probably wrong. min: ${knob.min}, center: ${knob.center}, max: ${knob.max}`);
         }
         return valid;
     }
@@ -1609,7 +1616,7 @@ class TraktorS2MK1Class {
         const valid = fader.min < ReasonableCalibrationThreshold
               && fader.max > 0xFFF - ReasonableCalibrationThreshold;
         if (!valid) {
-            console.log(`Calibration of ${  name  } is {min: ${fader.min}, max: ${fader.max}} and probably wrong`);
+            console.log(`Calibration of ${name} is probably wrong. min: ${fader.min}, max: ${fader.max}`);
         }
         return valid;
     }
