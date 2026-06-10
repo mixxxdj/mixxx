@@ -3246,6 +3246,7 @@ if(BUILD_TESTING)
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
+        src/test/qmlkeyutilstest.cpp
         src/test/themeqml_test.cpp
     )
   endif()
@@ -4205,6 +4206,7 @@ if(QML)
       src/qml/qmleffectmanifestparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp
+      src/qml/qmlkeyutils.cpp
       src/qml/qmllegacylibraryitem.cpp
       src/qml/qmllibraryproxy.cpp
       src/qml/qmllibrarysource.cpp
