@@ -16,13 +16,14 @@ DlgRecording::DlgRecording(
         KeyboardEventFilter* pKeyboard)
         : QWidget(parent),
           m_pConfig(pConfig),
-          m_pTrackTableView(
-                  new WTrackTableView(
-                          this,
-                          pConfig,
-                          pLibrary,
-                          parent->getTrackTableBackgroundColorOpacity())),
-          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
+          m_pTrackTableView(new WTrackTableView(this,
+                  pConfig,
+                  pLibrary,
+                  parent->getTrackTableBackgroundColorOpacity())),
+          m_browseModel(this,
+                  pLibrary->trackCollectionManager(),
+                  pRecordingManager,
+                  "mixxx.db.model.recording"),
           m_proxyModel(&m_browseModel, true),
           m_bytesRecordedStr("--"),
           m_durationRecordedStr("--:--"),
