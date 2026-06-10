@@ -456,9 +456,10 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
 bool Track::trySetBeatsWhileLocked(
         mixxx::BeatsPointer pBeats,
         bool lockBpmAfterSet) {
-    if (m_pBeats && m_record.getBpmLocked()) {
-        // Track has already a valid and locked beats object, abort.
-        qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
+    if (m_record.getBpmLocked()) {
+        // The BPM is locked, so the beatgrid must not be changed - regardless
+        // of whether one currently exists.
+        qDebug() << "Track is BPM-locked. Discarding new beats";
         return false;
     }
 
