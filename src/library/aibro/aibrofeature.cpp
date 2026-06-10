@@ -1008,16 +1008,34 @@ void AIBroFeature::findNextSong() {
     const QString& title = m_currentTrackTitle;
 
     // Build a YouTube search query to find similar songs.
-    // We try several strategies to get variety:
-    // 1. Artist + "remix extended" (for DJ-friendly versions)
-    // 2. Artist + "official audio" (for original tracks)
-    // 3. Greek music context for regional relevance
+    // Strategy: Use genre/mood queries to get variety, not just same artist.
+    // We rotate through different search strategies to avoid repetition.
     QString query;
     if (!artist.isEmpty() && artist.length() >= 3) {
-        // Primary: search for artist remixes — DJ-friendly with longer intros/outros
-        query = QStringLiteral("%1 remix extended ελληνικά").arg(artist);
+        // Use genre-based search for variety — find similar vibe/style
+        // Rotate through different query styles based on blend count
+        int strategy = m_blendCount % 4;
+        switch (strategy) {
+        case 0:
+            // Genre-based: find songs in the same style
+            query = QStringLiteral("ελληνικά remix 2024 2025");
+            break;
+        case 1:
+            // Mood-based: find songs with similar energy
+            query = QStringLiteral("greek laiko remix 2024");
+            break;
+        case 2:
+            // Artist-adjacent: find songs by related artists
+            // Use artist name but with "similar to" prefix
+            query = QStringLiteral("similar to %1 greek remix").arg(artist);
+            break;
+        case 3:
+            // Broad genre search for maximum variety
+            query = QStringLiteral("greek pop remix 2024 2025");
+            break;
+        }
     } else if (!title.isEmpty() && title.length() >= 3) {
-        query = QStringLiteral("%1 remix ελληνικά").arg(title);
+        query = QStringLiteral("ελληνικά remix 2024 2025");
     } else {
         query = QStringLiteral("popular greek music 2024 2025");
     }
