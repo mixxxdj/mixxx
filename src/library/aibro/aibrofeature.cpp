@@ -1011,20 +1011,28 @@ void AIBroFeature::findNextSong() {
 
     // Find the next song that "flows" from the current one.
     //
-    // Strategy: Search YouTube for the current artist name. YouTube's search
-    // algorithm naturally surfaces similar artists — when you search for an
-    // artist, results include that artist AND artists YouTube considers related
-    // (same genre, same scene, similar style).
+    // We leverage YouTube's search smarts. Queries like "songs like Artist"
+    // or "music like Artist" cause YouTube to return results from SIMILAR
+    // artists, not just the queried artist. This is the same algorithm YouTube
+    // uses for "Up Next" recommendations.
     //
-    // We then hard-filter out songs by the EXACT same artist (to avoid
-    // repetition) and pick the best-scoring song by a DIFFERENT artist.
-    // This gives natural "DJ flow" — similar vibe, same scene, different artist.
-    //
-    // If the current track has no artist info, fall back to genre search.
+    // We hard-filter out songs by the exact same artist (uploader name match)
+    // and pick the best-scoring remainder.
     QString query;
     if (!artist.isEmpty() && artist.length() >= 3) {
-        // Just search for the artist name — YouTube returns similar artists too
-        query = artist;
+        int style = m_blendCount % 3;
+        switch (style) {
+        case 0:
+            query = QStringLiteral("songs like %1").arg(artist);
+            break;
+        case 1:
+            query = QStringLiteral("music like %1").arg(artist);
+            break;
+        case 2:
+        default:
+            query = QStringLiteral("similar to %1").arg(artist);
+            break;
+        }
     } else if (!title.isEmpty() && title.length() >= 3) {
         query = title;
     } else {
@@ -1080,11 +1088,19 @@ void AIBroFeature::slotSearchResultsReady(
 
     auto candidate = pickBestCandidate(results);
     if (candidate.id.isEmpty()) {
-        kLogger.warning() << "AI Bro: no suitable candidate, retrying";
+        kLogger.warning() << "AI Bro: no suitable candidate, retrying with broader query";
         m_downloading = false;
+        // Retry with a broader genre search instead of the same query
         QTimer::singleShot(kRetryDelayMs, this, [this]() {
-            if (isActive())
-                findNextSong();
+            if (!isActive())
+                return;
+            // Fallback: search for genre terms to get variety
+            QString fallbackQuery = QStringLiteral("ελληνικά remix 2024 2025");
+            kLogger.info() << "AI Bro: fallback search:" << fallbackQuery;
+            m_downloading = true;
+            if (m_pYouTubeFeature) {
+                m_pYouTubeFeature->searchAndActivate(fallbackQuery);
+            }
         });
         return;
     }
