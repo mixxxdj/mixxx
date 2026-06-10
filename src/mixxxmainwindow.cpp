@@ -1597,11 +1597,13 @@ void MixxxMainWindow::keyPressEvent(QKeyEvent* event) {
         switch (event->key()) {
         case Qt::Key_S: {
             // Ctrl+S: Focus the library search box for YouTube search
-            // Find the search box in the widget tree
             auto* searchBox = findChild<WSearchLineEdit*>();
             if (searchBox) {
-                searchBox->setFocus();
-                searchBox->selectAll();
+                searchBox->setFocus(Qt::ShortcutFocusReason);
+                // WSearchLineEdit is a QComboBox; select all text in the edit field
+                if (searchBox->lineEdit()) {
+                    searchBox->lineEdit()->selectAll();
+                }
             }
             event->accept();
             return;
