@@ -26,6 +26,8 @@
 #include "widget/wsuggestionsbar.h"
 #endif
 
+#include "widget/wsearchlineedit.h"
+
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
 #include "defs_urls.h"
@@ -1590,6 +1592,31 @@ void MixxxMainWindow::keyPressEvent(QKeyEvent* event) {
             return;
         }
     }
+
+    // Keyboard shortcuts for Android (hardware keyboard)
+    if (event->modifiers() & Qt::ControlModifier) {
+        switch (event->key()) {
+        case Qt::Key_S: {
+            // Ctrl+S: Focus the library search box for YouTube search
+            // Find the search box in the widget tree
+            auto* searchBox = findChild<WSearchLineEdit*>();
+            if (searchBox) {
+                searchBox->setFocus();
+                searchBox->selectAll();
+            }
+            event->accept();
+            return;
+        }
+        case Qt::Key_O:
+            // Ctrl+O: Open preferences/options dialog
+            slotOptionsPreferences();
+            event->accept();
+            return;
+        default:
+            break;
+        }
+    }
+
     QMainWindow::keyPressEvent(event);
 }
 
