@@ -1035,14 +1035,13 @@ void DlgPrefSound::addMainOutputClicked() {
     }
 
     // Create a new main output with the next available index
-    // Use channel base 0 and let the user configure channels
     unsigned char channelBase = mainCount * 2; // stereo pairs
     mixxx::audio::ChannelCount channels = 2; // stereo
     AudioOutput output(AudioPathType::Main, channelBase, channels, mainCount);
 
-    // Add it to the config and create the UI item
-    addPath(output);
-    loadSettings();
+    // Register the output with the sound manager first
+    // This will trigger the outputRegistered signal which calls addPath
+    m_pSoundManager->registerOutput(output, nullptr);
 }
 
 void DlgPrefSound::mainMonoMixdownChanged(double value) {
