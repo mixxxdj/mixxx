@@ -4,9 +4,10 @@ config-opts:
   - -DCMAKE_BUILD_TYPE=RelWithDebInfo
   - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 sources:
-  - type: archive
-    url: https://codeberg.org/tenacityteam/libid3tag/archive/0.16.3.tar.gz
-    sha256: 0561009778513a95d91dac33cee8418d6622f710450a7cb56a74636d53b588cb
+  - type: git
+    url: https://codeberg.org/tenacityteam/libid3tag.git
+    tag: "0.16.3"
+    commit: e02ecf1276b467a8a5dd20c55ce711e6f7116d3e
     x-checker-data:
       type: anitya
       project-id: 21478
