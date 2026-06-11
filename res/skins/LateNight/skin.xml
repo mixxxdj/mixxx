@@ -39,7 +39,7 @@
     <!-- Set skin defaults -->
       <attribute config_key="[App],num_decks">4</attribute>
       <attribute config_key="[App],num_samplers">16</attribute>
-      <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_waveforms">0</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
 
     <!-- Decks -->
@@ -80,7 +80,7 @@
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
       <attribute persist="true" config_key="[LateNight],show_vumeters_compact">1</attribute>
     <!-- Effects -->
-      <attribute persist="true" config_key="[Skin],show_effectrack">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_effectrack">0</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
     <!-- Samplers -->
