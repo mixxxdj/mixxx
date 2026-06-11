@@ -522,7 +522,7 @@ SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
             continue;
         }
-        QList<AudioOutput> outputs = deviceOutputs[pDevice];
+        const QList<AudioOutput>& outputs = deviceOutputs[pDevice];
         for (const auto& type : priorityOrder) {
             const auto it = std::find_if(outputs.cbegin(),
                     outputs.cend(),
