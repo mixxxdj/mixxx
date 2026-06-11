@@ -440,8 +440,10 @@ void MixxxMainWindow::initialize() {
         slotUpdateMenuBarAltKeyConnection();
     }
 #else
+#ifndef __ANDROID__
     alwaysHideMenuBarDlg();
     slotUpdateMenuBarAltKeyConnection();
+#endif
 #endif
 #endif
 
