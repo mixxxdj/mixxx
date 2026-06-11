@@ -791,6 +791,8 @@ jobs:
 
   build-flatpak:
     name: "Flatpak"
+    if: inputs.publish == true
+    continue-on-error: true
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     container:
