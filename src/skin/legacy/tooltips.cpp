@@ -781,7 +781,7 @@ void Tooltips::addStandardTooltips() {
 
     // AI Bro status indicator
     add("ai_bro_status")
-            << tr("Let it cook \xF0\x9F\x98\x8E");
+            << tr("DJ Bro");
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

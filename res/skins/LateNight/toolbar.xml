@@ -118,6 +118,24 @@
         </Connection>
       </WidgetGroup><!-- GUI toggles with maximized library -->
 
+      <!-- DJ Bro centered in toolbar -->
+      <WidgetGroup><Size>me,min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>50f,20f</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Label>
+            <ObjectName>DJBroLabel</ObjectName>
+            <Size>50f,20f</Size>
+            <Alignment>center</Alignment>
+            <Text>DJ BRO</Text>
+            <Connection>
+              <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+        </Children>
+      </WidgetGroup>
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
       <StatusLight>
@@ -146,14 +164,14 @@
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Text>AI Bro \xF0\x9F\x98\x8E</Text>
+          <Text>DJ BRO</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
-          <Text>AI Bro \xF0\x9F\x98\x8E</Text>
+          <Text>DJ BRO</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
