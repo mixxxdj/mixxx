@@ -119,31 +119,40 @@
       </WidgetGroup><!-- GUI toggles with maximized library -->
 
       <!-- DJ Bro button -->
-      <PushButton>
-        <TooltipId>ai_bro_status</TooltipId>
+      <WidgetGroup>
         <ObjectName>AiBroButton</ObjectName>
         <Size>50f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>false</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-          <Text>DJ BRO</Text>
-          <Alignment>center</Alignment>
-          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>DJ BRO</Text>
-          <Alignment>center</Alignment>
-          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
-        </State>
+        <Children>
+          <!-- Inactive state: normal text -->
+          <Label>
+            <ObjectName>DJBroInactive</ObjectName>
+            <Size>50f,20f</Size>
+            <Alignment>center</Alignment>
+            <Text>DJ BRO</Text>
+            <Connection>
+              <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+          <!-- Active state: blue neon text -->
+          <Label>
+            <ObjectName>DJBroActive</ObjectName>
+            <Size>50f,20f</Size>
+            <Alignment>center</Alignment>
+            <Text>DJ BRO</Text>
+            <StyleSheet>color: #40a0ff;</StyleSheet>
+            <Connection>
+              <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Label>
+        </Children>
         <Connection>
           <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
-      </PushButton>
+      </WidgetGroup>
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
