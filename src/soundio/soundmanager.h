@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "audio/types.h"
 #include "control/pollingcontrolproxy.h"
@@ -19,6 +20,7 @@
 
 class EngineMixer;
 class ControlObject;
+class PipewireEnumerator;
 
 #define SOUNDMANAGER_DISCONNECTED 0
 #define SOUNDMANAGER_CONNECTING 1
@@ -87,7 +89,7 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
-        return m_networkEnumerator.getNetworkStream();
+        return m_networkEnumerator->getNetworkStream();
     }
 
     void underflowHappened(int code) {
@@ -115,6 +117,14 @@ class SoundManager : public QObject {
     void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
+    void deviceAdded(SoundDevicePointer device);
+    void deviceRemoved(SoundDevicePointer device);
+    void deviceUpdated(SoundDevicePointer device);
+
+  public slots:
+    void addDevice(SoundDevicePointer device);
+    void removeDevice(SoundDevicePointer device);
+    void updateDevice(SoundDevicePointer device);
 
   private slots:
     void completeDevicesClosing();
@@ -150,6 +160,7 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
 
-    PortAudioEnumerator m_paEnumerator;
-    NetworkEnumerator m_networkEnumerator;
+    std::unique_ptr<PortAudioEnumerator> m_paEnumerator;
+    std::unique_ptr<NetworkEnumerator> m_networkEnumerator;
+    std::unique_ptr<PipewireEnumerator> m_pipewireEnumerator;
 };
