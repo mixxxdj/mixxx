@@ -783,6 +783,9 @@ jobs:
 
   build-flatpak:
     name: "Flatpak"
+    # Don't block the release if Flatpak fails (e.g. network timeout
+    # downloading dependencies). Flatpak users can always rebuild locally.
+    continue-on-error: true
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     container:
