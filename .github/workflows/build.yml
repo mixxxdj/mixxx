@@ -303,19 +303,26 @@ jobs:
       - name: "Check out repository"
         uses: actions/checkout@v6
         with:
-          # This is necessary for making `git describe` work.
-          fetch-depth: 0
+          # Use shallow clone to avoid Windows MAX_PATH issues with
+          # long tag names from git describe. We fetch full history
+          # manually below for `git describe` to work.
+          fetch-depth: 1
+
+      - name: "[Windows] Enable long paths in git"
+        if: runner.os == 'Windows'
+        run: git config --system core.longpaths true
+
+      - name: "Fetch full history for git describe"
+        # actions/checkout with fetch-depth: 0 internally runs
+        # 'git fetch --tags' which fails on Windows when tag names
+        # exceed MAX_PATH. We fetch history without tags instead.
+        run: |
+          git fetch origin --force --no-tags --unshallow || git fetch origin --force --no-tags --depth=100
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
         # See https://github.com/actions/checkout/issues/760 for details
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
-
-      - name: "Ensure that all tags are fetched"
-        # Works around an issue where not the latest tag is not fetched when the
-        # workflow is triggered by a tag push event.
-        # Possibly related: actions/checkout#290
-        run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.2
@@ -825,6 +832,10 @@ jobs:
             GIT_DESC="unknown"
           fi
           echo "GIT_DESC=$GIT_DESC" >> $GITHUB_ENV
+          # Short description for use in file paths (avoids MAX_PATH issues on Windows
+          # and CPack temp-dir-too-long errors on macOS/Linux)
+          GIT_DESC_SHORT=$(git describe --abbrev=0 --first-parent 2>/dev/null || echo "$GIT_DESC")
+          echo "GIT_DESC_SHORT=$GIT_DESC_SHORT" >> $GITHUB_ENV
 
       - name: "Build Flatpak"
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6

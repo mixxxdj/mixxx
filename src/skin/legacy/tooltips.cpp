@@ -781,7 +781,7 @@ void Tooltips::addStandardTooltips() {
 
     // AI Bro status indicator
     add("ai_bro_status")
-            << tr("AI Bro is active - auto-mixing similar songs from YouTube");
+            << tr("DJ Bro");
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

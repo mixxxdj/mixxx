@@ -1123,6 +1123,9 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
     // playlist/channel cards and surfaces a much larger set of actual songs
     // (verified live 2026-06: "Greek top songs" 5 → 20 video results).
     body.insert(QStringLiteral("params"), QStringLiteral("EgIQAQ=="));
+    // Restrict to music category (videoCategoryId=10) so we get actual
+    // music videos instead of random content, reviews, tutorials, etc.
+    body.insert(QStringLiteral("videoCategoryId"), 10);
 
     QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,

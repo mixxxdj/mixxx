@@ -292,6 +292,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::mainOutputModeComboBoxChanged);
     m_pMainMonoMixdown->connectValueChanged(this, &DlgPrefSound::mainMonoMixdownChanged);
 
+    // Add main output button
+    connect(addMainOutputButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSound::addMainOutputClicked);
+
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
@@ -1016,6 +1022,26 @@ void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
 #ifdef __RUBBERBAND__
     updateKeylockDualThreadingCheckbox();
 #endif
+}
+
+void DlgPrefSound::addMainOutputClicked() {
+    // Count existing main outputs to determine the next index
+    int mainCount = 0;
+    for (const QObject* pObj : outputTab->children()) {
+        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (pItem && pItem->type() == AudioPathType::Main) {
+            mainCount++;
+        }
+    }
+
+    // Create a new main output with the next available index
+    unsigned char channelBase = mainCount * 2;
+    mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount::stereo();
+    AudioOutput output(AudioPathType::Main, channelBase, channels, mainCount);
+
+    // Register the output with the sound manager first
+    // This will trigger the outputRegistered signal which calls addPath
+    m_pSoundManager->registerOutput(output, nullptr);
 }
 
 void DlgPrefSound::mainMonoMixdownChanged(double value) {

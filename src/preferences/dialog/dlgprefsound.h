@@ -61,6 +61,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void mainOutputModeComboBoxChanged(int value);
     void mainMonoMixdownChanged(double value);
     void micMonitorModeComboBoxChanged(int value);
+    void addMainOutputClicked();
 
   private slots:
     void addPath(const AudioOutput& output);

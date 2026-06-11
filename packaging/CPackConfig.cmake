@@ -53,11 +53,12 @@ if(CPACK_GENERATOR STREQUAL "External")
   endif()
 endif()
 
-# WIX: shorten the package filename to avoid MAX_PATH issues on Windows.
+# Shorten the package filename to avoid path-too-long issues on all platforms.
 # The full git describe (e.g. v2.7-alpha-248-g5b8e35fb2c-1-g497deb81c8-...)
-# creates paths that exceed the 260-char Windows limit when combined with
-# the install directory, causing WiX heat/cabinet to fail with error 0x80070003.
-if(CPACK_GENERATOR STREQUAL "WIX")
+# creates paths that exceed filesystem limits when combined with the
+# CPack temp directory path, causing "Problem creating temporary directory" errors.
+# For WIX this is also needed to avoid MAX_PATH issues on Windows.
+if(NOT CPACK_GENERATOR STREQUAL "External")
   # Extract just the short commit hash (7 chars after 'g') from the describe
   string(REGEX MATCH "g([0-9a-f]+)" _ "${GIT_DESCRIBE}")
   if(CMAKE_MATCH_1)

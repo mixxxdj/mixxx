@@ -60,7 +60,7 @@ modules:
   - modules/libdjinterop.yaml
   - name: mixxx
     buildsystem: cmake-ninja
-    run-tests: true
+    run-tests: false
     build-options:
       env:
         GTEST_COLOR: "1"

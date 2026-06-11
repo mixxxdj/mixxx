@@ -118,6 +118,45 @@
         </Connection>
       </WidgetGroup><!-- GUI toggles with maximized library -->
 
+      <!-- DJ Bro button -->
+      <PushButton>
+        <TooltipId>ai_bro_status</TooltipId>
+        <ObjectName>AiBroButton</ObjectName>
+        <Size>50f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Text>DJ BRO</Text>
+          <Alignment>center</Alignment>
+          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>DJ BRO</Text>
+          <Alignment>center</Alignment>
+          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <!-- DJ Bro active indicator -->
+      <StatusLight>
+        <Size>8f,8f</Size>
+        <PathStatusLight1>skins:LateNight/<Variable name="StyleScheme"/>/style/ai_bro_indicator.svg</PathStatusLight1>
+        <PathStatusLight2>skins:LateNight/<Variable name="StyleScheme"/>/style/ai_bro_indicator.svg</PathStatusLight2>
+        <PathStatusLight3>skins:LateNight/<Variable name="StyleScheme"/>/style/ai_bro_indicator.svg</PathStatusLight3>
+        <Connection>
+          <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </StatusLight>
+
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
       <StatusLight>
@@ -137,41 +176,8 @@
         </Connection>
       </StatusLight>
 
-      <!-- AI Bro: Auto-DJ with YouTube similarity + auto-mix -->
-      <PushButton>
-        <TooltipId>ai_bro_status</TooltipId>
-        <ObjectName>AiBroButton</ObjectName>
-        <Size>40f,20f</Size>
-        <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>false</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-          <Text>AI</Text>
-          <Alignment>center</Alignment>
-          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>●</Text>
-          <Alignment>center</Alignment>
-          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
-          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-      </PushButton>
-
-      <WidgetGroup>
-        <ObjectName>ToolbarSeparator</ObjectName>
-        <Size>5f,9min</Size>
-      </WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
-        <Size>7f,1min</Size>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>

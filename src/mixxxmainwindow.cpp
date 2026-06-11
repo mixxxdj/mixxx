@@ -34,6 +34,7 @@
 #include "dialog/dlgkeywheel.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "widget/wsearchlineedit.h"
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
@@ -439,8 +440,10 @@ void MixxxMainWindow::initialize() {
         slotUpdateMenuBarAltKeyConnection();
     }
 #else
+#ifndef __ANDROID__
     alwaysHideMenuBarDlg();
     slotUpdateMenuBarAltKeyConnection();
+#endif
 #endif
 #endif
 
@@ -1590,8 +1593,57 @@ void MixxxMainWindow::keyPressEvent(QKeyEvent* event) {
             return;
         }
     }
+
+    // Keyboard shortcuts for Android (hardware keyboard)
+    if (event->modifiers() & Qt::ControlModifier) {
+        switch (event->key()) {
+        case Qt::Key_S: {
+            // Ctrl+S: Focus the library search box for YouTube search
+            auto* searchBox = findChild<WSearchLineEdit*>();
+            if (searchBox) {
+                searchBox->setFocus(Qt::ShortcutFocusReason);
+                // WSearchLineEdit is a QComboBox; select all text in the edit field
+                if (searchBox->lineEdit()) {
+                    searchBox->lineEdit()->selectAll();
+                }
+            }
+            event->accept();
+            return;
+        }
+        case Qt::Key_P:
+            // Ctrl+P: Open preferences/options dialog
+            slotOptionsPreferences();
+            event->accept();
+            return;
+        default:
+            break;
+        }
+    }
+
     QMainWindow::keyPressEvent(event);
 }
+
+void MixxxMainWindow::showEvent(QShowEvent* event) {
+    QMainWindow::showEvent(event);
+#ifdef Q_OS_ANDROID
+    // On Android DeX/external screen, the cursor may be hidden until the window
+    // is explicitly focused. Force cursor visibility on first show.
+    setCursor(Qt::ArrowCursor);
+    activateWindow();
+    raise();
+#endif
+}
+
+#ifdef Q_OS_ANDROID
+void MixxxMainWindow::changeEvent(QEvent* event) {
+    QMainWindow::changeEvent(event);
+    if (event->type() == QEvent::ActivationChange) {
+        if (isActiveWindow()) {
+            setCursor(Qt::ArrowCursor);
+        }
+    }
+}
+#endif
 
 bool MixxxMainWindow::handleAndroidBack() {
     // Pop dialogs / menus first — Qt already sends them the Back event before

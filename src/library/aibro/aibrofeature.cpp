@@ -25,8 +25,8 @@ const mixxx::Logger kLogger("AIBroFeature");
 constexpr int kProgressIntervalMs = 1000;
 constexpr int kBlendTickIntervalMs = 80;
 
-// Blend window — start blend at 50% of track
-constexpr double kBlendStartMin = 0.50;
+// Blend window — start blend at 80% of track
+constexpr double kBlendStartMin = 0.80;
 
 // Base blend duration: 8 seconds (genre rules multiply this)
 // Used by kBlendTickIntervalMs to compute total blend steps
@@ -780,6 +780,18 @@ double AIBroFeature::scoreCandidate(
     if (candidate.isLive)
         return -1.0;
 
+    // Hard filter: remixes (often low quality)
+    {
+        const QString lowerTitle = candidate.title.toLower();
+        if (lowerTitle.contains("remix") ||
+                lowerTitle.contains("edit") ||
+                lowerTitle.contains("bootleg") ||
+                lowerTitle.contains("mashup") ||
+                lowerTitle.contains("rework")) {
+            return -1.0;
+        }
+    }
+
     // Hard filter: garbage titles
     {
         const QString lowerTitle = candidate.title.toLower();
@@ -1022,14 +1034,14 @@ void AIBroFeature::findNextSong() {
         int style = m_blendCount % 3;
         switch (style) {
         case 0:
-            query = QStringLiteral("songs like %1").arg(artist);
+            query = QStringLiteral("%1 official music").arg(artist);
             break;
         case 1:
-            query = QStringLiteral("music like %1").arg(artist);
+            query = QStringLiteral("%1 songs playlist").arg(artist);
             break;
         case 2:
         default:
-            query = QStringLiteral("similar to %1").arg(artist);
+            query = QStringLiteral("best of %1 music").arg(artist);
             break;
         }
     } else if (!title.isEmpty() && title.length() >= 3) {
@@ -1093,8 +1105,8 @@ void AIBroFeature::slotSearchResultsReady(
         QTimer::singleShot(kRetryDelayMs, this, [this]() {
             if (!isActive())
                 return;
-            // Fallback: search for genre terms to get variety
-            QString fallbackQuery = QStringLiteral("ελληνικά remix 2024 2025");
+            // Fallback: search for genre terms to get variety (no remixes)
+            QString fallbackQuery = QStringLiteral("ελληνικά 2024 2025");
             kLogger.info() << "AI Bro: fallback search:" << fallbackQuery;
             m_downloading = true;
             if (m_pYouTubeFeature) {
