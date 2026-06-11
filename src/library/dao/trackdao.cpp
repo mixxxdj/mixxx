@@ -1303,15 +1303,10 @@ void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
         DEBUG_ASSERT(beatsBlob.isEmpty());
         return;
     }
-    bool bpmLocked = record.value(column + 4).toBool();
     const mixxx::BeatsPointer pBeats = mixxx::Beats::fromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        if (bpmLocked) {
-            pTrack->trySetAndLockBeats(pBeats);
-        } else {
-            pTrack->trySetBeats(pBeats);
-        }
+        pTrack->trySetBeats(pBeats);
     } else if (bpm.isValid()) {
         // Load a temporary beat grid without offset that will be replaced by the analyzer.
         const auto pBeats = mixxx::Beats::fromConstTempo(
@@ -1320,6 +1315,10 @@ void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     } else {
         pTrack->trySetBeats(nullptr);
     }
+}
+
+void setTrackBpmLock(const QSqlRecord& record, const int column, Track* pTrack) {
+    pTrack->setBpmLocked(record.value(column).toBool());
 }
 
 void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
@@ -1422,7 +1421,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"beats_version", nullptr},
             {"beats_sub_version", nullptr},
             {"beats", nullptr},
-            {"bpm_lock", nullptr},
+            {"bpm_lock", setTrackBpmLock},
 
             // Key detection columns are handled by setTrackKey. Do not change the
             // ordering of these columns or put other columns in between them!
