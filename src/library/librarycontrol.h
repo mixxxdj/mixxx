@@ -8,6 +8,8 @@
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
+#include "track/track_decl.h"
+#include "track/trackid.h"
 
 class ControlEncoder;
 class ControlObject;
@@ -49,6 +51,20 @@ class LoadToGroupController : public QObject {
 #endif
 };
 
+class PinLoadedTrackController : public QObject {
+    Q_OBJECT
+  public:
+    PinLoadedTrackController(LibraryControl* pParent, const QString& group);
+
+    void reset();
+
+  signals:
+    void pinLoadedTrack(const QString& group, double v);
+
+  private:
+    std::unique_ptr<ControlPushButton> m_pPinLoadedTrackControl;
+};
+
 class LibraryControl : public QObject {
     Q_OBJECT
   public:
@@ -62,6 +78,10 @@ class LibraryControl : public QObject {
     void setLibraryFocus(FocusWidget newFocusWidget,
             Qt::FocusReason focusReason = Qt::OtherFocusReason);
     FocusWidget getFocusedWidget();
+    bool hasPinnedTrack() const {
+        return m_pinnedTrackId.isValid();
+    }
+    void selectedPinnedTrack();
 
   signals:
     void clearSearchIfClearButtonHasFocus();
@@ -76,6 +96,10 @@ class LibraryControl : public QObject {
 #else
     void slotLoadSelectedTrackToGroup(const QString& group, bool play);
 #endif
+
+    void slotPinSelectedTrack(double v);
+    void slotPinLoadedTrack(const QString& group, double v);
+
     void slotUpdateTrackMenuControl(bool visible);
 
   private slots:
@@ -140,6 +164,9 @@ class LibraryControl : public QObject {
 
     // Simulate pressing a key on the keyboard
     void emitKeyEvent(QKeyEvent&& event);
+
+    void pinTrack(const TrackId& id);
+    void pinTrack(TrackPointer pTrack);
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
@@ -215,15 +242,19 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pSelectNextSidebarItem;
     std::unique_ptr<ControlObject> m_pToggleSidebarItem;
     std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
+    std::unique_ptr<ControlPushButton> m_pPinSelectedTrack;
 
     // Library widgets
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
     WSearchLineEdit* m_pSearchbox;
 
+    TrackId m_pinnedTrackId;
+
     // Other variables
     ControlProxy m_numDecks;
     ControlProxy m_numSamplers;
     ControlProxy m_numPreviewDecks;
     std::map<QString, std::unique_ptr<LoadToGroupController>> m_loadToGroupControllers;
+    std::map<QString, std::unique_ptr<PinLoadedTrackController>> m_pinLoadedTrackControllers;
 };

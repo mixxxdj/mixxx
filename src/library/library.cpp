@@ -560,7 +560,23 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     }
     emit showTrackModel(model);
     emit switchToView(m_sTrackViewName);
-    emit restoreSearch(trackModel->currentSearch());
+
+    if (m_pLibraryControl->hasPinnedTrack()) {
+        // TODO try to make sure the pinned track is visible
+        // Ie. clear the current search if it's not.
+        // Currently the user has to take care of that, then click sidebar item
+        // again in order to select the track(s)
+        // isTrackIdInCurrentLibraryView(pinnedTrack) doesn't fit since the
+        // TrackModel also only holds the filtered tracks.
+        // emit restoreSearch(QString()) clears searchbox for all features,
+        // but doesn't clear the model filter
+        //
+        // Try to select pinned track
+        m_pLibraryControl->selectedPinnedTrack();
+    } else {
+        // No pinned track, restore search
+        emit restoreSearch(trackModel->currentSearch());
+    }
 }
 
 void Library::slotSwitchToView(const QString& view) {

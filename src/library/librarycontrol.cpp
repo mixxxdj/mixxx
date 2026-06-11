@@ -12,8 +12,11 @@
 #include "control/controlpushbutton.h"
 #include "library/library.h"
 #include "library/libraryview.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_librarycontrol.cpp"
+#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -87,6 +90,28 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     }
 }
 
+PinLoadedTrackController::PinLoadedTrackController(
+        LibraryControl* pLibraryControl, const QString& group)
+        : QObject(pLibraryControl) {
+    m_pPinLoadedTrackControl =
+            std::make_unique<ControlPushButton>(ConfigKey(group, "pin_loaded_track"));
+    m_pPinLoadedTrackControl->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    connect(m_pPinLoadedTrackControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this, group](double v) {
+                emit pinLoadedTrack(group, v);
+            });
+    connect(this,
+            &PinLoadedTrackController::pinLoadedTrack,
+            pLibraryControl,
+            &LibraryControl::slotPinLoadedTrack);
+}
+
+void PinLoadedTrackController::reset() {
+    m_pPinLoadedTrackControl->set(0);
+}
+
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
@@ -95,6 +120,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
+          m_pinnedTrackId(TrackId()),
           m_numDecks(kAppGroup, QStringLiteral("num_decks"), this),
           m_numSamplers(kAppGroup, QStringLiteral("num_samplers"), this),
           m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks"), this) {
@@ -524,6 +550,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
 
+    m_pPinSelectedTrack = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "pin_selected_track"), false);
+    m_pPinSelectedTrack->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    connect(m_pPinSelectedTrack.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotPinSelectedTrack);
+
 #ifdef MIXXX_USE_QML
     if (!CmdlineArgs::Instance().isQml())
 #endif
@@ -552,6 +586,12 @@ LibraryControl::~LibraryControl() = default;
 void LibraryControl::maybeCreateGroupController(const QString& group) {
     if (m_loadToGroupControllers.find(group) == m_loadToGroupControllers.end()) {
         m_loadToGroupControllers.emplace(group, std::make_unique<LoadToGroupController>(this, group));
+    }
+    if (PlayerManager::isDeckGroup(group)) {
+        if (m_pinLoadedTrackControllers.find(group) == m_pinLoadedTrackControllers.end()) {
+            m_pinLoadedTrackControllers.emplace(group,
+                    std::make_unique<PinLoadedTrackController>(this, group));
+        }
     }
 }
 
@@ -670,6 +710,83 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
     if (pTrackTableView) {
         pTrackTableView->activateSelectedTrack();
     }
+}
+
+void LibraryControl::slotPinSelectedTrack(double v) {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    TrackId newId;
+    if (v > 0) {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (!pTrackTableView) {
+            return;
+        }
+        TrackId id = pTrackTableView->getCurrentTrackId();
+        if (!id.isValid()) {
+            m_pPinSelectedTrack->setAndConfirm(0);
+        }
+        newId = id;
+    }
+
+    // Reset all players' pin controls
+    for (const auto& pinController : m_pinLoadedTrackControllers) {
+        PinLoadedTrackController* controller = pinController.second.get();
+        controller->reset();
+    }
+
+    m_pinnedTrackId = newId;
+}
+
+/// Pin or unpin a track (unpin with invalid id)
+void LibraryControl::slotPinLoadedTrack(const QString& group, double v) {
+    TrackId newId;
+    TrackPointer pNewTrack;
+    if (v > 0) {
+        const auto groupsAndLoadedTracks = PlayerInfo::instance().getLoadedTracks();
+        auto it = groupsAndLoadedTracks.constFind(group);
+        if (it == groupsAndLoadedTracks.constEnd()) {
+            return;
+        }
+        TrackPointer loadedTrack = it.value();
+        if (loadedTrack) {
+            pNewTrack = loadedTrack;
+            newId = loadedTrack->getId();
+        }
+    }
+
+    // Reset the library pin control
+    m_pPinSelectedTrack->setAndConfirm(0);
+    // as well as all other players' pin controls
+    for (const auto& pinController : m_pinLoadedTrackControllers) {
+        if (newId.isValid() && pinController.first == group) {
+            continue;
+        }
+        PinLoadedTrackController* controller = pinController.second.get();
+        controller->reset();
+    }
+    m_pinnedTrackId = newId;
+    // Emit trackSelected() to update the playlist/crate/history item decoration
+    // so we don't need to select the deck track in the library
+    emit m_pLibrary->trackSelected(pNewTrack);
+}
+
+void LibraryControl::selectedPinnedTrack() {
+    if (!m_pLibraryWidget) {
+        return;
+    }
+
+    if (!m_pinnedTrackId.isValid()) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (!pTrackTableView) {
+        return;
+    }
+
+    pTrackTableView->selectPinnedTrack(m_pinnedTrackId);
 }
 
 void LibraryControl::slotAutoDjAddTop(double v) {
