@@ -12,6 +12,7 @@
 #include "library/trackprocessing.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
+#include "track/track_decl.h"
 #include "track/trackref.h"
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
@@ -21,6 +22,7 @@ class DlgTrackInfo;
 class DlgTrackInfoMulti;
 //class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
+class FindOnWebLast;
 class Library;
 class TrackModel;
 class WColorPickerAction;
@@ -105,6 +107,7 @@ class WTrackMenu : public QMenu {
         m_trackProperty = property;
     }
 
+    void updateMenus();
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
@@ -165,6 +168,10 @@ class WTrackMenu : public QMenu {
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
     void slotUndoBeatsChange();
+    void slotTranslateBeatsHalf();
+
+    // Hotcues
+    void slotSortHotcuesByPosition(HotcueSortMode sortMode);
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -225,7 +232,6 @@ class WTrackMenu : public QMenu {
     void createMenus();
     void createActions();
     void setupActions();
-    void updateMenus();
 
     void generateTrackLoadMenu(const QString& group,
             const QString& label,
@@ -285,13 +291,15 @@ class WTrackMenu : public QMenu {
     parented_ptr<QMenu> m_pCrateMenu;
     parented_ptr<QMenu> m_pMetadataMenu;
     parented_ptr<QMenu> m_pMetadataUpdateExternalCollectionsMenu;
+    parented_ptr<QMenu> m_pHotcueMenu;
     parented_ptr<QMenu> m_pClearMetadataMenu;
     parented_ptr<QMenu> m_pAnalyzeMenu;
     parented_ptr<QMenu> m_pBPMMenu;
     parented_ptr<QMenu> m_pColorMenu;
     parented_ptr<WCoverArtMenu> m_pCoverMenu;
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
-    parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
+    parented_ptr<QMenu> m_pFindOnWebMenu;
+    parented_ptr<FindOnWebLast> m_pFindOnWebLastAct;
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QMenu* m_pRemoveFromDiskMenu{};
 #endif
@@ -332,14 +340,17 @@ class WTrackMenu : public QMenu {
     // BPM feature
     parented_ptr<QAction> m_pBpmLockAction;
     parented_ptr<QAction> m_pBpmUnlockAction;
-    parented_ptr<QAction> m_pBpmDoubleAction;
     parented_ptr<QAction> m_pBpmHalveAction;
     parented_ptr<QAction> m_pBpmTwoThirdsAction;
-    parented_ptr<QAction> m_pBpmThreeFourthsAction;
     parented_ptr<QAction> m_pBpmFourThirdsAction;
+    parented_ptr<QAction> m_pBpmThreeFourthsAction;
+    parented_ptr<QAction> m_pBpmFourFifthsAction;
+    parented_ptr<QAction> m_pBpmFiveFourthsAction;
     parented_ptr<QAction> m_pBpmThreeHalvesAction;
+    parented_ptr<QAction> m_pBpmDoubleAction;
     parented_ptr<QAction> m_pBpmResetAction;
     parented_ptr<QAction> m_pBpmUndoAction;
+    parented_ptr<QAction> m_pTranslateBeatsHalf;
 
     // Track rating and color
     parented_ptr<WStarRatingAction> m_pStarRatingAction;
@@ -365,6 +376,8 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pClearKeyAction;
     parented_ptr<QAction> m_pClearReplayGainAction;
     parented_ptr<QAction> m_pClearAllMetadataAction;
+    parented_ptr<QAction> m_pSortHotcuesByPositionAction{};
+    parented_ptr<QAction> m_pSortHotcuesByPositionCompressAction{};
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
@@ -393,6 +406,7 @@ class WTrackMenu : public QMenu {
     QString m_trackProperty;
 
     static bool s_showPurgeSuccessPopup;
+    static bool s_confirmForAutoDjReplace;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(WTrackMenu::Features)

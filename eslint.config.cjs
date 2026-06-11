@@ -20,6 +20,7 @@ module.exports = tseslint.config(
             "res/controllers/Novation-Launchpad MK2-scripts.js",
             "res/controllers/Novation-Launchpad Mini MK3-scripts.js",
             "res/controllers/Novation-Launchpad-scripts.js",
+            "res/controllers/mixxx-controls.d.ts",
         ],
     },
     {
@@ -48,6 +49,7 @@ module.exports = tseslint.config(
                 // Mixxx custom
                 "ColorMapper": "readonly",
                 "components": "readonly",
+                "controller": "readonly",
                 "engine": "readonly",
                 "midi": "readonly",
                 // common-controller-scripts globals
@@ -66,7 +68,11 @@ module.exports = tseslint.config(
                 "Controller": "readonly",
                 "Button": "readonly",
                 "Control": "readonly",
-                "Deck": "readonly"
+                "Deck": "readonly",
+                // common-hid-packet-parser globals
+                HIDController: "readonly",
+                HIDDebug: "readonly",
+                HIDPacket: "readonly"
             }
         }
     },

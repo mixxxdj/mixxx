@@ -7,6 +7,11 @@
 #include "util/logging.h"
 
 int main(int argc, char **argv) {
+    // By default, render analyzer waveform tests to an offscreen buffer
+    if (qEnvironmentVariableIsEmpty("QT_QPA_PLATFORM")) {
+        qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
+    }
+
     // We never want to popup error dialogs when running tests.
     ErrorDialogHandler::setEnabled(false);
 
@@ -23,22 +28,14 @@ int main(int argc, char **argv) {
 
     if (run_benchmarks) {
         benchmark::Initialize(&argc, argv);
-    } else {
-        testing::InitGoogleTest(&argc, argv);
+        MixxxTest::ApplicationScope applicationScope(argc, argv);
+        benchmark::RunSpecifiedBenchmarks();
+        return 0;
     }
 
     // Otherwise, run the test suite:
-    MixxxTest::ApplicationScope applicationScope(argc, argv);
-
-    if (run_benchmarks) {
-        benchmark::RunSpecifiedBenchmarks();
-        return 0;
-    } else {
-        return RUN_ALL_TESTS();
-    }
-#else
+#endif
     testing::InitGoogleTest(&argc, argv);
     MixxxTest::ApplicationScope applicationScope(argc, argv);
     return RUN_ALL_TESTS();
-#endif
 }

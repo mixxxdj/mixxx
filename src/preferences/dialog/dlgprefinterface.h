@@ -19,7 +19,7 @@ class SkinLoader;
 }
 } // namespace mixxx
 
-class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
+class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg {
     Q_OBJECT
   public:
     DlgPrefInterface(
@@ -40,6 +40,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotSetScheme(int);
     void slotSetSkinDescription();
     void slotSetSkinPreview();
+    void slotUpdateSkins();
     void slotUpdateSchemes();
 
   signals:
@@ -49,7 +50,9 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   private:
     void notifyRebootNecessary();
+    void notifyExperimentalQmlSkinRestartNecessary();
     void loadTooltipPreferenceFromConfig();
+    void updateScreenMetrics();
 
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item
@@ -70,6 +73,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_colorSchemeOnUpdate;
     QString m_localeOnUpdate;
     mixxx::preferences::MultiSamplingMode m_multiSampling;
+    bool m_forceHardwareAcceleration;
     mixxx::preferences::Tooltips m_tooltipMode;
     double m_dScaleFactor;
     double m_minScaleFactor;

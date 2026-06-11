@@ -90,9 +90,13 @@ double ReplayGain::ratioFromString(const QString& dbGain, bool* pValid) {
     return kRatioUndefined;
 }
 
-QString ReplayGain::ratioToString(double ratio) {
+QString ReplayGain::ratioToString(double ratio, std::optional<int> precision) {
     if (isValidRatio(ratio)) {
-        return QString::number(ratio2db(ratio)) + kGainSuffix;
+        if (precision.has_value() && precision.value() >= 0) {
+            return QString::number(ratio2db(ratio), 'f', precision.value()) + kGainSuffix;
+        } else {
+            return QString::number(ratio2db(ratio)) + kGainSuffix;
+        }
     } else {
         return QString();
     }

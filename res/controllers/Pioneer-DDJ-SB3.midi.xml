@@ -1256,6 +1256,46 @@
         </options>
       </control>
       <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <description>Master Level</description>
+        <status>0xB6</status>
+        <midino>0x08</midino>
+        <options>
+          <fourteen-bit-msb/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <description>Master Level</description>
+        <status>0xB6</status>
+        <midino>0x28</midino>
+        <options>
+          <fourteen-bit-lsb/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headGain</key>
+        <description>Headphones Level</description>
+        <status>0xB6</status>
+        <midino>0x0D</midino>
+        <options>
+          <fourteen-bit-msb/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headGain</key>
+        <description>Headphones Level</description>
+        <status>0xB6</status>
+        <midino>0x2D</midino>
+        <options>
+          <fourteen-bit-lsb/>
+        </options>
+      </control>
+      <control>
         <group>[Playlist]</group>
         <key>PioneerDDJSB3.rotarySelector</key>
         <description>Browser rotate, Knob: BROWSER</description>
@@ -1456,21 +1496,21 @@
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit]</group>
-        <key>PioneerDDJSB3.effectUnit[1].knob.inputMSB</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>PioneerDDJSB3.effectUnit[1].shiftKnob.inputMSB</key>
         <description>Shift FX1 (MSB), Knob: left SHIFT &amp; FX1</description>
         <status>0xB4</status>
-        <midino>0x00</midino>
+        <midino>0x12</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
-        <group>[EffectRack1_EffectUnit]</group>
-        <key>PioneerDDJSB3.effectUnit[1].knob.inputLSB</key>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>PioneerDDJSB3.effectUnit[1].shiftKnob.inputLSB</key>
         <description>Shift FX1 (LSB), Knob: left SHIFT &amp; FX1</description>
         <status>0xB4</status>
-        <midino>0x20</midino>
+        <midino>0x32</midino>
         <options>
           <script-binding/>
         </options>
@@ -1557,20 +1597,20 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>PioneerDDJSB3.effectUnit[2].knob.inputMSB</key>
+        <key>PioneerDDJSB3.effectUnit[2].shiftKnob.inputMSB</key>
         <description>Shift FX2 (MSB), Knob: right SHIFT &amp; FX1</description>
         <status>0xB5</status>
-        <midino>0x00</midino>
+        <midino>0x12</midino>
         <options>
           <script-binding/>
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>PioneerDDJSB3.effectUnit[2].knob.inputLSB</key>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>PioneerDDJSB3.effectUnit[2].shiftKnob.inputLSB</key>
         <description>Shift FX2 (LSB), Knob: right SHIFT &amp; FX2</description>
         <status>0xB5</status>
-        <midino>0x20</midino>
+        <midino>0x32</midino>
         <options>
           <script-binding/>
         </options>

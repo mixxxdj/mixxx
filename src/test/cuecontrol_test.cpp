@@ -369,6 +369,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
 }
 
 TEST_F(CueControlTest, FollowCueOnQuantize) {
+    m_pQuantizeEnabled->set(0);
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     TrackPointer pTrack = createTestTrack();

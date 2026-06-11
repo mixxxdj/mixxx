@@ -9,7 +9,7 @@
     <SignalHighColor></SignalHighColor>
     <SignalMidColor></SignalMidColor>
     <SignalLowColor></SignalLowColor>
-    <SignalColor>#191F24</SignalColor>
+    <SignalColor><Variable name="SignalColor"/></SignalColor>
     <PlayPosColor>#00FF00</PlayPosColor>
     <EndOfTrackColor>#EA0000</EndOfTrackColor>
     <PassthroughLabelColor><Variable name="PassthroughLabelColor"/></PassthroughLabelColor>

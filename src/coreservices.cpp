@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QProcess>
+#include <QProcessEnvironment>
 #include <QStandardPaths>
 #include <QtGlobal>
 #include <gsl/pointers>
@@ -12,6 +14,7 @@
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/scripting/controllerscriptenginebase.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemixer.h"
@@ -20,7 +23,9 @@
 #endif
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
+#include "library/overviewcache.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -32,19 +37,17 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 #include "skin/skincontrols.h"
+#include "skin/skinloader.h"
 #ifdef MIXXX_USE_QML
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 
-#include "controllers/scripting/controllerscriptenginebase.h"
 #include "qml/qmlconfigproxy.h"
-#include "qml/qmlcontrolproxy.h"
-#include "qml/qmldlgpreferencesproxy.h"
-#include "qml/qmleffectslotproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
 #include "qml/qmlplayermanagerproxy.h"
-#include "qml/qmlplayerproxy.h"
+#include "qml/qmlpreferencesproxy.h"
+#include "qml/qmlsoundmanagerproxy.h"
 #endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -63,8 +66,14 @@
 #include "util/sandbox.h"
 #endif
 
+#if defined(Q_OS_LINUX) && defined(__X11__)
+#include <X11/XKBlib.h>
+#endif
+#if defined(Q_OS_ANDROID)
+#include <QtCore/private/qandroidextras_p.h>
+#endif
+
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <X11/Xlib.h>
 #include <X11/Xlibint.h>
 
 #include <QtX11Extras/QX11Info>
@@ -116,11 +125,234 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
 
 #endif
 
+#if defined(Q_OS_LINUX) && defined(__X11__)
+QLocale localeFromXkbSymbol(const QString& xkbLayout) {
+    // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
+    static const QMap<QString, QLocale> xkbToLocaleMap = {
+            {"cz", QLocale(QLocale::Czech, QLocale::CzechRepublic)},              // cs_CZ.kbd.cfg
+            {"de", QLocale(QLocale::German, QLocale::Germany)},                   // de_DE.kbd.cfg
+            {"de+nodeadkeys", QLocale(QLocale::German, QLocale::Germany)},        // de_DE.kbd.cfg
+            {"es", QLocale(QLocale::Spanish, QLocale::Spain)},                    // es_ES.kbd.cfg
+            {"es+nodeadkeys", QLocale(QLocale::Spanish, QLocale::Spain)},         // es_ES.kbd.cfg
+            {"fr", QLocale(QLocale::French, QLocale::France)},                    // fr_FR.kbd.cfg
+            {"fr+nodeadkeys", QLocale(QLocale::French, QLocale::France)},         // fr_FR.kbd.cfg
+            {"dk", QLocale(QLocale::Danish, QLocale::Denmark)},                   // da_DK.kbd.cfg
+            {"dk+nodeadkeys", QLocale(QLocale::Danish, QLocale::Denmark)},        // da_DK.kbd.cfg
+            {"gr", QLocale(QLocale::Greek, QLocale::Greece)},                     // el_GR.kbd.cfg
+            {"gr+nodeadkeys", QLocale(QLocale::Greek, QLocale::Greece)},          // el_GR.kbd.cfg
+            {"fi", QLocale(QLocale::Finnish, QLocale::Finland)},                  // fi_FI.kbd.cfg
+            {"it", QLocale(QLocale::Italian, QLocale::Italy)},                    // it_IT.kbd.cfg
+            {"it+nodeadkeys", QLocale(QLocale::Italian, QLocale::Italy)},         // it_IT.kbd.cfg
+            {"us", QLocale(QLocale::English, QLocale::UnitedStates)},             // en_US.kbd.cfg
+            {"ru", QLocale(QLocale::Russian, QLocale::Russia)},                   // ru_RU.kbd.cfg
+            {"ch", QLocale(QLocale::German, QLocale::Switzerland)},               // de_CH.kbd.cfg
+            {"ch+de_nodeadkeys", QLocale(QLocale::German, QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"ch+fr", QLocale(QLocale::French, QLocale::Switzerland)},            // fr_CH.kbd.cfg
+            {"ch+fr_nodeadkeys", QLocale(QLocale::French, QLocale::Switzerland)}  // fr_CH.kbd.cfg
+    };
+    return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
+}
+
+QLocale localeFromXkbName(const QString& xkbLayout) {
+    // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
+    static const QMap<QString, QLocale> xkbToLocaleMap = {
+            {"Czech",
+                    QLocale(QLocale::Czech,
+                            QLocale::CzechRepublic)}, // cs_CZ.kbd.cfg
+            {"German",
+                    QLocale(QLocale::German,
+                            QLocale::Germany)}, // de_DE.kbd.cfg
+            {"German (no dead keys)",
+                    QLocale(QLocale::German,
+                            QLocale::Germany)}, // de_DE.kbd.cfg
+            {"Spanish",
+                    QLocale(QLocale::Spanish, QLocale::Spain)}, // es_ES.kbd.cfg
+            {"Spanish (no dead keys)",
+                    QLocale(QLocale::Spanish, QLocale::Spain)}, // es_ES.kbd.cfg
+            {"French",
+                    QLocale(QLocale::French, QLocale::France)}, // fr_FR.kbd.cfg
+            {"French (no dead keys)",
+                    QLocale(QLocale::French, QLocale::France)}, // fr_FR.kbd.cfg
+            {"Danish",
+                    QLocale(QLocale::Danish,
+                            QLocale::Denmark)}, // da_DK.kbd.cfg
+            {"Danish (no dead keys)",
+                    QLocale(QLocale::Danish,
+                            QLocale::Denmark)}, // da_DK.kbd.cfg
+            {"Greek",
+                    QLocale(QLocale::Greek, QLocale::Greece)}, // el_GR.kbd.cfg
+            {"Greek (no dead keys)",
+                    QLocale(QLocale::Greek, QLocale::Greece)}, // el_GR.kbd.cfg
+            {"Finnish",
+                    QLocale(QLocale::Finnish,
+                            QLocale::Finland)}, // fi_FI.kbd.cfg
+            {"Italian",
+                    QLocale(QLocale::Italian, QLocale::Italy)}, // it_IT.kbd.cfg
+            {"Italian (no dead keys)",
+                    QLocale(QLocale::Italian, QLocale::Italy)}, // it_IT.kbd.cfg
+            {"English (US)",
+                    QLocale(QLocale::English,
+                            QLocale::UnitedStates)}, // en_US.kbd.cfg
+            {"Russian",
+                    QLocale(QLocale::Russian,
+                            QLocale::Russia)}, // ru_RU.kbd.cfg
+            {"German (Switzerland)",
+                    QLocale(QLocale::German,
+                            QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"German (Switzerland, no dead keys)",
+                    QLocale(QLocale::German,
+                            QLocale::Switzerland)}, // de_CH.kbd.cfg
+            {"French (Switzerland)",
+                    QLocale(QLocale::French,
+                            QLocale::Switzerland)}, // fr_CH.kbd.cfg
+            {"French (Switzerland, no dead keys)",
+                    QLocale(QLocale::French,
+                            QLocale::Switzerland)} // fr_CH.kbd.cfg
+    };
+    return xkbToLocaleMap.value(xkbLayout, QLocale(QLocale::English, QLocale::UnitedStates));
+}
+
+inline bool isGnomeSession() {
+    const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
+    return desktop.contains("gnome");
+}
+
+inline bool isXfceSession() {
+    const QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString desktop = env.value("XDG_CURRENT_DESKTOP").toLower();
+    return desktop.contains("xfce");
+}
+
+QString getCurrentXkbLayoutName() {
+    XkbIgnoreExtension(False);
+    Display* pDisplay = XkbOpenDisplay(nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+    if (!pDisplay) {
+        // No X11 / XWayland running or no Xkb in use
+        return {};
+    }
+
+    XkbStateRec state;
+    if (XkbGetState(pDisplay, XkbUseCoreKbd, &state) != Success) {
+        qWarning() << "XkbGetState failed";
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+
+    XkbDescPtr pDesc = XkbGetMap(pDisplay, 0, XkbUseCoreKbd);
+    if (!pDesc) {
+        qWarning() << "XkbGetMap failed";
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+
+    XkbGetNames(pDisplay, XkbGroupNamesMask, pDesc);
+    if (!pDesc->names) {
+        qWarning() << "XkbGetNames failed";
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+    char* pGroupName = XGetAtomName(pDisplay, pDesc->names->groups[state.group]);
+    if (!pGroupName) {
+        qWarning() << "XGetAtomName failed";
+        XkbFreeNames(pDesc, XkbGroupNamesMask, True);
+        XCloseDisplay(pDisplay);
+        return {};
+    }
+    QString layoutName = QString(pGroupName);
+    XFree(pGroupName);
+    XkbFreeNames(pDesc, XkbKeyNamesMask, True);
+    XCloseDisplay(pDisplay);
+    return layoutName;
+}
+#endif
+
+// Returns the locale of the current keyboard layout
+// On macOS and Windows QGuiApplication::inputMethod() is used straight away.
+// On Linux it first tries to via X11/XWayland. That works even if Mixxx itself
+// is running with Wayland. If XWayland is not installed it falls back to
+// dconf/xfconf-query and than QGuiApplication::inputMethod() which is equivalent
+// to "ibus engine". QGuiApplication::inputMethod() does not work with GNOME and XFCE
+// https://bugreports.qt.io/browse/QTBUG-137302
 inline QLocale inputLocale() {
-    // Use the default config for local keyboard
+#if defined(Q_OS_LINUX) && defined(__X11__)
+    QString layoutName = getCurrentXkbLayoutName();
+    if (!layoutName.isEmpty()) {
+        qDebug() << "Keyboard Layout from XKB:" << layoutName;
+        return localeFromXkbName(layoutName);
+    }
+    if (isGnomeSession()) {
+        // In a Gnome session QGuiApplication::inputMethod() is not necessarily correct
+        // https://github.com/mixxxdj/mixxx/issues/14838
+        // If this auto detection still fails the user may use a Custom.kb.cfg
+        QProcess sourcesProc;
+        sourcesProc.start("dconf",
+                {"read", "/org/gnome/desktop/input-sources/mru-sources"});
+        if (sourcesProc.waitForFinished(100)) {
+            const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            // Expecting something like this: [('xkb', 'de'), ('xkb', 'us')]
+            // The first match is the current layout.
+            // This matches entries like ('xkb', 'us') and extracts the layout
+            // code (e.g. 'us', 'de')
+            static const QRegularExpression re(QStringLiteral("\\('xkb',\\s*'([^']+)'\\)"));
+            QRegularExpressionMatch match = re.match(sourcesStr);
+            if (match.hasMatch()) {
+                const QString layout = match.captured(1);
+                ;
+                qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
+                return localeFromXkbSymbol(layout);
+            } else {
+                // mru-sources (most recently used source) is empty when user
+                // has only one keyboard layout enabled. Use it from sources.
+                sourcesProc.start("dconf",
+                        {"read", "/org/gnome/desktop/input-sources/sources"});
+                if (sourcesProc.waitForFinished(100)) {
+                    const QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+                    // Expecting something like this: [('xkb', 'de')]
+                    QRegularExpressionMatch match = re.match(sourcesStr);
+                    if (match.hasMatch()) {
+                        const QString layout = match.captured(1);
+                        qDebug() << "Keyboard Layout from GNOME dconf:" << layout;
+                        return localeFromXkbSymbol(layout);
+                    } else {
+                        qDebug() << "No valid keyboard layout found in dconf:" << sourcesStr;
+                    }
+                } else {
+                    qDebug() << "Failed to read Keyboard Layout from dconf.";
+                }
+            }
+        } else {
+            qDebug() << "Failed to read Keyboard Layout from dconf.";
+        }
+    } else if (isXfceSession()) {
+        // In a Xfce session QGuiApplication::inputMethod() is not necessarily correct
+        // https://github.com/mixxxdj/mixxx/issues/14838
+        // If this auto detection still fails the user may use a Custom.kb.cfg
+        const QStringList args{"-c", "keyboard-layout", "-p", "/Default/XkbLayout"};
+        QProcess sourcesProc;
+        sourcesProc.start("xfconf-query", args);
+        if (sourcesProc.waitForFinished(100)) {
+            QString sourcesStr = sourcesProc.readAllStandardOutput().trimmed();
+            // Expecting comma-separated layouts: de,gr,cz
+            // The first is the current layout.
+            if (sourcesStr.length() >= 2) {
+                const QStringList allLayouts = sourcesStr.split(',');
+                const QString currLayout = allLayouts[0];
+                qDebug() << "Keyboard Layout from XFCE xfconf:" << currLayout;
+                return localeFromXkbSymbol(currLayout);
+            } else {
+                qDebug() << "No valid keyboard layout found in xfconf:" << sourcesStr;
+            }
+        } else {
+            qDebug() << "Failed to read Keyboard Layout from xfconf.";
+        }
+    }
+#endif
+
     QInputMethod* pInputMethod = QGuiApplication::inputMethod();
     return pInputMethod ? pInputMethod->locale() : QLocale(QLocale::English);
 }
+
 } // anonymous namespace
 
 namespace mixxx {
@@ -153,8 +385,6 @@ CoreServices::~CoreServices() {
 
     // Tear down remaining stuff that was initialized in the constructor.
     CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
 
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::destroy();
@@ -211,6 +441,30 @@ void CoreServices::initializeSettings() {
     }
 #endif
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
+
+    // Verify we can access the custom settings directory. If it is unwritable
+    // (e.g. due to macOS sandboxing, or restricted filesystem permissions),
+    // prompt the user to grant access or select a new location.
+    // See https://github.com/mixxxdj/mixxx/issues/15489
+    if (m_cmdlineArgs.getSettingsPathSet()) {
+        if (!Sandbox::ensureSettingsPathAccessible(&settingsPath)) {
+            // The user either declined the permission dialog or the
+            // folder remains unwritable. Show a clear error and exit.
+            QMessageBox::critical(nullptr,
+                    tr("Cannot access settings folder"),
+                    tr("Mixxx cannot access the settings folder:"
+                       "\n\n%1\n\n"
+                       "You can either:\n\n"
+                       "\u2022 Remove the --settings-path argument to use the "
+                       "default location\n"
+                       "\u2022 Re-run Mixxx and select a valid folder when prompted\n\n"
+                       "Click OK to exit.")
+                            .arg(settingsPath),
+                    QMessageBox::Ok);
+            exit(1);
+        }
+    }
+
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
@@ -372,6 +626,12 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
 
+    OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
+    connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
+            &TrackDAO::waveformSummaryUpdated,
+            pOverviewCache,
+            &OverviewCache::onTrackSummaryChanged);
+
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has
     // been created. Otherwise Mixxx might hang when accessing
@@ -381,6 +641,58 @@ void CoreServices::initialize(QApplication* pApp) {
     bool musicDirAdded = false;
 
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
+#if defined(Q_OS_IOS) || defined(Q_OS_WASM)
+        // On the web and iOS, we are running in a sandbox (a virtual file
+        // system on the web). Since we are generally limited to paths within
+        // the sandbox, there is not much point in asking the user about a
+        // custom directory, so we just default to Qt's standard music directory
+        // (~/Documents/Music on iOS and ~/Music on Wasm). Since the sandbox is
+        // initially empty, we create that directory automatically.
+        // Advanced users can still customize this directory in the settings.
+        QString fd = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+#elif defined(Q_OS_ANDROID)
+        // if(QOperatingSystemVersion::current() <
+        // QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
+        //     qDebug() << "it is less then Android 11 - ALL FILES permission
+        //     isn't possible!";
+        // }
+        QString fd;
+        jboolean value = QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+        if (value == false) {
+            qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+            QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION =
+                    QJniObject::getStaticObjectField(
+                            "android/provider/Settings",
+                            "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
+                            "Ljava/lang/String;");
+            QJniObject intent("android/content/Intent",
+                    "(Ljava/lang/String;)V",
+                    ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
+            QJniObject jniPath = QJniObject::fromString(
+                    QStringLiteral("package:%1").arg(ANDROID_PACKAGE_NAME));
+            QJniObject jniUri =
+                    QJniObject::callStaticObjectMethod("android/net/Uri",
+                            "parse",
+                            "(Ljava/lang/String;)Landroid/net/Uri;",
+                            jniPath.object<jstring>());
+            QJniObject jniResult = intent.callObjectMethod("setData",
+                    "(Landroid/net/Uri;)Landroid/content/Intent;",
+                    jniUri.object<jobject>());
+            QtAndroidPrivate::startActivity(intent, 0);
+        } else {
+            qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+        }
+        fd = "/storage/emulated/0/Music/";
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
+#else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
@@ -391,7 +703,9 @@ void CoreServices::initialize(QApplication* pApp) {
         QString fd = QFileDialog::getExistingDirectory(nullptr,
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
-                        QStandardPaths::MusicLocation));
+                        QStandardPaths::MusicLocation),
+                QFileDialog::ShowDirsOnly);
+#endif
         // request to add directory to database.
         if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
             musicDirAdded = true;
@@ -443,10 +757,16 @@ void CoreServices::initialize(QApplication* pApp) {
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
             supportedFileSuffixes.join(","));
 
+    // Forward the scanner signal so MixxxMainWindow can display a summary popup.
+    connect(m_pTrackCollectionManager.get(),
+            &TrackCollectionManager::libraryScanSummary,
+            this,
+            &CoreServices::libraryScanSummary,
+            Qt::UniqueConnection);
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
-        m_pTrackCollectionManager->startLibraryScan();
+        m_pTrackCollectionManager->startLibraryAutoScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
@@ -462,13 +782,17 @@ void CoreServices::initialize(QApplication* pApp) {
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
-    for (int i = 0; i < (int)m_pPlayerManager->numDecks() && i < musicFiles.count(); ++i) {
+    const int numTracks = std::min(m_pPlayerManager->numberOfDecks(),
+            static_cast<int>(musicFiles.count()));
+    for (int i = 0; i < numTracks; ++i) {
         if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
     }
 
     m_isInitialized = true;
+
+    ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
 
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();
@@ -488,6 +812,11 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
+    mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
+    mixxx::qml::QmlControllerManagerProxy::registerManager(
+            getControllerManager(),
+            CmdlineArgs::Instance().getControllerPreviewScreens());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
@@ -500,77 +829,47 @@ void CoreServices::initializeQMLSingletons() {
 
 void CoreServices::initializeKeyboard() {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    QString resourcePath = pConfig->getResourcePath();
-
-    // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
-    }
-
-    // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
-
-    // Empty keyboard configuration
-    m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
-
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
-    } else {
-        // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
-
-        // check if a default keyboard exists
-        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
-        defaultKeyboard += locale.name();
-        defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
-
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
-                defaultKeyboard = "";
-            }
-        }
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(defaultKeyboard);
-    }
-
-    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
-    // initialization into KeyboardEventFilter
-    // Workaround for today: KeyboardEventFilter calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValue<bool>(
-            ConfigKey("[Keyboard]", "Enabled"));
-    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(
-            keyboardShortcutsEnabled ? m_pKbdConfig.get() : m_pKbdConfigEmpty.get());
+    const QLocale locale = inputLocale();
+    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(pConfig, locale);
 }
 
-void CoreServices::slotOptionsKeyboard(bool toggle) {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfig.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
-    } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
-    }
+std::shared_ptr<ConfigObject<ConfigValueKbd>> CoreServices::getKeyboardConfig() const {
+    return m_pKeyboardEventFilter->getKeyboardConfig();
 }
 
 bool CoreServices::initializeDatabase() {
     kLogger.info() << "Connecting to database";
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     if (!dbConnection.isOpen()) {
+        QString settingsPath = m_pSettingsManager->settings()->getSettingsPath();
+        QFileInfo settingsInfo(settingsPath);
+
+        QString errorDetail;
+        if (!settingsInfo.exists()) {
+            errorDetail = tr(
+                    "The settings directory does not exist:\n%1\n\n"
+                    "Please verify the --settings-path argument.")
+                                  .arg(settingsPath);
+        } else if (!settingsInfo.isWritable()) {
+            errorDetail = tr(
+                    "The settings directory is not writable:\n%1\n\n"
+                    "This may be caused by macOS sandbox restrictions "
+                    "if you are using a custom --settings-path outside "
+                    "the app container.\n\n"
+                    "Try running Mixxx without --settings-path, or "
+                    "grant Mixxx access to the folder when prompted.")
+                                  .arg(settingsPath);
+        } else {
+            errorDetail = tr(
+                    "Unable to establish a database connection.\n"
+                    "Mixxx requires Qt with SQLite support. Please read "
+                    "the Qt SQL driver documentation for information on how "
+                    "to build it.");
+        }
+
         QMessageBox::critical(nullptr,
                 tr("Cannot open database"),
-                tr("Unable to establish a database connection.\n"
-                   "Mixxx requires QT with SQLite support. Please read "
-                   "the Qt SQL driver documentation for information on how "
-                   "to build it.\n\n"
-                   "Click OK to exit."),
+                errorDetail + QStringLiteral("\n\n") + tr("Click OK to exit."),
                 QMessageBox::Ok);
         return false;
     }
@@ -582,9 +881,10 @@ bool CoreServices::initializeDatabase() {
 std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
     // Note: We return here the base class pointer to make the coreservices.h usable
     // in test classes where header included from dlgpreferences.h are not accessible.
+    auto pSkinLoader = std::make_shared<mixxx::skin::SkinLoader>(getSettings());
     std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
             getScreensaverManager(),
-            nullptr,
+            pSkinLoader,
             getSoundManager(),
             getControllerManager(),
             getVinylControlManager(),
@@ -609,9 +909,13 @@ void CoreServices::finalize() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(nullptr);
+    mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
+    mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

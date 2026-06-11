@@ -7,6 +7,33 @@
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4081</forums>
         <manual>hercules_dj_console_mk1</manual>
     </info>
+    <settings>
+        <group label="Backwards Compatibility">
+            <row orientation="vertical">
+                <option
+                    variable="pitchBendAsJogWheel"
+                    type="boolean"
+                    default="false"
+                    label="Use the pitch bend buttons as jog wheels">
+                    <description>
+                      This will change the pitch bend buttons to behave like the
+                      jog wheels, scratching when the track is paused or seeking
+                      when the track is playing.
+                    </description>
+                </option>
+                <option
+                    variable="gainAsTempo"
+                    type="boolean"
+                    default="false"
+                    label="Use the gain encoder for setting the tempo">
+                    <description>
+                      This will change the gain encoder to modify the tempo
+                      instead.
+                    </description>
+                </option>
+            </row>
+        </group>
+    </settings>
     <controller id="Hercules DJ Console Mk1 HID">
         <scriptfiles>
             <file filename="Hercules-DJ-Console-Mk1-hid-scripts.js" functionprefix="HerculesMk1Hid"/>

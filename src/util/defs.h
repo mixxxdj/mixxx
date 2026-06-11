@@ -22,6 +22,10 @@ constexpr unsigned int kMaxEngineSamples = kMaxEngineChannels * kMaxEngineFrames
 constexpr unsigned int MAX_BUFFER_LEN = 160000;
 
 constexpr int kMaxNumberOfDecks = 4;
+constexpr int kMaxNumberOfHotcues = 36;
+// Hotcue index is 0-based (0..35), +1 is the main cue
+// Used for a common tracking of the main cue in CueControl and WCueButton
+constexpr int kMainCueIndex = kMaxNumberOfHotcues;
 
 // Keyboard shortcut components for showing the Track Properties dialog and
 // for displaying the shortcut in the track context menu

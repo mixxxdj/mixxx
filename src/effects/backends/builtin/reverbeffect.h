@@ -17,13 +17,9 @@ class ReverbGroupState : public EffectState {
             : EffectState(engineParameters),
               sampleRate(engineParameters.sampleRate()),
               sendPrevious(0) {
+        reverb.init(sampleRate);
     }
     ~ReverbGroupState() override = default;
-
-    void engineParametersChanged(const mixxx::EngineParameters& engineParameters) {
-        sampleRate = engineParameters.sampleRate();
-        sendPrevious = 0;
-    }
 
     float sampleRate;
     float sendPrevious;

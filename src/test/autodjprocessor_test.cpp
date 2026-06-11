@@ -142,20 +142,20 @@ class MockPlayerManager : public PlayerManagerInterface {
 
     MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const QString&));
     MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const ChannelHandle&));
-    MOCK_CONST_METHOD1(getDeck, Deck*(unsigned int));
-    MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
-    MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));
+    MOCK_CONST_METHOD1(getDeckBase, BaseTrackPlayer*(int));
+    MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(int));
+    MOCK_CONST_METHOD1(getSampler, Sampler*(int));
 
-    unsigned int numberOfDecks() const {
-        return static_cast<unsigned int>(numDecks.get());
+    int numberOfDecks() const {
+        return static_cast<int>(numDecks.get());
     }
 
-    unsigned int numberOfSamplers() const {
-        return static_cast<unsigned int>(numSamplers.get());
+    int numberOfSamplers() const {
+        return static_cast<int>(numSamplers.get());
     }
 
-    unsigned int numberOfPreviewDecks() const {
-        return static_cast<unsigned int>(numPreviewDecks.get());
+    int numberOfPreviewDecks() const {
+        return static_cast<int>(numPreviewDecks.get());
     }
 
     ControlObject numDecks;
@@ -213,20 +213,20 @@ class AutoDJProcessorTest : public LibraryTest {
         PlayerInfo::create();
 
         // Setup 4 fake decks.
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
+        ON_CALL(*pPlayerManager, getDeckBase(0))
                 .WillByDefault(Return(&deck1));
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel2]")))
+        ON_CALL(*pPlayerManager, getDeckBase(1))
                 .WillByDefault(Return(&deck2));
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel3]")))
+        ON_CALL(*pPlayerManager, getDeckBase(2))
                 .WillByDefault(Return(&deck3));
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel4]")))
+        ON_CALL(*pPlayerManager, getDeckBase(3))
                 .WillByDefault(Return(&deck4));
         pPlayerManager->numDecks.set(4);
 
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(0)).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(1)).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(2)).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(3)).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(nullptr,
                 config(),
@@ -602,10 +602,10 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     config()->set(ConfigKey("[Auto DJ]", "Transition"), QString("25"));
     // Creating a new MockAutoDJProcessor will get each player from player
     // manager.
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(0)).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(1)).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(2)).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(3)).Times(1);
 
     // We need to call reset *before* constructing a new MockAutoDJProcessor,
     // because otherwise the new object will try to create COs that already

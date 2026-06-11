@@ -50,6 +50,9 @@ class CmdlineArgs final {
     bool isQml() const {
         return m_qml;
     }
+    bool isAwareOfRisk() const {
+        return m_awareOfRisk;
+    }
 #endif
     bool getSafeMode() const { return m_safeMode; }
     bool useColors() const {
@@ -77,6 +80,10 @@ class CmdlineArgs final {
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
+    const QString& getStyle() const {
+        return m_styleName;
+    }
+
     void setScaleFactor(double scaleFactor) {
         m_scaleFactor = scaleFactor;
     }
@@ -102,6 +109,7 @@ class CmdlineArgs final {
     bool m_developer; // Developer Mode
 #ifdef MIXXX_USE_QML
     bool m_qml;
+    bool m_awareOfRisk;
 #endif
     bool m_safeMode;
     bool m_useLegacyVuMeter;
@@ -118,4 +126,5 @@ class CmdlineArgs final {
     QString m_settingsPath;
     QString m_resourcePath;
     QString m_timelinePath;
+    QString m_styleName;
 };

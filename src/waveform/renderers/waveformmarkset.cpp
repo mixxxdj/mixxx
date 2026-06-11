@@ -1,8 +1,11 @@
-#include <set>
-#include <QtDebug>
-
 #include "waveformmarkset.h"
-#include "engine/controls/cuecontrol.h"
+
+#include <QtDebug>
+#include <memory>
+#include <optional>
+#include <set>
+
+#include "util/defs.h"
 
 WaveformMarkSet::WaveformMarkSet() {
 }
@@ -14,8 +17,8 @@ WaveformMarkSet::~WaveformMarkSet() {
 void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                             const SkinContext& context,
                             const WaveformSignalColors& signalColors) {
-
-    m_marks.reserve(NUM_HOT_CUES + 3); // + 3 for cue_point, loop_start_position and loop_end_position
+    // + 3 for cue_point, loop_start_position and loop_end_position
+    m_marks.reserve(kMaxNumberOfHotcues + 3);
     // Note: m_hotCueMarks does not support reserving space
 
     std::set<QString> controlItemSet;
@@ -26,20 +29,20 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     int priority = 0;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(
-                    group, child, context, --priority, signalColors));
+            m_pDefaultMark = WaveformMarkPointer::create(
+                    group, child, context, --priority, signalColors);
             hasDefaultMark = true;
             defaultChild = child;
         } else if (child.nodeName() == "Mark") {
-            WaveformMarkPointer pMark(new WaveformMark(
-                    group, child, context, --priority, signalColors));
+            auto pMark = WaveformMarkPointer::create(
+                    group, child, context, --priority, signalColors);
             if (pMark->isValid()) {
                 // guarantee uniqueness even if there is a misdesigned skin
                 QString item = pMark->getItem();
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                 } else  {
-                    m_marks.push_back(pMark);
+                    addMark(pMark);
                     if (pMark->getHotCue() >= 0) {
                         m_hotCueMarks.insert(pMark->getHotCue(), pMark);
                     }
@@ -52,16 +55,68 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     // check if there is a default mark and compare declared
     // and to create all missing hot_cues
     if (hasDefaultMark) {
-        for (int i = 0; i < NUM_HOT_CUES; ++i) {
+        for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
             if (m_hotCueMarks.value(i).isNull()) {
-                //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                WaveformMarkPointer pMark(new WaveformMark(
-                        group, defaultChild, context, i, signalColors, i));
+                // qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
+                auto pMark = WaveformMarkPointer::create(
+                        group, defaultChild, context, i, signalColors, i);
                 m_marks.push_front(pMark);
                 m_hotCueMarks.insert(pMark->getHotCue(), pMark);
             }
         }
     }
+}
+
+std::optional<WaveformMark::WaveformMarkConstructionError>
+WaveformMarkSet::setDefault(const QString& group,
+        const DefaultMarkerStyle& model,
+        const WaveformSignalColors& signalColors) {
+    auto mark = WaveformMark::create(
+            group,
+            model.positionControl,
+            model.visibilityControl,
+            model.textColor,
+            model.markAlign,
+            model.text,
+            model.pixmapPath,
+            model.iconPath,
+            model.color,
+            0,
+            Cue::kNoHotCue,
+            signalColors);
+    if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(mark)) {
+        return std::get<WaveformMark::WaveformMarkConstructionError>(mark);
+    }
+    m_pDefaultMark = std::get<WaveformMarkPointer>(mark);
+
+    for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
+        if (m_hotCueMarks.value(i).isNull()) {
+            auto pMaybeMark = WaveformMark::create(
+                    group,
+                    model.positionControl,
+                    model.visibilityControl,
+                    model.textColor,
+                    model.markAlign,
+                    model.text,
+                    model.pixmapPath,
+                    model.iconPath,
+                    model.color,
+                    i,
+                    i,
+                    signalColors,
+                    model.endPixmapPath,
+                    model.endIconPath,
+                    model.disabledOpacity,
+                    model.enabledOpacity);
+            if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(pMaybeMark)) {
+                return std::get<WaveformMark::WaveformMarkConstructionError>(pMaybeMark);
+            }
+            auto pMark = std::get<WaveformMarkPointer>(pMaybeMark);
+            m_marks.push_front(pMark);
+            m_hotCueMarks.insert(pMark->getHotCue(), pMark);
+        }
+    }
+    return {};
 }
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {

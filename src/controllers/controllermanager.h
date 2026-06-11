@@ -4,6 +4,7 @@
 #include <QSharedPointer>
 #include <QTimer>
 #include <memory>
+#include <vector>
 
 #include "controllers/controllerenumerator.h"
 #include "preferences/usersettings.h"
@@ -23,21 +24,21 @@ bool controllerCompare(Controller *a, Controller *b);
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
-    ControllerManager(UserSettingsPointer pConfig);
-    virtual ~ControllerManager();
+    explicit ControllerManager(UserSettingsPointer pConfig);
+    ~ControllerManager() override;
 
     static const mixxx::Duration kPollInterval;
 
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    QSharedPointer<MappingInfoEnumerator> getMainThreadUserMappingEnumerator() {
+    QSharedPointer<MappingInfoEnumerator> getMainThreadUserMappingEnumerator() const {
         return m_pMainThreadUserMappingEnumerator;
     }
-    QSharedPointer<MappingInfoEnumerator> getMainThreadSystemMappingEnumerator() {
+    QSharedPointer<MappingInfoEnumerator> getMainThreadSystemMappingEnumerator() const {
         return m_pMainThreadSystemMappingEnumerator;
     }
-    QString getConfiguredMappingFileForDevice(const QString& name);
+    QString getConfiguredMappingFileForDevice(const QString& name) const;
 
     /// Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit requestSetUpDevices(); };
@@ -45,6 +46,7 @@ class ControllerManager : public QObject {
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
   signals:
+    void initialized();
     void devicesChanged();
     void requestSetUpDevices();
     void requestShutdown();
@@ -52,13 +54,9 @@ class ControllerManager : public QObject {
     void mappingApplied(bool applied);
 
   public slots:
-    void updateControllerList();
-
     void slotApplyMapping(Controller* pController,
             std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
-    void openController(Controller* pController);
-    void closeController(Controller* pController);
 
   private slots:
     /// Perform initialization that should be delayed until the ControllerManager
@@ -70,20 +68,36 @@ class ControllerManager : public QObject {
     void slotSetUpDevices();
     void slotShutdown();
     /// Calls poll() on all devices that have isPolling() true.
-    void pollDevices();
+    void slotPollDevices();
+
+  private:
+    void updateControllerList();
     void startPolling();
     void stopPolling();
     void pollIfAnyControllersOpen();
+    void openController(Controller* pController);
+    void closeController(Controller* pController);
 
-  private:
     UserSettingsPointer m_pConfig;
-    ControllerLearningEventFilter* m_pControllerLearningEventFilter;
+    // WARNING: Do not parent m_pControllerLearningEventFilter to ControllerManager
+    // because the CM is moved to its own thread and runs its own event loop.
+    std::unique_ptr<ControllerLearningEventFilter> m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
     mutable QMutex m_mutex;
-    QList<ControllerEnumerator*> m_enumerators;
+    /// Guarded by m_mutex for main-thread reads.
+    /// Written/iterated only on the ControllerManager thread
+    std::vector<std::unique_ptr<ControllerEnumerator>> m_enumerators;
+    /// Non-owning; Controllers are owned by their respective ControllerEnumerator.
+    /// Guarded by m_mutex for main-thread reads.
+    /// Written only on the ControllerManager thread
     QList<Controller*> m_controllers;
-    QThread* m_pThread;
+    /// The single shared background thread that drives the entire ControllerManager,
+    /// all ControllerEnumerators, and all Controller instances.
+    std::unique_ptr<QThread> m_pThread;
+    /// Written once on the ControllerManager thread during slotInitialize(),
+    /// before initialized() is emitted. Afterwards only read from the main thread
     QSharedPointer<MappingInfoEnumerator> m_pMainThreadUserMappingEnumerator;
     QSharedPointer<MappingInfoEnumerator> m_pMainThreadSystemMappingEnumerator;
+    /// Accessed only from the ControllerManager thread via slotPollDevices().
     bool m_skipPoll;
 };

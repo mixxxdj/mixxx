@@ -39,8 +39,7 @@ set(
 )
 
 add_subdirectory(opengl)
-#################################
-# TODO: uncomment in follow-up PR
-# add_subdirectory(scenegraph)
-#################################
+if(QML)
+  add_subdirectory(scenegraph)
+endif()
 add_subdirectory(shaders)

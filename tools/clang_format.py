@@ -11,7 +11,6 @@ import typing
 
 import githelper
 
-
 # We recommend a maximum line length of 80, but do allow up to 100 characters
 # if deemed necessary by the developer. Lines that exceed that limit will
 # be wrapped after 80 characters automatically.
@@ -49,7 +48,7 @@ def run_clang_format_on_lines(rootdir, file_to_format, stylepath=None):
         ", ".join("{}-{}".format(*x) for x in file_to_format.lines),
     )
 
-    filename = os.path.join(rootdir, file_to_format.filename)
+    filename = os.path.join(rootdir, file_to_format.filename).strip()
     cmd = [
         "clang-format",
         "--style=file",

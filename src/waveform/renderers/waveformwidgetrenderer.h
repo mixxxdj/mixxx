@@ -11,7 +11,7 @@
 
 class ControlProxy;
 class VisualPlayPosition;
-class VSyncThread;
+class VSyncTimeProvider;
 class QPainter;
 class WaveformRendererAbstract;
 
@@ -32,18 +32,36 @@ class WaveformWidgetRenderer {
     };
 
   public:
-    explicit WaveformWidgetRenderer(const QString& group);
+    explicit WaveformWidgetRenderer(const QString& group = {});
     virtual ~WaveformWidgetRenderer();
 
     bool init();
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void onPreRender(VSyncThread* vsyncThread);
+    void onPreRender(VSyncTimeProvider* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
+
+    void setVisualPlayPosition(const QSharedPointer<VisualPlayPosition>& value) {
+        if (value == m_visualPlayPosition) {
+            return;
+        }
+        m_group.clear();
+        m_visualPlayPosition = value;
+        init();
+    }
 
     const QString& getGroup() const {
         return m_group;
+    }
+
+    virtual void setGroup(const QString& group) {
+        if (m_group == group) {
+            return;
+        }
+        m_visualPlayPosition.reset();
+        m_group = group;
+        init();
     }
 
     const TrackPointer& getTrackInfo() const {
@@ -119,24 +137,11 @@ class WaveformWidgetRenderer {
     int getTotalVSample() const {
         return m_totalVSamples;
     }
-    double getZoomFactor() const {
+    double getZoom() const {
         return m_zoomFactor;
     }
-    double getGain(bool applyCompensation) const {
-        // m_gain was always multiplied by 2.0, according to a comment:
-        //
-        //   "This gain adjustment compensates for an arbitrary /2 gain chop in
-        //   EnginePregain. See the comment there."
-        //
-        // However, no comment there seems to explain this, and it resulted
-        // in renderers that use the filtered.all data for the amplitude, to
-        // be twice the expected value.
-        // But without this compensation, renderers that use the combined
-        // lo, mid, hi values became much lower than expected. By making this
-        // optional we move the decision to each renderer whether to apply the
-        // compensation or not, in order to have a more similar amplitude across
-        // waveform renderers
-        return applyCompensation ? m_gain * 2.f : m_gain;
+    double getGain() const {
+        return m_gain;
     }
     double getTrackSamples() const {
         return m_trackSamples;
@@ -183,6 +188,11 @@ class WaveformWidgetRenderer {
 #ifdef __STEM__
     void selectStem(mixxx::StemChannelSelection stemMask);
 #endif
+
+    void addRenderer(WaveformRendererAbstract* renderer) {
+        m_rendererStack.push_back(renderer);
+    }
+
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
@@ -214,7 +224,7 @@ class WaveformWidgetRenderer {
     }
 
   protected:
-    const QString m_group;
+    QString m_group;
     TrackPointer m_pTrack;
 #ifdef __STEM__
     uint m_selectedStems;

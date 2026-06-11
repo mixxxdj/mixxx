@@ -20,3 +20,11 @@ cd build && gcc ../tools/dummy_hid_device.c -lhidapi-hidraw -o dummy_hid_device 
 # Allow the created hidraw device to be accessed by the user. You may also set the write udev rules. Finally, you can also run Mixxx as root, but that's not recommended.
 sudo chown "$USER" "$(ls -1t /dev/hidraw* | head -n 1)"
 ```
+
+## Traktor S4 Mk3 Screen drawing
+
+This small program can be used directly to draw arbitrary rectangles on the Traktor S4 Mk3 screens. It may also be useful for one to perform tests on top of the existing reversed engineered protocol.
+
+```sh
+cd build && gcc  ../tools/traktor_s4_mk3_screen_test.c `pkg-config --cflags --libs libusb-1.0` -o traktor_s4_mk3_screen_test && ./traktor_s4_mk3_screen_test
+```

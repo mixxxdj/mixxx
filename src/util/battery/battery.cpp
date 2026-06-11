@@ -11,7 +11,7 @@
 #include "util/battery/batterywindows.h"
 #elif defined(__APPLE__)
 #include "util/battery/batterymac.h"
-#else
+#elif __LINUX__
 #include "util/battery/batterylinux.h"
 #endif
 #endif
@@ -37,8 +37,11 @@ Battery* Battery::getBattery(QObject* parent) {
     return new BatteryWindows(parent);
 #elif defined(Q_OS_MAC)
     return new BatteryMac(parent);
-#else
+#elif __LINUX__
     return new BatteryLinux(parent);
+#else
+    Q_UNUSED(parent);
+    return nullptr;
 #endif
 #else
     Q_UNUSED(parent);

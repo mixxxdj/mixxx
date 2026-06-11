@@ -32,6 +32,12 @@ TEST_F(KeyUtilsTest, LancelotNotation) {
     EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
               KeyUtils::guessKeyFromText("12A"));
 
+    // Allow lower-case to be more flexible when parsing search queries
+    EXPECT_EQ(mixxx::track::io::key::C_MAJOR,
+            KeyUtils::guessKeyFromText("8b"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+            KeyUtils::guessKeyFromText("12a"));
+
     // whitespace is ok
     EXPECT_EQ(mixxx::track::io::key::B_MINOR,
             KeyUtils::guessKeyFromText("\t10A  "));

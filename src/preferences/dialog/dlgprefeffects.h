@@ -41,7 +41,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void loadChainPresetLists();
     void saveChainPresetLists();
 
-    bool eventFilter(QObject* pChainList, QEvent* event) override;
+    /// Handles FocusIn and KeyPress events in chain preset lists
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
     QListView* m_pFocusedChainList;
     QListView* unfocusedChainList();
     QTableView* m_pFocusedEffectList;

@@ -1,8 +1,3 @@
-# This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2025 Mixxx Development Team
-# Distributed under the GNU General Public Licence (GPL) version 2 or any later
-# later version. See the LICENSE file for details.
-
 #[=======================================================================[.rst:
 FindPortAudio
 --------
@@ -113,6 +108,17 @@ if(PortAudio_FOUND)
           TARGET PortAudio::PortAudio
           APPEND
           PROPERTY INTERFACE_LINK_LIBRARIES JACK::jack
+        )
+      endif()
+      if(CMAKE_SYSTEM_NAME STREQUAL Android)
+        find_package(Oboe)
+        if(NOT (OBOE_FOUND))
+          message(FATAL_ERROR "Oboe: not found")
+        endif()
+        set_property(
+          TARGET PortAudio::PortAudio
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES Oboe::Oboe
         )
       endif()
     endif()

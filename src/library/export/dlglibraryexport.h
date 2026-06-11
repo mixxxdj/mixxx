@@ -34,18 +34,17 @@ class DlgLibraryExport : public QDialog {
             UserSettingsPointer pConfig,
             TrackCollectionManager* pTrackCollectionManager);
 
-    /// Set the specified crate to be selected for export on the dialog.  If no
-    /// crate is provided (i.e. `std::nullopt`), then the dialog will be ready
-    /// to export the whole library.  If an unknown crate is provided, then no
-    /// action is taken.
-    void setSelectedCrate(std::optional<CrateId> crateId);
+    /// Set the provided crate and playlist to be initially selected for export
+    /// on the dialog.  If an unknown crate or playlist is provided, then no
+    /// action is taken for that item.
+    void setInitialSelection(std::optional<CrateId> crateId, std::optional<int> playlistId);
 
     /// Refresh the contents of the dialog.
     void refresh();
 
   signals:
     /// The startEnginePrimeExport signal is emitted when sufficient information
-    /// has been gathered from the user to kick off an Engine Prime export, and
+    /// has been gathered from the user to kick off an Engine DJ export, and
     /// details of the request are provided as part of the signal.
     void startEnginePrimeExport(QSharedPointer<mixxx::EnginePrimeExportRequest>);
 
@@ -60,8 +59,9 @@ class DlgLibraryExport : public QDialog {
     TrackCollectionManager* m_pTrackCollectionManager;
 
     parented_ptr<QRadioButton> m_pWholeLibraryRadio;
-    parented_ptr<QRadioButton> m_pCratesRadio;
+    parented_ptr<QRadioButton> m_pCratesAndPlaylistsRadio;
     parented_ptr<QListWidget> m_pCratesList;
+    parented_ptr<QListWidget> m_pPlaylistsList;
     parented_ptr<QLineEdit> m_pExportDirectoryTextField;
     parented_ptr<QComboBox> m_pVersionCombo;
     parented_ptr<QLabel> m_pExistingDatabaseLabel;

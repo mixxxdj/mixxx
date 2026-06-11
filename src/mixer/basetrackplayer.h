@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qtmetamacros.h>
+
 #include <gsl/pointers>
 #include <memory>
 
@@ -32,12 +34,13 @@ constexpr int kUnreplaceDelay = 500;
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
-    enum TrackLoadReset {
+    enum class TrackLoadReset : int {
         RESET_NONE,
         RESET_PITCH,
         RESET_PITCH_AND_SPEED,
         RESET_SPEED
     };
+    Q_ENUM(TrackLoadReset);
 
     BaseTrackPlayer(PlayerManager* pParent, const QString& group);
     ~BaseTrackPlayer() override = default;
@@ -123,7 +126,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     /// When the replaygain is adjusted, we modify the track pregain
     /// to compensate so there is no audible change in volume.
-    void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
+    void slotAdjustReplayGain(mixxx::ReplayGain replayGain, const QString& requestingPlayerGroup);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotTrackColorSelector(int steps);
 
@@ -140,10 +143,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void loadTrackFromGroup(const QString& group);
     void slotLoadTrackFromDeck(double deck);
     void slotLoadTrackFromSampler(double sampler);
+    void slotLoadTrackFromPreviewDeck(double deck);
     void slotTrackColorChangeRequest(double value);
     /// Slot for change signals from up/down controls (relative values)
     void slotTrackRatingChangeRequestRelative(int change);
-    void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
     void slotWaveformZoomDown(double pressed);
@@ -181,6 +184,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // Load track from other deck/sampler
     std::unique_ptr<ControlObject> m_pLoadTrackFromDeck;
     std::unique_ptr<ControlObject> m_pLoadTrackFromSampler;
+    std::unique_ptr<ControlObject> m_pLoadTrackFromPreviewDeck;
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;
@@ -225,6 +229,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
 
+    std::unique_ptr<ControlPushButton> m_pStarsOne;
+    std::unique_ptr<ControlPushButton> m_pStarsTwo;
+    std::unique_ptr<ControlPushButton> m_pStarsThree;
+    std::unique_ptr<ControlPushButton> m_pStarsFour;
+    std::unique_ptr<ControlPushButton> m_pStarsFive;
+
     std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
 
     parented_ptr<ControlProxy> m_pReplayGain;
@@ -237,8 +247,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pHighFilterKill;
     parented_ptr<ControlProxy> m_pPreGain;
     parented_ptr<ControlProxy> m_pRateRatio;
+    parented_ptr<ControlProxy> m_pPitch;
     parented_ptr<ControlProxy> m_pPitchAdjust;
-    parented_ptr<ControlProxy> m_pInputConfigured;
-    parented_ptr<ControlProxy> m_pVinylControlEnabled;
-    parented_ptr<ControlProxy> m_pVinylControlStatus;
+    parented_ptr<ControlProxy> m_pKeylock;
+    parented_ptr<ControlProxy> m_pKeylockMode;
 };

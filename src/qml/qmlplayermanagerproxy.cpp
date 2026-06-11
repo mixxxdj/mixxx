@@ -5,6 +5,7 @@
 #include "mixer/playermanager.h"
 #include "moc_qmlplayermanagerproxy.cpp"
 #include "qml/qmlplayerproxy.h"
+#include "track/track_decl.h"
 
 namespace mixxx {
 namespace qml {
@@ -14,7 +15,7 @@ QmlPlayerManagerProxy::QmlPlayerManagerProxy(
         : QObject(parent), m_pPlayerManager(pPlayerManager) {
 }
 
-QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
+QmlPlayerProxy* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
         qWarning() << "PlayerManagerProxy failed to find player for group" << group;
@@ -30,6 +31,20 @@ QObject* QmlPlayerManagerProxy::getPlayer(const QString& group) {
             this,
             [this, group](const QString& trackLocation, bool play) {
                 loadLocationToPlayer(trackLocation, group, play);
+            });
+    connect(pPlayerProxy,
+            &QmlPlayerProxy::loadTrackRequested,
+            this,
+            [this, group](TrackPointer track,
+#ifdef __STEM__
+                    mixxx::StemChannelSelection stemSelection,
+#endif
+                    bool play) {
+                loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        stemSelection,
+#endif
+                        play);
             });
     connect(pPlayerProxy,
             &QmlPlayerProxy::cloneFromGroup,
@@ -57,6 +72,19 @@ void QmlPlayerManagerProxy::loadLocationUrlIntoNextAvailableDeck(
 void QmlPlayerManagerProxy::loadLocationToPlayer(
         const QString& location, const QString& group, bool play) {
     m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
+}
+
+void QmlPlayerManagerProxy::loadTrackToPlayer(TrackPointer track,
+        const QString& group,
+#ifdef __STEM__
+        mixxx::StemChannelSelection stemSelection,
+#endif
+        bool play) {
+    m_pPlayerManager->slotLoadTrackToPlayer(track, group,
+#ifdef __STEM__
+            stemSelection,
+#endif
+            play);
 }
 
 // static

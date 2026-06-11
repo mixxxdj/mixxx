@@ -49,6 +49,7 @@
         <file>images/preferences/dark/ic_preferences_bulk.svg</file>
         <file>images/preferences/dark/ic_preferences_colors.svg</file>
         <file>images/preferences/dark/ic_preferences_controllers.svg</file>
+        <file>images/preferences/dark/ic_preferences_controllers_reload.svg</file>
         <file>images/preferences/dark/ic_preferences_crossfader.svg</file>
         <file>images/preferences/dark/ic_preferences_decks.svg</file>
         <file>images/preferences/dark/ic_preferences_effects.svg</file>
@@ -75,6 +76,7 @@
         <file>images/preferences/light/ic_preferences_bulk.svg</file>
         <file>images/preferences/light/ic_preferences_colors.svg</file>
         <file>images/preferences/light/ic_preferences_controllers.svg</file>
+        <file>images/preferences/light/ic_preferences_controllers_reload.svg</file>
         <file>images/preferences/light/ic_preferences_crossfader.svg</file>
         <file>images/preferences/light/ic_preferences_decks.svg</file>
         <file>images/preferences/light/ic_preferences_effects.svg</file>

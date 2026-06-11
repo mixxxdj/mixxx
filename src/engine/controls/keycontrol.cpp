@@ -7,14 +7,13 @@
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/defs_keylock.h"
 #include "engine/enginebuffer.h"
+#include "mixer/playermanager.h"
 #include "moc_keycontrol.cpp"
 #include "track/keyutils.h"
 
 constexpr bool kEnableDebugOutput = false;
-
-static const double kLockCurrentKey = 1;
-static const double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(const QString& group,
         UserSettingsPointer pConfig)
@@ -104,13 +103,14 @@ KeyControl::KeyControl(const QString& group,
     m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
-    m_pVCEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
-    m_pVCEnabled->connectValueChanged(this, &KeyControl::slotRateChanged,
-            Qt::DirectConnection);
+    // VinylControl is only available on main decks
+    if (PlayerManager::isDeckGroup(group)) {
+        m_pVCEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
+        m_pVCEnabled->connectValueChanged(this, &KeyControl::slotRateChanged, Qt::DirectConnection);
 
-    m_pVCRate = make_parented<ControlProxy>(group, "vinylcontrol_rate", this);
-    m_pVCRate->connectValueChanged(this, &KeyControl::slotRateChanged,
-                Qt::DirectConnection);
+        m_pVCRate = make_parented<ControlProxy>(group, "vinylcontrol_rate", this);
+        m_pVCRate->connectValueChanged(this, &KeyControl::slotRateChanged, Qt::DirectConnection);
+    }
 
     m_pKeylock = make_parented<ControlProxy>(group, "keylock", this);
     m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
@@ -145,12 +145,11 @@ void KeyControl::slotRateChanged() {
     updateRate();
 }
 
-// This is called when rate_ratio, vinylcontrol_rate, vinylcontrol_enabled or
-// keylock are changed, but also when EngineBuffer::processTrackLocked requests
-// m_pitchRateInfo struct while rate, pitch or pitch_adjust were just updated.
+/// This is called when rate_ratio, vinylcontrol_rate, vinylcontrol_enabled or
+/// keylock are changed, but also when EngineBuffer::processTrackLocked requests
+/// m_pitchRateInfo struct while rate, pitch or pitch_adjust were just updated.
 void KeyControl::updateRate() {
-
-    if(m_pVCEnabled->toBool()) {
+    if (m_pVCEnabled && m_pVCRate && m_pVCEnabled->toBool()) {
         m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
         m_pitchRateInfo.tempoRatio = m_pRateRatio->get();
@@ -190,7 +189,9 @@ void KeyControl::updateRate() {
 
     if (m_pKeylock->toBool()) {
         if (!m_pitchRateInfo.keylock) {                    // Enabling keylock
-            if (m_keylockMode->get() == kLockCurrentKey) { // Lock at current pitch
+            if (m_keylockMode->get() ==
+                    static_cast<double>(KeylockMode::LockCurrentKey)) {
+                // Lock at current pitch
                 speedSliderPitchRatio = m_pitchRateInfo.tempoRatio;
                 if constexpr (kEnableDebugOutput) {
                     qDebug() << "   LOCKING current key";
@@ -222,7 +223,7 @@ void KeyControl::updateRate() {
         }
     } else {                           // !m_pKeylock
         if (m_pitchRateInfo.keylock) { // Disabling Keylock
-            if (m_keyunlockMode->get() == kKeepUnlockedKey) {
+            if (m_keyunlockMode->get() == static_cast<double>(KeyunlockMode::KeepLockedKey)) {
                 // adopt speedSliderPitchRatio change as pitchTweakRatio
                 m_pitchRateInfo.pitchTweakRatio *=
                         (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
@@ -298,6 +299,8 @@ void KeyControl::updateRate() {
     updateKeyCOs(dFileKey, pitchOctaves);
 }
 
+/// This is called when the file key is changed (by analysis or user input),
+/// or when a track with a different key is loaded
 void KeyControl::slotFileKeyChanged(double value) {
     updateKeyCOs(value,  m_pPitch->get() / 12);
 }
@@ -351,6 +354,9 @@ void KeyControl::setEngineKey(double key, double key_distance) {
     return;
 }
 
+/// This is called when pitch is changed either by user interaction,
+/// or when BaseTrackPlayerImpl resets the pitch on track load per configuration
+/// AND key is locked with KeylockMode::LockCurrentKey
 void KeyControl::slotPitchChanged(double pitch) {
     Q_UNUSED(pitch)
     m_updatePitchRequest = 1;
@@ -390,6 +396,9 @@ void KeyControl::updatePitch() {
     }
 }
 
+/// This is called when pitch_adjust is changed either by user interaction,
+/// or when BaseTrackPlayerImpl resets the pitch on track load per configuration
+/// AND key is unlocked or locked with LockOriginalKey
 void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
     Q_UNUSED(pitchAdjust);
     m_updatePitchAdjustRequest = 1;

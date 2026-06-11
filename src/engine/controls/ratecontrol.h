@@ -2,9 +2,10 @@
 
 #include <QObject>
 
-#include "preferences/usersettings.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
 
 class BpmControl;
 class Rotary;
@@ -22,7 +23,6 @@ class RateControl : public EngineControl {
     Q_OBJECT
 public:
   RateControl(const QString& group, UserSettingsPointer pConfig);
-  ~RateControl() override;
 
   // Enumerations which hold the state of the pitchbend buttons.
   // These enumerations can be used like a bitmask.
@@ -76,6 +76,8 @@ public:
   // PositionScratchController can correctly interpret the sample position delta.
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
+  void notifySeek(mixxx::audio::FramePos position) override;
+  void resetPositionScratchController();
 
 public slots:
   void slotRateRangeChanged(double);
@@ -106,51 +108,53 @@ private:
   // Get the 'Raw' Temp Rate
   double getTempRate(void);
 
+  // For Sync Lock
+  BpmControl* m_pBpmControl;
+
+  PollingControlProxy m_pSampleRate;
+  std::unique_ptr<ControlObject> m_pRateRatio;
+  std::unique_ptr<ControlObject> m_pRateDir;
+  std::unique_ptr<ControlObject> m_pRateRange;
+  std::unique_ptr<ControlPotmeter> m_pRateSlider;
+  std::unique_ptr<ControlPotmeter> m_pRateSearch;
+
+  std::unique_ptr<ControlPushButton> m_pButtonRateTempDown;
+  std::unique_ptr<ControlPushButton> m_pButtonRateTempDownSmall;
+  std::unique_ptr<ControlPushButton> m_pButtonRateTempUp;
+  std::unique_ptr<ControlPushButton> m_pButtonRateTempUpSmall;
+
+  std::unique_ptr<ControlPushButton> m_pButtonRatePermDown;
+  std::unique_ptr<ControlPushButton> m_pButtonRatePermDownSmall;
+  std::unique_ptr<ControlPushButton> m_pButtonRatePermUp;
+  std::unique_ptr<ControlPushButton> m_pButtonRatePermUpSmall;
+
+  std::unique_ptr<ControlPushButton> m_pReverseButton;
+  std::unique_ptr<ControlPushButton> m_pReverseRollButton;
+  std::unique_ptr<ControlObject> m_pForwardButton;
+  std::unique_ptr<ControlObject> m_pBackButton;
+
+  std::unique_ptr<ControlTTRotary> m_pWheel;
+  std::unique_ptr<ControlObject> m_pScratch2;
+  std::unique_ptr<ControlPushButton> m_pScratch2Enable;
+  std::unique_ptr<ControlObject> m_pScratch2Scratching;
+
+  std::unique_ptr<PositionScratchController> m_pScratchController;
+
+  std::unique_ptr<ControlObject> m_pJog;
+  std::unique_ptr<Rotary> m_pJogFilter;
+
+  ControlObject* m_pVCEnabled;
+  ControlObject* m_pVCScratching;
+  ControlObject* m_pVCMode;
+
+  PollingControlProxy m_syncMode;
+  PollingControlProxy m_slipEnabled;
+
   // Values used when temp and perm rate buttons are pressed
   static ControlValueAtomic<double> m_dTemporaryRateChangeCoarse;
   static ControlValueAtomic<double> m_dTemporaryRateChangeFine;
   static ControlValueAtomic<double> m_dPermanentRateChangeCoarse;
   static ControlValueAtomic<double> m_dPermanentRateChangeFine;
-
-  ControlPushButton* m_pButtonRateTempDown;
-  ControlPushButton* m_pButtonRateTempDownSmall;
-  ControlPushButton* m_pButtonRateTempUp;
-  ControlPushButton* m_pButtonRateTempUpSmall;
-
-  ControlPushButton* m_pButtonRatePermDown;
-  ControlPushButton* m_pButtonRatePermDownSmall;
-  ControlPushButton* m_pButtonRatePermUp;
-  ControlPushButton* m_pButtonRatePermUpSmall;
-
-  ControlObject* m_pRateRatio;
-  ControlObject* m_pRateDir;
-  ControlObject* m_pRateRange;
-  ControlPotmeter* m_pRateSlider;
-  ControlPotmeter* m_pRateSearch;
-  ControlPushButton* m_pReverseButton;
-  ControlPushButton* m_pReverseRollButton;
-  ControlObject* m_pBackButton;
-  ControlObject* m_pForwardButton;
-
-  ControlTTRotary* m_pWheel;
-  ControlObject* m_pScratch2;
-  PositionScratchController* m_pScratchController;
-
-  ControlPushButton* m_pScratch2Enable;
-  ControlObject* m_pJog;
-  ControlObject* m_pVCEnabled;
-  ControlObject* m_pVCScratching;
-  ControlObject* m_pVCMode;
-  ControlObject* m_pScratch2Scratching;
-  Rotary* m_pJogFilter;
-
-  ControlObject* m_pSampleRate;
-
-  // For Sync Lock
-  BpmControl* m_pBpmControl;
-
-  ControlProxy* m_pSyncMode;
-  ControlProxy* m_pSlipEnabled;
 
   int m_wrapAroundCount;
   mixxx::audio::FramePos m_jumpPos;

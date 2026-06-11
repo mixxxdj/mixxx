@@ -194,6 +194,15 @@ script.midiDebug = function(channel, control, value, status, group) {
         " status: 0x" + status.toString(16) + " group: " + group);
 };
 
+// Returns the channel group name from the stem group name.
+script.channelFromStem = function(stem) {
+    // Jank safety check that's faster than a regex and probably good enough.
+    if (stem.length !== 16 || stem.substring(0, 8) !== "[Channel" || stem.substring(9, 14) !== "_Stem" || stem[15] !== "]") {
+        return undefined;
+    }
+    return `${stem.substring(0, 9)}]`;
+};
+
 // Returns the deck number of a "ChannelN" or "SamplerN" group
 script.deckFromGroup = function(group) {
     let deck = 0;

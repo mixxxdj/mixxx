@@ -22,8 +22,12 @@
 
 #include <stdbool.h>
 
+#include "filters.h"
 #include "lut.h"
+#include "lut_mk2.h"
 #include "pitch.h"
+#include "pitch_kalman.h"
+#include "ringbuffer.h"
 
 #define TIMECODER_CHANNELS 2
 
@@ -40,10 +44,14 @@ struct timecode_def {
         flags;
     bits_t seed, /* LFSR value at timecode zero */
         taps; /* central LFSR taps, excluding end taps */
+    mk2bits_t seed_mk2, /* MK2 version */
+        taps_mk2; /* MK2 version */
     unsigned int length, /* in cycles */
         safe; /* last 'safe' timecode number (for auto disconnect) */
+    signed int threshold; /* threshold for detection of zero-crossings */
     bool lookup; /* true if lut has been generated */
     struct lut lut;
+    struct lut_mk2 lut_mk2; /* MK2 version */
 };
 
 struct timecoder_channel {
@@ -51,42 +59,83 @@ struct timecoder_channel {
 	swapped; /* wave recently swapped polarity */
     signed int zero;
     unsigned int crossing_ticker; /* samples since we last crossed zero */
+
+    int rms, rms_deriv; /* RMS values for the signal and its derivative */
+    signed int deriv, deriv_decoder; /* Derivative */
+
+    struct ringbuffer *delayline; /* needed for the pitch detection*/
+    struct ringbuffer *delayline_deriv; /* needed for the pitch detection*/
+    struct ewma_filter ewma_filter;
+    struct differentiator differentiator;
+    struct root_mean_square rms_filter, rms_deriv_filter;
+    struct savitzky_golay *savgol_filter;
+    struct rumble_filter rumble_filter;
+};
+
+struct mk2_subcode {
+    mk2bits_t bitstream;
+    mk2bits_t timecode;
+    mk2bits_t bit;
+
+    unsigned int valid_counter;
+    signed int avg_reading;
+    signed int avg_slope;
+    bool recent_bit_flip;
+
+    struct ringbuffer *readings;
+    struct ewma_filter ewma_reading;
+    struct ewma_filter ewma_slope;
 };
 
 struct timecoder {
+    struct timecoder_channel primary, secondary;
     struct timecode_def *def;
-    double speed;
+
+    double speed; /* 33 or 45 rpm */
 
     /* Precomputed values */
 
     double dt, zero_alpha;
+    int sample_rate;
     signed int threshold;
 
     /* Pitch information */
 
+    double dphi; /* Phase difference */
+    double freq; /* Current carrier frequency */
+    double pitch; /* Current pitch */
+
     bool forwards;
-    struct timecoder_channel primary, secondary;
-    struct pitch pitch;
+    bool use_legacy_pitch_filter;
+    bool direction_changed;
+
+    struct pitch_filter pitch_filter;
+    struct pitch_kalman_filter pitch_kalman_filter;
 
     /* Numerical timecode */
 
     signed int ref_level;
     bits_t bitstream, /* actual bits from the record */
         timecode; /* corrected timecode */
+    mk2bits_t mk2_bitstream, /* Traktor MK2 version */
+        mk2_timecode; /* Traktor MK2 version */
     unsigned int valid_counter, /* number of successful error checks */
         timecode_ticker; /* samples since valid timecode was read */
+    double dB; /* Decibels to detect phono level */
 
     /* Feedback */
 
     unsigned char *mon; /* x-y array */
     int mon_size, mon_counter;
+
+    struct mk2_subcode upper_bitstream, lower_bitstream;
 };
 
-struct timecode_def* timecoder_find_definition(const char *name);
+struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path);
 void timecoder_free_lookup(void);
 
 void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono);
+                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator);
 void timecoder_clear(struct timecoder *tc);
 
 int timecoder_monitor_init(struct timecoder *tc, int size);
@@ -111,7 +160,7 @@ static inline struct timecode_def* timecoder_get_definition(struct timecoder *tc
 
 static inline double timecoder_get_pitch(struct timecoder *tc)
 {
-    return pitch_current(&tc->pitch) / tc->speed;
+        return tc->pitch / tc->speed;
 }
 
 /*

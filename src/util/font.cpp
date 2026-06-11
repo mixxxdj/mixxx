@@ -67,16 +67,16 @@ void FontUtils::initializeFonts(const QString& resourcePath) {
         return;
     }
 
-    const QList<QString> files = fontsDir.entryList(
+    const QFileInfoList files = fontsDir.entryInfoList(
             QDir::NoDotAndDotDot | QDir::Files | QDir::Readable);
-    for (const QString& path : files) {
+    for (const QFileInfo& file : files) {
         // Skip text files (e.g. license files). For all others we let Qt tell
         // us whether the font format is supported since there is no way to
         // check other than adding.
-        if (path.endsWith(QStringLiteral(".txt"), Qt::CaseInsensitive)) {
+        if (file.suffix().toLower() == QStringLiteral("txt")) {
             continue;
         }
 
-        addFont(path);
+        addFont(file.canonicalFilePath());
     }
 }

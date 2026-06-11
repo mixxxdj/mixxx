@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QWheelEvent>
 
+#include "rendergraph/engine.h"
+#include "rendergraph/opacitynode.h"
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
@@ -17,6 +19,7 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
 namespace allshader {
@@ -24,15 +27,20 @@ namespace allshader {
 WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformWidgetType::Type type,
         const QString& group,
-        WaveformRendererSignalBase::Options options)
+        ::WaveformRendererSignalBase::Options options)
         : WGLWidget(parent),
           WaveformWidgetAbstract(group),
+          m_type(type),
+          m_pWaveformRenderMarkSlip(nullptr),
           m_pWaveformRendererSignal(nullptr) {
     auto pTopNode = std::make_unique<rendergraph::Node>();
     auto pOpacityNode = std::make_unique<rendergraph::OpacityNode>();
 
     pTopNode->appendChildNode(addRendererNode<WaveformRenderBackground>());
-    pOpacityNode->appendChildNode(addRendererNode<WaveformRendererEndOfTrack>());
+    auto pEndOfTrackRenderer = addRendererNode<WaveformRendererEndOfTrack>();
+    pEndOfTrackRenderer->setEndOfTrackWarningTime(
+            WaveformWidgetFactory::instance()->getEndOfTrackWarningTime());
+    pOpacityNode->appendChildNode(std::move(pEndOfTrackRenderer));
     pOpacityNode->appendChildNode(addRendererNode<WaveformRendererPreroll>());
     m_pWaveformRenderMarkRange = pOpacityNode->appendChildNode(
             addRendererNode<WaveformRenderMarkRange>());
@@ -75,7 +83,7 @@ WaveformWidget::WaveformWidget(QWidget* parent,
         pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderBeat>(
                         ::WaveformRendererAbstract::Slip));
-        pOpacityNode->appendChildNode(
+        m_pWaveformRenderMarkSlip = pOpacityNode->appendChildNode(
                 addRendererNode<WaveformRenderMark>(
                         ::WaveformRendererAbstract::Slip));
     }
@@ -97,10 +105,10 @@ WaveformWidget::~WaveformWidget() {
 
 std::unique_ptr<WaveformRendererSignalBase>
 WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
-        WaveformRendererSignalBase::Options options,
+        ::WaveformRendererSignalBase::Options options,
         ::WaveformRendererAbstract::PositionSource positionSource) {
 #ifndef QT_OPENGL_ES_2
-    if (options & WaveformRendererSignalBase::Option::HighDetail) {
+    if (options & ::WaveformRendererSignalBase::Option::HighDetail) {
         switch (type) {
         case ::WaveformWidgetType::RGB:
         case ::WaveformWidgetType::Filtered:
@@ -115,16 +123,16 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
 
     switch (type) {
     case ::WaveformWidgetType::Simple:
-        return addWaveformSignalRenderer<WaveformRendererSimple>();
+        return addWaveformSignalRenderer<WaveformRendererSimple>(options);
     case ::WaveformWidgetType::RGB:
         return addWaveformSignalRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
-        return addWaveformSignalRenderer<WaveformRendererHSV>();
+        return addWaveformSignalRenderer<WaveformRendererHSV>(options);
     case ::WaveformWidgetType::Filtered:
-        return addWaveformSignalRenderer<WaveformRendererFiltered>(false);
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(false, options);
     case ::WaveformWidgetType::Stacked:
         return addWaveformSignalRenderer<WaveformRendererFiltered>(
-                true); // true for RGB Stacked
+                true, options); // true for RGB Stacked
     default:
         break;
     }
@@ -148,6 +156,9 @@ void WaveformWidget::paintGL() {
 
     m_pWaveformRenderMark->update();
     m_pWaveformRenderMarkRange->update();
+    if (m_pWaveformRenderMarkSlip) {
+        m_pWaveformRenderMarkSlip->update();
+    }
 
     m_pEngine->preprocess();
     m_pEngine->render();
@@ -170,8 +181,11 @@ void WaveformWidget::resizeGL(int w, int h) {
     w = static_cast<int>(std::lround(static_cast<qreal>(w) / devicePixelRatioF()));
     h = static_cast<int>(std::lround(static_cast<qreal>(h) / devicePixelRatioF()));
 
-    m_pEngine->resize(w, h);
+    // Many allshader components relies on WaveformWidgetRenderer::getWidth and
+    // WaveformWidgetRenderer::getHeight to update their rendering stack, so we
+    // must resize the renderer first, before updating the rendergraph
     WaveformWidgetRenderer::resizeRenderer(w, h, static_cast<float>(devicePixelRatio()));
+    m_pEngine->resize(w, h);
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {
@@ -186,31 +200,6 @@ void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
 void WaveformWidget::leaveEvent(QEvent* pEvent) {
     QApplication::sendEvent(parentWidget(), pEvent);
     pEvent->accept();
-}
-
-/* static */
-WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
-        WaveformWidgetType::Type type) {
-    WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None;
-    switch (type) {
-    case WaveformWidgetType::Type::RGB:
-        options = WaveformRendererSignalBase::Option::AllOptionsCombined;
-        break;
-    case WaveformWidgetType::Type::Filtered:
-        options = WaveformRendererSignalBase::Option::HighDetail;
-        break;
-    case WaveformWidgetType::Type::Stacked:
-        options = WaveformRendererSignalBase::Option::HighDetail;
-        break;
-    default:
-        break;
-    }
-#ifdef QT_OPENGL_ES_2
-    // High detail (textured) waveforms are not supported on OpenGL ES.
-    // See https://github.com/mixxxdj/mixxx/issues/13385
-    options &= ~WaveformRendererSignalBase::Options(WaveformRendererSignalBase::Option::HighDetail);
-#endif
-    return options;
 }
 
 /* static */

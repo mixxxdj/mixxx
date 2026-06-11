@@ -24,6 +24,18 @@ class WaveformMarkRange {
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors);
+    WaveformMarkRange(
+            const QString& group,
+            const QColor& activeColor,
+            const QColor& disabledColor,
+            double enabledOpacity,
+            double disabledOpacity,
+            const QColor& durationTextColor,
+            const QString& startControl,
+            const QString& endControl,
+            const QString& enabledControl,
+            const QString& visibilityControl,
+            const QString& durationTextLocation);
     // This class is only moveable, but not copiable!
     WaveformMarkRange(WaveformMarkRange&&) = default;
     WaveformMarkRange(const WaveformMarkRange&) = delete;

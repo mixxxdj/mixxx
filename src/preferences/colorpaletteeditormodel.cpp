@@ -5,8 +5,8 @@
 #include <QMultiMap>
 #include <algorithm>
 
-#include "engine/controls/cuecontrol.h"
 #include "moc_colorpaletteeditormodel.cpp"
+#include "util/defs.h"
 #include "util/make_const_iterator.h"
 #include "util/rangelist.h"
 
@@ -80,7 +80,7 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         // make sure no index is outside of range
         DEBUG_ASSERT(std::is_sorted(hotcueIndexList.constBegin(), hotcueIndexList.constEnd()));
         auto endUpper = std::upper_bound(
-                hotcueIndexList.constBegin(), hotcueIndexList.constEnd(), NUM_HOT_CUES);
+                hotcueIndexList.constBegin(), hotcueIndexList.constEnd(), kMaxNumberOfHotcues + 1);
         constErase(&hotcueIndexList, endUpper, hotcueIndexList.constEnd());
         auto endLower = std::upper_bound(
                 hotcueIndexList.constBegin(), hotcueIndexList.constEnd(), 0);

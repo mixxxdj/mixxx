@@ -18,7 +18,9 @@ if(TARGET rendergraph_sg)
   qt6_add_shaders(rendergraph_sg "shaders-qsb"
       BATCHABLE
       PRECOMPILE
-      OPTIMIZED
+      # FIXME qsl relies on 'spirv-opt' to be available in the path, so only installing it via VCPKG is not sufficient
+      # See https://doc.qt.io/qt-6/qtshadertools-build.html#invoking-external-tools
+      # OPTIMIZED
       PREFIX
           /shaders/rendergraph
       FILES
@@ -35,7 +37,9 @@ if(TARGET rendergraph_gl)
     qt6_add_shaders(rendergraph_gl "shaders-qsb"
           BATCHABLE
           PRECOMPILE
-          OPTIMIZED
+          # FIXME qsl relies on 'spirv-opt' to be available in the path, so only installing it via VCPKG is not sufficient
+          # See https://doc.qt.io/qt-6/qtshadertools-build.html#invoking-external-tools
+          # OPTIMIZED
           PREFIX
               /shaders/rendergraph
           FILES

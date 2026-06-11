@@ -6,4 +6,4 @@ if [ -z "${GITHUB_ENV}" ]; then
 fi
 
 tools_path=$(dirname "$0")
-BUILDENV_ARM64=TRUE "${tools_path}/macos_buildenv.sh" "$@"
+BUILDENV_ARM64_CROSS=TRUE "${tools_path}/macos_buildenv.sh" "$@"

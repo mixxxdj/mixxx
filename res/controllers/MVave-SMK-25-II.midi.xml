@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5" schemaVersion="1">
+  <info>
+    <name>M-Vave SMK-25 II</name>
+    <author>Sam Whited</author>
+    <description>MIDI mapping for the M-Vave SMK-25 II piano keyboard.</description>
+    <forums>https://mixxx.discourse.group/t/sinco-m-wave-smk-25-ii/31350</forums>
+    <manual>mvave_smk-25-ii</manual>
+    <devices>
+      <!--
+        This vendor and product ID is shared between multiple controllers and is
+        not unique to this device.
+      -->
+      <product protocol="midi" vendor_id="0x4353" product_id="0x4b4d"/>
+    </devices>
+  </info>
+  <controller id="mvave-smk-25-ii">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" functionprefix=""/>
+      <file filename="MVave-SMK-25-II-scripts.js" functionprefix="SMK25II"/>
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Master]</group>
+        <key>SMK25II.incomingData</key>
+        <description>Parser for incoming MMC messages.</description>
+        <status>0xF0</status>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.pitchStrip.input</key>
+        <description>Pitch strip.</description>
+        <status>0xE0</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.modStrip.input</key>
+        <description>Modulation strip.</description>
+        <status>0xB0</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Encoders -->
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.gainKnob.input</key>
+        <description>Encoder 1.</description>
+        <status>0xB0</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.highKnob.input</key>
+        <description>Encoder 2.</description>
+        <status>0xB0</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.midKnob.input</key>
+        <description>Encoder 3.</description>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.lowKnob.input</key>
+        <description>Encoder 4.</description>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.activeDeck.effectKnob.input</key>
+        <description>Encoder 5.</description>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.xfadeKnob.input</key>
+        <description>Encoder 6.</description>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.headGainKnob.input</key>
+        <description>Encoder 7.</description>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>SMK25II.controller.gainKnob.input</key>
+        <description>Encoder 8.</description>
+        <status>0xB0</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <!-- Drum Pads -->
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[0].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[1].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[2].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[3].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[4].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x30</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[5].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[6].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[7].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[8].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[9].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[10].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[11].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[12].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[13].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[14].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x2E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Sampler]</group>
+        <key>SMK25II.controller.samplers[15].input</key>
+        <description>Drum pad.</description>
+        <status>0x99</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+    </controls>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>

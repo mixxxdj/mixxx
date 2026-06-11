@@ -222,6 +222,21 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             // or downsize the image for efficiency.
             loadedImage.image = resizeImageWidth(loadedImage.image, desiredWidth);
         }
+    } else {
+        kLogger.warning() << "loaded image is NULL";
+        if (pTrack && coverInfo.type == CoverInfo::Type::METADATA) {
+            // The image was supposed to be in the track's metadata but is not.
+            // Removed form file? Database corruption?
+            // Either way this can cause repeated lookups by CoverArtDelegate
+            // which are affecting the GUI and cause massive framerate drop,
+            // see https://github.com/mixxxdj/mixxx/issues/15199
+            // In order to avoid this we reset the track's cover info.
+            // On next cover request we'll try to guess the cover again, so we
+            // either find a cover in the track directory or mark CoverInfo empty.
+            kLogger.warning() << "image was expected to be in metadata, but it's not. "
+                                 "Reset track's cover info";
+            pTrack->setCoverInfo(CoverInfoRelative());
+        }
     }
 
     res.coverArt = CoverArt(

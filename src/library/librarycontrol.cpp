@@ -1,6 +1,7 @@
 #include "library/librarycontrol.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QWindow>
@@ -17,6 +18,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wtracktableview.h"
 
 namespace {
@@ -255,6 +257,18 @@ LibraryControl::LibraryControl(Library* pLibrary)
     {
         m_pRefocusPrevWidgetCO->connectValueChangeRequest(this,
                 &LibraryControl::refocusPrevLibraryWidget);
+    }
+
+    // Control to "edit" the currently selected item/field in focused widget (context dependent)
+    m_pEditItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "EditItem"));
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        connect(m_pEditItem.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotEditItem);
     }
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
@@ -755,7 +769,8 @@ void LibraryControl::slotMoveVertical(double v) {
                 QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
         return;
     }
-    case FocusWidget::ContextMenu: {
+    case FocusWidget::ContextMenu:
+    case FocusWidget::SearchRelatedMenu: {
         // To navigate menus (and activate menus that were just opened) send the
         // keyEvent to focusWindow() (not focusWidget() like emitKeyEvent() does)
         const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
@@ -912,7 +927,15 @@ FocusWidget LibraryControl::getFocusedWidget() {
         // qt_edit_menuWindow    = QLineEdit/QCombobox context menu
         // QComboBoxPrivateContainerClassWindow
         //    = QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
-        return FocusWidget::ContextMenu;
+        auto* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget &&
+                qobject_cast<QCheckBox*>(pFocusWidget) &&
+                qobject_cast<WSearchRelatedTracksMenu*>(pFocusWidget->parent())) {
+            // TODO Also use this for the Crates menu?
+            return FocusWidget::SearchRelatedMenu;
+        } else {
+            return FocusWidget::ContextMenu;
+        }
     } else if (focusWindow->type() == Qt::Dialog) {
         // DlgPreferencesDlgWindow
         // DlgDeveloperToolsWindow
@@ -944,15 +967,11 @@ FocusWidget LibraryControl::getFocusedWidget() {
     }
 }
 
-void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
-    if (!QApplication::focusWindow()) {
-        qInfo() << "No Mixxx window, popup or menu has focus."
-                << "Don't attempt to focus a specific widget.";
-        return;
-    }
-
-    // ignore no-op
-    if (newFocusWidget == m_focusedWidget) {
+void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget, Qt::FocusReason focusReason) {
+    // The search box wants to do special handling when the Ctrl+f is used
+    // while it is already focused. Non-shortcut cases should still be a
+    // no-op when a control is already focused.
+    if (newFocusWidget == m_focusedWidget && focusReason != Qt::ShortcutFocusReason) {
         return;
     }
 
@@ -961,13 +980,13 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
         VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
             return;
         }
-        m_pSearchbox->setFocus();
+        m_pSearchbox->setFocus(focusReason);
         return;
     case FocusWidget::Sidebar:
         VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
             return;
         }
-        m_pSidebarWidget->setFocus();
+        m_pSidebarWidget->setFocus(focusReason);
         return;
     case FocusWidget::TracksTable:
         VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
@@ -1046,6 +1065,29 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     }
 }
 
+void LibraryControl::slotEditItem(double v) {
+    if (v <= 0) {
+        return;
+    }
+
+    switch (m_focusedWidget) {
+    case FocusWidget::Sidebar: {
+        m_pSidebarWidget->renameSelectedItem();
+        break;
+    }
+    case FocusWidget::TracksTable: {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (pTrackTableView) {
+            pTrackTableView->editSelectedItem();
+        }
+        break;
+    }
+    default: {
+        break;
+    }
+    }
+}
+
 void LibraryControl::slotGoToItem(double v) {
     if (v <= 0) {
         return;
@@ -1071,8 +1113,11 @@ void LibraryControl::slotGoToItem(double v) {
         }
         return;
     }
-    case FocusWidget::Dialog: {
-        // press & release Space (QAbstractButton::clicked() is emitted on release)
+    case FocusWidget::Dialog:
+    case FocusWidget::SearchRelatedMenu: {
+        // Press Space to click dialog buttons. In SearchRelatedMenu this toggles
+        // individual search checkboxes and triggers the Search Selected action.
+        // Press & release Space because QAbstractButton::clicked() is emitted on release.
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
         auto* pWindow = QApplication::focusWindow();

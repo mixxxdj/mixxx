@@ -27,6 +27,7 @@
  */
 
 (function(global) {
+    const NO_TIMER = 0;
     const Component = function(options) {
         if (Array.isArray(options) && typeof options[0] === "number") {
             this.midi = options;
@@ -129,14 +130,18 @@
         disconnect: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
-                    conn.disconnect();
+                    if (conn !== undefined) {
+                        conn.disconnect();
+                    }
                 });
             }
         },
         trigger: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
-                    conn.trigger();
+                    if (conn !== undefined) {
+                        conn.trigger();
+                    }
                 });
             }
         },
@@ -176,6 +181,9 @@
         // in any Buttons that act differently with short and long presses
         // to keep the timeouts uniform.
         longPressTimeout: 275,
+        triggerOnRelease: false,
+        isLongPressed: false,
+        longPressTimer: NO_TIMER,
         isPress: function(channel, control, value, _status) {
             return value > 0;
         },
@@ -192,15 +200,17 @@
                     this.isLongPressed = false;
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
+                    } else if (this.triggerOnRelease) {
+                        this.trigger();
                     }
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                     this.isLongPressed = false;
                 }
@@ -257,15 +267,15 @@
                         engine.setValue(this.group, "beatsync", 1);
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
-                            this.longPressTimer = 0;
+                            this.longPressTimer = NO_TIMER;
                         }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
                 } else {
-                    if (this.longPressTimer !== 0) {
+                    if (this.longPressTimer !== NO_TIMER) {
                         engine.stopTimer(this.longPressTimer);
-                        this.longPressTimer = 0;
+                        this.longPressTimer = NO_TIMER;
                     }
                 }
             };
@@ -702,13 +712,14 @@
         setCurrentDeck: function(newGroup) {
             this.currentDeck = newGroup;
             this.reconnectComponents(function(component) {
-                if (component.group === undefined
-                      || component.group.search(script.channelRegEx) !== -1) {
+                if (component.group === undefined) {
                     component.group = newGroup;
-                } else if (component.group.search(script.eqRegEx) !== -1) {
-                    component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
-                } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                    component.group = "[QuickEffectRack1_" + newGroup + "]";
+                } else {
+                    // Match the channel anywhere it might appear in the group
+                    // whether it includes the closing brace or is part of
+                    // another group name such as "Channel1_Stem1".
+                    const anyChannelRegEx = /\[Channel\d+([\]_])/;
+                    component.group = component.group.replace(anyChannelRegEx, `${newGroup.slice(0, -1)}$1`);
                 }
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
@@ -744,7 +755,7 @@
         }
 
         const deck = options.deck;
-        const group = script.deckFromGroup(options.group);
+        const deckFromGroup = script.deckFromGroup(options.group);
         delete options.deck;
         delete options.group;
 
@@ -755,7 +766,7 @@
         Object.defineProperties(this, {
             deck: {
                 get: () => this._deck,
-                set: (value) => {
+                set: value => {
                     if (Number.isInteger(value) && value > 0) {
                         this._deck = value;
                         this.reset();
@@ -763,13 +774,9 @@
                 },
             },
             group: {
-                get: () => `[Channel${deck}]`,
+                get: () => `[Channel${this.deck}]`,
                 set: value => {
-                    const deck = script.deckFromGroup(value);
-                    if (deck > 0) {
-                        this._deck = deck;
-                        this.reset();
-                    }
+                    this.deck = script.deckFromGroup(value);
                 },
             }
         });
@@ -777,9 +784,13 @@
         this.deck = deck;
 
         if (!this.deck) {
-            this.group = group;  // try setting deck from group
+            this.deck = deckFromGroup;  // try setting deck from group
         }
 
+        if (!Number.isInteger(this.deck)) {
+            console.warn("missing deck or group");
+            return;
+        }
         if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
@@ -799,7 +810,7 @@
     };
 
     JogWheelBasic.prototype = new Component({
-        vinylMode: true,
+        _vinylMode: true, // private, accessible via setters defined below
         isPress: Button.prototype.isPress,
         inValueScale: function(value) {
             // default implementation for converting signed ints
@@ -837,6 +848,19 @@
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
         reset() {},
+    });
+    Object.defineProperty(JogWheelBasic.prototype, "vinylMode", {
+        get() {
+            return this._vinylMode;
+        },
+        set(vinylMode) {
+            // Disable scratching immediately when disabling vinylMode in case
+            // the touch surface malfunctions
+            if (!vinylMode && engine.isScratching(this.deck)) {
+                engine.scratchDisable(this.deck);
+            }
+            this._vinylMode = vinylMode;
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {
@@ -1172,8 +1196,6 @@
 
         this.effectFocusButton = new Button({
             group: this.group,
-            longPressed: false,
-            longPressTimer: 0,
             pressedWhenParametersHidden: false,
             previouslyFocusedEffect: 0,
             startEffectFocusChooseMode: function() {
@@ -1199,9 +1221,10 @@
                 this.input = function(channel, control, value, status, _group) {
                     const showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                            this.startEffectFocusChooseMode.bind(this),
-                            true);
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
+                            this.startEffectFocusChooseMode();
+                            this.longPressTimer = NO_TIMER;
+                        }, true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {
                                 engine.setValue(this.group, "show_parameters", 1);
@@ -1211,8 +1234,9 @@
                             this.pressedWhenParametersHidden = true;
                         }
                     } else {
-                        if (this.longPressTimer) {
+                        if (this.longPressTimer !== NO_TIMER) {
                             engine.stopTimer(this.longPressTimer);
+                            this.longPressTimer = NO_TIMER;
                         }
 
                         if (eu.focusChooseModeActive) {

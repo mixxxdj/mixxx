@@ -86,8 +86,6 @@ class PortMidiController : public MidiController {
     }
 
   private slots:
-    int open() override;
-    int close() override;
     bool poll() override;
 
   protected:
@@ -96,6 +94,9 @@ class PortMidiController : public MidiController {
                       unsigned char byte2) override;
 
   private:
+    int open(const QString& resourcePath) override;
+    int close() override;
+
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
     bool sendBytes(const QByteArray& data) override;

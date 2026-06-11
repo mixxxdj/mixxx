@@ -1,22 +1,22 @@
 <Template>
-	<WidgetGroup>
-	  <SizePolicy>me,f</SizePolicy>
-	  <Layout>horizontal</Layout>
-	  <!-- I don't now why this works but a WidgetGroup wrapper around a
-		 WidgetStack with a 'fixed' size policy makes the group track the
-		 minimum size of the current stack widget. -->
-	  <Children>
-		<WidgetGroup>
-		  <Layout>horizontal</Layout>
-		  <Children>
-			<WidgetGroup>
-			  <Layout>horizontal</Layout>
-			  <Children>
-				<WidgetGroup>
-					<ObjectName>SamplerLeftBorder</ObjectName>
-					<Size>3f,0e</Size>
-				</WidgetGroup>
-				<WidgetGroup>
+  <WidgetGroup>
+    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+     WidgetStack with a 'fixed' size policy makes the group track the
+     minimum size of the current stack widget. -->
+    <Children>
+    <WidgetGroup>
+      <Layout>horizontal</Layout>
+      <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+        <WidgetGroup>
+          <ObjectName>SamplerLeftBorder</ObjectName>
+          <Size>3f,0e</Size>
+        </WidgetGroup>
+        <WidgetGroup>
           <Layout>vertical</Layout>
           <Children>
             <Template src="skin:srcmicrophoneaux.xml">
@@ -25,14 +25,14 @@
               <SetVariable name="auxnum">1</SetVariable>
             </Template>
           </Children>
-				</WidgetGroup>
-				<WidgetGroup>
+        </WidgetGroup>
+        <WidgetGroup>
           <Layout>vertical</Layout>
           <Children>
             <Template src="skin:srcfx.xml"/>
           </Children>
-				</WidgetGroup>
-				<WidgetGroup>
+        </WidgetGroup>
+        <WidgetGroup>
           <Layout>vertical</Layout>
           <Children>
           <Template src="skin:srcmicrophoneaux.xml">
@@ -41,22 +41,22 @@
             <SetVariable name="auxnum">2</SetVariable>
           </Template>
           </Children>
-				</WidgetGroup>
-			  </Children>
-			</WidgetGroup>
-		  </Children>
-		  <Connection>
-		    <ConfigKey>[Skin],show_microphones</ConfigKey>
-		    <BindProperty>visible</BindProperty>
-		  </Connection>
-		</WidgetGroup>
-	  </Children>
-	   <Connection>
-		   <ConfigKey>[Skin],show_maximized_library</ConfigKey>
-		   <BindProperty>visible</BindProperty>
-		   <Transform>
-		     <Not/>
-		   </Transform>
-	   </Connection>
-	</WidgetGroup>
+        </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      </Children>
+      <Connection>
+        <ConfigKey>[Skin],show_microphones</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+    </WidgetGroup>
+    </Children>
+     <Connection>
+       <ConfigKey>[Skin],show_maximized_library</ConfigKey>
+       <BindProperty>visible</BindProperty>
+       <Transform>
+         <Not/>
+       </Transform>
+     </Connection>
+  </WidgetGroup>
 </Template>

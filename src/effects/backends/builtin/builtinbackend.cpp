@@ -16,17 +16,20 @@
 #ifndef __MACAPPSTORE__
 #include "effects/backends/builtin/reverbeffect.h"
 #endif
+#include "effects/backends/builtin/autogaincontroleffect.h"
 #include "effects/backends/builtin/autopaneffect.h"
 #include "effects/backends/builtin/compressoreffect.h"
 #include "effects/backends/builtin/distortioneffect.h"
 #include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/glitcheffect.h"
+#include "effects/backends/builtin/keycomparisoneffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
 #include "effects/backends/builtin/phasereffect.h"
 #ifdef __RUBBERBAND__
 #include "effects/backends/builtin/pitchshifteffect.h"
 #endif
+#include "effects/backends/builtin/gaineffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
@@ -57,6 +60,7 @@ BuiltInBackend::BuiltInBackend() {
 #endif
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
+    registerEffect<KeyComparisonEffect>();
     registerEffect<TremoloEffect>();
 #ifdef __RUBBERBAND__
     registerEffect<PitchShiftEffect>();
@@ -64,6 +68,8 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<DistortionEffect>();
     registerEffect<GlitchEffect>();
     registerEffect<CompressorEffect>();
+    registerEffect<AutoGainControlEffect>();
+    registerEffect<GainEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(

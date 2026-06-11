@@ -143,13 +143,13 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
         return 0;
     }
 
-    TreeItem* parentItem;
+    TreeItem* pParentItem;
     if (parent.isValid()) {
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        pParentItem = static_cast<TreeItem*>(parent.internalPointer());
     } else {
-        parentItem = getRootItem();
+        pParentItem = getRootItem();
     }
-    return parentItem->childRows();
+    return pParentItem->childRows();
 }
 
 // Populates the model and notifies the view.
@@ -176,7 +176,10 @@ void TreeItemModel::insertTreeItemRows(
     }
 
     TreeItem* pParentItem = getItem(parent);
-    DEBUG_ASSERT(pParentItem != nullptr);
+    VERIFY_OR_DEBUG_ASSERT(pParentItem != nullptr) {
+        qWarning() << "TreeItemModel::insertTreeItemRows: parent item invalid, abort.";
+        return;
+    }
 
     beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
     pParentItem->insertChildren(position, std::move(rows));

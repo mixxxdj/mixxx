@@ -2,6 +2,7 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <QKeyEvent>
 
 #include "control/control.h"
 #include "moc_dlgdevelopertools.cpp"
@@ -38,7 +39,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
         qWarning() << "ERROR: Could not open log file:" << logFileName;
     }
 
-    // Set up the control search box
+    // Set up the control search
+    m_controlProxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     connect(controlSearch,
             &WSearchLineEdit::search,
             this,
@@ -65,6 +67,9 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
 
     // Delete this dialog when its closed. We don't want any persistence.
     setAttribute(Qt::WA_DeleteOnClose);
+
+    // Just to catch Ctrl+F to focus searchbar
+    installEventFilter(this);
 }
 
 void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
@@ -103,7 +108,13 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
 }
 
 void DlgDeveloperTools::slotControlSearch(const QString& search) {
-    m_controlProxyModel.setFilterFixedString(search);
+    QStringList words = search.split(' ');
+    if (words.size() > 1) {
+        QString combo = words.join(QStringLiteral(".*"));
+        m_controlProxyModel.setFilterRegularExpression(combo);
+    } else {
+        m_controlProxyModel.setFilterFixedString(search);
+    }
 }
 
 void DlgDeveloperTools::slotControlDump() {
@@ -137,4 +148,20 @@ void DlgDeveloperTools::slotLogSearch() {
     QString textToFind = logSearch->text();
     m_logCursor = logTextView->document()->find(textToFind, m_logCursor);
     logTextView->setTextCursor(m_logCursor);
+}
+
+bool DlgDeveloperTools::eventFilter(QObject* pObj, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ShortcutOverride) {
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(pEvent);
+        VERIFY_OR_DEBUG_ASSERT(pKE) {
+            return QDialog::eventFilter(pObj, pEvent);
+        }
+
+        if (pKE->key() == Qt::Key_F && (pKE->modifiers() & Qt::ControlModifier)) {
+            controlSearch->setFocus(Qt::ShortcutFocusReason);
+            pEvent->accept();
+            return true;
+        }
+    }
+    return QDialog::eventFilter(pObj, pEvent);
 }

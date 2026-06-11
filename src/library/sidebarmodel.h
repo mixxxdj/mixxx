@@ -39,7 +39,7 @@ class SidebarModel : public QAbstractItemModel {
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole) const override;
     bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
-    bool dragMoveAccept(const QModelIndex& index, const QUrl& url) const;
+    bool dragMoveAccept(const QModelIndex& index, const QList<QUrl>& urls) const;
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
     QModelIndex translateChildIndex(const QModelIndex& index) {
@@ -56,7 +56,9 @@ class SidebarModel : public QAbstractItemModel {
     void rightClicked(const QPoint& globalPos, const QModelIndex& index);
     void renameItem(const QModelIndex& index);
     void deleteItem(const QModelIndex& index);
-    void slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex& index = QModelIndex());
+    void slotFeatureSelect(LibraryFeature* pFeature,
+            const QModelIndex& index = QModelIndex(),
+            bool scrollTo = true);
 
     // Slots for every single QAbstractItemModel signal
     // void slotColumnsAboutToBeInserted(const QModelIndex& parent, int start, int end);
@@ -79,16 +81,18 @@ class SidebarModel : public QAbstractItemModel {
     void slotFeatureLoadingFinished(LibraryFeature*);
 
   signals:
-    void selectIndex(const QModelIndex& index);
+    void selectIndex(const QModelIndex& index, bool scrollTo);
 
   private slots:
     void slotPressedUntilClickedTimeout();
+
+  protected:
+    QList<LibraryFeature*> m_sFeatures;
 
   private:
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     QModelIndex translateIndex(const QModelIndex& index, const QAbstractItemModel* model);
     void featureRenamed(LibraryFeature*);
-    QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
 
     QTimer* const m_pressedUntilClickedTimer;

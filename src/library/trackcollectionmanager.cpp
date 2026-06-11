@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "library/externaltrackcollection.h"
+#include "library/library_decl.h"
 #include "library/library_prefs.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
@@ -84,6 +85,11 @@ TrackCollectionManager::TrackCollectionManager(
                 this,
                 &TrackCollectionManager::libraryScanFinished,
                 /*signal-to-signal*/ Qt::DirectConnection);
+        connect(m_pScanner.get(),
+                &LibraryScanner::scanSummary,
+                this,
+                &TrackCollectionManager::libraryScanSummary,
+                /*signal-to-signal*/ Qt::DirectConnection);
 
         // Handle signals
         // NOTE: The receiver's thread context `this` is required to enforce
@@ -164,6 +170,13 @@ TrackCollectionManager::~TrackCollectionManager() {
     m_pInternalCollection->disconnectDatabase();
 
     GlobalTrackCache::destroyInstance();
+}
+
+void TrackCollectionManager::startLibraryAutoScan() {
+    VERIFY_OR_DEBUG_ASSERT(m_pScanner) {
+        return;
+    }
+    m_pScanner->scan(true);
 }
 
 void TrackCollectionManager::startLibraryScan() {
@@ -578,6 +591,14 @@ TrackPointer TrackCollectionManager::getTrackByRef(
         const TrackRef& trackRef) const {
     return internalCollection()->getTrackByRef(
             trackRef);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIds(
+        const QList<mixxx::FileInfo>& fileInfos,
+        QObject* pSource) const {
+    return internalCollection()->resolveTrackIds(
+            fileInfos,
+            pSource);
 }
 
 QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(

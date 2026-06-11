@@ -4,6 +4,8 @@
 #include <Shlobj.h>
 #else
 #include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #endif
 
 #include <QFileInfoList>
@@ -28,21 +30,25 @@ FolderTreeModel::~FolderTreeModel() {
 // Note that BrowseFeature inserts folder trees dynamically and rowCount()
 // is only called if necessary.
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
-    TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
-    // Usually the child count is 0 because we do lazy initialization
-    // However, for, buid-in items such as 'Quick Links' there exist
-    // child items at init time
-    if (item->getData().toString() == QUICK_LINK_NODE) {
-        return true;
+    TreeItem* pItem = static_cast<TreeItem*>(parent.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pItem) {
+        return false;
     }
-    //Can only happen on Windows
-    if (item->getData().toString() == DEVICE_NODE) {
+    // For Quick Link node we simply return the row count.
+    // That way we always have the real (uncached) state.
+    if (pItem->getData().toString() == QUICK_LINK_NODE) {
+        return rowCount(parent) > 0;
+    }
+    // For the 'Removable Devices' node we always return true so WLibrarySidebar
+    // thinks the node is expandable and any attempt to expand it will invoke
+    // LibraryFeature::onLazyChildExpandation() and update the tree.
+    if (pItem->getData().toString() == DEVICE_NODE) {
         return true;
     }
 
     // In all other cases the getData() points to a folder
-    QString folder = item->getData().toString();
-    return directoryHasChildren(folder);
+    const QString path = pItem->getData().toString();
+    return directoryHasChildren(path);
 }
 
 bool FolderTreeModel::directoryHasChildren(const QString& path) const {
@@ -90,8 +96,21 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
                 total_count++;
                 if (entry->d_type == DT_UNKNOWN) {
                     unknown_count++;
+                } else if (entry->d_type == DT_DIR) {
+                    has_children = true;
+                    break;
+                } else if (entry->d_type == DT_LNK) {
+                    // Check if this links to a directory
+                    struct stat st;
+                    std::string fullPath = path.toStdString();
+                    fullPath += '/';
+                    fullPath += entry->d_name;
+                    // stat() follows the symlink
+                    if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
+                        has_children = true;
+                        break;
+                    }
                 }
-                has_children = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
             }
         }
         closedir(directory);
@@ -102,7 +121,9 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // filesystems that do not fully implement readdir such as JFS.
     if (directory == nullptr || (unknown_count == total_count && total_count > 0)) {
         QDir dir(path);
-        QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        // Instead of costly entryInfoList() we use entryList() which doesn't
+        // create a QFileInfo cache (only if sort flag is not set!).
+        const QStringList all = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         has_children = all.count() > 0;
     }
 #endif

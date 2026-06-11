@@ -35,33 +35,6 @@ TrackRef createTrackRef(const Track& track) {
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
-TrackRef validateAndCanonicalizeRequestedTrackRef(
-        const TrackRef& requestedTrackRef,
-        const Track& cachedTrack) {
-    const auto cachedTrackRef = createTrackRef(cachedTrack);
-    // If an id has been provided the caller expects that if a track
-    // is found it is supposed to have the exact same id. This cannot
-    // be guaranteed due to file system aliasing.
-    // The found track may or may not have a valid id.
-    if (requestedTrackRef.hasId() &&
-            requestedTrackRef.getId() != cachedTrackRef.getId()) {
-        DEBUG_ASSERT(
-                requestedTrackRef.getLocation() !=
-                cachedTrackRef.getLocation());
-        DEBUG_ASSERT(
-                requestedTrackRef.getCanonicalLocation() ==
-                cachedTrackRef.getCanonicalLocation());
-        kLogger.warning()
-                << "Found a different track for the same canonical location:"
-                << "requested =" << requestedTrackRef
-                << "cached =" << cachedTrackRef;
-        return cachedTrackRef;
-    } else {
-        // Regular case, i.e. no aliasing
-        return requestedTrackRef;
-    }
-}
-
 class EvictAndSaveFunctor {
   public:
     explicit EvictAndSaveFunctor(
@@ -179,10 +152,16 @@ QSet<TrackId> GlobalTrackCacheLocker::getCachedTrackIds() const {
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
-        mixxx::FileAccess fileAccess)
+        mixxx::FileAccess fileAccess,
+        bool temporary)
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
-    m_pInstance->resolve(this, std::move(fileAccess), TrackId());
+    if (temporary) {
+        m_pInstance->resolveTemporary(this, std::move(fileAccess));
+    } else {
+        m_pInstance->resolve(this, std::move(fileAccess), TrackId());
+    }
+    m_pInstance->m_mutex.unlock();
 }
 
 GlobalTrackCacheResolver::GlobalTrackCacheResolver(
@@ -191,6 +170,20 @@ GlobalTrackCacheResolver::GlobalTrackCacheResolver(
         : m_lookupResult(GlobalTrackCacheLookupResult::None) {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->resolve(this, std::move(fileAccess), std::move(trackId));
+    m_pInstance->m_mutex.unlock();
+}
+
+GlobalTrackCacheResolver::~GlobalTrackCacheResolver() {
+    if (m_pInstance) {
+        // Temporarily obtain the lock to guard access to m_isTrackCompleted.
+        // Will be released by the parent class destructor
+        // ~GlobalTrackCacheLocker().
+        m_pInstance->m_mutex.lock();
+        // Only one GlobalTrackCacheResolver has access to the unique
+        // incomplete Track. Others are suspended during construction.
+        // This call wakes them up.
+        m_pInstance->discardIncompleteTrack();
+    }
 }
 
 void GlobalTrackCacheResolver::initLookupResult(
@@ -210,6 +203,7 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
     DEBUG_ASSERT(GlobalTrackCacheLookupResult::None != m_lookupResult);
     DEBUG_ASSERT(m_strongPtr);
     DEBUG_ASSERT(trackId.isValid());
+    m_pInstance->m_mutex.lock();
     if (m_trackRef.getId().isValid()) {
         // Ignore initializing the same id twice
         DEBUG_ASSERT(m_trackRef.getId() == trackId);
@@ -308,11 +302,7 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
 GlobalTrackCache::GlobalTrackCache(
         GlobalTrackCacheSaver* pSaver,
         deleteTrackFn_t deleteTrackFn)
-        :
-#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
-          m_mutex(QMutex::Recursive),
-#endif
-          m_pSaver(pSaver),
+        : m_pSaver(pSaver),
           m_deleteTrackFn(deleteTrackFn),
           m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
@@ -439,6 +429,19 @@ bool GlobalTrackCache::isEmpty() const {
 
 TrackPointer GlobalTrackCache::lookupById(
         const TrackId& trackId) {
+    while (m_incompleteTrack && m_incompleteTrack->getId() == trackId) {
+        // The requested track is currently locked by another thread
+        // (despite us currently owning the global track cache lock aka. m_mutex).
+        //
+        // The background metadata loader thread can use this mechanism
+        // to avoid blocking the global lock for longer periods of time,
+        // which was observed to cause UI stutter.
+        //
+        // Release the global lock, wait until the asynchronous loading
+        // has completed; afterwards, reacquire the global lock and continue.
+        m_isTrackCompleted.wait(&m_mutex);
+    }
+
     TrackPointer trackPtr;
     const auto trackById(m_tracksById.find(trackId));
     if (m_tracksById.end() != trackById) {
@@ -464,29 +467,41 @@ TrackPointer GlobalTrackCache::lookupById(
 
 TrackPointer GlobalTrackCache::lookupByRef(
         const TrackRef& trackRef) {
-    TrackPointer trackPtr;
     if (trackRef.hasId()) {
-        trackPtr = lookupById(trackRef.getId());
+        TrackPointer trackPtr = lookupById(trackRef.getId());
         if (trackPtr) {
             return trackPtr;
         }
     }
     if (trackRef.hasCanonicalLocation()) {
-        trackPtr = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
+        TrackPointer trackPtr = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
         if (trackPtr) {
-            const auto cachedTrackRef =
-                    validateAndCanonicalizeRequestedTrackRef(trackRef, *trackPtr);
             // Multiple tracks may reference the same physical file on disk
-            if (!trackRef.hasId() || trackRef.getId() == cachedTrackRef.getId()) {
+            const auto cachedTrackRef = createTrackRef(*trackPtr);
+            if (trackRef.getLocation() == cachedTrackRef.getLocation()) {
                 return trackPtr;
             }
+            kLogger.warning()
+                    << "Found a different track for the same canonical location:"
+                    << "requested =" << trackRef
+                    << "cached =" << cachedTrackRef;
         }
     }
-    return trackPtr;
+    // Lookup failed, either because the TrackRef did not specify an id or canonical location,
+    // or because the database contains multiple tracks with that canonical location.
+    return {};
 }
 
 TrackPointer GlobalTrackCache::lookupByCanonicalLocation(
         const QString& canonicalLocation) {
+    while (m_incompleteTrack &&
+            m_incompleteTrack->getFileInfo().canonicalLocationPath() == canonicalLocation) {
+        // See GlobalTrackCache::lookupById for the comment on how
+        // the synchronization with the background metadata loader
+        // thread works.
+        m_isTrackCompleted.wait(&m_mutex);
+    }
+
     TrackPointer trackPtr;
     const auto trackByCanonicalLocation(
             m_tracksByCanonicalLocation.find(canonicalLocation));
@@ -594,27 +609,32 @@ void GlobalTrackCache::resolve(
                 trackRef.getCanonicalLocation());
         if (strongPtr) {
             // Cache hit
-            if (debugLogEnabled()) {
-                kLogger.debug()
-                        << "Cache hit - found track by canonical location"
-                        << trackRef.getCanonicalLocation()
-                        << strongPtr.get();
-            }
-            auto cachedTrackRef = validateAndCanonicalizeRequestedTrackRef(
-                    trackRef,
-                    *strongPtr);
+
             // Multiple tracks may reference the same physical file on disk
-            if (!trackRef.hasId() || trackRef.getId() == cachedTrackRef.getId()) {
+            auto cachedTrackRef = createTrackRef(*strongPtr);
+            if (trackRef.getLocation() == cachedTrackRef.getLocation()) {
+                if (debugLogEnabled()) {
+                    kLogger.debug()
+                            << "Cache hit - found track by canonical location"
+                            << trackRef.getCanonicalLocation()
+                            << strongPtr.get();
+                }
                 pCacheResolver->initLookupResult(
                         GlobalTrackCacheLookupResult::Hit,
                         std::move(strongPtr),
                         std::move(trackRef));
-            } else {
-                pCacheResolver->initLookupResult(
-                        GlobalTrackCacheLookupResult::ConflictCanonicalLocation,
-                        TrackPointer(),
-                        std::move(cachedTrackRef));
+                return;
             }
+            if (debugLogEnabled()) {
+                kLogger.debug() << "Cache Conflict - found a different track "
+                                   "for the same canonical location:"
+                                << "requested =" << trackRef
+                                << "cached =" << cachedTrackRef;
+            }
+            pCacheResolver->initLookupResult(
+                    GlobalTrackCacheLookupResult::ConflictCanonicalLocation,
+                    TrackPointer(),
+                    std::move(cachedTrackRef));
             return;
         }
     }
@@ -676,9 +696,71 @@ void GlobalTrackCache::resolve(
     // created object to the main thread.
     savingPtr->moveToThread(QCoreApplication::instance()->thread());
 
+    // Check if someone else is currently busy loading track metadata
+    // in the background, and wait until they are done.
+    //
+    // See GlobalTrackCache::lookupById for more information on how
+    // the locking is implemented.
+    while (m_incompleteTrack) {
+        // Wait for completion.
+        m_isTrackCompleted.wait(&m_mutex);
+        // now the track should be empty
+    }
+    m_incompleteTrack = savingPtr;
+
     pCacheResolver->initLookupResult(
             GlobalTrackCacheLookupResult::Miss,
             std::move(savingPtr),
+            std::move(trackRef));
+}
+
+void GlobalTrackCache::resolveTemporary(
+        GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
+        mixxx::FileAccess /*in*/ fileAccess) {
+    DEBUG_ASSERT(pCacheResolver);
+
+    TrackPointer pTrack;
+
+    auto trackRef = TrackRef::fromFileInfo(fileAccess.info());
+    if (trackRef.hasCanonicalLocation()) {
+        pTrack = lookupByCanonicalLocation(trackRef.getCanonicalLocation());
+        if (pTrack) {
+            // Multiple tracks may reference the same physical file on disk
+            auto cachedTrackRef = createTrackRef(*pTrack);
+            if (trackRef.getLocation() != cachedTrackRef.getLocation()) {
+                kLogger.warning()
+                        << "Found a different track for the same canonical location:"
+                        << "requested =" << trackRef
+                        << "cached =" << cachedTrackRef;
+                pCacheResolver->initLookupResult(
+                        GlobalTrackCacheLookupResult::ConflictCanonicalLocation,
+                        TrackPointer(),
+                        std::move(cachedTrackRef));
+            } else {
+                pCacheResolver->initLookupResult(
+                        GlobalTrackCacheLookupResult::Hit,
+                        std::move(pTrack),
+                        std::move(cachedTrackRef));
+            }
+            return;
+        }
+    }
+
+    pTrack = Track::newTemporary(std::move(fileAccess));
+    // Check if someone else is currently busy loading track metadata
+    // in the background, and wait until they are done.
+    //
+    // See GlobalTrackCache::lookupById for more information on how
+    // the locking is implemented.
+    while (m_incompleteTrack) {
+        // Wait for completion.
+        m_isTrackCompleted.wait(&m_mutex);
+        // now the track should be empty
+    }
+    m_incompleteTrack = pTrack;
+    pCacheResolver->initLookupResult(
+            GlobalTrackCacheLookupResult::Miss,
+            std::move(pTrack),
             std::move(trackRef));
 }
 
@@ -695,6 +777,9 @@ TrackRef GlobalTrackCache::initTrackId(
     EvictAndSaveFunctor* pDel = std::get_deleter<EvictAndSaveFunctor>(strongPtr);
     DEBUG_ASSERT(pDel);
 
+    DEBUG_ASSERT(strongPtr == m_incompleteTrack);
+    discardIncompleteTrack();
+
     // Insert item by id
     DEBUG_ASSERT(m_tracksById.find(trackId) == m_tracksById.end());
     m_tracksById.insert(std::make_pair(
@@ -706,6 +791,11 @@ TrackRef GlobalTrackCache::initTrackId(
     DEBUG_ASSERT(m_tracksById.find(trackId) != m_tracksById.end());
 
     return trackRefWithId;
+}
+
+void GlobalTrackCache::discardIncompleteTrack() {
+    m_incompleteTrack = nullptr;
+    m_isTrackCompleted.wakeAll();
 }
 
 void GlobalTrackCache::purgeTrackId(TrackId trackId) {

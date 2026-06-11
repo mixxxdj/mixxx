@@ -14,6 +14,8 @@ extern const QString kConfigGroup;
 
 extern const ConfigKey kRescanOnStartupConfigKey;
 
+extern const ConfigKey kShowScanSummaryConfigKey;
+
 extern const ConfigKey kKeyNotationConfigKey;
 
 extern const ConfigKey kTrackDoubleClickActionConfigKey;
@@ -55,6 +57,12 @@ extern const ConfigKey kCoverArtFetcherQualityConfigKey;
 extern const ConfigKey kTagFetcherApplyTagsConfigKey;
 
 extern const ConfigKey kTagFetcherApplyCoverConfigKey;
+
+extern const ConfigKey kDateFormatConfigKey;
+
+const int kSidebarHoverExpandDelayDefault = 500; // ms
+
+extern const ConfigKey kSidebarHoverExpandDelayConfigKey;
 
 } // namespace prefs
 

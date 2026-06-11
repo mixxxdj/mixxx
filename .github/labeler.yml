@@ -32,6 +32,18 @@ controller mappings:
       - any-glob-to-any-file:
           - res/controllers/**
 
+developer experience:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/ISSUE_TEMPLATE/**
+          - .github/labeler.yml
+          - tools/**
+          - .pre-commit-config.yaml
+          - CODE_OF_CONDUCT.md
+          - CONTRIBUTING.md
+          - README.md
+          - src/dialog/dlgdevelopertools*
+
 analyzer:
   - changed-files:
       - any-glob-to-any-file:
@@ -127,6 +139,11 @@ soundsource:
   - changed-files:
       - any-glob-to-any-file:
           - src/sources/soundsource*
+
+sync-branches:
+  - all:
+      - base-branch: ['\d+\.\d+']
+      - head-branch: ["main", '\d+\.\d+']
 
 ui:
   - changed-files:

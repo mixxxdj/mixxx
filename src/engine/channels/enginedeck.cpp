@@ -9,7 +9,6 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
-#include "engine/enginevumeter.h"
 #include "moc_enginedeck.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -26,6 +25,9 @@ EngineDeck::EngineDeck(
                   /*isTalkoverChannel*/ false,
                   primaryDeck),
           m_pConfig(pConfig),
+#ifdef __STEM__
+          m_stemClonedState(false),
+#endif
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
     m_pInputConfigured->setReadOnly();
@@ -66,6 +68,7 @@ EngineDeck::EngineDeck(
 
     m_stemGain.reserve(mixxx::kMaxSupportedStems);
     m_stemMute.reserve(mixxx::kMaxSupportedStems);
+    m_stemVuMeter.reserve(mixxx::kMaxSupportedStems);
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
                 ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
@@ -78,6 +81,9 @@ EngineDeck::EngineDeck(
                 ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
         pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
         m_stemMute.push_back(std::move(pMuteButton));
+
+        m_stemVuMeter.emplace_back(std::make_unique<EngineVuMeter>(
+                getGroupForStem(getGroup(), stemIdx), QString(), false));
     }
 #endif
 }
@@ -89,13 +95,14 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
         return;
     }
     if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true)) {
+                ConfigKey("[Mixer Profile]", "stem_auto_reset"), true) &&
+            !m_stemClonedState) {
         for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
-            ;
         }
     }
+    m_stemClonedState = false;
     if (pNewTrack) {
         int stemCount = pNewTrack->getStemInfo().size();
         m_pStemCount->forceSet(stemCount);
@@ -123,7 +130,8 @@ void EngineDeck::addStemHandle(const ChannelHandleAndGroup& stemHandleGroup) {
 void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     mixxx::audio::ChannelCount chCount = m_pBuffer->getChannelCount();
     VERIFY_OR_DEBUG_ASSERT(m_stems.size() <= chCount &&
-            m_stemMute.size() <= chCount && m_stemGain.size() <= chCount) {
+            m_stemMute.size() <= chCount && m_stemGain.size() <= chCount &&
+            m_stemVuMeter.size() <= chCount) {
         return;
     };
     mixxx::audio::SampleRate sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
@@ -153,7 +161,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
-    for (std::size_t stemIdx = 0; stemIdx < stemCount;
+    for (unsigned int stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()
@@ -180,6 +188,8 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
         // next iteration. Without this, (e.g using a static "previous"
         // gain) gain changes will yield to audio cracks.
         m_stemsGainCache[stemIdx] = stemGain;
+
+        m_stemVuMeter[stemIdx]->process(pOut, bufferSize);
 
         // Put back the stem frames into the steam buffer (LRLR -> LR......LR......)
         SampleUtil::insertStereoToMulti(
@@ -212,6 +222,7 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
     }
+    m_stemClonedState = true;
 }
 #endif
 
@@ -295,6 +306,11 @@ EngineChannel::ActiveState EngineDeck::updateActiveState() {
     }
     if (m_active) {
         m_vuMeter.reset();
+#ifdef __STEM__
+        for (auto& stemVuMeter : m_stemVuMeter) {
+            stemVuMeter->reset();
+        }
+#endif
         m_active = false;
         return ActiveState::WasActive;
     }

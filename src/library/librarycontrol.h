@@ -58,8 +58,9 @@ class LibraryControl : public QObject {
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
-    // Give the keyboard focus to one of the library widgets
-    void setLibraryFocus(FocusWidget newFocusWidget);
+    /// Give the keyboard focus to one of the library widgets
+    void setLibraryFocus(FocusWidget newFocusWidget,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
     FocusWidget getFocusedWidget();
 
   signals:
@@ -102,6 +103,7 @@ class LibraryControl : public QObject {
     void slotMoveTrackUp(double);
     void slotMoveTrackDown(double);
     void slotMoveTrack(double);
+    void slotEditItem(double);
     void slotGoToItem(double v);
 
     void slotTrackColorPrev(double v);
@@ -167,6 +169,9 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveTrackUp;
     std::unique_ptr<ControlPushButton> m_pMoveTrackDown;
     std::unique_ptr<ControlEncoder> m_pMoveTrack;
+
+    // Control to edit the currently selected item/field in focused widget
+    std::unique_ptr<ControlObject> m_pEditItem;
 
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;
