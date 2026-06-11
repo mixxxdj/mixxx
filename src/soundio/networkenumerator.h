@@ -8,8 +8,8 @@
 
 class NetworkEnumerator : public SoundDeviceEnumerator {
   public:
-    NetworkEnumerator(UserSettingsPointer config,
-            SoundManager* sm);
+    NetworkEnumerator(UserSettingsPointer pConfig,
+            SoundManager* pSoundManager);
     ~NetworkEnumerator() override;
 
     std::vector<SoundDevicePointer> queryDevices() const override;

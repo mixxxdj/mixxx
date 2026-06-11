@@ -3,11 +3,11 @@
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/sounddevice.h"
 
-NetworkEnumerator::NetworkEnumerator(UserSettingsPointer config,
-        SoundManager* sm)
+NetworkEnumerator::NetworkEnumerator(UserSettingsPointer pConfig,
+        SoundManager* pSoundManager)
         : m_pNetworkStream(QSharedPointer<EngineNetworkStream>::create(2, 0)),
           m_pDevice(QSharedPointer<SoundDeviceNetwork>::create(
-                  config, sm, m_pNetworkStream)) {
+                  pConfig, pSoundManager, m_pNetworkStream)) {
 }
 
 NetworkEnumerator::~NetworkEnumerator() {
