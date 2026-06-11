@@ -145,21 +145,17 @@
         </Connection>
       </PushButton>
 
-      <!-- DJ Bro active indicator dot -->
-      <WidgetGroup>
-        <Size>6f,6f</Size>
-        <Layout>stacked</Layout>
-        <Children>
-          <Label>
-            <Size>6f,6f</Size>
-            <StyleSheet>background-color: #40a0ff; border-radius: 3px;</StyleSheet>
-            <Connection>
-              <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </Label>
-        </Children>
-      </WidgetGroup>
+      <!-- DJ Bro active indicator -->
+      <StatusLight>
+        <Size>8f,8f</Size>
+        <PathStatusLight1>skins:LateNight/<Variable name="StyleScheme"/>/style/ai_bro_indicator.svg</PathStatusLight1>
+        <PathStatusLight2>skins:LateNight/<Variable name="StyleScheme"/>/style/ai_bro_indicator.svg</PathStatusLight2>
+        <PathStatusLight3>skins:LateNight/<Variable name="StyleScheme"/>/style/ai_bro_indicator.svg</PathStatusLight3>
+        <Connection>
+          <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </StatusLight>
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 

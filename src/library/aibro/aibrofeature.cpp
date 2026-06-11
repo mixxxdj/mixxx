@@ -1034,14 +1034,14 @@ void AIBroFeature::findNextSong() {
         int style = m_blendCount % 3;
         switch (style) {
         case 0:
-            query = QStringLiteral("songs like %1").arg(artist);
+            query = QStringLiteral("%1 official music").arg(artist);
             break;
         case 1:
-            query = QStringLiteral("music like %1").arg(artist);
+            query = QStringLiteral("%1 songs playlist").arg(artist);
             break;
         case 2:
         default:
-            query = QStringLiteral("similar to %1").arg(artist);
+            query = QStringLiteral("best of %1 music").arg(artist);
             break;
         }
     } else if (!title.isEmpty() && title.length() >= 3) {
