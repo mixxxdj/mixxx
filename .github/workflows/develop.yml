@@ -19,7 +19,7 @@ permissions:
   checks: write #  to create new checks (coverallsapp/github-action)
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && github.sha || github.ref }}
   cancel-in-progress: true
 
 jobs:
