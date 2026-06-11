@@ -317,8 +317,7 @@ jobs:
         # 'git fetch --tags' which fails on Windows when tag names
         # exceed MAX_PATH. We fetch history without tags instead.
         run: |
-          git fetch origin --force --no-tags --unshallow 2>/dev/null || \
-          git fetch origin --force --no-tags --depth=100
+          git fetch origin --force --no-tags --unshallow || git fetch origin --force --no-tags --depth=100
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
