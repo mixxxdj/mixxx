@@ -317,6 +317,10 @@ jobs:
         # Possibly related: actions/checkout#290
         run: git fetch origin --force --tags
 
+      - name: "[Windows] Enable long paths in git"
+        if: runner.os == 'Windows'
+        run: git config --system core.longpaths true
+
       - name: "[macOS] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.2
         # Ubuntu 24.04 should use the CMake version from the repos.
@@ -825,6 +829,10 @@ jobs:
             GIT_DESC="unknown"
           fi
           echo "GIT_DESC=$GIT_DESC" >> $GITHUB_ENV
+          # Short description for use in file paths (avoids MAX_PATH issues on Windows
+          # and CPack temp-dir-too-long errors on macOS/Linux)
+          GIT_DESC_SHORT=$(git describe --abbrev=0 --first-parent 2>/dev/null || echo "$GIT_DESC")
+          echo "GIT_DESC_SHORT=$GIT_DESC_SHORT" >> $GITHUB_ENV
 
       - name: "Build Flatpak"
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
