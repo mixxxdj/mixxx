@@ -113,6 +113,7 @@ case "$1" in
             libmsgsl-dev \
             libopus-dev \
             libopusfile-dev \
+            libpipewire-0.3-dev \
             libportmidi-dev \
             libprotobuf-dev \
             libqt6core5compat6-dev \

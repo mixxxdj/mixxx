@@ -161,6 +161,10 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverload;
 
     std::unique_ptr<PortAudioEnumerator> m_paEnumerator;
-    std::unique_ptr<NetworkEnumerator> m_networkEnumerator;
+
+#ifdef __PIPEWIRE__
     std::unique_ptr<PipewireEnumerator> m_pipewireEnumerator;
+#endif
+
+    std::unique_ptr<NetworkEnumerator> m_networkEnumerator;
 };
