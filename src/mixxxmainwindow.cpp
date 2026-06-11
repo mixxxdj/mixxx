@@ -1608,8 +1608,8 @@ void MixxxMainWindow::keyPressEvent(QKeyEvent* event) {
             event->accept();
             return;
         }
-        case Qt::Key_M:
-            // Ctrl+M: Open preferences/options dialog
+        case Qt::Key_P:
+            // Ctrl+P: Open preferences/options dialog
             slotOptionsPreferences();
             event->accept();
             return;
