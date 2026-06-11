@@ -305,6 +305,19 @@ jobs:
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
+          # Don't fetch tags automatically -- the long tag names from
+          # git describe exceed Windows MAX_PATH (260 chars) and cause
+          # "Filename too long" errors. We fetch tags manually below
+          # with a refspec that avoids creating long local refs.
+          fetch-tags: false
+
+      - name: "Fetch tags (safe for Windows long paths)"
+        # actions/checkout's built-in tag fetch fails on Windows when
+        # git describe produces a tag name longer than MAX_PATH.
+        # We skip tag fetching entirely -- git describe --always
+        # still works without tags (outputs commit hash).
+        run: |
+          git fetch origin --force --no-tags
 
       - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
         if: matrix.container != null
