@@ -122,8 +122,30 @@
       <WidgetGroup>
         <ObjectName>AiBroButton</ObjectName>
         <Size>50f,20f</Size>
+        <Layout>stacked</Layout>
         <Children>
-          <!-- Inactive state: normal text -->
+          <!-- Clickable button background -->
+          <PushButton>
+            <TooltipId>ai_bro_status</TooltipId>
+            <Size>50f,20f</Size>
+            <NumberStates>2</NumberStates>
+            <RightClickIsPushButton>false</RightClickIsPushButton>
+            <State>
+              <Number>0</Number>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+              <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+          <!-- Inactive text: normal color -->
           <Label>
             <ObjectName>DJBroInactive</ObjectName>
             <Size>50f,20f</Size>
@@ -135,7 +157,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </Label>
-          <!-- Active state: blue neon text -->
+          <!-- Active text: blue neon -->
           <Label>
             <ObjectName>DJBroActive</ObjectName>
             <Size>50f,20f</Size>
@@ -148,10 +170,6 @@
             </Connection>
           </Label>
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[AIBro],enabled</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
       </WidgetGroup>
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
