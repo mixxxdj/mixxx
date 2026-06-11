@@ -87,6 +87,9 @@ class LibraryControl : public QObject {
     void clearSearchIfClearButtonHasFocus();
     void showHideTrackMenu(bool show);
 
+    void pinnedTrackIdChanged(const TrackId& id);
+    void pinnedTrackChanged(TrackPointer pTrack);
+
   public slots:
     // Deprecated navigation slots
 #ifdef __STEM__
@@ -167,6 +170,7 @@ class LibraryControl : public QObject {
 
     void pinTrack(const TrackId& id);
     void pinTrack(TrackPointer pTrack);
+    void updateHasPinnedTrackControl();
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     std::unique_ptr<ControlPushButton> m_pMoveUp;
@@ -243,6 +247,7 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pToggleSidebarItem;
     std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
     std::unique_ptr<ControlPushButton> m_pPinSelectedTrack;
+    std::unique_ptr<ControlObject> m_pHasPinnedTrack;
 
     // Library widgets
     WLibrary* m_pLibraryWidget;

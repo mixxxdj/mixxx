@@ -267,6 +267,17 @@ Library::Library(
     m_editMetadataSelectedClick = m_pConfig->getValue(
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
+
+    // Forward the 'pinned track' signal so eg. WTrackProperty can be notified
+    connect(m_pLibraryControl,
+            &LibraryControl::pinnedTrackChanged,
+            this,
+            &Library::pinnedTrackChanged);
+    // and a wrapper when LibraryControl only has the TrackId
+    connect(m_pLibraryControl,
+            &LibraryControl::pinnedTrackIdChanged,
+            this,
+            &Library::slotPinnedTrackIdChanged);
 }
 
 Library::~Library() = default;
@@ -613,6 +624,14 @@ void Library::slotLoadTrackToPlayer(
     emit loadTrackToPlayer(pTrack, group, play);
 }
 #endif
+
+void Library::slotPinnedTrackIdChanged(const TrackId& id) {
+    TrackPointer pTrack;
+    if (id.isValid()) {
+        pTrack = trackCollectionManager()->getTrackById(id);
+    }
+    emit pinnedTrackChanged(pTrack);
+}
 
 void Library::slotRefreshLibraryModels() {
     m_pMixxxLibraryFeature->refreshLibraryModels();

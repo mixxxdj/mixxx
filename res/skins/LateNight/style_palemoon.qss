@@ -79,6 +79,7 @@
 #SidebarCoverSplitter:handle,
 #LibrarySplitter::handle,
 #LibraryFeatureControls,
+#PinnedTrackControls,
 QAbstractScrollArea::corner {
   border-top: 1px solid #212123;
   border-right: 1px solid #111;
@@ -141,7 +142,8 @@ QAbstractScrollArea::corner {
         max-height: 3px;
       }
   /* Controls row in AutoDJ, Recording and other library features */
-  #LibraryFeatureControls {
+  #LibraryFeatureControls,
+  #PinnedTrackControls {
     border-width: 1px 0px 0px 0px;
     border-radius: 0px;
     margin-top: 1px;
@@ -1293,6 +1295,7 @@ WEffectChainPresetSelector,
   #DeckMini2 #ArtistTextSmall,
   #DeckMini2 #BpmTextSmall,
   #DeckMini2 #KeyTextSmall,
+#PinnedTrackControls WTrackProperty,
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini,
 #MainMenu QMenu,
@@ -1306,6 +1309,8 @@ WTrackTableView,
 #LibraryPlayedCheckbox::item,
 WLibraryTextBrowser,
 WLibrarySidebar,
+#PinnedTrackControls WPushButton,
+WPushButton#PinnedTrackToggle,
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QPushButton,
 #LibraryFeatureControls QRadioButton,
@@ -1503,6 +1508,7 @@ WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #BroadcastButton[displayValue="4"], /* warning */
 #RecDuration[highlight="1"],  /* initializing */
 #RecDuration[highlight="2"],  /* recording */
+WPushButton#PinnedTrackToggle[displayValue="1"],
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonRepeatPlaylist:checked,
@@ -1569,6 +1575,8 @@ WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
 #LibraryFeatureControls QPushButton:enabled,
+#PinnedTrackControls WPushButton,
+WPushButton#PinnedTrackToggle,
 #CueDeleteButton,
 #CueStandardButton,
 #CueSavedLoopButton,
@@ -1592,6 +1600,7 @@ WEffectSelector:!editable,
   #BroadcastButton[displayValue="3"],
   #BroadcastButton[displayValue="4"],
   #SkinSettingsToggle[displayValue="1"],
+  WPushButton#PinnedTrackToggle[displayValue="1"],
   #LibraryFeatureControls QPushButton:pressed
   QPushButton#pushButtonAutoDJ:checked,
   QPushButton#pushButtonRepeatPlaylist:checked,
@@ -1751,6 +1760,8 @@ WBpmEditor QDoubleSpinBox {
   #spinBoxRecentDays::up-button,
   #spinBoxRecentDays::down-button,
   QPushButton#pushButtonAutoDJ:enabled:!checked,
+  #PinnedTrackControls WPushButton,
+  WPushButton#PinnedTrackToggle,
   #LibraryFeatureControls QPushButton:enabled {
     background-color: #222;
   }
@@ -1766,6 +1777,7 @@ WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
 WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
+WPushButton#PinnedTrackToggle[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
