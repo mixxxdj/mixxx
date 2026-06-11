@@ -534,6 +534,17 @@ SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
             }
         }
     }
+
+    // Fallback to keep waveforms running if no local SoundDevice is configured:
+    // set it to the first network clock device.
+    for (const auto& pDevice : devices) {
+        if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
+            qWarning() << "No local sound device configured, local "
+                          "sync reference not set! Using"
+                       << pDevice->getDisplayName();
+            return pDevice;
+        }
+    }
     return nullptr;
 }
 
@@ -621,30 +632,6 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     } else {
         pNewMainClockRef = pNewLocalTimeSyncRef;
-    }
-
-    // Fallback to keep waveforms running if no local SoundDevice is configured
-    // If pNewLocalTimeSyncRef or pNewMainClockRef is still nullptr,
-    // set it to the first network clock device.
-    if (!pNewLocalTimeSyncRef || !pNewMainClockRef) {
-        for (const auto& pDevice : std::as_const(m_devices)) {
-            if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
-                if (!pNewLocalTimeSyncRef) {
-                    qWarning() << "No local sound device configured, local "
-                                  "sync reference not set! Using"
-                               << pDevice->getDisplayName();
-                    pNewLocalTimeSyncRef = pDevice;
-                }
-                if (!pNewMainClockRef) {
-                    qWarning() << "Output sound device clock reference not set! Using"
-                               << pDevice->getDisplayName();
-                    pNewMainClockRef = pDevice;
-                }
-                if (pNewLocalTimeSyncRef && pNewMainClockRef) {
-                    break;
-                }
-            }
-        }
     }
 
     // loop over all available devices
