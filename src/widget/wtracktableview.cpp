@@ -1310,10 +1310,13 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
 }
 
 void WTrackTableView::selectPinnedTrack(const TrackId& id) {
+    qWarning() << "WTrackTableView::selectPinnedTrack" << id;
     if (!isVisible()) {
+        qWarning() << "-> not visible, return";
         return;
     }
     if (!id.isValid()) {
+        qWarning() << "-> id invalid, return";
         return;
     }
     selectTrack(id);
@@ -1321,7 +1324,7 @@ void WTrackTableView::selectPinnedTrack(const TrackId& id) {
     // (bold) that allows to identify playlists/crates that also hold the track
     TrackPointer pTrack = m_pLibrary->trackCollectionManager()->getTrackById(id);
     if (!pTrack) {
-        return;
+        qWarning() << "-> no track for id" << id;
     }
     emit trackSelected(pTrack);
 }

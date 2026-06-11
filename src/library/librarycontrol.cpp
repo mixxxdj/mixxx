@@ -785,11 +785,13 @@ void LibraryControl::updateHasPinnedTrackControl() {
 };
 
 void LibraryControl::selectedPinnedTrack() {
+    qDebug() << "LibraryControl::selectedPinnedTrack()";
     if (!m_pLibraryWidget) {
         return;
     }
 
     if (!m_pinnedTrackId.isValid()) {
+        qDebug() << "-> pinned id invalid, return";
         return;
     }
 

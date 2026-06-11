@@ -573,6 +573,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     emit switchToView(m_sTrackViewName);
 
     if (m_pLibraryControl->hasPinnedTrack()) {
+        qDebug() << "Library::slotShowTrackModel -> try to select pinned track";
         // TODO try to make sure the pinned track is visible
         // Ie. clear the current search if it's not.
         // Currently the user has to take care of that, then click sidebar item
