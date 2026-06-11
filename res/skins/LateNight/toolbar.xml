@@ -141,19 +141,19 @@
       <PushButton>
         <TooltipId>ai_bro_status</TooltipId>
         <ObjectName>AiBroButton</ObjectName>
-        <Size>40f,20f</Size>
+        <Size>50f,20f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Text>DJ</Text>
+          <Text>DJ BRO</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
         </State>
         <State>
           <Number>1</Number>
-          <Text>DJ</Text>
+          <Text>DJ BRO</Text>
           <Alignment>center</Alignment>
           <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
           <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
