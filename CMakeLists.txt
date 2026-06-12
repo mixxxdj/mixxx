@@ -4328,6 +4328,16 @@ if(DEBUG_ASSERTIONS_FATAL)
   endif()
 endif()
 
+# QML Type Compiler (QMLTC) — AOT compilation of QML to C++.
+# Available since Qt 6.7. Significantly reduces QML startup time and
+# improves runtime performance by compiling QML types ahead of time.
+# Only enabled for non-Debug Qt6 builds where QML is used.
+if(QML AND QT6 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND QT_VERSION VERSION_GREATER_EQUAL 6.7)
+  message(STATUS "QML Type Compiler enabled — QML files will be AOT-compiled")
+  set_target_properties(mixxx-qml-lib PROPERTIES QT_QMLTC ON)
+  set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES QT_QMLTC ON)
+endif()
+
 if(EMSCRIPTEN)
   option(
     WASM_ASSERTIONS
