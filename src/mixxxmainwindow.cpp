@@ -23,8 +23,8 @@
 
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
-#include "widget/wsuggestionsbar.h"
 #endif
+#include "widget/wsuggestionsbar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
@@ -275,9 +275,10 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-#ifndef MIXXX_USE_QOPENGL
+#if !defined(MIXXX_USE_QOPENGL) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
+    // QGLFormat/QGLWidget were removed in Qt6.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
