@@ -625,7 +625,7 @@ jobs:
 
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7
         with:
           name: ${{ matrix.os }}-logs-packages-wix
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
@@ -784,7 +784,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           archive: "false"
           path: ${{ matrix.artifacts_path }}
@@ -837,7 +837,7 @@ jobs:
           echo "GIT_DESC_SHORT=$GIT_DESC" >> $GITHUB_ENV
 
       - name: "Build Flatpak"
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v7
+        uses: flatpak/flatpak-github-actions/flatpak-builder@bf5cafdfd97dcf5a89c7475bbc86a616e1f86acb  # v6.7
         with:
           manifest-path: packaging/flatpak/org.mixxx.Mixxx.yaml
           arch: ${{ matrix.variant.arch }}
@@ -858,13 +858,13 @@ jobs:
             --runtime Mixxx-${GIT_DESC_SHORT}-${{ matrix.variant.arch }}.Debug.flatpak org.mixxx.Mixxx.Debug
 
       - name: "Upload Flatpak bundle"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           archive: "false"
           path: Mixxx-${{ env.GIT_DESC_SHORT }}-${{ matrix.variant.arch }}.flatpak
 
       - name: "Upload Debug extension"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
         with:
           archive: "false"
           path: Mixxx-${{ env.GIT_DESC_SHORT }}-${{ matrix.variant.arch }}.Debug.flatpak
