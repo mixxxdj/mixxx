@@ -362,7 +362,8 @@ void SoundDevicePipewire::callback(const spa_io_position* pos) {
 
     uint64_t framesPerBuffer = clock.duration;
 
-    if (clock.flags & SPA_IO_CLOCK_FLAG_XRUN_RECOVER) {
+    if (clock.xrun > xrun_duration) {
+        xrun_duration = clock.xrun;
         m_pSoundManager->underflowHappened(1);
         // qDebug() << "callbackProcess read:" << "Underflow";
     }
@@ -426,7 +427,8 @@ void SoundDevicePipewire::callbackDrift(const spa_io_position* pos) {
     const spa_io_clock& clock = pos->clock;
     int framesPerBuffer = clock.duration;
 
-    if (clock.flags & SPA_IO_CLOCK_FLAG_XRUN_RECOVER) {
+    if (clock.xrun > xrun_duration) {
+        xrun_duration = clock.xrun;
         m_pSoundManager->underflowHappened(7);
     }
 
@@ -699,7 +701,8 @@ void SoundDevicePipewire::callbackClkRef(const spa_io_position* pos) {
 #endif
 #endif
 
-    if (pos->clock.flags & SPA_IO_CLOCK_FLAG_XRUN_RECOVER) {
+    if (pos->clock.xrun > xrun_duration) {
+        xrun_duration = pos->clock.xrun;
         m_pSoundManager->underflowHappened(6);
     }
     const uint64_t framesPerBuffer = pos->clock.duration;

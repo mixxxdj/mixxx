@@ -149,4 +149,5 @@ class SoundDevicePipewire : public SoundDevice {
     size_t m_fifoSize;
     bool m_closing;
     QString m_lastError;
+    uint64_t xrun_duration;
 };
