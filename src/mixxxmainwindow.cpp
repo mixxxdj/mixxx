@@ -24,7 +24,6 @@
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
 #endif
-#include "widget/wsuggestionsbar.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
@@ -35,6 +34,7 @@
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wsuggestionsbar.h"
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
