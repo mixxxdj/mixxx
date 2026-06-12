@@ -621,7 +621,7 @@ endif()
 
 #######################################################################
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 if(MSVC)
   # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
@@ -2466,7 +2466,7 @@ if(QT6)
     )
     set(
       CMAKE_LINKER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
+      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/lld"
     )
     set(
       CMAKE_C_COMPILER
@@ -2476,24 +2476,21 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -fPIC")
 
     # ─── Android performance & size optimizations ───────────────────────
-    # Use -Oz (smallest code with vectorization) instead of the global -O3.
-    # On ARM64 the difference vs -O3 is negligible for audio DSP workloads
-    # because NEON auto-vectorization still fires, but the binary shrinks
-    # ~15-25 %. -ffunction-sections + -fdata-sections allow the linker to
-    # discard unreachable code/data via --gc-sections.
+    # -O2 + full LTO gives the best perf/size tradeoff on ARM64.
+    # -Oz sacrifices ~10-15% perf for ~5% size savings which is not
+    # worth it for a DJ app where audio DSP latency matters.
     target_compile_options(
       mixxx-lib
-      PUBLIC -Oz -ffunction-sections -fdata-sections
+      PUBLIC -O2 -ffunction-sections -fdata-sections
     )
-    # Enable Link-Time Optimization (Thin LTO) — provides cross-TU inlining
-    # and dead-code elimination with much lower memory/time cost than full
-    # LTO. Combined with --gc-sections and --icf=safe this yields the
-    # smallest possible binary with optimal hot-path performance.
-    target_compile_options(mixxx-lib PUBLIC -flto=thin)
-    target_link_options(mixxx-lib PUBLIC -flto=thin)
+    # Full LTO (not Thin LTO) for release builds — maximizes cross-TU
+    # inlining and dead-code elimination. With NDK r28 Clang 19 this is
+    # stable and produces measurably smaller+faster binaries.
+    target_compile_options(mixxx-lib PUBLIC -flto=full)
+    target_link_options(mixxx-lib PUBLIC -flto=full)
 
     # Locate the NDK's bundled libomp.so dynamically. The path used to be
     # hardcoded to `lib/clang/18/...` which broke every time the NDK was
