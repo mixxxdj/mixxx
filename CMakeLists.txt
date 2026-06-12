@@ -2630,16 +2630,13 @@ if(QT6)
       # packaging/android/res/ and the SVG icons are 4.5MB of dead weight.
       # Exclude templates/logo_mixxx.png — desktop-only about dialog logo.
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/res/images/preferences
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/preferences
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/preferences
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/res/images/keywheel
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/keywheel
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/keywheel
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/res/images/library
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/library
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/library
       COMMAND
         ${CMAKE_COMMAND} -E copy
@@ -4052,11 +4049,11 @@ set(
   Sql
   Svg
   Xml
+  Widgets # Needed for QMessageBox (errordialoghandler.h includes it unconditionally)
 )
 if(NOT ANDROID)
   list(APPEND QT_COMPONENTS "OpenGL")
   list(APPEND QT_COMPONENTS "Test")
-  list(APPEND QT_COMPONENTS "Widgets")
   list(APPEND QT_COMPONENTS "PrintSupport")
 endif()
 set(QT_EXTRA_COMPONENTS "")
