@@ -80,7 +80,7 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer config,
     m_hostAPI = "PipeWire";
     m_deviceId.name = name.data();
 
-    qWarning() << "PipeWire device: " << name;
+    qWarning() << "PipeWire device: " << name.data();
 
     m_deviceId.deviceIndex = id;
     m_strDisplayName = QString::fromUtf8(name);
