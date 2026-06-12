@@ -11,8 +11,12 @@
 # Android NDK/SDK, macOS codesigning, vcpkg deps, etc.).
 #
 # This workflow adds a release-publishing stage on top that collects
-# the built artifacts (DEB, DMG x2, MSI x2) and publishes them to
+# the built artifacts (DEB, DMG x2, MSI x2, APK) and publishes them to
 # GitHub Releases.
+#
+# Runner cost: 1 version job + 1 build job (build.yml handles its own
+# 6-platform matrix internally) + 1 release job = ~8 concurrent runners
+# instead of the previous 30+ from the cartesian product bug.
 
 name: Auto-Release
 
@@ -77,15 +81,17 @@ jobs:
           # Priority 2: pushed version tag
           elif [[ "${{ github.ref_type }}" == "tag" ]]; then
             VER="${{ github.ref_name }}"
-          # Priority 3: short nightly version (git describe can produce
-          # enormous strings on repos with many merge commits from
-          # upstream, exceeding GitHub's 255-byte ref limit).
+          # Priority 3: short nightly version.
+          #
+          # CRITICAL: We use a FIXED base version (v2.7-alpha) plus the
+          # short commit hash. Do NOT use git describe to find the nearest
+          # tag, because previous auto-release runs created tags that
+          # themselves contain full git-describe output, causing the tag
+          # name to grow indefinitely and exceed GitHub's 255-byte ref
+          # limit.
           else
             SHORT_HASH="$(git rev-parse --short HEAD)"
-            # Use the nearest tag + short hash, capped to stay well under
-            # the 255-byte GitHub ref limit.
-            NEAREST_TAG="$(git describe --tags --abbrev=0 --first-parent 2>/dev/null || echo "v2.7")"
-            VER="${NEAREST_TAG}-${SHORT_HASH}"
+            VER="v2.7-alpha-${SHORT_HASH}"
           fi
 
           # Strip a leading 'v' for display; keep it in the tag name.
@@ -115,24 +121,13 @@ jobs:
           echo "PreRelease: ${IS_PRE}"
 
   # ── 2. Build every platform via the reusable build workflow ───────────────
+  #
+  # NOTE: build.yml has its own internal matrix for the 6 build platforms.
+  # Do NOT wrap this in a second matrix here — that would create a
+  # cartesian product (6 × 6 = 36 jobs) and burn through runners.
   build:
-    name: Build – ${{ matrix.name }}
+    name: Build
     needs: version
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Ubuntu 24.04
-            artifacts_slug: ubuntu-jammy
-          - name: macOS 15 x64
-            artifacts_slug: macos-macosintel
-          - name: macOS 15 arm64
-            artifacts_slug: macos-macosarm
-          - name: Windows 2022 x64
-            artifacts_slug: windows-win64
-          - name: Windows 11 ARM64
-            artifacts_slug: windows-winarm
-
     uses: ./.github/workflows/build.yml
     with:
       publish: false
