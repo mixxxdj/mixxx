@@ -2628,13 +2628,16 @@ if(QT6)
       # packaging/android/res/ and the SVG icons are 4.5MB of dead weight.
       # Exclude templates/logo_mixxx.png — desktop-only about dialog logo.
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/preferences
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/preferences
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/preferences
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/keywheel
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/keywheel
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/keywheel
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/library
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/library
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/library
       COMMAND
         ${CMAKE_COMMAND} -E copy
@@ -4332,7 +4335,12 @@ endif()
 # Available since Qt 6.7. Significantly reduces QML startup time and
 # improves runtime performance by compiling QML types ahead of time.
 # Only enabled for non-Debug Qt6 builds where QML is used.
-if(QML AND QT6 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND QT_VERSION VERSION_GREATER_EQUAL 6.7)
+if(
+  QML
+  AND QT6
+  AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
+  AND QT_VERSION VERSION_GREATER_EQUAL 6.7
+)
   message(STATUS "QML Type Compiler enabled — QML files will be AOT-compiled")
   set_target_properties(mixxx-qml-lib PROPERTIES QT_QMLTC ON)
   set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES QT_QMLTC ON)
