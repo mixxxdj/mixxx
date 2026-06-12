@@ -449,7 +449,14 @@ cmake_dependent_option(
 )
 
 if(QT6)
-  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+  if(ANDROID)
+    # Android uses GLESv3, not desktop OpenGL. Don't compile desktop
+    # OpenGL source files (waveform renderers, spinny, etc.) — they
+    # would be dead code bloating the binary.
+    set(QOPENGL OFF CACHE INTERNAL "Disabled on Android — uses GLESv3")
+  else()
+    set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+  endif()
 else()
   option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 endif()
@@ -2614,8 +2621,25 @@ if(QT6)
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/fonts
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/fonts
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images
+        ${CMAKE_COMMAND} -E make_directory
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images
+      # Copy only the image files Android actually needs.
+      # Exclude res/images/icons/ entirely — Android uses mipmap icons from
+      # packaging/android/res/ and the SVG icons are 4.5MB of dead weight.
+      # Exclude templates/logo_mixxx.png — desktop-only about dialog logo.
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/preferences
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/preferences
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/keywheel
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/keywheel
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/library
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/library
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/res/images/skin_preview_placeholder.png
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/skin_preview_placeholder.png
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/keyboard
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/keyboard
@@ -3924,9 +3948,20 @@ else()
       PUBLIC -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES2=1
     )
   elseif(ANDROID)
-    find_library(GLESv2_LIBRARY GLESv2)
-    target_link_libraries(mixxx-lib PRIVATE "${GLESv2_LIBRARY}")
-    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+    # Use OpenGL ES 3.2 (supported on all Android API 24+ / ARM64 devices).
+    # ES 3.2 adds compute shaders, ASTC texture compression, and improved
+    # shader precision — all beneficial for waveform rendering.
+    # Qt 6.2+ supports ES 3.2 via QSurfaceFormat::setVersion(3, 2).
+    find_library(GLESv3_LIBRARY GLESv3)
+    if(GLESv3_LIBRARY)
+      target_link_libraries(mixxx-lib PRIVATE "${GLESv3_LIBRARY}")
+      target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_3_2)
+    else()
+      # Fallback to ES 2.0 for older NDK/sysroot setups
+      find_library(GLESv2_LIBRARY GLESv2)
+      target_link_libraries(mixxx-lib PRIVATE "${GLESv2_LIBRARY}")
+      target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+    endif()
   else()
     find_package(WrapOpenGL REQUIRED)
     if(OPENGL_opengl_LIBRARY)
@@ -4008,22 +4043,26 @@ set(
   Core
   Gui
   Network
-  OpenGL
   Qml # for QJSEngine
   Sql
   Svg
-  Test
-  Widgets
   Xml
 )
 if(NOT ANDROID)
+  list(APPEND QT_COMPONENTS "OpenGL")
+  list(APPEND QT_COMPONENTS "Test")
+  list(APPEND QT_COMPONENTS "Widgets")
   list(APPEND QT_COMPONENTS "PrintSupport")
 endif()
 set(QT_EXTRA_COMPONENTS "")
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
-  list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+  if(NOT ANDROID)
+    list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+  endif()
+  # Core5Compat needed for QStringRef (used in src/util/string.h)
+  # and QTextCodec (used in library parsers) — Qt6 moved these here
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
     # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
@@ -4039,17 +4078,21 @@ if(QML)
   endif()
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
-  list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+  if(NOT ANDROID)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
+  endif()
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
-  list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
     list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
     list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
-    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
-    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+    if(NOT ANDROID)
+      list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+      list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+    endif()
   endif()
   if(QT_VERSION VERSION_LESS 6.8)
     # From Qt 6.8 integrated in Qml via QmlMeta
