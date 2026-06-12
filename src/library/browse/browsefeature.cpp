@@ -316,30 +316,28 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     }
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         emit saveModelState();
-        // Clear the tracks view
-        m_pBrowseModel->setPath({});
-    } else {
-        // Open a security token for this path and if we do not have access, ask
-        // for it.
-        auto dirInfo = mixxx::FileInfo(path);
-        auto dirAccess = mixxx::FileAccess(dirInfo);
-        if (!dirAccess.isReadable()) {
-            if (Sandbox::askForAccess(&dirInfo)) {
-                // Re-create to get a new token.
-                dirAccess = mixxx::FileAccess(dirInfo);
-            } else {
-                // TODO(rryan): Activate an info page about sandboxing?
-                return;
-            }
-        }
-        emit saveModelState();
-        m_pBrowseModel->setPath(std::move(dirAccess));
+        // Nothing to see here, show the Computer root view
+        activate();
+        return;
     }
+
+    // Open a security token for this path and if we do not have access, ask
+    // for it.
+    auto dirInfo = mixxx::FileInfo(path);
+    auto dirAccess = mixxx::FileAccess(dirInfo);
+    if (!dirAccess.isReadable()) {
+        if (Sandbox::askForAccess(&dirInfo)) {
+            // Re-create to get a new token.
+            dirAccess = mixxx::FileAccess(dirInfo);
+        } else {
+            // TODO(rryan): Activate an info page about sandboxing?
+            return;
+        }
+    }
+    emit saveModelState();
+    m_pBrowseModel->setPath(std::move(dirAccess));
     emit showTrackModel(m_pProxyModel.get());
     // Search is restored in Library::slotShowTrackModel, disable it where it's useless
-    if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        emit disableSearch();
-    }
     emit enableCoverArtDisplay(false);
 }
 
