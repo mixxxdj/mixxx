@@ -2097,14 +2097,17 @@ if(QOPENGL)
       src/widget/wvumeterglsl.cpp
   )
 else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/waveform/renderers/qtvsynctestrenderer.cpp
-      src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-      src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-      src/widget/wglwidgetqglwidget.cpp
-  )
+  # Qt5 fallback only — QGLWidget was removed in Qt6
+  if(NOT QT6)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/waveform/renderers/qtvsynctestrenderer.cpp
+        src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+        src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+        src/widget/wglwidgetqglwidget.cpp
+    )
+  endif()
 endif()
 
 set_source_files_properties(
@@ -2630,13 +2633,16 @@ if(QT6)
       # packaging/android/res/ and the SVG icons are 4.5MB of dead weight.
       # Exclude templates/logo_mixxx.png — desktop-only about dialog logo.
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/preferences
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/preferences
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/preferences
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/keywheel
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/keywheel
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/keywheel
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images/library
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/library
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/library
       COMMAND
         ${CMAKE_COMMAND} -E copy

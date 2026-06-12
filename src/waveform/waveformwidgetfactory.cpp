@@ -225,6 +225,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         widget->hide();
     }
 #else
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt5 fallback — QGLWidget was removed in Qt6
     QGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
@@ -365,6 +367,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
         pGlWidget->hide();
     }
+#endif // QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #endif
     evaluateWidgets();
     m_time.start();
