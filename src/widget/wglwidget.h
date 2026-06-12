@@ -7,7 +7,8 @@
 
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/wglwidgetqopengl.h"
-#else
+#elif QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+// QGLWidget was removed in Qt6 — only include Qt5 fallback
 #include "widget/wglwidgetqglwidget.h"
 #endif
 
