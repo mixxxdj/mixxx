@@ -1,7 +1,7 @@
 #include "waveform/sharedglcontext.h"
 
 #include <QtGlobal>
-#if !defined(MIXXX_USE_QOPENGL) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if !defined(MIXXX_USE_QOPENGL) && defined(QT_VERSION) && QT_VERSION < 0x060000
 #include <QDebug>
 #include <QGLContext>
 #include <QGLFormat>

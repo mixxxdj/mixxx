@@ -6,6 +6,7 @@
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 #include "waveform/widgets/waveformwidgettype.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 #ifdef MIXXX_USE_QOPENGL
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #endif
