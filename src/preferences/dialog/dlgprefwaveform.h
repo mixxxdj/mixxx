@@ -75,9 +75,11 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
+#ifdef MIXXX_USE_QOPENGL
     void updateWaveformTypeOptions(bool useWaveform,
             WaveformWidgetBackend backend,
             WaveformRendererSignalBase::Options currentOption);
+#endif
     void updateWaveformAcceleration(
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
     void updateWaveformGeneralOptionsEnabled();
