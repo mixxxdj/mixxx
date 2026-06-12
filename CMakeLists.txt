@@ -628,7 +628,7 @@ endif()
 
 #######################################################################
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
   # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
@@ -2483,6 +2483,8 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
+    # Use C++23 for Android (NDK r28 Clang 19 supports it fully).
+    # Desktop stays at C++20 because GCC 13 on Ubuntu 24.04 doesn't fully support C++23.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -fPIC")
 
     # ─── Android performance & size optimizations ───────────────────────
