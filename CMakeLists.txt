@@ -2476,7 +2476,7 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -fPIC")
 
     # ─── Android performance & size optimizations ───────────────────────
     # Use -Oz (smallest code with vectorization) instead of the global -O3.

@@ -277,12 +277,16 @@ jobs:
               -DMAD=OFF
               -DMODPLUG=OFF
               -DWAVPACK=OFF
+              -DSTEM=OFF
+              -DENGINEPRIME=OFF
+              -DKEYFINDER=OFF
+              -DRUBBERBAND=OFF
               -DOPTIMIZE=portable
               -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
-              -DCMAKE_C_FLAGS=-ffunction-sections\ -fdata-sections\ -fvisibility=hidden\ -Oz\ -fmerge-all-constants
-              -DCMAKE_CXX_FLAGS=-ffunction-sections\ -fdata-sections\ -fvisibility=hidden\ -fvisibility-inlines-hidden\ -Oz\ -fmerge-all-constants
-              -DCMAKE_EXE_LINKER_FLAGS=-Wl,--gc-sections,--icf=safe,-O2,-s
-              -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--gc-sections,--icf=safe,-O2,-s
+              -DCMAKE_C_FLAGS=-ffunction-sections\\ -fdata-sections\\ -fvisibility=hidden\\ -O2\\ -fmerge-all-constants
+              -DCMAKE_CXX_FLAGS=-ffunction-sections\\ -fdata-sections\\ -fvisibility=hidden\\ -fvisibility-inlines-hidden\\ -O2\\ -fmerge-all-constants
+              -DCMAKE_EXE_LINKER_FLAGS=-Wl,--gc-sections,--icf=safe,--as-needed,--no-merge-exidx-entries,-O2,-s
+              -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--gc-sections,--icf=safe,--as-needed,--no-merge-exidx-entries,-O2,-s
               -DVCPKG_TARGET_TRIPLET=arm64-android
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-linux-release
               -DCMAKE_SYSTEM_NAME=Android
