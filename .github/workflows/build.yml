@@ -61,8 +61,6 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-              -DOPTIMIZE=portable
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
               -DNDEBUG
             # TODO: Fix these broken tests. They time out on slow CI runners.
             ctest_args: --exclude-regex '(ControllerScriptEngineLegacy|PlayerManagerTest\.Un|MappingTestFixture)'
@@ -87,8 +85,6 @@ jobs:
               -DQML=OFF
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
-              -DOPTIMIZE=portable
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
               -DNDEBUG
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
@@ -113,8 +109,6 @@ jobs:
               -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
-              -DOPTIMIZE=portable
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
               -DNDEBUG
             # TODO: Fix this broken test on macOS
             crosscompile: true
@@ -143,8 +137,6 @@ jobs:
               -DQML=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-windows-release
-              -DOPTIMIZE=portable
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
               -DNDEBUG
             cc: cl
             cxx: cl
@@ -174,8 +166,6 @@ jobs:
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-windows-release
               -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-windows-release
-              -DOPTIMIZE=portable
-              -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON
               -DNDEBUG
             cc: cl
             cxx: cl
