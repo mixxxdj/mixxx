@@ -545,9 +545,8 @@ class QmlWaveformRendererStem
         return true;
     }
 #else
-    Renderer create(WaveformWidgetRenderer* waveformWidget,
-            mixxx::qml::WaveformRendererSignalBaseOptions options)
-            const override {
+    Renderer create(WaveformWidgetRenderer*,
+            mixxx::qml::WaveformRendererSignalBaseOptions) const override {
         return Renderer{};
     }
 
