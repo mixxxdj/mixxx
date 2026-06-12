@@ -77,9 +77,15 @@ jobs:
           # Priority 2: pushed version tag
           elif [[ "${{ github.ref_type }}" == "tag" ]]; then
             VER="${{ github.ref_name }}"
-          # Priority 3: git describe (nightly / rolling build)
+          # Priority 3: short nightly version (git describe can produce
+          # enormous strings on repos with many merge commits from
+          # upstream, exceeding GitHub's 255-byte ref limit).
           else
-            VER="$(git describe --tags --always --first-parent --dirty=-modified 2>/dev/null || echo "dev-$(git rev-parse --short HEAD)")"
+            SHORT_HASH="$(git rev-parse --short HEAD)"
+            # Use the nearest tag + short hash, capped to stay well under
+            # the 255-byte GitHub ref limit.
+            NEAREST_TAG="$(git describe --tags --abbrev=0 --first-parent 2>/dev/null || echo "v2.7")"
+            VER="${NEAREST_TAG}-${SHORT_HASH}"
           fi
 
           # Strip a leading 'v' for display; keep it in the tag name.
