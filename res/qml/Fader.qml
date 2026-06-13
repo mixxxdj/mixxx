@@ -6,12 +6,6 @@ import "Theme"
 MixxxControls.Fader {
     id: root
 
-    enum SnapMode {
-        NoSnap,
-        SnapAlways,
-        SnapOnRelease
-    }
-
     property alias bg: backgroundImage.source
     property alias fg: handleImage.source
     property alias handleImage: handleImage

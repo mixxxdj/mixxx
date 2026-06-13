@@ -178,7 +178,6 @@ Item {
         when: dragHandler.active && root.live
     }
 
-    // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
     MouseArea {
         acceptedButtons: Qt.NoButton
         anchors.fill: parent
