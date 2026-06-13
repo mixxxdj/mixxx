@@ -78,7 +78,6 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     // TODO (XXX) Move this signal in ControllerScriptEngineBase when ScreenInfo
     // isn't tight to LegacyControllerMapping anymore.
     void previewRenderedScreen(const LegacyControllerMapping::ScreenInfo& screen, QImage frame);
-#endif
 
   private:
     struct Setting {

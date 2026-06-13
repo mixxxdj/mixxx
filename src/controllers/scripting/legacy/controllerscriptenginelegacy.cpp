@@ -507,7 +507,9 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
             &ControllerScriptEngineLegacy::shutdown);
     return true;
 }
+#endif
 
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 void ControllerScriptEngineLegacy::handleScreenFrame(
         const LegacyControllerMapping::ScreenInfo& screenInfo,
         const QImage& frame,
