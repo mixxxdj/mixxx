@@ -936,6 +936,7 @@ void WaveformWidgetFactory::swap() {
     m_vsyncThread->vsyncSlotFinished();
 }
 
+#ifdef MIXXX_USE_QOPENGL
 void WaveformWidgetFactory::swapAndRender() {
     // used for PLL
     WGLWidget* widget = SharedGLContext::getWidget();
@@ -946,6 +947,7 @@ void WaveformWidgetFactory::swapAndRender() {
 
     m_vsyncThread->vsyncSlotFinished();
 }
+#endif
 
 void WaveformWidgetFactory::slotFrameSwapped() {
 #ifdef MIXXX_USE_QOPENGL
@@ -1029,7 +1031,10 @@ void WaveformWidgetFactory::evaluateWidgets() {
     QHash<WaveformWidgetType::Type,
             WaveformRendererSignalBase::Options>
             supportedOptions;
-    bool useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
+    bool useGles = false;
+#ifdef MIXXX_USE_QOPENGL
+    useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
+#endif
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
         case WaveformWidgetType::Empty:
@@ -1109,12 +1114,14 @@ void WaveformWidgetFactory::evaluateWidgets() {
     }
 }
 
+#ifdef MIXXX_USE_QOPENGL
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type,
         WWaveformViewer* viewer,
         WaveformRendererSignalBase::Options options) {
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
+#endif
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
@@ -1159,18 +1166,24 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
     }
 }
 
+#ifdef MIXXX_USE_QOPENGL
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetBackend backend = getBackendFromConfig();
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer, options);
-#endif
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
 }
+#else
+WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
+    Q_UNUSED(options);
+    return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+}
+#endif
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
