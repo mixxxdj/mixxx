@@ -101,8 +101,10 @@ bool Controller::applyMapping(const QString& resourcePath) {
     m_pScriptEngineLegacy->setSettings(getMappingSettings());
 #ifdef MIXXX_USE_QML
     m_pScriptEngineLegacy->setModulePaths(getMappingModules());
+#if !defined(Q_OS_ANDROID)
     m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);
+#endif
 #else
     Q_UNUSED(resourcePath);
 #endif
