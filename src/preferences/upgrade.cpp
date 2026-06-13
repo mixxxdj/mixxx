@@ -139,7 +139,7 @@ upgradeToAllShaders(int unsafeWaveformType,
 }
 #else
 // Without AllShader support, provide a stub that returns defaults
-std::tuple<WaveformWidgetType::Type,
+[[maybe_unused]] std::tuple<WaveformWidgetType::Type,
         WaveformWidgetBackend,
         WaveformRendererSignalBase::Options>
 upgradeToAllShaders(int unsafeWaveformType,
