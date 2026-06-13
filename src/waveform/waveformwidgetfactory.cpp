@@ -8,8 +8,11 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
 #else
+#include <QtGlobal>
+#if QT_VERSION < 0x060000
 #include <QGLFormat>
 #include <QGLShaderProgram>
+#endif
 #endif
 #ifdef Q_OS_ANDROID
 #include <GLES3/gl3.h>
