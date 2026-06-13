@@ -229,7 +229,9 @@ void ControllerScriptEngineLegacy::setModulePaths(
 void ControllerScriptEngineLegacy::setInfoScreens(
         const QList<LegacyControllerMapping::ScreenInfo>& screens) {
     m_rootItems.clear();
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_renderingScreens.clear();
+#endif
     m_infoScreens = screens;
 }
 #endif
@@ -273,6 +275,8 @@ bool ControllerScriptEngineLegacy::initialize() {
 #ifdef MIXXX_USE_QML
     // During the initialisation, any QML errors are considered fatal.
     setErrorsAreFatal(true);
+
+#ifndef Q_OS_ANDROID
     QMap<QString, std::shared_ptr<ControllerRenderingEngine>> availableScreens;
 
     if (m_bQmlMode) {
@@ -319,7 +323,8 @@ bool ControllerScriptEngineLegacy::initialize() {
         qCWarning(m_logger) << "Controller mapping has screen definitions but no QML "
                                "files to render on it. Ignoring.";
     }
-#endif
+#endif // Q_OS_ANDROID
+#endif // MIXXX_USE_QML
 
     // Binary data is passed from the Controller as a QByteArray, which
     // QJSEngine::toScriptValue converts to an ArrayBuffer in JavaScript.
@@ -447,7 +452,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                         wrapFunctionCode(functionName, 2)));
     }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_engineThreadControl.setCanPause(true);
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         pScreen->start();
@@ -466,7 +471,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     return true;
 }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 
 bool ControllerScriptEngineLegacy::bindSceneToScreen(
         const LegacyControllerMapping::ScriptFileInfo& qmlFile,
@@ -616,7 +621,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
 void ControllerScriptEngineLegacy::shutdown() {
     callShutdownFunction();
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_engineThreadControl.setCanPause(false);
     // Wait till the splash off animation has finished rendering.
     std::chrono::milliseconds maxSplashOffDuration{};
@@ -739,7 +744,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     return true;
 }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen> ControllerScriptEngineLegacy::loadQMLFile(
         const LegacyControllerMapping::ScriptFileInfo& qmlScript,
         std::shared_ptr<ControllerRenderingEngine> pScreen) {

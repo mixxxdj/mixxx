@@ -116,7 +116,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
     QJSValue m_makeArrayBufferWrapperFunction;
     QList<QString> m_scriptFunctionPrefixes;
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
     // Contains all the scenes loaded for this mapping. Key is the scene
     // identifier (LegacyControllerMapping::ScreenInfo::identifier), value in
