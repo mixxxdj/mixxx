@@ -1860,10 +1860,10 @@ add_library(
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
   src/widget/wslidercomposed.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/widget/wspinny.cpp
   src/widget/wspinnybase.cpp
-#endif
+  #endif
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
@@ -1874,10 +1874,10 @@ add_library(
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
   src/widget/wtrackwidgetgroup.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/widget/wvumeter.cpp
   src/widget/wvumeterbase.cpp
-#endif
+  #endif
   src/widget/wvumeterlegacy.cpp
   src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
@@ -2117,6 +2117,15 @@ else()
         src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
         src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
         src/widget/wglwidgetqglwidget.cpp
+    )
+  endif()
+  # Provide stub WGLWidget implementations for Android (QOPENGL=OFF)
+  # so the linker can resolve virtual method symbols
+  if(Q_OS_ANDROID)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/widget/wglwidgetqopengl_stub.cpp
     )
   endif()
 endif()
