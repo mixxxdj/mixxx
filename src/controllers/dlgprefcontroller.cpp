@@ -1069,10 +1069,12 @@ void DlgPrefController::slotShowPreviewScreens(
                 new ControllerScreenPreview(m_ui.screensTab, screen);
         m_ui.screensTab->layout()->addWidget(pPreviewScreen);
 
+#if !defined(Q_OS_ANDROID)
         connect(scriptEngine,
                 &ControllerScriptEngineLegacy::previewRenderedScreen,
                 pPreviewScreen,
                 &ControllerScreenPreview::updateFrame);
+#endif
     }
 }
 #endif
