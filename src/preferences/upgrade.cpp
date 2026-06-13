@@ -35,13 +35,13 @@ Upgrade::~Upgrade() {
 
 namespace {
 // mapping to proactively move users to the new all-shader waveform types
+#ifdef MIXXX_USE_QOPENGL
 std::tuple<WaveformWidgetType::Type,
         WaveformWidgetBackend,
         WaveformRendererSignalBase::Options>
 upgradeToAllShaders(int unsafeWaveformType,
         int unsafeWaveformBackend,
         int unsafeWaveformOption) {
-#ifdef MIXXX_USE_QOPENGL
     // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
     using WWT = WaveformWidgetType;
 
@@ -138,20 +138,21 @@ upgradeToAllShaders(int unsafeWaveformType,
     return {waveformType, waveformBackend, waveformOption};
 }
 #else
-    // Without AllShader support, provide a stub that returns defaults
-    std::tuple<WaveformWidgetType::Type,
-            WaveformWidgetBackend,
-            WaveformRendererSignalBase::Options>
-    upgradeToAllShaders(int unsafeWaveformType,
-            int unsafeWaveformBackend,
-            int unsafeWaveformOption) {
-        Q_UNUSED(unsafeWaveformType);
-        Q_UNUSED(unsafeWaveformBackend);
-        Q_UNUSED(unsafeWaveformOption);
-        return {WaveformWidgetFactory::defaultType(),
-                WaveformWidgetBackend::None,
-                WaveformRendererSignalBase::Option::None};
-    }
+namespace {
+// Without AllShader support, provide a stub that returns defaults
+std::tuple<WaveformWidgetType::Type,
+        WaveformWidgetBackend,
+        WaveformRendererSignalBase::Options>
+upgradeToAllShaders(int unsafeWaveformType,
+        int unsafeWaveformBackend,
+        int unsafeWaveformOption) {
+    Q_UNUSED(unsafeWaveformType);
+    Q_UNUSED(unsafeWaveformBackend);
+    Q_UNUSED(unsafeWaveformOption);
+    return {WaveformWidgetFactory::defaultType(),
+            WaveformWidgetBackend::None,
+            WaveformRendererSignalBase::Option::None};
+}
 #endif
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
