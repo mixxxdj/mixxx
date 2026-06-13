@@ -2,7 +2,9 @@
 
 #include <QQuickItem>
 
+#ifndef Q_OS_ANDROID
 #include "controllers/rendering/controllerrenderingengine.h"
+#endif
 
 namespace mixxx {
 namespace qml {

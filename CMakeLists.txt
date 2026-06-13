@@ -2053,10 +2053,16 @@ else()
     mixxx-lib
     PRIVATE
       # The following source depends of QML being available but aren't part of the new QML UI
-      src/controllers/rendering/controllerrenderingengine.cpp
       src/controllers/controllerenginethreadcontrol.cpp
       src/controllers/controllerscreenpreview.cpp
   )
+  if(NOT ANDROID)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/controllers/rendering/controllerrenderingengine.cpp
+    )
+  endif()
 endif()
 if(QOPENGL)
   target_sources(
