@@ -1302,10 +1302,12 @@ void WaveformWidgetFactory::startVSync(
             &VSyncThread::vsyncSwap,
             this,
             &WaveformWidgetFactory::swap);
+#ifdef MIXXX_USE_QOPENGL
     connect(m_vsyncThread,
             &VSyncThread::vsyncSwapAndRender,
             this,
             &WaveformWidgetFactory::swapAndRender);
+#endif
 
     m_vsyncThread->start(QThread::NormalPriority);
 }

@@ -56,7 +56,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     void setSettings(
             const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings);
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     void setModulePaths(const QList<LegacyControllerMapping::QMLModuleInfo>& scripts);
 #endif
 #if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
