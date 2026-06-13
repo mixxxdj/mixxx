@@ -3735,22 +3735,17 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 
 # PipeWire
-default_option(PIPEWIRE "Enable the PipeWire backend" "UNIX AND NOT APPLE")
+default_option(PIPEWIRE "Enable the PipeWire backend" "UNIX AND NOT APPLE AND NOT ANDROID")
 if(PIPEWIRE)
-  find_package(PkgConfig REQUIRED)
-  if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PIPEWIRE REQUIRED IMPORTED_TARGET libpipewire-0.3)
-    if(PIPEWIRE_FOUND)
-      target_compile_definitions(mixxx-lib PUBLIC __PIPEWIRE__)
-      target_link_libraries(mixxx-lib PUBLIC PkgConfig::PIPEWIRE)
-      target_sources(
-        mixxx-lib
-        PRIVATE
-          src/soundio/pipewireenumerator.cpp
-          src/soundio/sounddevicepipewire.cpp
-      )
-    endif()
-  endif()
+  find_package(PipeWire REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC PipeWire::PipeWire)
+  target_compile_definitions(mixxx-lib PUBLIC __PIPEWIRE__)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/soundio/pipewireenumerator.cpp
+      src/soundio/sounddevicepipewire.cpp
+  )
 endif()
 
 # PortMidi
