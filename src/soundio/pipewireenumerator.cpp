@@ -49,6 +49,7 @@ PipewireEnumerator::PipewireEnumerator(
 }
 
 PipewireEnumerator::~PipewireEnumerator() {
+    pw_thread_loop_stop(m_pThreadLoop);
     spa_hook_remove(&m_registryListener);
     spa_hook_remove(&m_metadataListener);
     pw_proxy_destroy((struct pw_proxy*)m_pRegistry);
