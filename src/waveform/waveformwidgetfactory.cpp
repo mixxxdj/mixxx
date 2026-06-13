@@ -1031,9 +1031,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
     QHash<WaveformWidgetType::Type,
             WaveformRendererSignalBase::Options>
             supportedOptions;
-    bool useGles = false;
 #ifdef MIXXX_USE_QOPENGL
-    useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
+    bool useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
 #endif
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
@@ -1195,6 +1194,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
 #endif
     default:
+        Q_UNUSED(options);
         return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
 }
