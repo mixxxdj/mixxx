@@ -2059,8 +2059,7 @@ else()
   if(NOT ANDROID)
     target_sources(
       mixxx-lib
-      PRIVATE
-        src/controllers/rendering/controllerrenderingengine.cpp
+      PRIVATE src/controllers/rendering/controllerrenderingengine.cpp
     )
   endif()
 endif()
