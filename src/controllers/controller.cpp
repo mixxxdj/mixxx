@@ -104,6 +104,8 @@ bool Controller::applyMapping(const QString& resourcePath) {
 #if !defined(Q_OS_ANDROID)
     m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);
+#else
+    Q_UNUSED(resourcePath);
 #endif
 #else
     Q_UNUSED(resourcePath);
