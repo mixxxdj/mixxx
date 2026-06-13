@@ -21,8 +21,8 @@ static const char* find_node_name(const struct spa_dict* props) {
             PW_KEY_MEDIA_NAME,
     };
 
-    SPA_FOR_EACH_ELEMENT_VAR(name_keys, key) {
-        const char* name = spa_dict_lookup(props, *key);
+    for (const char* key : name_keys) {
+        const char* name = spa_dict_lookup(props, key);
         if (name) {
             return name;
         }
