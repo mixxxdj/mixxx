@@ -6,8 +6,8 @@
 WGLWidget::WGLWidget(QWidget* parent)
         : QWidget(parent),
           m_pOpenGLWindow(nullptr),
-          m_pContainerWidget(nullptr),
           m_pTrackDropTarget(nullptr) {
+    Q_UNUSED(parent);
 }
 
 WGLWidget::~WGLWidget() {
@@ -50,7 +50,7 @@ TrackDropTarget* WGLWidget::trackDropTarget() const {
 }
 
 QOpenGLWindow* WGLWidget::getOpenGLWindow() const {
-    return m_pOpenGLWindow;
+    return nullptr;
 }
 
 void WGLWidget::showEvent(QShowEvent* event) {
