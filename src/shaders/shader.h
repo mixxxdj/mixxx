@@ -1,8 +1,8 @@
 #pragma once
 
-#ifdef MIXXX_USE_QOPENGL
+#if defined(MIXXX_USE_QOPENGL)
 #include <QOpenGLShaderProgram>
-#else
+#elif QT_VERSION < 0x060000
 #include <QGLShaderProgram>
 #endif
 

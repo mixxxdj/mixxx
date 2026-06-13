@@ -76,7 +76,9 @@
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
 #include "widget/wspinny.h"
+#ifdef MIXXX_USE_QOPENGL
 #include "widget/wspinnyglsl.h"
+#endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
@@ -87,7 +89,9 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wtrackwidgetgroup.h"
 #include "widget/wvumeter.h"
+#ifdef MIXXX_USE_QOPENGL
 #include "widget/wvumeterglsl.h"
+#endif
 #include "widget/wvumeterlegacy.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
