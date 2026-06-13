@@ -391,6 +391,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             }
 #ifdef MIXXX_USE_QML
         } else {
+#ifndef Q_OS_ANDROID
             if (script.identifier.isEmpty()) {
                 while (!availableScreens.isEmpty()) {
                     QString screenIdentifier(availableScreens.firstKey());
@@ -413,9 +414,13 @@ bool ControllerScriptEngineLegacy::initialize() {
                     sceneBindingHasFailure = true;
                 }
             }
+#else
+            Q_UNUSED(script);
+#endif
         }
     }
 
+#ifndef Q_OS_ANDROID
     if (!availableScreens.isEmpty()) {
         if (!sceneBindingHasFailure) {
             qCWarning(m_logger)
@@ -431,6 +436,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             };
         }
     }
+#endif // Q_OS_ANDROID
     if (sceneBindingHasFailure) {
         shutdown();
         return false;
