@@ -386,7 +386,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 #endif
     // If we encounter a failure while loading a scene, we will need to properly
     // stop the screen threads before shutting down.
-    bool sceneBindingHasFailure = false;
+    [[maybe_unused]] bool sceneBindingHasFailure = false;
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
 #ifdef MIXXX_USE_QML
         if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::Javascript) {
