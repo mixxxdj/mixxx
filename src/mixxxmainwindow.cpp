@@ -1687,6 +1687,10 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
+    // On Android, OpenGL availability is handled differently and the
+    // desktop GL check is not applicable (allshader widgets are used).
+    // Skip the direct rendering warning.
+#if !defined(Q_OS_ANDROID)
     if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
             pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(nullptr,
@@ -1702,6 +1706,7 @@ void MixxxMainWindow::checkDirectRendering() {
                    "section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
+#endif
 }
 
 bool MixxxMainWindow::confirmExit() {
