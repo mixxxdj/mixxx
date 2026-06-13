@@ -58,16 +58,20 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
 #ifdef MIXXX_USE_QML
     void setModulePaths(const QList<LegacyControllerMapping::QMLModuleInfo>& scripts);
+#endif
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     void setInfoScreens(const QList<LegacyControllerMapping::ScreenInfo>& scripts);
     void setResourcePath(const QString& resourcePath) {
         m_resourcePath = resourcePath;
     }
-
+#endif
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
   private slots:
     void handleScreenFrame(
             const LegacyControllerMapping::ScreenInfo& screeninfo,
             const QImage& frame,
             const QDateTime& timestamp);
+#endif
 
   signals:
     /// Emitted when a screen has been rendered.

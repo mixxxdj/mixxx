@@ -216,7 +216,7 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
     return wrappedFunction;
 }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 void ControllerScriptEngineLegacy::setModulePaths(
         const QList<LegacyControllerMapping::QMLModuleInfo>& modules) {
     const QStringList paths = m_fileWatcher.files();
@@ -226,12 +226,13 @@ void ControllerScriptEngineLegacy::setModulePaths(
 
     m_modules = modules;
 }
+#endif
+
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 void ControllerScriptEngineLegacy::setInfoScreens(
         const QList<LegacyControllerMapping::ScreenInfo>& screens) {
     m_rootItems.clear();
-#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_renderingScreens.clear();
-#endif
     m_infoScreens = screens;
 }
 #endif
