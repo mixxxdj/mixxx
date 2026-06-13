@@ -1,5 +1,5 @@
 #include "waveform/renderers/deprecated/glslwaveformrenderersignal.h"
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #ifdef MIXXX_USE_QOPENGL
 #include <QOpenGLFramebufferObject>

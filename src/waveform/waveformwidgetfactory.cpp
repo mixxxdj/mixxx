@@ -344,7 +344,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             m_openGLVersion = QString::number(majorGlVersion) + "."
                     + QString::number(minorGlVersion);
 
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
             if (majorGlVersion * 100 + minorGlVersion >= 201) {
                 // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
                 m_openGlAvailable = true;

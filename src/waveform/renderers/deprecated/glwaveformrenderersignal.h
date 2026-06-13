@@ -3,7 +3,7 @@
 #include "waveform/renderers/deprecated/glwaveformrenderer.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 /// GLWaveformRendererSignal is a WaveformRendererAbstract which directly calls OpenGL functions.
 ///

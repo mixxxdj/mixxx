@@ -14,7 +14,7 @@ GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
     //  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
     //  addRenderer<WaveformRenderMarkRange>(); // 793 µs
 
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLVSyncTestRenderer>(); // 841 µs // 2271 µs
 #endif                                  // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2
 
