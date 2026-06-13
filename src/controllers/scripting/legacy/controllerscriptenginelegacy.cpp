@@ -119,6 +119,7 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 #ifdef MIXXX_USE_QML
     } else {
+#ifndef Q_OS_ANDROID
         bool success = true;
         for (const auto& [screenIdentifier, screen] : m_rootItems) {
             if (!screen->getShutdown().isCallable()) {
@@ -143,6 +144,9 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
             }
         }
         return success;
+#else
+        return true;
+#endif
     }
 #endif
 }
@@ -159,6 +163,7 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
 #ifdef MIXXX_USE_QML
     } else {
+#ifndef Q_OS_ANDROID
         for (const auto& [screenIdentifier, screen] : m_rootItems) {
             if (!screen->getInit().isCallable()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
@@ -179,6 +184,9 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
             }
         }
         return true;
+#else
+        return true;
+#endif
     }
 #endif
 }
@@ -353,6 +361,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     engineGlobalObject.setProperty("engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
 #ifdef MIXXX_USE_QML
+#ifndef Q_OS_ANDROID
     if (m_bQmlMode) {
         for (const LegacyControllerMapping::QMLModuleInfo& module :
                 std::as_const(m_modules)) {
@@ -373,11 +382,11 @@ bool ControllerScriptEngineLegacy::initialize() {
         qCWarning(m_logger) << "Controller mapping has QML library definitions but no "
                                "QML files to use it. Ignoring.";
     }
-
+#endif
+#endif
     // If we encounter a failure while loading a scene, we will need to properly
     // stop the screen threads before shutting down.
     bool sceneBindingHasFailure = false;
-#endif
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
 #ifdef MIXXX_USE_QML
         if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::Javascript) {
