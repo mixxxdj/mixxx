@@ -1788,9 +1788,9 @@ add_library(
   src/waveform/widgets/simplesignalwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/waveform/widgets/glwaveformwidgetabstract.cpp
-#endif
+  #endif
   src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
@@ -1861,9 +1861,9 @@ add_library(
   src/widget/wskincolor.cpp
   src/widget/wslidercomposed.cpp
   src/widget/wspinny.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/widget/wspinnybase.cpp
-#endif
+  #endif
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
@@ -1875,9 +1875,9 @@ add_library(
   src/widget/wtracktableviewheader.cpp
   src/widget/wtrackwidgetgroup.cpp
   src/widget/wvumeter.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/widget/wvumeterbase.cpp
-#endif
+  #endif
   src/widget/wvumeterlegacy.cpp
   src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
