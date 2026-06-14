@@ -38,9 +38,9 @@ void EngineBufferScaleSignalSmith::setScaleParameters(
     // https://signalsmith-audio.co.uk/code/stretch/#how-to-use-latency-starting-and-ending,
     // stretch factor should be used when computing total latency
     m_expectedFrameLatency =
+            static_cast<SINT>(m_stretch.inputLatency()) +
             static_cast<SINT>(std::round(m_effectiveRate *
-                    static_cast<double>(m_stretch.inputLatency()))) +
-            static_cast<SINT>(m_stretch.outputLatency());
+                    static_cast<double>(m_stretch.outputLatency())));
 }
 
 void EngineBufferScaleSignalSmith::onSignalChanged() {
@@ -87,7 +87,6 @@ void EngineBufferScaleSignalSmith::clear() {
 }
 
 SINT EngineBufferScaleSignalSmith::fetchAndDeinterleave(SINT sampleToRead, SINT frameOffset) {
-    auto sampleOffset = getOutputSignal().frames2samples(frameOffset);
     auto frameRead = getOutputSignal().samples2frames(
             m_pReadAheadManager->getNextSamples(
                     // The value doesn't matter here. All that matters is we
@@ -102,7 +101,7 @@ SINT EngineBufferScaleSignalSmith::fetchAndDeinterleave(SINT sampleToRead, SINT 
         SampleUtil::deinterleaveBuffer(
                 m_buffers[0].data(frameOffset),
                 m_buffers[1].data(frameOffset),
-                m_interleavedBuffer.data(sampleOffset),
+                m_interleavedBuffer.data(),
                 frameRead);
         break;
     case mixxx::audio::ChannelCount::stem():
@@ -115,7 +114,7 @@ SINT EngineBufferScaleSignalSmith::fetchAndDeinterleave(SINT sampleToRead, SINT 
                 m_buffers[5].data(frameOffset),
                 m_buffers[6].data(frameOffset),
                 m_buffers[7].data(frameOffset),
-                m_interleavedBuffer.data(sampleOffset),
+                m_interleavedBuffer.data(),
                 frameRead);
         break;
     default: {
@@ -134,7 +133,7 @@ SINT EngineBufferScaleSignalSmith::fetchAndDeinterleave(SINT sampleToRead, SINT 
         for (SINT frameIdx = 0; frameIdx < frameRead; ++frameIdx) {
             for (int channel = 0; channel < chCount; channel++) {
                 m_buffers[channel].data(frameOffset)[frameIdx] =
-                        m_interleavedBuffer.data(sampleOffset)[frameIdx * chCount + channel];
+                        m_interleavedBuffer.data()[frameIdx * chCount + channel];
             }
         }
     } break;
