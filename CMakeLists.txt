@@ -2145,6 +2145,12 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
+if(ANDROID)
+  # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
+  # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
+  target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+endif()
+
 if(APPLE)
   enable_language(OBJC OBJCXX)
 
