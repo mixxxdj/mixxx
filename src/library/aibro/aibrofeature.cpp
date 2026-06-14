@@ -336,18 +336,22 @@ static QString normalizeSongTitle(const QString& title) {
 
 // Word-overlap similarity (Jaccard-like)
 static double titleSimilarity(const QString& a, const QString& b) {
-    if (a.isEmpty() || b.isEmpty())
+    if (a.isEmpty() || b.isEmpty()) {
         return 0.0;
-    if (a == b)
+    }
+    if (a == b) {
         return 1.0;
+    }
     QStringList wordsA = a.split(' ');
     QStringList wordsB = b.split(' ');
-    if (wordsA.isEmpty() || wordsB.isEmpty())
+    if (wordsA.isEmpty() || wordsB.isEmpty()) {
         return 0.0;
+    }
     int matches = 0;
     for (const QString& w : std::as_const(wordsA)) {
-        if (wordsB.contains(w))
+        if (wordsB.contains(w)) {
             ++matches;
+        }
     }
     return static_cast<double>(matches) /
             qMax(wordsA.size(), wordsB.size());
@@ -661,8 +665,9 @@ double AIBroFeature::computeEnergyArc() const {
 // ===================================================================
 
 double AIBroFeature::correctBPM(double detectedBPM, double expectedBPM) const {
-    if (expectedBPM <= 0)
+    if (expectedBPM <= 0) {
         return detectedBPM;
+    }
     // Common librosa detection error ratios
     static const double ratios[] = {1.0, 2.0, 0.5, 1.5, 0.75, 1.333, 0.666};
     double bestRatio = 1.0;
@@ -689,8 +694,9 @@ double AIBroFeature::correctBPM(double detectedBPM, double expectedBPM) const {
 
 double AIBroFeature::alignToPhraseBoundary(double positionSec) const {
     double bpm = getCurrentPlayingBPM();
-    if (bpm <= 0)
+    if (bpm <= 0) {
         bpm = 120.0;
+    }
     double beatInterval = 60.0 / bpm;
     double phraseInterval = beatInterval * kPhraseBeats;
     // Round up to next phrase boundary
@@ -703,10 +709,12 @@ double AIBroFeature::alignToPhraseBoundary(double positionSec) const {
 // ===================================================================
 
 QString AIBroFeature::buildSearchQuery() {
-    if (m_currentTrackTitle.isEmpty())
+    if (m_currentTrackTitle.isEmpty()) {
         return {};
-    if (m_currentTrackArtist.isEmpty())
+    }
+    if (m_currentTrackArtist.isEmpty()) {
         return m_currentTrackTitle;
+    }
     return QStringLiteral("%1 %2").arg(m_currentTrackArtist, m_currentTrackTitle);
 }
 
@@ -714,12 +722,14 @@ QStringList AIBroFeature::buildDiscoveryQueries() {
     QStringList queries;
     const QString title = m_currentTrackTitle;
     const QString artist = m_currentTrackArtist;
-    if (title.isEmpty() || title.length() < 3)
+    if (title.isEmpty() || title.length() < 3) {
         return queries;
+    }
     const QString currentLower = title.toLower();
     for (const QString& pattern : garbagePatterns()) {
-        if (currentLower.contains(pattern))
+        if (currentLower.contains(pattern)) {
             return queries;
+        }
     }
     if (!artist.isEmpty()) {
         queries << QStringLiteral("%1 remix ελληνικά").arg(artist);

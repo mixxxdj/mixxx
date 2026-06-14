@@ -1431,10 +1431,15 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 
     if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
             !pWaveformWidgetFactory->isOpenGlesAvailable()) {
-        WLabel* dummy = new WLabel(m_pParent);
-        //: Shown when Spinny can not be displayed. Please keep \n unchanged
-        dummy->setText(tr("No OpenGL\nsupport."));
-        return dummy;
+        // No OpenGL: show cover art placeholder instead of error message
+        QString group = lookupNodeGroup(node);
+        BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+        WCoverArt* pCoverArt = new WCoverArt(m_pParent, m_pConfig, group, pPlayer);
+        pCoverArt->setup(node, *m_pContext);
+        commonWidgetSetup(node, pCoverArt);
+        pCoverArt->installEventFilter(m_pKeyboard);
+        pCoverArt->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+        return pCoverArt;
     }
 
     QString group = lookupNodeGroup(node);
