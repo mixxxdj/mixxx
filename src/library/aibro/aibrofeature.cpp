@@ -745,12 +745,14 @@ QStringList AIBroFeature::buildDiscoveryQueries() {
 
 double AIBroFeature::scoreCandidate(
         const mixxx::YouTubeVideoInfo& candidate) {
-    if (candidate.title.isEmpty())
+    if (candidate.title.isEmpty()) {
         return -1.0;
+    }
 
     // Hard filter: already played
-    if (m_playedVideoIds.contains(candidate.id))
+    if (m_playedVideoIds.contains(candidate.id)) {
         return -1.0;
+    }
 
     // Hard filter: similar title already played
     QString normTitle = normalizeSongTitle(candidate.title);
@@ -767,11 +769,13 @@ double AIBroFeature::scoreCandidate(
     if (!trendingMode) {
         const QString candLower = candidate.title.toLower().trimmed();
         const QString currLower = m_currentTrackTitle.toLower().trimmed();
-        if (candLower == currLower)
+        if (candLower == currLower) {
             return -1.0;
+        }
         if (candLower.contains(currLower) || currLower.contains(candLower)) {
-            if (candLower.length() < currLower.length() + 15)
+            if (candLower.length() < currLower.length() + 15) {
                 return -1.0;
+            }
         }
     }
 
@@ -787,8 +791,9 @@ double AIBroFeature::scoreCandidate(
     }
 
     // Hard filter: live streams
-    if (candidate.isLive)
+    if (candidate.isLive) {
         return -1.0;
+    }
 
     // Hard filter: remixes (often low quality)
     {
@@ -806,26 +811,31 @@ double AIBroFeature::scoreCandidate(
     {
         const QString lowerTitle = candidate.title.toLower();
         for (const QString& pattern : garbagePatterns()) {
-            if (lowerTitle.contains(pattern))
+            if (lowerTitle.contains(pattern)) {
                 return -1.0;
+            }
         }
-        if (candidate.title.length() < 3 || candidate.title.length() > 100)
+        if (candidate.title.length() < 3 || candidate.title.length() > 100) {
             return -1.0;
+        }
         int specialCharCount = 0;
         for (const QChar& c : candidate.title) {
-            if (c.unicode() > 127 && !c.isLetterOrNumber())
+            if (c.unicode() > 127 && !c.isLetterOrNumber()) {
                 specialCharCount++;
+            }
         }
-        if (specialCharCount > 3)
+        if (specialCharCount > 3) {
             return -1.0;
+        }
     }
 
     // Hard filter: current track is garbage
     if (!m_currentTrackTitle.isEmpty() && m_currentTrackTitle.length() >= 3) {
         const QString currentLower = m_currentTrackTitle.toLower();
         for (const QString& pattern : garbagePatterns()) {
-            if (currentLower.contains(pattern))
+            if (currentLower.contains(pattern)) {
                 return -1.0;
+            }
         }
     }
 
