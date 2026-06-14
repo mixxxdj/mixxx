@@ -450,10 +450,11 @@ cmake_dependent_option(
 
 if(QT6)
   if(ANDROID)
-    # Android uses GLESv3, not desktop OpenGL. Don't compile desktop
-    # OpenGL source files (waveform renderers, spinny, etc.) — they
-    # would be dead code bloating the binary.
-    set(QOPENGL OFF CACHE INTERNAL "Disabled on Android — uses GLESv3")
+    # Android uses GLESv3. Enable MIXXX_USE_QOPENGL so the allshader
+    # waveform renderers (which support GLES) are compiled. This gives
+    # hardware-accelerated waveform rendering instead of the slow
+    # QPainter software fallback.
+    set(QOPENGL ON CACHE INTERNAL "Enabled on Android for GLES rendering")
   else()
     set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
   endif()
