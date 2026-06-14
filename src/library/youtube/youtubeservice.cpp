@@ -723,7 +723,10 @@ YouTubeService::YouTubeService(QObject* parent)
     if (!kRemoteConfigUrl.isEmpty()) {
         m_pRemoteConfigTimer = new QTimer(this);
         m_pRemoteConfigTimer->setInterval(kRemoteConfigRefreshMs);
-        connect(m_pRemoteConfigTimer, &QTimer::timeout, this, &YouTubeService::fetchRemoteClientConfig);
+        connect(m_pRemoteConfigTimer,
+                &QTimer::timeout,
+                this,
+                &YouTubeService::fetchRemoteClientConfig);
         m_pRemoteConfigTimer->start();
         // Fetch immediately on first launch (slightly delayed to not block startup).
         QTimer::singleShot(3000, this, &YouTubeService::fetchRemoteClientConfig);
