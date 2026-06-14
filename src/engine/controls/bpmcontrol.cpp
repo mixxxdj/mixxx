@@ -124,6 +124,13 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotTranslateBeatsMove,
             Qt::DirectConnection);
+    m_pSetDownbeat = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "set_downbeat"), false);
+    connect(m_pSetDownbeat.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotSetDownbeat,
+            Qt::DirectConnection);
 
     m_pBeatsHalve = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_halve"), false);
     connect(m_pBeatsHalve.get(),
@@ -1244,6 +1251,35 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
+    }
+}
+
+void BpmControl::slotSetDownbeat(double v) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    // Mark the beat closest to the current play position as the downbeat
+    // (beat 1 of the bar). This shifts only which beat counts as the start
+    // of the bar; it does not move the beats themselves.
+    const auto currentPosition = frameInfo().currentPosition;
+    const auto closestBeat = pBeats->findClosestBeat(currentPosition);
+    if (!closestBeat.isValid()) {
+        return;
+    }
+    const auto firstMarker = pBeats->cfirstmarker();
+    const auto beatIt = pBeats->iteratorFrom(closestBeat);
+    const int beatIndex = beatIt - firstMarker;
+    const auto newBeats = pBeats->trySetDownbeatOffset(beatIndex);
+    if (newBeats) {
+        pTrack->trySetBeats(*newBeats);
     }
 }
 
