@@ -49,7 +49,7 @@ QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
     return allDirs;
 }
 
-QList<DirectoryDAO::RootDirectory> DirectoryDAO::getRootDirectories() const {
+QList<DirectoryDAO::RootDirectoryInfo> DirectoryDAO::getRootDirectories() const {
     DEBUG_ASSERT(m_database.isOpen());
     const auto statement = QStringLiteral(
             "SELECT d.%1, COUNT(t.directory) AS total_track, SUM(l.duration) "
@@ -66,7 +66,7 @@ QList<DirectoryDAO::RootDirectory> DirectoryDAO::getRootDirectories() const {
         return {};
     }
 
-    QList<DirectoryDAO::RootDirectory> allDirs;
+    QList<DirectoryDAO::RootDirectoryInfo> allDirs;
     const auto locationIndex = query.fieldIndex(kLocationColumn);
     const auto totalTrackIndex = query.fieldIndex("total_track");
     const auto totalRuntimeIndex = query.fieldIndex("total_runtime");
@@ -77,7 +77,7 @@ QList<DirectoryDAO::RootDirectory> DirectoryDAO::getRootDirectories() const {
                 query.fieldValue(totalTrackIndex).toUInt();
         const auto totalRuntimeValue =
                 query.fieldValue(totalRuntimeIndex).toUInt();
-        allDirs.append(DirectoryDAO::RootDirectory{
+        allDirs.append(DirectoryDAO::RootDirectoryInfo{
                 locationValue, totalTrackValue, totalRuntimeValue});
     }
     return allDirs;

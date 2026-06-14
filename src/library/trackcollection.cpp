@@ -148,7 +148,7 @@ QStringList TrackCollection::getRootDirStrings() const {
     return rootDirStrings;
 }
 
-QList<DirectoryDAO::RootDirectory> TrackCollection::getRootDirectories() const {
+QList<DirectoryDAO::RootDirectoryInfo> TrackCollection::getRootDirectories() const {
     return m_directoryDao.getRootDirectories();
 }
 
