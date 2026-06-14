@@ -1462,7 +1462,6 @@ void BpmControl::slotPhraseAdd(double v) {
     const int beatsPerBar = 4;
     const int barsPerPhrase = 8;
     const int beatsPerPhrase = beatsPerBar * barsPerPhrase;
-    const auto firstMarker = pBeats->cfirstmarker();
     auto startIt = pBeats->iteratorFrom(closestBeat);
     auto endIt = startIt + beatsPerPhrase;
     const auto endPos = *endIt;
