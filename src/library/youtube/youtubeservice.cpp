@@ -745,12 +745,12 @@ void YouTubeService::fetchRemoteClientConfig() {
         return;
     }
     kLogger.info() << "Fetching remote InnerTube client config from" << kRemoteConfigUrl;
-    QNetworkRequest req(QUrl(kRemoteConfigUrl));
+    QNetworkRequest req{QUrl(kRemoteConfigUrl)};
     req.setTransferTimeout(kRemoteConfigTimeoutMs);
     req.setHeader(QNetworkRequest::UserAgentHeader,
             QStringLiteral("Mixxx-DJ-Sugar/2.7"));
     QNetworkReply* reply = m_pNam->get(req);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+    connect(reply, &QNetworkReply::finished, this, [reply, this]() {
         onRemoteConfigReply(reply);
     });
 }

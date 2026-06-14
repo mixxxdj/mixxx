@@ -364,6 +364,17 @@ class YouTubeService : public QObject {
     /// Initialize and persist a cookie jar that outlives individual requests.
     void setupCookieJar();
 
+    // ----- Remote client signature auto-update -----
+
+    /// Fetch the remote client config JSON from kRemoteConfigUrl.
+    void fetchRemoteClientConfig();
+
+    /// Slot called when the remote config network reply finishes.
+    void onRemoteConfigReply(QNetworkReply* reply);
+
+    /// Parse and apply a remote config JSON. Returns true if applied.
+    bool applyRemoteConfig(const QJsonObject& config, int remoteVersion);
+
     QNetworkAccessManager* m_pNam;
     QString m_ytDlpPath;
     /// Continuation token from the most recent InnerTube /search response.
