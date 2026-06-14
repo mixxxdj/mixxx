@@ -853,8 +853,9 @@ double AIBroFeature::scoreCandidate(
     if (!titleWords.isEmpty() && !videoWords.isEmpty()) {
         int common = 0;
         for (const QString& w : titleWords) {
-            if (videoWords.contains(w))
+            if (videoWords.contains(w)) {
                 ++common;
+            }
         }
         double jaccard = static_cast<double>(common) /
                 qMax(titleWords.size(), videoWords.size());
@@ -866,8 +867,9 @@ double AIBroFeature::scoreCandidate(
         double semanticScore = 0.0;
         int meaningfulWords = 0;
         for (const QString& w : titleWords) {
-            if (stopWords().contains(w))
+            if (stopWords().contains(w)) {
                 continue;
+            }
             ++meaningfulWords;
             if (videoWords.contains(w)) {
                 semanticScore += 1.0;
@@ -880,8 +882,9 @@ double AIBroFeature::scoreCandidate(
                 }
             }
         }
-        if (meaningfulWords > 0)
+        if (meaningfulWords > 0) {
             semanticScore /= meaningfulWords;
+        }
         score += kWeightSemanticWords * semanticScore;
     }
 
@@ -921,8 +924,9 @@ double AIBroFeature::scoreCandidate(
             "rework"};
     int energyMatches = 0;
     for (const QString& ew : kEnergyWords) {
-        if (videoT.contains(ew))
+        if (videoT.contains(ew)) {
             ++energyMatches;
+        }
     }
     if (energyMatches > 0) {
         score += kWeightGenreMatch * qMin(energyMatches, 3) / 3.0;
@@ -988,8 +992,9 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
 
 void AIBroFeature::downloadCandidate(
         const mixxx::YouTubeVideoInfo& candidate) {
-    if (!m_pYouTubeFeature)
+    if (!m_pYouTubeFeature) {
         return;
+    }
     qint64 now = QDateTime::currentMSecsSinceEpoch();
     if (now - m_lastSearchTimeMs < kMinSearchIntervalMs) {
         kLogger.info() << "AI Bro: rate limited, skipping";
@@ -1009,8 +1014,9 @@ void AIBroFeature::downloadCandidate(
 // ===================================================================
 
 void AIBroFeature::findNextSong() {
-    if (!isActive() || m_downloading)
+    if (!isActive() || m_downloading) {
         return;
+    }
 
     updateCurrentTrackInfo();
 
@@ -1082,8 +1088,9 @@ void AIBroFeature::findNextSong() {
 // ===================================================================
 
 void AIBroFeature::slotProgressTick() {
-    if (!isActive() || m_blending || !m_pPlayerManager)
+    if (!isActive() || m_blending || !m_pPlayerManager) {
         return;
+    }
     if (isDeckPlaying(m_iCurrentDeck)) {
         double pos = getDeckPlayPosition(m_iCurrentDeck);
         if (pos >= kBlendStartMin && !m_downloading) {
@@ -1103,8 +1110,9 @@ void AIBroFeature::slotSearchResultsReady(
         const QString& query,
         const QList<mixxx::YouTubeVideoInfo>& results) {
     Q_UNUSED(query);
-    if (!m_downloading || results.isEmpty())
+    if (!m_downloading || results.isEmpty()) {
         return;
+    }
 
     kLogger.info() << "AI Bro:" << results.size() << "results";
 
@@ -1189,21 +1197,24 @@ void AIBroFeature::slotDownloadFailed(
     }
 
     QTimer::singleShot(kRetryDelayMs * 2, this, [this]() {
-        if (isActive())
+        if (isActive()) {
             findNextSong();
+        }
     });
 }
 
 void AIBroFeature::slotSearchFailed(
         const QString& query, const QString& error) {
-    if (!m_downloading)
+    if (!m_downloading) {
         return;
+    }
     Q_UNUSED(query);
     kLogger.warning() << "AI Bro: search failed:" << error;
     m_downloading = false;
     QTimer::singleShot(kRetryDelayMs, this, [this]() {
-        if (isActive())
+        if (isActive()) {
             findNextSong();
+        }
     });
 }
 
