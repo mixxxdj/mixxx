@@ -56,19 +56,24 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     void setSettings(
             const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings);
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     void setModulePaths(const QList<LegacyControllerMapping::QMLModuleInfo>& scripts);
+#endif
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     void setInfoScreens(const QList<LegacyControllerMapping::ScreenInfo>& scripts);
     void setResourcePath(const QString& resourcePath) {
         m_resourcePath = resourcePath;
     }
-
+#endif
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
   private slots:
     void handleScreenFrame(
             const LegacyControllerMapping::ScreenInfo& screeninfo,
             const QImage& frame,
             const QDateTime& timestamp);
+#endif
 
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
   signals:
     /// Emitted when a screen has been rendered.
     // TODO (XXX) Move this signal in ControllerScriptEngineBase when ScreenInfo
@@ -116,7 +121,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
 
     QJSValue m_makeArrayBufferWrapperFunction;
     QList<QString> m_scriptFunctionPrefixes;
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
     // Contains all the scenes loaded for this mapping. Key is the scene
     // identifier (LegacyControllerMapping::ScreenInfo::identifier), value in

@@ -119,6 +119,7 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "shutdown");
 #ifdef MIXXX_USE_QML
     } else {
+#ifndef Q_OS_ANDROID
         bool success = true;
         for (const auto& [screenIdentifier, screen] : m_rootItems) {
             if (!screen->getShutdown().isCallable()) {
@@ -143,6 +144,9 @@ bool ControllerScriptEngineLegacy::callShutdownFunction() {
             }
         }
         return success;
+#else
+        return true;
+#endif
     }
 #endif
 }
@@ -159,6 +163,7 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
         return callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true);
 #ifdef MIXXX_USE_QML
     } else {
+#ifndef Q_OS_ANDROID
         for (const auto& [screenIdentifier, screen] : m_rootItems) {
             if (!screen->getInit().isCallable()) {
                 qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
@@ -179,6 +184,9 @@ bool ControllerScriptEngineLegacy::callInitFunction() {
             }
         }
         return true;
+#else
+        return true;
+#endif
     }
 #endif
 }
@@ -216,7 +224,7 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
     return wrappedFunction;
 }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 void ControllerScriptEngineLegacy::setModulePaths(
         const QList<LegacyControllerMapping::QMLModuleInfo>& modules) {
     const QStringList paths = m_fileWatcher.files();
@@ -226,6 +234,9 @@ void ControllerScriptEngineLegacy::setModulePaths(
 
     m_modules = modules;
 }
+#endif
+
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 void ControllerScriptEngineLegacy::setInfoScreens(
         const QList<LegacyControllerMapping::ScreenInfo>& screens) {
     m_rootItems.clear();
@@ -273,6 +284,8 @@ bool ControllerScriptEngineLegacy::initialize() {
 #ifdef MIXXX_USE_QML
     // During the initialisation, any QML errors are considered fatal.
     setErrorsAreFatal(true);
+
+#ifndef Q_OS_ANDROID
     QMap<QString, std::shared_ptr<ControllerRenderingEngine>> availableScreens;
 
     if (m_bQmlMode) {
@@ -319,7 +332,8 @@ bool ControllerScriptEngineLegacy::initialize() {
         qCWarning(m_logger) << "Controller mapping has screen definitions but no QML "
                                "files to render on it. Ignoring.";
     }
-#endif
+#endif // Q_OS_ANDROID
+#endif // MIXXX_USE_QML
 
     // Binary data is passed from the Controller as a QByteArray, which
     // QJSEngine::toScriptValue converts to an ArrayBuffer in JavaScript.
@@ -347,6 +361,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     engineGlobalObject.setProperty("engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
 #ifdef MIXXX_USE_QML
+#ifndef Q_OS_ANDROID
     if (m_bQmlMode) {
         for (const LegacyControllerMapping::QMLModuleInfo& module :
                 std::as_const(m_modules)) {
@@ -367,11 +382,11 @@ bool ControllerScriptEngineLegacy::initialize() {
         qCWarning(m_logger) << "Controller mapping has QML library definitions but no "
                                "QML files to use it. Ignoring.";
     }
-
+#endif
+#endif
     // If we encounter a failure while loading a scene, we will need to properly
     // stop the screen threads before shutting down.
-    bool sceneBindingHasFailure = false;
-#endif
+    [[maybe_unused]] bool sceneBindingHasFailure = false;
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
 #ifdef MIXXX_USE_QML
         if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::Javascript) {
@@ -385,6 +400,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             }
 #ifdef MIXXX_USE_QML
         } else {
+#ifndef Q_OS_ANDROID
             if (script.identifier.isEmpty()) {
                 while (!availableScreens.isEmpty()) {
                     QString screenIdentifier(availableScreens.firstKey());
@@ -407,9 +423,13 @@ bool ControllerScriptEngineLegacy::initialize() {
                     sceneBindingHasFailure = true;
                 }
             }
+#else
+            Q_UNUSED(script);
+#endif
         }
     }
 
+#ifndef Q_OS_ANDROID
     if (!availableScreens.isEmpty()) {
         if (!sceneBindingHasFailure) {
             qCWarning(m_logger)
@@ -425,6 +445,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             };
         }
     }
+#endif // Q_OS_ANDROID
     if (sceneBindingHasFailure) {
         shutdown();
         return false;
@@ -447,7 +468,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                         wrapFunctionCode(functionName, 2)));
     }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_engineThreadControl.setCanPause(true);
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         pScreen->start();
@@ -466,7 +487,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     return true;
 }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 
 bool ControllerScriptEngineLegacy::bindSceneToScreen(
         const LegacyControllerMapping::ScriptFileInfo& qmlFile,
@@ -501,7 +522,9 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
             &ControllerScriptEngineLegacy::shutdown);
     return true;
 }
+#endif
 
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 void ControllerScriptEngineLegacy::handleScreenFrame(
         const LegacyControllerMapping::ScreenInfo& screenInfo,
         const QImage& frame,
@@ -616,7 +639,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
 void ControllerScriptEngineLegacy::shutdown() {
     callShutdownFunction();
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_engineThreadControl.setCanPause(false);
     // Wait till the splash off animation has finished rendering.
     std::chrono::milliseconds maxSplashOffDuration{};
@@ -739,7 +762,7 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     return true;
 }
 
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
 std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen> ControllerScriptEngineLegacy::loadQMLFile(
         const LegacyControllerMapping::ScriptFileInfo& qmlScript,
         std::shared_ptr<ControllerRenderingEngine> pScreen) {

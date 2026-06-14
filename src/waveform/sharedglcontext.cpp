@@ -1,6 +1,7 @@
 #include "waveform/sharedglcontext.h"
 
-#ifndef MIXXX_USE_QOPENGL
+#include <QtGlobal>
+#if !defined(MIXXX_USE_QOPENGL) && defined(QT_VERSION) && QT_VERSION < 0x060000
 #include <QDebug>
 #include <QGLContext>
 #include <QGLFormat>
@@ -13,7 +14,7 @@ WGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
 // static
 void SharedGLContext::setWidget(WGLWidget* pWidget) {
     s_pSharedGLWidget = pWidget;
-#ifndef MIXXX_USE_QOPENGL
+#if !defined(MIXXX_USE_QOPENGL) && defined(QT_VERSION) && QT_VERSION < 0x060000
     qDebug() << "Set root GL Context widget valid:"
              << pWidget << (pWidget && pWidget->isValid());
     if (pWidget) {

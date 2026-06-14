@@ -23,7 +23,6 @@
 
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
-#include "widget/wsuggestionsbar.h"
 #endif
 
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -35,6 +34,7 @@
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wsuggestionsbar.h"
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
@@ -275,9 +275,10 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
-#ifndef MIXXX_USE_QOPENGL
+#if !defined(MIXXX_USE_QOPENGL) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
+    // QGLFormat/QGLWidget were removed in Qt6.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
@@ -1686,6 +1687,10 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
+    // On Android, OpenGL availability is handled differently and the
+    // desktop GL check is not applicable (allshader widgets are used).
+    // Skip the direct rendering warning.
+#if !defined(Q_OS_ANDROID)
     if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
             pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(nullptr,
@@ -1701,6 +1706,7 @@ void MixxxMainWindow::checkDirectRendering() {
                    "section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
+#endif
 }
 
 bool MixxxMainWindow::confirmExit() {

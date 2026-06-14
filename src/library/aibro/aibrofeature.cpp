@@ -336,18 +336,22 @@ static QString normalizeSongTitle(const QString& title) {
 
 // Word-overlap similarity (Jaccard-like)
 static double titleSimilarity(const QString& a, const QString& b) {
-    if (a.isEmpty() || b.isEmpty())
+    if (a.isEmpty() || b.isEmpty()) {
         return 0.0;
-    if (a == b)
+    }
+    if (a == b) {
         return 1.0;
+    }
     QStringList wordsA = a.split(' ');
     QStringList wordsB = b.split(' ');
-    if (wordsA.isEmpty() || wordsB.isEmpty())
+    if (wordsA.isEmpty() || wordsB.isEmpty()) {
         return 0.0;
+    }
     int matches = 0;
     for (const QString& w : std::as_const(wordsA)) {
-        if (wordsB.contains(w))
+        if (wordsB.contains(w)) {
             ++matches;
+        }
     }
     return static_cast<double>(matches) /
             qMax(wordsA.size(), wordsB.size());
@@ -661,8 +665,9 @@ double AIBroFeature::computeEnergyArc() const {
 // ===================================================================
 
 double AIBroFeature::correctBPM(double detectedBPM, double expectedBPM) const {
-    if (expectedBPM <= 0)
+    if (expectedBPM <= 0) {
         return detectedBPM;
+    }
     // Common librosa detection error ratios
     static const double ratios[] = {1.0, 2.0, 0.5, 1.5, 0.75, 1.333, 0.666};
     double bestRatio = 1.0;
@@ -689,8 +694,9 @@ double AIBroFeature::correctBPM(double detectedBPM, double expectedBPM) const {
 
 double AIBroFeature::alignToPhraseBoundary(double positionSec) const {
     double bpm = getCurrentPlayingBPM();
-    if (bpm <= 0)
+    if (bpm <= 0) {
         bpm = 120.0;
+    }
     double beatInterval = 60.0 / bpm;
     double phraseInterval = beatInterval * kPhraseBeats;
     // Round up to next phrase boundary
@@ -703,10 +709,12 @@ double AIBroFeature::alignToPhraseBoundary(double positionSec) const {
 // ===================================================================
 
 QString AIBroFeature::buildSearchQuery() {
-    if (m_currentTrackTitle.isEmpty())
+    if (m_currentTrackTitle.isEmpty()) {
         return {};
-    if (m_currentTrackArtist.isEmpty())
+    }
+    if (m_currentTrackArtist.isEmpty()) {
         return m_currentTrackTitle;
+    }
     return QStringLiteral("%1 %2").arg(m_currentTrackArtist, m_currentTrackTitle);
 }
 
@@ -714,12 +722,14 @@ QStringList AIBroFeature::buildDiscoveryQueries() {
     QStringList queries;
     const QString title = m_currentTrackTitle;
     const QString artist = m_currentTrackArtist;
-    if (title.isEmpty() || title.length() < 3)
+    if (title.isEmpty() || title.length() < 3) {
         return queries;
+    }
     const QString currentLower = title.toLower();
     for (const QString& pattern : garbagePatterns()) {
-        if (currentLower.contains(pattern))
+        if (currentLower.contains(pattern)) {
             return queries;
+        }
     }
     if (!artist.isEmpty()) {
         queries << QStringLiteral("%1 remix ελληνικά").arg(artist);
@@ -735,12 +745,14 @@ QStringList AIBroFeature::buildDiscoveryQueries() {
 
 double AIBroFeature::scoreCandidate(
         const mixxx::YouTubeVideoInfo& candidate) {
-    if (candidate.title.isEmpty())
+    if (candidate.title.isEmpty()) {
         return -1.0;
+    }
 
     // Hard filter: already played
-    if (m_playedVideoIds.contains(candidate.id))
+    if (m_playedVideoIds.contains(candidate.id)) {
         return -1.0;
+    }
 
     // Hard filter: similar title already played
     QString normTitle = normalizeSongTitle(candidate.title);
@@ -757,11 +769,13 @@ double AIBroFeature::scoreCandidate(
     if (!trendingMode) {
         const QString candLower = candidate.title.toLower().trimmed();
         const QString currLower = m_currentTrackTitle.toLower().trimmed();
-        if (candLower == currLower)
+        if (candLower == currLower) {
             return -1.0;
+        }
         if (candLower.contains(currLower) || currLower.contains(candLower)) {
-            if (candLower.length() < currLower.length() + 15)
+            if (candLower.length() < currLower.length() + 15) {
                 return -1.0;
+            }
         }
     }
 
@@ -777,8 +791,9 @@ double AIBroFeature::scoreCandidate(
     }
 
     // Hard filter: live streams
-    if (candidate.isLive)
+    if (candidate.isLive) {
         return -1.0;
+    }
 
     // Hard filter: remixes (often low quality)
     {
@@ -796,26 +811,31 @@ double AIBroFeature::scoreCandidate(
     {
         const QString lowerTitle = candidate.title.toLower();
         for (const QString& pattern : garbagePatterns()) {
-            if (lowerTitle.contains(pattern))
+            if (lowerTitle.contains(pattern)) {
                 return -1.0;
+            }
         }
-        if (candidate.title.length() < 3 || candidate.title.length() > 100)
+        if (candidate.title.length() < 3 || candidate.title.length() > 100) {
             return -1.0;
+        }
         int specialCharCount = 0;
         for (const QChar& c : candidate.title) {
-            if (c.unicode() > 127 && !c.isLetterOrNumber())
+            if (c.unicode() > 127 && !c.isLetterOrNumber()) {
                 specialCharCount++;
+            }
         }
-        if (specialCharCount > 3)
+        if (specialCharCount > 3) {
             return -1.0;
+        }
     }
 
     // Hard filter: current track is garbage
     if (!m_currentTrackTitle.isEmpty() && m_currentTrackTitle.length() >= 3) {
         const QString currentLower = m_currentTrackTitle.toLower();
         for (const QString& pattern : garbagePatterns()) {
-            if (currentLower.contains(pattern))
+            if (currentLower.contains(pattern)) {
                 return -1.0;
+            }
         }
     }
 
@@ -833,8 +853,9 @@ double AIBroFeature::scoreCandidate(
     if (!titleWords.isEmpty() && !videoWords.isEmpty()) {
         int common = 0;
         for (const QString& w : titleWords) {
-            if (videoWords.contains(w))
+            if (videoWords.contains(w)) {
                 ++common;
+            }
         }
         double jaccard = static_cast<double>(common) /
                 qMax(titleWords.size(), videoWords.size());
@@ -846,8 +867,9 @@ double AIBroFeature::scoreCandidate(
         double semanticScore = 0.0;
         int meaningfulWords = 0;
         for (const QString& w : titleWords) {
-            if (stopWords().contains(w))
+            if (stopWords().contains(w)) {
                 continue;
+            }
             ++meaningfulWords;
             if (videoWords.contains(w)) {
                 semanticScore += 1.0;
@@ -860,8 +882,9 @@ double AIBroFeature::scoreCandidate(
                 }
             }
         }
-        if (meaningfulWords > 0)
+        if (meaningfulWords > 0) {
             semanticScore /= meaningfulWords;
+        }
         score += kWeightSemanticWords * semanticScore;
     }
 
@@ -901,8 +924,9 @@ double AIBroFeature::scoreCandidate(
             "rework"};
     int energyMatches = 0;
     for (const QString& ew : kEnergyWords) {
-        if (videoT.contains(ew))
+        if (videoT.contains(ew)) {
             ++energyMatches;
+        }
     }
     if (energyMatches > 0) {
         score += kWeightGenreMatch * qMin(energyMatches, 3) / 3.0;
@@ -968,8 +992,9 @@ mixxx::YouTubeVideoInfo AIBroFeature::pickBestCandidate(
 
 void AIBroFeature::downloadCandidate(
         const mixxx::YouTubeVideoInfo& candidate) {
-    if (!m_pYouTubeFeature)
+    if (!m_pYouTubeFeature) {
         return;
+    }
     qint64 now = QDateTime::currentMSecsSinceEpoch();
     if (now - m_lastSearchTimeMs < kMinSearchIntervalMs) {
         kLogger.info() << "AI Bro: rate limited, skipping";
@@ -989,8 +1014,9 @@ void AIBroFeature::downloadCandidate(
 // ===================================================================
 
 void AIBroFeature::findNextSong() {
-    if (!isActive() || m_downloading)
+    if (!isActive() || m_downloading) {
         return;
+    }
 
     updateCurrentTrackInfo();
 
@@ -1062,8 +1088,9 @@ void AIBroFeature::findNextSong() {
 // ===================================================================
 
 void AIBroFeature::slotProgressTick() {
-    if (!isActive() || m_blending || !m_pPlayerManager)
+    if (!isActive() || m_blending || !m_pPlayerManager) {
         return;
+    }
     if (isDeckPlaying(m_iCurrentDeck)) {
         double pos = getDeckPlayPosition(m_iCurrentDeck);
         if (pos >= kBlendStartMin && !m_downloading) {
@@ -1083,8 +1110,9 @@ void AIBroFeature::slotSearchResultsReady(
         const QString& query,
         const QList<mixxx::YouTubeVideoInfo>& results) {
     Q_UNUSED(query);
-    if (!m_downloading || results.isEmpty())
+    if (!m_downloading || results.isEmpty()) {
         return;
+    }
 
     kLogger.info() << "AI Bro:" << results.size() << "results";
 
@@ -1169,21 +1197,24 @@ void AIBroFeature::slotDownloadFailed(
     }
 
     QTimer::singleShot(kRetryDelayMs * 2, this, [this]() {
-        if (isActive())
+        if (isActive()) {
             findNextSong();
+        }
     });
 }
 
 void AIBroFeature::slotSearchFailed(
         const QString& query, const QString& error) {
-    if (!m_downloading)
+    if (!m_downloading) {
         return;
+    }
     Q_UNUSED(query);
     kLogger.warning() << "AI Bro: search failed:" << error;
     m_downloading = false;
     QTimer::singleShot(kRetryDelayMs, this, [this]() {
-        if (isActive())
+        if (isActive()) {
             findNextSong();
+        }
     });
 }
 

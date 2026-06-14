@@ -18,7 +18,7 @@ GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<GLWaveformRendererFilteredSignal>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();

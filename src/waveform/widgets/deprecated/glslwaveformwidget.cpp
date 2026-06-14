@@ -42,7 +42,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (type == GlslType::Filtered) {
         addRenderer<GLSLWaveformRendererFilteredSignal>();
     } else if (type == GlslType::RGB) {

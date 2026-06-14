@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "comment": "InnerTube client signatures for Mixxx YouTube integration. Update this file when YouTube blocks existing clients. The app fetches this at startup and applies updates automatically.",
+  "clients": [
+    {
+      "name": "ANDROID_VR",
+      "version": "1.65.10",
+      "id": "28",
+      "api_key": "",
+      "user_agent": "com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+      "device_make": "Oculus",
+      "device_model": "Quest 3",
+      "android_sdk": 32,
+      "os_name": "Android",
+      "os_version": "12L"
+    },
+    {
+      "name": "IOS",
+      "version": "21.02.3",
+      "id": "5",
+      "api_key": "",
+      "user_agent": "com.google.ios.youtube/21.02.3 (iPhone16,2; U; CPU iOS 18_3_2 like Mac OS X;)",
+      "device_make": "Apple",
+      "device_model": "iPhone16,2",
+      "android_sdk": 0,
+      "os_name": "iPhone",
+      "os_version": "18.3.2.22D82"
+    },
+    {
+      "name": "ANDROID",
+      "version": "21.02.35",
+      "id": "3",
+      "api_key": "",
+      "user_agent": "com.google.android.youtube/21.02.35 (Linux; U; Android 11) gzip",
+      "device_make": "",
+      "device_model": "",
+      "android_sdk": 30,
+      "os_name": "Android",
+      "os_version": "11"
+    },
+    {
+      "name": "TVHTML5_SIMPLY",
+      "version": "1.0",
+      "id": "75",
+      "api_key": "",
+      "user_agent": "Mozilla/5.0 (PlayStation; PlayStation 4/12.00) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
+      "device_make": "",
+      "device_model": "",
+      "android_sdk": 0,
+      "os_name": "",
+      "os_version": ""
+    }
+  ],
+  "search_clients": [
+    {
+      "name": "ANDROID_VR",
+      "version": "1.65.10",
+      "id": "28"
+    },
+    {
+      "name": "TVHTML5_SIMPLY",
+      "version": "1.0",
+      "id": "75"
+    },
+    {
+      "name": "WEB",
+      "version": "2.20260114.08.00",
+      "id": "1",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    }
+  ]
+}

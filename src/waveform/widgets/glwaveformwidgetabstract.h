@@ -22,7 +22,7 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
     }
 
   protected:
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 #ifdef MIXXX_USE_QOPENGL
     void paintGL() override {
         // Called by OpenGLWindow to avoid flickering on resize.

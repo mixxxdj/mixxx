@@ -8,8 +8,11 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
 #else
+#include <QtGlobal>
+#if QT_VERSION < 0x060000
 #include <QGLFormat>
 #include <QGLShaderProgram>
+#endif
 #endif
 #ifdef Q_OS_ANDROID
 #include <GLES3/gl3.h>
@@ -225,6 +228,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         widget->hide();
     }
 #else
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt5 fallback — QGLWidget was removed in Qt6
     QGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
@@ -342,7 +347,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             m_openGLVersion = QString::number(majorGlVersion) + "."
                     + QString::number(minorGlVersion);
 
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
             if (majorGlVersion * 100 + minorGlVersion >= 201) {
                 // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
                 m_openGlAvailable = true;
@@ -365,6 +370,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
         pGlWidget->hide();
     }
+#endif // QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #endif
     evaluateWidgets();
     m_time.start();
@@ -385,7 +391,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool ok = false;
 
     int frameRate = m_config->getValue(kFrameRateKey, m_frameRate);
-    m_frameRate = math_clamp(frameRate, 1, 120);
+    m_frameRate = math_clamp(frameRate, 1, 240);
 
     int endTime = m_config->getValueString(kEndOfTrackWarningKey).toInt(&ok);
     if (ok) {
@@ -930,6 +936,7 @@ void WaveformWidgetFactory::swap() {
     m_vsyncThread->vsyncSlotFinished();
 }
 
+#ifdef MIXXX_USE_QOPENGL
 void WaveformWidgetFactory::swapAndRender() {
     // used for PLL
     WGLWidget* widget = SharedGLContext::getWidget();
@@ -940,6 +947,7 @@ void WaveformWidgetFactory::swapAndRender() {
 
     m_vsyncThread->vsyncSlotFinished();
 }
+#endif
 
 void WaveformWidgetFactory::slotFrameSwapped() {
 #ifdef MIXXX_USE_QOPENGL
@@ -1023,7 +1031,9 @@ void WaveformWidgetFactory::evaluateWidgets() {
     QHash<WaveformWidgetType::Type,
             WaveformRendererSignalBase::Options>
             supportedOptions;
+#ifdef MIXXX_USE_QOPENGL
     bool useGles = isOpenGlesAvailable(); // we can make use of GLES waveforms
+#endif
     for (WaveformWidgetType::Type type : WaveformWidgetType::kValues) {
         switch (type) {
         case WaveformWidgetType::Empty:
@@ -1103,12 +1113,14 @@ void WaveformWidgetFactory::evaluateWidgets() {
     }
 }
 
+#ifdef MIXXX_USE_QOPENGL
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type,
         WWaveformViewer* viewer,
         WaveformRendererSignalBase::Options options) {
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
+#endif
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
@@ -1153,18 +1165,24 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
     }
 }
 
+#ifdef MIXXX_USE_QOPENGL
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetBackend backend = getBackendFromConfig();
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer, options);
-#endif
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
 }
+#else
+WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
+    Q_UNUSED(options);
+    return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+}
+#endif
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
@@ -1176,6 +1194,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
 #endif
     default:
+        Q_UNUSED(options);
         return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
 }
@@ -1283,10 +1302,12 @@ void WaveformWidgetFactory::startVSync(
             &VSyncThread::vsyncSwap,
             this,
             &WaveformWidgetFactory::swap);
+#ifdef MIXXX_USE_QOPENGL
     connect(m_vsyncThread,
             &VSyncThread::vsyncSwapAndRender,
             this,
             &WaveformWidgetFactory::swapAndRender);
+#endif
 
     m_vsyncThread->start(QThread::NormalPriority);
 }

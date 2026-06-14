@@ -99,7 +99,7 @@ bool Controller::applyMapping(const QString& resourcePath) {
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
     m_pScriptEngineLegacy->setSettings(getMappingSettings());
-#ifdef MIXXX_USE_QML
+#if defined(MIXXX_USE_QML) && !defined(Q_OS_ANDROID)
     m_pScriptEngineLegacy->setModulePaths(getMappingModules());
     m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);

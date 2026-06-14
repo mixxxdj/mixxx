@@ -1,5 +1,5 @@
 #include "waveform/renderers/deprecated/glwaveformrenderersimplesignal.h"
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"

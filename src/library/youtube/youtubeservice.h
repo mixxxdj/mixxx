@@ -11,6 +11,11 @@
 #include <QTimer>
 #include <functional>
 
+// Forward declarations for JSON types used in private methods
+class QJsonArray;
+class QJsonObject;
+class QJsonDocument;
+
 class QNetworkAccessManager;
 class QNetworkCookieJar;
 class QNetworkReply;
@@ -359,6 +364,17 @@ class YouTubeService : public QObject {
     /// Initialize and persist a cookie jar that outlives individual requests.
     void setupCookieJar();
 
+    // ----- Remote client signature auto-update -----
+
+    /// Fetch the remote client config JSON from kRemoteConfigUrl.
+    void fetchRemoteClientConfig();
+
+    /// Slot called when the remote config network reply finishes.
+    void onRemoteConfigReply(QNetworkReply* reply);
+
+    /// Parse and apply a remote config JSON. Returns true if applied.
+    bool applyRemoteConfig(const QJsonObject& config, int remoteVersion);
+
     QNetworkAccessManager* m_pNam;
     QString m_ytDlpPath;
     /// Continuation token from the most recent InnerTube /search response.
@@ -404,6 +420,16 @@ class YouTubeService : public QObject {
     /// calls all registered waiters and removes the entry.
     QHash<QString, QList<std::function<void(const QList<SponsorSegment>&)>>>
             m_sponsorPrefetchWaiters;
+
+    // ----- Remote client signature update state -----
+
+    /// Timestamp (elapsed ms) of the last successful remote config fetch.
+    qint64 m_remoteConfigLastFetch = 0;
+    /// Version number from the last fetched remote config. Used to avoid
+    /// re-applying the same config. 0 = never fetched.
+    int m_remoteConfigVersion = 0;
+    /// Timer that triggers periodic re-fetch of the remote config.
+    QTimer* m_pRemoteConfigTimer = nullptr;
 };
 
 } // namespace mixxx

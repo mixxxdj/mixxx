@@ -449,7 +449,15 @@ cmake_dependent_option(
 )
 
 if(QT6)
-  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+  if(ANDROID)
+    # Android uses GLESv3. Enable MIXXX_USE_QOPENGL so the allshader
+    # waveform renderers (which support GLES) are compiled. This gives
+    # hardware-accelerated waveform rendering instead of the slow
+    # QPainter software fallback.
+    set(QOPENGL ON CACHE INTERNAL "Enabled on Android for GLES rendering")
+  else()
+    set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
+  endif()
 else()
   option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 endif()
@@ -1781,7 +1789,9 @@ add_library(
   src/waveform/widgets/simplesignalwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
+  #if !defined(Q_OS_ANDROID)
   src/waveform/widgets/glwaveformwidgetabstract.cpp
+  #endif
   src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
@@ -1851,8 +1861,10 @@ add_library(
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
   src/widget/wslidercomposed.cpp
+  #if !defined(Q_OS_ANDROID)
   src/widget/wspinny.cpp
   src/widget/wspinnybase.cpp
+  #endif
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
@@ -1863,8 +1875,10 @@ add_library(
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
   src/widget/wtrackwidgetgroup.cpp
+  #if !defined(Q_OS_ANDROID)
   src/widget/wvumeter.cpp
   src/widget/wvumeterbase.cpp
+  #endif
   src/widget/wvumeterlegacy.cpp
   src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
@@ -2046,10 +2060,15 @@ else()
     mixxx-lib
     PRIVATE
       # The following source depends of QML being available but aren't part of the new QML UI
-      src/controllers/rendering/controllerrenderingengine.cpp
       src/controllers/controllerenginethreadcontrol.cpp
       src/controllers/controllerscreenpreview.cpp
   )
+  if(NOT ANDROID)
+    target_sources(
+      mixxx-lib
+      PRIVATE src/controllers/rendering/controllerrenderingengine.cpp
+    )
+  endif()
 endif()
 if(QOPENGL)
   target_sources(
@@ -2090,14 +2109,22 @@ if(QOPENGL)
       src/widget/wvumeterglsl.cpp
   )
 else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/waveform/renderers/qtvsynctestrenderer.cpp
-      src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-      src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-      src/widget/wglwidgetqglwidget.cpp
-  )
+  # Qt5 fallback only — QGLWidget was removed in Qt6
+  if(NOT QT6)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/waveform/renderers/qtvsynctestrenderer.cpp
+        src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
+        src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
+        src/widget/wglwidgetqglwidget.cpp
+    )
+  endif()
+  # Provide stub WGLWidget implementations for Android (QOPENGL=OFF)
+  # so the linker can resolve virtual method symbols
+  if(ANDROID)
+    target_sources(mixxx-lib PRIVATE src/widget/wglwidgetqopengl_stub.cpp)
+  endif()
 endif()
 
 set_source_files_properties(
@@ -2116,6 +2143,12 @@ target_include_directories(
 if(UNIX AND NOT APPLE AND NOT ANDROID)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
+endif()
+
+if(ANDROID)
+  # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
+  # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
+  target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
 endif()
 
 if(APPLE)
@@ -2466,7 +2499,7 @@ if(QT6)
     )
     set(
       CMAKE_LINKER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
+      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/lld"
     )
     set(
       CMAKE_C_COMPILER
@@ -2476,24 +2509,23 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+    # Use C++23 for Android (NDK r28 Clang 19 supports it fully).
+    # Desktop stays at C++20 because GCC 13 on Ubuntu 24.04 doesn't fully support C++23.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -fPIC")
 
     # ─── Android performance & size optimizations ───────────────────────
-    # Use -Oz (smallest code with vectorization) instead of the global -O3.
-    # On ARM64 the difference vs -O3 is negligible for audio DSP workloads
-    # because NEON auto-vectorization still fires, but the binary shrinks
-    # ~15-25 %. -ffunction-sections + -fdata-sections allow the linker to
-    # discard unreachable code/data via --gc-sections.
+    # -O2 + full LTO gives the best perf/size tradeoff on ARM64.
+    # -Oz sacrifices ~10-15% perf for ~5% size savings which is not
+    # worth it for a DJ app where audio DSP latency matters.
     target_compile_options(
       mixxx-lib
-      PUBLIC -Oz -ffunction-sections -fdata-sections
+      PUBLIC -O2 -ffunction-sections -fdata-sections
     )
-    # Enable Link-Time Optimization (Thin LTO) — provides cross-TU inlining
-    # and dead-code elimination with much lower memory/time cost than full
-    # LTO. Combined with --gc-sections and --icf=safe this yields the
-    # smallest possible binary with optimal hot-path performance.
-    target_compile_options(mixxx-lib PUBLIC -flto=thin)
-    target_link_options(mixxx-lib PUBLIC -flto=thin)
+    # Full LTO (not Thin LTO) for release builds — maximizes cross-TU
+    # inlining and dead-code elimination. With NDK r28 Clang 19 this is
+    # stable and produces measurably smaller+faster binaries.
+    target_compile_options(mixxx-lib PUBLIC -flto=full)
+    target_link_options(mixxx-lib PUBLIC -flto=full)
 
     # Locate the NDK's bundled libomp.so dynamically. The path used to be
     # hardcoded to `lib/clang/18/...` which broke every time the NDK was
@@ -2617,8 +2649,28 @@ if(QT6)
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/fonts
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/fonts
       COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/images
+        ${CMAKE_COMMAND} -E make_directory
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images
+      # Copy only the image files Android actually needs.
+      # Exclude res/images/icons/ entirely — Android uses mipmap icons from
+      # packaging/android/res/ and the SVG icons are 4.5MB of dead weight.
+      # Exclude templates/logo_mixxx.png — desktop-only about dialog logo.
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/preferences
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/preferences
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/keywheel
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/keywheel
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res/images/library
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/library
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/res/images/skin_preview_placeholder.png
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/images/skin_preview_placeholder.png
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/keyboard
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/keyboard
@@ -3927,9 +3979,20 @@ else()
       PUBLIC -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES2=1
     )
   elseif(ANDROID)
-    find_library(GLESv2_LIBRARY GLESv2)
-    target_link_libraries(mixxx-lib PRIVATE "${GLESv2_LIBRARY}")
-    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+    # Use OpenGL ES 3.2 (supported on all Android API 24+ / ARM64 devices).
+    # ES 3.2 adds compute shaders, ASTC texture compression, and improved
+    # shader precision — all beneficial for waveform rendering.
+    # Qt 6.2+ supports ES 3.2 via QSurfaceFormat::setVersion(3, 2).
+    find_library(GLESv3_LIBRARY GLESv3)
+    if(GLESv3_LIBRARY)
+      target_link_libraries(mixxx-lib PRIVATE "${GLESv3_LIBRARY}")
+      target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_3_2)
+    else()
+      # Fallback to ES 2.0 for older NDK/sysroot setups
+      find_library(GLESv2_LIBRARY GLESv2)
+      target_link_libraries(mixxx-lib PRIVATE "${GLESv2_LIBRARY}")
+      target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+    endif()
   else()
     find_package(WrapOpenGL REQUIRED)
     if(OPENGL_opengl_LIBRARY)
@@ -4011,22 +4074,25 @@ set(
   Core
   Gui
   Network
-  OpenGL
   Qml # for QJSEngine
   Sql
   Svg
-  Test
-  Widgets
   Xml
+  Widgets # Needed for QMessageBox (errordialoghandler.h includes it unconditionally)
 )
 if(NOT ANDROID)
+  list(APPEND QT_COMPONENTS "OpenGL")
+  list(APPEND QT_COMPONENTS "Test")
   list(APPEND QT_COMPONENTS "PrintSupport")
 endif()
 set(QT_EXTRA_COMPONENTS "")
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  # SvgWidgets needed for QSvgWidget (dlgkeywheel.h includes it unconditionally)
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+  # Core5Compat needed for QStringRef (used in src/util/string.h)
+  # and QTextCodec (used in library parsers) — Qt6 moved these here
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
     # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
@@ -4042,17 +4108,21 @@ if(QML)
   endif()
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
-  list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+  if(NOT ANDROID)
+    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+    list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
+  endif()
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
-  list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   if(QT_VERSION VERSION_GREATER_EQUAL 6.7)
     list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Basic")
     list(APPEND QT_EXTRA_COMPONENTS "QuickControls2BasicStyleImpl")
-    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
-    list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+    if(NOT ANDROID)
+      list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Fusion")
+      list(APPEND QT_EXTRA_COMPONENTS "QuickControls2FusionStyleImpl")
+    endif()
   endif()
   if(QT_VERSION VERSION_LESS 6.8)
     # From Qt 6.8 integrated in Qml via QmlMeta
@@ -4286,6 +4356,21 @@ if(DEBUG_ASSERTIONS_FATAL)
       "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON."
     )
   endif()
+endif()
+
+# QML Type Compiler (QMLTC) — AOT compilation of QML to C++.
+# Available since Qt 6.7. Significantly reduces QML startup time and
+# improves runtime performance by compiling QML types ahead of time.
+# Only enabled for non-Debug Qt6 builds where QML is used.
+if(
+  QML
+  AND QT6
+  AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
+  AND QT_VERSION VERSION_GREATER_EQUAL 6.7
+)
+  message(STATUS "QML Type Compiler enabled — QML files will be AOT-compiled")
+  set_target_properties(mixxx-qml-lib PROPERTIES QT_QMLTC ON)
+  set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES QT_QMLTC ON)
 endif()
 
 if(EMSCRIPTEN)

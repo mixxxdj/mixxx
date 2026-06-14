@@ -1,7 +1,7 @@
 #pragma once
 
 #include "waveform/renderers/deprecated/glwaveformrenderersignal.h"
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 class GLVSyncTestRenderer : public GLWaveformRendererSignal {
   public:

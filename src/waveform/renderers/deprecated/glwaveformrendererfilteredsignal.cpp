@@ -1,5 +1,5 @@
 #include "glwaveformrendererfilteredsignal.h"
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+#if defined(MIXXX_USE_QOPENGL) && !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QDomNode>
 
