@@ -374,6 +374,8 @@ jobs:
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
         run: |
+          export HOMEBREW_NO_AUTO_UPDATE=1
+          export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
           brew install ccache
 
       - name: "[macOS/Windows] Get build environment name"
