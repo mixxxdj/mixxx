@@ -52,6 +52,13 @@ namespace {
 constexpr double kVisualGainDefault[] = {2, 1, 1, 1};
 constexpr bool kOverviewNormalizedDefault = false;
 
+// Global fallback time signature, used when a track has no per-track
+// beats-per-bar value. User-configurable in the range [kMinBeatsPerBar,
+// kMaxBeatsPerBar] and overridden per track by beat analysis.
+constexpr int kDefaultBeatsPerBar = 4;
+constexpr int kMinBeatsPerBar = 2;
+constexpr int kMaxBeatsPerBar = 32;
+
 // Returns true if the given waveform should be rendered.
 bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     if (pWaveformWidget == nullptr ||
@@ -136,7 +143,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_showBarCounter(true),
-          m_beatsPerBar(4),
+          m_beatsPerBar(kDefaultBeatsPerBar),
           m_downbeatsEnabled(true),
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextPointSize(24),
@@ -1514,7 +1521,7 @@ void WaveformWidgetFactory::setShowBarCounter(bool value) {
 }
 
 void WaveformWidgetFactory::setBeatsPerBar(int value) {
-    m_beatsPerBar = qBound(2, value, 32);
+    m_beatsPerBar = qBound(kMinBeatsPerBar, value, kMaxBeatsPerBar);
     if (m_config) {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("BeatsPerBar")),
                 m_beatsPerBar);

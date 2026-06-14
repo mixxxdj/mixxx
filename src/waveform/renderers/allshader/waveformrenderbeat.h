@@ -61,7 +61,9 @@ class allshader::WaveformRenderBeat final
 
     QColor m_color;
     QColor m_downbeatColor;
-    int m_beatsPerBar{4};
+    // Global fallback time signature; set from WaveformWidgetFactory in the
+    // constructor and kept in sync via beatsPerBarChanged. 0 until then.
+    int m_beatsPerBar{0};
     bool m_downbeatsEnabled{true};
     bool m_isSlipRenderer;
 
