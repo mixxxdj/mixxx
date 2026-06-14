@@ -404,6 +404,16 @@ class YouTubeService : public QObject {
     /// calls all registered waiters and removes the entry.
     QHash<QString, QList<std::function<void(const QList<SponsorSegment>&)>>>
             m_sponsorPrefetchWaiters;
+
+    // ----- Remote client signature update state -----
+
+    /// Timestamp (elapsed ms) of the last successful remote config fetch.
+    qint64 m_remoteConfigLastFetch = 0;
+    /// Version number from the last fetched remote config. Used to avoid
+    /// re-applying the same config. 0 = never fetched.
+    int m_remoteConfigVersion = 0;
+    /// Timer that triggers periodic re-fetch of the remote config.
+    QTimer* m_pRemoteConfigTimer = nullptr;
 };
 
 } // namespace mixxx
