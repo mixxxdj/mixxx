@@ -141,10 +141,10 @@ WEffectSelector::indicator:unchecked:selected,
 }
 
 #EffectSelectorGroup[highlight="1"]{
-	border: 1px solid #f8ba54;
+  border: 1px solid #f8ba54;
 }
 #EffectSelectorGroup[highlight="0"]{
-	border: 0px solid #f8ba54;
+  border: 0px solid #f8ba54;
 }
 
 #CueDeleteButton,

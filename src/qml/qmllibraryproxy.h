@@ -13,6 +13,7 @@
 
 class Library;
 class LibraryScanner;
+class KeyboardEventFilter;
 
 namespace mixxx {
 namespace qml {
@@ -24,7 +25,7 @@ class QmlLibrarySource : public QObject {
     Q_PROPERTY(uint trackCount MEMBER m_trackCount CONSTANT)
     QML_NAMED_ELEMENT(LibrarySource)
   public:
-    QmlLibrarySource(const DirectoryDAO::RootDirectory& record)
+    QmlLibrarySource(const DirectoryDAO::RootDirectoryInfo& record)
             : m_path(record.path),
               m_totalSecond(record.totalSecond),
               m_trackCount(record.trackCount) {
@@ -141,6 +142,16 @@ class QmlLibraryProxy : public QObject {
     Q_INVOKABLE AddResult addSource(const QString& newPath);
     Q_INVOKABLE RemoveResult removeSource(const QString& oldPath, SourceRemovalType type);
     Q_INVOKABLE RelocateResult relinkSource(const QString& oldPath, const QString& newPath);
+
+    static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
+        s_pKeyboard = std::move(pKeyboard);
+    }
+
+    static KeyboardEventFilter* getKeyboard() {
+        return s_pKeyboard.get();
+    }
+
+    QmlLibraryTrackListModel* model() const;
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
 
   private:
@@ -156,6 +167,7 @@ class QmlLibraryProxy : public QObject {
     static QmlLibrarySource* sources_at(
             QQmlListProperty<QmlLibrarySource>* property, qsizetype index);
     static void sources_clear(QQmlListProperty<QmlLibrarySource>* property);
+    static inline std::shared_ptr<KeyboardEventFilter> s_pKeyboard;
 };
 
 } // namespace qml

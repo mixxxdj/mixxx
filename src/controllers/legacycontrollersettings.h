@@ -631,6 +631,7 @@ class LegacyControllerEnumSetting
 class LegacyControllerColorSetting
         : public LegacyControllerSettingMixin<QColor>,
           public LegacyControllerSettingFactory<LegacyControllerColorSetting> {
+    Q_OBJECT
   public:
     LegacyControllerColorSetting(const QDomElement& element);
 

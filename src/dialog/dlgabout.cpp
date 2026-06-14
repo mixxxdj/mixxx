@@ -154,13 +154,29 @@ DlgAbout::DlgAbout()
             << "Graham Hall"
             << "Ayush Sah"
             << "fixxiefixx"
-            << "evoixmr"
             << "Greg-Orca"
             << "Iron-Wolf"
+            << "Swarnadip Kar"
+            << "Kevin Zheng"
+            << "yen3k"
+            << "Pappmann"
+            << "Sriram Varun Kumar"
+            << "Ahmed Salah"
+            << "Dheeraj Arora"
+            << "Pranav Jadhav"
             << "endcredits33"
             << "cucucat"
-            << "Swarnadip Kar"
-            << "Kevin Zheng";
+            << "Laura Mora"
+            << "Tom&aacute;&scaron; Ba&#382;ant"
+            << "Serveny"
+            << "Robert Hendrickx"
+            << "Rishabh Saini"
+            << "J&eacute;r&ocirc;me Froissart"
+            << "Daniel Kinahan"
+            << "Anuj Nayak"
+            << "Jeff Magill"
+            << "Michael Scherer"
+            << "Simon Tegelid";
 
     QStringList specialThanks;
     specialThanks

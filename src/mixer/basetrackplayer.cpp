@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/defs_keylock.h"
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
@@ -156,6 +157,56 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
                 }
             });
 
+    m_pStarsOne = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_one"));
+    connect(m_pStarsOne.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(1);
+                }
+            });
+
+    m_pStarsTwo = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_two"));
+    connect(m_pStarsTwo.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(2);
+                }
+            });
+
+    m_pStarsThree = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_three"));
+    connect(m_pStarsThree.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(3);
+                }
+            });
+
+    m_pStarsFour = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_four"));
+    connect(m_pStarsFour.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(4);
+                }
+            });
+
+    m_pStarsFive = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_five"));
+    connect(m_pStarsFive.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequest(5);
+                }
+            });
+
     // Deck cloning
     m_pCloneFromDeck = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "CloneFromDeck"),
@@ -277,7 +328,10 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
+    m_pPitch = make_parented<ControlProxy>(getGroup(), "pitch", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
+    m_pKeylock = make_parented<ControlProxy>(getGroup(), "keylock", this);
+    m_pKeylockMode = make_parented<ControlProxy>(getGroup(), "keylockMode", this);
 
     m_pUpdateReplayGainFromPregain = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "update_replaygain_from_pregain"));
@@ -695,7 +749,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         }
 
         if (!m_pChannelToCloneFrom) {
-            BaseTrackPlayer::TrackLoadReset reset = m_pConfig->getValue(
+            TrackLoadReset reset = m_pConfig->getValue(
                     ConfigKey("[Controls]", "SpeedAutoReset"), TrackLoadReset::RESET_PITCH);
             if (reset == TrackLoadReset::RESET_SPEED ||
                     reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
@@ -707,7 +761,16 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
             if (reset == TrackLoadReset::RESET_PITCH ||
                     reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
-                m_pPitchAdjust->set(0.0);
+                // With KeylockMode::LockCurrentKey we need to reset `pitch`
+                // instead of `pitch_adjust` to avoid a roundtrip in KeyControl
+                // which would lead `pitch` != 0
+                if (m_pKeylock->toBool() &&
+                        m_pKeylockMode->get() ==
+                                static_cast<double>(KeylockMode::LockCurrentKey)) {
+                    m_pPitch->set(0.0);
+                } else {
+                    m_pPitchAdjust->set(0.0);
+                }
             }
         } else {
             // perform a clone of the given channel
@@ -725,8 +788,12 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                     m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
 
             // copy the loop state
-            if (ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0) {
+            if (ControlObject::get(
+                        ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0 &&
+                    ControlObject::get(ConfigKey(getGroup(), "loop_enabled")) != 1.0) {
+                // trigger (set 1, then 0) in order to avoid a stuck "reloop_toggle" button
                 ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
+                ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 0.0);
             }
         }
 

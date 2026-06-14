@@ -7,6 +7,7 @@
 #include <QMimeData>
 #include <QMouseEvent>
 
+#include "control/controlobject.h"
 #include "mixer/playerinfo.h"
 #include "moc_wcuebutton.cpp"
 #include "skin/legacy/skincontext.h"
@@ -18,7 +19,8 @@ using namespace mixxx::hotcuedrag;
 
 WCueButton::WCueButton(QWidget* pParent, const QString& group)
         : WPushButton(pParent),
-          m_group(group) {
+          m_group(group),
+          m_playControl(group, QStringLiteral("play")) {
 }
 
 void WCueButton::setup(const QDomNode& node, const SkinContext& context) {
@@ -42,7 +44,13 @@ void WCueButton::mouseMoveEvent(QMouseEvent* pEvent) {
         return;
     }
 
-    // TODO Initiate drag only if pressing this button actually starts cue preview?
+    // Initiate drag only if pressing this button actually started cue preview.
+    // (it has already been stopped on press if the track was playing,
+    // so drop onto Play would have no effect anyway)
+    if (!m_playControl.toBool()) {
+        return;
+    }
+
     if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         const TrackId id = pTrack->getId();
         VERIFY_OR_DEBUG_ASSERT(id.isValid()) {

@@ -235,7 +235,7 @@ WPushButton,
 #SamplerBpmMini,
 #PreviewBPM,
 #LibraryFeatureControls QRadioButton {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 WKey,

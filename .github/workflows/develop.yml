@@ -28,7 +28,7 @@ jobs:
       - name: Check if there is an open PR for this branch
         id: stop-build
         if: ${{ github.event_name == 'push' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           ORGANIZATION: mixxxdj
           REPOSITORY: mixxx

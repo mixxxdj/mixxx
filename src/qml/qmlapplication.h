@@ -2,6 +2,9 @@
 
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QString>
+#include <QTimer>
+#include <memory>
 
 #include "coreservices.h"
 #include "qmlautoreload.h"
@@ -21,11 +24,16 @@ class QmlApplication : public QObject {
   public:
     QmlApplication(
             QApplication* app,
-            const CmdlineArgs& args);
+            std::shared_ptr<CoreServices> pCoreServices,
+            const QString& mainQmlFilePath = QString());
     ~QmlApplication() override;
 
+    bool isReady() const {
+        return m_loadSucceeded;
+    }
+
   public slots:
-    void loadQml(const QString& path);
+    bool loadQml(const QString& path);
 
 #if defined(Q_OS_ANDROID)
   private slots:
@@ -34,12 +42,15 @@ class QmlApplication : public QObject {
 #endif
 
   private:
-    std::unique_ptr<CoreServices> m_pCoreServices;
+    std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
+    std::unique_ptr<GuiTick> m_pGuiTick;
+    QTimer m_guiTickTimer;
 
     QString m_mainFilePath;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
+    bool m_loadSucceeded;
     QmlAutoReload m_autoReload;
 
 #if defined(Q_OS_ANDROID)

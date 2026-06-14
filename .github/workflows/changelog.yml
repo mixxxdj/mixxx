@@ -4,6 +4,9 @@ name: Changelog
 
 on:
   workflow_call:
+    secrets:
+      MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT:
+        required: false
 
 permissions: {}
 jobs:

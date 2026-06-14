@@ -303,9 +303,9 @@
           </item>
 
           <item row="5" column="2">
-           <widget class="QLabel" name="lblKey">
+           <widget class="QLabel" name="lblTrackNumber">
             <property name="text">
-             <string>Key</string>
+             <string>Track #</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -313,7 +313,7 @@
            </widget>
           </item>
           <item row="5" column="3">
-           <widget class="QLineEdit" name="txtKey">
+           <widget class="QLineEdit" name="txtTrackNumber">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -356,34 +356,125 @@
            </widget>
           </item>
 
-          <item row="6" column="2">
-           <widget class="QLabel" name="lblTrackNumber">
+          <item row="7" column="0">
+           <widget class="QLabel" name="lblKey">
             <property name="text">
-             <string>Track #</string>
+             <string>Key</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item row="6" column="3">
-           <widget class="QLineEdit" name="txtTrackNumber">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+          <item row="7" column="1">
+           <widget class="QWidget">
+            <layout class="QHBoxLayout" name="key_layout">
+
+             <item>
+              <widget class="QLineEdit" name="txtKey">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="keyTuningSpacerItem">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Fixed</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>25</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblTuning">
+               <property name="text">
+                <string>Tuning</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+
+             <item>
+              <widget class="QDoubleSpinBox" name="spinTuning">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                 <horstretch>1</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>A4 tuning frequency in Hz. Standard tuning is 440 Hz.</string>
+               </property>
+               <property name="suffix">
+                <string> Hz</string>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="minimum">
+                <double>400.000000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>480.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>400.000000000000000</double>
+               </property>
+               <property name="specialValueText">
+                <string/>
+               </property>
+              </widget>
+             </item>
+
+            </layout>
+           </widget>
+          </item>
+
+          <item row="7" column="2">
+           <widget class="QLabel" name="lblTuningCents">
+            <property name="text">
+             <string>Offset:</string>
             </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="3">
+           <widget class="QLabel" name="txtTuningCents">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="toolTip">
+             <string>Offset from A440 standard tuning in cents.</string>
             </property>
            </widget>
           </item>
 
-          <item row="7" column="0">
+
+          <item row="8" column="0">
            <widget class="QLabel" name="lblTrackComment">
             <property name="text">
              <string>Comments</string>
@@ -393,7 +484,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1" colspan="3">
+          <item row="8" column="1" colspan="3">
            <widget class="QPlainTextEdit" name="txtComment">
             <property name="tabChangesFocus">
              <bool>true</bool>
@@ -401,7 +492,7 @@
            </widget>
           </item>
 
-          <item row="8" column="0">
+          <item row="9" column="0">
            <widget class="QLabel" name="lblTrackColor">
             <property name="text">
              <string>Color</string>
@@ -411,7 +502,7 @@
             </property>
            </widget>
           </item>
-          <item row="8" column="1" colspan="3">
+          <item row="9" column="1" colspan="3">
            <widget class="QPushButton" name="btnColorPicker">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -421,7 +512,8 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
+
+          <item row="10" column="0">
            <spacer name="horizontalSpacer_5">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -434,7 +526,8 @@
             </property>
            </spacer>
           </item>
-          <item row="10" column="0" colspan="4">
+
+          <item row="11" column="0" colspan="4">
            <layout class="QHBoxLayout" name="meatdata_buttons_layout">
             <item>
              <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
@@ -733,6 +826,13 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
+        <widget class="QPushButton" name="bpmLock">
+         <property name="toolTip">
+          <string>Lock or unlock the BPM and beatgrid for this track.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <layout class="QGridLayout" name="gridLayout">
@@ -759,45 +859,30 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
+           <item row="1" column="1" colspan="2">
             <widget class="QCheckBox" name="bpmConst">
              <property name="toolTip">
               <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</string>
              </property>
-             <property name="layoutDirection">
-              <enum>Qt::RightToLeft</enum>
-             </property>
              <property name="text">
               <string>Assume constant tempo</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="bpmDouble">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 200% of the current value.</string>
-             </property>
+           <item row="2" column="0" colspan="3">
+            <widget class="QLabel" name="labelScaleBpm">
              <property name="text">
-              <string>Double BPM</string>
+              <string>Scale BPM:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="3" column="0">
             <widget class="QPushButton" name="bpmHalve">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="toolTip">
               <string>Sets the BPM to 50% of the current value.</string>
              </property>
@@ -806,14 +891,18 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QPushButton" name="bpmTwoThirds">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="bpmDouble">
+             <property name="toolTip">
+              <string>Sets the BPM to 200% of the current value.</string>
              </property>
+             <property name="text">
+              <string>Double BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QPushButton" name="bpmTwoThirds">
              <property name="toolTip">
               <string>Sets the BPM to 66% of the current value.</string>
              </property>
@@ -822,30 +911,8 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QPushButton" name="bpmThreeFourth">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>Sets the BPM to 75% of the current value.</string>
-             </property>
-             <property name="text">
-              <string>3/4 BPM</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
+           <item row="4" column="1">
             <widget class="QPushButton" name="bpmThreeHalves">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
-             </property>
              <property name="toolTip">
               <string>Sets the BPM to 150% of the current value.</string>
              </property>
@@ -854,14 +921,18 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
-            <widget class="QPushButton" name="bpmFourThirds">
-             <property name="minimumSize">
-              <size>
-               <width>125</width>
-               <height>0</height>
-              </size>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="bpmThreeFourths">
+             <property name="toolTip">
+              <string>Sets the BPM to 75% of the current value.</string>
              </property>
+             <property name="text">
+              <string>3/4 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="1">
+            <widget class="QPushButton" name="bpmFourThirds">
              <property name="toolTip">
               <string>Sets the BPM to 133% of the current value.</string>
              </property>
@@ -870,19 +941,33 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
              </property>
             </widget>
            </item>
-           <item row="2" column="2" rowspan="3">
-            <widget class="QPushButton" name="bpmTap">
-             <property name="minimumSize">
-              <size>
-               <width>121</width>
-               <height>91</height>
-              </size>
+           <item row="6" column="0">
+            <widget class="QPushButton" name="bpmFourFifths">
+             <property name="toolTip">
+              <string>Sets the BPM to 80% of the current value.</string>
              </property>
-             <property name="maximumSize">
-              <size>
-               <width>123</width>
-               <height>128</height>
-              </size>
+             <property name="text">
+              <string>4/5 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="1">
+            <widget class="QPushButton" name="bpmFiveFourths">
+             <property name="toolTip">
+              <string>Sets the BPM to 125% of the current value.</string>
+             </property>
+             <property name="text">
+              <string>5/4 BPM</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2" rowspan="4">
+            <widget class="QPushButton" name="bpmTap">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
              <property name="toolTip">
               <string>Tap with the beat to set the BPM to the speed you are tapping.</string>
@@ -1056,12 +1141,13 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtAlbum</tabstop>
   <tabstop>txtAlbumArtist</tabstop>
   <tabstop>txtComposer</tabstop>
-  <tabstop>txtGenre</tabstop>
-  <tabstop>txtGrouping</tabstop>
-  <tabstop>txtComment</tabstop>
   <tabstop>txtYear</tabstop>
-  <tabstop>txtKey</tabstop>
+  <tabstop>txtGenre</tabstop>
   <tabstop>txtTrackNumber</tabstop>
+  <tabstop>txtGrouping</tabstop>
+  <tabstop>txtKey</tabstop>
+  <tabstop>spinTuning</tabstop>
+  <tabstop>txtComment</tabstop>
   <tabstop>btnColorPicker</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
   <tabstop>btnImportMetadataFromFile</tabstop>
@@ -1069,12 +1155,14 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmConst</tabstop>
   <tabstop>bpmTap</tabstop>
-  <tabstop>bpmDouble</tabstop>
   <tabstop>bpmHalve</tabstop>
+  <tabstop>bpmDouble</tabstop>
   <tabstop>bpmTwoThirds</tabstop>
-  <tabstop>bpmThreeFourth</tabstop>
   <tabstop>bpmThreeHalves</tabstop>
+  <tabstop>bpmThreeFourths</tabstop>
   <tabstop>bpmFourThirds</tabstop>
+  <tabstop>bpmFourFifths</tabstop>
+  <tabstop>bpmFiveFourths</tabstop>
   <tabstop>bpmClear</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>

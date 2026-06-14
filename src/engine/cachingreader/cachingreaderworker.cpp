@@ -320,16 +320,19 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk,
                     m_firstSoundFrameToVerify.toLowerFrameBoundary()
                             .value()));
     if (pChunk->getIndex() == firstSoundIndex) {
-        mixxx::SampleBuffer sampleBuffer(kNumSoundFrameToVerify * channelCount);
+        auto sampleBuffer = mixxx::SampleBuffer(
+                kNumSoundFrameToVerify * channelCount);
         // We read two frames, the last silence frame and the first non-silence frame from
         // m_firstSoundFrameToVerify. end points to one position after them.
+        sampleBuffer.clear(); // we need to clear the buffer, for the case the
+                              // very first sample is the first sound.
         SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value()) + 1;
         mixxx::IndexRange probeFrameIndexRange =
                 mixxx::IndexRange::between(end - kNumSoundFrameToVerify, end);
         mixxx::IndexRange bufferedFrameIndexRange =
                 pChunk->readBufferedSampleFrames(
                         sampleBuffer.data(), channelCount, probeFrameIndexRange);
-        VERIFY_OR_DEBUG_ASSERT(bufferedFrameIndexRange == probeFrameIndexRange) {
+        VERIFY_OR_DEBUG_ASSERT(bufferedFrameIndexRange.end() == probeFrameIndexRange.end()) {
             qWarning() << "skipping verifyFirstSound()";
             return;
         }
