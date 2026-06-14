@@ -87,8 +87,9 @@ const QString kDefaultRegion = QStringLiteral("GR");
 // }
 // Set to empty string to disable remote updates.
 const QString kRemoteConfigUrl =
-        QStringLiteral("https://raw.githubusercontent.com/winnerspiros/djsugar/main/"
-                       "res/youtube/inner_tube_clients.json");
+        QStringLiteral(
+                "https://raw.githubusercontent.com/winnerspiros/djsugar/main/"
+                "res/youtube/inner_tube_clients.json");
 // How often to re-fetch the remote config (24 hours).
 constexpr int kRemoteConfigRefreshMs = 24 * 60 * 60 * 1000;
 // Timeout for the config fetch (5 seconds — it's a small JSON file).
@@ -722,8 +723,7 @@ YouTubeService::YouTubeService(QObject* parent)
     if (!kRemoteConfigUrl.isEmpty()) {
         m_pRemoteConfigTimer = new QTimer(this);
         m_pRemoteConfigTimer->setInterval(kRemoteConfigRefreshMs);
-        connect(m_pRemoteConfigTimer, &QTimer::timeout, this,
-                &YouTubeService::fetchRemoteClientConfig);
+        connect(m_pRemoteConfigTimer, &QTimer::timeout, this, &YouTubeService::fetchRemoteClientConfig);
         m_pRemoteConfigTimer->start();
         // Fetch immediately on first launch (slightly delayed to not block startup).
         QTimer::singleShot(3000, this, &YouTubeService::fetchRemoteClientConfig);
@@ -789,7 +789,8 @@ bool YouTubeService::applyRemoteConfig(const QJsonObject& config, int remoteVers
     QVector<InnerTubeClient> newDownloadClients;
     for (const QJsonValue& v : clientsArr) {
         const QJsonObject o = v.toObject();
-        if (o.isEmpty()) continue;
+        if (o.isEmpty())
+            continue;
         InnerTubeClient c;
         c.clientName = nullptr;
         c.clientVersion = nullptr;
@@ -811,7 +812,8 @@ bool YouTubeService::applyRemoteConfig(const QJsonObject& config, int remoteVers
     }
     // Save to disk for future reference.
     const QString cachePath = QStandardPaths::writableLocation(
-            QStandardPaths::AppDataLocation) + QStringLiteral("/youtube");
+                                      QStandardPaths::AppDataLocation) +
+            QStringLiteral("/youtube");
     QDir().mkpath(cachePath);
     QFile outFile(cachePath + QStringLiteral("/inner_tube_clients.json"));
     if (outFile.open(QIODevice::WriteOnly)) {
