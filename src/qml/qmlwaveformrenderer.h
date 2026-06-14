@@ -323,6 +323,20 @@ class QmlWaveformRendererBarCounter
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
 };
 
+class QmlWaveformRendererPhrase
+        : public QmlWaveformRendererFactory {
+    Q_OBJECT
+    QML_NAMED_ELEMENT(WaveformRendererPhrase)
+
+  public:
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
+
+  private:
+    ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};
+};
+
 class QmlWaveformMarkRange : public QObject {
     Q_OBJECT
     Q_PROPERTY(QColor color MEMBER m_color NOTIFY colorChanged)

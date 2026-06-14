@@ -9,6 +9,7 @@
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "waveform/overviewtype.h"
+#include "waveform/renderers/phrasecolors.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -45,7 +46,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
-
     void mouseMoveEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
@@ -95,6 +95,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackFrame(QPainter* pPainter);
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
+    void drawPhrases(QPainter* pPainter, const float offset, const float gain);
     void drawMarks(QPainter* pPainter, const float offset, const float gain);
     void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
@@ -109,7 +110,11 @@ class WOverview : public WWidget, public TrackDropTarget {
         return static_cast<double>(position) / m_maxPixelPos;
     }
 
-    void updateCues(const QList<CuePointer> &loadedCues);
+    void updateCues(const QList<CuePointer>& loadedCues);
+
+    // Ctrl+right-click phrase editor: add a phrase at the clicked position
+    // (snapped to the nearest beat), or change/remove the phrase under it.
+    void showPhraseContextMenu(QMouseEvent* e);
 
     inline int length() {
         return m_orientation == Qt::Horizontal ? width() : height();
@@ -141,7 +146,6 @@ class WOverview : public WWidget, public TrackDropTarget {
             return 0.0;
         }
     }
-
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
@@ -190,6 +194,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QImage m_waveformImageScaled;
 
     WaveformSignalColors m_signalColors;
+    mixxx::PhraseColors m_phraseColors{mixxx::defaultPhraseColors()};
 
     parented_ptr<ControlProxy> m_endOfTrackControl;
     parented_ptr<ControlProxy> m_pRateRatioControl;
@@ -209,7 +214,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
     WaveformMarkLabel m_timeRulerDistanceLabel;
-
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;

@@ -18,6 +18,7 @@
 #include "waveform/renderers/allshader/waveformrendererrgb.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/renderers/allshader/waveformrenderersimple.h"
+#include "waveform/renderers/allshader/waveformrenderphrase.h"
 // #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/waveformmark.h"
 #ifdef __STEM__
@@ -340,6 +341,14 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMarkRange::create(
                 pMark->visibilityControl(),
                 pMark->durationTextLocation()));
     }
+    return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererPhrase::create(
+        WaveformWidgetRenderer* waveformWidget,
+        mixxx::qml::WaveformRendererSignalBaseOptions) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRenderPhrase>(
+            waveformWidget, m_position);
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 

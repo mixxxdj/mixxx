@@ -10,6 +10,7 @@
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrenderphrase.h"
 
 SoftwareWaveformWidget::SoftwareWaveformWidget(const QString& group,
         QWidget* parent,
@@ -18,6 +19,7 @@ SoftwareWaveformWidget::SoftwareWaveformWidget(const QString& group,
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
+    addRenderer<WaveformRenderPhrase>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererFilteredSignal>(options);
     addRenderer<WaveformRenderBeat>();

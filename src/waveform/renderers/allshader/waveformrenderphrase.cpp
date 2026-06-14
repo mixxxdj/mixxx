@@ -29,8 +29,7 @@ void WaveformRenderPhrase::draw(QPainter* painter, QPaintEvent* event) {
 
 void WaveformRenderPhrase::setup(
         const QDomNode& node, const SkinContext& skinContext) {
-    Q_UNUSED(node);
-    Q_UNUSED(skinContext);
+    m_colors = mixxx::readPhraseColors(node, skinContext);
 }
 
 void WaveformRenderPhrase::preprocess() {
@@ -95,7 +94,7 @@ bool WaveformRenderPhrase::preprocessInner() {
             continue;
         }
 
-        QColor color = mixxx::Phrase::defaultColor(phrase.type());
+        QColor color = mixxx::phraseColor(m_colors, phrase.type());
 
         auto pNode = std::make_unique<GeometryNode>();
         pNode->initForRectangles<UniColorMaterial>(1);

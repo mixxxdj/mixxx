@@ -1711,6 +1711,7 @@ add_library(
   src/waveform/renderers/waveformoverviewrenderer.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrenderphrase.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
   src/waveform/renderers/waveformrendererendoftrack.cpp
   src/waveform/renderers/waveformrendererfilteredsignal.cpp
@@ -2933,6 +2934,7 @@ if(BUILD_TESTING)
     src/test/mock_networkaccessmanager.cpp
     src/test/musicbrainzrecordingstasktest.cpp
     src/test/performancetimer_test.cpp
+    src/test/phrasestest.cpp
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
