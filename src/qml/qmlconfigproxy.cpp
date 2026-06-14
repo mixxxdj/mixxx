@@ -4,6 +4,7 @@
 
 #include "library/basetracktablemodel.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
@@ -15,6 +16,9 @@
                 ConfigKey(GROUP, KEY),                        \
                 DEFAULT);                                     \
     }
+
+#define PROPERTY_IMPL_CONFIGKEY(CONFIGKEY, TYPE, NAME, DEFAULT) \
+    PROPERTY_IMPL(CONFIGKEY.group, CONFIGKEY.item, TYPE, NAME, DEFAULT)
 
 #define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                       \
     PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                    \
@@ -46,13 +50,6 @@ const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 const QString k3DHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 
 // Library group
-const QString kSyncTrackMetadataExport = QStringLiteral("SyncTrackMetadataExport");
-const QString kSeratoMetadataExport = QStringLiteral("SeratoMetadataExport");
-const QString kUseRelativePathOnExport = QStringLiteral("UseRelativePathOnExport");
-const QString kHistoryMinTracksToKeep = QStringLiteral("history_min_tracks_to_keep");
-const QString kHistoryTrackDuplicateDistance = QStringLiteral("history_track_duplicate_distance");
-const QString kSearchBpmFuzzyRange = QStringLiteral("search_bpm_fuzzy_range");
-const QString kSearchDebouncingTimeout = QStringLiteral("SearchDebouncingTimeoutMillis");
 const QString kRhythmboxEnabled = QStringLiteral("ShowRhythmboxLibrary");
 const QString kBansheeEnabled = QStringLiteral("ShowBansheeLibrary");
 const QString kITunesEnabled = QStringLiteral("ShowITunesLibrary");
@@ -283,29 +280,48 @@ PROPERTY_IMPL(kLibraryGroup,
         bool,
         librarySearchHistoryShortcutsEnable,
         true);
-PROPERTY_IMPL(kLibraryGroup, kSyncTrackMetadataExport, bool, librarySyncTrackMetadataExport, false);
-PROPERTY_IMPL(kLibraryGroup, kSeratoMetadataExport, bool, librarySeratoMetadataExport, false);
-PROPERTY_IMPL(kLibraryGroup, kUseRelativePathOnExport, bool, libraryUseRelativePathOnExport, false);
-PROPERTY_IMPL(kLibraryGroup, kHistoryMinTracksToKeep, int, libraryHistoryMinTracksToKeep, 1);
-PROPERTY_IMPL(kLibraryGroup,
-        kHistoryTrackDuplicateDistance,
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+        bool,
+        librarySyncTrackMetadataExport,
+        false);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSyncSeratoMetadataConfigKey,
+        bool,
+        librarySeratoMetadataExport,
+        false);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kUseRelativePathOnExportConfigKey,
+        bool,
+        libraryUseRelativePathOnExport,
+        false);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kHistoryMinTracksToKeepConfigKey,
+        int,
+        libraryHistoryMinTracksToKeep,
+        1);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kHistoryTrackDuplicateDistanceConfigKey,
         int,
         libraryHistoryTrackDuplicateDistance,
         6);
-PROPERTY_IMPL(kLibraryGroup, kSearchBpmFuzzyRange, double, librarySearchBpmFuzzyRange, 0.06);
-PROPERTY_IMPL(kLibraryGroup, kSearchDebouncingTimeout, int, librarySearchDebouncingTimeout, 300);
-PROPERTY_IMPL(kLibraryGroup,
-        kEnableSearchCompletionsKey,
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSearchBpmFuzzyRangeConfigKey,
+        double,
+        librarySearchBpmFuzzyRange,
+        0.06);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey,
+        int,
+        librarySearchDebouncingTimeout,
+        300);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kEnableSearchCompletionsConfigKey,
         bool,
         librarySearchCompletionsEnable,
         true);
-PROPERTY_IMPL(kLibraryGroup,
-        kEnableSearchHistoryShortcutsKey,
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kEnableSearchHistoryShortcutsConfigKey,
         bool,
         libraryEnableSearchHistoryShortcuts,
         true);
-PROPERTY_IMPL(kLibraryGroup,
-        kBpmColumnPrecisionKey,
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
         int,
         libraryBpmColumnPrecision,
         BaseTrackTableModel::kBpmColumnPrecisionDefault);
