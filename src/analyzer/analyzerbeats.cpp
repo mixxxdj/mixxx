@@ -260,8 +260,17 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     mixxx::BeatsPointer pBeats;
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<mixxx::audio::FramePos> beats = m_pPlugin->getBeats();
-        const int beatsPerBar = m_pPlugin->getBeatsPerBar();
-        const int downbeatOffset = m_pPlugin->getDownbeatOffset();
+        int beatsPerBar = m_pPlugin->getBeatsPerBar();
+        int downbeatOffset = m_pPlugin->getDownbeatOffset();
+        // Preserve an existing per-track time signature (user-set in the track
+        // properties or previously detected) across re-analysis instead of
+        // overwriting it with a fresh, possibly different detection. The user
+        // remains in control and can still change it manually.
+        const mixxx::BeatsPointer pExistingBeats = pTrack->getBeats();
+        if (pExistingBeats && pExistingBeats->beatsPerBar() > 0) {
+            beatsPerBar = pExistingBeats->beatsPerBar();
+            downbeatOffset = pExistingBeats->downbeatOffset();
+        }
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(

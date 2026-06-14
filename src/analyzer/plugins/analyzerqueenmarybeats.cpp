@@ -142,8 +142,15 @@ bool AnalyzerQueenMaryBeats::finalize() {
 
         if (pAudio && audioLength > 0) {
             constexpr int kCandidates[] = {3, 4, 5, 6, 7};
+            // A confident detection requires the best candidate's downbeat
+            // pattern to stand out clearly from the next-best one. If the
+            // margin is too small the time signature is ambiguous and we
+            // report "unknown" (0) so the global default is used instead of
+            // committing to a likely-wrong guess.
+            constexpr double kMinConfidenceRatio = 1.15;
             double bestVariance = -1.0;
-            int bestBpb = 4;
+            double secondBestVariance = -1.0;
+            int bestBpb = 0;
             int bestOffset = 0;
 
             for (int bpb : kCandidates) {
@@ -172,18 +179,31 @@ bool AnalyzerQueenMaryBeats::finalize() {
                 variance /= static_cast<double>(beatsd.size());
 
                 if (variance > bestVariance) {
+                    secondBestVariance = bestVariance;
                     bestVariance = variance;
                     bestBpb = bpb;
                     bestOffset = downbeats.empty() ? 0 : downbeats.front();
+                } else if (variance > secondBestVariance) {
+                    secondBestVariance = variance;
                 }
             }
 
-            m_detectedBeatsPerBar = bestBpb;
-            m_detectedDownbeatOffset = bestOffset;
-            qDebug() << "DownBeat analysis: detected"
+            const bool confident = bestVariance > 0.0 &&
+                    (secondBestVariance <= 0.0 ||
+                            bestVariance >= secondBestVariance * kMinConfidenceRatio);
+            if (confident) {
+                m_detectedBeatsPerBar = bestBpb;
+                m_detectedDownbeatOffset = bestOffset;
+            } else {
+                m_detectedBeatsPerBar = 0;
+                m_detectedDownbeatOffset = 0;
+            }
+            qDebug() << "DownBeat analysis:"
+                     << (confident ? "detected" : "ambiguous, using default;")
                      << m_detectedBeatsPerBar << "beats per bar,"
                      << "downbeat offset" << m_detectedDownbeatOffset
-                     << "(variance:" << bestVariance << ")";
+                     << "(variance:" << bestVariance
+                     << "second:" << secondBestVariance << ")";
         }
     }
 
