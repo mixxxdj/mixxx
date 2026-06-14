@@ -28,8 +28,6 @@
 #include <QUrl>
 #include <QUrlQuery>
 #include <QVector>
-#include <QMutex>
-#include <QMutexLocker>
 #include <algorithm>
 #include <atomic>
 #include <utility>
@@ -181,14 +179,11 @@ struct InnerTubeClient {
     const char* osVersion;   // optional, empty when not applicable
 };
 
-// These are non-const so they can be updated at runtime by fetchRemoteClientConfig().
-// Protected by the fact that YouTubeService is single-threaded (main thread only).
-static QVector<InnerTubeClient> s_downloadClients;
-static QVector<InnerTubeClient> s_searchClients;
-static QMutex s_clientMutex;
+// These are mutable so they can be updated at runtime by fetchRemoteClientConfig().
+QVector<InnerTubeClient> s_downloadClients;
+QVector<InnerTubeClient> s_searchClients;
 
 QVector<InnerTubeClient> innerTubeClients() {
-    QMutexLocker lock(&s_clientMutex);
     if (!s_downloadClients.isEmpty()) {
         return s_downloadClients;
     }

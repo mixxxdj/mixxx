@@ -11,6 +11,11 @@
 #include <QTimer>
 #include <functional>
 
+// Forward declarations for JSON types used in private methods
+class QJsonArray;
+class QJsonObject;
+class QJsonDocument;
+
 class QNetworkAccessManager;
 class QNetworkCookieJar;
 class QNetworkReply;
