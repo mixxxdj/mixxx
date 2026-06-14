@@ -3588,6 +3588,7 @@ if(QT6)
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
     # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
     list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+    set(QT_NO_PRIVATE_MODULE_WARNING ON)
   endif()
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
@@ -5026,7 +5027,7 @@ target_precompile_headers(
   mixxx-lib
   PUBLIC ${MIXXX_LIB_PRECOMPILED_HEADER} ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
-if(BUILD_TESTING)
+if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 endif()
 
