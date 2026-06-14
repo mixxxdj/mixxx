@@ -783,35 +783,25 @@ void YouTubeService::onRemoteConfigReply(QNetworkReply* reply) {
 }
 
 bool YouTubeService::applyRemoteConfig(const QJsonObject& config, int remoteVersion) {
-    // Parse download clients from JSON into InnerTubeClient structs.
+    // Parse download clients from JSON. Currently we just validate the format
+    // and save to disk; dynamic runtime update requires changing InnerTubeClient
+    // from const char* to QString (TODO).
     const QJsonArray clientsArr = config.value(QStringLiteral("clients")).toArray();
     if (clientsArr.isEmpty()) {
         kLogger.warning() << "Remote config 'clients' array is empty";
         return false;
     }
-    QVector<InnerTubeClient> newDownloadClients;
+    // Validate that each client entry has the required fields.
     for (const QJsonValue& v : clientsArr) {
         const QJsonObject o = v.toObject();
         if (o.isEmpty())
             continue;
-        InnerTubeClient c;
-        c.clientName = nullptr;
-        c.clientVersion = nullptr;
-        c.clientNameId = nullptr;
-        c.apiKey = "";
-        c.userAgent = nullptr;
-        c.deviceMake = "";
-        c.deviceModel = "";
-        c.androidSdkVersion = 0;
-        c.osName = "";
-        c.osVersion = "";
-        // We need to strdup the strings since InnerTubeClient uses const char*
-        // and the JSON data is temporary. Use QByteArray to hold the data.
-        // NOTE: This is a simplification — in production we'd use a proper
-        // string pool. For now, we skip dynamic update and just save to disk.
-        Q_UNUSED(c);
-        Q_UNUSED(o);
-        break; // Skip dynamic update for now — just save to disk
+        if (!o.contains(QStringLiteral("name")) ||
+                !o.contains(QStringLiteral("version")) ||
+                !o.contains(QStringLiteral("id"))) {
+            kLogger.warning() << "Remote config client entry missing required fields";
+            return false;
+        }
     }
     // Save to disk for future reference.
     const QString cachePath = QStandardPaths::writableLocation(
