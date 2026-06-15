@@ -296,6 +296,39 @@ void DlgAutoDJ::autoDJError(AutoDJProcessor::AutoDJError error) {
                 tr("Decks not used for Auto DJ must be stopped to enable Auto DJ mode."),
                 QMessageBox::Ok);
         break;
+    case AutoDJProcessor::ADJ_BOTH_FOUND_DECKS_ARE_PLAYING:
+        QMessageBox::warning(nullptr,
+                tr("Auto DJ"),
+                tr("Auto DJ needs two non playing decks with opposite "
+                   "crossfader orientation, the decks that can be used"
+                   "for AutoDJ are both playing, change the orientation of the "
+                   "other decks or stop the plauing decks"),
+                QMessageBox::Ok);
+        break;
+    case AutoDJProcessor::ADJ_HARD_CUT_ON_PLAYING_DECK:
+        QMessageBox::warning(nullptr,
+                tr("Auto DJ WARNING: HARD CUT"),
+                tr("Enabling Auto DJ would cause a hard cut on a playing deck"
+                   "by moving the crossfader immediately to the an opposite edge. \n\n"
+                   "To enable Auto DJ without hard cut:\n"
+                   "- Stop / mix the playing track first, or\n"
+                   "- change the crossfader orientation of the playing deck(s) to center\n\n"
+                   "AutoDJ is not enabled!\n"),
+                QMessageBox::Ok);
+        break;
+
+    case AutoDJProcessor::ADJ_AUTODJDECKS_ORIENTATION_CHANGED:
+        QMessageBox::warning(nullptr,
+                tr("Auto DJ WARNING: ORIENTATION CHANGED"),
+                tr("The crossfader orientation of at least one of the AutoDJ "
+                   "decks has been changed on purpose or by accident.\n\n"
+                   "Changing the orientation breaks the visual crossfader.\n\n "
+                   "- Please revert the decks orientation to continue, or\n"
+                   "- disable AutoDJ and enable it again with the new settings.\n\n"
+                   "Until the error is corrected the fade now function is"
+                   "not available"),
+                QMessageBox::Ok);
+        break;
     case AutoDJProcessor::ADJ_OK:
     default:
         break;

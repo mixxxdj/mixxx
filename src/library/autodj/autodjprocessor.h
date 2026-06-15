@@ -160,7 +160,10 @@ class AutoDJProcessor : public QObject {
         ADJ_QUEUE_EMPTY,
         ADJ_BOTH_DECKS_PLAYING,
         ADJ_UNUSED_DECK_PLAYING,
-        ADJ_NOT_TWO_DECKS
+        ADJ_NOT_TWO_DECKS,
+        ADJ_BOTH_FOUND_DECKS_ARE_PLAYING,
+        ADJ_HARD_CUT_ON_PLAYING_DECK,
+        ADJ_AUTODJDECKS_ORIENTATION_CHANGED
     };
 
     enum class TransitionMode {
@@ -285,6 +288,10 @@ class AutoDJProcessor : public QObject {
             double toDeckStartSecond);
     DeckAttributes* getLeftDeck();
     DeckAttributes* getRightDeck();
+
+    DeckAttributes* getLeftDeckDynamic(bool skipPlaying = false);
+    DeckAttributes* getRightDeckDynamic(bool skipPlaying = false);
+
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
 
@@ -316,6 +323,12 @@ class AutoDJProcessor : public QObject {
     ControlPushButton m_addRandomTrack;
     ControlPushButton m_fadeNow;
     ControlPushButton m_enabledAutoDJ;
+
+    bool findAvailableLeftRightPair(DeckAttributes*& pLeftDeck, DeckAttributes*& pRightDeck);
+    DeckAttributes* m_pAutoDJLeftDeck = nullptr;
+    DeckAttributes* m_pAutoDJRightDeck = nullptr;
+    void connectSignalsOnToggleAutoDJ();
+    bool checkAutoDJDecksOrientation();
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
