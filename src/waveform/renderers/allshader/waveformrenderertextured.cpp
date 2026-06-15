@@ -312,7 +312,7 @@ void WaveformRendererTextured::paintGL() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && pWaveform->hasStem()) {
+    if (stemInfo.isValid() && pWaveform->hasStem()) {
         return;
     }
 #endif

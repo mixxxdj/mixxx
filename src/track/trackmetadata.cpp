@@ -168,6 +168,9 @@ bool TrackMetadata::anyFileTagsModified(
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
     return lhs.getStreamInfo() == rhs.getStreamInfo() &&
             lhs.getAlbumInfo() == rhs.getAlbumInfo() &&
+#ifdef __STEM__
+            lhs.getStemInfo() == rhs.getStemInfo() &&
+#endif
             lhs.getTrackInfo() == rhs.getTrackInfo();
 }
 
@@ -176,6 +179,9 @@ QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
     arg.dbgStreamInfo(dbg);
     arg.dbgTrackInfo(dbg);
     arg.dbgAlbumInfo(dbg);
+#ifdef __STEM__
+    arg.dbgStemInfo(dbg);
+#endif
     dbg << '}';
     return dbg;
 }

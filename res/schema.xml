@@ -593,4 +593,12 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
+  <revision version="41" min_compatible="3">
+    <description>
+      Add stems column to library table
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN stems BLOB;
+    </sql>
+  </revision>
 </schema>

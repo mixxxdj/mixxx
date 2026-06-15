@@ -17,6 +17,11 @@ void importTrackMetadataFromTag(
         const TagLib::MP4::Tag& tag,
         bool resetMissingTagMetadata);
 
+#ifdef __STEM__
+void importStemInfo(TrackMetadata* pTrackMetadata,
+        const TagLib::MP4::Tag& tag);
+#endif
+
 bool importCoverImageFromTag(
         QImage* pCoverArt,
         const TagLib::MP4::Tag& tag);
@@ -24,6 +29,12 @@ bool importCoverImageFromTag(
 bool exportTrackMetadataIntoTag(
         TagLib::MP4::Tag* pTag,
         const TrackMetadata& trackMetadata);
+
+#ifdef __STEM__
+bool exportStemInfo(
+        TagLib::MP4::Tag* pTag,
+        const TrackMetadata& trackMetadata);
+#endif
 
 } // namespace mp4
 

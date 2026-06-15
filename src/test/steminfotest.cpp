@@ -7,7 +7,7 @@
 namespace {
 
 TEST(StemInfoTest, equality) {
-    StemInfo stem1("Foo", "black"), stem2("Bar", "white");
+    mixxx::Stem stem1("Foo", "black"), stem2("Bar", "white");
 
     ASSERT_NE(stem1, stem2);
     stem1.setColor(stem2.getColor());
@@ -19,7 +19,7 @@ TEST(StemInfoTest, equality) {
 }
 
 TEST(StemInfoTest, validity) {
-    StemInfo stem("black", "foo");
+    mixxx::Stem stem("black", "foo");
 
     ASSERT_FALSE(stem.isValid());
     stem.setColor("red");
@@ -29,7 +29,7 @@ TEST(StemInfoTest, validity) {
     stem.setLabel("Foo");
     ASSERT_TRUE(stem.isValid());
 
-    stem = StemInfo("Bar", "green");
+    stem = mixxx::Stem("Bar", "green");
     ASSERT_TRUE(stem.isValid());
 }
 
