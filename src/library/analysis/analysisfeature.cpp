@@ -8,7 +8,9 @@
 #include "library/analysis/dlganalysis.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/musicbrainzqueue/dlgmusicbrainzqueue.h"
 #include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
@@ -20,6 +22,8 @@ namespace {
 const mixxx::Logger kLogger("AnalysisFeature");
 
 const QString kViewName = QStringLiteral("Analysis");
+
+const QString kQueueViewName = QStringLiteral("MusicBrainzQueue");
 
 // Utilize all available cores for batch analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount());
@@ -56,10 +60,15 @@ AnalysisFeature::AnalysisFeature(
         UserSettingsPointer pConfig)
         : LibraryFeature(pLibrary, pConfig, QStringLiteral("prepare")),
           m_baseTitle(tr("Analyze")),
+          kQueueTitle(tr("Fingerprint Queue")),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAnalysisView(nullptr),
+          m_pQueueView(nullptr),
           m_title(m_baseTitle) {
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
+    pRootItem->appendChild(kQueueTitle);
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 }
 
 void AnalysisFeature::resetTitle() {
@@ -119,6 +128,14 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     emit analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler));
 
     libraryWidget->registerView(kViewName, m_pAnalysisView);
+
+    m_pQueueView = new DlgMusicBrainzQueue(
+            libraryWidget, m_pConfig, m_pLibrary, keyboard);
+    connect(m_pQueueView,
+            &DlgMusicBrainzQueue::trackSelected,
+            this,
+            &AnalysisFeature::trackSelected);
+    libraryWidget->registerView(kQueueViewName, m_pQueueView);
 }
 
 TreeItemModel* AnalysisFeature::sidebarModel() const {
@@ -138,6 +155,19 @@ void AnalysisFeature::activate() {
         emit restoreSearch(m_pAnalysisView->currentSearch());
     }
     emit enableCoverArtDisplay(true);
+}
+
+void AnalysisFeature::activateChild(const QModelIndex& index) {
+    // Currently only one child exists: kQueueTitle ("Fingerprint Queue").
+    const QString itemName = index.data().toString();
+    if (itemName == kQueueTitle) {
+        emit switchToView(kQueueViewName);
+        if (m_pQueueView) {
+            m_pQueueView->onShow();
+            emit restoreSearch(m_pQueueView->currentSearch());
+        }
+        emit enableCoverArtDisplay(false);
+    }
 }
 
 void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks) {

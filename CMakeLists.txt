@@ -1438,7 +1438,6 @@ add_library(
   src/library/mixxxlibraryfeature.cpp
   src/library/musicbrainzqueue/dlgacoustidsubmit.cpp
   src/library/musicbrainzqueue/dlgmusicbrainzqueue.cpp
-  src/library/musicbrainzqueue/musicbrainzqueuefeature.cpp
   src/library/musicbrainzqueue/musicbrainzqueuetablemodel.cpp
   src/library/overviewcache.cpp
   src/library/parser.cpp
