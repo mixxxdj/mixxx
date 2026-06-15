@@ -327,6 +327,18 @@ void DlgTrackInfoMulti::loadTracks(const QList<TrackPointer>& pTracks) {
     connectTracksChanged();
 }
 
+QList<TrackPointer> DlgTrackInfoMulti::getTracksClearLoadedTracksHash() {
+    // Extract all TrackPointers into a flat list
+    QList<TrackPointer> tracksToRelease = m_pLoadedTracks.values();
+
+    // Clear the hash. When the dialog is deleted it drops its
+    // TrackPointer ownership, but the local 'tracksToRelease'
+    // list in the caller keeps them alive.
+    m_pLoadedTracks.clear();
+
+    return tracksToRelease;
+}
+
 void DlgTrackInfoMulti::focusField(const QString& property) {
     if (property.isEmpty()) {
         return;

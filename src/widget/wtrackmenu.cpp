@@ -2743,14 +2743,74 @@ void WTrackMenu::slotShowDlgTrackInfo() {
         // Create a fresh dialog on invocation.
         m_pDlgTrackInfoMulti = std::make_unique<DlgTrackInfoMulti>(
                 m_pConfig);
+        // NOTE As soon as DlgTrackInfo is deleted the TrackPointers are dropped
+        // which causes metadata synchronization (export to track files if enabled)
+        // which in turn causes a GUI lag since the export is apparently run in
+        // the main thread.
+        // Trying to lint the symptoms by showing a progress dialog.
+        // FIXME Use the same delay mechanism as LibraryScannerDlg which shows the
+        // dialog only after 2 sec of activity.
         connect(m_pDlgTrackInfoMulti.get(),
                 &QDialog::finished,
                 this,
                 [this]() {
                     if (m_pDlgTrackInfoMulti.get() == sender()) {
+                        // Steal the tracks safely before the dialog goes away
+                        QList<TrackPointer> tracksToRelease =
+                                m_pDlgTrackInfoMulti
+                                        ->getTracksClearLoadedTracksHash();
+
                         m_pDlgTrackInfoMulti.release()->deleteLater();
                         // clear the track property name
                         m_trackProperty.clear();
+
+                        // Set up the progress dialog
+                        QProgressDialog progress(
+                                tr("Saving track metadata of %1 tracks.\n"
+                                   "It safe to hide this. Track operations will "
+                                   "resume in the background")
+                                        .arg(QString::number(tracksToRelease.size())),
+                                tr("Hide"),
+                                0,
+                                tracksToRelease.size(),
+                                this);
+                        progress.setWindowModality(Qt::WindowModal);
+                        progress.setWindowTitle(tr("Saving track metadata"));
+                        progress.setRange(0, tracksToRelease.size());
+                        // FIXME Itwould be cool to have the label left-aligned
+                        // like the detailed text in a QMessageBox (depending on
+                        // layout direction of course, RTL/LTR).
+                        // And have the Hide button centered horizontally, and
+                        // maybe even stretched to full width.
+
+                        progress.setMinimumDuration(0);
+                        progress.show();
+
+                        // Drop the pointers one by one
+                        int total = tracksToRelease.size();
+                        for (int i = 0; i < total; ++i) {
+                            progress.setValue(i + 1);
+
+                            // Pop the first item. If it's the last reference, Mixxx
+                            // triggers the synchronous file write and database save.
+                            tracksToRelease.pop_front();
+
+                            // If the dialog is still active, process all queued events,
+                            // for example to let the GUI paint the progress bar update
+                            // and waveform movements.
+                            // Else, like before introducing this dialog, the main event
+                            // main event loop was blocked by the track operations.
+                            //
+                            // Also note that QEventLoop::ExcludeUserInputEvents does
+                            // apparently not block emulated keypress event done by
+                            // controller mappings, eg. [Library],MoveVertical
+                            if (!progress.wasCanceled()) {
+                                // QCoreApplication::processEvents();
+                                QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+                            }
+                        }
+
+                        progress.setValue(total);
                     }
                 });
         QList<TrackPointer> tracks;
