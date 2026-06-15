@@ -6,12 +6,6 @@
 #include "util/sample.h"
 #include <QDebug>
 
-// ================================
-// Reverb Band-Pass Experiment
-// Author: Tanu
-// Goal: Understand where and how a band-pass filter
-// can be integrated into the reverb signal path.
-// ================================
 
 // static
 QString ReverbEffect::getId() {

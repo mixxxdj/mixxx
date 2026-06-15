@@ -10,9 +10,10 @@
 #include "effects/backends/effectprocessor.h"
 #include "util/class.h"
 #include "util/types.h"
+#include "engine/filters/enginefilterbutterworth2.h"
 #include "engine/filters/enginefilterbutterworth4.h"
-
-
+#include "engine/filters/enginefilterbutterworth6.h"
+#include "engine/filters/enginefilterbutterworth8.h"
 
 class BandpassReverbGroupState : public EffectState {
   public:
@@ -20,7 +21,10 @@ class BandpassReverbGroupState : public EffectState {
             : EffectState(engineParameters),
               sampleRate(engineParameters.sampleRate()),
               sendPrevious(0),
-               butterworthBP(engineParameters.sampleRate(), 200.0, 2000.0) {
+               butter2(engineParameters.sampleRate(), 200.0, 2000.0),
+                butter4(engineParameters.sampleRate(), 200.0, 2000.0),
+                butter6(engineParameters.sampleRate(), 200.0, 2000.0),
+                butter8(engineParameters.sampleRate(), 200.0, 2000.0) {
         reverb.init(sampleRate);
     }
     
@@ -30,9 +34,11 @@ class BandpassReverbGroupState : public EffectState {
     float sendPrevious;
     MixxxPlateX2 reverb;
 
-    EngineFilterButterworth4Band butterworthBP;
+    EngineFilterButterworth2Band butter2;
+    EngineFilterButterworth4Band butter4;
+    EngineFilterButterworth6Band butter6;
+    EngineFilterButterworth8Band butter8;
 };
-
 class BandpassReverbEffect : public EffectProcessorImpl<BandpassReverbGroupState> {
   public:
     BandpassReverbEffect() = default;
@@ -61,11 +67,10 @@ class BandpassReverbEffect : public EffectProcessorImpl<BandpassReverbGroupState
     EngineEffectParameterPointer m_pBandWidthParameter;
     EngineEffectParameterPointer m_pDampingParameter;
     EngineEffectParameterPointer m_pSendParameter;
-    EngineEffectParameterPointer m_pBPFreqParameter;
-    EngineEffectParameterPointer m_pBPQParameter;
+    EngineEffectParameterPointer m_pHPCutoffParameter;
+    EngineEffectParameterPointer m_pLPCutoffParameter;
+    EngineEffectParameterPointer m_pPostFilterParameter;
+    EngineEffectParameterPointer m_pFilterOrderParameter;
     
-  
-
-
     DISALLOW_COPY_AND_ASSIGN(BandpassReverbEffect);
 };

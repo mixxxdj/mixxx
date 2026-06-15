@@ -1,4 +1,3 @@
-
 #include "effects/backends/builtin/bandpassreverbeffect.h"
 
 #include "effects/backends/effectmanifest.h"
@@ -7,8 +6,6 @@
 #include <QDebug>
 #include <vector>
 
-
-
 QString BandpassReverbEffect::getId() {
     return "org.mixxx.effects.bandpassreverb";
 }
@@ -16,7 +13,7 @@ QString BandpassReverbEffect::getId() {
 // static
 EffectManifestPointer BandpassReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
-    pManifest->setAddDryToWet(false);
+    pManifest->setAddDryToWet(true);
     pManifest->setEffectRampsFromDry(true);
 
     pManifest->setId(getId());
@@ -70,25 +67,54 @@ EffectManifestPointer BandpassReverbEffect::getManifest() {
     send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NotInverted);
     send->setRange(0, 0, 1);
 
-    EffectManifestParameterPointer bpFreq = pManifest->addParameter();
-    bpFreq->setId("bp_freq");
-    bpFreq->setName(QObject::tr("BP Frequency"));
-    bpFreq->setShortName(QObject::tr("BPFreq"));
-    bpFreq->setDescription(QObject::tr("Center frequency of band-pass filter"));
-    bpFreq->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    bpFreq->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    bpFreq->setRange(200, 1000, 5000);
+    EffectManifestParameterPointer hpCutoff = pManifest->addParameter();
+    hpCutoff->setId("hp_cutoff");
+    hpCutoff->setName(QObject::tr("HP Cutoff"));
+    hpCutoff->setShortName(QObject::tr("HP"));
+    hpCutoff->setDescription(
+            QObject::tr("High-pass cutoff frequency"));
+    hpCutoff->setValueScaler(
+            EffectManifestParameter::ValueScaler::Logarithmic);
+    hpCutoff->setUnitsHint(
+            EffectManifestParameter::UnitsHint::Unknown);
+    hpCutoff->setRange(20, 200, 18000);
 
-    EffectManifestParameterPointer bpQ = pManifest->addParameter();
-    bpQ->setId("bp_q");
-    bpQ->setName(QObject::tr("Bandwidth"));
-    bpQ->setShortName(QObject::tr("Width"));
-    bpQ->setDescription(QObject::tr("Controls width of the band-pass filter"));
-    bpQ->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    bpQ->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    bpQ->setRange(0.1, 0.707, 10);
+    EffectManifestParameterPointer lpCutoff = pManifest->addParameter();
+    lpCutoff->setId("lp_cutoff");
+    lpCutoff->setName(QObject::tr("LP Cutoff"));
+    lpCutoff->setShortName(QObject::tr("LP"));
+    lpCutoff->setDescription(
+            QObject::tr("Low-pass cutoff frequency"));
+    lpCutoff->setValueScaler(
+            EffectManifestParameter::ValueScaler::Logarithmic);
+    lpCutoff->setUnitsHint(
+            EffectManifestParameter::UnitsHint::Unknown);
+    lpCutoff->setRange(20, 5000, 20000);
 
-    
+    EffectManifestParameterPointer postFilter = pManifest->addParameter();
+    postFilter->setId("post_filter");
+    postFilter->setName(QObject::tr("Post Filter"));
+    postFilter->setShortName(QObject::tr("Post Filter"));
+    postFilter->setDescription(
+            QObject::tr("Apply band-pass filter after the reverb"));
+    postFilter->setValueScaler(
+            EffectManifestParameter::ValueScaler::Toggle);
+    postFilter->setUnitsHint(
+            EffectManifestParameter::UnitsHint::Unknown);
+    postFilter->setRange(0, 0, 1);
+
+    EffectManifestParameterPointer filterOrder = pManifest->addParameter();
+    filterOrder->setId("filter_order");
+    filterOrder->setName(QObject::tr("Filter Order"));
+    filterOrder->setShortName(QObject::tr("Order"));
+    filterOrder->setDescription(QObject::tr(
+        "Selects Butterworth filter steepness (2/4/6/8)."));
+    filterOrder->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
+    //filterOrder->appendStep(qMakePair(QObject::tr("2"), 2));
+    //filterOrder->appendStep(qMakePair(QObject::tr("4"), 4));
+    //filterOrder->appendStep(qMakePair(QObject::tr("6"), 6));
+    //filterOrder->appendStep(qMakePair(QObject::tr("8"), 8));
+    filterOrder->setRange(1, 4, 4);
 
     return pManifest;
 }
@@ -99,11 +125,12 @@ void BandpassReverbEffect::loadEngineEffectParameters(
     m_pBandWidthParameter = parameters.value("bandwidth");
     m_pDampingParameter = parameters.value("damping");
     m_pSendParameter = parameters.value("send_amount");
-    m_pBPFreqParameter = parameters.value("bp_freq");
-    m_pBPQParameter = parameters.value("bp_q");
-   
+    m_pHPCutoffParameter = parameters.value("hp_cutoff");
+    m_pLPCutoffParameter = parameters.value("lp_cutoff");
+    m_pPostFilterParameter = parameters.value("post_filter");
+    m_pFilterOrderParameter = parameters.value("filter_order");
+    
 }
-
 
 void BandpassReverbEffect::processChannel(
         BandpassReverbGroupState* pState,
@@ -112,59 +139,98 @@ void BandpassReverbEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures){
-    
-            
-    
+  
     Q_UNUSED(groupFeatures);
 
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
     const auto bandwidth = static_cast<sample_t>(m_pBandWidthParameter->value());
     const auto damping = static_cast<sample_t>(m_pDampingParameter->value());
     const auto sendCurrent = static_cast<sample_t>(m_pSendParameter->value());
+    const bool postFilter = m_pPostFilterParameter->toBool();
+    const int filterOrder = static_cast<int>(m_pFilterOrderParameter->value());
 
     if (pState->sampleRate != engineParameters.sampleRate()) {
         pState->reverb.setSamplerate(engineParameters.sampleRate());
         pState->sampleRate = engineParameters.sampleRate();
     }
 
-
     if (enableState == EffectEnableState::Enabling) {
         pState->reverb.activate();
     }
 
- 
-    sample_t freq = static_cast<sample_t>(m_pBPFreqParameter->value());
-    sample_t q = static_cast<sample_t>(m_pBPQParameter->value());
+    const sample_t nyquist = static_cast<sample_t>(engineParameters.sampleRate() * 0.5);
 
-    sample_t bandwidthHz = freq / q;
+    sample_t lowFreq = static_cast<sample_t>(m_pHPCutoffParameter->value());
 
-    sample_t lowFreq = freq - bandwidthHz * 0.5;
-    sample_t highFreq = freq + bandwidthHz * 0.5;
+    sample_t highFreq = static_cast<sample_t>(m_pLPCutoffParameter->value());
 
-    if (lowFreq < 20.0) {
-        lowFreq = 20.0;
+    lowFreq = std::clamp(lowFreq, static_cast<sample_t>(20.0), nyquist - static_cast<sample_t>(100.0));
+
+    highFreq = std::clamp(highFreq, static_cast<sample_t>(20.0), nyquist - static_cast<sample_t>(100.0));
+
+    if (highFreq <= lowFreq) { highFreq = std::min(lowFreq + static_cast<sample_t>(50.0), nyquist - static_cast<sample_t>(1.0));
     }
 
-    if (highFreq > engineParameters.sampleRate() / 2.0 - 100.0) {
-        highFreq = engineParameters.sampleRate() / 2.0 - 100.0;
+    switch (filterOrder) {
+        case 1:
+        pState->butter2.setFrequencyCorners(
+                engineParameters.sampleRate(),
+                lowFreq,
+                highFreq);
+        break;
+        case 2:
+        pState->butter4.setFrequencyCorners(
+                engineParameters.sampleRate(),
+                lowFreq,
+                highFreq);
+        break;
+        case 3:
+        pState->butter6.setFrequencyCorners(
+                engineParameters.sampleRate(),
+                lowFreq,
+                highFreq);
+        break;
+        default:
+        pState->butter8.setFrequencyCorners(
+                engineParameters.sampleRate(),
+                lowFreq,
+                highFreq);
+        break;
+        }
+
+auto processFilter = [&](const CSAMPLE* in, CSAMPLE* out) {
+    switch (filterOrder) {
+    case 1:
+        pState->butter2.process(
+                in, out,
+                engineParameters.samplesPerBuffer());
+        break;
+    case 2:
+        pState->butter4.process(
+                in, out,
+                engineParameters.samplesPerBuffer());
+        break;
+    case 3:
+        pState->butter6.process(
+                in, out,
+                engineParameters.samplesPerBuffer());
+        break;
+    default:
+        pState->butter8.process(
+                in, out,
+                engineParameters.samplesPerBuffer());
+        break;
     }
+};
 
-    pState->butterworthBP.setFrequencyCorners(
-            engineParameters.sampleRate(),
-            lowFreq,
-            highFreq);
+if (!postFilter) {
+    // PRE FILTER
+    std::vector<CSAMPLE> filteredBuffer(
+            engineParameters.samplesPerBuffer());
 
-
- std::vector<CSAMPLE> filteredBuffer(engineParameters.samplesPerBuffer());
-
-
-
-
-pState->butterworthBP.process(
+    processFilter(
         pInput,
-        filteredBuffer.data(),
-        engineParameters.samplesPerBuffer());
-
+        filteredBuffer.data());
 
     pState->reverb.processBuffer(
             filteredBuffer.data(),
@@ -176,10 +242,34 @@ pState->butterworthBP.process(
             sendCurrent,
             pState->sendPrevious);
 
+} else {
+    // POST FILTER
+    std::vector<CSAMPLE> reverbBuffer(
+            engineParameters.samplesPerBuffer());
+
+    pState->reverb.processBuffer(
+            pInput,
+            reverbBuffer.data(),
+            engineParameters.samplesPerBuffer(),
+            bandwidth,
+            decay,
+            damping,
+            sendCurrent,
+            pState->sendPrevious);
+
+    processFilter(
+    reverbBuffer.data(),
+    pOutput);
+}
 
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
-        pState->sendPrevious = 0;
+        SampleUtil::applyRampingGain(
+            pOutput,
+            static_cast<sample_t>(1.0),
+            static_cast<sample_t>(0.0),
+            engineParameters.samplesPerBuffer()
+        );
+        pState->sendPrevious = static_cast<sample_t>(0.0);
     } else {
         pState->sendPrevious = sendCurrent;
     }
