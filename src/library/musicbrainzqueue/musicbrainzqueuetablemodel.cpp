@@ -24,24 +24,37 @@ MusicBrainzQueueTableModel::~MusicBrainzQueueTableModel() {
 }
 
 void MusicBrainzQueueTableModel::setTableModel() {
-    const QString tableName("musicbrainz_queue_view");
+    const QString tableName = QStringLiteral("musicbrainz_queue_view");
 
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID;
+    // Drop then recreate so that schema changes take effect without restarting
+    // Mixxx.  The view is TEMPORARY (per database connection), so DROP here
+    // has no effect on any other connection in the process.
+    QSqlQuery dropQuery(m_database);
+    dropQuery.exec(QStringLiteral("DROP VIEW IF EXISTS ") + tableName);
 
+    // LEFT JOIN acoustid_queue: tracks that have a valid fingerprint but were
+    // never enqueued still appear in the view.  Their status column comes back
+    // as NULL; rawValue() maps that to the string "pending".
     QSqlQuery query(m_database);
     query.prepare(
             "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
-            " AS SELECT " + columns.join(",") +
-            " FROM library "
-            "INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "INNER JOIN fingerprint_metadata fm "
-            "ON library.id = fm.track_id "
-            "WHERE library.acoustid_id IS NULL "
-            "AND fm.fingerprint_valid = 1 "
-            "AND library.mixxx_deleted = 0 "
-            "AND track_locations.fs_deleted = 0");
+            " AS "
+            "SELECT"
+            "  library." +
+            LIBRARYTABLE_ID +
+            ","
+            "  aq.status"
+            " FROM library"
+            " INNER JOIN track_locations"
+            "   ON library.location = track_locations.id"
+            " INNER JOIN fingerprint_metadata fm"
+            "   ON library.id = fm.track_id"
+            " LEFT JOIN acoustid_queue aq"
+            "   ON library.id = aq.track_id"
+            " WHERE library.acoustid_id IS NULL"
+            "   AND fm.fingerprint_valid = 1"
+            "   AND library.mixxx_deleted = 0"
+            "   AND track_locations.fs_deleted = 0");
 
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
@@ -53,6 +66,8 @@ void MusicBrainzQueueTableModel::setTableModel() {
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
+    tableColumns << QStringLiteral("status");
+
     setTable(tableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
@@ -61,11 +76,36 @@ void MusicBrainzQueueTableModel::setTableModel() {
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST),
             Qt::AscendingOrder);
     setSearch(QString());
+
+    // headerData() is final in BaseTrackTableModel, so setHeaderData() is the
+    // only way to set a display name for the Status column.  setTable() calls
+    // initTableColumnsAndHeaderProperties() first, which assigns names from
+    // ColumnCache; we overwrite the non-standard "status" entry here.
+    setHeaderData(COL_STATUS, Qt::Horizontal, tr("Status"));
+}
+
+QVariant MusicBrainzQueueTableModel::rawValue(
+        const QModelIndex& index) const {
+    if (index.column() == COL_STATUS) {
+        // NULL status means the track has a valid fingerprint but has not yet
+        // been placed in acoustid_queue.  Show "pending" so the user knows the
+        // background worker will pick it up on its next poll cycle.
+        const QVariant raw = BaseSqlTableModel::rawValue(index);
+        if (raw.isNull() || raw.toString().isEmpty()) {
+            return QStringLiteral("pending");
+        }
+        return raw;
+    }
+    return BaseSqlTableModel::rawValue(index);
 }
 
 bool MusicBrainzQueueTableModel::isColumnInternal(int column) {
-    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
+    // COL_ID is always hidden.  The remaining internal columns below all live
+    // in the track source (indices >= COL_COUNT) and are matched by fieldIndex.
+    if (column == COL_ID) {
+        return true;
+    }
+    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BEATS_VERSION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
