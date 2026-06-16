@@ -54,6 +54,9 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     // AudioInput index.
     void receiveBuffer(const AudioInput& input, const CSAMPLE* pBuffer, unsigned int iNumFrames);
 
+  signals:
+    void qualityReportWritten();
+
   protected:
     void run();
 
