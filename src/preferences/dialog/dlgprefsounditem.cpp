@@ -5,6 +5,7 @@
 #include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
+#include "util/assert.h"
 
 /// Constructs a new preferences sound item, representing an AudioPath and SoundDevice
 /// with a label and two combo boxes.
@@ -66,6 +67,71 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
     if (newIndex != -1) {
         deviceComboBox->setCurrentIndex(newIndex);
     }
+}
+
+void DlgPrefSoundItem::addDevice(const SoundDevicePointer pDevice) {
+    // SoundDeviceId oldDev =
+    // deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
+    deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
+
+    // int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
+    // deviceComboBox->setCurrentIndex(newIndex);
+
+    m_devices.push_back(pDevice);
+}
+
+void DlgPrefSoundItem::removeDevice(const SoundDevicePointer pDevice) {
+    int removeIndex = deviceComboBox->findData(QVariant::fromValue(pDevice->getDeviceId()));
+    int currentIndex = deviceComboBox->currentIndex();
+
+    if (currentIndex == removeIndex) {
+        deviceComboBox->setCurrentIndex(0);
+        deviceComboBox->removeItem(removeIndex);
+    } else {
+        SoundDeviceId oldDev = deviceComboBox->itemData(currentIndex).value<SoundDeviceId>();
+        deviceComboBox->removeItem(removeIndex);
+
+        int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
+        if (newIndex != currentIndex) {
+            deviceComboBox->setCurrentIndex(newIndex);
+        }
+    }
+    m_devices.removeOne(pDevice);
+}
+
+void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
+    const auto& id = pDevice->getDeviceId();
+    int index = deviceComboBox->findData(QVariant::fromValue(id));
+    if (index >= 0) { // soundItem has the changed device selected
+        m_emitSettingChanged = false;
+        deviceChanged(index);
+        m_emitSettingChanged = true;
+    }
+}
+
+void DlgPrefSoundItem::updateDeviceRoute(const SoundDeviceId& id, const AudioPath* pPath) {
+    if (pPath->getType() != m_type || pPath->getIndex() != m_index) {
+        return;
+    }
+
+    // qWarning() << "DlgPrefSoundItem::updateDevice" << id.name;
+    int index = deviceComboBox->findData(QVariant::fromValue(id));
+
+    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+        return;
+    }
+
+    if (index != deviceComboBox->currentIndex()) {
+        deviceComboBox->blockSignals(true);
+        deviceComboBox->setCurrentIndex(index);
+        deviceComboBox->blockSignals(false);
+        deviceChanged(index);
+    }
+
+    auto channelGroup = pPath->getChannelGroup();
+    QPoint point = QPoint(channelGroup.getChannelBase(), channelGroup.getChannelCount());
+    int channelIndex = channelComboBox->findData(QVariant::fromValue(point));
+    channelComboBox->setCurrentIndex(channelIndex);
 }
 
 /// Slot called when the device combo box selection changes. Updates the channel

@@ -3,13 +3,11 @@
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
-#include "defs_urls.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/parented_ptr.h"
 
@@ -42,8 +40,14 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
+    void addOutputDevice(SoundDevicePointer devices);
+    void addInputDevice(SoundDevicePointer devices);
+    void removeOutputDevice(SoundDevicePointer devices);
+    void removeInputDevice(SoundDevicePointer devices);
     void updatingAPI();
     void updatedAPI();
+    void deviceRouteUpdated(const SoundDeviceId& device, const AudioPath* pPath);
+    void deviceChannelsUpdated(SoundDevicePointer devices);
 
   public slots:
     void slotUpdate() override; // called on show
@@ -83,6 +87,11 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updateKeylockDualThreadingCheckbox();
     void updateKeylockMultithreading(bool enabled);
 #endif
+    void addDevice(SoundDevicePointer pDevice);
+    void removeDevice(SoundDevicePointer pDevice);
+    void connectDevice(const SoundDeviceId& device, const AudioPath* pPath);
+    void disconnectDevice(const AudioPath* pPath);
+    void updateDeviceChannels(SoundDevicePointer pDevice);
 
   private:
     void initializePaths();
