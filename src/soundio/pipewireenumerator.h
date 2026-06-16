@@ -15,66 +15,44 @@
 class PipewireEnumerator : public SoundDeviceEnumerator {
     Q_OBJECT
   public:
-    PipewireEnumerator(UserSettingsPointer config,
-            SoundManager* sm);
+    PipewireEnumerator(UserSettingsPointer pConfig,
+            SoundManager* pManager);
     ~PipewireEnumerator() override;
 
     QList<mixxx::audio::SampleRate> getSampleRates() const override;
     std::vector<SoundDevicePointer> queryDevices() const override;
-    std::vector<std::string> getAPIs() const override;
+    std::vector<std::string> getAPIs() const override {
+        return std::vector<std::string>{"PipeWire"};
+    }
 
     void initialize();
 
     pw_core* getCore();
     pw_thread_loop* getThreadLoop();
 
-  signals:
-    void deviceAdded(SoundDevicePointer device);
-    void deviceRemoved(SoundDevicePointer device);
-    void portAdded(SoundDevicePointer device);
-    void portRemoved(SoundDevicePointer device);
-    void linkAdded(SoundDevicePointer device);
-    void linkRemoved(SoundDevicePointer device);
+    bool isOpen(uint32_t id);
+    void openDevice(uint32_t id, std::set<uint8_t> inChannels, std::set<uint8_t> outChannels);
+    void closeDevice(uint32_t id);
 
   private:
-    /// Source of all events, like a soundcard is detected/removed, link is created/destroyed
-    void registryEventGlobal(uint32_t id,
-            uint32_t permissions,
-            const char* type,
-            uint32_t version,
-            const struct spa_dict* props);
     static void registryEventGlobalOuter(void* data,
             uint32_t id,
             uint32_t permissions,
             const char* type,
             uint32_t version,
-            const struct spa_dict* props);
+            const struct spa_dict* props) {
+        ((PipewireEnumerator*)data)->registryEventGlobal(id, permissions, type, version, props);
+    }
 
-    static void registryEventGlobalRemove(void* data, unsigned int id);
+    static void registryEventGlobalRemoveOuter(void* data, uint32_t id) {
+        ((PipewireEnumerator*)data)->registryEventGlobalRemove(id);
+    }
 
-    static constexpr struct pw_registry_events registry_events = {
+    static constexpr pw_registry_events registry_events = {
             .version = PW_VERSION_REGISTRY_EVENTS,
             .global = registryEventGlobalOuter,
-            .global_remove = registryEventGlobalRemove,
+            .global_remove = registryEventGlobalRemoveOuter,
     };
-
-    struct Filter {
-        struct Port {
-            uint32_t id;
-        };
-
-        pw_filter* filter;
-        std::unordered_map<std::shared_ptr<SoundDevicePipewire>, std::vector<Port>> devices;
-    };
-
-    struct Device {
-        pw_device* device;
-        pw_node* in_node;
-        pw_node* out_node;
-        Filter filter;
-    };
-
-    std::unordered_map<uint32_t, Device> m_devices;
 
     static int metadataProperty(void* data,
             uint32_t id,
@@ -86,19 +64,54 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             .version = PW_VERSION_METADATA_EVENTS,
             .property = metadataProperty};
 
-    void createSoundDevice(uint32_t id, const char* name);
-    void destroySoundDevice(uint32_t id);
+    static void callback(void* data, spa_io_position* pos) {
+        ((PipewireEnumerator*)data)->callback(pos);
+    }
 
+    static constexpr pw_filter_events filter_events{
+            .version = PW_VERSION_FILTER_EVENTS,
+            .destroy = nullptr,
+            .state_changed = nullptr,
+            .io_changed = nullptr,
+            .param_changed = nullptr,
+            .add_buffer = nullptr,
+            .remove_buffer = nullptr,
+            .process = callback,
+            .drained = nullptr,
+            .command = nullptr,
+    };
+
+    void registryEventGlobal(uint32_t id,
+            uint32_t permissions,
+            const char* type,
+            uint32_t version,
+            const struct spa_dict* props);
+    void registryEventGlobalRemove(unsigned int id);
+
+    void callback(const spa_io_position* pos);
+
+    void addDevice(uint32_t id);
+    void removeDevice(uint32_t id);
+
+    void writeInput(const float* input, int channel, int framesPerBuffer, int offset = 0);
+    void writeOutput(float* output, int channel, int framesPerBuffer, int offset = 0);
+
+    void createLink(uint32_t outNodeId,
+            uint32_t outPortId,
+            uint32_t inNodeI,
+            uint32_t inPortId);
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
     struct Link {
-        uint32_t portId;
+        uint32_t import;
+        uint32_t outPort;
     };
 
     struct Port {
         // this is not global id, but port.id, which starts from 0
         // using this we can directly index into the port vector
         // on the node from nodeId
+        // global id indexes into maps, port.id indexes into vectors
         uint32_t id;
         uint32_t nodeId;
         spa_direction direction;
@@ -110,7 +123,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<uint32_t, Object> m_objects;
     QList<mixxx::audio::SampleRate> m_samplerates;
 
-    SoundManager* m_pManager;
+    SoundManager* m_pSoundManager;
     UserSettingsPointer m_pConfig;
 
     pw_core* m_pCore;
@@ -120,6 +133,33 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     pw_thread_loop* m_pThreadLoop;
     spa_hook m_registryListener;
     spa_hook m_metadataListener;
+    spa_hook m_filterListener;
+    pw_filter* m_pFilter;
+
+    struct Device {
+        struct Port {
+            void* port_data;
+            uint32_t devicePort;
+            uint32_t filterPort;
+        };
+
+        // inputs correspond to filter inputs and soundDevice outputs
+        std::vector<Port> inputs;
+        // outputs correspond to filter outputs and soundDevice inputs
+        std::vector<Port> outputs;
+    };
+
+    std::unordered_map<uint32_t, Device> m_openedDevices;
 
     bool m_initialized;
+    uint64_t xrun_duration;
+    int m_invalidTimeInfoCount;
+    double m_lastCallbackEntrytoDacSecs;
+    PerformanceTimer m_clkRefTimer;
+    mixxx::audio::SampleRate m_sampleRate;
+
+    PollingControlProxy m_audioLatencyUsage;
+    mixxx::Duration m_timeInAudioCallback;
+    int m_framesSinceAudioLatencyUsageUpdate;
+    uint32_t m_filterId;
 };
