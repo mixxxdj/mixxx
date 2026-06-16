@@ -16,6 +16,7 @@
 
 namespace {
 
+constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 const QString kAppGroup = QStringLiteral("[App]");
 
 static const char* find_node_name(const struct spa_dict* props) {
@@ -360,7 +361,7 @@ void PipewireEnumerator::closeDevice(uint32_t id) {
 
 void PipewireEnumerator::callback(const spa_io_position* pos) {
     // This must be the very first call, else timeInfo becomes invalid
-    double timeSinceLastCbSecs = m_clkRefTimer.restart().toDoubleSeconds();
+    m_clkRefTimer.restart().toDoubleSeconds();
     VisualPlayPosition::setCallbackEntryToDacSecs(
             pos->clock.delay / pos->clock.rate.denom, m_clkRefTimer);
 
@@ -398,6 +399,22 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
             soundDevice->writeOutput(static_cast<float*>(buffer), port.devicePort, framesPerBuffer);
         }
     }
+    updateAudioLatencyUsage(framesPerBuffer);
+}
+
+void PipewireEnumerator::updateAudioLatencyUsage(const SINT framesPerBuffer) {
+    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
+        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
+        m_audioLatencyUsage.set(
+                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
+        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        // qDebug() << m_audioLatencyUsage
+        //          << m_audioLatencyUsage->get();
+    }
+    // measure time in Audio callback at the very last
+    m_timeInAudioCallback += m_clkRefTimer.elapsed();
 }
 
 void PipewireEnumerator::createLink(uint32_t outNodeId,

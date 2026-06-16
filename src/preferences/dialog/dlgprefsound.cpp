@@ -860,7 +860,7 @@ void DlgPrefSound::removeDevice(SoundDevicePointer pDevice) {
     }
 }
 
-void DlgPrefSound::connectDevice(const SoundDeviceId& device, const AudioPath* pPath) {
+void DlgPrefSound::connectDevice(const SoundDeviceId&, const AudioPath*) {
     // emit deviceRouteUpdated(device, pPath);
 }
 

@@ -21,7 +21,7 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
     m_numOutputChannels = mixxx::audio::ChannelCount(0);
 }
 
-SoundDeviceStatus SoundDevicePipewire::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
     std::set<uint8_t> inChans;
     for (auto& input : m_audioInputs) {
         ChannelGroup channelGroup = input.getChannelGroup();

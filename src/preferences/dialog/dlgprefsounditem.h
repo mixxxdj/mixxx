@@ -18,7 +18,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     DlgPrefSoundItem(QWidget* parent, AudioPathType type,
             const QList<SoundDevicePointer>& devices,
             bool isInput, unsigned int index = 0);
-    virtual ~DlgPrefSoundItem();
+    ~DlgPrefSoundItem() override;
 
     AudioPathType type() const { return m_type; };
     unsigned int index() const { return m_index; };
