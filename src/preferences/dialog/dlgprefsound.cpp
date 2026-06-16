@@ -6,12 +6,15 @@
 #include <vector>
 
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefsound.cpp"
 #include "preferences/dialog/dlgprefsounditem.h"
+#include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 
@@ -93,6 +96,21 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &SoundManager::devicesUpdated,
             this,
             &DlgPrefSound::refreshDevices);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::deviceAdded,
+            this,
+            &DlgPrefSound::addDevice);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::deviceRemoved,
+            this,
+            &DlgPrefSound::removeDevice);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::deviceChannelsUpdated,
+            this,
+            &DlgPrefSound::updateDeviceChannels);
 
     apiComboBox->clear();
     apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
@@ -508,14 +526,23 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
     if (pItem->isInput()) {
         connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
+        connect(this, &DlgPrefSound::addInputDevice, pItem, &DlgPrefSoundItem::addDevice);
+        connect(this, &DlgPrefSound::removeInputDevice, pItem, &DlgPrefSoundItem::removeDevice);
     } else {
         connect(this,
                 &DlgPrefSound::refreshOutputDevices,
                 pItem,
                 &DlgPrefSoundItem::refreshDevices);
+        connect(this, &DlgPrefSound::addOutputDevice, pItem, &DlgPrefSoundItem::addDevice);
+        connect(this, &DlgPrefSound::removeOutputDevice, pItem, &DlgPrefSoundItem::removeDevice);
     }
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
+    connect(this,
+            &DlgPrefSound::deviceChannelsUpdated,
+            pItem,
+            &DlgPrefSoundItem::updateDeviceChannels);
+    connect(this, &DlgPrefSound::deviceRouteUpdated, pItem, &DlgPrefSoundItem::updateDeviceRoute);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -795,6 +822,62 @@ void DlgPrefSound::refreshDevices() {
     }
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);
+}
+
+void DlgPrefSound::addDevice(SoundDevicePointer pDevice) {
+    const bool hasInputs = pDevice->getNumInputChannels().isValid();
+    const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
+
+    if (hasInputs) {
+        m_inputDevices.append(pDevice);
+        emit addInputDevice(pDevice);
+    }
+    if (hasOutputs) {
+        m_outputDevices.append(pDevice);
+        emit addOutputDevice(pDevice);
+    }
+}
+
+void DlgPrefSound::removeDevice(SoundDevicePointer pDevice) {
+    const bool hasInputs = pDevice->getNumInputChannels().isValid();
+    const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
+
+    if (hasInputs && m_inputDevices.removeOne(pDevice)) {
+        emit removeInputDevice(pDevice);
+    }
+
+    if (hasOutputs && m_outputDevices.removeOne(pDevice)) {
+        emit removeOutputDevice(pDevice);
+    }
+}
+
+void DlgPrefSound::updateDeviceChannels(SoundDevicePointer pDevice) {
+    const bool hasInputs = pDevice->getNumInputChannels().isValid();
+    const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
+    const bool hadInputs = m_inputDevices.contains(pDevice);
+    const bool hadOutputs = m_outputDevices.contains(pDevice);
+    const bool listsModified = (hasInputs ^ hadInputs) || (hasOutputs ^ hadOutputs);
+
+    if (!listsModified) {
+        emit deviceChannelsUpdated(pDevice);
+        return;
+    }
+
+    if (hadInputs && !hasInputs) {
+        m_inputDevices.removeOne(pDevice);
+        emit removeInputDevice(pDevice);
+    } else if (!hadInputs && hasInputs) {
+        m_inputDevices.append(pDevice);
+        emit addInputDevice(pDevice);
+    }
+
+    if (hadOutputs && !hasOutputs) {
+        m_outputDevices.removeOne(pDevice);
+        emit removeOutputDevice(pDevice);
+    } else if (!hadOutputs && hasOutputs) {
+        m_outputDevices.append(pDevice);
+        emit addOutputDevice(pDevice);
+    }
 }
 
 /// Called when any of the combo boxes in this dialog are changed. Enables the

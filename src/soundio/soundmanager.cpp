@@ -11,7 +11,6 @@
 #include "soundio/networkenumerator.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddeviceenumerator.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
@@ -276,8 +275,6 @@ void SoundManager::queryDevices() {
         m_devices.push_back(device);
         qDebug() << "m_devices.push_back " << device->getDisplayName();
     }
-
-    m_pipewireEnumerator->initialize();
 #endif
 
     for (auto& device : m_networkEnumerator->queryDevices()) {
@@ -339,6 +336,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
     QVector<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
+
     for (const auto& pDevice : std::as_const(m_devices)) {
         DeviceMode mode = {pDevice, false, false};
         pDevice->clearInputs();
@@ -665,7 +663,6 @@ void SoundManager::addDevice(SoundDevicePointer pDevice) {
     emit deviceAdded(pDevice);
 }
 
-// device closing is handled before this
 void SoundManager::removeDevice(SoundDevicePointer pDevice) {
     for (const auto& device : std::as_const(m_devices)) {
         if (device == pDevice) {
@@ -677,7 +674,6 @@ void SoundManager::removeDevice(SoundDevicePointer pDevice) {
     }
 }
 
-// device port/link changed
-void SoundManager::updateDevice(SoundDevicePointer pDevice) {
-    emit deviceUpdated(pDevice);
+void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
+    emit deviceChannelsUpdated(pDevice);
 }

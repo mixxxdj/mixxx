@@ -111,23 +111,28 @@ class SoundManager : public QObject {
         m_audioLatencyOverloadCount.set(0);
     }
 
+    // currently only used by pipewire
+    void updateDeviceChannels(SoundDevicePointer pDevice);
+
   signals:
+    void deviceAdded(SoundDevicePointer pDevice);
+    void deviceRemoved(SoundDevicePointer pDevice);
+    void deviceChannelsUpdated(SoundDevicePointer pDevice);
+    void deviceConnected(const SoundDeviceId& pDevice, const AudioPath* pPath);
+    void deviceDisconnected(const AudioPath* pPath);
+
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
     void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
-    void deviceAdded(SoundDevicePointer device);
-    void deviceRemoved(SoundDevicePointer device);
-    void deviceUpdated(SoundDevicePointer device);
-
-  public slots:
-    void addDevice(SoundDevicePointer device);
-    void removeDevice(SoundDevicePointer device);
-    void updateDevice(SoundDevicePointer device);
 
   private slots:
     void completeDevicesClosing();
+
+  public slots:
+    void addDevice(SoundDevicePointer pDevice);
+    void removeDevice(SoundDevicePointer pDevice);
 
   private:
     // Closes all the devices and empties the list of devices we have.
