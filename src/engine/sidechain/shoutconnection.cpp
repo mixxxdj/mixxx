@@ -27,6 +27,13 @@
 #include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 
+// SHOUT_ATTR_F_DEPRECATED was first introduced in libshout-idjc 2.4.6.
+// Since libshout-idjc provides no version macro, we probe for that symbol to
+// detect the 2.4.6+ API.
+#ifdef SHOUT_ATTR_F_DEPRECATED
+#define MIXXX_USE_SHOUT_API_246
+#endif
+
 namespace {
 
 constexpr int kConnectRetries = 30;
@@ -385,7 +392,7 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-#ifdef SHOUT_ATTR_F_DEPRECATED
+#ifdef MIXXX_USE_SHOUT_API_246
     if (shout_set_content_format(
                 m_pShout, format, 0 /* SHOUT_USAGE_UNKNOWN */, nullptr) !=
             SHOUTERR_SUCCESS) {
@@ -875,7 +882,7 @@ void ShoutConnection::updateMetaData() {
                 insertMetaData("song",  baSong.constData());
             }
             setFunctionCode(11);
-#ifdef SHOUT_ATTR_F_DEPRECATED
+#ifdef MIXXX_USE_SHOUT_API_246
             int ret = shout_set_metadata_utf8(m_pShout, m_pShoutMetaData);
 #else
             int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
@@ -900,7 +907,7 @@ void ShoutConnection::updateMetaData() {
             }
 
             setFunctionCode(13);
-#ifdef SHOUT_ATTR_F_DEPRECATED
+#ifdef MIXXX_USE_SHOUT_API_246
             int metaRet = shout_set_metadata_utf8(m_pShout, m_pShoutMetaData);
 #else
             int metaRet = shout_set_metadata(m_pShout, m_pShoutMetaData);
