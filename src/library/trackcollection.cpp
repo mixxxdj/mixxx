@@ -425,6 +425,13 @@ bool TrackCollection::purgeAllTracks(
     return purgeTracks(trackIds);
 }
 
+bool TrackCollection::relocateTrack(const Track& track,
+        const mixxx::FileInfo& newLocation) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    return m_trackDao.relocateTrack(track, newLocation);
+}
+
 bool TrackCollection::insertCrate(
         const Crate& crate,
         CrateId* pCrateId) {

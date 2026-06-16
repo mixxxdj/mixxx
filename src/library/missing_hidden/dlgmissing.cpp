@@ -40,6 +40,10 @@ DlgMissing::DlgMissing(
 
     connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
     connect(btnSelect, &QPushButton::clicked, this, &DlgMissing::selectAll);
+    connect(btnRelocate,
+            &QPushButton::clicked,
+            m_pTrackTableView,
+            &WTrackTableView::slotRelocateTrack);
     connect(m_pTrackTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -75,14 +79,14 @@ void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgMissing::activateButtons(bool enable) {
-    btnPurge->setEnabled(enable);
+void DlgMissing::activateButtons(int nbSelected) {
+    btnPurge->setEnabled(nbSelected >= 1);
+    btnRelocate->setEnabled(nbSelected == 1);
 }
 
-void DlgMissing::selectionChanged(const QItemSelection &selected,
-                                  const QItemSelection &deselected) {
-    Q_UNUSED(deselected);
-    activateButtons(!selected.indexes().isEmpty());
+void DlgMissing::selectionChanged([[maybe_unused]] const QItemSelection& selected,
+        [[maybe_unused]] const QItemSelection& deselected) {
+    activateButtons(m_pTrackTableView->selectionModel()->selectedRows().count());
 }
 
 bool DlgMissing::hasFocus() const {

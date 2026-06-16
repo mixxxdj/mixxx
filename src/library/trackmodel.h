@@ -172,6 +172,9 @@ class TrackModel {
     virtual void purgeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
+    virtual void relocateTrack([[maybe_unused]] const QModelIndex& index,
+            [[maybe_unused]] const mixxx::FileInfo& newLocation) {
+    }
     virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
         Q_UNUSED(index);
         Q_UNUSED(locations);

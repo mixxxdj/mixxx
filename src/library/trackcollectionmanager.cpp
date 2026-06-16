@@ -481,6 +481,13 @@ void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) const {
     }
 }
 
+bool TrackCollectionManager::relocateTrack(const Track& track,
+        const mixxx::FileInfo& newLocation) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    return m_pInternalCollection->relocateTrack(track, newLocation);
+}
+
 TrackPointer TrackCollectionManager::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) const {

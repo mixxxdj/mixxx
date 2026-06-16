@@ -1,6 +1,7 @@
 #include "widget/wtracktableview.h"
 
 #include <QDrag>
+#include <QFileDialog>
 #include <QModelIndex>
 #include <QScrollBar>
 #include <QShortcut>
@@ -512,6 +513,39 @@ void WTrackTableView::slotPurge() {
     saveCurrentIndex();
     pTrackModel->purgeTracks(indices);
     restoreCurrentIndex();
+}
+
+void WTrackTableView::slotRelocateTrack() {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    // Only works for one selected track
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    if (indices.count() != 1) {
+        return;
+    }
+    TrackPointer pTrack = pTrackModel->getTrack(indices[0]);
+    if (!pTrack) {
+        return;
+    }
+    QString location = QFileInfo(pTrack->getLocation()).absolutePath();
+    if (location.isEmpty() || !QDir(location).exists()) {
+        location = QDir::homePath();
+    }
+
+    const QString newLocation = QFileDialog::getOpenFileName(
+            this,
+            tr("Locate missing file: %1").arg(pTrack->getTitle()),
+            location,
+            tr("Audio Files (*.mp3 *.flac *.ogg *.wav *.aiff *.m4a *.opus);;All Files (*)"));
+
+    if (newLocation.isEmpty()) {
+        return;
+    }
+
+    const mixxx::FileInfo fileInfo(newLocation);
+    pTrackModel->relocateTrack(indices[0], fileInfo);
 }
 
 void WTrackTableView::slotDeleteTracksFromDisk() {

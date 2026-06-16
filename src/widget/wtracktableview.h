@@ -132,6 +132,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
+    void slotRelocateTrack();
     void slotDeleteTracksFromDisk();
     void slotShowHideTrackMenu(bool show);
 
