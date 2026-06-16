@@ -16,6 +16,7 @@
 
 namespace {
 
+constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 const QString kAppGroup = QStringLiteral("[App]");
 
 static const char* find_node_name(const struct spa_dict* props) {
@@ -41,6 +42,9 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
         : m_pSoundManager(pManager),
           m_initialized(false),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")) {
+    connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
+    connect(this, &PipewireEnumerator::deviceRemoved, m_pSoundManager, &SoundManager::removeDevice);
+
     pw_init(nullptr, nullptr);
 
     m_pThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
@@ -141,7 +145,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         m_objects.insert_or_assign(id, Object{Node{}});
         auto pDevice = QSharedPointer<SoundDevicePipewire>::create(
                 m_pConfig, m_pSoundManager, this, id, name);
-        m_pSoundManager->addDevice(pDevice);
+        emit deviceAdded(pDevice);
         m_soundDevices.insert_or_assign(id, std::move(pDevice));
 
         if (strcmp(name, "Mixxx") == 0) {
@@ -162,6 +166,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         m_objects.insert_or_assign(id, Object{Port(port_id, node_id, direction)});
         auto& soundDevice = m_soundDevices[node_id];
         soundDevice->registerDevicePort(id, pProps);
+        m_pSoundManager->updateDeviceChannels(soundDevice);
 
         if (node_id != m_filterId) {
             return;
@@ -215,7 +220,7 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         if (device->isOpen()) {
             device->close();
         }
-        m_pSoundManager->removeDevice(device);
+        emit deviceRemoved(device);
     } else if (auto* port = std::get_if<Port>(&object)) {
         auto& device = m_soundDevices[port->nodeId];
         device->unregisterDevicePort(port->id, port->direction);
@@ -382,6 +387,22 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
             soundDevice->writeOutput(static_cast<float*>(buffer), port.devicePort, framesPerBuffer);
         }
     }
+    updateAudioLatencyUsage(framesPerBuffer);
+}
+
+void PipewireEnumerator::updateAudioLatencyUsage(const SINT framesPerBuffer) {
+    m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
+        double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
+        m_audioLatencyUsage.set(
+                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
+        m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
+        m_framesSinceAudioLatencyUsageUpdate = 0;
+        // qDebug() << m_audioLatencyUsage
+        //          << m_audioLatencyUsage->get();
+    }
+    // measure time in Audio callback at the very last
+    m_timeInAudioCallback += m_clkRefTimer.elapsed();
 }
 
 void PipewireEnumerator::createLink(uint32_t outNodeId,
