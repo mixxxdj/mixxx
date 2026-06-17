@@ -144,16 +144,18 @@ void SoundDevicePipewire::registerDevicePort(uint32_t id, const struct spa_dict*
     }
 }
 
-void SoundDevicePipewire::unregisterDevicePort(uint32_t id, spa_direction direction) {
-    switch (direction) {
-    case SPA_DIRECTION_INPUT:
-        m_inPorts.erase(m_inPorts.begin() + id);
-        m_numInputChannels = mixxx::audio::ChannelCount::fromInt(m_outPorts.size());
-        break;
-    case SPA_DIRECTION_OUTPUT:
-        m_outPorts.erase(m_outPorts.begin() + id);
-        m_numOutputChannels = mixxx::audio::ChannelCount::fromInt(m_inPorts.size());
-        break;
+void SoundDevicePipewire::unregisterDevicePort(uint32_t id) {
+    for (auto it = m_inPorts.begin(); it != m_inPorts.end(); it++) {
+        if (it->id == id) {
+            m_inPorts.erase(it);
+            return;
+        }
+    }
+    for (auto it = m_outPorts.begin(); it != m_outPorts.end(); it++) {
+        if (it->id == id) {
+            m_outPorts.erase(it);
+            return;
+        }
     }
 }
 

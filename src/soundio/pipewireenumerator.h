@@ -106,18 +106,12 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
     struct Link {
-        uint32_t import;
-        uint32_t outPort;
+        uint32_t input;
+        uint32_t output;
     };
 
     struct Port {
-        // this is not global id, but port.id, which starts from 0
-        // using this we can directly index into the port vector
-        // on the node from nodeId
-        // global id indexes into maps, port.id indexes into vectors
-        uint32_t id;
         uint32_t nodeId;
-        spa_direction direction;
     };
 
     struct Node {};
@@ -142,6 +136,9 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     struct Device {
         struct Port {
             void* port_data;
+
+            // these are our own indices, and are not assigned by
+            // pipewire in any way
             uint32_t devicePort;
             uint32_t filterPort;
         };

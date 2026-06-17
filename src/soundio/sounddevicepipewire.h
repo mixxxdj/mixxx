@@ -39,7 +39,7 @@ class SoundDevicePipewire : public SoundDevice {
             uint32_t inNodeId,
             uint32_t inPortId);
     void registerDevicePort(uint32_t id, const struct spa_dict* props);
-    void unregisterDevicePort(uint32_t id, spa_direction direction);
+    void unregisterDevicePort(uint32_t id);
 
     AudioPath* getAudioPath(uint32_t channel, spa_direction direction);
 
