@@ -7,7 +7,6 @@
 class ControlProxy;
 class SoundManager;
 class VinylControlProcessor;
-class QTimerEvent;
 class VinylSignalQualityListener;
 
 // VinylControlManager is the main-thread interface that other parts of Mixxx
@@ -32,11 +31,9 @@ class VinylControlManager : public QObject {
 
     void addSignalQualityListener(VinylSignalQualityListener* pListener);
     void removeSignalQualityListener(VinylSignalQualityListener* pListener);
-    void updateSignalQualityListeners();
-
-    void timerEvent(QTimerEvent* pEvent);
 
   public slots:
+    void updateSignalQualityListeners();
     void requestReloadConfig();
     void toggleVinylControl(int deck);
 
@@ -51,7 +48,6 @@ class VinylControlManager : public QObject {
     UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
-    int m_iTimerId;
     QList<ControlProxy*> m_pVcEnabled;
     ControlProxy* m_pNumDecks;
     int m_iNumConfiguredDecks;

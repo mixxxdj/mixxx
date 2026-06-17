@@ -717,7 +717,9 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
     }
 
     if (m_matchMode == MatchMode::Constant) {
-        return pTrack->getBeats()->hasConstantTempo();
+        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        // Note: a track without a beatgrid cannot have a constant tempo.
+        return pBeats && pBeats->hasConstantTempo();
     }
 
     double value = pTrack->getBpm();

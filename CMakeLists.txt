@@ -1637,6 +1637,9 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
+  src/soundio/networkenumerator.cpp
+  src/soundio/portaudioenumerator.cpp
+  src/soundio/sounddeviceenumerator.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
   src/soundio/sounddeviceportaudio.cpp
@@ -3509,6 +3512,12 @@ target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
+if(NOT TARGET SQLite3::SQLite3) # CMake < 4.3
+  # This will allow to use the new name while still permitting it to
+  # compile with older versions of CMake.
+  add_library(SQLite3::SQLite3 ALIAS SQLite::SQLite3)
+endif()
+
 # For LOCALECOMPARE we call directly sqlite functions to the database opened by
 # Qt. It only works without crashing when Mixxx links to the same sqlite
 # library as Qt. On vcpkg builds, the custom FindSQLite3.cmake wrapper ensures
@@ -3557,12 +3566,12 @@ if(LOCALECOMPARE)
       endif()
     endif()
   else()
-    target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
+    target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
   endif()
 elseif(SQLite3_FOUND)
   # When LOCALECOMPARE is OFF (manually set) but SQLite3 is found (static Qt builds),
   # we still need to link SQLite3 unconditionally
-  target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
@@ -4097,6 +4106,7 @@ if(QT6)
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
     # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
     list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+    set(QT_NO_PRIVATE_MODULE_WARNING ON)
   endif()
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
@@ -5678,7 +5688,7 @@ target_precompile_headers(
   mixxx-lib
   PUBLIC ${MIXXX_LIB_PRECOMPILED_HEADER} ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
-if(BUILD_TESTING)
+if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 endif()
 

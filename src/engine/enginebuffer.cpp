@@ -80,6 +80,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_baserate_old(0),
           m_rate_old(0.),
           m_trackEndPositionOld(mixxx::audio::kInvalidFramePos),
+          m_samplesSinceLastIndicatorUpdate(0),
           m_slipPos(mixxx::audio::kStartFramePos),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
@@ -1527,6 +1528,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
                     kPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
+        m_samplesSinceLastIndicatorUpdate = 0;
     }
 
     // Update visual control object, this needs to be done more often than the
