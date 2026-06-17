@@ -5,6 +5,7 @@
 #include <spa/utils/defs.h>
 
 #include <QObject>
+#include <set>
 
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
@@ -100,6 +101,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             uint32_t outPortId,
             uint32_t inNodeI,
             uint32_t inPortId);
+    void updateAudioLatencyUsage(const SINT framesPerBuffer);
+
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
     struct Link {
