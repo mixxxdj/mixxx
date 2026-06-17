@@ -36,6 +36,30 @@ static const char* find_node_name(const struct spa_dict* props) {
     return nullptr;
 }
 
+// Calculates the port index from port name, since port name is very
+// convenient property to access. That also mean that any changes in
+// port naming scheme take in account this function.
+static std::optional<uint32_t> getPortIndexFromName(const char* name) {
+    std::string_view view(name);
+
+    auto pos = view.find(':');
+    if (pos == std::string_view::npos) {
+        return std::nullopt;
+    }
+
+    uint32_t value;
+    auto [ptr, ec] = std::from_chars(
+            view.data() + pos + 1,
+            view.data() + view.size(),
+            value);
+
+    if (ec == std::errc{}) {
+        return value;
+    }
+
+    return std::nullopt;
+}
+
 } // namespace
 
 PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
@@ -153,22 +177,25 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         }
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Port) == 0) {
         const uint32_t node_id = pw_properties_parse_int(spa_dict_lookup(pProps, PW_KEY_NODE_ID));
-        const uint32_t port_id = pw_properties_parse_int(spa_dict_lookup(pProps, PW_KEY_PORT_ID));
         const char* dir = spa_dict_lookup(pProps, PW_KEY_PORT_DIRECTION);
         const bool isInput = strcmp(dir, "in") == 0;
-        const spa_direction direction = isInput ? SPA_DIRECTION_INPUT : SPA_DIRECTION_OUTPUT;
 
         if (!m_soundDevices.contains(node_id)) {
             // most likely midi or video node
             return;
         }
 
-        m_objects.insert_or_assign(id, Object{Port(port_id, node_id, direction)});
-        auto& soundDevice = m_soundDevices[node_id];
+        m_objects.insert_or_assign(id, Object{Port(node_id)});
+        auto soundDevice = m_soundDevices[node_id];
         soundDevice->registerDevicePort(id, pProps);
         m_pSoundManager->updateDeviceChannels(soundDevice);
 
         if (node_id != m_filterId) {
+            return;
+        }
+
+        auto port_id = getPortIndexFromName(spa_dict_lookup(pProps, PW_KEY_PORT_NAME));
+        VERIFY_OR_DEBUG_ASSERT(!port_id.has_value()) {
             return;
         }
 

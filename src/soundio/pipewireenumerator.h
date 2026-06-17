@@ -115,13 +115,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     };
 
     struct Port {
-        // this is not global id, but port.id, which starts from 0
-        // using this we can directly index into the port vector
-        // on the node from nodeId
-        // global id indexes into maps, port.id indexes into vectors
-        uint32_t id;
         uint32_t nodeId;
-        spa_direction direction;
     };
 
     struct Node {};
