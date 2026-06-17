@@ -111,6 +111,7 @@ LibraryScanner::LibraryScanner(
 #else
           m_pProgressDlg(nullptr),
 #endif
+          m_canceled(false),
           m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
@@ -196,6 +197,7 @@ void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
 
+    m_canceled = false;
     cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
@@ -580,6 +582,7 @@ void LibraryScanner::cancelAndQuit() {
 void LibraryScanner::cancel() {
     DEBUG_ASSERT(m_state == CANCELING);
 
+    m_canceled = true;
     // we need to make a local copy because cancel is called
     // from any thread but m_scannerGlobal may be cleared
     // in the LibraryScanner thread in the meanwhile
@@ -652,6 +655,22 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
     ScopedTimer timer(QStringLiteral("LibraryScanner::slotDirectoryHashedAndScanned"));
     // kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //           << newDirectory << hash;
+
+    // Don't write dir hashes after the scan has been canceled!
+    // Reason: after canceling we may still receive signals from ImportFilesTask,
+    // eg. addNewTrack() and directoryHashedAndScanned(). However, canceled
+    // means we probably didn't add all tracks. In order to allow "resuming"
+    // the incomplete scan of this directory, we need to keep the old hash
+    // (see slotAddNewTrack) and prevent the directoryHashedAndScanned() signal
+    // from undoing this (what we'd do in this slot by saving a valid hash).
+
+    if (!m_scannerGlobal || m_scannerGlobal->shouldCancel()) {
+        kLogger.warning() << "--> should cancel --> clear hash for" << directoryPath;
+        // Clearing the hash is not strictly required but let's keep it as
+        // safety net in case signals get mixed up?
+        m_libraryHashDao.clearDirectoryHash(directoryPath);
+        return;
+    }
 
     // For statistics tracking -- if we hashed a directory then we scanned it
     // (it was changed or new).
