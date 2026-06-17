@@ -150,6 +150,7 @@ class TrackCollection : public QObject,
             bool* pAlreadyInLibrary = nullptr);
     FRIEND_TEST(DirectoryDAOTest, relocateDirectory);
     FRIEND_TEST(TrackDAOTest, detectMovedTracks);
+    FRIEND_TEST(TrackDAOTest, bpmLockPreservedForTrackWithoutBeats);
     TrackId addTrack(
             const TrackPointer& pTrack,
             bool unremove);

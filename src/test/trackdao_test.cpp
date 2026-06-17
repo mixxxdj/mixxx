@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "test/librarytest.h"
+#include "track/globaltrackcache.h"
 #include "track/track.h"
 
 using ::testing::UnorderedElementsAre;
@@ -55,4 +56,33 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QSet<QString> trackLocations = trackDAO.getAllTrackLocations();
     EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location(), otherFile.location()));
+}
+
+// Regression test for the bug where a BPM-locked track without a beatgrid
+// loses its lock when reloaded from the database.
+// https://github.com/mixxxdj/mixxx/issues/15196
+TEST_F(TrackDAOTest, bpmLockPreservedForTrackWithoutBeats) {
+    const mixxx::FileInfo fileInfo(
+            QDir(QDir::tempPath()), QStringLiteral("bpmlocked-no-beats.mp3"));
+    TrackPointer pTrack = Track::newTemporary(mixxx::FileAccess(fileInfo));
+    pTrack->setDuration(135);
+    // Lock the BPM although the track has no beatgrid at all.
+    pTrack->setBpmLocked(true);
+    ASSERT_FALSE(pTrack->getBeats());
+    ASSERT_TRUE(pTrack->isBpmLocked());
+
+    const TrackId trackId = internalCollection()->addTrack(pTrack, false);
+    ASSERT_TRUE(trackId.isValid());
+
+    // Dropping the last reference evicts the track from the cache
+    // synchronously (eviction runs as a direct call on this thread), so the
+    // lookup below reloads it from the database instead of returning the
+    // cached in-memory object whose lock flag was never lost.
+    pTrack.reset();
+    ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
+
+    const TrackPointer pReloaded = internalCollection()->getTrackById(trackId);
+    ASSERT_TRUE(pReloaded);
+    EXPECT_FALSE(pReloaded->getBeats());
+    EXPECT_TRUE(pReloaded->isBpmLocked());
 }
