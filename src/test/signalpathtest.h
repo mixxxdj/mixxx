@@ -157,9 +157,6 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-        if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
-            pEngineDeck->getEngineBuffer()->ejectTrack();
-        }
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
