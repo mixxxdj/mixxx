@@ -117,7 +117,7 @@ repos:
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.37.2
+    rev: 0.37.3
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/pre-commit/mirrors-prettier
