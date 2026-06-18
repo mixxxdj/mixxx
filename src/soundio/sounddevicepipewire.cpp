@@ -135,6 +135,8 @@ void SoundDevicePipewire::registerDevicePort(uint32_t id, const struct spa_dict*
         name += spa_dict_lookup(props, PW_KEY_PORT_ID);
     }
 
+    // m_numInputChannels, m_numOutputChannels, m_audioInputs, m_audioOutputs
+    // are with respect to Mixxx and not the SoundDevice
     if (strcmp(dir, "in") == 0) {
         m_inPorts.emplace_back(id, name);
         m_numOutputChannels = mixxx::audio::ChannelCount::fromInt(m_inPorts.size());
@@ -159,28 +161,44 @@ void SoundDevicePipewire::unregisterDevicePort(uint32_t id) {
     }
 }
 
-AudioPath* SoundDevicePipewire::getAudioPath(uint32_t channel, spa_direction direction) {
-    if (direction == SPA_DIRECTION_INPUT) {
-        for (auto& input : m_audioInputs) {
-            const auto& channelGroup = input.getChannelGroup();
-            const uint32_t channelBase = channelGroup.getChannelBase();
-            uint32_t channelEnd = channelBase + channelGroup.getChannelCount();
-            if (channelBase <= channel && channel < channelEnd) {
-                return &input;
-            }
-        }
-    } else {
+AudioPath* SoundDevicePipewire::getInputAudioPath(uint32_t id) {
+    auto it = std::ranges::find(m_inPorts, id, &Port::id);
+
+    if (it != m_inPorts.end()) {
+        auto channel = it - m_inPorts.begin();
         for (auto& output : m_audioOutputs) {
             const auto& channelGroup = output.getChannelGroup();
             const uint32_t channelBase = channelGroup.getChannelBase();
             uint32_t channelEnd = channelBase + channelGroup.getChannelCount();
+            qWarning() << "searching input audio path:" << channelBase << channel << channelEnd;
+
             if (channelBase <= channel && channel < channelEnd) {
                 return &output;
             }
         }
     }
 
-    qWarning() << "returning null AudioPath, inputs:" << m_audioInputs.size()
-               << "outputs:" << m_audioOutputs.size();
+    // its fine to return nullptr here, this can be called after
+    // this device has closed, in that case we ignore the nullptr
+    return nullptr;
+}
+
+AudioPath* SoundDevicePipewire::getOutputAudioPath(uint32_t id) {
+    auto it = std::ranges::find(m_outPorts, id, &Port::id);
+    if (it != m_outPorts.end()) {
+        auto channel = it - m_outPorts.begin();
+        for (auto& input : m_audioInputs) {
+            const auto& channelGroup = input.getChannelGroup();
+            const uint32_t channelBase = channelGroup.getChannelBase();
+            uint32_t channelEnd = channelBase + channelGroup.getChannelCount();
+            qWarning() << "searching output audio path:" << channelBase << channel << channelEnd;
+            if (channelBase <= channel && channel < channelEnd) {
+                return &input;
+            }
+        }
+    }
+
+    // its fine to return nullptr here, this can be called after
+    // this device has closed, in that case we ignore the nullptr
     return nullptr;
 }

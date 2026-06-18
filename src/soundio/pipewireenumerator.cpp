@@ -215,17 +215,14 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                 spa_dict_lookup(pProps, PW_KEY_LINK_OUTPUT_PORT));
 
         if (in_node == m_filterId) {
-            uint32_t port_id = std::get<Port>(m_objects[out_port]).id;
             auto& soundDevice = m_soundDevices[out_node];
-            auto* path = soundDevice->getAudioPath(port_id, SPA_DIRECTION_INPUT);
+            auto* path = soundDevice->getOutputAudioPath(out_port);
             const auto& deviceId = soundDevice->getDeviceId();
             m_pSoundManager->connectDevice(deviceId, path);
             m_objects.insert_or_assign(id, Object{Link(in_port, out_port)});
         } else if (out_node == m_filterId) {
-            uint32_t port_id = std::get<Port>(m_objects[in_port]).id;
-
             auto& soundDevice = m_soundDevices[in_node];
-            auto* path = soundDevice->getAudioPath(port_id, SPA_DIRECTION_OUTPUT);
+            auto* path = soundDevice->getInputAudioPath(in_port);
             const auto& deviceId = soundDevice->getDeviceId();
             m_pSoundManager->connectDevice(deviceId, path);
             m_objects.insert_or_assign(id, Object{Link(in_port, out_port)});
@@ -249,20 +246,20 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         m_pSoundManager->removeDevice(device);
     } else if (auto* port = std::get_if<Port>(&object)) {
         auto& device = m_soundDevices[port->nodeId];
-        device->unregisterDevicePort(port->id, port->direction);
+        device->unregisterDevicePort(id);
         m_pSoundManager->updateDeviceChannels(device);
     } else if (auto* link = std::get_if<Link>(&object)) {
         if (m_objects.contains(id)) {
-            const Port& in = std::get<Port>(m_objects[link->import]);
-            const Port& out = std::get<Port>(m_objects[link->outPort]);
+            const Port& in = std::get<Port>(m_objects[link->input]);
+            const Port& out = std::get<Port>(m_objects[link->output]);
 
             if (in.nodeId == m_filterId) {
                 auto& device = m_soundDevices[out.nodeId];
-                auto* path = device->getAudioPath(out.id, SPA_DIRECTION_INPUT);
+                auto* path = device->getOutputAudioPath(id);
                 m_pSoundManager->disconnectDevice(path);
             } else {
                 auto& device = m_soundDevices[in.nodeId];
-                auto* path = device->getAudioPath(in.id, SPA_DIRECTION_OUTPUT);
+                auto* path = device->getInputAudioPath(id);
                 m_pSoundManager->disconnectDevice(path);
             }
         }
