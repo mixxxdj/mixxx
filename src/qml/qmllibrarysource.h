@@ -65,7 +65,7 @@ class QmlLibrarySource : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString label MEMBER m_label)
     Q_PROPERTY(QString icon MEMBER m_icon)
-    Q_PROPERTY(QQmlListProperty<QmlLibraryTrackListColumn> columns READ columnsQml)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns READ columnsQml)
     Q_CLASSINFO("DefaultProperty", "columns")
     QML_NAMED_ELEMENT(LibrarySource)
     QML_UNCREATABLE("Only accessible via its specialization")
@@ -73,7 +73,7 @@ class QmlLibrarySource : public QObject {
     explicit QmlLibrarySource(QObject* parent = nullptr,
             const QList<QmlLibraryTrackListColumn*>& columns = {});
 
-    QQmlListProperty<QmlLibraryTrackListColumn> columnsQml() {
+    QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columnsQml() {
         return {this, &m_columns};
     }
 
@@ -85,11 +85,7 @@ class QmlLibrarySource : public QObject {
     void slotShowTrackModel(QAbstractItemModel* pModel);
 
   signals:
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void requestTrackModel(std::shared_ptr<QmlLibraryTrackListModel> pModel);
-#else
     void requestTrackModel(std::shared_ptr<mixxx::qml::QmlLibraryTrackListModel> pModel);
-#endif
 
   protected:
     QString m_label;

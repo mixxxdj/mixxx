@@ -33,7 +33,7 @@ using WaveformRendererSignalBaseOptions = WaveformRendererSignalBase::Options;
 
 class QmlWaveformRendererFactory : public QObject {
     Q_OBJECT
-    Q_PROPERTY(WaveformRendererPositionSource position MEMBER
+    Q_PROPERTY(WaveformRendererAbstract::PositionSource position MEMBER
                     m_position NOTIFY positionChanged)
     QML_ANONYMOUS
   public:
@@ -50,11 +50,7 @@ class QmlWaveformRendererFactory : public QObject {
             mixxx::qml::WaveformRendererSignalBaseOptions options) const = 0;
 
   signals:
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void positionChanged(WaveformRendererPositionSource);
-#else
-    void positionChanged(mixxx::qml::WaveformRendererPositionSource);
-#endif
+    void positionChanged(WaveformRendererAbstract::PositionSource);
 
   protected:
     WaveformRendererPositionSource m_position{::WaveformRendererAbstract::Play};
@@ -216,11 +212,7 @@ class QmlWaveformRendererHSV
     void gainLowChanged(double);
     void gainMidChanged(double);
     void gainHighChanged(double);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void optionsChanged(WaveformRendererSignalBaseOptions);
-#else
     void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
-#endif
 
   private:
     QColor m_axesColor;
@@ -260,11 +252,7 @@ class QmlWaveformRendererSimple
     void colorChanged(const QColor&);
     void ignoreStemChanged(bool);
     void gainChanged(double);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void optionsChanged(WaveformRendererSignalBaseOptions);
-#else
     void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
-#endif
 
   private:
     QColor m_axesColor;
@@ -598,7 +586,7 @@ class QmlWaveformRendererMark
             mixxx::qml::WaveformRendererSignalBaseOptions options)
             const override;
 
-    QQmlListProperty<QmlWaveformMark> marks() {
+    QQmlListProperty<mixxx::qml::QmlWaveformMark> marks() {
         return {this, &m_marks};
     }
   signals:
