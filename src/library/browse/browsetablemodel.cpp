@@ -364,7 +364,7 @@ void BrowseTableModel::slotClear(BrowseTableModel* caller_object) {
     }
 }
 
-void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
+void BrowseTableModel::slotInsert(const BrowseTableItems& rows,
         BrowseTableModel* caller_object) {
     // There exists more than one BrowseTableModel in Mixxx and we only want to
     // receive items this object has 'ordered' from the BrowseThread (singleton)
