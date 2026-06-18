@@ -91,24 +91,33 @@ endif()
 if(FdkAac_FOUND AND NOT TARGET FdkAac::FdkAac)
   set(FdkAac_INCLUDE_DIRS "${FdkAac_INCLUDE_DIR}")
 
-  add_library(FdkAac::FdkAac UNKNOWN IMPORTED)
-  set_target_properties(
-    FdkAac::FdkAac
-    PROPERTIES IMPORTED_LOCATION "${FdkAac_LIBRARY}"
-  )
-  if(FdkAac_INCLUDE_DIR)
-    set_target_properties(
-      FdkAac::FdkAac
-      PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FdkAac_INCLUDE_DIR}"
-    )
-  endif()
   if(WIN32 AND FdkAac_DLL)
-    # Expose the DLL as the runtime artifact; the .lib is the link artifact.
+    # Create a SHARED IMPORTED target so $<TARGET_RUNTIME_DLLS> can discover
+    # fdk-aac.dll automatically.  The contract is:
+    #   IMPORTED_LOCATION  = the .dll  (runtime artifact)
+    #   IMPORTED_IMPLIB    = the .lib  (link artifact)
+    add_library(FdkAac::FdkAac SHARED IMPORTED)
     set_target_properties(
       FdkAac::FdkAac
       PROPERTIES
         IMPORTED_LOCATION "${FdkAac_DLL}"
         IMPORTED_IMPLIB "${FdkAac_LIBRARY}"
+    )
+  else()
+    # On non-Windows UNKNOWN IMPORTED means to use the normal shared/static lib
+    # On Windows with DLL missing on build system UNKNOWN IMPORTED means that
+    # it links fine but no automatic DLL copy is done (DLL needed at runtime).
+    add_library(FdkAac::FdkAac UNKNOWN IMPORTED)
+    set_target_properties(
+      FdkAac::FdkAac
+      PROPERTIES IMPORTED_LOCATION "${FdkAac_LIBRARY}"
+    )
+  endif()
+
+  if(FdkAac_INCLUDE_DIR)
+    set_target_properties(
+      FdkAac::FdkAac
+      PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FdkAac_INCLUDE_DIR}"
     )
   endif()
 endif()
