@@ -5,6 +5,12 @@ FindFdkAac
 Finds the Fraunhofer FDK AAC library (libfdk-aac).
 
 FDK-AAC is used in two distinct ways in Mixxx:
+``Encoding in EncoderFdkAac``
+  which loads libfdk-aac dynamically the DLL/dylib
+  which is bundled in the Windows and macOS packages
+``FFmpeg AAC decoding in SoundSourceFFmpeg``
+  prefer this decoder over FFmpeg's built-in aac decoder
+  and it's used for AAC encoded STEM files.
 
 Imported Targets
 ^^^^^^^^^^^^^^^^
