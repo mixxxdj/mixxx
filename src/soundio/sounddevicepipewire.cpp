@@ -58,9 +58,8 @@ SoundDeviceStatus SoundDevicePipewire::close() {
 }
 
 void SoundDevicePipewire::writeOutput(float* output, int channel, int framesPerBuffer, int offset) {
-    for (auto i = m_audioOutputs.constBegin(), e = m_audioOutputs.constEnd(); i != e; ++i) {
-        const AudioOutputBuffer& in = *i;
-        ChannelGroup chanGroup = in.getChannelGroup();
+    for (const auto& out : m_audioOutputs) {
+        ChannelGroup chanGroup = out.getChannelGroup();
         const int iChannelCount = chanGroup.getChannelCount();
         const int iChannelBase = chanGroup.getChannelBase();
         const int iChannelEnd = iChannelCount + iChannelBase;
@@ -69,7 +68,7 @@ void SoundDevicePipewire::writeOutput(float* output, int channel, int framesPerB
             continue;
         }
 
-        const CSAMPLE* pOutputBuffer = &in.getBuffer()[offset];
+        const CSAMPLE* pOutputBuffer = &out.getBuffer()[offset];
 
         if (iChannelCount == 1) {
             for (int i = 0; i < framesPerBuffer; i++) {
@@ -85,8 +84,7 @@ void SoundDevicePipewire::writeOutput(float* output, int channel, int framesPerB
 
 void SoundDevicePipewire::writeInput(
         const float* input, int channel, int framesPerBuffer, int offset) {
-    for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
-        const AudioInputBuffer& in = *i;
+    for (const auto& in : m_audioInputs) {
         ChannelGroup chanGroup = in.getChannelGroup();
         const int iChannelCount = chanGroup.getChannelCount();
         const int iChannelBase = chanGroup.getChannelBase();

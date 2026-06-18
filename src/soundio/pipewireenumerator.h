@@ -139,7 +139,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     struct Device {
         struct Port {
-            void* port_data;
+            void* pPortData;
 
             // these are our own indices, and are not assigned by
             // pipewire in any way

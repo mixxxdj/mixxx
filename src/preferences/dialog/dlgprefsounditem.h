@@ -47,9 +47,9 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void writePath(SoundManagerConfig *config) const;
     void save();
     void reload();
-    void addDevice(const SoundDevicePointer device);
-    void removeDevice(const SoundDevicePointer device);
-    void updateDeviceChannels(SoundDevicePointer device);
+    void addDevice(const SoundDevicePointer pDevice);
+    void removeDevice(const SoundDevicePointer pDevice);
+    void updateDeviceChannels(SoundDevicePointer pDevice);
     void updateDeviceRoute(const SoundDeviceId& pDevice, const AudioPath* pPath);
 
   private:

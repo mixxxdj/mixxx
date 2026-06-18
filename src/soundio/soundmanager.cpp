@@ -657,18 +657,18 @@ void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
     }
 }
 
-void SoundManager::addDevice(SoundDevicePointer device) {
-    m_devices.push_back(device);
-    qDebug() << "SoundManager::addDevice" << device->getDisplayName()
-             << device->getDeviceId().deviceIndex;
-    emit deviceAdded(device);
+void SoundManager::addDevice(SoundDevicePointer pDevice) {
+    m_devices.push_back(pDevice);
+    qDebug() << "SoundManager::addDevice" << pDevice->getDisplayName()
+             << pDevice->getDeviceId().deviceIndex;
+    emit deviceAdded(pDevice);
 }
 
 void SoundManager::removeDevice(SoundDevicePointer pDevice) {
-    for (auto it = m_devices.begin(); it != m_devices.end(); it++) {
-        if (*it == pDevice) {
+    for (auto device : m_devices) {
+        if (device == pDevice) {
             qDebug() << "SoundManager::removeDevice" << pDevice->getDisplayName();
-            m_devices.erase(it);
+            m_devices.removeOne(pDevice);
             emit deviceRemoved(pDevice);
             return;
         }

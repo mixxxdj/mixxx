@@ -40,10 +40,10 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
-    void addOutputDevice(SoundDevicePointer devices);
-    void addInputDevice(SoundDevicePointer devices);
-    void removeOutputDevice(SoundDevicePointer devices);
-    void removeInputDevice(SoundDevicePointer devices);
+    void addOutputDevice(SoundDevicePointer pDevice);
+    void addInputDevice(SoundDevicePointer pDevice);
+    void removeOutputDevice(SoundDevicePointer pDevice);
+    void removeInputDevice(SoundDevicePointer pDevice);
     void updatingAPI();
     void updatedAPI();
     void deviceRouteUpdated(const SoundDeviceId& device, const AudioPath* pPath);

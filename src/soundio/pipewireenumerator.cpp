@@ -375,11 +375,11 @@ void PipewireEnumerator::closeDevice(uint32_t id) {
 
     pw_thread_loop_lock(m_pThreadLoop);
     for (auto& port : device.inputs) {
-        pw_filter_remove_port(port.port_data);
+        pw_filter_remove_port(port.pPortData);
     }
 
     for (auto& port : device.outputs) {
-        pw_filter_remove_port(port.port_data);
+        pw_filter_remove_port(port.pPortData);
     }
     pw_thread_loop_unlock(m_pThreadLoop);
 
@@ -406,7 +406,7 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
         auto soundDevice = m_soundDevices[id];
         auto& ports = device.inputs;
         for (const auto& port : ports) {
-            void* buffer = pw_filter_get_dsp_buffer(port.port_data, framesPerBuffer);
+            void* buffer = pw_filter_get_dsp_buffer(port.pPortData, framesPerBuffer);
             soundDevice->writeInput(static_cast<float*>(buffer), port.devicePort, framesPerBuffer);
         }
         m_pSoundManager->pushInputBuffers(soundDevice->inputs(), framesPerBuffer);
@@ -418,7 +418,7 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
         auto& soundDevice = m_soundDevices[id];
         auto& ports = device.outputs;
         for (const auto& port : ports) {
-            void* buffer = pw_filter_get_dsp_buffer(port.port_data, framesPerBuffer);
+            void* buffer = pw_filter_get_dsp_buffer(port.pPortData, framesPerBuffer);
             if (!buffer) {
                 continue;
             }
