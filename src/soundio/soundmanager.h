@@ -112,8 +112,6 @@ class SoundManager : public QObject {
     }
 
     // currently only used by pipewire
-    void addDevice(SoundDevicePointer pDevice);
-    void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
     void connectDevice(const SoundDeviceId& pId, const AudioPath* path);
     void disconnectDevice(const AudioPath* path);
@@ -133,6 +131,10 @@ class SoundManager : public QObject {
 
   private slots:
     void completeDevicesClosing();
+
+  public slots:
+    void addDevice(SoundDevicePointer pDevice);
+    void removeDevice(SoundDevicePointer pDevice);
 
   private:
     // Closes all the devices and empties the list of devices we have.

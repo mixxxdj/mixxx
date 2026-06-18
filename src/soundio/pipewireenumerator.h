@@ -35,6 +35,10 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void openDevice(uint32_t id, std::set<uint8_t> inChannels, std::set<uint8_t> outChannels);
     void closeDevice(uint32_t id);
 
+  signals:
+    void deviceAdded(SoundDevicePointer pDevice);
+    void deviceRemoved(SoundDevicePointer pDevice);
+
   private:
     static void registryEventGlobalOuter(void* data,
             uint32_t id,

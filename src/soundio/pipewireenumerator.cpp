@@ -66,6 +66,9 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
         : m_pSoundManager(pManager),
           m_initialized(false),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")) {
+    connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
+    connect(this, &PipewireEnumerator::deviceRemoved, m_pSoundManager, &SoundManager::removeDevice);
+
     pw_init(nullptr, nullptr);
 
     m_pThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
@@ -155,8 +158,8 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         m_objects.insert_or_assign(id, Object{Node{}});
         auto device = QSharedPointer<SoundDevicePipewire>::create(
                 m_pConfig, m_pSoundManager, this, id, name);
-        m_pSoundManager->addDevice(device);
         m_soundDevices.insert_or_assign(id, std::move(device));
+        emit deviceAdded(device);
 
         if (strcmp(name, "mixxx") == 0) {
             m_filterId = id;
@@ -243,7 +246,7 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         if (device->isOpen()) {
             device->close();
         }
-        m_pSoundManager->removeDevice(device);
+        emit deviceRemoved(device);
     } else if (auto* port = std::get_if<Port>(&object)) {
         auto& device = m_soundDevices[port->nodeId];
         device->unregisterDevicePort(id);
