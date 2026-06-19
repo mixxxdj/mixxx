@@ -867,7 +867,7 @@ void DlgPrefSound::connectDevice(const SoundDeviceId&, const AudioPath*) {
 void DlgPrefSound::disconnectDevice(const AudioPath* path) {
     for (auto* soundItem : m_selectedInputChannelIndices.keys()) {
         if (path->getType() == soundItem->type() && path->getIndex() == soundItem->index()) {
-            soundItem->setDevice(SoundDeviceId());
+            pSoundItem->setDeviceIndex(0);
         }
     }
 }

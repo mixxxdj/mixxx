@@ -140,6 +140,10 @@ void DlgPrefSoundItem::updateDeviceRoute(const SoundDeviceId& id, const AudioPat
     channelComboBox->setCurrentIndex(channelIndex);
 }
 
+void DlgPrefSoundItem::setDeviceIndex(int index) {
+    deviceComboBox->setCurrentIndex(index);
+}
+
 /// Slot called when the device combo box selection changes. Updates the channel
 /// combo box.
 void DlgPrefSoundItem::deviceChanged(int index) {

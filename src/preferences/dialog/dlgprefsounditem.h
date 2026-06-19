@@ -33,6 +33,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     }
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
     void setDevice(const SoundDeviceId& device);
+    void setDeviceIndex(int index);
 
   signals:
     void selectedDeviceChanged();
