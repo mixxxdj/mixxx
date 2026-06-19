@@ -102,9 +102,15 @@ void DlgPrefSoundItem::removeDevice(const SoundDevicePointer pDevice) {
 void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
     const auto& id = pDevice->getDeviceId();
     int index = deviceComboBox->findData(QVariant::fromValue(id));
-    if (index >= 0) { // soundItem has the changed device selected
-        m_emitSettingChanged = false;
+    if (index >= 0 && deviceComboBox->currentIndex() == index) {
+        // if changed device is not selected no need to update
+        int currentIndex = channelComboBox->currentIndex();
+        auto channelData = channelComboBox->itemData(currentIndex).value<QPoint>();
         deviceChanged(index);
+        auto newIndex = channelComboBox->findData(QVariant::fromValue(channelData));
+
+        m_emitSettingChanged = false;
+        channelComboBox->setCurrentIndex(newIndex);
         m_emitSettingChanged = true;
     }
 }
