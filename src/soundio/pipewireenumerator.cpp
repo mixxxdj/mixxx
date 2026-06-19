@@ -75,15 +75,26 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
     m_pContext = pw_context_new(pw_thread_loop_get_loop(m_pThreadLoop), nullptr, 0);
     m_pCore = pw_context_connect(m_pContext, nullptr, 0);
     m_pRegistry = pw_core_get_registry(m_pCore, PW_VERSION_REGISTRY, 0);
+
+    // see https://docs.pipewire.org/page_man_pipewire-props_7.html
+    // and pipewire/keys.h header
     m_pFilter = pw_filter_new(m_pCore,
             "mixxx",
-            pw_properties_new(PW_KEY_MEDIA_TYPE,
+            pw_properties_new(PW_KEY_MEDIA_NAME,
+                    "Mixxx",
+                    PW_KEY_MEDIA_TYPE,
                     "Audio",
                     PW_KEY_MEDIA_CATEGORY,
-                    "Filter",
+                    "Duplex",
                     PW_KEY_MEDIA_ROLE,
-                    "DSP",
-                    nullptr)); // the name and properties are used for detection
+                    "Production",
+                    PW_KEY_MEDIA_CLASS,
+                    "Audio/Duplex",
+                    PW_KEY_NODE_NAME,
+                    "Mixxx",
+                    PW_KEY_NODE_NICK,
+                    "Mixxx",
+                    nullptr));
 
     spa_zero(m_registryListener);
     spa_zero(m_metadataListener);
@@ -161,7 +172,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         m_soundDevices.insert_or_assign(id, std::move(device));
         emit deviceAdded(device);
 
-        if (strcmp(name, "mixxx") == 0) {
+        if (strcmp(name, "Mixxx") == 0) {
             m_filterId = id;
         }
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Port) == 0) {
@@ -330,7 +341,10 @@ void PipewireEnumerator::openDevice(
     for (uint8_t i : inChans) {
         size_t filterPortIndex = inputs.size() + numInPorts;
         pw_properties* props = pw_properties_new(
-                PW_KEY_FORMAT_DSP, "32 bit float mono audio", nullptr);
+                // see pipewire/keys.h header
+                PW_KEY_FORMAT_DSP,
+                "32 bit float mono audio",
+                nullptr);
         pw_properties_setf(props, PW_KEY_PORT_NAME, "in:%zu", filterPortIndex);
         void* port_data = pw_filter_add_port(m_pFilter,
                 SPA_DIRECTION_INPUT,
