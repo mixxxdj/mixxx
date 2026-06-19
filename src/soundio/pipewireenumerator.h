@@ -107,7 +107,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             uint32_t inPortId);
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
 
-    std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
     struct Link {
         uint32_t input;
@@ -153,7 +152,11 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
         std::vector<Port> outputs;
     };
 
-    std::unordered_map<uint32_t, Device> m_openedDevices;
+    using SoundDeviceMap = std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>>;
+    std::atomic<std::shared_ptr<SoundDeviceMap>> m_soundDevices;
+
+    using DeviceMap = std::unordered_map<uint32_t, Device>;
+    std::atomic<std::shared_ptr<DeviceMap>> m_openedDevices;
 
     bool m_initialized;
     uint64_t xrun_duration;

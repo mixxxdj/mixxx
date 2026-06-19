@@ -1,9 +1,10 @@
 #include "soundio/pipewireenumerator.h"
 
 #include <pipewire/pipewire.h>
-#include <qlogging.h>
 #include <spa/utils/defs.h>
 #include <spa/utils/dict.h>
+
+#include <memory>
 
 #include "moc_pipewireenumerator.cpp"
 #include "soundio/sounddevice.h"
@@ -64,6 +65,8 @@ static std::optional<uint32_t> getPortIndexFromName(const char* name) {
 
 PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
         : m_pSoundManager(pManager),
+          m_soundDevices(std::make_shared<SoundDeviceMap>()),
+          m_openedDevices(std::make_shared<DeviceMap>()),
           m_initialized(false),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")) {
     connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
@@ -169,8 +172,13 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         m_objects.insert_or_assign(id, Object{Node{}});
         auto device = QSharedPointer<SoundDevicePipewire>::create(
                 m_pConfig, m_pSoundManager, this, id, name);
-        m_soundDevices.insert_or_assign(id, std::move(device));
         emit deviceAdded(device);
+        auto pSoundDevices = std::make_shared<SoundDeviceMap>(*m_soundDevices.load());
+
+        // pipewire assigns each object with a unique ID
+        // any previous element is either invalid or already removed
+        pSoundDevices->insert_or_assign(id, std::move(device));
+        m_soundDevices.store(pSoundDevices);
 
         if (strcmp(name, "Mixxx") == 0) {
             m_filterId = id;
@@ -180,38 +188,41 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         const char* dir = spa_dict_lookup(pProps, PW_KEY_PORT_DIRECTION);
         const bool isInput = strcmp(dir, "in") == 0;
 
-        if (!m_soundDevices.contains(node_id)) {
+        if (!m_soundDevices.load()->contains(node_id)) {
             // most likely midi or video node
             return;
         }
 
         m_objects.insert_or_assign(id, Object{Port(node_id)});
-        auto soundDevice = m_soundDevices[node_id];
-        soundDevice->registerDevicePort(id, pProps);
-        m_pSoundManager->updateDeviceChannels(soundDevice);
+        auto pSoundDevices = m_soundDevices.load();
+        auto pSoundDevice = pSoundDevices->at(node_id);
+        pSoundDevice->registerDevicePort(id, pProps);
+        m_pSoundManager->updateDeviceChannels(pSoundDevice);
 
         if (node_id != m_filterId) {
             return;
         }
 
-        auto port_id = getPortIndexFromName(spa_dict_lookup(pProps, PW_KEY_PORT_NAME));
-        VERIFY_OR_DEBUG_ASSERT(!port_id.has_value()) {
+        auto portId = getPortIndexFromName(spa_dict_lookup(pProps, PW_KEY_PORT_NAME));
+        VERIFY_OR_DEBUG_ASSERT(portId.has_value()) {
             return;
         }
 
-        for (auto& [deviceId, device] : m_openedDevices) {
+        auto pOpenedDevices = *m_openedDevices.load();
+
+        for (auto& [deviceId, device] : pOpenedDevices) {
             if (isInput) {
                 for (auto& port : device.inputs) {
-                    if (port.filterPort == port_id) {
-                        auto devicePorts = m_soundDevices[deviceId]->getOutPorts();
+                    if (port.filterPort == portId) {
+                        auto devicePorts = pSoundDevices->at(deviceId)->getOutPorts();
                         uint32_t devicePortId = devicePorts[port.devicePort].id;
                         createLink(deviceId, devicePortId, node_id, id);
                     }
                 }
             } else {
                 for (auto& port : device.outputs) {
-                    if (port_id == port.filterPort) {
-                        auto devicePorts = m_soundDevices[deviceId]->getInPorts();
+                    if (portId == port.filterPort) {
+                        auto devicePorts = pSoundDevices->at(deviceId)->getInPorts();
                         uint32_t devicePortId = devicePorts[port.devicePort].id;
                         createLink(node_id, id, deviceId, devicePortId);
                     }
@@ -239,28 +250,44 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         return;
     }
 
-    Object& object = m_objects.at(id);
+    auto pair = m_objects.extract(id);
+    Object& object = pair.mapped();
 
     if (std::get_if<Node>(&object)) {
-        const auto& node = m_soundDevices.extract(id);
-        auto& device = node.mapped();
-        if (device->isOpen()) {
-            device->close();
+        auto pSoundDevices = std::make_shared<SoundDeviceMap>(*m_soundDevices.load());
+        if (!pSoundDevices->contains(id)) {
+            return;
         }
-        emit deviceRemoved(device);
-    } else if (auto* port = std::get_if<Port>(&object)) {
-        auto& device = m_soundDevices[port->nodeId];
-        device->unregisterDevicePort(id);
-        m_pSoundManager->updateDeviceChannels(device);
-    }
 
-    m_objects.erase(id);
+        auto pDevice = pSoundDevices->at(id);
+        if (pDevice->isOpen()) {
+            pDevice->close();
+        }
+
+        qWarning() << "removing device:" << pDevice->getDisplayName();
+        pSoundDevices->erase(id);
+        m_soundDevices.store(pSoundDevices);
+        emit deviceRemoved(pDevice);
+        // m_pSoundManager->removeDevice(device);
+    } else if (auto* port = std::get_if<Port>(&object)) {
+        auto pSoundDevices = m_soundDevices.load();
+        VERIFY_OR_DEBUG_ASSERT(pSoundDevices->contains(port->nodeId)) {
+            qWarning() << "node" << port->nodeId << "port " << id;
+            return;
+        }
+
+        auto pSoundDevice = pSoundDevices->at(port->nodeId);
+        qWarning() << "removing port:" << id;
+        pSoundDevice->unregisterDevicePort(id);
+        m_pSoundManager->updateDeviceChannels(pSoundDevice);
+    }
 }
 
 std::vector<SoundDevicePointer> PipewireEnumerator::queryDevices() const {
-    std::vector<SoundDevicePointer> devices{};
-    for (const auto& [id, device] : m_soundDevices) {
-        devices.push_back(device);
+    std::vector<SoundDevicePointer> devices;
+    auto pSoundDevices = m_soundDevices.load();
+    for (const auto& [id, pDevice] : *pSoundDevices) {
+        devices.push_back(pDevice);
     }
 
     return devices;
@@ -290,12 +317,14 @@ int PipewireEnumerator::metadataProperty(
 }
 
 bool PipewireEnumerator::isOpen(uint32_t id) {
-    return m_openedDevices.contains(id);
+    return m_openedDevices.load()->contains(id);
 }
 
 void PipewireEnumerator::openDevice(
         uint32_t id, const std::set<uint8_t> inChans, const std::set<uint8_t> outChans) {
-    VERIFY_OR_DEBUG_ASSERT(!m_openedDevices.contains(id)) {
+    auto pOpenedDevices = std::make_shared<DeviceMap>(*m_openedDevices.load());
+
+    VERIFY_OR_DEBUG_ASSERT(!pOpenedDevices->contains(id)) {
         qWarning() << "device:" << id << "already open";
         return;
     }
@@ -305,7 +334,7 @@ void PipewireEnumerator::openDevice(
     size_t numInPorts = 0;
     size_t numOutPorts = 0;
 
-    for (auto& [id, device] : m_openedDevices) {
+    for (auto& [id, device] : *pOpenedDevices) {
         numInPorts += device.inputs.size();
         numOutPorts += device.outputs.size();
     }
@@ -351,16 +380,20 @@ void PipewireEnumerator::openDevice(
 
     // qWarning() << "PipewireEnumerator::openDevice" << inChans.size() <<
     // outChans.size() << inputs.size() << outputs.size();
-    m_openedDevices.emplace(id, Device{std::move(inputs), std::move(outputs)});
+    // auto newDevices = *m_openedDevices.load();
+    pOpenedDevices->emplace(id, Device{std::move(inputs), std::move(outputs)});
+    m_openedDevices.store(pOpenedDevices);
+    // m_openedDevices.emplace(id, Device{std::move(inputs), std::move(outputs)});
 }
 
 void PipewireEnumerator::closeDevice(uint32_t id) {
-    VERIFY_OR_DEBUG_ASSERT(m_openedDevices.contains(id)) {
+    auto pOpenedDevices = std::make_shared<DeviceMap>(*m_openedDevices.load());
+    VERIFY_OR_DEBUG_ASSERT(pOpenedDevices->contains(id)) {
         qWarning() << "device:" << id << "not opened";
         return;
     }
 
-    auto& device = m_openedDevices[id];
+    auto& device = pOpenedDevices->at(id);
 
     pw_thread_loop_lock(m_pThreadLoop);
     for (auto& port : device.inputs) {
@@ -372,7 +405,8 @@ void PipewireEnumerator::closeDevice(uint32_t id) {
     }
     pw_thread_loop_unlock(m_pThreadLoop);
 
-    m_openedDevices.erase(id);
+    pOpenedDevices->erase(id);
+    m_openedDevices.store(pOpenedDevices);
 }
 
 void PipewireEnumerator::callback(const spa_io_position* pos) {
@@ -391,28 +425,35 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
     const uint64_t framesPerBuffer = pos->clock.duration;
     m_pSoundManager->processUnderflowHappened(framesPerBuffer);
 
-    for (auto& [id, device] : m_openedDevices) {
-        auto soundDevice = m_soundDevices[id];
+    auto pOpenedDevices = m_openedDevices.load();
+    auto pSoundDevices = m_soundDevices.load();
+
+    for (auto& [id, device] : *pOpenedDevices) {
+        auto pSoundDevice = pSoundDevices->at(id);
         auto& ports = device.inputs;
         for (const auto& port : ports) {
-            void* buffer = pw_filter_get_dsp_buffer(port.pPortData, framesPerBuffer);
-            soundDevice->writeInput(static_cast<float*>(buffer), port.devicePort, framesPerBuffer);
+            void* pBuffer = pw_filter_get_dsp_buffer(port.pPortData, framesPerBuffer);
+            pSoundDevice->writeInput(static_cast<float*>(pBuffer),
+                    port.devicePort,
+                    framesPerBuffer);
         }
-        m_pSoundManager->pushInputBuffers(soundDevice->inputs(), framesPerBuffer);
+        m_pSoundManager->pushInputBuffers(pSoundDevice->inputs(), framesPerBuffer);
     }
 
     m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
 
-    for (auto& [id, device] : m_openedDevices) {
-        auto& soundDevice = m_soundDevices[id];
+    for (auto& [id, device] : *pOpenedDevices) {
+        auto pSoundDevice = pSoundDevices->at(id);
         auto& ports = device.outputs;
         for (const auto& port : ports) {
-            void* buffer = pw_filter_get_dsp_buffer(port.pPortData, framesPerBuffer);
-            if (!buffer) {
+            void* pBuffer = pw_filter_get_dsp_buffer(port.pPortData, framesPerBuffer);
+            if (!pBuffer) {
                 continue;
             }
-            SampleUtil::clear(static_cast<float*>(buffer), framesPerBuffer);
-            soundDevice->writeOutput(static_cast<float*>(buffer), port.devicePort, framesPerBuffer);
+            SampleUtil::clear(static_cast<float*>(pBuffer), framesPerBuffer);
+            pSoundDevice->writeOutput(static_cast<float*>(pBuffer),
+                    port.devicePort,
+                    framesPerBuffer);
         }
     }
     updateAudioLatencyUsage(framesPerBuffer);
@@ -451,13 +492,13 @@ void PipewireEnumerator::createLink(uint32_t outNodeId,
     items[props.n_items++] = SPA_DICT_ITEM_INIT(PW_KEY_LINK_INPUT_PORT, strInPort.c_str());
     items[props.n_items++] = SPA_DICT_ITEM_INIT(PW_KEY_OBJECT_LINGER, "true");
 
-    struct pw_proxy* proxy = (struct pw_proxy*)pw_core_create_object(m_pCore,
+    struct pw_proxy* pProxy = static_cast<pw_proxy*>(pw_core_create_object(m_pCore,
             "link-factory",
             PW_TYPE_INTERFACE_Link,
             PW_VERSION_LINK,
             &props,
-            0);
-    if (proxy) {
-        pw_proxy_destroy(proxy);
+            0));
+    if (pProxy) {
+        pw_proxy_destroy(pProxy);
     }
 }
