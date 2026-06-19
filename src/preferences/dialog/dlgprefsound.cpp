@@ -108,15 +108,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::removeDevice);
 
     connect(m_pSoundManager.get(),
-            &SoundManager::deviceConnected,
-            this,
-            &DlgPrefSound::connectDevice);
-
-    connect(m_pSoundManager.get(),
-            &SoundManager::deviceDisconnected,
-            this,
-            &DlgPrefSound::disconnectDevice);
-    connect(m_pSoundManager.get(),
             &SoundManager::deviceChannelsUpdated,
             this,
             &DlgPrefSound::updateDeviceChannels);
@@ -857,18 +848,6 @@ void DlgPrefSound::removeDevice(SoundDevicePointer pDevice) {
 
     if (hasOutputs && m_outputDevices.removeOne(pDevice)) {
         emit removeOutputDevice(pDevice);
-    }
-}
-
-void DlgPrefSound::connectDevice(const SoundDeviceId&, const AudioPath*) {
-    // emit deviceRouteUpdated(device, pPath);
-}
-
-void DlgPrefSound::disconnectDevice(const AudioPath* path) {
-    for (auto* soundItem : m_selectedInputChannelIndices.keys()) {
-        if (path->getType() == soundItem->type() && path->getIndex() == soundItem->index()) {
-            pSoundItem->setDeviceIndex(0);
-        }
     }
 }
 

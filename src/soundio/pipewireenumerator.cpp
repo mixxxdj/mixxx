@@ -228,17 +228,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         const uint32_t out_port = pw_properties_parse_int(
                 spa_dict_lookup(pProps, PW_KEY_LINK_OUTPUT_PORT));
 
-        if (in_node == m_filterId) {
-            auto& soundDevice = m_soundDevices[out_node];
-            auto* path = soundDevice->getOutputAudioPath(out_port);
-            const auto& deviceId = soundDevice->getDeviceId();
-            m_pSoundManager->connectDevice(deviceId, path);
-            m_objects.insert_or_assign(id, Object{Link(in_port, out_port)});
-        } else if (out_node == m_filterId) {
-            auto& soundDevice = m_soundDevices[in_node];
-            auto* path = soundDevice->getInputAudioPath(in_port);
-            const auto& deviceId = soundDevice->getDeviceId();
-            m_pSoundManager->connectDevice(deviceId, path);
+        if (in_node == m_filterId || out_node == m_filterId) {
             m_objects.insert_or_assign(id, Object{Link(in_port, out_port)});
         }
     }
@@ -262,21 +252,6 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         auto& device = m_soundDevices[port->nodeId];
         device->unregisterDevicePort(id);
         m_pSoundManager->updateDeviceChannels(device);
-    } else if (auto* link = std::get_if<Link>(&object)) {
-        if (m_objects.contains(id)) {
-            const Port& in = std::get<Port>(m_objects[link->input]);
-            const Port& out = std::get<Port>(m_objects[link->output]);
-
-            if (in.nodeId == m_filterId) {
-                auto& device = m_soundDevices[out.nodeId];
-                auto* path = device->getOutputAudioPath(id);
-                m_pSoundManager->disconnectDevice(path);
-            } else {
-                auto& device = m_soundDevices[in.nodeId];
-                auto* path = device->getInputAudioPath(id);
-                m_pSoundManager->disconnectDevice(path);
-            }
-        }
     }
 
     m_objects.erase(id);

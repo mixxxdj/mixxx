@@ -89,8 +89,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 #endif
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
-    void connectDevice(const SoundDeviceId& device, const AudioPath* pPath);
-    void disconnectDevice(const AudioPath* pPath);
     void updateDeviceChannels(SoundDevicePointer pDevice);
 
   private:

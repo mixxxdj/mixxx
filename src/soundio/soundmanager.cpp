@@ -675,14 +675,6 @@ void SoundManager::removeDevice(SoundDevicePointer pDevice) {
     }
 }
 
-void SoundManager::connectDevice(const SoundDeviceId& pId, const AudioPath* path) {
-    emit deviceConnected(pId, path);
-}
-
-void SoundManager::disconnectDevice(const AudioPath* path) {
-    emit deviceDisconnected(path);
-}
-
 void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
     emit deviceChannelsUpdated(pDevice);
 }

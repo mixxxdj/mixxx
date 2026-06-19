@@ -113,8 +113,6 @@ class SoundManager : public QObject {
 
     // currently only used by pipewire
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void connectDevice(const SoundDeviceId& pId, const AudioPath* path);
-    void disconnectDevice(const AudioPath* path);
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
