@@ -878,7 +878,6 @@ void DlgPrefSound::updateDeviceChannels(SoundDevicePointer pDevice) {
         m_outputDevices.append(pDevice);
         emit addOutputDevice(pDevice);
     }
-
 }
 
 /// Called when any of the combo boxes in this dialog are changed. Enables the

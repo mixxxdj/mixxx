@@ -24,7 +24,7 @@ class SoundDevicePipewire : public SoundDevice {
     void writeProcess(SINT) override {
     }
     QString getError() const override {
-        return "";
+        return {};
     }
 
     mixxx::audio::SampleRate getDefaultSampleRate() const override {

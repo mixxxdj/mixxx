@@ -131,7 +131,7 @@ void DlgPrefSoundItem::updateDeviceRoute(const SoundDeviceId& id, const AudioPat
         deviceComboBox->blockSignals(true);
         deviceComboBox->setCurrentIndex(index);
         deviceComboBox->blockSignals(false);
-        deviceChanged(index);
+        deviceChanged(index); // synchronous call, since we update channels just below
     }
 
     auto channelGroup = pPath->getChannelGroup();

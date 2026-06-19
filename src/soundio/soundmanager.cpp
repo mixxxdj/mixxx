@@ -336,7 +336,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
     QList<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
-    qWarning() << m_devices;
+
     for (const auto& pDevice : std::as_const(m_devices)) {
         DeviceMode mode = {pDevice, false, false};
         pDevice->clearInputs();

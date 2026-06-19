@@ -168,7 +168,6 @@ AudioPath* SoundDevicePipewire::getInputAudioPath(uint32_t id) {
             const auto& channelGroup = output.getChannelGroup();
             const uint32_t channelBase = channelGroup.getChannelBase();
             uint32_t channelEnd = channelBase + channelGroup.getChannelCount();
-            qWarning() << "searching input audio path:" << channelBase << channel << channelEnd;
 
             if (channelBase <= channel && channel < channelEnd) {
                 return &output;
@@ -189,7 +188,6 @@ AudioPath* SoundDevicePipewire::getOutputAudioPath(uint32_t id) {
             const auto& channelGroup = input.getChannelGroup();
             const uint32_t channelBase = channelGroup.getChannelBase();
             uint32_t channelEnd = channelBase + channelGroup.getChannelCount();
-            qWarning() << "searching output audio path:" << channelBase << channel << channelEnd;
             if (channelBase <= channel && channel < channelEnd) {
                 return &input;
             }
