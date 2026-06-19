@@ -1262,18 +1262,26 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
+    QMessageBox msgBox;
+    msgBox.setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    msgBox.setWindowTitle(tr("Library scan finished"));
 
     if (result.noDirectoriesConfigured) {
-        pMsg->setText(tr("No music directories configured for scanning.") +
+        msgBox.setText(tr("No music directories configured for scanning.") +
                 QStringLiteral("<br>") +
                 tr("Add directories in the library preferences."));
-        pMsg->show();
+        msgBox.show();
         return;
     }
 
+    if (result.numNewTracks == 1) {
+        showSingleScanSummaryDlg(result);
+    } else {
+        showMassScanSummaryDlg(result);
+    }
+}
+
+void MixxxMainWindow::showMassScanSummaryDlg(const LibraryScanResultSummary& result) {
     QString summary =
             tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
     if (result.numNewTracks == 0 &&
@@ -1309,8 +1317,59 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 QStringLiteral("</b>");
     }
 
-    pMsg->setText(summary);
-    pMsg->show();
+    QMessageBox msgBox;
+    msgBox.setText(summary);
+    msgBox.show();
+}
+
+void MixxxMainWindow::showSingleScanSummaryDlg(const LibraryScanResultSummary& result) {
+    const QString location = result.lastTrackLocation;
+
+    // Try to resolve the newly added track to get artist/title.
+    TrackPointer pTrack;
+    auto pTrackCollectionManager = m_pCoreServices->getTrackCollectionManager();
+    if (pTrackCollectionManager) {
+        QList<TrackId> trackIds =
+                pTrackCollectionManager->resolveTrackIdsFromLocations({location});
+        if (!trackIds.isEmpty()) {
+            pTrack = pTrackCollectionManager->getTrackById(trackIds.first());
+        }
+    }
+
+    QString trackLable;
+    if (pTrack) {
+        trackLable = QString("%1 - %2").arg(pTrack->getArtist(), pTrack->getTitle());
+    }
+
+    QMessageBox msgBox;
+    msgBox.setWindowTitle(tr("New track found"));
+    msgBox.setTextFormat(Qt::RichText);
+    // Show the track title in bold and the file path on the next line.
+    msgBox.setText(QString("<b>%1</b><br/><small>%2</small>")
+                    .arg(trackLable.toHtmlEscaped(),
+                            QDir::toNativeSeparators(location)
+                                    .toHtmlEscaped()));
+
+    msgBox.setStandardButtons(QMessageBox::Close);
+
+    QPushButton* pLoadPreviewBtn =
+            msgBox.addButton(tr("Preview"), QMessageBox::ActionRole);
+    QPushButton* pAddAutoDJBtn =
+            msgBox.addButton(tr("Add to Auto DJ"), QMessageBox::ActionRole);
+
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == pLoadPreviewBtn) {
+        // Load into the first preview deck (preview decks are 1-indexed).
+        auto pPlayerManager = m_pCoreServices->getPlayerManager();
+        if (pPlayerManager) {
+            pPlayerManager->slotPreview(location);
+        }
+    } else if (msgBox.clickedButton() == pAddAutoDJBtn) {
+        auto* pLibrary = m_pCoreServices->getLibrary().get();
+        pLibrary->appendTracksToAutoDJ({pTrack->getId()});
+        pLibrary->showAutoDJ();
+    }
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {

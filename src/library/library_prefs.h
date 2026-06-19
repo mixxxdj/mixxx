@@ -12,6 +12,8 @@ extern const ConfigKey kLegacyDirectoryConfigKey;
 
 extern const QString kConfigGroup;
 
+extern const ConfigKey kIncomingTracksDir;
+
 extern const ConfigKey kRescanOnStartupConfigKey;
 
 extern const ConfigKey kShowScanSummaryConfigKey;
