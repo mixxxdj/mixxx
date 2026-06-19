@@ -877,7 +877,12 @@ void DlgPrefSound::updateDeviceChannels(SoundDevicePointer pDevice) {
     const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
     const bool hadInputs = m_inputDevices.contains(pDevice);
     const bool hadOutputs = m_outputDevices.contains(pDevice);
-    const bool updated = (hasInputs ^ hadInputs) || (hasOutputs ^ hadOutputs);
+    const bool listsModified = (hasInputs ^ hadInputs) || (hasOutputs ^ hadOutputs);
+
+    if (!listsModified) {
+        emit deviceChannelsUpdated(pDevice);
+        return;
+    }
 
     if (hadInputs && !hasInputs) {
         m_inputDevices.removeOne(pDevice);
@@ -895,9 +900,6 @@ void DlgPrefSound::updateDeviceChannels(SoundDevicePointer pDevice) {
         emit addOutputDevice(pDevice);
     }
 
-    if (!updated) {
-        emit deviceChannelsUpdated(pDevice);
-    }
 }
 
 /// Called when any of the combo boxes in this dialog are changed. Enables the
