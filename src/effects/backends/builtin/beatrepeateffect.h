@@ -58,7 +58,7 @@ class BeatRepeatGroupState : public EffectState {
 class BeatRepeatEffect : public EffectProcessorImpl<BeatRepeatGroupState> {
   public:
     BeatRepeatEffect() = default;
-    ~BeatRepeatEffect() override = default();
+    ~BeatRepeatEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
