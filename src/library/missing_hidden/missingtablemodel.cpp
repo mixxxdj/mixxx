@@ -65,9 +65,9 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 void MissingTableModel::relocateTrack(
         const QModelIndex& index, const mixxx::FileInfo& newLocation) {
     TrackPointer pTrack = getTrack(index);
-    m_pTrackCollectionManager->relocateTrack(*pTrack, newLocation);
-
-    select(); // Repopulate the data model
+    if (m_pTrackCollectionManager->relocateTrack(*pTrack, newLocation)) {
+        select(); // Repopulate the data model
+    }
 }
 
 bool MissingTableModel::isColumnInternal(int column) {
