@@ -173,7 +173,8 @@ void ProFilterEffect::processChannel(
     const SINT numSamples = engineParameters.samplesPerBuffer();
     const int chCount = engineParameters.channelCount();
 
-    double cutoff_raw = m_pCutoffParameter->value();
+    // Invert cutoff so knob at max = no effect (wide open), knob at min = full effect
+    double cutoff_raw = 1.0 - m_pCutoffParameter->value();
     double resonance_raw = m_pResonanceParameter->value();
     int mode = static_cast<int>(m_pModeParameter->value());
     double gain_raw = m_pGainParameter->value();
