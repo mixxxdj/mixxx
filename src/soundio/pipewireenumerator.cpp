@@ -3,6 +3,7 @@
 #include <pipewire/pipewire.h>
 #include <spa/utils/defs.h>
 #include <spa/utils/dict.h>
+#include <spa/utils/result.h>
 
 #include <memory>
 #include <string>
@@ -78,7 +79,27 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
 
     m_pThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
     m_pContext = pw_context_new(pw_thread_loop_get_loop(m_pThreadLoop), nullptr, 0);
+}
+
+PipewireEnumerator::~PipewireEnumerator() {
+    pw_thread_loop_stop(m_pThreadLoop);
+    spa_hook_remove(&m_registryListener);
+    spa_hook_remove(&m_metadataListener);
+    pw_proxy_destroy((struct pw_proxy*)m_pRegistry);
+    pw_proxy_destroy((struct pw_proxy*)m_pMetadata);
+    pw_core_disconnect(m_pCore);
+    pw_context_destroy(m_pContext);
+    pw_thread_loop_destroy(m_pThreadLoop);
+    pw_deinit();
+}
+
+void PipewireEnumerator::initialize() {
     m_pCore = pw_context_connect(m_pContext, nullptr, 0);
+
+    if (!m_pCore) {
+        return;
+    }
+
     m_pRegistry = pw_core_get_registry(m_pCore, PW_VERSION_REGISTRY, 0);
 
     // see https://docs.pipewire.org/page_man_pipewire-props_7.html
@@ -108,24 +129,18 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
     pw_registry_add_listener(m_pRegistry, &m_registryListener, &registry_events, this);
     pw_filter_add_listener(m_pFilter, &m_filterListener, &filter_events, this);
 
-    pw_filter_connect(m_pFilter,
+    int res = pw_filter_connect(m_pFilter,
             PW_FILTER_FLAG_RT_PROCESS,
             nullptr,
             0);
 
-    pw_thread_loop_start(m_pThreadLoop);
-}
+    VERIFY_OR_DEBUG_ASSERT(res >= 0) {
+        qWarning() << "pw_filter_connect error:" << spa_strerror(res);
+    }
 
-PipewireEnumerator::~PipewireEnumerator() {
-    pw_thread_loop_stop(m_pThreadLoop);
-    spa_hook_remove(&m_registryListener);
-    spa_hook_remove(&m_metadataListener);
-    pw_proxy_destroy((struct pw_proxy*)m_pRegistry);
-    pw_proxy_destroy((struct pw_proxy*)m_pMetadata);
-    pw_core_disconnect(m_pCore);
-    pw_context_destroy(m_pContext);
-    pw_thread_loop_destroy(m_pThreadLoop);
-    pw_deinit();
+    pw_thread_loop_start(m_pThreadLoop);
+
+    m_initialized = true;
 }
 
 QList<mixxx::audio::SampleRate> PipewireEnumerator::getSampleRates() const {
@@ -287,9 +302,6 @@ std::vector<SoundDevicePointer> PipewireEnumerator::queryDevices() const {
     return devices;
 }
 
-void PipewireEnumerator::initialize() {
-}
-
 int PipewireEnumerator::metadataProperty(
         void* data, uint32_t, const char* key, const char*, const char* value) {
     PipewireEnumerator* pEnumerator = static_cast<PipewireEnumerator*>(data);
@@ -321,6 +333,12 @@ void PipewireEnumerator::openDevice(uint32_t id,
         const std::set<uint8_t> outChans,
         mixxx::audio::SampleRate rate,
         uint32_t framesPerBuffer) {
+    VERIFY_OR_DEBUG_ASSERT(m_initialized) {
+        qWarning() << "PipewireEnumerator::openDevice called when "
+                      "uninitialized, this should not happen";
+        return;
+    }
+
     auto pOpenedDevices = std::make_shared<DeviceMap>(*m_openedDevices.load());
 
     VERIFY_OR_DEBUG_ASSERT(!pOpenedDevices->contains(id)) {
@@ -344,6 +362,9 @@ void PipewireEnumerator::openDevice(uint32_t id,
         if (res >= 0) {
             m_sampleRate = mixxx::audio::SampleRate(rate);
             m_framesPerBuffer = framesPerBuffer;
+        } else {
+            qWarning() << "pw_filter_update_properties failed:" << spa_strerror(res);
+            qWarning() << "Unable to set requested samplerate and buffer size";
         }
     }
 
@@ -403,6 +424,12 @@ void PipewireEnumerator::openDevice(uint32_t id,
 }
 
 void PipewireEnumerator::closeDevice(uint32_t id) {
+    VERIFY_OR_DEBUG_ASSERT(m_initialized) {
+        qWarning() << "PipewireEnumerator::closeDevice called when "
+                      "uninitialized, this should not happen";
+        return;
+    }
+
     auto pOpenedDevices = std::make_shared<DeviceMap>(*m_openedDevices.load());
     VERIFY_OR_DEBUG_ASSERT(pOpenedDevices->contains(id)) {
         qWarning() << "device:" << id << "not opened";
