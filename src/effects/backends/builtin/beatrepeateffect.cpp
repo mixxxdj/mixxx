@@ -178,8 +178,9 @@ CSAMPLE BeatRepeatEffect::processRepeatSample(BeatRepeatGroupState* pState,
         readPos2 = readPos2 % pState->delay_buf.size();
     }
 
-    CSAMPLE sample = pState->delay_buf[readPos] * (1.0 - frac) +
-            pState->delay_buf[readPos2] * frac;
+    CSAMPLE sample = static_cast<CSAMPLE>(
+            pState->delay_buf[readPos] * (1.0 - frac) +
+            pState->delay_buf[readPos2] * frac);
     sample *= volume;
 
     // Gate effect: mute portions of the loop
@@ -196,10 +197,12 @@ CSAMPLE BeatRepeatEffect::processRepeatSample(BeatRepeatGroupState* pState,
 
     // Advance read position with pitch shift
     double pitchMultiplier = std::pow(2.0, static_cast<double>(pState->prev_pitch));
-    if (pitchMultiplier < 0.25)
+    if (pitchMultiplier < 0.25) {
         pitchMultiplier = 0.25;
-    if (pitchMultiplier > 4.0)
+    }
+    if (pitchMultiplier > 4.0) {
         pitchMultiplier = 4.0;
+    }
 
     pState->read_position += pitchMultiplier;
 

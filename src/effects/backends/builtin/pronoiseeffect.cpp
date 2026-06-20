@@ -200,7 +200,7 @@ void ProNoiseEffect::processChannel(
         if (mode != BANDPASS) {
             CSAMPLE whiteNoise = generateWhiteNoise();
             CSAMPLE pinkNoise = generatePinkNoise(pState);
-            noise = whiteNoise * (1.0f - color) + pinkNoise * color;
+            noise = static_cast<CSAMPLE>(whiteNoise * (1.0f - color) + pinkNoise * color);
         }
 
         pOutput[i] = static_cast<CSAMPLE>(pInput[i] + noise * smoothSend);
