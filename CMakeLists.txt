@@ -1322,12 +1322,18 @@ add_library(
   src/effects/backends/builtin/builtinbackend.cpp
   src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/echoeffect.cpp
+  src/effects/backends/builtin/djechoeffect.cpp
   src/effects/backends/builtin/filtereffect.cpp
   src/effects/backends/builtin/flangereffect.cpp
   src/effects/backends/builtin/gaineffect.cpp
   src/effects/backends/builtin/glitcheffect.cpp
   src/effects/backends/builtin/graphiceqeffect.cpp
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
+  src/effects/backends/builtin/proreverbeffect.cpp
+  src/effects/backends/builtin/profiltereffect.cpp
+  src/effects/backends/builtin/pronoiseeffect.cpp
+  src/effects/backends/builtin/beatrepeateffect.cpp
+  src/effects/backends/builtin/tapestopeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/metronomeclick.cpp
