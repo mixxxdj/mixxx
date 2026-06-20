@@ -90,7 +90,9 @@ void TapeStopEffect::processChannel(
 
         // Calculate deceleration rate per sample (total samples = duration * sampleRate * chCount)
         const double totalSamples = duration * sampleRate * chCount;
-        const double decelRate = totalSamples > 0.0 ? (pState->speed - kMinSpeed) / totalSamples : 0.0;
+        const double decelRate = totalSamples > 0.0
+                ? (pState->speed - kMinSpeed) / totalSamples
+                : 0.0;
 
         for (SINT i = 0; i < numSamples; ++i) {
             // Decelerate
