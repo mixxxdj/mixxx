@@ -61,6 +61,7 @@ EffectManifestPointer ProReverbEffect::getManifest() {
     pSend->setDescription(QObject::tr("Amount of signal sent to reverb"));
     pSend->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pSend->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    pSend->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     pSend->setRange(0.0, 0.3, 1.0);
 
     auto pFeedback = pManifest->addParameter();

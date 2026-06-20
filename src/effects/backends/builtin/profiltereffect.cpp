@@ -124,6 +124,7 @@ EffectManifestPointer ProFilterEffect::getManifest() {
     pCutoff->setDescription(QObject::tr("Filter cutoff frequency"));
     pCutoff->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     pCutoff->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
+    pCutoff->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     pCutoff->setRange(0.0, 0.5, 1.0);
 
     auto pResonance = pManifest->addParameter();

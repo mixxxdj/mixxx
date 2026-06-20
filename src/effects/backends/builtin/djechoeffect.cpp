@@ -128,6 +128,7 @@ EffectManifestPointer DJEchoEffect::getManifest() {
             "Higher values create stronger initial echo."));
     send->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     send->setRange(0.0, db2ratio(-3.0), 1.00);
 
     return pManifest;

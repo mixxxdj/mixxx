@@ -39,6 +39,7 @@ EffectManifestPointer TapeStopEffect::getManifest() {
     pSpeed->setDescription(QObject::tr("Initial playback speed"));
     pSpeed->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     pSpeed->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    pSpeed->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     pSpeed->setRange(0.1, 1.0, 2.0);
 
     auto pDuration = pManifest->addParameter();

@@ -55,6 +55,7 @@ EffectManifestPointer BeatRepeatEffect::getManifest() {
     pDecay->setDescription(QObject::tr("Volume decay per repeat"));
     pDecay->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pDecay->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    pDecay->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     pDecay->setRange(0.0, 0.0, 1.0);
 
     auto pGate = pManifest->addParameter();

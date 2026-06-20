@@ -80,6 +80,7 @@ EffectManifestPointer ProNoiseEffect::getManifest() {
     pSend->setDescription(QObject::tr("Noise volume"));
     pSend->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pSend->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    pSend->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     pSend->setRange(0.0, 0.5, 1.0);
 
     auto pColor = pManifest->addParameter();
