@@ -4,6 +4,7 @@
 
 #include "soundio/pipewireenumerator.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerconfig.h"
 #include "util/sample.h"
 
 SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
@@ -19,6 +20,7 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
     m_strDisplayName = QString::fromUtf8(name);
     m_numInputChannels = mixxx::audio::ChannelCount(0);
     m_numOutputChannels = mixxx::audio::ChannelCount(0);
+    m_sampleRate = getDefaultSampleRate();
 }
 
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
@@ -40,7 +42,11 @@ SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
         }
     }
 
-    m_pEnumerator->openDevice(m_deviceId.deviceIndex, inChans, outChans);
+    m_pEnumerator->openDevice(m_deviceId.deviceIndex,
+            inChans,
+            outChans,
+            m_sampleRate,
+            m_configFramesPerBuffer);
     return SoundDeviceStatus::Ok;
 }
 
@@ -153,4 +159,13 @@ void SoundDevicePipewire::unregisterDevicePort(uint32_t id) {
             return;
         }
     }
+}
+
+mixxx::audio::SampleRate SoundDevicePipewire::getDefaultSampleRate() const {
+    auto defaultSampleRate = m_pEnumerator->getDefaultSampleRate();
+    if (defaultSampleRate.isValid()) {
+        return defaultSampleRate;
+    }
+
+    return SoundManagerConfig::kMixxxDefaultSampleRate;
 }

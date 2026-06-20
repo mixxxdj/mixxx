@@ -235,19 +235,25 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
+    QList<mixxx::audio::SampleRate> samplerates;
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
-        return m_paEnumerator->getJackSampleRates();
+        samplerates = m_paEnumerator->getJackSampleRates();
     }
 #ifdef __PIPEWIRE__
     else if (api == MIXXX_PIPEWIRE_STRING) {
-        return m_pipewireEnumerator->getSampleRates();
+        samplerates = m_pipewireEnumerator->getSampleRates();
     }
 #endif
     else if (!api.isEmpty()) {
-        return m_paEnumerator->getSampleRates();
+        samplerates = m_paEnumerator->getSampleRates();
     }
+
+    if (!samplerates.empty()) {
+        return samplerates;
+    }
+
     return QList<mixxx::audio::SampleRate>{
             mixxx::audio::SampleRate(44100),
             mixxx::audio::SampleRate(48000),
@@ -256,7 +262,7 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api)
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
-    return getSampleRates("");
+    return getSampleRates(m_config.getAPI());
 }
 
 void SoundManager::queryDevices() {

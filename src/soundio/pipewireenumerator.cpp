@@ -5,7 +5,9 @@
 #include <spa/utils/dict.h>
 
 #include <memory>
+#include <string>
 
+#include "audio/types.h"
 #include "moc_pipewireenumerator.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicepipewire.h"
@@ -127,14 +129,6 @@ PipewireEnumerator::~PipewireEnumerator() {
 }
 
 QList<mixxx::audio::SampleRate> PipewireEnumerator::getSampleRates() const {
-    if (m_samplerates.empty()) {
-        return QList<mixxx::audio::SampleRate>{
-                mixxx::audio::SampleRate(44100),
-                mixxx::audio::SampleRate(48000),
-                mixxx::audio::SampleRate(96000),
-        };
-    }
-
     return m_samplerates;
 }
 
@@ -300,7 +294,10 @@ int PipewireEnumerator::metadataProperty(
         void* data, uint32_t, const char* key, const char*, const char* value) {
     PipewireEnumerator* pEnumerator = static_cast<PipewireEnumerator*>(data);
 
-    if (strcmp(key, "clock.allowed-rates") == 0) {
+    if (strcmp(key, "clock.rate") == 0) {
+        pEnumerator->m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
+    } else if (strcmp(key, "clock.allowed-rates") == 0) {
+        qDebug() << "PipewireEnumerator::metadataProperty clock.allowed-rates" << value;
         // parse json arrays like [ 44100, 48000, 96000 ]
         QString s = value;
         s.remove('[');
@@ -311,7 +308,6 @@ int PipewireEnumerator::metadataProperty(
         for (const QString& part : parts) {
             pEnumerator->m_samplerates.push_back(mixxx::audio::SampleRate(part.trimmed().toInt()));
         }
-        pEnumerator->m_pSoundManager->checkConfig();
     }
     return 0;
 }
@@ -320,8 +316,11 @@ bool PipewireEnumerator::isOpen(uint32_t id) {
     return m_openedDevices.load()->contains(id);
 }
 
-void PipewireEnumerator::openDevice(
-        uint32_t id, const std::set<uint8_t>& inChans, const std::set<uint8_t>& outChans) {
+void PipewireEnumerator::openDevice(uint32_t id,
+        const std::set<uint8_t>& inChans,
+        const std::set<uint8_t>& outChans,
+        mixxx::audio::SampleRate rate,
+        uint32_t framesPerBuffer) {
     auto pOpenedDevices = std::make_shared<DeviceMap>(*m_openedDevices.load());
 
     VERIFY_OR_DEBUG_ASSERT(!pOpenedDevices->contains(id)) {
@@ -330,6 +329,23 @@ void PipewireEnumerator::openDevice(
     }
 
     pw_thread_loop_lock(m_pThreadLoop);
+
+    if (rate != m_sampleRate.value() || framesPerBuffer != m_framesPerBuffer) {
+        std::string rateStr = "1/" + std::to_string(rate);
+        std::string latencyStr = std::to_string(framesPerBuffer) + "/" + std::to_string(rate);
+
+        spa_dict_item items[] = {
+                SPA_DICT_ITEM_INIT(PW_KEY_NODE_RATE, rateStr.c_str()),
+                SPA_DICT_ITEM_INIT(PW_KEY_NODE_LATENCY, latencyStr.c_str()),
+        };
+        spa_dict properties = SPA_DICT_INIT(items, 2);
+
+        int res = pw_filter_update_properties(m_pFilter, nullptr, &properties);
+        if (res >= 0) {
+            m_sampleRate = mixxx::audio::SampleRate(rate);
+            m_framesPerBuffer = framesPerBuffer;
+        }
+    }
 
     size_t numInPorts = 0;
     size_t numOutPorts = 0;
@@ -499,4 +515,8 @@ void PipewireEnumerator::createLink(uint32_t outNodeId,
     if (pProxy) {
         pw_proxy_destroy(pProxy);
     }
+}
+
+mixxx::audio::SampleRate PipewireEnumerator::getDefaultSampleRate() const {
+    return m_defaultSampleRate;
 }

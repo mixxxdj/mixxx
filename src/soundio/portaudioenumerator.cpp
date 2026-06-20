@@ -322,10 +322,7 @@ std::vector<std::string> PortAudioEnumerator::getAPIs() const {
 QList<mixxx::audio::SampleRate> PortAudioEnumerator::getSampleRates() const {
     // Hack because PortAudio samplerate enumeration is slow as hell on Linux
     // (ALSA dmix sucks, so we can't blame PortAudio)
-    return QList<mixxx::audio::SampleRate>{
-            mixxx::audio::SampleRate(44100),
-            mixxx::audio::SampleRate(48000),
-            mixxx::audio::SampleRate(96000)};
+    return QList<mixxx::audio::SampleRate>{};
 }
 
 QList<mixxx::audio::SampleRate> PortAudioEnumerator::getJackSampleRates() const {
