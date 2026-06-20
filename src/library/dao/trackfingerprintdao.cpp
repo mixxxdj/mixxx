@@ -4,8 +4,10 @@
 #include <QSqlRecord>
 #include <QVariant>
 #include <QtDebug>
+#include <cstring>
 
 #include "library/queryutil.h"
+#include "musicbrainz/fingerprintmatcher.h"
 
 namespace {
 const QString kFingerprintTableName = QStringLiteral("fingerprint_metadata");
@@ -18,6 +20,16 @@ const QString kStatusProcessing = QStringLiteral("processing");
 const QString kStatusCompleted = QStringLiteral("completed");
 const QString kStatusFailed = QStringLiteral("failed");
 const bool sDebugTrackFingerprintDao = true;
+
+QVector<quint32> chromaBytesToVector(const QByteArray& rawChromaData) {
+    const int numValues = rawChromaData.size() / static_cast<int>(sizeof(quint32));
+    if (numValues == 0) {
+        return {};
+    }
+    QVector<quint32> result(numValues);
+    std::memcpy(result.data(), rawChromaData.constData(), numValues * sizeof(quint32));
+    return result;
+}
 } // namespace
 
 TrackFingerprintDao::TrackFingerprintDao(UserSettingsPointer pConfig)
@@ -1578,59 +1590,37 @@ bool TrackFingerprintDao::clearFingerprintData(TrackId trackId) const {
     // TODO (XXX): Update this logic to select next canonical track
     // is a canonical Track is deleted, instead of just promoting the
     // first member found in the group.
+    // If this track was canonical in its group, re-elect a new canonical
+    // from the remaining members by quality_score (highest wins) and
+    // recalculate everyone else's offset against it. If it was the sole
+    // member, delete the now-empty group. Non-canonical tracks skip this
+    // step entirely — removing a regular member doesn't change anyone
+    // else's canonical status or offsets.
     {
         auto pMetadata = getFingerprintMetadata(trackId);
         if (pMetadata && pMetadata->isCanonical && pMetadata->cmrtGroupId >= 0) {
             const int groupId = pMetadata->cmrtGroupId;
 
-            // Look for another member in this group.
-            QSqlQuery q(m_database);
-            q.prepare(QStringLiteral(
-                    "SELECT track_id FROM %1 "
-                    "WHERE group_id = :group_id AND track_id != :track_id "
-                    "LIMIT 1")
-                            .arg(kCmrtMembersTableName));
-            q.bindValue(QStringLiteral(":group_id"), groupId);
-            q.bindValue(QStringLiteral(":track_id"), trackId.toVariant());
+            const QList<CmrtMember> members = getCmrtMembersForGroup(groupId);
 
-            if (q.exec() && q.next()) {
-                // Another member exists — promote it to canonical.
-                const TrackId newCanonical(q.value(0));
-
-                QSqlQuery updateGroup(m_database);
-                updateGroup.prepare(QStringLiteral(
-                        "UPDATE %1 SET canonical_track_id = :new_canonical "
-                        "WHERE group_id = :group_id")
-                                .arg(kCmrtGroupsTableName));
-                updateGroup.bindValue(QStringLiteral(":new_canonical"),
-                        newCanonical.toVariant());
-                updateGroup.bindValue(QStringLiteral(":group_id"), groupId);
-                if (!updateGroup.exec()) {
-                    LOG_FAILED_QUERY(updateGroup)
-                            << "couldn't reassign canonical for group" << groupId;
-                    return false; // ScopedTransaction destructor rolls back
+            // Highest quality_score among everyone except the track being
+            // deleted becomes the new canonical. quality_score is written
+            // by CmrtGroupingService when each member joins its group (see
+            // CmrtGroupingService::assignToExistingGroup() and
+            // ::createNewGroup()).
+            TrackId bestCandidateId;
+            double bestScore = -1.0;
+            for (const CmrtMember& member : members) {
+                if (member.trackId == trackId) {
+                    continue;
                 }
-
-                QSqlQuery updateMeta(m_database);
-                updateMeta.prepare(QStringLiteral(
-                        "UPDATE %1 SET is_canonical = 1 "
-                        "WHERE track_id = :track_id")
-                                .arg(kFingerprintTableName));
-                updateMeta.bindValue(QStringLiteral(":track_id"),
-                        newCanonical.toVariant());
-                if (!updateMeta.exec()) {
-                    LOG_FAILED_QUERY(updateMeta)
-                            << "couldn't promote new canonical in fingerprint_metadata";
-                    return false; // ScopedTransaction destructor rolls back
+                if (member.qualityScore > bestScore) {
+                    bestScore = member.qualityScore;
+                    bestCandidateId = member.trackId;
                 }
+            }
 
-                if (sDebugTrackFingerprintDao) {
-                    qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
-                                "promoted new canonical"
-                             << newCanonical
-                             << "for group" << groupId;
-                }
-            } else {
+            if (!bestCandidateId.isValid()) {
                 // No other members — delete the now-empty group.
                 QSqlQuery deleteGroup(m_database);
                 deleteGroup.prepare(QStringLiteral(
@@ -1647,6 +1637,65 @@ bool TrackFingerprintDao::clearFingerprintData(TrackId trackId) const {
                     qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
                                 "deleted empty group"
                              << groupId;
+                }
+            } else {
+                // Promote bestCandidateId to canonical then
+                // recalculate offsets for every other remaining
+                // member against the new canonical's fingerprint.
+                if (!updateCanonicalTrack(groupId, bestCandidateId)) {
+                    return false; // ScopedTransaction destructor rolls back
+                }
+                if (auto pNewCanonicalMeta = getFingerprintMetadata(bestCandidateId)) {
+                    pNewCanonicalMeta->isCanonical = true;
+                    pNewCanonicalMeta->cmrtOffsetSeconds = 0.0;
+                    if (!saveFingerprintMetadata(*pNewCanonicalMeta)) {
+                        return false; // ScopedTransaction destructor rolls back
+                    }
+                }
+                if (!updateMemberOffset(bestCandidateId, 0.0)) {
+                    return false; // ScopedTransaction destructor rolls back
+                }
+
+                if (!updateMemberMatchScore(bestCandidateId, -1.0)) {
+                    return false; // ScopedTransaction destructor rolls back
+                }
+
+                // O(member count) .chroma reads — fine for the small group
+                // sizes expected here (a handful of masterings per recording).
+                const QVector<quint32> newCanonicalFp =
+                        chromaBytesToVector(loadChromaFile(bestCandidateId));
+
+                for (const CmrtMember& member : members) {
+                    if (member.trackId == trackId || member.trackId == bestCandidateId) {
+                        continue;
+                    }
+
+                    const QVector<quint32> memberFp =
+                            chromaBytesToVector(loadChromaFile(member.trackId));
+                    const auto matchResult =
+                            mixxx::FingerprintMatcher::compare(memberFp, newCanonicalFp);
+                    const double offsetSeconds = matchResult.offsetItems *
+                            mixxx::FingerprintMatcher::kItemDurationSeconds;
+
+                    if (!updateMemberOffset(member.trackId, offsetSeconds)) {
+                        return false; // ScopedTransaction destructor rolls back
+                    }
+                    if (!updateMemberMatchScore(member.trackId, matchResult.score)) {
+                        return false; // ScopedTransaction destructor rolls back
+                    }
+                    if (auto pMemberMeta = getFingerprintMetadata(member.trackId)) {
+                        pMemberMeta->cmrtOffsetSeconds = offsetSeconds;
+                        if (!saveFingerprintMetadata(*pMemberMeta)) {
+                            return false; // ScopedTransaction destructor rolls back
+                        }
+                    }
+                }
+
+                if (sDebugTrackFingerprintDao) {
+                    qDebug() << "TrackFingerprintDao -> [clearFingerprintData] -> "
+                                "re-elected canonical by quality score"
+                             << bestCandidateId << "for group" << groupId
+                             << "bestScore:" << bestScore;
                 }
             }
         }
