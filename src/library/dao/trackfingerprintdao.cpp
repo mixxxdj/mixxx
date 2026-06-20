@@ -410,6 +410,99 @@ std::unique_ptr<CmrtGroup> TrackFingerprintDao::getCmrtGroup(int groupId) const 
     return nullptr;
 }
 
+QList<MbidGroupCandidate> TrackFingerprintDao::getGroupsForMbid(
+        const QString& musicbrainzRecordingId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getGroupsForMbid] -> entry"
+                 << "mbid:" << musicbrainzRecordingId;
+    }
+
+    if (!m_database.isOpen() || musicbrainzRecordingId.isEmpty()) {
+        qDebug() << "TrackFingerprintDao -> [getGroupsForMbid] -> "
+                    "aborting: database not open or empty mbid";
+        return {};
+    }
+
+    QSqlQuery query(m_database);
+    // cmrt_groups has no column of its own for "the recording MBID this
+    // group's tracks share" -- that MBID lives only on the canonical
+    // track's library row. Joining through canonical_track_id (the FK that
+    // already exists for this purpose) avoids denormalizing the MBID onto
+    // cmrt_groups as a new column.
+    query.prepare(QString(
+            "SELECT cg.group_id, cg.fingerprint_hash, cg.canonical_track_id "
+            "FROM %1 cg "
+            "JOIN library l ON cg.canonical_track_id = l.id "
+            "WHERE l.musicbrainz_recording_id = :mbid")
+                    .arg(kCmrtGroupsTableName));
+    query.bindValue(":mbid", musicbrainzRecordingId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't fetch cmrt_groups for mbid" << musicbrainzRecordingId;
+        return {};
+    }
+
+    QList<MbidGroupCandidate> candidates;
+    QSqlRecord record = query.record();
+    while (query.next()) {
+        MbidGroupCandidate candidate;
+        candidate.cmrtGroupId = query.value(record.indexOf("group_id")).toInt();
+        candidate.fingerprintHash =
+                query.value(record.indexOf("fingerprint_hash")).toUInt();
+        candidate.canonicalTrackId =
+                TrackId(query.value(record.indexOf("canonical_track_id")));
+        candidates.append(candidate);
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getGroupsForMbid] -> found"
+                 << candidates.size() << "candidate group(s) for mbid:"
+                 << musicbrainzRecordingId;
+    }
+    return candidates;
+}
+
+QList<MbidGroupCandidate> TrackFingerprintDao::getAllGroupCandidates() const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getAllGroupCandidates] -> entry";
+    }
+
+    if (!m_database.isOpen()) {
+        qDebug() << "TrackFingerprintDao -> [getAllGroupCandidates] -> "
+                    "aborting: database not open";
+        return {};
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "SELECT group_id, fingerprint_hash, canonical_track_id FROM %1")
+                    .arg(kCmrtGroupsTableName));
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch all cmrt_groups";
+        return {};
+    }
+
+    QList<MbidGroupCandidate> candidates;
+    QSqlRecord record = query.record();
+    while (query.next()) {
+        MbidGroupCandidate candidate;
+        candidate.cmrtGroupId = query.value(record.indexOf("group_id")).toInt();
+        candidate.fingerprintHash =
+                query.value(record.indexOf("fingerprint_hash")).toUInt();
+        candidate.canonicalTrackId =
+                TrackId(query.value(record.indexOf("canonical_track_id")));
+        candidates.append(candidate);
+    }
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getAllGroupCandidates] -> found"
+                 << candidates.size() << "group(s)";
+    }
+    return candidates;
+}
+
 bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
     if (sDebugTrackFingerprintDao) {
         qDebug() << "TrackFingerprintDao -> [addCmrtMember] -> entry"
