@@ -1131,8 +1131,9 @@ void AIBroFeature::slotSearchResultsReady(
         m_downloading = false;
         // Retry with a broader genre search instead of the same query
         QTimer::singleShot(kRetryDelayMs, this, [this]() {
-            if (!isActive())
+            if (!isActive()) {
                 return;
+            }
             // Fallback: search for genre terms to get variety (no remixes)
             QString fallbackQuery = QStringLiteral("ελληνικά 2024 2025");
             kLogger.info() << "AI Bro: fallback search:" << fallbackQuery;
@@ -1223,8 +1224,9 @@ void AIBroFeature::slotSearchFailed(
 // ===================================================================
 
 void AIBroFeature::loadAndBlend(const QString& localPath) {
-    if (!m_pPlayerManager || m_blending)
+    if (!m_pPlayerManager || m_blending) {
         return;
+    }
 
     int toDeck = findAvailableDeck();
     if (toDeck < 0) {
@@ -1283,8 +1285,9 @@ void AIBroFeature::startBlend(int fromDeck, int toDeck) {
 
     // Store session BPM for crossfade curve computation
     m_sessionBPM = getCurrentPlayingBPM();
-    if (m_sessionBPM <= 0)
+    if (m_sessionBPM <= 0) {
         m_sessionBPM = 120.0;
+    }
 
     // NO BPM sync — pure crossfade blending
     // Set rate range for potential manual tempo matching
@@ -1481,23 +1484,27 @@ void AIBroFeature::setPlay(int deckIndex, bool play) {
 // ===================================================================
 
 bool AIBroFeature::isDeckPlaying(int deckIndex) const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return false;
+    }
     auto* pPlayer = m_pPlayerManager->getDeck(deckIndex);
-    if (!pPlayer)
+    if (!pPlayer) {
         return false;
+    }
     ConfigKey playKey(
             QStringLiteral("[Channel%1]").arg(deckIndex + 1), "play");
     return ControlObject::get(playKey) > 0.0;
 }
 
 int AIBroFeature::countPlayingDecks() const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return 0;
+    }
     int count = 0;
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (isDeckPlaying(i))
+        if (isDeckPlaying(i)) {
             ++count;
+        }
     }
     return count;
 }
@@ -1505,14 +1512,17 @@ int AIBroFeature::countPlayingDecks() const {
 void AIBroFeature::updateCurrentTrackInfo() {
     m_currentTrackTitle.clear();
     m_currentTrackArtist.clear();
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return;
+    }
     auto* pPlayer = m_pPlayerManager->getDeck(m_iCurrentDeck);
-    if (!pPlayer)
+    if (!pPlayer) {
         return;
+    }
     TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return;
+    }
     m_currentTrackTitle = pTrack->getTitle();
     m_currentTrackArtist = pTrack->getArtist();
 }
