@@ -410,28 +410,28 @@ static double fadeIn(double t) {
 AIBroFeature::AIBroFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlayerManager* pPlayerManager,
-        YouTubeFeature* pYouTubeFeature){
-    : m_pProgressTimer(new QTimer(this)),
-} m_pBlendTimer(new QTimer(this)),
-        m_keyEnabled("[AIBro]", "enabled"),
-        m_controlEnabled(m_keyEnabled),
-        m_coCrossfader(ConfigKey("[Master]", "crossfader")),
-        m_downloading(false),
-        m_blending(false),
-        m_blendStep(0),
-        m_blendFromDeck(-1),
-        m_blendToDeck(-1),
-        m_iCurrentDeck(0),
-        m_lastSearchTimeMs(0),
-        m_manualTrackPath(),
-        m_manualTrackDeck(-1),
-        m_hasManualTrack(false),
-        m_blendCount(0),
-        m_sessionBPM(0.0),
-        m_pLibrary(pLibrary),
-        m_pConfig(pConfig),
-        m_pPlayerManager(pPlayerManager),
-        m_pYouTubeFeature(pYouTubeFeature) {
+        YouTubeFeature* pYouTubeFeature)
+        : m_pProgressTimer(new QTimer(this)),
+          m_pBlendTimer(new QTimer(this)),
+          m_keyEnabled("[AIBro]", "enabled"),
+          m_controlEnabled(m_keyEnabled),
+          m_coCrossfader(ConfigKey("[Master]", "crossfader")),
+          m_downloading(false),
+          m_blending(false),
+          m_blendStep(0),
+          m_blendFromDeck(-1),
+          m_blendToDeck(-1),
+          m_iCurrentDeck(0),
+          m_lastSearchTimeMs(0),
+          m_manualTrackPath(),
+          m_manualTrackDeck(-1),
+          m_hasManualTrack(false),
+          m_blendCount(0),
+          m_sessionBPM(0.0),
+          m_pLibrary(pLibrary),
+          m_pConfig(pConfig),
+          m_pPlayerManager(pPlayerManager),
+          m_pYouTubeFeature(pYouTubeFeature) {
 }
 
 AIBroFeature::~AIBroFeature() = default;
@@ -1131,9 +1131,8 @@ void AIBroFeature::slotSearchResultsReady(
         m_downloading = false;
         // Retry with a broader genre search instead of the same query
         QTimer::singleShot(kRetryDelayMs, this, [this]() {
-            if (!isActive()) {
+            if (!isActive())
                 return;
-            }
             // Fallback: search for genre terms to get variety (no remixes)
             QString fallbackQuery = QStringLiteral("ελληνικά 2024 2025");
             kLogger.info() << "AI Bro: fallback search:" << fallbackQuery;
@@ -1172,9 +1171,7 @@ void AIBroFeature::slotDownloadFinished(
     m_downloading = false;
 
     if (!isActive()) {
-        {
-            kLogger.info() << "AI Bro: download finished but deactivated";
-        }
+        kLogger.info() << "AI Bro: download finished but deactivated";
         return;
     }
 
@@ -1244,9 +1241,8 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
         return;
     }
 
-    kLogger.info() << "AI Bro: loading to deck" << (toDeck + 1) {
-        << "blending from deck" << (fromDeck + 1);
-    }
+    kLogger.info() << "AI Bro: loading to deck" << (toDeck + 1)
+                   << "blending from deck" << (fromDeck + 1);
 
     m_pPlayerManager->slotLoadToDeck(localPath, toDeck + 1);
 
@@ -1254,9 +1250,7 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
     m_blendToDeck = toDeck;
     QTimer::singleShot(kLoadToBlendDelayMs, this, [this]() {
         if (!isActive()) {
-            {
-                m_downloading = false;
-            }
+            m_downloading = false;
             return;
         }
         // Vocal sync: seek incoming track to estimated vocal start
@@ -1274,9 +1268,8 @@ void AIBroFeature::loadAndBlend(const QString& localPath) {
 }
 
 void AIBroFeature::startBlend(int fromDeck, int toDeck) {
-    kLogger.info() << "AI Bro: starting blend from deck" << (fromDeck + 1) {
-        << "to deck" << (toDeck + 1);
-    }
+    kLogger.info() << "AI Bro: starting blend from deck" << (fromDeck + 1)
+                   << "to deck" << (toDeck + 1);
 
     m_blending = true;
     m_blendStep = 0;
@@ -1290,9 +1283,8 @@ void AIBroFeature::startBlend(int fromDeck, int toDeck) {
 
     // Store session BPM for crossfade curve computation
     m_sessionBPM = getCurrentPlayingBPM();
-    if (m_sessionBPM <= 0) {
+    if (m_sessionBPM <= 0)
         m_sessionBPM = 120.0;
-    }
 
     // NO BPM sync — pure crossfade blending
     // Set rate range for potential manual tempo matching
@@ -1489,27 +1481,23 @@ void AIBroFeature::setPlay(int deckIndex, bool play) {
 // ===================================================================
 
 bool AIBroFeature::isDeckPlaying(int deckIndex) const {
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return false;
-    }
     auto* pPlayer = m_pPlayerManager->getDeck(deckIndex);
-    if (!pPlayer) {
+    if (!pPlayer)
         return false;
-    }
     ConfigKey playKey(
             QStringLiteral("[Channel%1]").arg(deckIndex + 1), "play");
     return ControlObject::get(playKey) > 0.0;
 }
 
 int AIBroFeature::countPlayingDecks() const {
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return 0;
-    }
     int count = 0;
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (isDeckPlaying(i)) {
+        if (isDeckPlaying(i))
             ++count;
-        }
     }
     return count;
 }
@@ -1517,25 +1505,21 @@ int AIBroFeature::countPlayingDecks() const {
 void AIBroFeature::updateCurrentTrackInfo() {
     m_currentTrackTitle.clear();
     m_currentTrackArtist.clear();
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return;
-    }
     auto* pPlayer = m_pPlayerManager->getDeck(m_iCurrentDeck);
-    if (!pPlayer) {
+    if (!pPlayer)
         return;
-    }
     TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (!pTrack) {
+    if (!pTrack)
         return;
-    }
     m_currentTrackTitle = pTrack->getTitle();
     m_currentTrackArtist = pTrack->getArtist();
 }
 
 int AIBroFeature::findAvailableDeck() const {
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return -1;
-    }
     return (m_iCurrentDeck == 0) ? 1 : 0;
 }
 
@@ -1550,13 +1534,11 @@ double AIBroFeature::getDeckPlayPosition(int deckIndex) const {
 // ===================================================================
 
 double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return 0.0;
-    }
     auto* pPlayer = m_pPlayerManager->getDeck(deckIndex);
-    if (!pPlayer) {
+    if (!pPlayer)
         return 0.0;
-    }
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (!pTrack)
         return 0.0;
@@ -1607,26 +1589,22 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
 
 QMap<int, QString> AIBroFeature::snapshotTrackLocations() const {
     QMap<int, QString> snapshot;
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return snapshot;
-    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer) {
+        if (!pPlayer)
             continue;
-        }
         TrackPointer pTrack = pPlayer->getLoadedTrack();
-        if (pTrack) {
+        if (pTrack)
             snapshot[i] = pTrack->getLocation();
-        }
     }
     return snapshot;
 }
 
 QString AIBroFeature::findNewManualTrack() {
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return {};
-    }
     QMap<int, QString> current = snapshotTrackLocations();
     for (auto it = current.begin(); it != current.end(); ++it) {
         int deck = it.key();
@@ -1639,9 +1617,8 @@ QString AIBroFeature::findNewManualTrack() {
             continue;
         }
         if (!isDeckPlaying(deck)) {
-            kLogger.info() << "AI Bro: manual track on deck" << (deck + 1) {
-                << ":" << location;
-            }
+            kLogger.info() << "AI Bro: manual track on deck" << (deck + 1)
+                           << ":" << location;
             return location;
         }
     }
@@ -1653,16 +1630,14 @@ QString AIBroFeature::findNewManualTrack() {
 // ===================================================================
 
 double AIBroFeature::getCurrentPlayingBPM() const {
-    if (!m_pPlayerManager) {
+    if (!m_pPlayerManager)
         return 0.0;
-    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         if (!isDeckPlaying(i))
             continue;
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer) {
+        if (!pPlayer)
             continue;
-        }
         TrackPointer pTrack = pPlayer->getLoadedTrack();
         if (pTrack) {
             double bpm = pTrack->getBpm();
@@ -1677,9 +1652,7 @@ double AIBroFeature::getCandidateBPM(
         const mixxx::YouTubeVideoInfo& candidate) const {
     QString title = candidate.title.toLower();
     if (title.contains("drum and bass") || title.contains("dnb") ||
-    {
             title.contains("drum & bass"))
-    }
         return 174.0;
     if (title.contains("dubstep") || title.contains("dub step"))
         return 140.0;
@@ -1698,14 +1671,10 @@ double AIBroFeature::getCandidateBPM(
     if (title.contains("electro"))
         return 128.0;
     if (title.contains("hip hop") || title.contains("hip-hop") ||
-    {
             title.contains("rap"))
-    }
         return 90.0;
     if (title.contains("r&b") || title.contains("rnb") ||
-    {
             title.contains("rhythm and blues"))
-    }
         return 85.0;
     if (title.contains("pop"))
         return 120.0;
