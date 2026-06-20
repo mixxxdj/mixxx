@@ -1,5 +1,7 @@
 #include "widget/wtracktableview.h"
 
+#include <qlogging.h>
+
 #include <QDrag>
 #include <QFileDialog>
 #include <QModelIndex>
@@ -534,11 +536,14 @@ void WTrackTableView::slotRelocateTrack() {
         location = QDir::homePath();
     }
 
+    qWarning() << SoundSourceProxy::getSupportedFileNamePatterns().join(" ");
+
     const QString newLocation = QFileDialog::getOpenFileName(
             this,
             tr("Locate missing file: %1").arg(pTrack->getTitle()),
             location,
-            tr("Audio Files (*.mp3 *.flac *.ogg *.wav *.aiff *.m4a *.opus);;All Files (*)"));
+            QString("Audio Files (%1)")
+                    .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
 
     if (newLocation.isEmpty()) {
         return;
