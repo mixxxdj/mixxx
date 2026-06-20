@@ -134,12 +134,12 @@ void ProFlangerEffect::processChannel(
         // Read from delay buffer with linear interpolation
         float readPos = pState->write_position - delaySamples;
         while (readPos < 0) {
-            readPos += kMaxDelaySamples;
+            readPos += ProFlangerGroupState::kMaxDelaySamples;
         }
 
         int readPosInt = static_cast<int>(readPos);
         float frac = readPos - readPosInt;
-        int readPos2 = (readPosInt + 1) % kMaxDelaySamples;
+        int readPos2 = (readPosInt + 1) % ProFlangerGroupState::kMaxDelaySamples;
 
         CSAMPLE delayed = pState->delay_buf[readPosInt] * (1.0f - frac) +
                 pState->delay_buf[readPos2] * frac;
@@ -151,7 +151,7 @@ void ProFlangerEffect::processChannel(
         pState->delay_buf[pState->write_position] = pInput[i] + delayed * smoothFeedback;
 
         // Advance write position
-        pState->write_position = (pState->write_position + 1) % kMaxDelaySamples;
+        pState->write_position = (pState->write_position + 1) % ProFlangerGroupState::kMaxDelaySamples;
 
         // Advance LFO phase
         pState->lfo_phase += phaseInc;
