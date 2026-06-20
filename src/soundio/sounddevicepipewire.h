@@ -27,9 +27,7 @@ class SoundDevicePipewire : public SoundDevice {
         return {};
     }
 
-    mixxx::audio::SampleRate getDefaultSampleRate() const override {
-        return SoundManagerConfig::kMixxxDefaultSampleRate;
-    }
+    mixxx::audio::SampleRate getDefaultSampleRate() const override;
 
     void writeOutput(float* output, int channel, int framesPerBuffer, int offset = 0);
     void writeInput(const float* input, int channel, int framesPerBuffer, int offset = 0);
