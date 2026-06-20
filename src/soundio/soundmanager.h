@@ -89,7 +89,7 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
-        return m_networkEnumerator->getNetworkStream();
+        return m_pNetworkEnumerator->getNetworkStream();
     }
 
     void underflowHappened(int code) {
@@ -165,11 +165,11 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
 
-    std::unique_ptr<PortAudioEnumerator> m_paEnumerator;
+    std::unique_ptr<PortAudioEnumerator> m_pPaEnumerator;
 
 #ifdef __PIPEWIRE__
-    std::unique_ptr<PipewireEnumerator> m_pipewireEnumerator;
+    std::unique_ptr<PipewireEnumerator> m_pPipewireEnumerator;
 #endif
 
-    std::unique_ptr<NetworkEnumerator> m_networkEnumerator;
+    std::unique_ptr<NetworkEnumerator> m_pNetworkEnumerator;
 };

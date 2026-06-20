@@ -23,13 +23,10 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     QList<mixxx::audio::SampleRate> getSampleRates() const override;
     std::vector<SoundDevicePointer> queryDevices() const override;
     std::vector<std::string> getAPIs() const override {
-        return std::vector<std::string>{"PipeWire"};
+        return m_initialized ? std::vector<std::string>{"PipeWire"} : std::vector<std::string>{};
     }
 
     void initialize();
-
-    pw_core* getCore();
-    pw_thread_loop* getThreadLoop();
 
     bool isOpen(uint32_t id);
     void openDevice(uint32_t id,
