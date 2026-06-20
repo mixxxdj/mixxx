@@ -728,10 +728,12 @@ void LoopingControl::setLoopInToCurrentPosition() {
                     ? prevBeatPosition
                     : nextBeatPosition;
             if (m_bAdjustingLoopIn) {
-                if (closestBeatPosition == position) {
-                    quantizedBeatPosition = closestBeatPosition;
-                } else {
+                // EXPERIMENT: snap loop-in to the closest beat while adjusting,
+                // instead of the previous beat (mirrors the loop-out change).
+                if (closestBeatPosition > info.trackEndPosition) {
                     quantizedBeatPosition = prevBeatPosition;
+                } else {
+                    quantizedBeatPosition = closestBeatPosition;
                 }
             } else {
                 if (closestBeatPosition > info.trackEndPosition) {
@@ -888,14 +890,13 @@ void LoopingControl::setLoopOutToCurrentPosition() {
                     ? prevBeatPosition
                     : nextBeatPosition;
             if (m_bAdjustingLoopOut) {
-                if (closestBeatPosition == position) {
-                    quantizedBeatPosition = closestBeatPosition;
+                // EXPERIMENT: snap loop-out to the closest beat while adjusting,
+                // instead of the next beat. This makes a momentary loop-out
+                // press behave the same whether or not a loop is already active.
+                if (closestBeatPosition > info.trackEndPosition) {
+                    quantizedBeatPosition = prevBeatPosition;
                 } else {
-                    if (nextBeatPosition > info.trackEndPosition) {
-                        quantizedBeatPosition = prevBeatPosition;
-                    } else {
-                        quantizedBeatPosition = nextBeatPosition;
-                    }
+                    quantizedBeatPosition = closestBeatPosition;
                 }
             } else {
                 if (closestBeatPosition > info.trackEndPosition) {
