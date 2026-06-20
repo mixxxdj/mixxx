@@ -353,8 +353,8 @@ void PipewireEnumerator::openDevice(uint32_t id,
         std::string latencyStr = std::to_string(framesPerBuffer) + "/" + std::to_string(rate);
 
         spa_dict_item items[] = {
-                SPA_DICT_ITEM(PW_KEY_NODE_RATE, rateStr.c_str()),
-                SPA_DICT_ITEM(PW_KEY_NODE_LATENCY, latencyStr.c_str()),
+                SPA_DICT_ITEM_INIT(PW_KEY_NODE_RATE, rateStr.c_str()),
+                SPA_DICT_ITEM_INIT(PW_KEY_NODE_LATENCY, latencyStr.c_str()),
         };
         spa_dict properties = SPA_DICT_INIT(items, 2);
 
