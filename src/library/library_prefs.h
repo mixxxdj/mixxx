@@ -72,6 +72,8 @@ extern const ConfigKey kAcoustIdUserApiKeyConfigKey;
 
 extern const ConfigKey kAcoustIdAutoSubmitConfigKey;
 
+extern const ConfigKey kCmrtAutoGroupingEnabledConfigKey;
+
 } // namespace prefs
 
 } // namespace library

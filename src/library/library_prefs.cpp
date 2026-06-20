@@ -144,3 +144,8 @@ const ConfigKey mixxx::library::prefs::kAcoustIdAutoSubmitConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("AcoustIdAutoSubmit")};
+
+const ConfigKey mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CmrtAutoGroupingEnabled")};
