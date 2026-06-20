@@ -313,7 +313,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="580"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U قائمة التشغيل (* .m3u ) ؛؛ M3U8 قائمة التشغيل (* .m3u8) ؛؛ PLS التشغيل (* .pls) ؛؛ CSV نص (* CSV.) ؛؛ نص مقروء (* txt)</translation>
+        <translation>M3U قائمة التشغيل (*.m3u);;M3U8 قائمة التشغيل (*.m3u8);;PLS قائمة التشغيل (*.pls);;نص CSV (*.csv);;نص مقروء (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -4089,7 +4089,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="793"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U قائمة التشغيل (* .m3u ) ؛؛ M3U8 قائمة التشغيل (* .m3u8) ؛؛ PLS التشغيل (* .pls) ؛؛ CSV نص (* CSV.) ؛؛ نص مقروء (* txt)</translation>
+        <translation>M3U قائمة التشغيل (*.m3u);;M3U8 قائمة التشغيل (*.m3u8);;PLS قائمة التشغيل (*.pls);;نص CSV (*.csv);;نص مقروء (*.txt)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="795"/>
