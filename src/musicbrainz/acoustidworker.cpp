@@ -77,6 +77,8 @@ void AcoustIdWorker::doRun() {
     m_pFingerprintDao = std::make_unique<TrackFingerprintDao>(m_pConfig);
     m_pFingerprintDao->initialize(dbConnection);
 
+    m_pGroupingService = std::make_unique<CmrtGroupingService>(*m_pFingerprintDao);
+
     // QNetworkAccessManager must be created in the thread that uses it.
     // Local QEventLoops in doLookup() and checkConnectivity() provide the
     // event dispatching it requires.
@@ -134,6 +136,7 @@ void AcoustIdWorker::doRun() {
         }
     }
 
+    m_pGroupingService.reset();
     m_pFingerprintDao.reset();
     m_pNetwork.reset();
 }
@@ -273,6 +276,12 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
                 pCached->musicbrainzReleaseId,
                 QString(),
                 QString());
+
+        // TODO(XXX):
+        // A cache hit means another track already has this exact SHA-256, so
+        // this track is a likely candidate for that track's CMRT group too
+        // Left out to keep the scope to - every NEW lookup also runs grouping
+
         m_pFingerprintDao->deleteQueueEntry(job.trackId);
         return true;
     }
@@ -347,6 +356,15 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
                 result.musicbrainzReleaseId,
                 result.musicbrainzTrackId,
                 result.musicbrainzArtistId);
+
+        // Hand off to the grouping pipeline on this same worker thread.
+        // Grouping only touches the local DB and a couple of small file
+        // reads — no network — so it doesn't meaningfully block the rate
+        // limiter below.
+        if (m_pConfig->getValue(mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey, true)) {
+            m_pGroupingService->processTrack(job.trackId, mbRecordingId);
+        }
+
         m_pFingerprintDao->deleteQueueEntry(job.trackId);
         return true;
     }
@@ -377,6 +395,15 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
             QString(),
             QString(),
             QString());
+
+    // No MBID to filter on, but processTrack() falls back to scanning every
+    // existing group via SimHash when musicbrainzRecordingId is empty —
+    // still worth running so this track isn't permanently excluded from
+    // CMRT grouping just because AcoustID didn't recognize it.
+    if (m_pConfig->getValue(mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey, true)) {
+        m_pGroupingService->processTrack(job.trackId, QString());
+    }
+
     m_pFingerprintDao->updateQueueStatus(
             job.queueId,
             QStringLiteral("unmatched"),

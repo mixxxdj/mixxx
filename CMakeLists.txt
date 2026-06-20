@@ -1506,6 +1506,7 @@ add_library(
   src/mixxxapplication.cpp
   src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
+  src/musicbrainz/cmrtgroupingservice.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/fingerprintmatcher.cpp
   src/musicbrainz/gzip.cpp

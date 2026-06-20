@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "library/dao/trackfingerprintdao.h"
+#include "musicbrainz/cmrtgroupingservice.h"
 #include "preferences/usersettings.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/workerthread.h"
@@ -108,6 +109,10 @@ class AcoustIdWorker : public WorkerThread {
     // Created in doRun() with a thread-local DB connection from the pool —
     // same pattern as AnalyzerThread + AnalysisDao.
     std::unique_ptr<TrackFingerprintDao> m_pFingerprintDao;
+
+    // Created in doRun() right after m_pFingerprintDao. Runs the CMRT
+    // grouping pipeline after a successful or unmatched AcoustID lookup
+    std::unique_ptr<CmrtGroupingService> m_pGroupingService;
 
     QList<AcoustIdJob> m_pendingJobs;
 };
