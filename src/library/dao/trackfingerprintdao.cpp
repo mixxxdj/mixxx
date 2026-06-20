@@ -503,6 +503,81 @@ QList<MbidGroupCandidate> TrackFingerprintDao::getAllGroupCandidates() const {
     return candidates;
 }
 
+std::optional<TrackQualityInfo> TrackFingerprintDao::getTrackQualityInfo(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getTrackQualityInfo] -> entry"
+                 << "trackId:" << trackId;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [getTrackQualityInfo] -> "
+                    "aborting: database not open or invalid trackId";
+        return std::nullopt;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT library.filetype, library.samplerate, track_locations.filesize "
+            "FROM library "
+            "JOIN track_locations ON library.location = track_locations.id "
+            "WHERE library.id = :track_id"));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch quality info for track" << trackId;
+        return std::nullopt;
+    }
+
+    if (!query.next()) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [getTrackQualityInfo] -> "
+                        "no library row found for trackId:"
+                     << trackId;
+        }
+        return std::nullopt;
+    }
+
+    QSqlRecord record = query.record();
+    TrackQualityInfo info;
+    info.filetype = query.value(record.indexOf("filetype")).toString();
+    info.sampleRate = query.value(record.indexOf("samplerate")).toInt();
+    info.fileSize = query.value(record.indexOf("filesize")).toLongLong();
+    return info;
+}
+
+bool TrackFingerprintDao::updateCanonicalTrack(int groupId, TrackId newCanonicalTrackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [updateCanonicalTrack] -> entry"
+                 << "groupId:" << groupId << "newCanonicalTrackId:" << newCanonicalTrackId;
+    }
+
+    if (!m_database.isOpen() || groupId < 0 || !newCanonicalTrackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [updateCanonicalTrack] -> "
+                    "aborting: database not open or invalid groupId/trackId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "UPDATE %1 SET canonical_track_id = :track_id WHERE group_id = :group_id")
+                    .arg(kCmrtGroupsTableName));
+    query.bindValue(":track_id", newCanonicalTrackId.toVariant());
+    query.bindValue(":group_id", groupId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't update canonical track for group" << groupId;
+        return false;
+    }
+
+    const bool affected = query.numRowsAffected() > 0;
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [updateCanonicalTrack] ->"
+                 << (affected ? "updated" : "no row found")
+                 << "groupId:" << groupId;
+    }
+    return affected;
+}
+
 bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
     if (sDebugTrackFingerprintDao) {
         qDebug() << "TrackFingerprintDao -> [addCmrtMember] -> entry"
