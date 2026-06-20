@@ -18,10 +18,11 @@
 #endif
 #include "effects/backends/builtin/autogaincontroleffect.h"
 #include "effects/backends/builtin/autopaneffect.h"
+#include "effects/backends/builtin/beatrepeateffect.h"
 #include "effects/backends/builtin/compressoreffect.h"
 #include "effects/backends/builtin/distortioneffect.h"
-#include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/djechoeffect.h"
+#include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/glitcheffect.h"
 #include "effects/backends/builtin/keycomparisoneffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
@@ -30,7 +31,6 @@
 #include "effects/backends/builtin/profiltereffect.h"
 #include "effects/backends/builtin/pronoiseeffect.h"
 #include "effects/backends/builtin/proreverbeffect.h"
-#include "effects/backends/builtin/beatrepeateffect.h"
 #include "effects/backends/builtin/tapestopeffect.h"
 #ifdef __RUBBERBAND__
 #include "effects/backends/builtin/pitchshifteffect.h"

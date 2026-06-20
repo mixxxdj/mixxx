@@ -196,8 +196,10 @@ CSAMPLE BeatRepeatEffect::processRepeatSample(BeatRepeatGroupState* pState,
 
     // Advance read position with pitch shift
     double pitchMultiplier = std::pow(2.0, static_cast<double>(pState->prev_pitch));
-    if (pitchMultiplier < 0.25) pitchMultiplier = 0.25;
-    if (pitchMultiplier > 4.0) pitchMultiplier = 4.0;
+    if (pitchMultiplier < 0.25)
+        pitchMultiplier = 0.25;
+    if (pitchMultiplier > 4.0)
+        pitchMultiplier = 4.0;
 
     pState->read_position += pitchMultiplier;
 
