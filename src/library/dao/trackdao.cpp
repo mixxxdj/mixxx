@@ -1788,8 +1788,7 @@ bool TrackDAO::relocateTrack(const Track& track, const mixxx::FileInfo& newLocat
                     << "to" << newLocation;
 
     SqlTransaction transaction(m_database);
-    QSqlQuery query(m_database);
-    query.prepare(
+    FwdSqlQuery query(m_database,
             "UPDATE track_locations SET "
             "location = :location,"
             "directory = :directory,"
@@ -1801,12 +1800,10 @@ bool TrackDAO::relocateTrack(const Track& track, const mixxx::FileInfo& newLocat
     query.bindValue(":location", newLocation.location());
     query.bindValue(":directory", newLocation.locationPath());
     query.bindValue(":filename", newLocation.fileName());
-    query.bindValue(":filesize", newLocation.sizeInBytes());
+    query.bindValue(":filesize", QVariant::fromValue(newLocation.sizeInBytes()));
     query.bindValue(":trackId", trackId.toVariant());
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
+    if (query.hasError() || !query.execPrepared()) {
         return false;
     }
 
