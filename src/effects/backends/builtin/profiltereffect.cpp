@@ -123,7 +123,7 @@ EffectManifestPointer ProFilterEffect::getManifest() {
     pCutoff->setName(QObject::tr("Cutoff"));
     pCutoff->setDescription(QObject::tr("Filter cutoff frequency"));
     pCutoff->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
-    pCutoff->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    pCutoff->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
     pCutoff->setRange(0.0, 0.5, 1.0);
 
     auto pResonance = pManifest->addParameter();
@@ -147,7 +147,7 @@ EffectManifestPointer ProFilterEffect::getManifest() {
     pGain->setName(QObject::tr("Gain"));
     pGain->setDescription(QObject::tr("Gain (for peaking mode, in dB)"));
     pGain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    pGain->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    pGain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     pGain->setRange(-1.0, 0.0, 1.0);
 
     return pManifest;
@@ -169,7 +169,8 @@ void ProFilterEffect::processChannel(
         [[maybe_unused]] const EffectEnableState enableState,
         [[maybe_unused]] const GroupFeatureState& groupFeatures) {
     const int sampleRate = engineParameters.sampleRate();
-    const int numSamples = engineParameters.framesPerBuffer();
+    const SINT numSamples = engineParameters.samplesPerBuffer();
+    const int chCount = engineParameters.channelCount();
 
     double cutoff_raw = m_pCutoffParameter->value();
     double resonance_raw = m_pResonanceParameter->value();
@@ -195,8 +196,8 @@ void ProFilterEffect::processChannel(
     computeBiquadCoefficients(
             smoothCutoff, smoothResonance, smoothGain, &b0, &b1, &b2, &a1, &a2, mode, sampleRate);
 
-    for (int i = 0; i < numSamples; ++i) {
-        int ch = i % 2;
+    for (SINT i = 0; i < numSamples; ++i) {
+        int ch = i % chCount;
 
         double x0 = static_cast<double>(pInput[i]);
         double y0 = b0 * x0 + b1 * pState->x1[ch] + b2 * pState->x2[ch] -

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 
 #include "effects/backends/effectmanifest.h"
@@ -124,7 +125,7 @@ void ProNoiseEffect::processChannel(
         [[maybe_unused]] const EffectEnableState enableState,
         [[maybe_unused]] const GroupFeatureState& groupFeatures) {
     const int sampleRate = engineParameters.sampleRate();
-    const int numSamples = engineParameters.framesPerBuffer();
+    const SINT numSamples = engineParameters.samplesPerBuffer();
 
     double send = m_pSendParameter->value();
     double color = m_pColorParameter->value();
@@ -134,16 +135,22 @@ void ProNoiseEffect::processChannel(
     mode = std::clamp(mode, 0, NUM_MODES - 1);
 
     double smoothSend = pState->prev_send + kSmoothCoeff * (send - pState->prev_send);
-    double smoothColor = pState->prev_color + kSmoothCoeff * (color - pState->prev_color);
     double smoothBandwidth = pState->prev_bandwidth +
             kSmoothCoeff * (bandwidth - pState->prev_bandwidth);
 
     pState->prev_send = static_cast<CSAMPLE>(smoothSend);
-    pState->prev_color = static_cast<CSAMPLE>(smoothColor);
     pState->prev_bandwidth = static_cast<CSAMPLE>(smoothBandwidth);
 
-    double bp_center = 1000.0 + smoothBandwidth * 8000.0;
-    double bp_q = 1.0 + smoothBandwidth * 4.0;
+    // Use color to blend between white (0) and pink (1) noise
+    // For bandpass mode, color controls the center frequency offset
+    double bp_center, bp_q;
+    if (mode == BANDPASS) {
+        bp_center = 500.0 + smoothBandwidth * 9500.0;
+        bp_q = 0.5 + color * 9.5;
+    } else {
+        bp_center = 1000.0 + smoothBandwidth * 8000.0;
+        bp_q = 1.0 + smoothBandwidth * 4.0;
+    }
     double w0 = 2.0 * M_PI * bp_center / sampleRate;
     double cosw0 = std::cos(w0);
     double sinw0 = std::sin(w0);
@@ -162,7 +169,7 @@ void ProNoiseEffect::processChannel(
     a1 /= a0;
     a2 /= a0;
 
-    for (int i = 0; i < numSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         CSAMPLE noise;
 
         switch (mode) {
@@ -187,6 +194,13 @@ void ProNoiseEffect::processChannel(
         default:
             noise = generateWhiteNoise();
             break;
+        }
+
+        // Blend white/pink based on color parameter (only for non-bandpass modes)
+        if (mode != BANDPASS) {
+            CSAMPLE whiteNoise = generateWhiteNoise();
+            CSAMPLE pinkNoise = generatePinkNoise(pState);
+            noise = whiteNoise * (1.0f - color) + pinkNoise * color;
         }
 
         pOutput[i] = static_cast<CSAMPLE>(pInput[i] + noise * smoothSend);

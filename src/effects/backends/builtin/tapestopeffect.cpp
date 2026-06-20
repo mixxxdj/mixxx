@@ -67,7 +67,8 @@ void TapeStopEffect::processChannel(
         [[maybe_unused]] const EffectEnableState enableState,
         [[maybe_unused]] const GroupFeatureState& groupFeatures) {
     const int sampleRate = engineParameters.sampleRate();
-    const int numSamples = engineParameters.framesPerBuffer();
+    const SINT numSamples = engineParameters.samplesPerBuffer();
+    const int chCount = engineParameters.channelCount();
 
     const CSAMPLE_GAIN enable = static_cast<CSAMPLE_GAIN>(m_pEnableParameter->value());
     const CSAMPLE_GAIN speed = static_cast<CSAMPLE_GAIN>(m_pSpeedParameter->value());
@@ -87,12 +88,11 @@ void TapeStopEffect::processChannel(
             pState->stop_start_pos = pState->write_position;
         }
 
-        // Calculate deceleration rate
-        // Speed goes from current to kMinSpeed over the duration
-        const double totalSamples = duration * sampleRate;
-        const double decelRate = (pState->speed - kMinSpeed) / totalSamples;
+        // Calculate deceleration rate per sample (total samples = duration * sampleRate * chCount)
+        const double totalSamples = duration * sampleRate * chCount;
+        const double decelRate = totalSamples > 0.0 ? (pState->speed - kMinSpeed) / totalSamples : 0.0;
 
-        for (int i = 0; i < numSamples; ++i) {
+        for (SINT i = 0; i < numSamples; ++i) {
             // Decelerate
             pState->speed -= decelRate;
             if (pState->speed < kMinSpeed) {
@@ -128,7 +128,7 @@ void TapeStopEffect::processChannel(
         }
     } else {
         // Disabled: pass through
-        for (int i = 0; i < numSamples; ++i) {
+        for (SINT i = 0; i < numSamples; ++i) {
             pOutput[i] = pInput[i];
             pState->delay_buf[pState->write_position] = pInput[i];
             pState->write_position = (pState->write_position + 1) % pState->delay_buf.size();

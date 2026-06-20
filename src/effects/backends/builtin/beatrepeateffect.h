@@ -49,7 +49,7 @@ class BeatRepeatGroupState : public EffectState {
     int write_position;
     int loop_start;
     int loop_length;
-    int read_position;
+    double read_position;
     bool is_recording;
     int repeat_count;
     CSAMPLE fade_state;
@@ -58,7 +58,7 @@ class BeatRepeatGroupState : public EffectState {
 class BeatRepeatEffect : public EffectProcessorImpl<BeatRepeatGroupState> {
   public:
     BeatRepeatEffect() = default;
-    ~BeatRepeatEffect() override = default;
+    ~BeatRepeatEffect() override = default();
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -75,6 +75,11 @@ class BeatRepeatEffect : public EffectProcessorImpl<BeatRepeatGroupState> {
             const GroupFeatureState& groupFeatures) override;
 
   private:
+    CSAMPLE processRepeatSample(BeatRepeatGroupState* pState,
+            int loopLen,
+            CSAMPLE_GAIN decay,
+            CSAMPLE_GAIN gate);
+
     QString debugString() const {
         return getId();
     }

@@ -138,7 +138,7 @@ void ProReverbEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         [[maybe_unused]] const EffectEnableState enableState,
         [[maybe_unused]] const GroupFeatureState& groupFeatures) {
-    const int numSamples = engineParameters.framesPerBuffer();
+    const SINT numSamples = engineParameters.samplesPerBuffer();
 
     const CSAMPLE_GAIN send = static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
     const CSAMPLE_GAIN feedback = static_cast<CSAMPLE_GAIN>(m_pFeedbackParameter->value());
@@ -159,7 +159,7 @@ void ProReverbEffect::processChannel(
 
     const double damp_coeff = kDampingMin + effectiveDamping * (kDampingMax - kDampingMin);
 
-    for (int i = 0; i < numSamples; ++i) {
+    for (SINT i = 0; i < numSamples; ++i) {
         CSAMPLE inputSample = pInput[i];
 
         CSAMPLE delayedSum = 0.0f;

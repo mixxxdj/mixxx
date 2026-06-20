@@ -37,7 +37,7 @@ EffectManifestPointer BeatRepeatEffect::getManifest() {
     pInterval->setId("interval");
     pInterval->setName(QObject::tr("Interval"));
     pInterval->setDescription(QObject::tr("Loop length in beats"));
-    pInterval->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
+    pInterval->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pInterval->setUnitsHint(EffectManifestParameter::UnitsHint::Beats);
     pInterval->setRange(0.25, 1.0, 4.0);
 
@@ -85,7 +85,7 @@ void BeatRepeatEffect::processChannel(
         [[maybe_unused]] const EffectEnableState enableState,
         [[maybe_unused]] const GroupFeatureState& groupFeatures) {
     const int sampleRate = engineParameters.sampleRate();
-    const int numSamples = engineParameters.framesPerBuffer();
+    const SINT numSamples = engineParameters.samplesPerBuffer();
     const int chCount = engineParameters.channelCount();
 
     const CSAMPLE_GAIN enable = static_cast<CSAMPLE_GAIN>(m_pEnableParameter->value());
@@ -105,10 +105,9 @@ void BeatRepeatEffect::processChannel(
     pState->prev_pitch = static_cast<CSAMPLE_GAIN>(smoothPitch);
 
     // Calculate loop length in samples based on interval (beats)
-    // Assume 120 BPM default if no tempo info
     double bpm = 120.0;
-    double beatSamples = (60.0 / bpm) * sampleRate;
-    int loopLen = std::max(1, static_cast<int>(smoothInterval * beatSamples * chCount));
+    double beatSamples = (60.0 / bpm) * sampleRate * chCount;
+    int loopLen = std::max(chCount, static_cast<int>(smoothInterval * beatSamples));
 
     if (loopLen > pState->delay_buf.size()) {
         loopLen = pState->delay_buf.size();
@@ -118,65 +117,38 @@ void BeatRepeatEffect::processChannel(
     if (enable > 0.5) {
         if (pState->is_recording) {
             // Record into buffer
-            for (int i = 0; i < numSamples; ++i) {
+            SINT recorded = 0;
+            for (SINT i = 0; i < numSamples; ++i) {
                 pState->delay_buf[pState->write_position] = pInput[i];
                 pOutput[i] = pInput[i]; // Pass through while recording
                 pState->write_position = (pState->write_position + 1) % pState->delay_buf.size();
-
-                if (pState->write_position == loopLen) {
+                recorded++;
+                if ((int)recorded >= loopLen) {
                     // Finished recording, start repeating
                     pState->is_recording = false;
                     pState->loop_start = 0;
                     pState->loop_length = loopLen;
-                    pState->read_position = 0;
+                    pState->read_position = 0.0;
                     pState->repeat_count = 0;
                     pState->fade_state = 1.0f;
+                    // Process remaining samples in repeat mode
+                    for (SINT j = i + 1; j < numSamples; ++j) {
+                        CSAMPLE sample = processRepeatSample(pState, loopLen, decay, gate);
+                        pOutput[j] = sample;
+                    }
                     break;
                 }
             }
         } else {
             // Repeat mode
-            CSAMPLE_GAIN volume = static_cast<CSAMPLE_GAIN>(pState->fade_state);
-            CSAMPLE_GAIN decayPerSample = static_cast<CSAMPLE_GAIN>(decay * 0.001f); // Slow decay
-
-            for (int i = 0; i < numSamples; ++i) {
-                // Read from loop with optional pitch shift (simple resampling)
-                int readPos = pState->loop_start + pState->read_position;
-                if (readPos >= pState->delay_buf.size()) {
-                    readPos -= pState->delay_buf.size();
-                }
-
-                CSAMPLE sample = pState->delay_buf[readPos] * volume;
-
-                // Gate effect: mute every other beat
-                if (gate > 0.5) {
-                    int gatePos = pState->read_position % (loopLen / 2);
-                    if (gatePos >= loopLen / 4) {
-                        sample *= 0.0f;
-                    }
-                }
-
+            for (SINT i = 0; i < numSamples; ++i) {
+                CSAMPLE sample = processRepeatSample(pState, loopLen, decay, gate);
                 pOutput[i] = sample;
-
-                // Advance read position with pitch shift
-                double pitchMultiplier = std::pow(2.0, smoothPitch);
-                pState->read_position += static_cast<int>(pitchMultiplier);
-
-                if (pState->read_position >= pState->loop_length) {
-                    pState->read_position = 0;
-                    pState->repeat_count++;
-                    volume -= decayPerSample * pState->loop_length;
-                    if (volume < 0.0f) {
-                        volume = 0.0f;
-                    }
-                }
             }
-
-            pState->fade_state = volume;
         }
     } else {
         // Disabled: pass through and reset
-        for (int i = 0; i < numSamples; ++i) {
+        for (SINT i = 0; i < numSamples; ++i) {
             pOutput[i] = pInput[i];
         }
         pState->is_recording = true;
@@ -184,4 +156,60 @@ void BeatRepeatEffect::processChannel(
         pState->repeat_count = 0;
         pState->fade_state = 1.0f;
     }
+}
+
+CSAMPLE BeatRepeatEffect::processRepeatSample(BeatRepeatGroupState* pState,
+        int loopLen,
+        CSAMPLE_GAIN decay,
+        CSAMPLE_GAIN gate) {
+    CSAMPLE_GAIN volume = pState->fade_state;
+    CSAMPLE_GAIN decayPerSample = decay * 0.001f;
+
+    // Read from loop with optional pitch shift (linear interpolation)
+    int readPos = pState->loop_start + static_cast<int>(pState->read_position);
+    int readPos2 = readPos + 1;
+    double frac = pState->read_position - static_cast<int>(pState->read_position);
+
+    // Wrap positions
+    if (readPos >= pState->delay_buf.size()) {
+        readPos = readPos % pState->delay_buf.size();
+    }
+    if (readPos2 >= pState->delay_buf.size()) {
+        readPos2 = readPos2 % pState->delay_buf.size();
+    }
+
+    CSAMPLE sample = pState->delay_buf[readPos] * (1.0 - frac) +
+            pState->delay_buf[readPos2] * frac;
+    sample *= volume;
+
+    // Gate effect: mute portions of the loop
+    if (gate > 0.5 && loopLen > 4) {
+        int halfLoop = loopLen / 2;
+        if (halfLoop > 0) {
+            int gatePos = static_cast<int>(pState->read_position) % halfLoop;
+            int quarterLoop = halfLoop / 2;
+            if (quarterLoop > 0 && gatePos >= quarterLoop) {
+                sample = 0.0f;
+            }
+        }
+    }
+
+    // Advance read position with pitch shift
+    double pitchMultiplier = std::pow(2.0, static_cast<double>(pState->prev_pitch));
+    if (pitchMultiplier < 0.25) pitchMultiplier = 0.25;
+    if (pitchMultiplier > 4.0) pitchMultiplier = 4.0;
+
+    pState->read_position += pitchMultiplier;
+
+    if (pState->read_position >= pState->loop_length) {
+        pState->read_position = 0.0;
+        pState->repeat_count++;
+        volume -= decayPerSample * pState->loop_length;
+        if (volume < 0.0f) {
+            volume = 0.0f;
+        }
+        pState->fade_state = volume;
+    }
+
+    return sample;
 }
