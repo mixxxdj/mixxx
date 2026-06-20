@@ -93,6 +93,12 @@ struct UnmatchedTrackInfo {
     bool fingerprintValid{false};
 };
 
+struct MbidGroupCandidate {
+    int cmrtGroupId{-1};
+    quint32 fingerprintHash{0}; // cmrt_groups.fingerprint_hash
+    TrackId canonicalTrackId;
+};
+
 class TrackFingerprintDao : public DAO {
   public:
     explicit TrackFingerprintDao(UserSettingsPointer pConfig);
@@ -107,6 +113,9 @@ class TrackFingerprintDao : public DAO {
     // cmrt_groups operations
     int createCmrtGroup(const CmrtGroup& group) const;
     std::unique_ptr<CmrtGroup> getCmrtGroup(int groupId) const;
+
+    QList<MbidGroupCandidate> getGroupsForMbid(const QString& musicbrainzRecordingId) const;
+    QList<MbidGroupCandidate> getAllGroupCandidates() const;
 
     // cmrt_members operations
     bool addCmrtMember(const CmrtMember& member) const;
