@@ -8,6 +8,7 @@
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
+#include "util/performancetimer.h"
 
 class ControlPushButton;
 class ControlObject;
@@ -266,6 +267,7 @@ class LoopingControl : public EngineControl {
     // Flag that allows to act quantized only if we have true track beats.
     // See quantizeEnabledAndHasTrueTrackBeats()
     bool m_trueTrackBeats;
+    PerformanceTimer m_loopOutPressTimer;
 
     friend class LoopingControlTest;
 };

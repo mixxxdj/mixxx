@@ -403,7 +403,16 @@ void LoopingControl::process(const double rate,
     if (m_bAdjustingLoopIn) {
         setLoopInToCurrentPosition();
     } else if (m_bAdjustingLoopOut) {
-        setLoopOutToCurrentPosition();
+        if (quantizeEnabledAndHasTrueTrackBeats()) {
+            // Adjust loop_out only if the button was longpressed
+            const auto loopOutPressDuration = m_loopOutPressTimer.elapsed();
+            if (loopOutPressDuration.toIntegerMillis() >
+                    ControlPushButtonBehavior::kLongPressLatchingTimeMillis) {
+                setLoopOutToCurrentPosition();
+            }
+        } else {
+            setLoopOutToCurrentPosition();
+        }
     }
 }
 
@@ -979,14 +988,29 @@ void LoopingControl::slotLoopOut(double pressed) {
     // when this button is released.
     if (m_bLoopingEnabled) {
         if (pressed > 0.0) {
-            m_bAdjustingLoopOut = true;
             // Adjusting both the in and out point at the same time makes no sense
             m_bAdjustingLoopIn = false;
+            // If m_bAdjustingLoopOut is true, process() continuously calls
+            // setLoopOutToCurrentPosition().
+            // However, with quantize enabled and the loop eing active it snaps
+            // to the NEXT beat -- compared to CLOSEST beat if the loop is disabled.
+            // This causes unintended behavior if you're used to press loop_out
+            // on beat (by ear). See https://github.com/mixxxdj/mixxx/issues/16612
+            //
+            // Workaround:
+            // call setLoopOutToCurrentPosition() first to snap to the closest beat,
+            // then set m_bAdjustingLoopOut.
+            // Additionally start a timer so process() does setLoopOutToCurrentPosition()
+            // only kLongpressThresholdMillis after press.
+            setLoopOutToCurrentPosition();
+            m_loopOutPressTimer.restart();
+            m_bAdjustingLoopOut = true;
         } else {
             // If this button was pressed to set the loop out point when loop
             // was disabled, that will enable looping, so avoid moving the
             // loop out point when the button is released.
             if (!m_bLoopOutPressedWhileLoopDisabled) {
+                m_bAdjustingLoopOut = false;
                 setLoopOutToCurrentPosition();
                 LoopInfo loopInfo = m_loopInfo.getValue();
                 if (loopInfo.startPosition < loopInfo.endPosition) {
@@ -994,7 +1018,6 @@ void LoopingControl::slotLoopOut(double pressed) {
                 } else {
                     emit loopReset();
                 }
-                m_bAdjustingLoopOut = false;
             } else {
                 m_bLoopOutPressedWhileLoopDisabled = false;
             }
