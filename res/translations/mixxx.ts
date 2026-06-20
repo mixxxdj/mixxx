@@ -213,7 +213,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="559"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="594"/>
         <source>Export Playlist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -260,13 +260,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="368"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="372"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="383"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="531"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="566"/>
         <source>Playlist Creation Failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="384"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="532"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="567"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -281,12 +281,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="563"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="598"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="561"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="596"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3865,12 +3865,12 @@ trace    - Above + Profiling messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="465"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="466"/>
         <source>Official Website</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="475"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="476"/>
         <source>Donate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9055,12 +9055,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectManifestTableModel</name>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="49"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="48"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="51"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11299,13 +11299,13 @@ Fully right: end of the effect period</source>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="60"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="474"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="489"/>
         <source> encoder failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="62"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="476"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="491"/>
         <source>Failed to apply the selected settings.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -11911,193 +11911,193 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>ShoutConnection</name>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="81"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="86"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="88"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="93"/>
         <source>Mixxx encountered a problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="82"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="89"/>
         <source>Could not allocate shout_t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="87"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="94"/>
         <source>Could not allocate shout_metadata_t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="92"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="99"/>
         <source>Error setting non-blocking mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="101"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="108"/>
         <source>Error setting tls mode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="289"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
         <source>Error setting hostname!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="303"/>
         <source>Error setting port!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="302"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="309"/>
         <source>Error setting password!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="308"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
         <source>Error setting mount!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="314"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="321"/>
         <source>Error setting username!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="319"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="326"/>
         <source>Error setting stream name!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="324"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="333"/>
         <source>Error setting stream description!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="329"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="338"/>
         <source>Error setting stream genre!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="334"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
         <source>Error setting stream url!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="340"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="349"/>
         <source>Error setting stream IRC!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="347"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
         <source>Error setting stream AIM!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="354"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="363"/>
         <source>Error setting stream ICQ!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="360"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="369"/>
         <source>Error setting stream public!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="380"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
         <source>Unknown stream encoding format!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="381"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="390"/>
         <source>Use a libshout version with %1 enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="387"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="402"/>
         <source>Error setting stream encoding format!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="402"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="417"/>
         <source>Broadcasting at 96 kHz with Ogg Vorbis is not currently supported. Please try a different sample rate or switch to a different encoding.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="405"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="420"/>
         <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="414"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="429"/>
         <source>Unsupported sample rate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="423"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="438"/>
         <source>Error setting bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="438"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="453"/>
         <source>Error: unknown server protocol!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="443"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="458"/>
         <source>Error: Shoutcast only supports MP3 and AAC encoders</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="449"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="464"/>
         <source>Error setting protocol!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="681"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="696"/>
         <source>Network cache overflow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="901"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="927"/>
         <source>Connection error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="902"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="928"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="916"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="942"/>
         <source>Connection message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="917"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="943"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="967"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="993"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="996"/>
         <source>Lost connection to streaming server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="975"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1001"/>
         <source>Please check your connection to the Internet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1010"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1036"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1012"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1038"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation type="unfinished"></translation>
     </message>
