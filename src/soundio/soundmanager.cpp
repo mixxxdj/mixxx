@@ -53,11 +53,11 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_underflowUpdateCount(0),
           m_audioLatencyOverloadCount(kAppGroup, QStringLiteral("audio_latency_overload_count")),
           m_audioLatencyOverload(kAppGroup, QStringLiteral("audio_latency_overload")),
-          m_paEnumerator(std::make_unique<PortAudioEnumerator>(pConfig, this)),
+          m_pPaEnumerator(std::make_unique<PortAudioEnumerator>(pConfig, this)),
 #ifdef __PIPEWIRE__
-          m_pipewireEnumerator(std::make_unique<PipewireEnumerator>(pConfig, this)),
+          m_pPipewireEnumerator(std::make_unique<PipewireEnumerator>(pConfig, this)),
 #endif
-          m_networkEnumerator(std::make_unique<NetworkEnumerator>(pConfig, this)) {
+          m_pNetworkEnumerator(std::make_unique<NetworkEnumerator>(pConfig, this)) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -66,6 +66,8 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
+
+    m_pPipewireEnumerator->initialize();
 
     queryDevices();
 
@@ -130,12 +132,12 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
 QList<QString> SoundManager::getHostAPIList() const {
     QList<QString> apiList;
 
-    for (const auto& api : m_paEnumerator->getAPIs()) {
+    for (const auto& api : m_pPaEnumerator->getAPIs()) {
         apiList.push_back(api.c_str());
     }
 
 #ifdef __PIPEWIRE__
-    for (const auto& api : m_pipewireEnumerator->getAPIs()) {
+    for (const auto& api : m_pPipewireEnumerator->getAPIs()) {
         apiList.push_back(api.c_str());
     }
 #endif
@@ -231,7 +233,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     m_devices.clear();
     m_pErrorDevice.clear();
 
-    m_paEnumerator->terminate();
+    m_pPaEnumerator->terminate();
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
@@ -239,15 +241,15 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api)
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
-        samplerates = m_paEnumerator->getJackSampleRates();
+        samplerates = m_pPaEnumerator->getJackSampleRates();
     }
 #ifdef __PIPEWIRE__
     else if (api == MIXXX_PIPEWIRE_STRING) {
-        samplerates = m_pipewireEnumerator->getSampleRates();
+        samplerates = m_pPipewireEnumerator->getSampleRates();
     }
 #endif
     else if (!api.isEmpty()) {
-        samplerates = m_paEnumerator->getSampleRates();
+        samplerates = m_pPaEnumerator->getSampleRates();
     }
 
     if (!samplerates.empty()) {
@@ -269,21 +271,21 @@ void SoundManager::queryDevices() {
     qDebug() << "SoundManager::queryDevices()";
 
     m_devices.clear();
-    m_paEnumerator->initialize();
+    m_pPaEnumerator->initialize();
 
-    for (auto& device : m_paEnumerator->queryDevices()) {
+    for (auto& device : m_pPaEnumerator->queryDevices()) {
         m_devices.push_back(device);
         qDebug() << "m_devices.push_back " << device->getDisplayName();
     }
 
 #ifdef __PIPEWIRE__
-    for (auto& device : m_pipewireEnumerator->queryDevices()) {
+    for (auto& device : m_pPipewireEnumerator->queryDevices()) {
         m_devices.push_back(device);
         qDebug() << "m_devices.push_back " << device->getDisplayName();
     }
 #endif
 
-    for (auto& device : m_networkEnumerator->queryDevices()) {
+    for (auto& device : m_pNetworkEnumerator->queryDevices()) {
         m_devices.push_back(device);
         qDebug() << "m_devices.push_back " << device->getDisplayName();
     }
