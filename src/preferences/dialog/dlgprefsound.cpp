@@ -126,16 +126,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_SOUND_API_URL));
 
-    sampleRateComboBox->clear();
-    const auto sampleRates = m_pSoundManager->getSampleRates();
-    for (const auto& sampleRate : sampleRates) {
-        if (sampleRate.isValid()) {
-            // no ridiculous sample rate values. prohibiting zero means
-            // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
-                    QVariant::fromValue(sampleRate));
-        }
-    }
+    updateSampleRates(m_pSoundManager->getSampleRates());
     connect(sampleRateComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -1181,4 +1172,16 @@ void DlgPrefSound::checkLatencyCompensation() {
 
 bool DlgPrefSound::okayToClose() const {
     return m_configValid;
+}
+
+void DlgPrefSound::updateSampleRates(QList<mixxx::audio::SampleRate> sampleRates) {
+    sampleRateComboBox->clear();
+    for (const auto& sampleRate : sampleRates) {
+        if (sampleRate.isValid()) {
+            // no ridiculous sample rate values. prohibiting zero means
+            // avoiding a potential div-by-0 error in ::updateLatencies
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate));
+        }
+    }
 }

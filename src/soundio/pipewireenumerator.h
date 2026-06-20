@@ -32,8 +32,13 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     pw_thread_loop* getThreadLoop();
 
     bool isOpen(uint32_t id);
-    void openDevice(uint32_t id, std::set<uint8_t> inChannels, std::set<uint8_t> outChannels);
+    void openDevice(uint32_t id,
+            const std::set<uint8_t> inChans,
+            const std::set<uint8_t> outChans,
+            mixxx::audio::SampleRate rate,
+            uint32_t framesPerBuffer);
     void closeDevice(uint32_t id);
+    mixxx::audio::SampleRate getDefaultSampleRate() const;
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
@@ -153,11 +158,9 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     using SoundDeviceMap = std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>>;
     std::atomic<std::shared_ptr<SoundDeviceMap>> m_soundDevices;
-    // std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
     using DeviceMap = std::unordered_map<uint32_t, Device>;
     std::atomic<std::shared_ptr<DeviceMap>> m_openedDevices;
-    // std::unordered_map<uint32_t, Device> m_openedDevices;
 
     bool m_initialized;
     uint64_t xrun_duration;
@@ -165,6 +168,9 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     double m_lastCallbackEntrytoDacSecs;
     PerformanceTimer m_clkRefTimer;
     mixxx::audio::SampleRate m_sampleRate;
+    mixxx::audio::SampleRate m_defaultSampleRate;
+
+    uint32_t m_framesPerBuffer;
 
     PollingControlProxy m_audioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
