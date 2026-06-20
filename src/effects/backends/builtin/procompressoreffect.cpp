@@ -117,13 +117,12 @@ void ProCompressorEffect::loadEngineEffectParameters(
 
 void ProCompressorEffect::processChannel(
         ProCompressorGroupState* pState,
-                const CSAMPLE* pInput,
-                CSAMPLE* pOutput,
-                const mixxx::EngineParameters& engineParameters,
-                const EffectEnableState enableState,
-                const GroupFeatureState& groupFeatures) {
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
+        const mixxx::EngineParameters& engineParameters,
+        [[maybe_unused]] const EffectEnableState enableState,
+        [[maybe_unused]] const GroupFeatureState& groupFeatures) {
     const SINT numSamples = engineParameters.samplesPerBuffer();
-    const int chCount = engineParameters.channelCount();
     const float sampleRate = static_cast<float>(engineParameters.sampleRate());
 
     float threshold = m_pThresholdParameter->value();
@@ -132,9 +131,6 @@ void ProCompressorEffect::processChannel(
     float release = m_pReleaseParameter->value();
     float makeup = m_pMakeupParameter->value();
     float dryWet = m_pDryWetParameter->value();
-
-    // Convert threshold from dB to linear
-    float thresholdLin = db2ratio(threshold);
 
     // Attack/release coefficients
     float attackCoeff = std::exp(-1.0f / (attack * 0.001f * sampleRate));
@@ -152,8 +148,6 @@ void ProCompressorEffect::processChannel(
     float thresholdSmoothLin = db2ratio(smoothThreshold);
 
     for (SINT i = 0; i < numSamples; ++i) {
-        int ch = i % chCount;
-
         // Compute input level (peak detection)
         float inputAbs = std::abs(pInput[i]);
 
