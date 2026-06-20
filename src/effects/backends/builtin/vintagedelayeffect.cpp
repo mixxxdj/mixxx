@@ -94,13 +94,6 @@ void VintageDelayEffect::processChannel(
     // Compute delay in samples
     int delaySamples = static_cast<int>(time * sampleRate * 0.001f);
 
-    // Low-pass filter coefficient based on tone
-    // tone = 0 -> dark (low cutoff), tone = 1 -> bright (high cutoff)
-    float cutoffFreq = 800.0f + tone * 12000.0f; // 800Hz to 12800Hz
-    float rc = 1.0f / (2.0f * 3.14159265f * cutoffFreq);
-    float dt = 1.0f / sampleRate;
-    float alpha = dt / (rc + dt);
-
     // Smooth parameters
     float smoothFeedback = pState->prev_feedback + 0.001f * (feedback - pState->prev_feedback);
     float smoothTone = pState->prev_tone + 0.001f * (tone - pState->prev_tone);
