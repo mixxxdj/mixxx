@@ -128,7 +128,8 @@ void ProFlangerEffect::processChannel(
         }
 
         // Compute modulated delay
-        float delaySamples = baseDelaySamples + modDepthMs * sampleRate * 0.001f * (lfo * 0.5f + 0.5f);
+        float delaySamples = baseDelaySamples +
+                modDepthMs * sampleRate * 0.001f * (lfo * 0.5f + 0.5f);
 
         // Read from delay buffer with linear interpolation
         float readPos = pState->write_position - delaySamples;

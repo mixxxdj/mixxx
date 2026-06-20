@@ -8,7 +8,7 @@
 #include "util/samplebuffer.h"
 
 // Professional DJ Flanger
-# LFO-modulated delay line with feedback, based on Calf DSP flanger algorithms
+#LFO - modulated delay line with feedback, based on Calf DSP flanger algorithms
 
 class FlangerGroupState : public EffectState {
   public:

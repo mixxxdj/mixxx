@@ -131,7 +131,8 @@ void VintageDelayEffect::processChannel(
                 pState->delay_buf[readPos2] * frac;
 
         // Apply low-pass filter (tape character)
-        pState->lp_state[ch] = pState->lp_state[ch] + smoothAlpha * (delayed - pState->lp_state[ch]);
+        pState->lp_state[ch] = pState->lp_state[ch] +
+                smoothAlpha * (delayed - pState->lp_state[ch]);
         CSAMPLE filtered = pState->lp_state[ch];
 
         // Write to delay buffer with feedback
