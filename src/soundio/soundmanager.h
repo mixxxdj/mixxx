@@ -10,6 +10,8 @@
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
+#include "soundio/networkenumerator.h"
+#include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/cmdlineargs.h"
@@ -17,17 +19,6 @@
 
 class EngineMixer;
 class ControlObject;
-
-#define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
-#define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
-#define MIXXX_PORTAUDIO_OSS_STRING "OSS"
-#define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
-#define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
-// NOTE: This is what our patched version of PortAudio uses for the Core Audio
-// backend on iOS. If/when upstream supports iOS officially
-// (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
-#define MIXXX_PORTAUDIO_IOSAUDIO_STRING "iOS Audio"
-#define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
 
 #define SOUNDMANAGER_DISCONNECTED 0
 #define SOUNDMANAGER_CONNECTING 1
@@ -49,8 +40,6 @@ class SoundManager : public QObject {
     // Creates a list of sound devices
     void clearAndQueryDevices();
     void queryDevices();
-    void queryDevicesPortaudio();
-    void queryDevicesMixxx();
 
     static SoundDevicePointer selectLocalTimeSyncRef(
             const QHash<SoundDevicePointer, QList<AudioOutput>>& deviceOutputs,
@@ -102,7 +91,7 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
-        return m_pNetworkStream;
+        return m_networkEnumerator.getNetworkStream();
     }
 
     void underflowHappened(int code) {
@@ -144,17 +133,13 @@ class SoundManager : public QObject {
     // isn't open is safe.
     void closeDevices(bool sleepAfterClosing, bool async = false);
 
-    void setJACKName() const;
     bool jackApiUsed() const {
         return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
     EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
-    bool m_paInitialized;
-    mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
-    QList<mixxx::audio::SampleRate> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
@@ -164,10 +149,11 @@ class SoundManager : public QObject {
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
 
-    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
-
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
+
+    PortAudioEnumerator m_paEnumerator;
+    NetworkEnumerator m_networkEnumerator;
 };
