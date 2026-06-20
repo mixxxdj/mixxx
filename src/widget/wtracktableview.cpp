@@ -536,8 +536,6 @@ void WTrackTableView::slotRelocateTrack() {
         location = QDir::homePath();
     }
 
-    qWarning() << SoundSourceProxy::getSupportedFileNamePatterns().join(" ");
-
     const QString newLocation = QFileDialog::getOpenFileName(
             this,
             tr("Locate missing file: %1").arg(pTrack->getTitle()),
