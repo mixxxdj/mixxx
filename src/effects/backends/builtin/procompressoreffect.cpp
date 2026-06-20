@@ -116,12 +116,12 @@ void ProCompressorEffect::loadEngineEffectParameters(
 }
 
 void ProCompressorEffect::processChannel(
-        CompressorGroupState* pState,
-        const CSAMPLE* pInput,
-        CSAMPLE* pOutput,
-        const mixxx::EngineParameters& engineParameters,
-        [[maybe_unused]] const EffectEnableState enableState,
-        [[maybe_unused]] const GroupFeatureState& groupFeatures) {
+        ProCompressorGroupState* pState,
+                const CSAMPLE* pInput,
+                CSAMPLE* pOutput,
+                const mixxx::EngineParameters& engineParameters,
+                const EffectEnableState enableState,
+                const GroupFeatureState& groupFeatures) {
     const SINT numSamples = engineParameters.samplesPerBuffer();
     const int chCount = engineParameters.channelCount();
     const float sampleRate = static_cast<float>(engineParameters.sampleRate());

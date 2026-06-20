@@ -10,14 +10,14 @@
 // Professional DJ Compressor
 // Smooth compression for DJ mixing, based on Calf DSP compressor algorithms
 
-class CompressorGroupState : public EffectState {
+class ProCompressorGroupState : public EffectState {
   public:
-    CompressorGroupState(const mixxx::EngineParameters& engineParameters)
+    ProCompressorGroupState(const mixxx::EngineParameters& engineParameters)
             : EffectState(engineParameters) {
         audioParametersChanged(engineParameters);
         clear();
     }
-    ~CompressorGroupState() override = default;
+    ~ProCompressorGroupState() override = default;
 
     void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
         m_sampleRate = engineParameters.sampleRate();
@@ -46,7 +46,7 @@ class CompressorGroupState : public EffectState {
     float prev_env[2];
 };
 
-class ProCompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
+class ProCompressorEffect : public EffectProcessorImpl<ProCompressorGroupState> {
   public:
     ProCompressorEffect() = default;
     ~ProCompressorEffect() override = default;
@@ -58,7 +58,7 @@ class ProCompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
     void processChannel(
-            CompressorGroupState* pState,
+            ProCompressorGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const mixxx::EngineParameters& engineParameters,

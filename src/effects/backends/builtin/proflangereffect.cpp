@@ -81,7 +81,7 @@ void ProFlangerEffect::loadEngineEffectParameters(
 }
 
 void ProFlangerEffect::processChannel(
-        FlangerGroupState* pState,
+        ProFlangerGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
