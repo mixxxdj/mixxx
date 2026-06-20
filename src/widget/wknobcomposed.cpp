@@ -2,7 +2,9 @@
 
 #include <QStyleOption>
 #include <QStylePainter>
+#include <QToolTip>
 #include <QTransform>
+#include <cmath>
 
 #include "moc_wknobcomposed.cpp"
 #include "widget/wskincolor.h"
@@ -227,6 +229,21 @@ void WKnobComposed::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void WKnobComposed::mousePressEvent(QMouseEvent* e) {
+    double rawValue = getControlParameterDisplay();
+    double normalizedValue = (rawValue - 0.5) * 2.0;
+
+    QString formattedValue;
+    const double tolerance = 1e-6;
+    if (std::fabs(normalizedValue + 1.0) < tolerance ||
+            std::fabs(normalizedValue) < tolerance ||
+            std::fabs(normalizedValue - 1.0) < tolerance) {
+        formattedValue = QString::number(normalizedValue, 'f', 0);
+    } else {
+        formattedValue = QString::number(normalizedValue, 'f', 2);
+    }
+
+    QToolTip::showText(e->globalPosition().toPoint(), formattedValue);
+
     m_handler.mousePressEvent(this, e);
 }
 
