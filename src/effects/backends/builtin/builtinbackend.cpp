@@ -23,6 +23,9 @@
 #include "effects/backends/builtin/distortioneffect.h"
 #include "effects/backends/builtin/djechoeffect.h"
 #include "effects/backends/builtin/echoeffect.h"
+#include "effects/backends/builtin/procompressoreffect.h"
+#include "effects/backends/builtin/proflangereffect.h"
+#include "effects/backends/builtin/vintagedelayeffect.h"
 #include "effects/backends/builtin/glitcheffect.h"
 #include "effects/backends/builtin/keycomparisoneffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
@@ -61,6 +64,9 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
     registerEffect<DJEchoEffect>();
+    registerEffect<ProCompressorEffect>();
+    registerEffect<ProFlangerEffect>();
+    registerEffect<VintageDelayEffect>();
     registerEffect<AutoPanEffect>();
     registerEffect<ProReverbEffect>();
     registerEffect<ProFilterEffect>();
