@@ -7,7 +7,7 @@
 #include "engine/effects/engineeffectparameter.h"
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846f
 #endif
 
 QString ProFlangerEffect::getId() {
@@ -107,7 +107,7 @@ void ProFlangerEffect::processChannel(ProFlangerGroupState* pState,
     pState->prev_feedback = smoothFeedback;
 
     // LFO phase increment
-    float phaseInc = (2.0f * M_PI * smoothRate) / sampleRate;
+    float phaseInc = (2.0f * 3.14159265f * smoothRate) / sampleRate;
 
     // Base delay in samples (0.5ms to 5ms range for flanger)
     float baseDelayMs = 1.0f;
@@ -160,8 +160,8 @@ void ProFlangerEffect::processChannel(ProFlangerGroupState* pState,
 
         // Advance LFO phase
         pState->lfo_phase += phaseInc;
-        while (pState->lfo_phase > 2.0f * M_PI) {
-            pState->lfo_phase -= 2.0f * M_PI;
+        while (pState->lfo_phase > 2.0f * 3.14159265f) {
+            pState->lfo_phase -= 2.0f * 3.14159265f;
         }
 
         // Output with dry/wet mix controlled by depth
