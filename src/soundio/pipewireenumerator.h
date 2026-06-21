@@ -127,15 +127,15 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     SoundManager* m_pSoundManager;
     UserSettingsPointer m_pConfig;
 
-    pw_core* m_pCore;
-    pw_registry* m_pRegistry;
-    pw_context* m_pContext;
-    pw_metadata* m_pMetadata;
-    pw_thread_loop* m_pThreadLoop;
-    spa_hook m_registryListener;
-    spa_hook m_metadataListener;
-    spa_hook m_filterListener;
-    pw_filter* m_pFilter;
+    pw_thread_loop* m_pPwThreadLoop;
+    pw_context* m_pPwContext;
+    pw_core* m_pPwCore;
+    pw_registry* m_pPwRegistry;
+    pw_metadata* m_pPwMetadata;
+    pw_filter* m_pPwFilter;
+    spa_hook m_pwRegistryListener;
+    spa_hook m_pwFilterListener;
+    spa_hook m_pwMetadataListener;
 
     struct Device {
         struct Port {
