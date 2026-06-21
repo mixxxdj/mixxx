@@ -170,7 +170,7 @@ ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
 *	<i>FPS: %0/%1</i>
 *	\u276f
 *	\u276e
-de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL,pt_PT	Album
+de,hu,bs,cs,da,fr,hr,id,it,lb,ms,nb,nl,nn,oc,pl,ro,sk,sl,sv,vi,sq_AL	Album
 de,da,fr,lb,ms,nl,oc,sv	Genre
 de,it,pl	Bitrate:
 es,es_419,es_AR,es_CO,es_MX,ca,es_ES	Error:
@@ -331,7 +331,7 @@ fr	%1 minutes
 fr,it	Bypass Fr.
 fr,sv	Gain 1
 fr,sv	Gain 2
-fr,it,ru,es*	Queen Mary University London
+fr,it,ru,es*,ko	Queen Mary University London
 fr,nl,sv	Distortion
 fr,de	Ratio (:1)
 fr,de	Ratio
@@ -363,7 +363,7 @@ es*,fr,it,nl,pt*,sq_AL,sv	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
-fr,it,nl,zh*	 pt
+fr,it,nl,zh*,ko	 pt
 it	Password
 nl,sv,vi	Equalizers
 nl,it	Controllers
@@ -395,7 +395,7 @@ de,fr,it,nl,pl	Echo
 de,it,nl,sv	Feedback
 de,nl,sl,sv	Filter
 de	Regeneration
-de,it,nl,pl,pt,pt_PT,ru,zh*	BW
+de,it,nl,pl,pt,pt_PT,ru,zh*,ko	BW
 de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
 nl	Track #
 de	Name
@@ -423,7 +423,7 @@ de,it,ja,nl,pt*,ro	Deck 1
 de,it,ja,nl,pt*,ro	Deck 2
 de,it,ja,nl	Deck 3
 de,it,ja,nl	Deck 4
-de,fr,it,nl,sl,sv	 fps
+de,fr,it,nl,sl,sv,ko	 fps
 de,nl	Decks
 de,nl	Track
 de,nl	Tracks
@@ -448,3 +448,4 @@ de	Attack (ms)
 de	Attack
 vi	Samplerate
 it,tr	Mount
+ko	Return
