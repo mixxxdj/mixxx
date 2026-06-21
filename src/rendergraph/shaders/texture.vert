@@ -1,4 +1,4 @@
-#version 440
+#version 310 es
 
 layout(std140, binding = 0) uniform buf {
     highp mat4 matrix;

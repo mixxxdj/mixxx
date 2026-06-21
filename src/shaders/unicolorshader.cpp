@@ -5,7 +5,8 @@ using namespace mixxx;
 void UnicolorShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform highp mat4 matrix;
-attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
+in highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
+out highp vec4 fragColor;
 void main()
 {
     gl_Position = matrix * position;
@@ -14,9 +15,10 @@ void main()
 
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform highp vec4 color;
+out highp vec4 fragColor;
 void main()
 {
-    gl_FragColor = color;
+    fragColor = color;
 }
 )--");
 

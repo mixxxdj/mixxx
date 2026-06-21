@@ -1,4 +1,5 @@
-#version 440
+#version 310 es
+precision mediump float;
 
 layout(std140, binding = 0) uniform buf {
     highp mat4 matrix;
