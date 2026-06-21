@@ -123,7 +123,7 @@ EncoderPointer EncoderFactory::createEncoder(
     } else {
         qWarning() << "Unsupported format requested! "
                 << QString(pSettings ? pSettings->getFormat() : QString("NULL"));
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
         pEncoder = std::make_shared<EncoderWave>(pCallback);
     }
     return pEncoder;
@@ -151,7 +151,7 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
         return std::make_shared<EncoderFdkAacSettings>(pConfig, format.internalName);
     } else {
         qWarning() << "Unsupported format requested! " << format.internalName;
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
         return std::make_shared<EncoderWaveSettings>(pConfig, ENCODING_WAVE);
     }
 }

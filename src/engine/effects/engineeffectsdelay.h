@@ -42,10 +42,12 @@ class EngineEffectsDelay final : public EngineObject {
     /// a zero delay. When is the delay set, the EngineEffectsDelay::process
     /// method works with this set delay value until the value is changed.
     void setDelayFrames(SINT delayFrames) {
-        VERIFY_OR_DEBUG_ASSERT(delayFrames >= 0) {
+        if (delayFrames < 0) {
+            DEBUG_ASSERT_UNREACHABLE(false);
             delayFrames = 0;
         }
-        VERIFY_OR_DEBUG_ASSERT(delayFrames <= kMaxDelayFrames) {
+        if (delayFrames > kMaxDelayFrames) {
+            DEBUG_ASSERT_UNREACHABLE(false);
             delayFrames = kMaxDelayFrames;
         }
 
