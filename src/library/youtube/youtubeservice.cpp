@@ -156,7 +156,6 @@ const QStringList kPipedInstances = {
         QStringLiteral("https://api.piped.projectsegfau.lt"),
         QStringLiteral("https://pipedapi.orangenet.cc"),
         QStringLiteral("https://pi.ggtyler.dev"),
-        QStringLiteral("https://pipedapi.kavin.rocks"),
 };
 
 // InnerTube client contexts tried in order by downloadViaInnerTubeClient().
