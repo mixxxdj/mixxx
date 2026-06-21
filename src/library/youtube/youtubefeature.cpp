@@ -1160,9 +1160,8 @@ void YouTubeFeature::onSearchResultsReady(
     Q_EMIT showTrackModel(m_pTrackModel);
     // Focus the track table so the user can immediately navigate results
     // with arrow keys without needing to click or tab first.
-    if (m_pLibrary && m_pLibrary->m_pLibraryControl) {
-        m_pLibrary->m_pLibraryControl->setLibraryFocus(
-                FocusWidget::TracksTable, Qt::ShortcutFocusReason);
+    if (m_pLibrary) {
+        m_pLibrary->setLibraryFocus(FocusWidget::TracksTable, Qt::ShortcutFocusReason);
     }
     if (!m_lastQuery.isEmpty() &&
             !m_lastQuery.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {

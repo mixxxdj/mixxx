@@ -97,6 +97,9 @@ class Library : public QObject {
     YouTubeFeature* youtubeFeature() const {
         return m_pYouTubeFeature.get();
     }
+    void setLibraryFocus(FocusWidget widget, Qt::FocusReason reason) {
+        m_pLibraryControl->setLibraryFocus(widget, reason);
+    }
 
     bool isTrackIdInCurrentLibraryView(const TrackId& trackId);
 
