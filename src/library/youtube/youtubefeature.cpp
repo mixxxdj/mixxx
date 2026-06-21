@@ -1388,6 +1388,21 @@ void YouTubeFeature::onDownloadFinished(
     pTrack->setTitle(title.isEmpty() ? videoId : title);
     pTrack->setAlbum(QStringLiteral("YouTube"));
     pTrack->setComment(videoId);
+    // Set cover info from the thumbnail if it has already been downloaded
+    // (e.g. from a previous search). This ensures the vinyl widget and
+    // other cover-art-aware widgets display the YouTube thumbnail.
+    if (!m_thumbnailDir.isEmpty()) {
+        const QString thumbPath = m_thumbnailDir + QLatin1Char('/') +
+                videoId + QStringLiteral(".jpg");
+        if (QFileInfo::exists(thumbPath)) {
+            CoverInfo coverInfo;
+            coverInfo.type = CoverInfo::FILE;
+            coverInfo.source = CoverInfo::GUESSED;
+            coverInfo.setImageDigest(videoId.toUtf8(), /*legacyHash=*/0);
+            coverInfo.coverLocation = thumbPath;
+            pTrack->setCoverInfo(coverInfo);
+        }
+    }
     // Auto-detect genre from the search query that found this track. If the
     // user searched for "frenchcore 2024" or clicked the "Hard Techno" genre
     // shortcut, the track gets tagged automatically so the library's genre

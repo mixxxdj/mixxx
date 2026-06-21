@@ -41,7 +41,27 @@ TrackPointer YouTubeTrackModel::getTrack(const QModelIndex& index) const {
         // signal path which carries the target deck group.
         return TrackPointer();
     }
-    return BaseExternalTrackModel::getTrack(index);
+    TrackPointer pTrack = BaseExternalTrackModel::getTrack(index);
+    // If a thumbnail has been downloaded for this YouTube video, attach
+    // it as FILE-type CoverInfo so that the vinyl widget, cover art
+    // label, and any other track-cover-aware widget can display it.
+    if (pTrack && !m_thumbnailDir.isEmpty()) {
+        const QString videoId = getFieldString(
+                index, ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+        if (!videoId.isEmpty()) {
+            const QString thumbPath = m_thumbnailDir + QLatin1Char('/') +
+                    videoId + QStringLiteral(".jpg");
+            if (QFileInfo::exists(thumbPath)) {
+                CoverInfo coverInfo;
+                coverInfo.type = CoverInfo::FILE;
+                coverInfo.source = CoverInfo::GUESSED;
+                coverInfo.setImageDigest(videoId.toUtf8(), /*legacyHash=*/0);
+                coverInfo.coverLocation = thumbPath;
+                pTrack->setCoverInfo(coverInfo);
+            }
+        }
+    }
+    return pTrack;
 }
 
 QUrl YouTubeTrackModel::getTrackUrl(const QModelIndex& index) const {
