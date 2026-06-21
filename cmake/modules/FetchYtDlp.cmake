@@ -27,7 +27,7 @@
 
 set(
   YTDLP_VERSION
-  "2026.03.17"
+  "2026.06.09"
   CACHE STRING
   "Pinned yt-dlp release tag to bundle inside Mixxx"
 )
@@ -39,14 +39,14 @@ if(WIN32)
   set(_ytdlp_asset "yt-dlp.exe")
   set(
     _ytdlp_sha256
-    "3db811b366b2da47337d2fcfdfe5bbd9a258dad3f350c54974f005df115a1545"
+    "3a48cb955d55c8821b60ccbdbbc6f61bc958f2f3d3b7ad5eaf3d83a543293a27"
   )
   set(_ytdlp_install_name "yt-dlp.exe")
 elseif(APPLE)
   set(_ytdlp_asset "yt-dlp_macos")
   set(
     _ytdlp_sha256
-    "e80c47b3ce712acee51d5e3d4eace2d181b44d38f1942c3a32e3c7ff53cd9ed5"
+    "b82c3626952e6c14eaf654cc565866775ffd0b9ffb7021628ac59b42c2f4f244"
   )
   set(_ytdlp_install_name "yt-dlp")
 elseif(UNIX)
@@ -57,7 +57,7 @@ elseif(UNIX)
     set(_ytdlp_asset "yt-dlp_linux")
     set(
       _ytdlp_sha256
-      "c2b0189f581fe4a2ddd41954f1bcb7d327db04b07ed0dea97e4f1b3e09b5dd8e"
+      "bf8aac79b72287a6d2043074415132558b43743a8f9461a22b0141e90f16ce66"
     )
     set(_ytdlp_install_name "yt-dlp")
   endif()

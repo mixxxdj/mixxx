@@ -4,10 +4,12 @@ using namespace mixxx;
 
 void RGBShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
+#version 310 es
+precision mediump float;
 uniform highp mat4 matrix;
-attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
-attribute highp vec3 color;
-varying highp vec3 vColor;
+in highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
+in highp vec3 color;
+out highp vec3 vColor;
 void main()
 {
     vColor = color;
@@ -16,10 +18,13 @@ void main()
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-varying highp vec3 vColor;
+#version 310 es
+precision mediump float;
+in highp vec3 vColor;
+out highp vec4 fragColor;
 void main()
 {
-    gl_FragColor = vec4(vColor, 1.0);
+    fragColor = vec4(vColor, 1.0);
 }
 )--");
 

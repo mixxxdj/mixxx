@@ -28,10 +28,13 @@
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
 #include "effects/backends/builtin/phasereffect.h"
+#include "effects/backends/builtin/procompressoreffect.h"
 #include "effects/backends/builtin/profiltereffect.h"
+#include "effects/backends/builtin/proflangereffect.h"
 #include "effects/backends/builtin/pronoiseeffect.h"
 #include "effects/backends/builtin/proreverbeffect.h"
 #include "effects/backends/builtin/tapestopeffect.h"
+#include "effects/backends/builtin/vintagedelayeffect.h"
 #ifdef __RUBBERBAND__
 #include "effects/backends/builtin/pitchshifteffect.h"
 #endif
@@ -61,6 +64,9 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<FlangerEffect>();
     registerEffect<EchoEffect>();
     registerEffect<DJEchoEffect>();
+    registerEffect<ProCompressorEffect>();
+    registerEffect<ProFlangerEffect>();
+    registerEffect<VintageDelayEffect>();
     registerEffect<AutoPanEffect>();
     registerEffect<ProReverbEffect>();
     registerEffect<ProFilterEffect>();
@@ -97,8 +103,7 @@ BuiltInBackend::~BuiltInBackend() {
     m_effectIds.clear();
 }
 
-void BuiltInBackend::registerEffectInner(
-        const QString& id,
+void BuiltInBackend::registerEffectInner(const QString& id,
         EffectManifestPointer pManifest,
         EffectProcessorInstantiator instantiator) {
     VERIFY_OR_DEBUG_ASSERT(!m_registeredEffects.contains(id)) {
@@ -115,7 +120,8 @@ const QList<QString> BuiltInBackend::getEffectIds() const {
     return m_effectIds;
 }
 
-EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const {
+EffectManifestPointer BuiltInBackend::getManifest(
+        const QString& effectId) const {
     return m_registeredEffects.value(effectId).pManifest;
 }
 

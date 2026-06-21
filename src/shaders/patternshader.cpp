@@ -5,9 +5,10 @@ using namespace mixxx;
 void PatternShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform highp mat4 matrix;
-attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
-attribute highp vec2 texcoor;
-varying highp vec2 vTexcoor;
+in highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
+in highp vec2 texcoor;
+in highp vec2 vTexcoor;
+out highp vec4 fragColor;
 void main()
 {
     vTexcoor = texcoor;
@@ -18,10 +19,11 @@ void main()
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform sampler2D texture;
 uniform highp vec2 repetitions;
-varying highp vec2 vTexcoor;
+in highp vec2 vTexcoor;
+out highp vec4 fragColor;
 void main()
 {
-    gl_FragColor = texture2D(texture, fract(vTexcoor * repetitions));
+    fragColor = texture(texture, fract(vTexcoor * repetitions));
 }
 )--");
 

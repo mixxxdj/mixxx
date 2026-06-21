@@ -23,6 +23,7 @@
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
+#include "library/librarycontrol.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -1157,6 +1158,11 @@ void YouTubeFeature::onSearchResultsReady(
     // what the user typed (setSearch(query) already set it on the model,
     // but the view may not have picked it up yet).
     Q_EMIT showTrackModel(m_pTrackModel);
+    // Focus the track table so the user can immediately navigate results
+    // with arrow keys without needing to click or tab first.
+    if (m_pLibrary) {
+        m_pLibrary->setLibraryFocus(FocusWidget::TracksTable, Qt::ShortcutFocusReason);
+    }
     if (!m_lastQuery.isEmpty() &&
             !m_lastQuery.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {
         Q_EMIT restoreSearch(m_lastQuery);
@@ -1273,6 +1279,9 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
         kLogger.warning() << "Ignoring invalid YouTube video id:" << videoId;
         return;
     }
+    // Also fetch the thumbnail so cover art displays on the vinyl widget
+    // and track table immediately after download.
+    fetchThumbnails({{videoId, QString(), QString(), 0}});
     // If we already have a cached file for this id, skip the download and load
     // it straight away.
     const QDir dir(cacheDir());
@@ -1382,6 +1391,21 @@ void YouTubeFeature::onDownloadFinished(
     pTrack->setTitle(title.isEmpty() ? videoId : title);
     pTrack->setAlbum(QStringLiteral("YouTube"));
     pTrack->setComment(videoId);
+    // Set cover info from the thumbnail if it has already been downloaded
+    // (e.g. from a previous search). This ensures the vinyl widget and
+    // other cover-art-aware widgets display the YouTube thumbnail.
+    if (!m_pTrackModel->thumbnailDir().isEmpty()) {
+        const QString thumbPath = m_pTrackModel->thumbnailDir() + QLatin1Char('/') +
+                videoId + QStringLiteral(".jpg");
+        if (QFileInfo::exists(thumbPath)) {
+            CoverInfo coverInfo;
+            coverInfo.type = CoverInfo::FILE;
+            coverInfo.source = CoverInfo::GUESSED;
+            coverInfo.setImageDigest(videoId.toUtf8(), /*legacyHash=*/0);
+            coverInfo.coverLocation = thumbPath;
+            pTrack->setCoverInfo(coverInfo);
+        }
+    }
     // Auto-detect genre from the search query that found this track. If the
     // user searched for "frenchcore 2024" or clicked the "Hard Techno" genre
     // shortcut, the track gets tagged automatically so the library's genre

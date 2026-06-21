@@ -43,6 +43,9 @@ class YouTubeTrackModel : public BaseExternalTrackModel {
     /// UNIQUE on that column — using the videoId in the URL guarantees
     /// uniqueness without an extra index.
     static const QString kPlaceholderScheme;
+    QString thumbnailDir() const {
+        return m_thumbnailDir;
+    }
 
     YouTubeTrackModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,

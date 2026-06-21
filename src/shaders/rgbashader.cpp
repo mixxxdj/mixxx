@@ -5,9 +5,10 @@ using namespace mixxx;
 void RGBAShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform highp mat4 matrix;
-attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
-attribute highp vec4 color;
-varying highp vec4 vColor;
+in highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
+in highp vec4 color;
+in highp vec4 vColor;
+out highp vec4 fragColor;
 void main()
 {
     vColor = color;
@@ -16,10 +17,11 @@ void main()
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-varying highp vec4 vColor;
+in highp vec4 vColor;
+out highp vec4 fragColor;
 void main()
 {
-    gl_FragColor = vColor;
+    fragColor = vColor;
 }
 )--");
 

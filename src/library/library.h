@@ -8,6 +8,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/dao/playlistdao.h"
 #include "library/library_decl.h"
+#include "library/librarycontrol.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
 #endif
@@ -96,6 +97,9 @@ class Library : public QObject {
     }
     YouTubeFeature* youtubeFeature() const {
         return m_pYouTubeFeature.get();
+    }
+    void setLibraryFocus(FocusWidget widget, Qt::FocusReason reason) {
+        m_pLibraryControl->setLibraryFocus(widget, reason);
     }
 
     bool isTrackIdInCurrentLibraryView(const TrackId& trackId);

@@ -4,9 +4,10 @@ using namespace mixxx;
 
 void EndOfTrackShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
-attribute highp vec4 position; // use vec4 here (will be padded) to assign directly to gl_Position
-attribute highp float gradient;
-varying highp float vgradient;
+in highp vec4 position; // use vec4 here (will be padded) to assign directly to gl_Position
+in highp float gradient;
+in highp float vgradient;
+out highp vec4 fragColor;
 void main()
 {
     vgradient = gradient;
@@ -16,12 +17,13 @@ void main()
 
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform highp vec4 color;
-varying highp float vgradient;
+in highp float vgradient;
+out highp vec4 fragColor;
 void main()
 {
     highp float minAlpha = 0.5 * color.w;
     highp float maxAlpha = 0.83 * color.w;
-    gl_FragColor = vec4(color.xyz, mix(minAlpha, maxAlpha, max(0.0, vgradient)));
+    fragColor = vec4(color.xyz, mix(minAlpha, maxAlpha, max(0.0, vgradient)));
 }
 )--");
 
