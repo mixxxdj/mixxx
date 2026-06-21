@@ -68,6 +68,12 @@ static std::optional<uint32_t> getPortIndexFromName(const char* name) {
 
 PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
         : m_pSoundManager(pManager),
+          m_pPwThreadLoop(nullptr),
+          m_pPwContext(nullptr),
+          m_pPwCore(nullptr),
+          m_pPwRegistry(nullptr),
+          m_pPwMetadata(nullptr),
+          m_pPwFilter(nullptr),
           m_soundDevices(std::make_shared<SoundDeviceMap>()),
           m_openedDevices(std::make_shared<DeviceMap>()),
           m_initialized(false),
@@ -77,34 +83,72 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
 
     pw_init(nullptr, nullptr);
 
-    m_pThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
-    m_pContext = pw_context_new(pw_thread_loop_get_loop(m_pThreadLoop), nullptr, 0);
+    m_pPwThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
+    spa_zero(m_pwRegistryListener);
+    spa_zero(m_pwMetadataListener);
+    spa_zero(m_pwFilterListener);
 }
 
 PipewireEnumerator::~PipewireEnumerator() {
-    pw_thread_loop_stop(m_pThreadLoop);
-    spa_hook_remove(&m_registryListener);
-    spa_hook_remove(&m_metadataListener);
-    pw_proxy_destroy((struct pw_proxy*)m_pRegistry);
-    pw_proxy_destroy((struct pw_proxy*)m_pMetadata);
-    pw_core_disconnect(m_pCore);
-    pw_context_destroy(m_pContext);
-    pw_thread_loop_destroy(m_pThreadLoop);
+    pw_thread_loop_stop(m_pPwThreadLoop);
+
+    if (m_pPwFilter) {
+        pw_filter_destroy(m_pPwFilter);
+    }
+
+    if (m_pPwMetadata) {
+        spa_hook_remove(&m_pwMetadataListener);
+        pw_proxy_destroy((struct pw_proxy*)m_pPwMetadata);
+    }
+
+    if (m_pPwRegistry) {
+        spa_hook_remove(&m_pwRegistryListener);
+        pw_proxy_destroy((struct pw_proxy*)m_pPwRegistry);
+    }
+
+    if (m_pPwCore) {
+        pw_core_disconnect(m_pPwCore);
+    }
+
+    if (m_pPwContext) {
+        pw_context_destroy(m_pPwContext);
+    }
+
+    pw_thread_loop_destroy(m_pPwThreadLoop);
     pw_deinit();
 }
 
 void PipewireEnumerator::initialize() {
-    m_pCore = pw_context_connect(m_pContext, nullptr, 0);
-
-    if (!m_pCore) {
+    if (m_initialized) {
+        qWarning() << "PipewireEnumerator::initialize already initialized";
         return;
     }
 
-    m_pRegistry = pw_core_get_registry(m_pCore, PW_VERSION_REGISTRY, 0);
+    if (!m_pPwContext) {
+        m_pPwContext = pw_context_new(pw_thread_loop_get_loop(m_pPwThreadLoop), nullptr, 0);
+        if (!m_pPwContext) {
+            qWarning() << "PipewireEnumerator::initialize pw_context_new "
+                          "failed with error:"
+                       << spa_strerror(errno);
+            return;
+        }
+    }
+
+    m_pPwCore = pw_context_connect(m_pPwContext, nullptr, 0);
+
+    if (!m_pPwCore) {
+        qWarning() << "PipewireEnumerator::initialize pw_context_connect "
+                      "failed with error:"
+                   << spa_strerror(errno);
+        return;
+    }
+
+    m_pPwRegistry = pw_core_get_registry(m_pPwCore, PW_VERSION_REGISTRY, 0);
+    pw_registry_add_listener(m_pPwRegistry, &m_pwRegistryListener, &registry_events, this);
 
     // see https://docs.pipewire.org/page_man_pipewire-props_7.html
     // and pipewire/keys.h header
-    m_pFilter = pw_filter_new(m_pCore,
+    m_pPwFilter = pw_filter_new(m_pPwCore,
             "mixxx",
             pw_properties_new(PW_KEY_MEDIA_NAME,
                     "Mixxx",
@@ -122,14 +166,9 @@ void PipewireEnumerator::initialize() {
                     "Mixxx",
                     nullptr));
 
-    spa_zero(m_registryListener);
-    spa_zero(m_metadataListener);
-    spa_zero(m_filterListener);
+    pw_filter_add_listener(m_pPwFilter, &m_pwFilterListener, &filter_events, this);
 
-    pw_registry_add_listener(m_pRegistry, &m_registryListener, &registry_events, this);
-    pw_filter_add_listener(m_pFilter, &m_filterListener, &filter_events, this);
-
-    int res = pw_filter_connect(m_pFilter,
+    int res = pw_filter_connect(m_pPwFilter,
             PW_FILTER_FLAG_RT_PROCESS,
             nullptr,
             0);
@@ -138,7 +177,7 @@ void PipewireEnumerator::initialize() {
         qWarning() << "pw_filter_connect error:" << spa_strerror(res);
     }
 
-    pw_thread_loop_start(m_pThreadLoop);
+    pw_thread_loop_start(m_pPwThreadLoop);
 
     m_initialized = true;
 }
@@ -158,13 +197,13 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             return;
         }
 
-        void* data = pw_registry_bind(m_pRegistry,
+        void* data = pw_registry_bind(m_pPwRegistry,
                 id,
                 PW_TYPE_INTERFACE_Metadata,
                 PW_VERSION_METADATA,
                 0);
-        m_pMetadata = static_cast<pw_metadata*>(data);
-        pw_metadata_add_listener(m_pMetadata, &m_metadataListener, &metadataEvents, this);
+        m_pPwMetadata = static_cast<pw_metadata*>(data);
+        pw_metadata_add_listener(m_pPwMetadata, &m_pwMetadataListener, &metadataEvents, this);
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Node) == 0) {
         const char* media_class = spa_dict_lookup(pProps, PW_KEY_MEDIA_CLASS);
         const char* media_type = spa_dict_lookup(pProps, PW_KEY_MEDIA_TYPE);
@@ -346,7 +385,7 @@ void PipewireEnumerator::openDevice(uint32_t id,
         return;
     }
 
-    pw_thread_loop_lock(m_pThreadLoop);
+    pw_thread_loop_lock(m_pPwThreadLoop);
 
     if (rate != m_sampleRate.value() || framesPerBuffer != m_framesPerBuffer) {
         std::string rateStr = "1/" + std::to_string(rate);
@@ -358,7 +397,7 @@ void PipewireEnumerator::openDevice(uint32_t id,
         };
         spa_dict properties = SPA_DICT_INIT(items, 2);
 
-        int res = pw_filter_update_properties(m_pFilter, nullptr, &properties);
+        int res = pw_filter_update_properties(m_pPwFilter, nullptr, &properties);
         if (res >= 0) {
             m_sampleRate = mixxx::audio::SampleRate(rate);
             m_framesPerBuffer = framesPerBuffer;
@@ -387,7 +426,7 @@ void PipewireEnumerator::openDevice(uint32_t id,
                 "32 bit float mono audio",
                 nullptr);
         pw_properties_setf(props, PW_KEY_PORT_NAME, "in:%zu", filterPortIndex);
-        void* port_data = pw_filter_add_port(m_pFilter,
+        void* port_data = pw_filter_add_port(m_ppwFilter,
                 SPA_DIRECTION_INPUT,
                 PW_FILTER_PORT_FLAG_MAP_BUFFERS,
                 0,
@@ -404,7 +443,7 @@ void PipewireEnumerator::openDevice(uint32_t id,
         pw_properties* props = pw_properties_new(
                 PW_KEY_FORMAT_DSP, "32 bit float mono audio", nullptr);
         pw_properties_setf(props, PW_KEY_PORT_NAME, "out:%zu", filterPortIndex);
-        void* port_data = pw_filter_add_port(m_pFilter,
+        void* port_data = pw_filter_add_port(m_ppwFilter,
                 SPA_DIRECTION_OUTPUT,
                 PW_FILTER_PORT_FLAG_MAP_BUFFERS,
                 0,
@@ -413,7 +452,7 @@ void PipewireEnumerator::openDevice(uint32_t id,
                 0);
         outputs.emplace_back(port_data, i, filterPortIndex);
     }
-    pw_thread_loop_unlock(m_pThreadLoop);
+    pw_thread_loop_unlock(m_pPwThreadLoop);
 
     pOpenedDevices->emplace(id, Device{std::move(inputs), std::move(outputs)});
     m_openedDevices.store(pOpenedDevices);
@@ -434,7 +473,7 @@ void PipewireEnumerator::closeDevice(uint32_t id) {
 
     auto& device = pOpenedDevices->at(id);
 
-    pw_thread_loop_lock(m_pThreadLoop);
+    pw_thread_loop_lock(m_pPwThreadLoop);
     for (auto& port : device.inputs) {
         pw_filter_remove_port(port.pPortData);
     }
@@ -442,7 +481,7 @@ void PipewireEnumerator::closeDevice(uint32_t id) {
     for (auto& port : device.outputs) {
         pw_filter_remove_port(port.pPortData);
     }
-    pw_thread_loop_unlock(m_pThreadLoop);
+    pw_thread_loop_unlock(m_pPwThreadLoop);
 
     pOpenedDevices->erase(id);
     m_openedDevices.store(pOpenedDevices);
@@ -533,7 +572,7 @@ void PipewireEnumerator::createLink(uint32_t outNodeId,
     items[props.n_items++] = SPA_DICT_ITEM_INIT(PW_KEY_LINK_INPUT_PORT, strInPort.c_str());
     items[props.n_items++] = SPA_DICT_ITEM_INIT(PW_KEY_OBJECT_LINGER, "true");
 
-    struct pw_proxy* pProxy = static_cast<pw_proxy*>(pw_core_create_object(m_pCore,
+    struct pw_proxy* pProxy = static_cast<pw_proxy*>(pw_core_create_object(m_pPwCore,
             "link-factory",
             PW_TYPE_INTERFACE_Link,
             PW_VERSION_LINK,
