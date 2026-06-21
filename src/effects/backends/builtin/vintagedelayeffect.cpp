@@ -106,6 +106,7 @@ void VintageDelayEffect::processChannel(VintageDelayGroupState* pState,
     // Recompute alpha based on smooth tone
     float smoothCutoff = 800.0f + smoothTone * 12000.0f;
     float smoothRc = 1.0f / (2.0f * 3.14159265f * smoothCutoff);
+    float dt = 1.0f / sampleRate;
     float smoothAlpha = dt / (smoothRc + dt);
 
     for (SINT i = 0; i < numSamples; ++i) {
