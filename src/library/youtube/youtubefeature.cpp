@@ -1391,8 +1391,8 @@ void YouTubeFeature::onDownloadFinished(
     // Set cover info from the thumbnail if it has already been downloaded
     // (e.g. from a previous search). This ensures the vinyl widget and
     // other cover-art-aware widgets display the YouTube thumbnail.
-    if (!m_thumbnailDir.isEmpty()) {
-        const QString thumbPath = m_thumbnailDir + QLatin1Char('/') +
+    if (!m_pTrackModel->thumbnailDir().isEmpty()) {
+        const QString thumbPath = m_pTrackModel->thumbnailDir() + QLatin1Char('/') +
                 videoId + QStringLiteral(".jpg");
         if (QFileInfo::exists(thumbPath)) {
             CoverInfo coverInfo;
