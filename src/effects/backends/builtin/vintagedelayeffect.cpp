@@ -86,10 +86,10 @@ void VintageDelayEffect::processChannel(VintageDelayGroupState* pState,
     const int chCount = engineParameters.channelCount();
     const int sampleRate = engineParameters.sampleRate();
 
-    float time = m_pTimeParameter->value();
-    float feedback = m_pFeedbackParameter->value();
-    float tone = m_pToneParameter->value();
-    float mix = m_pMixParameter->value();
+    float time = static_cast<float>(m_pTimeParameter->value());
+    float feedback = static_cast<float>(m_pFeedbackParameter->value());
+    float tone = static_cast<float>(m_pToneParameter->value());
+    float mix = static_cast<float>(m_pMixParameter->value());
 
     // Compute delay in samples
     int delaySamples = static_cast<int>(time * sampleRate * 0.001f);

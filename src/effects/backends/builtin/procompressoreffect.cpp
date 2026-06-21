@@ -124,12 +124,12 @@ void ProCompressorEffect::processChannel(ProCompressorGroupState* pState,
     const SINT numSamples = engineParameters.samplesPerBuffer();
     const float sampleRate = static_cast<float>(engineParameters.sampleRate());
 
-    float threshold = m_pThresholdParameter->value();
-    float ratio = m_pRatioParameter->value();
-    float attack = m_pAttackParameter->value();
-    float release = m_pReleaseParameter->value();
-    float makeup = m_pMakeupParameter->value();
-    float dryWet = m_pDryWetParameter->value();
+    float threshold = static_cast<float>(m_pThresholdParameter->value());
+    float ratio = static_cast<float>(m_pRatioParameter->value());
+    float attack = static_cast<float>(m_pAttackParameter->value());
+    float release = static_cast<float>(m_pReleaseParameter->value());
+    float makeup = static_cast<float>(m_pMakeupParameter->value());
+    float dryWet = static_cast<float>(m_pDryWetParameter->value());
 
     // Attack/release coefficients
     float attackCoeff = std::exp(-1.0f / (attack * 0.001f * sampleRate));

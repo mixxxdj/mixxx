@@ -91,9 +91,9 @@ void ProFlangerEffect::processChannel(ProFlangerGroupState* pState,
     const int chCount = engineParameters.channelCount();
     const float sampleRate = static_cast<float>(engineParameters.sampleRate());
 
-    float rate = m_pRateParameter->value();
-    float depth = m_pDepthParameter->value();
-    float feedback = m_pFeedbackParameter->value();
+    float rate = static_cast<float>(m_pRateParameter->value());
+    float depth = static_cast<float>(m_pDepthParameter->value());
+    float feedback = static_cast<float>(m_pFeedbackParameter->value());
     bool stereo = m_pStereoParameter->value() > 0.5f;
 
     // Smooth parameters
