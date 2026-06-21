@@ -23,6 +23,7 @@
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
+#include "library/librarycontrol.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -1157,6 +1158,11 @@ void YouTubeFeature::onSearchResultsReady(
     // what the user typed (setSearch(query) already set it on the model,
     // but the view may not have picked it up yet).
     Q_EMIT showTrackModel(m_pTrackModel);
+    // Focus the track table so the user can immediately navigate results
+    // with arrow keys without needing to click or tab first.
+    if (m_pLibrary) {
+        m_pLibrary->setLibraryFocus(FocusWidget::TracksTable, Qt::ShortcutFocusReason);
+    }
     if (!m_lastQuery.isEmpty() &&
             !m_lastQuery.startsWith(mixxx::YouTubeService::kTrendingQueryPrefix)) {
         Q_EMIT restoreSearch(m_lastQuery);
