@@ -341,9 +341,15 @@ QImage WSpinnyBase::scaleToSize(const QImage& image) const {
     if (image.isNull()) {
         return QImage();
     }
-    QImage scaled = image.scaled(size() * devicePixelRatioF(),
-            Qt::KeepAspectRatio,
+    QSize targetSize = size() * devicePixelRatioF();
+    QImage scaled = image.scaled(targetSize,
+            Qt::KeepAspectRatioByExpanding,
             Qt::SmoothTransformation);
+    if (scaled.width() != scaled.height()) {
+        int x = (scaled.width() - targetSize.width()) / 2;
+        int y = (scaled.height() - targetSize.height()) / 2;
+        scaled = scaled.copy(x, y, targetSize.width(), targetSize.height());
+    }
     scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
@@ -356,9 +362,19 @@ QPixmap WSpinnyBase::scaleToSize(const QPixmap& pixmap) const {
     if (pixmap.isNull()) {
         return QPixmap();
     }
-    QPixmap scaled = pixmap.scaled(size() * devicePixelRatioF(),
-            Qt::KeepAspectRatio,
+    // Use KeepAspectRatioByExpanding so that non-square images (e.g. 16:9
+    // YouTube thumbnails) fill the entire vinyl without letterboxing.
+    // Then crop to the center to get a square.
+    QSize targetSize = size() * devicePixelRatioF();
+    QPixmap scaled = pixmap.scaled(targetSize,
+            Qt::KeepAspectRatioByExpanding,
             Qt::SmoothTransformation);
+    // Center-crop to square if the expanded image is wider/taller
+    if (scaled.width() != scaled.height()) {
+        int x = (scaled.width() - targetSize.width()) / 2;
+        int y = (scaled.height() - targetSize.height()) / 2;
+        scaled = scaled.copy(x, y, targetSize.width(), targetSize.height());
+    }
     scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
