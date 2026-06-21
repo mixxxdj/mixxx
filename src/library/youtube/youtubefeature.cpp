@@ -1279,6 +1279,9 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
         kLogger.warning() << "Ignoring invalid YouTube video id:" << videoId;
         return;
     }
+    // Also fetch the thumbnail so cover art displays on the vinyl widget
+    // and track table immediately after download.
+    fetchThumbnails({{videoId, QString(), QString(), 0}});
     // If we already have a cached file for this id, skip the download and load
     // it straight away.
     const QDir dir(cacheDir());
