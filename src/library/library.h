@@ -8,6 +8,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/dao/playlistdao.h"
 #include "library/library_decl.h"
+#include "library/librarycontrol.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
 #endif

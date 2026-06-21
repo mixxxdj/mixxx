@@ -64,7 +64,7 @@ repos:
             "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))",
             --write-changes,
           ]
-        exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|res/linux/org\.mixxx\.Mixxx\.desktop|res/controllers/|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg))$
+        exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|res/linux/org\.mixxx\.Mixxx\.desktop|res/controllers/.*|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v10.4.1
     hooks:
@@ -82,7 +82,7 @@ repos:
           - typescript-eslint
           - eslint-plugin-jsdoc@^v50.4.3
           - eslint-plugin-diff@^v2.1.7
-        exclude: ^res/translations/.*\.ts$|^res/controllers/
+        exclude: ^res/translations/.*\.ts$|^res/controllers/.*
   - repo: local
     hooks:
       - id: clang-format
