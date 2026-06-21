@@ -20,18 +20,18 @@ EffectManifestPointer ProFlangerEffect::getManifest() {
     pManifest->setName(QObject::tr("Pro Flanger"));
     pManifest->setAuthor("DJ Sugar");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-            "Professional DJ flanger with LFO-modulated delay. "
-            "Creates the classic 'sweeping jet' effect. "
-            "Comparable to Rekordbox's Flanger effect."));
+    pManifest->setDescription(
+            QObject::tr("Professional DJ flanger with LFO-modulated delay. "
+                        "Creates the classic 'sweeping jet' effect. "
+                        "Comparable to Rekordbox's Flanger effect."));
 
     auto pRate = pManifest->addParameter();
     pRate->setId("rate");
     pRate->setName(QObject::tr("Rate"));
     pRate->setShortName(QObject::tr("Rate"));
-    pRate->setDescription(QObject::tr(
-            "Speed of the LFO modulation.\n"
-            "Slow = gentle sweep, Fast = intense flutter."));
+    pRate->setDescription(
+            QObject::tr("Speed of the LFO modulation.\n"
+                        "Slow = gentle sweep, Fast = intense flutter."));
     pRate->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     pRate->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
     pRate->setRange(0.1, 1.0, 10.0);
@@ -40,9 +40,9 @@ EffectManifestPointer ProFlangerEffect::getManifest() {
     pDepth->setId("depth");
     pDepth->setName(QObject::tr("Depth"));
     pDepth->setShortName(QObject::tr("Depth"));
-    pDepth->setDescription(QObject::tr(
-            "Amount of delay modulation.\n"
-            "Higher = more pronounced sweeping effect."));
+    pDepth->setDescription(
+            QObject::tr("Amount of delay modulation.\n"
+                        "Higher = more pronounced sweeping effect."));
     pDepth->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pDepth->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pDepth->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
@@ -52,9 +52,9 @@ EffectManifestPointer ProFlangerEffect::getManifest() {
     pFeedback->setId("feedback");
     pFeedback->setName(QObject::tr("Feedback"));
     pFeedback->setShortName(QObject::tr("Fdbk"));
-    pFeedback->setDescription(QObject::tr(
-            "Amount of output fed back into input.\n"
-            "Higher = more intense/resonant effect."));
+    pFeedback->setDescription(
+            QObject::tr("Amount of output fed back into input.\n"
+                        "Higher = more intense/resonant effect."));
     pFeedback->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pFeedback->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pFeedback->setRange(0.0, 0.3, 0.9);
@@ -63,8 +63,9 @@ EffectManifestPointer ProFlangerEffect::getManifest() {
     pStereo->setId("stereo");
     pStereo->setName(QObject::tr("Stereo"));
     pStereo->setShortName(QObject::tr("Stereo"));
-    pStereo->setDescription(QObject::tr(
-            "Stereo mode: on = inverted LFO on right channel for wide stereo effect."));
+    pStereo->setDescription(
+            QObject::tr("Stereo mode: on = inverted LFO on right channel for "
+                        "wide stereo effect."));
     pStereo->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     pStereo->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pStereo->setRange(0.0, 1.0, 1.0);
@@ -80,8 +81,7 @@ void ProFlangerEffect::loadEngineEffectParameters(
     m_pStereoParameter = parameters.value("stereo");
 }
 
-void ProFlangerEffect::processChannel(
-        ProFlangerGroupState* pState,
+void ProFlangerEffect::processChannel(ProFlangerGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
@@ -98,8 +98,10 @@ void ProFlangerEffect::processChannel(
 
     // Smooth parameters
     float smoothRate = pState->prev_rate + 0.01f * (rate - pState->prev_rate);
-    float smoothDepth = pState->prev_depth + 0.01f * (depth - pState->prev_depth);
-    float smoothFeedback = pState->prev_feedback + 0.01f * (feedback - pState->prev_feedback);
+    float smoothDepth =
+            pState->prev_depth + 0.01f * (depth - pState->prev_depth);
+    float smoothFeedback =
+            pState->prev_feedback + 0.01f * (feedback - pState->prev_feedback);
     pState->prev_rate = smoothRate;
     pState->prev_depth = smoothDepth;
     pState->prev_feedback = smoothFeedback;
@@ -139,7 +141,8 @@ void ProFlangerEffect::processChannel(
 
         int readPosInt = static_cast<int>(readPos);
         float frac = readPos - readPosInt;
-        int readPos2 = (readPosInt + 1) % ProFlangerGroupState::kMaxDelaySamples;
+        int readPos2 =
+                (readPosInt + 1) % ProFlangerGroupState::kMaxDelaySamples;
 
         CSAMPLE delayed = pState->delay_buf[readPosInt] * (1.0f - frac) +
                 pState->delay_buf[readPos2] * frac;
@@ -148,10 +151,12 @@ void ProFlangerEffect::processChannel(
         float output = pInput[i] + delayed * smoothFeedback;
 
         // Write back to delay buffer with feedback
-        pState->delay_buf[pState->write_position] = pInput[i] + delayed * smoothFeedback;
+        pState->delay_buf[pState->write_position] =
+                pInput[i] + delayed * smoothFeedback;
 
         // Advance write position
-        pState->write_position = (pState->write_position + 1) % ProFlangerGroupState::kMaxDelaySamples;
+        pState->write_position = (pState->write_position + 1) %
+                ProFlangerGroupState::kMaxDelaySamples;
 
         // Advance LFO phase
         pState->lfo_phase += phaseInc;
@@ -160,6 +165,7 @@ void ProFlangerEffect::processChannel(
         }
 
         // Output with dry/wet mix controlled by depth
-        pOutput[i] = pInput[i] * (1.0f - smoothDepth * 0.5f) + output * (smoothDepth * 0.5f);
+        pOutput[i] = pInput[i] * (1.0f - smoothDepth * 0.5f) +
+                output * (smoothDepth * 0.5f);
     }
 }

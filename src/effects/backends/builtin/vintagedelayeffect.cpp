@@ -16,10 +16,11 @@ EffectManifestPointer VintageDelayEffect::getManifest() {
     pManifest->setName(QObject::tr("Vintage Delay"));
     pManifest->setAuthor("DJ Sugar");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-            "Tape-style delay with warm, dark character. "
-            "Low-pass filtering in the feedback loop simulates analog tape echo. "
-            "Comparable to classic Roland RE-201 Space Echo."));
+    pManifest->setDescription(
+            QObject::tr("Tape-style delay with warm, dark character. "
+                        "Low-pass filtering in the feedback loop simulates "
+                        "analog tape echo. "
+                        "Comparable to classic Roland RE-201 Space Echo."));
 
     auto pTime = pManifest->addParameter();
     pTime->setId("time");
@@ -34,9 +35,9 @@ EffectManifestPointer VintageDelayEffect::getManifest() {
     pFeedback->setId("feedback");
     pFeedback->setName(QObject::tr("Feedback"));
     pFeedback->setShortName(QObject::tr("Fdbk"));
-    pFeedback->setDescription(QObject::tr(
-            "Amount of output fed back into input.\n"
-            "Higher = more repeats."));
+    pFeedback->setDescription(
+            QObject::tr("Amount of output fed back into input.\n"
+                        "Higher = more repeats."));
     pFeedback->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pFeedback->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pFeedback->setRange(0.0, 0.4, 0.9);
@@ -45,9 +46,9 @@ EffectManifestPointer VintageDelayEffect::getManifest() {
     pTone->setId("tone");
     pTone->setName(QObject::tr("Tone"));
     pTone->setShortName(QObject::tr("Tone"));
-    pTone->setDescription(QObject::tr(
-            "Brightness of the delay repeats.\n"
-            "0 = dark/warm, 1 = bright/clear."));
+    pTone->setDescription(
+            QObject::tr("Brightness of the delay repeats.\n"
+                        "0 = dark/warm, 1 = bright/clear."));
     pTone->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pTone->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pTone->setRange(0.0, 0.5, 1.0);
@@ -56,9 +57,9 @@ EffectManifestPointer VintageDelayEffect::getManifest() {
     pMix->setId("mix");
     pMix->setName(QObject::tr("Mix"));
     pMix->setShortName(QObject::tr("Mix"));
-    pMix->setDescription(QObject::tr(
-            "Dry/wet mix.\n"
-            "0 = dry only, 1 = wet only."));
+    pMix->setDescription(
+            QObject::tr("Dry/wet mix.\n"
+                        "0 = dry only, 1 = wet only."));
     pMix->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pMix->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pMix->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
@@ -75,8 +76,7 @@ void VintageDelayEffect::loadEngineEffectParameters(
     m_pMixParameter = parameters.value("mix");
 }
 
-void VintageDelayEffect::processChannel(
-        VintageDelayGroupState* pState,
+void VintageDelayEffect::processChannel(VintageDelayGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
@@ -95,7 +95,8 @@ void VintageDelayEffect::processChannel(
     int delaySamples = static_cast<int>(time * sampleRate * 0.001f);
 
     // Smooth parameters
-    float smoothFeedback = pState->prev_feedback + 0.001f * (feedback - pState->prev_feedback);
+    float smoothFeedback =
+            pState->prev_feedback + 0.001f * (feedback - pState->prev_feedback);
     float smoothTone = pState->prev_tone + 0.001f * (tone - pState->prev_tone);
     float smoothMix = pState->prev_mix + 0.001f * (mix - pState->prev_mix);
     pState->prev_feedback = smoothFeedback;
@@ -111,7 +112,8 @@ void VintageDelayEffect::processChannel(
         int ch = i % chCount;
 
         // Read from delay buffer with linear interpolation
-        float readPos = static_cast<float>(pState->write_position) - delaySamples;
+        float readPos =
+                static_cast<float>(pState->write_position) - delaySamples;
         while (readPos < 0.0f) {
             readPos += pState->delay_buf.size();
         }
@@ -129,10 +131,12 @@ void VintageDelayEffect::processChannel(
         CSAMPLE filtered = pState->lp_state[ch];
 
         // Write to delay buffer with feedback
-        pState->delay_buf[pState->write_position] = pInput[i] + filtered * smoothFeedback;
+        pState->delay_buf[pState->write_position] =
+                pInput[i] + filtered * smoothFeedback;
 
         // Advance write position
-        pState->write_position = (pState->write_position + 1) % pState->delay_buf.size();
+        pState->write_position =
+                (pState->write_position + 1) % pState->delay_buf.size();
 
         // Output with dry/wet mix
         pOutput[i] = pInput[i] * (1.0f - smoothMix) + filtered * smoothMix;

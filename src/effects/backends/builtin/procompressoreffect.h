@@ -19,7 +19,8 @@ class ProCompressorGroupState : public EffectState {
     }
     ~ProCompressorGroupState() override = default;
 
-    void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
+    void audioParametersChanged(
+            const mixxx::EngineParameters& engineParameters) {
         m_sampleRate = engineParameters.sampleRate();
     };
 
@@ -46,7 +47,8 @@ class ProCompressorGroupState : public EffectState {
     float prev_env[2];
 };
 
-class ProCompressorEffect : public EffectProcessorImpl<ProCompressorGroupState> {
+class ProCompressorEffect
+        : public EffectProcessorImpl<ProCompressorGroupState> {
   public:
     ProCompressorEffect() = default;
     ~ProCompressorEffect() override = default;
@@ -55,10 +57,10 @@ class ProCompressorEffect : public EffectProcessorImpl<ProCompressorGroupState> 
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+            const QMap<QString, EngineEffectParameterPointer>& parameters)
+            override;
 
-    void processChannel(
-            ProCompressorGroupState* pState,
+    void processChannel(ProCompressorGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const mixxx::EngineParameters& engineParameters,

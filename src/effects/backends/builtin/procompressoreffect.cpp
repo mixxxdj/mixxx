@@ -41,9 +41,9 @@ EffectManifestPointer ProCompressorEffect::getManifest() {
     pThreshold->setId("threshold");
     pThreshold->setName(QObject::tr("Threshold"));
     pThreshold->setShortName(QObject::tr("Thresh"));
-    pThreshold->setDescription(QObject::tr(
-            "Level above which compression begins.\n"
-            "Lower values = more compression."));
+    pThreshold->setDescription(
+            QObject::tr("Level above which compression begins.\n"
+                        "Lower values = more compression."));
     pThreshold->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pThreshold->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     pThreshold->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
@@ -53,9 +53,9 @@ EffectManifestPointer ProCompressorEffect::getManifest() {
     pRatio->setId("ratio");
     pRatio->setName(QObject::tr("Ratio"));
     pRatio->setShortName(QObject::tr("Ratio"));
-    pRatio->setDescription(QObject::tr(
-            "Amount of compression applied.\n"
-            "1:1 = no compression, 20:1 = extreme limiting."));
+    pRatio->setDescription(
+            QObject::tr("Amount of compression applied.\n"
+                        "1:1 = no compression, 20:1 = extreme limiting."));
     pRatio->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pRatio->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pRatio->setRange(1.0, 4.0, 20.0);
@@ -64,9 +64,9 @@ EffectManifestPointer ProCompressorEffect::getManifest() {
     pAttack->setId("attack");
     pAttack->setName(QObject::tr("Attack"));
     pAttack->setShortName(QObject::tr("Attack"));
-    pAttack->setDescription(QObject::tr(
-            "How quickly the compressor engages.\n"
-            "Fast = punchy, Slow = smooth."));
+    pAttack->setDescription(
+            QObject::tr("How quickly the compressor engages.\n"
+                        "Fast = punchy, Slow = smooth."));
     pAttack->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     pAttack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     pAttack->setRange(1.0, 10.0, 100.0);
@@ -75,9 +75,9 @@ EffectManifestPointer ProCompressorEffect::getManifest() {
     pRelease->setId("release");
     pRelease->setName(QObject::tr("Release"));
     pRelease->setShortName(QObject::tr("Release"));
-    pRelease->setDescription(QObject::tr(
-            "How quickly the compressor releases.\n"
-            "Fast = pumping, Slow = smooth."));
+    pRelease->setDescription(
+            QObject::tr("How quickly the compressor releases.\n"
+                        "Fast = pumping, Slow = smooth."));
     pRelease->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     pRelease->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     pRelease->setRange(10.0, 100.0, 1000.0);
@@ -115,8 +115,7 @@ void ProCompressorEffect::loadEngineEffectParameters(
     m_pDryWetParameter = parameters.value("drywet");
 }
 
-void ProCompressorEffect::processChannel(
-        ProCompressorGroupState* pState,
+void ProCompressorEffect::processChannel(ProCompressorGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
@@ -140,8 +139,10 @@ void ProCompressorEffect::processChannel(
     float makeupLin = db2ratio(makeup);
 
     // Smooth parameter changes
-    float smoothThreshold = pState->prev_threshold + 0.001f * (threshold - pState->prev_threshold);
-    float smoothRatio = pState->prev_ratio + 0.001f * (ratio - pState->prev_ratio);
+    float smoothThreshold = pState->prev_threshold +
+            0.001f * (threshold - pState->prev_threshold);
+    float smoothRatio =
+            pState->prev_ratio + 0.001f * (ratio - pState->prev_ratio);
     pState->prev_threshold = smoothThreshold;
     pState->prev_ratio = smoothRatio;
 
@@ -154,21 +155,25 @@ void ProCompressorEffect::processChannel(
         // Envelope follower
         float targetEnv = inputAbs;
         if (targetEnv > pState->envelope) {
-            pState->envelope = attackCoeff * pState->envelope + (1.0f - attackCoeff) * targetEnv;
+            pState->envelope = attackCoeff * pState->envelope +
+                    (1.0f - attackCoeff) * targetEnv;
         } else {
-            pState->envelope = releaseCoeff * pState->envelope + (1.0f - releaseCoeff) * targetEnv;
+            pState->envelope = releaseCoeff * pState->envelope +
+                    (1.0f - releaseCoeff) * targetEnv;
         }
 
         // Gain computer
         float gain = 1.0f;
         if (pState->envelope > thresholdSmoothLin) {
             float envDB = ratio2db(pState->envelope);
-            float compressedDB = smoothThreshold + (envDB - smoothThreshold) / smoothRatio;
+            float compressedDB =
+                    smoothThreshold + (envDB - smoothThreshold) / smoothRatio;
             gain = db2ratio(compressedDB - envDB);
         }
 
         // Smooth gain
-        pState->prev_gain = pState->prev_gain + 0.0001f * (gain - pState->prev_gain);
+        pState->prev_gain =
+                pState->prev_gain + 0.0001f * (gain - pState->prev_gain);
 
         // Apply compression with makeup gain and dry/wet mix
         float wet = pInput[i] * pState->prev_gain * makeupLin;

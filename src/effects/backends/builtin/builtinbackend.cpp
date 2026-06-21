@@ -103,8 +103,7 @@ BuiltInBackend::~BuiltInBackend() {
     m_effectIds.clear();
 }
 
-void BuiltInBackend::registerEffectInner(
-        const QString& id,
+void BuiltInBackend::registerEffectInner(const QString& id,
         EffectManifestPointer pManifest,
         EffectProcessorInstantiator instantiator) {
     VERIFY_OR_DEBUG_ASSERT(!m_registeredEffects.contains(id)) {
@@ -121,7 +120,8 @@ const QList<QString> BuiltInBackend::getEffectIds() const {
     return m_effectIds;
 }
 
-EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const {
+EffectManifestPointer BuiltInBackend::getManifest(
+        const QString& effectId) const {
     return m_registeredEffects.value(effectId).pManifest;
 }
 

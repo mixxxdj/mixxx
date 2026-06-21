@@ -8,7 +8,8 @@
 #include "util/samplebuffer.h"
 
 // Professional DJ Flanger
-// Frequency-modulated delay line with feedback, based on Calf DSP flanger algorithms
+// Frequency-modulated delay line with feedback, based on Calf DSP flanger
+// algorithms
 
 class ProFlangerGroupState : public EffectState {
   public:
@@ -21,7 +22,8 @@ class ProFlangerGroupState : public EffectState {
     }
     ~ProFlangerGroupState() override = default;
 
-    void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
+    void audioParametersChanged(
+            const mixxx::EngineParameters& engineParameters) {
         m_sampleRate = engineParameters.sampleRate();
         delay_buf = mixxx::SampleBuffer(kMaxDelaySamples);
     };
@@ -57,10 +59,10 @@ class ProFlangerEffect : public EffectProcessorImpl<ProFlangerGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+            const QMap<QString, EngineEffectParameterPointer>& parameters)
+            override;
 
-    void processChannel(
-            ProFlangerGroupState* pState,
+    void processChannel(ProFlangerGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const mixxx::EngineParameters& engineParameters,

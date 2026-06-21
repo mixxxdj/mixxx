@@ -21,7 +21,8 @@ class VintageDelayGroupState : public EffectState {
     }
     ~VintageDelayGroupState() override = default;
 
-    void audioParametersChanged(const mixxx::EngineParameters& engineParameters) {
+    void audioParametersChanged(
+            const mixxx::EngineParameters& engineParameters) {
         delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds *
                 engineParameters.sampleRate() *
                 engineParameters.channelCount());
@@ -59,10 +60,10 @@ class VintageDelayEffect : public EffectProcessorImpl<VintageDelayGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+            const QMap<QString, EngineEffectParameterPointer>& parameters)
+            override;
 
-    void processChannel(
-            VintageDelayGroupState* pState,
+    void processChannel(VintageDelayGroupState* pState,
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const mixxx::EngineParameters& engineParameters,
