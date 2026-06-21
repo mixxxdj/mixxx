@@ -1280,15 +1280,15 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
+    QMessageBox msgBox;
+    msgBox.setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    msgBox.setWindowTitle(tr("Library scan finished"));
 
     if (result.noDirectoriesConfigured) {
-        pMsg->setText(tr("No music directories configured for scanning.") +
+        msgBox.setText(tr("No music directories configured for scanning.") +
                 QStringLiteral("<br>") +
                 tr("Add directories in the library preferences."));
-        pMsg->show();
+        msgBox.show();
         return;
     }
 
@@ -1327,8 +1327,8 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 QStringLiteral("</b>");
     }
 
-    pMsg->setText(summary);
-    pMsg->show();
+    msgBox.setText(summary);
+    msgBox.show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {
