@@ -84,22 +84,25 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
     pw_init(nullptr, nullptr);
 
     m_ppwThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
+    spa_zero(m_pwRegistryListener);
+    spa_zero(m_pwMetadataListener);
+    spa_zero(m_pwFilterListener);
 }
 
 PipewireEnumerator::~PipewireEnumerator() {
     pw_thread_loop_stop(m_ppwThreadLoop);
-    spa_hook_remove(&m_pwRegistryListener);
-    spa_hook_remove(&m_pwMetadataListener);
 
     if (m_ppwFilter) {
         pw_filter_destroy(m_ppwFilter);
     }
 
     if (m_ppwMetadata) {
+        spa_hook_remove(&m_pwMetadataListener);
         pw_proxy_destroy((struct pw_proxy*)m_ppwMetadata);
     }
 
     if (m_ppwRegistry) {
+        spa_hook_remove(&m_pwRegistryListener);
         pw_proxy_destroy((struct pw_proxy*)m_ppwRegistry);
     }
 
@@ -116,6 +119,11 @@ PipewireEnumerator::~PipewireEnumerator() {
 }
 
 void PipewireEnumerator::initialize() {
+    if (m_initialized) {
+        qWarning() << "PipewireEnumerator::initialize already initialized";
+        return;
+    }
+
     if (!m_ppwContext) {
         m_ppwContext = pw_context_new(pw_thread_loop_get_loop(m_ppwThreadLoop), nullptr, 0);
         if (!m_ppwContext) {
@@ -136,6 +144,7 @@ void PipewireEnumerator::initialize() {
     }
 
     m_ppwRegistry = pw_core_get_registry(m_ppwCore, PW_VERSION_REGISTRY, 0);
+    pw_registry_add_listener(m_ppwRegistry, &m_pwRegistryListener, &registry_events, this);
 
     // see https://docs.pipewire.org/page_man_pipewire-props_7.html
     // and pipewire/keys.h header
@@ -157,11 +166,6 @@ void PipewireEnumerator::initialize() {
                     "Mixxx",
                     nullptr));
 
-    spa_zero(m_pwRegistryListener);
-    spa_zero(m_pwMetadataListener);
-    spa_zero(m_pwFilterListener);
-
-    pw_registry_add_listener(m_ppwRegistry, &m_pwRegistryListener, &registry_events, this);
     pw_filter_add_listener(m_ppwFilter, &m_pwFilterListener, &filter_events, this);
 
     int res = pw_filter_connect(m_ppwFilter,
