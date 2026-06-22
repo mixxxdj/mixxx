@@ -30,8 +30,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     bool isOpen(uint32_t id);
     void openDevice(uint32_t id,
-            const std::set<uint8_t> inChans,
-            const std::set<uint8_t> outChans,
+            const std::set<uint8_t>& inChans,
+            const std::set<uint8_t>& outChans,
             mixxx::audio::SampleRate rate,
             uint32_t framesPerBuffer);
     void closeDevice(uint32_t id);

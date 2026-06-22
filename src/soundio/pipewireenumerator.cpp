@@ -368,8 +368,8 @@ bool PipewireEnumerator::isOpen(uint32_t id) {
 }
 
 void PipewireEnumerator::openDevice(uint32_t id,
-        const std::set<uint8_t> inChans,
-        const std::set<uint8_t> outChans,
+        const std::set<uint8_t>& inChans,
+        const std::set<uint8_t>& outChans,
         mixxx::audio::SampleRate rate,
         uint32_t framesPerBuffer) {
     VERIFY_OR_DEBUG_ASSERT(m_initialized) {

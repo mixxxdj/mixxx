@@ -64,7 +64,7 @@ SoundDeviceStatus SoundDevicePipewire::close() {
 }
 
 void SoundDevicePipewire::writeOutput(float* output, int channel, int framesPerBuffer, int offset) {
-    for (const auto& out : m_audioOutputs) {
+    for (const auto& out : std::as_const(m_audioOutputs)) {
         ChannelGroup chanGroup = out.getChannelGroup();
         const int iChannelCount = chanGroup.getChannelCount();
         const int iChannelBase = chanGroup.getChannelBase();
@@ -90,7 +90,7 @@ void SoundDevicePipewire::writeOutput(float* output, int channel, int framesPerB
 
 void SoundDevicePipewire::writeInput(
         const float* input, int channel, int framesPerBuffer, int offset) {
-    for (const auto& in : m_audioInputs) {
+    for (const auto& in : std::as_const(m_audioInputs)) {
         ChannelGroup chanGroup = in.getChannelGroup();
         const int iChannelCount = chanGroup.getChannelCount();
         const int iChannelBase = chanGroup.getChannelBase();

@@ -675,7 +675,7 @@ void SoundManager::addDevice(SoundDevicePointer pDevice) {
 }
 
 void SoundManager::removeDevice(SoundDevicePointer pDevice) {
-    for (auto device : m_devices) {
+    for (const auto& device : std::as_const(m_devices)) {
         if (device == pDevice) {
             qDebug() << "SoundManager::removeDevice" << pDevice->getDisplayName();
             m_devices.removeOne(pDevice);

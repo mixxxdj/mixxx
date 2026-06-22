@@ -1174,7 +1174,7 @@ bool DlgPrefSound::okayToClose() const {
     return m_configValid;
 }
 
-void DlgPrefSound::updateSampleRates(QList<mixxx::audio::SampleRate> sampleRates) {
+void DlgPrefSound::updateSampleRates(QList<mixxx::audio::SampleRate>& sampleRates) {
     sampleRateComboBox->clear();
     for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {
