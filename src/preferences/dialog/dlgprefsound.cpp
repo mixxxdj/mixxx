@@ -126,7 +126,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_SOUND_API_URL));
 
-    updateSampleRates(m_pSoundManager->getSampleRates());
+    const auto sampleRates = m_pSoundManager->getSampleRates();
+    updateSampleRates(sampleRates);
     connect(sampleRateComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -1174,7 +1175,7 @@ bool DlgPrefSound::okayToClose() const {
     return m_configValid;
 }
 
-void DlgPrefSound::updateSampleRates(QList<mixxx::audio::SampleRate>& sampleRates) {
+void DlgPrefSound::updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates) {
     sampleRateComboBox->clear();
     for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {

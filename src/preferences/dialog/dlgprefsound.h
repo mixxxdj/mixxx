@@ -90,7 +90,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void updateSampleRates(QList<mixxx::audio::SampleRate>& sampleRates);
+    void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
 
   private:
     void initializePaths();
