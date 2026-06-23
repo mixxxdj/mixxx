@@ -30,7 +30,7 @@ if the ``<depends>`` condition evaluates to false, ``default_option`` will only
 set a default and the value may be overridden by the user.
 #]=======================================================================]
 
-macro(DEFAULT_OPTION option doc depends)
+macro(default_option option doc depends)
   set(${option}_DEFAULT_ON 1)
   foreach(dependency ${depends})
     # if() takes the condition as a list of arguments. Parentheses need to be separated as well.
