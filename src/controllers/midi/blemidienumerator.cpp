@@ -4,9 +4,10 @@
 #include "util/logger.h"
 
 #ifdef Q_OS_ANDROID
-#include <QAndroidJniEnvironment>
-#include <QAndroidJniObject>
-#include <QtAndroid>
+#include <QtCore/private/qandroidextras_p.h>
+
+#include <QJniEnvironment>
+#include <QJniObject>
 #endif
 
 namespace {
@@ -43,26 +44,29 @@ void BleMidiEnumerator::startScan() {
     }
     m_scanning = true;
 
-    QAndroidJniEnvironment env;
+    QJniEnvironment env;
     if (!env) {
         kLogger.warning() << "BLE scan: JNI environment not available";
         m_scanning = false;
         return;
     }
 
-    QAndroidJniObject activity = QtAndroid::androidActivity();
+    QJniObject activity = QJniObject::callStaticObjectMethod(
+            "org/qtproject/qt/android/QtNative",
+            "activity",
+            "()Landroid/app/Activity;");
     if (!activity.isValid()) {
         kLogger.warning() << "BLE scan: activity not available";
         m_scanning = false;
         return;
     }
 
-    jboolean result = QAndroidJniObject::callStaticMethod<jboolean>(
+    jboolean result = QJniObject::callStaticMethod<jboolean>(
             kBleScannerClass,
             "startScan",
             "(Landroid/content/Context;Ljava/lang/String;)Z",
             activity.object<jobject>(),
-            QAndroidJniObject::fromString(QString(kBleMidiServiceUuid)).object<jstring>());
+            QJniObject::fromString(QString(kBleMidiServiceUuid)).object<jstring>());
 
     if (!result) {
         kLogger.info() << "BLE scan: scanner returned no results or permissions denied";
@@ -86,11 +90,14 @@ bool BleMidiEnumerator::isConnected() const {
 #ifdef Q_OS_ANDROID
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
-    QAndroidJniObject activity = QtAndroid::androidActivity();
+    QJniObject activity = QJniObject::callStaticObjectMethod(
+            "org/qtproject/qt/android/QtNative",
+            "activity",
+            "()Landroid/app/Activity;");
     if (!activity.isValid()) {
         return false;
     }
-    jboolean result = QAndroidJniObject::callStaticMethod<jboolean>(
+    jboolean result = QJniObject::callStaticMethod<jboolean>(
             kBleScannerClass, "isConnected", "()Z");
     return result;
 #else
@@ -104,12 +111,15 @@ void BleMidiEnumerator::slotOnScanTimeout() {
 
     m_scanning = false;
 
-    QAndroidJniObject activity = QtAndroid::androidActivity();
+    QJniObject activity = QJniObject::callStaticObjectMethod(
+            "org/qtproject/qt/android/QtNative",
+            "activity",
+            "()Landroid/app/Activity;");
     if (!activity.isValid()) {
         return;
     }
 
-    QAndroidJniObject devices = QAndroidJniObject::callStaticObjectMethod(
+    QJniObject devices = QJniObject::callStaticObjectMethod(
             kBleScannerClass,
             "getDiscoveredDevices",
             "()Ljava/util/List;");
