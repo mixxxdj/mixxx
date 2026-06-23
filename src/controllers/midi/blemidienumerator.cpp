@@ -45,7 +45,7 @@ void BleMidiEnumerator::startScan() {
     m_scanning = true;
 
     QJniEnvironment env;
-    if (!env) {
+    if (!env.isValid()) {
         kLogger.warning() << "BLE scan: JNI environment not available";
         m_scanning = false;
         return;
