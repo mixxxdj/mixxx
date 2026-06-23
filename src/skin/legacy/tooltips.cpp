@@ -265,6 +265,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");
 
+    add("show_prepwin")
+            << tr("Show Preparation Window")
+            << tr("Switches between Preparation Window visible & hidden.");
+
     add("show_waveforms")
             << tr("Show/hide the scrolling waveforms");
 
