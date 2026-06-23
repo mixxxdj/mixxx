@@ -159,7 +159,7 @@ if(
       foreach(_attempt RANGE 1 ${_buildenv_download_attempts})
         file(REMOVE "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
         file(
-          DOWNLOAD ${ BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+          DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
           SHOW_PROGRESS
           TLS_VERIFY ON
           STATUS _buildenv_dl_status
