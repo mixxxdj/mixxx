@@ -7,6 +7,18 @@
         <forum>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forum>
         <manual>pioneer_ddj_flx2</manual>
     </info>
+    <settings>
+        <option variable="beatJumpPadMode" type="enum" label="Beat Jump Pad Mode">
+            <description>
+                Replace a pad mode with Beat Jump controls. When enabled, the 8 pads
+                become 4 back/forward pairs jumping 1, 2, 4, and 8 beats. Hold Shift
+                to double the jump sizes (2, 4, 8, 16 beats).
+            </description>
+            <value label="Off (use original pad modes)" default="true">off</value>
+            <value label="Replace Sampler (pad mode 4)">sampler</value>
+            <value label="Replace Pad FX (pad mode 2)">padfx</value>
+        </option>
+    </settings>
     <controller id="DDJ-FLX2">
         <scriptfiles>
             <file functionprefix="DDJFLX2" filename="Pioneer-DDJ-FLX2-scripts.js"/>

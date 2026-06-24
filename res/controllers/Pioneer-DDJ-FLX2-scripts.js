@@ -55,6 +55,14 @@ var DDJFLX2 = {
     loopPadSizes: [0.125, 0.25, 0.5, 1, 2, 4, 8, 16],
     padFxState: {},
 
+    // Which pad mode (if any) is replaced by Beat Jump.
+    // Values: "off" | "sampler" | "padfx" — loaded from Mixxx preferences.
+    beatJumpPadMode: "off",
+
+    // Sizes for the 4 pad pairs (pads 1-2, 3-4, 5-6, 7-8).
+    // Holding Shift doubles each size (2, 4, 8, 16 beats).
+    beatJumpSizes: [1, 2, 4, 8],
+
     // Shared blink state for all animated LEDs (loop active, sampler playing).
     // blinkPhase toggles on every timer tick; all blinking LEDs share the same
     // phase so they pulse in sync.
@@ -258,6 +266,8 @@ var DDJFLX2 = {
 };
 
 DDJFLX2.init = function() {
+    DDJFLX2.beatJumpPadMode = engine.getSetting("beatJumpPadMode") || "off";
+
     for (let i = 1; i <= 4; i++) {
     // Create runtime storage for each virtual deck.
         this.vDeck[i] = {
@@ -1240,6 +1250,10 @@ DDJFLX2.padFx = function(
     status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "padfx") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.padFxPadFromControl(control), false);
+        return;
+    }
     DDJFLX2.applyPadFx(control, value, status, group, false);
 };
 
@@ -1250,6 +1264,10 @@ DDJFLX2.padFxShift = function(
     status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "padfx") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.padFxPadFromControl(control), true);
+        return;
+    }
     DDJFLX2.applyPadFx(control, value, status, group, true);
 };
 
@@ -1293,6 +1311,11 @@ DDJFLX2.updateAllBlinkingLEDs = function() {
 //   loaded  → LED on (steady)
 //   playing → LED blinks with blinkPhase
 DDJFLX2.updateAllSamplerLEDs = function() {
+    // Beat jump owns the sampler pad LEDs when it replaces that mode.
+    if (DDJFLX2.beatJumpPadMode === "sampler") {
+        return;
+    }
+
     for (let physicalDeck = 1; physicalDeck <= 2; physicalDeck++) {
         const ledStatus = DDJFLX2.getPadLedStatus(physicalDeck, false);
         for (let pad = 1; pad <= 8; pad++) {
@@ -1337,13 +1360,39 @@ DDJFLX2.updateAllLoopBlinkLEDs = function() {
     }
 };
 
+// Shared handler for beat jump pad mode.
+// Odd pads jump backward, even pads jump forward.
+// Pad pairing: 1&2 -> 1 beat, 3&4 -> 2 beats, 5&6 -> 4 beats, 7&8 -> 8 beats.
+DDJFLX2.applyBeatJump = function(control, value, status, group, padNum, shifted) {
+    const deck = DDJFLX2.resolveDeck(group);
+    const ledStatus = DDJFLX2.getPadLedStatus(deck.physicalDeck, shifted);
+
+    if (!value) {
+        midi.sendShortMsg(ledStatus, control, 0x00);
+        return;
+    }
+
+    const isForward = padNum % 2 === 0;
+    const pairIndex = Math.floor((padNum - 1) / 2);
+    const size = (isForward ? 1 : -1) * DDJFLX2.beatJumpSizes[pairIndex] * (shifted ? 2 : 1);
+
+    engine.setValue(group, "beatjump_size", size);
+    engine.setValue(group, "beatjump", size);
+    midi.sendShortMsg(ledStatus, control, 0x7f);
+};
+
 DDJFLX2.samplerPad = function(
     channel,
     control,
     value,
-    _status,
+    status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "sampler") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.samplerPadFromControl(control), false);
+        return;
+    }
+
     if (!value) {
         return;
     }
@@ -1361,9 +1410,14 @@ DDJFLX2.samplerStopPad = function(
     channel,
     control,
     value,
-    _status,
+    status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "sampler") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.samplerPadFromControl(control), true);
+        return;
+    }
+
     if (!value) {
         return;
     }
