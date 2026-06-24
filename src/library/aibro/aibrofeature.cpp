@@ -1675,50 +1675,71 @@ double AIBroFeature::getCandidateBPM(
         const mixxx::YouTubeVideoInfo& candidate) const {
     QString title = candidate.title.toLower();
     if (title.contains("drum and bass") || title.contains("dnb") ||
-            title.contains("drum & bass"))
+            title.contains("drum & bass")) {
         return 174.0;
-    if (title.contains("dubstep") || title.contains("dub step"))
+    }
+    if (title.contains("dubstep") || title.contains("dub step")) {
         return 140.0;
-    if (title.contains("techno"))
+    }
+    if (title.contains("techno")) {
         return 130.0;
-    if (title.contains("trance"))
+    }
+    if (title.contains("trance")) {
         return 138.0;
-    if (title.contains("house"))
+    }
+    if (title.contains("house")) {
         return 124.0;
-    if (title.contains("deep house"))
+    }
+    if (title.contains("deep house")) {
         return 122.0;
-    if (title.contains("tech house"))
+    }
+    if (title.contains("tech house")) {
         return 126.0;
-    if (title.contains("progressive"))
+    }
+    if (title.contains("progressive")) {
         return 128.0;
-    if (title.contains("electro"))
+    }
+    if (title.contains("electro")) {
         return 128.0;
+    }
     if (title.contains("hip hop") || title.contains("hip-hop") ||
-            title.contains("rap"))
+            title.contains("rap")) {
         return 90.0;
+    }
     if (title.contains("r&b") || title.contains("rnb") ||
-            title.contains("rhythm and blues"))
+            title.contains("rhythm and blues")) {
         return 85.0;
-    if (title.contains("pop"))
+    }
+    if (title.contains("pop")) {
         return 120.0;
-    if (title.contains("reggaeton") || title.contains("reggae"))
+    }
+    if (title.contains("reggaeton") || title.contains("reggae")) {
         return 95.0;
-    if (title.contains("dancehall"))
+    }
+    if (title.contains("dancehall")) {
         return 100.0;
-    if (title.contains("afrobeats"))
+    }
+    if (title.contains("afrobeats")) {
         return 110.0;
-    if (title.contains("ambient") || title.contains("chill"))
+    }
+    if (title.contains("ambient") || title.contains("chill")) {
         return 90.0;
-    if (title.contains("downtempo"))
+    }
+    if (title.contains("downtempo")) {
         return 85.0;
-    if (title.contains("breakbeat") || title.contains("breaks"))
+    }
+    if (title.contains("breakbeat") || title.contains("breaks")) {
         return 135.0;
-    if (title.contains("garage"))
+    }
+    if (title.contains("garage")) {
         return 130.0;
-    if (title.contains("grime"))
+    }
+    if (title.contains("grime")) {
         return 140.0;
-    if (title.contains("jungle"))
+    }
+    if (title.contains("jungle")) {
         return 170.0;
+    }
     return 0.0;
 }
 
