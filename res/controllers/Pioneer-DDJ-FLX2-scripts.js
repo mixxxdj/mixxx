@@ -573,10 +573,10 @@ DDJFLX2.browseTracks = function(value) {
     // Threshold of 350 requires a firm, deliberate wheel turn
     // before triggering a single row move in the library.
     if (DDJFLX2.jogCounter > 350) {
-        engine.setValue("[Library]", "MoveDown", true);
+        engine.setValue("[Library]", "MoveUp", true);
         DDJFLX2.jogCounter = 0;
     } else if (DDJFLX2.jogCounter < -350) {
-        engine.setValue("[Library]", "MoveUp", true);
+        engine.setValue("[Library]", "MoveDown", true);
         DDJFLX2.jogCounter = 0;
     }
 };
