@@ -33,17 +33,6 @@ EffectManifestPointer BandpassReverbEffect::getManifest() {
     decay->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     decay->setRange(0, 0.5, 1);
 
-    EffectManifestParameterPointer bandwidth = pManifest->addParameter();
-    bandwidth->setId("bandwidth");
-    bandwidth->setName(QObject::tr("Bandwidth"));
-    bandwidth->setShortName(QObject::tr("BW"));
-    bandwidth->setDescription(QObject::tr(
-            "Bandwidth of the low pass filter at the input.\n"
-            "Higher values result in less attenuation of high frequencies."));
-    bandwidth->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
-    bandwidth->setRange(0, 1, 1);
-
     EffectManifestParameterPointer damping = pManifest->addParameter();
     damping->setId("damping");
     damping->setName(QObject::tr("Damping"));
@@ -122,7 +111,6 @@ EffectManifestPointer BandpassReverbEffect::getManifest() {
 void BandpassReverbEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pDecayParameter = parameters.value("decay");
-    m_pBandWidthParameter = parameters.value("bandwidth");
     m_pDampingParameter = parameters.value("damping");
     m_pSendParameter = parameters.value("send_amount");
     m_pHPCutoffParameter = parameters.value("hp_cutoff");
@@ -143,7 +131,6 @@ void BandpassReverbEffect::processChannel(
     Q_UNUSED(groupFeatures);
 
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
-    const auto bandwidth = static_cast<sample_t>(m_pBandWidthParameter->value());
     const auto damping = static_cast<sample_t>(m_pDampingParameter->value());
     const auto sendCurrent = static_cast<sample_t>(m_pSendParameter->value());
     const bool postFilter = m_pPostFilterParameter->toBool();
@@ -236,7 +223,7 @@ if (!postFilter) {
             filteredBuffer.data(),
             pOutput,
             engineParameters.samplesPerBuffer(),
-            bandwidth,
+            1.0f,
             decay,
             damping,
             sendCurrent,
@@ -251,7 +238,7 @@ if (!postFilter) {
             pInput,
             reverbBuffer.data(),
             engineParameters.samplesPerBuffer(),
-            bandwidth,
+            1.0f,
             decay,
             damping,
             sendCurrent,

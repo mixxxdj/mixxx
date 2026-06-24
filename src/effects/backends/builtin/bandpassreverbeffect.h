@@ -64,7 +64,6 @@ class BandpassReverbEffect : public EffectProcessorImpl<BandpassReverbGroupState
     }
 
     EngineEffectParameterPointer m_pDecayParameter;
-    EngineEffectParameterPointer m_pBandWidthParameter;
     EngineEffectParameterPointer m_pDampingParameter;
     EngineEffectParameterPointer m_pSendParameter;
     EngineEffectParameterPointer m_pHPCutoffParameter;
