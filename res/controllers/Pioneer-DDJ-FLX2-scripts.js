@@ -686,7 +686,7 @@ DDJFLX2.touch = function(
     if (value) {
         engine.scratchEnable(
             deck.virtualDeck,
-            1024,
+            460,
             33 + 1 / 3,
             0.125,
             0.003
