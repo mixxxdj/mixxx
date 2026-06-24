@@ -63,7 +63,8 @@ void MusicMatcherClient::searchArtist(const QString& query) {
             return;
         }
 
-        QJsonArray data = doc.object()["data"].toArray();
+        const QJsonObject rootObj = doc.object();
+        const QJsonArray data = rootObj["data"].toArray();
         if (data.isEmpty()) {
             emit searchFailed("No artist found");
             return;
@@ -115,7 +116,8 @@ void MusicMatcherClient::fetchArtistTopTracks(const QString& artistId) {
             return;
         }
 
-        QJsonArray data = doc.object()["data"].toArray();
+        const QJsonObject rootObj = doc.object();
+        const QJsonArray data = rootObj["data"].toArray();
         QList<MusicMatcherSuggestion> results;
 
         static const QRegularExpression kLiveRe(
