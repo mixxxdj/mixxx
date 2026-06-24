@@ -189,7 +189,7 @@ void ControllerManager::slotInitialize() {
 #ifdef __ANDROID__
         m_enumerators.push_back(std::make_unique<BleMidiEnumerator>(m_pConfig));
         // Keep raw pointer for BLE scan access (ownership is in m_enumerators)
-        m_pBleScanEnumerator = m_enumerators.back().get();
+        m_pBleScanEnumerator = static_cast<BleMidiEnumerator*>(m_enumerators.back().get());
 #endif
     } // Mutex locker released here
     emit initialized();
