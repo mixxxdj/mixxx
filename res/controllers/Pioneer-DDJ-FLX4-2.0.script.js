@@ -1351,7 +1351,7 @@ PioneerDDJFLX4._cancelBrakeWatch = function(deckIdx) {
     if (t !== -1) {
         try {
             engine.stopTimer(t);
-        } catch { /* ignored */ }
+        } catch (e) { /* ignored */ }
 
         PioneerDDJFLX4._brakeWatchTimer[deckIdx] = -1;
     }
@@ -1370,13 +1370,13 @@ PioneerDDJFLX4._stopAllVinylFx = function(deck) {
         if (typeof engine.isBrakeActive === "function" && engine.isBrakeActive(deck)) {
             engine.brake(deck, false);
         }
-    } catch { /* ignored */ }
+    } catch (e) { /* ignored */ }
 
     try {
         if (typeof engine.isSoftStartActive === "function" && engine.isSoftStartActive(deck)) {
             engine.softStart(deck, false);
         }
-    } catch { /* ignored */ }
+    } catch (e) { /* ignored */ }
 };
 
 
@@ -2081,7 +2081,7 @@ PioneerDDJFLX4._armBeatFxUnit = function(u) {
         : (PioneerDDJFLX4._beatFx.assign.ch2 ? 1 : 0);
 
     // route ON for its intended deck, OFF otherwise
-    try { engine.setValue(u, routeKey, enable); } catch { /* ignored */ }
+    try { engine.setValue(u, routeKey, enable); } catch (e) { /* ignored */ }
 };
 
 // ---- LED ----
@@ -2190,7 +2190,7 @@ PioneerDDJFLX4._beatFxSetUnitAndSlots = function(u, on) {
 
         const routeKey = PioneerDDJFLX4._beatFxRouteKey(u);
         if (routeKey) {
-            try { engine.setValue(u, routeKey, 0); } catch { /* ignored */ }
+            try { engine.setValue(u, routeKey, 0); } catch (e) { /* ignored */ }
         }
         return;
     }
@@ -2484,12 +2484,12 @@ PioneerDDJFLX4._setUnitAndSlots = function(unitIdx, group, on) {
         engine.setValue(S2, "enabled", 0);
         engine.setValue(S1, "enabled", 0);
         engine.setValue(U,  "enabled", 0);
-        try { engine.setValue(U, rk, 0); } catch { /* ignored */ }
+        try { engine.setValue(U, rk, 0); } catch (e) { /* ignored */ }
         return;
     }
 
     // ON: route + unit first, then slots
-    try { engine.setValue(U, rk, 1); } catch { /* ignored */ }
+    try { engine.setValue(U, rk, 1); } catch (e) { /* ignored */ }
     engine.setValue(U, "enabled", 1);
     engine.setValue(S1, "enabled", 1);
     engine.setValue(S2, "enabled", 1);

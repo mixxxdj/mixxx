@@ -1528,8 +1528,9 @@ void AIBroFeature::updateCurrentTrackInfo() {
 }
 
 int AIBroFeature::findAvailableDeck() const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return -1;
+    }
     return (m_iCurrentDeck == 0) ? 1 : 0;
 }
 
@@ -1544,18 +1545,22 @@ double AIBroFeature::getDeckPlayPosition(int deckIndex) const {
 // ===================================================================
 
 double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return 0.0;
+    }
     auto* pPlayer = m_pPlayerManager->getDeck(deckIndex);
-    if (!pPlayer)
+    if (!pPlayer) {
         return 0.0;
+    }
     TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return 0.0;
+    }
 
     double durationSec = pTrack->getDuration();
-    if (durationSec <= 0.0)
+    if (durationSec <= 0.0) {
         return 0.0;
+    }
 
     QString title = pTrack->getTitle().toLower();
     bool isRemix = false;
@@ -1599,22 +1604,26 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
 
 QMap<int, QString> AIBroFeature::snapshotTrackLocations() const {
     QMap<int, QString> snapshot;
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return snapshot;
+    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer)
+        if (!pPlayer) {
             continue;
+        }
         TrackPointer pTrack = pPlayer->getLoadedTrack();
-        if (pTrack)
+        if (pTrack) {
             snapshot[i] = pTrack->getLocation();
+        }
     }
     return snapshot;
 }
 
 QString AIBroFeature::findNewManualTrack() {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return {};
+    }
     QMap<int, QString> current = snapshotTrackLocations();
     for (auto it = current.begin(); it != current.end(); ++it) {
         int deck = it.key();
@@ -1640,19 +1649,23 @@ QString AIBroFeature::findNewManualTrack() {
 // ===================================================================
 
 double AIBroFeature::getCurrentPlayingBPM() const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return 0.0;
+    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i))
+        if (!isDeckPlaying(i)) {
             continue;
+        }
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer)
+        if (!pPlayer) {
             continue;
+        }
         TrackPointer pTrack = pPlayer->getLoadedTrack();
         if (pTrack) {
             double bpm = pTrack->getBpm();
-            if (bpm > 0)
+            if (bpm > 0) {
                 return bpm;
+            }
         }
     }
     return 0.0;
