@@ -1095,22 +1095,22 @@ DDJFLX2.hotcueNActivate = function(
     status,
     group
 ) {
-    if (!value) {
-        return;
-    }
-
     const deck = DDJFLX2.resolveDeck(group);
     const hotcueNum = DDJFLX2.hotcuePadFromControl(control);
     const hotcue = `hotcue_${  hotcueNum}`;
 
-    engine.setValue(deck.group, `${hotcue  }_activate`, true);
+    // Pass both press (1) and release (0) so Mixxx can manage the
+    // preview-while-held behavior when the deck is paused.
+    engine.setValue(deck.group, `${hotcue  }_activate`, value ? 1 : 0);
 
-    // Update play LED immediately for responsiveness.
-    midi.sendShortMsg(
-        0x90 + deck.physicalDeck - 1,
-        0x0b,
-        0x7f * engine.getValue(deck.group, "play")
-    );
+    if (value) {
+        // Update play LED immediately for responsiveness.
+        midi.sendShortMsg(
+            0x90 + deck.physicalDeck - 1,
+            0x0b,
+            0x7f * engine.getValue(deck.group, "play")
+        );
+    }
     // NOTE: hotcue pad LED is handled by the makeConnection on hotcue_X_enabled.
 };
 
