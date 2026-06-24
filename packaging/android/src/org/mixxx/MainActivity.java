@@ -75,7 +75,31 @@ public class MainActivity extends QtActivityBase {
 
     private void requestBluetoothPermissions() {
         // Bluetooth/Location permissions needed for BLE MIDI controllers (Android 12+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+: Request WiFi device discovery for WiFi-based controllers
+            java.util.List<String> needed = new java.util.ArrayList<>();
+            if (checkSelfPermission(Manifest.permission.NEARBY_WIFI_DEVICES)
+                != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.NEARBY_WIFI_DEVICES);
+            }
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
+                != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.BLUETOOTH_CONNECT);
+            }
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
+                != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.BLUETOOTH_SCAN);
+            }
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+            if (!needed.isEmpty()) {
+                requestPermissions(
+                    needed.toArray(new String[0]),
+                    BLUETOOTH_PERMISSION_REQUEST);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             java.util.List<String> needed = new java.util.ArrayList<>();
             if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
                 != PackageManager.PERMISSION_GRANTED) {
