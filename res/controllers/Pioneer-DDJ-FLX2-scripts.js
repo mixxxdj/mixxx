@@ -39,6 +39,9 @@ var DDJFLX2 = {
     // Used for temporary values such as 14-bit MIDI reconstruction.
     vDeck: {},
 
+    // Pitch bend factor for jog wheel side movement.
+    pitchShiftFactor: 0.5,
+
     // Current shift button state.
     // Press/release logic is more reliable than toggle logic.
     shiftPressed: {left: false, right: false},
@@ -613,7 +616,7 @@ DDJFLX2.jogWheel = function(
     }
 
     const deck = DDJFLX2.resolveDeck(group);
-    engine.setValue(deck.group, "jog", (value - 64) * 0.05);
+    engine.setValue(deck.group, "jog", (value - 64) * DDJFLX2.pitchShiftFactor);
 };
 
 // Shared helper for all scratch-related handlers.
