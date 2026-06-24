@@ -117,6 +117,7 @@ class EffectsManager {
     // ControlObjects for Equalizers' frequencies
     // TODO: replace these with effect parameters that are hidden by default
     ControlPotmeter m_loEqFreq;
+    ControlPotmeter m_midEqFreq;
     ControlPotmeter m_hiEqFreq;
 
     // This is set true when setup() is run. Then, the initial decks (their EQ
