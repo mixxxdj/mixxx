@@ -377,6 +377,9 @@ DJ505.setChannelInput = function(channel, control, value, _status, _group) {
         break;
     case 0x01:  // LINE
     case 0x02:  // PHONO
+        if (engine.getValue(channelgroup, "input_configured") === 0) {
+            throw "Configuration Error: a PC/Line/Phono switch has been set to Line or Phono. In order to use these modes audio inputs to be configured accordingly! Please refer to https://manual.mixxx.org/latest/hardware/controllers/roland_dj_505#audio-setup";
+        }
         engine.setValue(channelgroup, "passthrough", 1);
         break;
     }
