@@ -795,6 +795,22 @@ double AIBroFeature::scoreCandidate(
         return -1.0;
     }
 
+    // Hard filter: compilations, playlists, "best of", mixes, collections
+    {
+        const QString lowerTitle = candidate.title.toLower();
+        if (lowerTitle.contains("compilation") ||
+                lowerTitle.contains("best of") ||
+                lowerTitle.contains("greatest hits") ||
+                lowerTitle.contains("top hits") ||
+                lowerTitle.contains("playlist") ||
+                lowerTitle.contains("full album") ||
+                lowerTitle.contains("album mix") ||
+                lowerTitle.contains("vol.") ||
+                lowerTitle.contains("volume ")) {
+            return -1.0;
+        }
+    }
+
     // Hard filter: remixes (often low quality)
     {
         const QString lowerTitle = candidate.title.toLower();
@@ -825,6 +841,17 @@ double AIBroFeature::scoreCandidate(
             }
         }
         if (specialCharCount > 3) {
+            return -1.0;
+        }
+    }
+
+    // Hard filter: label/compilation uploaders (e.g. "QualityControlVEVO", "Various Artists")
+    {
+        const QString uploaderLower = candidate.uploader.toLower();
+        if (uploaderLower.contains("quality control") ||
+                uploaderLower.contains("qualitycontrol") ||
+                uploaderLower.contains("various artists") ||
+                uploaderLower.contains("various") && candidate.title.contains("-")) {
             return -1.0;
         }
     }
@@ -1057,23 +1084,25 @@ void AIBroFeature::findNextSong() {
     // and pick the best-scoring remainder.
     QString query;
     if (!artist.isEmpty() && artist.length() >= 3) {
+        // Rotate between query styles for variety, but always target
+        // specific songs (not compilations or "best of" playlists)
         int style = m_blendCount % 3;
         switch (style) {
         case 0:
-            query = QStringLiteral("%1 official music").arg(artist);
+            query = QStringLiteral("%1 official audio").arg(artist);
             break;
         case 1:
-            query = QStringLiteral("%1 songs playlist").arg(artist);
+            query = QStringLiteral("%1 lyrics").arg(artist);
             break;
         case 2:
         default:
-            query = QStringLiteral("best of %1 music").arg(artist);
+            query = QStringLiteral("%1 popular songs").arg(artist);
             break;
         }
     } else if (!title.isEmpty() && title.length() >= 3) {
         query = title;
     } else {
-        query = QStringLiteral("popular greek music 2024 2025");
+        query = QStringLiteral("popular music 2025");
     }
     kLogger.info() << "AI Bro: searching YouTube for:" << query;
     m_downloading = true;

@@ -71,6 +71,23 @@
       </item>
 
       <item>
+       <widget class="QPushButton" name="btnSearchBluetooth">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Search for Bluetooth Controllers</string>
+        </property>
+        <property name="toolTip">
+         <string>Scan for Bluetooth MIDI controllers nearby. Make sure your controller is in pairing mode.</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
        <widget class="Line" name="line_midithrough">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
