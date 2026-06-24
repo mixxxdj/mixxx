@@ -97,6 +97,7 @@ class TrackModel {
         LastPlayedAt = 31,
         PlaylistDateTimeAdded = 32,
         TuningFrequency = 33,
+        CatalogueNumber = 34,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
