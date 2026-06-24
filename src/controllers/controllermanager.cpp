@@ -188,7 +188,9 @@ void ControllerManager::slotInitialize() {
 #endif
 #ifdef __ANDROID__
         m_pBleMidiEnumerator = std::make_unique<BleMidiEnumerator>(m_pConfig);
-        m_enumerators.push_back(m_pBleMidiEnumerator.get());
+        m_enumerators.push_back(std::move(m_pBleMidiEnumerator));
+        // Keep raw pointer for BLE scan access (ownership is in m_enumerators)
+        m_pBleScanEnumerator = m_enumerators.back().get();
 #endif
     } // Mutex locker released here
     emit initialized();
@@ -513,14 +515,14 @@ QList<QString> ControllerManager::getMappingPaths(UserSettingsPointer pConfig) {
 
 #ifdef __ANDROID__
 void ControllerManager::startBleScan() {
-    if (m_pBleMidiEnumerator) {
-        m_pBleMidiEnumerator->startScan();
+    if (m_pBleScanEnumerator) {
+        m_pBleScanEnumerator->startScan();
     }
 }
 
 bool ControllerManager::isBleConnected() const {
-    if (m_pBleMidiEnumerator) {
-        return m_pBleMidiEnumerator->isConnected();
+    if (m_pBleScanEnumerator) {
+        return m_pBleScanEnumerator->isConnected();
     }
     return false;
 }

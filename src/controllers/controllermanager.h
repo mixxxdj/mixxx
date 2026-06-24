@@ -106,6 +106,6 @@ class ControllerManager : public QObject {
     /// Accessed only from the ControllerManager thread via slotPollDevices().
     bool m_skipPoll;
 #ifdef __ANDROID__
-    std::unique_ptr<class BleMidiEnumerator> m_pBleMidiEnumerator;
+    class BleMidiEnumerator* m_pBleScanEnumerator = nullptr;
 #endif
 };
