@@ -78,15 +78,15 @@ public class MainActivity extends QtActivityBase {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             java.util.List<String> needed = new java.util.ArrayList<>();
             if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 needed.add(Manifest.permission.BLUETOOTH_CONNECT);
             }
             if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 needed.add(Manifest.permission.BLUETOOTH_SCAN);
             }
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
             }
             if (!needed.isEmpty()) {
@@ -97,7 +97,7 @@ public class MainActivity extends QtActivityBase {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Location required for Bluetooth scanning on Android 6-11
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(
                     new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
                     BLUETOOTH_PERMISSION_REQUEST);
