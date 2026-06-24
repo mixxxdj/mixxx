@@ -4,6 +4,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
+#include "track/track.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
@@ -24,7 +25,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     QPixmap requestUncachedOverview(
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
-            TrackId trackId,
+            TrackPointer pTrack,
             const QObject* pRequester,
             QSize desiredSize);
 
@@ -63,7 +64,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
-            TrackId trackId,
+            TrackPointer pTrack,
             const QObject* pRequester,
             QSize desiredSize);
 
