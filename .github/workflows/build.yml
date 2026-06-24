@@ -244,7 +244,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
