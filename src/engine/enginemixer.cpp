@@ -121,7 +121,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))),
           m_pHeadSplitEnabled(std::make_unique<ControlPushButton>(
                   ConfigKey(group, "headSplit"), true, 0.0)),
-
+          m_pHeadSplitReverse(std::make_unique<ControlPushButton>(
+        ConfigKey(group, "headSplitReverse"), true, 0.0)),
           m_pKeylockEngine(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                   false,
@@ -189,6 +190,8 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
     m_pHeadMix->set(-1.);
 
     m_pHeadSplitEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pHeadSplitReverse->setButtonMode(mixxx::control::ButtonMode::Toggle);
+m_pHeadSplitReverse->set(0.0);
     m_pHeadSplitEnabled->set(0.0);
 
     // zero out otherwise uninitialized buffers
@@ -823,17 +826,19 @@ void EngineMixer::processHeadphones(
     // If Head Split is enabled, replace the left channel of the pfl buffer
     // with a mono mix of the headphone buffer, and the right channel of the pfl
     // buffer with a mono mix of the main output buffer.
-    if (m_pHeadSplitEnabled->toBool()) {
-        // note: NOT VECTORIZED because of in place copy
-        // with all compilers, except clang >= 14.
-        auto* const ph = m_head.data();
-        auto* const pm = m_main.data();
-        for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
-            ph[i] = (ph[i] + ph[i + 1]) / 2;
-            ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
-        }
+   if (m_pHeadSplitEnabled->toBool()) {
+    // note: NOT VECTORIZED because of in place copy
+    // with all compilers, except clang >= 14.
+    auto* const ph = m_head.data();
+    auto* const pm = m_main.data();
+    const bool reversed = m_pHeadSplitReverse->toBool();
+    for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
+        const CSAMPLE headMono = (ph[i] + ph[i + 1]) / 2;
+        const CSAMPLE mainMono = (pm[i] + pm[i + 1]) / 2;
+        ph[i]     = reversed ? mainMono : headMono;
+        ph[i + 1] = reversed ? headMono : mainMono;
     }
-
+}
     // Apply headphone gain
     CSAMPLE_GAIN headphoneGain = static_cast<CSAMPLE_GAIN>(m_pHeadGain->get());
     SampleUtil::applyRampingGain(
