@@ -27,6 +27,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/usersettings.h"
 #include "util/cmdlineargs.h"
 #include "util/desktophelper.h"
@@ -88,6 +89,7 @@ DlgPrefController::DlgPrefController(
           m_pOutputProxyModel(nullptr),
           m_GuiInitialized(false),
           m_bDirty(false),
+          m_bPrefsDialogWasVisible(false),
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
@@ -364,7 +366,14 @@ void DlgPrefController::slotRecreateControlPickerMenu() {
     m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 }
 
-void DlgPrefController::showLearningWizard() {
+void DlgPrefController::showLearningWizard(bool suppressPrefsDialogOnClose) {
+    Q_UNUSED(suppressPrefsDialogOnClose);
+    QWidget* pPrefsDialog = this;
+    while (pPrefsDialog && !qobject_cast<DlgPreferences*>(pPrefsDialog)) {
+        pPrefsDialog = pPrefsDialog->parentWidget();
+    }
+    m_bPrefsDialogWasVisible = pPrefsDialog && pPrefsDialog->isVisible();
+
     if (isDirty()) {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                 tr("Apply device settings?"),
@@ -388,6 +397,11 @@ void DlgPrefController::showLearningWizard() {
         // shortcut for creating and assigning required I/O table models
         showMapping(m_pMapping);
     }
+
+    // Hide the prefs dialog before showing the wizard. The wizard is parented
+    // to this page (a child of the prefs dialog), so hiding the prefs dialog
+    // after show() would cascade-hide the wizard too.
+    emit mappingStarted();
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
@@ -413,8 +427,6 @@ void DlgPrefController::showLearningWizard() {
             &DlgControllerLearning::inputMappingsLearned,
             this,
             &DlgPrefController::midiInputMappingsLearned);
-
-    emit mappingStarted();
     connect(m_pDlgControllerLearning,
             &DlgControllerLearning::stopLearning,
             this,
@@ -423,7 +435,10 @@ void DlgPrefController::showLearningWizard() {
 
 void DlgPrefController::slotStopLearning() {
     VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
-        emit mappingEnded();
+        if (m_bPrefsDialogWasVisible) {
+            emit mappingEnded();
+        }
+        m_bPrefsDialogWasVisible = false;
         return;
     }
 
@@ -455,8 +470,10 @@ void DlgPrefController::slotStopLearning() {
         }
     }
 
-    // This will show() -> slotUpdate() -> enumerateMappings() etc.
-    emit mappingEnded();
+    if (m_bPrefsDialogWasVisible) {
+        emit mappingEnded();
+    }
+    m_bPrefsDialogWasVisible = false;
 }
 
 void DlgPrefController::midiInputMappingsLearned(
