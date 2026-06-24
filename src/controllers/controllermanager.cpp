@@ -187,8 +187,7 @@ void ControllerManager::slotInitialize() {
         m_enumerators.push_back(std::make_unique<HidEnumerator>());
 #endif
 #ifdef __ANDROID__
-        m_pBleMidiEnumerator = std::make_unique<BleMidiEnumerator>(m_pConfig);
-        m_enumerators.push_back(std::move(m_pBleMidiEnumerator));
+        m_enumerators.push_back(std::make_unique<BleMidiEnumerator>(m_pConfig));
         // Keep raw pointer for BLE scan access (ownership is in m_enumerators)
         m_pBleScanEnumerator = m_enumerators.back().get();
 #endif
