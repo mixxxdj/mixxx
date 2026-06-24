@@ -851,7 +851,7 @@ double AIBroFeature::scoreCandidate(
         if (uploaderLower.contains("quality control") ||
                 uploaderLower.contains("qualitycontrol") ||
                 uploaderLower.contains("various artists") ||
-                uploaderLower.contains("various") && candidate.title.contains("-")) {
+                (uploaderLower.contains("various") && candidate.title.contains("-"))) {
             return -1.0;
         }
     }
