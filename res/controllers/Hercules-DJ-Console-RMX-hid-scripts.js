@@ -157,7 +157,7 @@ RMX.init = function() {
     engine.setValue(g, "pfl", !engine.getValue(g, "pfl"));
   });
 
-  c.capture("headMix", "all", function(g, e, v) {
+  c.capture("headphone_mix", "all", function(g, e, v) {
     engine.setValue(g, e, (v-128)/128);
   });
 
@@ -364,12 +364,12 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "filterLowKill",     "[Channel2]", "button", 5, 0x80);
 
   // master buttons
-  c.add_control(pid, "scratch",           "[Master]",   "button", 6, 0x01);
-  c.add_control(pid, "menu_up",           "[Master]",   "button", 6, 0x02);
-  c.add_control(pid, "menu_down",         "[Master]",   "button", 6, 0x04);
-  c.add_control(pid, "menu_left",         "[Master]",   "button", 6, 0x08);
-  c.add_control(pid, "menu_right",        "[Master]",   "button", 6, 0x10);
-  c.add_control(pid, "mic_toggle",        "[Master]",   "button", 6, 0x20);
+  c.add_control(pid, "scratch",           "[Mixer]",   "button", 6, 0x01);
+  c.add_control(pid, "menu_up",           "[Mixer]",   "button", 6, 0x02);
+  c.add_control(pid, "menu_down",         "[Mixer]",   "button", 6, 0x04);
+  c.add_control(pid, "menu_left",         "[Mixer]",   "button", 6, 0x08);
+  c.add_control(pid, "menu_right",        "[Mixer]",   "button", 6, 0x10);
+  c.add_control(pid, "mic_toggle",        "[Mixer]",   "button", 6, 0x20);
 
   // wheels
   c.add_control(pid, "jog",               "[Channel1]", "encoder", 7, 0xff);
@@ -383,10 +383,10 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "filterMid",         "[Channel1]", "fader", 13, 0xff);
   c.add_control(pid, "filterLow",         "[Channel1]", "fader", 14, 0xff);
 
-  c.add_control(pid, "balance",           "[Master]",   "fader", 15, 0xff);
-  c.add_control(pid, "volume",            "[Master]",   "fader", 16, 0xff);
-  c.add_control(pid, "crossfader",        "[Master]",   "fader", 17, 0xff);
-  c.add_control(pid, "headMix",           "[Master]",   "fader", 18, 0xff);
+  c.add_control(pid, "balance",           "[Mixer]",   "fader", 15, 0xff);
+  c.add_control(pid, "volume",            "[Mixer]",   "fader", 16, 0xff);
+  c.add_control(pid, "crossfader",        "[Mixer]",   "fader", 17, 0xff);
+  c.add_control(pid, "headphone_mix",           "[Mixer]",   "fader", 18, 0xff);
 
   c.add_control(pid, "rate",              "[Channel2]", "fader", 19, 0xff);
   c.add_control(pid, "volume",            "[Channel2]", "fader", 20, 0xff);

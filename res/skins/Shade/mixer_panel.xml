@@ -75,7 +75,7 @@
                 <Pos>72,200</Pos>
                 <Horizontal>true</Horizontal>
                 <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <ConfigKey>[Mixer],crossfader</ConfigKey>
                   <EmitOnDownPress>false</EmitOnDownPress>
                 </Connection>
               </SliderComposed>
@@ -663,7 +663,7 @@
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>151,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],gain</ConfigKey>
+                  <ConfigKey>[Mixer],main_gain</ConfigKey>
                 </Connection>
               </Knob>
               <Knob>
@@ -672,7 +672,7 @@
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>184,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],balance</ConfigKey>
+                  <ConfigKey>[Mixer],balance</ConfigKey>
                 </Connection>
               </Knob>
 
@@ -682,12 +682,12 @@
               **********************************************
               -->
               <Knob>
-                <TooltipId>headMix</TooltipId>
+                <TooltipId>headphone_mix</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>45,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],headMix</ConfigKey>
+                  <ConfigKey>[Mixer],headphone_mix</ConfigKey>
                 </Connection>
               </Knob>
               <Knob>
@@ -696,7 +696,7 @@
                 <Path>knobs_no_center/knob_rotary_s%1.png</Path>
                 <Pos>78,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],headGain</ConfigKey>
+                  <ConfigKey>[Mixer],headphone_gain</ConfigKey>
                 </Connection>
               </Knob>
 
@@ -720,7 +720,7 @@
                 </State>
                 <Pos>11,18</Pos>
                 <Connection>
-                  <ConfigKey>[Master],headSplit</ConfigKey>
+                  <ConfigKey>[Mixer],headphone_split</ConfigKey>
                 </Connection>
               </PushButton>
 

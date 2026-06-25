@@ -37,7 +37,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
 
         const CrossfaderUnit = function(options) {
             const unitOptions = options || {};
-            unitOptions.group = unitOptions.group || "[Master]";
+            unitOptions.group = unitOptions.group || "[Mixer]";
             c.ComponentContainer.call(this, unitOptions);
 
             const Crossfader = function(options) {
@@ -53,7 +53,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 },
                 disable: function() {
                     this.input = this.ignoreInput;
-                    engine.setValue("[Master]", "crossfader_set_default", 1);
+                    engine.setValue("[Mixer]", "crossfader_set_default", 1);
                 },
             });
             const crossfader = new Crossfader(options.crossfader);
@@ -381,7 +381,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                     ]
                 },
                 { // Crossfader
-                    defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
+                    defaultDefinition: {type: c.Button, options: {group: "[Mixer]"}},
                     components: [
                         { // Crossfader: On
                             type: CrossfaderUnit, options: {
@@ -419,7 +419,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                         {options: {midi: [cc,   0x62], outKey: null}}, // Sampler: REC Source 3
                         {options: {midi: [cc,   0x63], outKey: null}}, // Sampler: REC Source 4
                         {options: {midi: [cc,   0x64], outKey: null}}, // Sampler: REC Source Microphone
-                        {options: {midi: [cc,   0x65], outKey: null}}, // Sampler: REC Source Master
+                        {options: {midi: [cc,   0x65], outKey: null}}, // Sampler: REC Source Main
                         {options: {midi: [note, 0x66],    key: "pfl", sendShifted: true}}, // Sampler: PFL
                         {options: {midi: [note, 0x67],  inKey: "beatloop_size", values: [1, 2, 4, 8, 16, 256]}, type: e.EnumToggleButton}, // Sampler: Sample Length (Right)
                         {options: {midi: [note, 0x68],  inKey: "beatloop_size", values: [256, 16, 8, 4, 2, 1]}, type: e.EnumToggleButton}, // Sampler: Sample Length (Left)

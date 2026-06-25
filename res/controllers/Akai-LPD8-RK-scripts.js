@@ -242,7 +242,7 @@ LPD8RK.loops["b33"] = new Array("[Sampler2]", "8", 0xB3, 0x03);
 LPD8RK.init = function (id, debug) { // called when the device is opened & set up
     if (LPD8RK.debug){print("###init##############")};
     //soft takeovers
-    engine.softTakeover("[Master]","crossfader",true);
+    engine.softTakeover("[Mixer]","crossfader",true);
     engine.softTakeover("[Channel1]","volume",true);
     engine.softTakeover("[Channel1]","rate",true);
     engine.softTakeover("[Channel2]","volume",true);

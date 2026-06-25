@@ -105,14 +105,14 @@
           <WidgetGroup>
             <Size>2f,1min</Size>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
+          <ConfigKey>[Skin],show_settings</ConfigKey>
           <BindProperty>highlight</BindProperty>
         </Connection>
       </WidgetGroup><!-- WaveformsContainer -->

@@ -2869,7 +2869,7 @@
             </control>
             <!-- FX 1 -->
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableButtons[1].input</key>
                 <description>FX 1 ON 1</description>
                 <status>0x98</status>
@@ -2879,7 +2879,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableButtons[2].input</key>
                 <description>FX 1 ON 2</description>
                 <status>0x98</status>
@@ -2889,7 +2889,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableButtons[3].input</key>
                 <description>FX 1 ON 3</description>
                 <status>0x98</status>
@@ -2899,7 +2899,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].effectFocusButton.input</key>
                 <description>FX 1 TAP</description>
                 <status>0x98</status>
@@ -2909,7 +2909,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableButtons[1].input</key>
                 <description>FX 1 FX SELECT 1</description>
                 <status>0x98</status>
@@ -2919,7 +2919,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableButtons[2].input</key>
                 <description>FX 1 FX SELECT 2</description>
                 <status>0x98</status>
@@ -2929,7 +2929,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableButtons[3].input</key>
                 <description>FX 1 FX SELECT 3</description>
                 <status>0x98</status>
@@ -2939,7 +2939,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].effectFocusButton.input</key>
                 <description>FX 1 FX MODE</description>
                 <status>0x98</status>
@@ -2949,7 +2949,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].knobs[1].input</key>
                 <description>FX 1 KNOB 1</description>
                 <status>0xB8</status>
@@ -2959,7 +2959,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].knobs[2].input</key>
                 <description>FX 1 KNOB 2</description>
                 <status>0xB8</status>
@@ -2969,7 +2969,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].knobs[3].input</key>
                 <description>FX 1 KNOB 3</description>
                 <status>0xB8</status>
@@ -2980,7 +2980,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].knobs[1].input</key>
                 <description>FX 1 KNOB 1 (shifted)</description>
                 <status>0xB8</status>
@@ -2990,7 +2990,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].knobs[2].input</key>
                 <description>FX 1 KNOB 2 (shifted)</description>
                 <status>0xB8</status>
@@ -3000,7 +3000,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].knobs[3].input</key>
                 <description>FX 1 KNOB 3 (shifted)</description>
                 <status>0xB8</status>
@@ -3010,7 +3010,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].dryWetKnob.input</key>
                 <description>FX 1 BEATS KNOB</description>
                 <status>0xB8</status>
@@ -3020,7 +3020,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].dryWetKnob.input</key>
                 <description>FX 1 BEATS KNOB PRESS</description>
                 <status>0x98</status>
@@ -3030,7 +3030,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel1.input</key>
                 <description>FX 1 CH ASSIGN 1</description>
                 <status>0x98</status>
@@ -3040,7 +3040,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel2.input</key>
                 <description>FX 1 CH ASSIGN 2</description>
                 <status>0x98</status>
@@ -3050,7 +3050,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel3.input</key>
                 <description>FX 1 CH ASSIGN 3</description>
                 <status>0x98</status>
@@ -3060,7 +3060,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel4.input</key>
                 <description>FX 1 CH ASSIGN 4</description>
                 <status>0x98</status>
@@ -3070,7 +3070,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[0].enableOnTrsButton.input</key>
                 <description>FX 2 CH ASSIGN TR/SAMPLER</description>
                 <status>0x98</status>
@@ -3082,7 +3082,7 @@
 
             <!-- FX 2 -->
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableButtons[1].input</key>
                 <description>FX 2 ON 1</description>
                 <status>0x99</status>
@@ -3092,7 +3092,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableButtons[2].input</key>
                 <description>FX 2 ON 2</description>
                 <status>0x99</status>
@@ -3102,7 +3102,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableButtons[3].input</key>
                 <description>FX 2 ON 3</description>
                 <status>0x99</status>
@@ -3112,7 +3112,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].effectFocusButton.input</key>
                 <description>FX 2 TAP</description>
                 <status>0x99</status>
@@ -3122,7 +3122,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableButtons[1].input</key>
                 <description>FX 2 FX SELECT 1</description>
                 <status>0x99</status>
@@ -3132,7 +3132,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableButtons[2].input</key>
                 <description>FX 2 FX SELECT 2</description>
                 <status>0x99</status>
@@ -3142,7 +3142,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableButtons[3].input</key>
                 <description>FX 2 FX SELECT 3</description>
                 <status>0x99</status>
@@ -3152,7 +3152,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].effectFocusButton.input</key>
                 <description>FX 2 FX MODE</description>
                 <status>0x99</status>
@@ -3162,7 +3162,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].knobs[1].input</key>
                 <description>FX 2 KNOB 1</description>
                 <status>0xB9</status>
@@ -3172,7 +3172,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].knobs[2].input</key>
                 <description>FX 2 KNOB 2</description>
                 <status>0xB9</status>
@@ -3182,7 +3182,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].knobs[3].input</key>
                 <description>FX 2 KNOB 3</description>
                 <status>0xB9</status>
@@ -3193,7 +3193,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].knobs[1].input</key>
                 <description>FX 2 KNOB 1 (shifted)</description>
                 <status>0xB9</status>
@@ -3203,7 +3203,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].knobs[2].input</key>
                 <description>FX 2 KNOB 2 (shifted)</description>
                 <status>0xB9</status>
@@ -3213,7 +3213,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].knobs[3].input</key>
                 <description>FX 2 KNOB 3 (shifted)</description>
                 <status>0xB9</status>
@@ -3223,7 +3223,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].dryWetKnob.input</key>
                 <description>FX 2 BEATS KNOB</description>
                 <status>0xB9</status>
@@ -3233,7 +3233,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].dryWetKnob.input</key>
                 <description>FX 2 BEATS KNOB PRESS</description>
                 <status>0x99</status>
@@ -3243,7 +3243,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel1.input</key>
                 <description>FX 2 CH ASSIGN 1</description>
                 <status>0x99</status>
@@ -3253,7 +3253,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel2.input</key>
                 <description>FX 2 CH ASSIGN 2</description>
                 <status>0x99</status>
@@ -3263,7 +3263,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel3.input</key>
                 <description>FX 2 CH ASSIGN 3</description>
                 <status>0x99</status>
@@ -3273,7 +3273,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel4.input</key>
                 <description>FX 2 CH ASSIGN 4</description>
                 <status>0x99</status>
@@ -3283,7 +3283,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[EffectRack1]</group>
                 <key>DJ505.effectUnit[1].enableOnTrsButton.input</key>
                 <description>FX 2 CH ASSIGN TR/SAMPLER</description>
                 <status>0x99</status>
@@ -3295,7 +3295,7 @@
 
             <!-- General -->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.shiftButton</key>
                 <description>SHIFT</description>
                 <status>0x9F</status>
@@ -3435,7 +3435,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.crossfader.inputMSB</key>
                 <description>CROSS FADER (MSB)</description>
                 <status>0xBF</status>
@@ -3445,7 +3445,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.crossfader.inputLSB</key>
                 <description>CROSS FADER (LSB)</description>
                 <status>0xBF</status>
@@ -3456,7 +3456,7 @@
             </control>
             <!--
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <description>MASTER LEVEL</description>
                 <status>0xBF</status>
                 <midino>0x0A</midino>
@@ -3465,7 +3465,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <description>BOOTH LEVEL</description>
                 <status>0xBE</status>
                 <midino>0x7F</midino>
@@ -3474,7 +3474,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <description>CUE/MASTER MIXING</description>
                 <status>0xBF</status>
                 <midino>0x0D</midino>
@@ -3484,7 +3484,7 @@
             </control>
             -->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.levelKnob.input</key>
                 <description>TR/SAMPLER LEVEL</description>
                 <status>0xBF</status>
@@ -3494,7 +3494,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.cueButton.input</key>
                 <description>TR/SAMPLER CUE/PFL</description>
                 <status>0x9F</status>
@@ -3526,7 +3526,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.setChannelInput</key>
                 <description>CH 1 PC/LINE/PHONO</description>
                 <status>0xB0</status>
@@ -3536,7 +3536,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.setChannelInput</key>
                 <description>CH 2 PC/LINE/PHONO</description>
                 <status>0xB1</status>
@@ -3547,7 +3547,7 @@
             </control>
             <!--
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <description>MIC LEVEL</description>
                 <status>0xBE</status>
                 <midino>0x7F</midino>
@@ -3556,7 +3556,7 @@
 
             <!-- TR-S Section -->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.bpmKnobTurned</key>
                 <description>TR-S VALUE</description>
                 <status>0xEF</status>
@@ -3565,7 +3565,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.syncButtonPressed</key>
                 <description>TR-S SYNC</description>
                 <status>0x9F</status>
@@ -3575,7 +3575,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.syncButtonPressed</key>
                 <description>TR-S SYNC OFF</description>
                 <status>0x9F</status>
@@ -3585,7 +3585,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.startStopButtonPressed</key>
                 <description>TR-S START</description>
                 <status>0xFA</status>
@@ -3594,7 +3594,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DJ505.sampler.startStopButtonPressed</key>
                 <description>TR-S STOP</description>
                 <status>0xFC</status>
@@ -3684,7 +3684,7 @@
             </control>
             <!--
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <description>TR-S (change)</description>
                 <status>0x9E</status>
                 <midino>0x7F</midino>
