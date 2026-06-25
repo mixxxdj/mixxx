@@ -172,10 +172,10 @@ class AutoDJProcessor : public QObject {
     };
 
     AutoDJProcessor(QObject* pParent,
-                    UserSettingsPointer pConfig,
-                    PlayerManagerInterface* pPlayerManager,
-                    TrackCollectionManager* pTrackCollectionManager,
-                    int iAutoDJPlaylistId);
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager,
+            TrackCollectionManager* pTrackCollectionManager,
+            int iAutoDJPlaylistId);
     virtual ~AutoDJProcessor() = default;
 
     AutoDJState getState() const {
@@ -204,6 +204,8 @@ class AutoDJProcessor : public QObject {
     AutoDJError skipNext();
     void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
+    double getRemainingDeckSeconds() const;
+    double getActiveDeckRemainingSeconds() const;
 
   signals:
 #ifdef __STEM__
@@ -270,7 +272,8 @@ class AutoDJProcessor : public QObject {
     double getFirstSoundSecond(DeckAttributes* pDeck);
     double getLastSoundSecond(DeckAttributes* pDeck);
     double getEndSecond(DeckAttributes* pDeck);
-    double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
+    double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck) const;
+    double calcRemainingDeckSeconds(bool activeDeckOnly) const;
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);

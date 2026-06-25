@@ -88,7 +88,7 @@ class FakeDeck : public BaseTrackPlayer {
         return loadedTrack;
     }
 
-    void setupEqControls() override{};
+    void setupEqControls() override {};
 
     // This method emulates requesting a track load to a player and emits no
     // signals. Normally, the reader thread attempts to load the file and emits
@@ -166,12 +166,11 @@ class MockPlayerManager : public PlayerManagerInterface {
 class MockAutoDJProcessor : public AutoDJProcessor {
   public:
     MockAutoDJProcessor(QObject* pParent,
-                        UserSettingsPointer pConfig,
-                        PlayerManagerInterface* pPlayerManager,
-                        TrackCollectionManager* pTrackCollectionManager,
-                        int iAutoDJPlaylistId)
-            : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              pTrackCollectionManager, iAutoDJPlaylistId) {
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager,
+            TrackCollectionManager* pTrackCollectionManager,
+            int iAutoDJPlaylistId)
+            : AutoDJProcessor(pParent, pConfig, pPlayerManager, pTrackCollectionManager, iAutoDJPlaylistId) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -1541,7 +1540,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }
 
-
 TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);
 
@@ -1895,4 +1893,121 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Expect that the track is rejected an a new one is loaded
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
+}
+
+// End marker tests
+
+TEST_F(AutoDJProcessorTest, EndMarker_OnlyInQueue_ReturnsQueueEmpty) {
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertEndMarker(-1);
+    EXPECT_EQ(1, pAutoDJTableModel->rowCount());
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
+    EXPECT_EQ(0, pAutoDJTableModel->rowCount());
+}
+
+TEST_F(AutoDJProcessorTest, EndMarker_AtHead_RealTrackAfter_ReturnsQueueEmpty) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertEndMarker(-1);
+    pAutoDJTableModel->appendTrack(testId);
+    EXPECT_EQ(2, pAutoDJTableModel->rowCount());
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
+    EXPECT_EQ(1, pAutoDJTableModel->rowCount());
+    EXPECT_FALSE(pAutoDJTableModel->isEndMarker(pAutoDJTableModel->index(0, 0)));
+}
+
+TEST_F(AutoDJProcessorTest, EndMarker_NeverEmitsLoadTrackToPlayer) {
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertEndMarker(-1);
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+    EXPECT_EQ(0, pAutoDJTableModel->rowCount());
+}
+
+TEST_F(AutoDJProcessorTest, GetRemainingDeckSeconds_DisabledReturnsZero) {
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(0.0, pProcessor->getRemainingDeckSeconds());
+}
+
+TEST_F(AutoDJProcessorTest, GetActiveDeckRemainingSeconds_DisabledReturnsZero) {
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(0.0, pProcessor->getActiveDeckRemainingSeconds());
+}
+
+TEST_F(AutoDJProcessorTest, GetActiveDeckRemainingSeconds_OnlyCountsPlayingDecks) {
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(100);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck1.fakeTrackLoadedEvent(pTrack);
+    deck1.playposition.set(0.5);
+
+    // deck1 has a track at 50% but play is off
+    EXPECT_NEAR(50.0, pProcessor->getRemainingDeckSeconds(), 1.0);
+    EXPECT_DOUBLE_EQ(0.0, pProcessor->getActiveDeckRemainingSeconds());
+
+    // Start playing deck1 — active method now returns ~50s
+    deck1.play.set(1.0);
+    EXPECT_NEAR(50.0, pProcessor->getActiveDeckRemainingSeconds(), 1.0);
+
+    // Preload deck2 silently — not counted by active method
+    TrackPointer pTrack2 = newTestTrack();
+    pTrack2->setDuration(100);
+    deck2.slotLoadTrack(pTrack2,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack2);
+    deck2.playposition.set(0.0);
+
+    // getRemainingDeckSeconds counts both decks (~50 + ~100)
+    EXPECT_NEAR(150.0, pProcessor->getRemainingDeckSeconds(), 2.0);
+    // getActiveDeckRemainingSeconds only counts deck1 (playing), not deck2 (silent)
+    EXPECT_NEAR(50.0, pProcessor->getActiveDeckRemainingSeconds(), 1.0);
+}
+
+TEST_F(AutoDJProcessorTest, GetRemainingDeckSeconds_ActiveDeckRemainingTime) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    mixer.crossfader.set(-1.0);
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(100);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pTrack);
+    deck1.playposition.set(0.5);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(_)).Times(testing::AnyNumber());
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(testing::AnyNumber());
+
+    pProcessor->toggleAutoDJ(true);
+    EXPECT_NE(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+
+    // deck1 at 50% of a 100s track → (1.0 - 0.5) * 100 = 50s remaining
+    // deck2 has no track loaded (mock did not actually load), contributes 0
+    EXPECT_NEAR(50.0, pProcessor->getRemainingDeckSeconds(), 1.0);
 }
