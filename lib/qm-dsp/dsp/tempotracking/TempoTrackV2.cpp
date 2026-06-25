@@ -165,7 +165,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
             std::fill(dfframe.begin() + l, dfframe.end(), 0.0);
         }
         
-        std::copy(df.begin() + i + k, df.begin() + i + l,
+        std::copy(df.begin() + (i + k), df.begin() + (i + l),
                       dfframe.begin() + k);
 
         // Apply the resonator comb filter (RCF) bank to the window
