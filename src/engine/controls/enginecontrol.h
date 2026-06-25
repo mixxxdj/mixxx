@@ -112,6 +112,7 @@ class EngineControl : public QObject {
     UserSettingsPointer getConfig();
     EngineMixer* getEngineMixer();
     EngineBuffer* getEngineBuffer();
+    EngineBuffer* getEngineBuffer() const;
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
