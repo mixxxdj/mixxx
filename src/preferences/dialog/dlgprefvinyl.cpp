@@ -38,20 +38,23 @@ DlgPrefVinyl::DlgPrefVinyl(
             ComboBoxVinylType3,
             ComboBoxVinylType4};
     for (auto* box : std::as_const(m_vcTypeBoxes)) {
-        box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
-        box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
-        box->addItem(MIXXX_VINYL_SERATOCD);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2CD);
-        box->addItem(MIXXX_VINYL_MIXVIBESDVS);
-        box->addItem(MIXXX_VINYL_MIXVIBES7INCH);
-        box->addItem(MIXXX_VINYL_PIONEERA);
-        box->addItem(MIXXX_VINYL_PIONEERB);
         box->addItem(MIXXX_VINYL_ALGORIDDIMA);
         box->addItem(MIXXX_VINYL_ALGORIDDIMB);
+        box->addItem(MIXXX_VINYL_MIXVIBES7INCH);
+        box->addItem(MIXXX_VINYL_MIXVIBESDVS);
+        box->addItem(MIXXX_VINYL_PIONEERA);
+        box->addItem(MIXXX_VINYL_PIONEERB);
+        box->addItem(MIXXX_VINYL_SERATOCD);
+        box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+        box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2CD);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA);
+        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB);
+
+        // Use Serato as initial constructor value. Gets overwritten by config in slotUpdate()
+        box->setCurrentText(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
         connect(box,
                 &QComboBox::currentTextChanged,
                 this,
@@ -166,17 +169,17 @@ void DlgPrefVinyl::slotHide() {
 
 void DlgPrefVinyl::slotResetToDefaults() {
     // Default to Serato Side A.
-    for (auto* box : std::as_const(m_vcTypeBoxes)) {
-        box->setCurrentIndex(0);
+    for (auto* pBox : std::as_const(m_vcTypeBoxes)) {
+        pBox->setCurrentText(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
     }
 
     // Default to 33 RPM.
-    for (auto* box : std::as_const(m_vcTypeBoxes)) {
-        box->setCurrentIndex(0);
+    for (auto* pBox : std::as_const(m_vcSpeedBoxes)) {
+        pBox->setCurrentText(MIXXX_VINYL_SPEED_33);
     }
 
-    for (auto* box : std::as_const(m_vcLeadInBoxes)) {
-        box->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
+    for (auto* pBox : std::as_const(m_vcLeadInBoxes)) {
+        pBox->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
     }
 
     SignalQualityEnable->setChecked(true);
@@ -242,34 +245,34 @@ void DlgPrefVinyl::verifyAndSaveLeadInTime(
 }
 
 int DlgPrefVinyl::getDefaultLeadIn(const QString& vinyl_type) const {
-    if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
-        return MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
-        return MIXXX_VINYL_SERATOCV02VINYLSIDEB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_SERATOCD) {
-        return MIXXX_VINYL_SERATOCD_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
-        return MIXXX_VINYL_TRAKTORSCRATCHSIDEA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
-        return MIXXX_VINYL_TRAKTORSCRATCHSIDEB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK2CD_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_MIXVIBESDVS) {
-        return MIXXX_VINYL_MIXVIBESDVS_LEADIN;
+    if (vinyl_type == MIXXX_VINYL_ALGORIDDIMA) {
+        return MIXXX_VINYL_ALGORIDDIMA_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_ALGORIDDIMB) {
+        return MIXXX_VINYL_ALGORIDDIMB_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_MIXVIBES7INCH) {
         return MIXXX_VINYL_MIXVIBES7INCH_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_MIXVIBESDVS) {
+        return MIXXX_VINYL_MIXVIBESDVS_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_PIONEERA) {
         return MIXXX_VINYL_PIONEERA_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_PIONEERB) {
         return MIXXX_VINYL_PIONEERB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_ALGORIDDIMA) {
-        return MIXXX_VINYL_ALGORIDDIMA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_ALGORIDDIMB) {
-        return MIXXX_VINYL_ALGORIDDIMB_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_SERATOCD) {
+        return MIXXX_VINYL_SERATOCD_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
+        return MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
+        return MIXXX_VINYL_SERATOCV02VINYLSIDEB_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK2CD_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_LEADIN;
+    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
+        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_LEADIN;
     }
 
     qWarning() << "Unknown vinyl type " << vinyl_type;

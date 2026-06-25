@@ -17,16 +17,6 @@ enum class DisplayFormat {
 };
 } // namespace TrackTime
 
-enum class KeylockMode {
-    LockOriginalKey,
-    LockCurrentKey
-};
-
-enum class KeyunlockMode {
-    ResetLockedKey,
-    KeepLockedKey
-};
-
 enum class LoadWhenDeckPlaying {
     Reject,
     Allow,
