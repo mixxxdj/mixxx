@@ -59,6 +59,14 @@ var DDJFLX2 = {
     // Values: "off" | "sampler" | "padfx" — loaded from Mixxx preferences.
     beatJumpPadMode: "off",
 
+    // Pad FX behavior — loaded from Mixxx preferences.
+    // "override": hold to apply (snapshot + restore on release).
+    // "toggle":   press to enable/disable the effect slot.
+    padFxMode: "override",
+
+    // Meta value applied to the effect slot in Pad FX override mode.
+    padFxMeta: 0.75,
+
     // Sizes for the 4 pad pairs (pads 1-2, 3-4, 5-6, 7-8).
     // Holding Shift doubles each size (2, 4, 8, 16 beats).
     beatJumpSizes: [1, 2, 4, 8],
@@ -267,6 +275,8 @@ var DDJFLX2 = {
 
 DDJFLX2.init = function() {
     DDJFLX2.beatJumpPadMode = engine.getSetting("beatJumpPadMode") || "off";
+    DDJFLX2.padFxMode = engine.getSetting("padFxMode") || "override";
+    DDJFLX2.padFxMeta = Number(engine.getSetting("padFxMeta") ?? 0.75);
 
     for (let i = 1; i <= 4; i++) {
     // Create runtime storage for each virtual deck.
@@ -1194,6 +1204,19 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
 
     const ledStatus = DDJFLX2.getPadLedStatus(deck.physicalDeck, shifted);
 
+    // TOGGLE MODE: each press flips the effect slot enabled state; release is a no-op.
+    if (DDJFLX2.padFxMode === "toggle") {
+        if (!value) {
+            return;
+        }
+        const nowEnabled = !engine.getValue(effectGroup, "enabled");
+        engine.setValue(effectGroup, "enabled", nowEnabled ? 1 : 0);
+        midi.sendShortMsg(ledStatus, control, nowEnabled ? 0x7f : 0x00);
+        return;
+    }
+
+    // OVERRIDE MODE (default): hold to apply, restore on release.
+
     // BUTTON RELEASED: Restore original effect state.
     // We read the values we saved when the button was first pressed and
     // re-apply them to the effect unit, effectively "cleaning up" after the FX.
@@ -1237,7 +1260,7 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
     engine.setValue(fxGroup, `group_${  deck.group  }_enable`, 1);
     engine.setValue(fxGroup, "enabled", 1);
     engine.setValue(fxGroup, "mix", 1);
-    engine.setValue(effectGroup, "meta", 0.75);
+    engine.setValue(effectGroup, "meta", DDJFLX2.padFxMeta);
     engine.setValue(effectGroup, "enabled", 1);
 
     midi.sendShortMsg(ledStatus, control, 0x7f);
