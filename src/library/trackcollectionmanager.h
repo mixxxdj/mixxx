@@ -6,6 +6,8 @@
 #include <memory>
 
 #include "library/dao/directorydao.h"
+#include "library/dao/genre.h"    // For the Genre struct
+#include "library/dao/genredao.h" // For the GenreDAO class
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -61,10 +63,16 @@ class TrackCollectionManager: public QObject,
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations) const;
 
-    bool updateTrackGenre(
+    bool replaceAllTrackGenres(
             Track* pTrack,
-            const QString& genre) const;
-#if defined(__EXTRA_METADATA__)
+            const QStringList& genreNames) const;
+
+    // Retrieves all genres from the database.
+    QList<Genre> getAllGenres() const;
+
+    // Cleans unused genres from the database.
+    int deleteUnusedGenres() const;
+
     bool updateTrackMood(
             Track* pTrack,
             const QString& mood) const;
@@ -135,4 +143,7 @@ class TrackCollectionManager: public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+
+    // DAO for genre-related database operations.
+    std::unique_ptr<GenreDAO> m_pGenreDAO;
 };
