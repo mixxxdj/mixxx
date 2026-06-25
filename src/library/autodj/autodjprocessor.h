@@ -167,6 +167,7 @@ class AutoDJProcessor : public QObject {
         FullIntroOutro,
         FadeAtOutroStart,
         FixedFullTrack,
+        FixedCueToTrackEnd,
         FixedSkipSilence,
         FixedStartCenterSkipSilence
     };
