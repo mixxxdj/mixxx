@@ -39,6 +39,9 @@ var DDJFLX2 = {
     // Used for temporary values such as 14-bit MIDI reconstruction.
     vDeck: {},
 
+    // Pitch bend factor for jog wheel side movement.
+    pitchShiftFactor: 0.5,
+
     // Current shift button state.
     // Press/release logic is more reliable than toggle logic.
     shiftPressed: {left: false, right: false},
@@ -51,6 +54,22 @@ var DDJFLX2 = {
 
     loopPadSizes: [0.125, 0.25, 0.5, 1, 2, 4, 8, 16],
     padFxState: {},
+
+    // Which pad mode (if any) is replaced by Beat Jump.
+    // Values: "off" | "sampler" | "padfx" — loaded from Mixxx preferences.
+    beatJumpPadMode: "off",
+
+    // Pad FX behavior — loaded from Mixxx preferences.
+    // "override": hold to apply (snapshot + restore on release).
+    // "toggle":   press to enable/disable the effect slot.
+    padFxMode: "override",
+
+    // Meta value applied to the effect slot in Pad FX override mode.
+    padFxMeta: 0.75,
+
+    // Sizes for the 4 pad pairs (pads 1-2, 3-4, 5-6, 7-8).
+    // Holding Shift doubles each size (2, 4, 8, 16 beats).
+    beatJumpSizes: [1, 2, 4, 8],
 
     // Shared blink state for all animated LEDs (loop active, sampler playing).
     // blinkPhase toggles on every timer tick; all blinking LEDs share the same
@@ -255,6 +274,10 @@ var DDJFLX2 = {
 };
 
 DDJFLX2.init = function() {
+    DDJFLX2.beatJumpPadMode = engine.getSetting("beatJumpPadMode") || "off";
+    DDJFLX2.padFxMode = engine.getSetting("padFxMode") || "override";
+    DDJFLX2.padFxMeta = Number(engine.getSetting("padFxMeta") ?? 0.75);
+
     for (let i = 1; i <= 4; i++) {
     // Create runtime storage for each virtual deck.
         this.vDeck[i] = {
@@ -573,10 +596,10 @@ DDJFLX2.browseTracks = function(value) {
     // Threshold of 350 requires a firm, deliberate wheel turn
     // before triggering a single row move in the library.
     if (DDJFLX2.jogCounter > 350) {
-        engine.setValue("[Library]", "MoveDown", true);
+        engine.setValue("[Library]", "MoveUp", true);
         DDJFLX2.jogCounter = 0;
     } else if (DDJFLX2.jogCounter < -350) {
-        engine.setValue("[Library]", "MoveUp", true);
+        engine.setValue("[Library]", "MoveDown", true);
         DDJFLX2.jogCounter = 0;
     }
 };
@@ -613,7 +636,7 @@ DDJFLX2.jogWheel = function(
     }
 
     const deck = DDJFLX2.resolveDeck(group);
-    engine.setValue(deck.group, "jog", (value - 64) * 0.05);
+    engine.setValue(deck.group, "jog", (value - 64) * DDJFLX2.pitchShiftFactor);
 };
 
 // Shared helper for all scratch-related handlers.
@@ -683,7 +706,7 @@ DDJFLX2.touch = function(
     if (value) {
         engine.scratchEnable(
             deck.virtualDeck,
-            1024,
+            460,
             33 + 1 / 3,
             0.125,
             0.003
@@ -1095,22 +1118,22 @@ DDJFLX2.hotcueNActivate = function(
     status,
     group
 ) {
-    if (!value) {
-        return;
-    }
-
     const deck = DDJFLX2.resolveDeck(group);
     const hotcueNum = DDJFLX2.hotcuePadFromControl(control);
     const hotcue = `hotcue_${  hotcueNum}`;
 
-    engine.setValue(deck.group, `${hotcue  }_activate`, true);
+    // Pass both press (1) and release (0) so Mixxx can manage the
+    // preview-while-held behavior when the deck is paused.
+    engine.setValue(deck.group, `${hotcue  }_activate`, value ? 1 : 0);
 
-    // Update play LED immediately for responsiveness.
-    midi.sendShortMsg(
-        0x90 + deck.physicalDeck - 1,
-        0x0b,
-        0x7f * engine.getValue(deck.group, "play")
-    );
+    if (value) {
+        // Update play LED immediately for responsiveness.
+        midi.sendShortMsg(
+            0x90 + deck.physicalDeck - 1,
+            0x0b,
+            0x7f * engine.getValue(deck.group, "play")
+        );
+    }
     // NOTE: hotcue pad LED is handled by the makeConnection on hotcue_X_enabled.
 };
 
@@ -1181,6 +1204,19 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
 
     const ledStatus = DDJFLX2.getPadLedStatus(deck.physicalDeck, shifted);
 
+    // TOGGLE MODE: each press flips the effect slot enabled state; release is a no-op.
+    if (DDJFLX2.padFxMode === "toggle") {
+        if (!value) {
+            return;
+        }
+        const nowEnabled = !engine.getValue(effectGroup, "enabled");
+        engine.setValue(effectGroup, "enabled", nowEnabled ? 1 : 0);
+        midi.sendShortMsg(ledStatus, control, nowEnabled ? 0x7f : 0x00);
+        return;
+    }
+
+    // OVERRIDE MODE (default): hold to apply, restore on release.
+
     // BUTTON RELEASED: Restore original effect state.
     // We read the values we saved when the button was first pressed and
     // re-apply them to the effect unit, effectively "cleaning up" after the FX.
@@ -1224,7 +1260,7 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
     engine.setValue(fxGroup, `group_${  deck.group  }_enable`, 1);
     engine.setValue(fxGroup, "enabled", 1);
     engine.setValue(fxGroup, "mix", 1);
-    engine.setValue(effectGroup, "meta", 0.75);
+    engine.setValue(effectGroup, "meta", DDJFLX2.padFxMeta);
     engine.setValue(effectGroup, "enabled", 1);
 
     midi.sendShortMsg(ledStatus, control, 0x7f);
@@ -1237,6 +1273,10 @@ DDJFLX2.padFx = function(
     status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "padfx") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.padFxPadFromControl(control), false);
+        return;
+    }
     DDJFLX2.applyPadFx(control, value, status, group, false);
 };
 
@@ -1247,6 +1287,10 @@ DDJFLX2.padFxShift = function(
     status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "padfx") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.padFxPadFromControl(control), true);
+        return;
+    }
     DDJFLX2.applyPadFx(control, value, status, group, true);
 };
 
@@ -1290,6 +1334,11 @@ DDJFLX2.updateAllBlinkingLEDs = function() {
 //   loaded  → LED on (steady)
 //   playing → LED blinks with blinkPhase
 DDJFLX2.updateAllSamplerLEDs = function() {
+    // Beat jump owns the sampler pad LEDs when it replaces that mode.
+    if (DDJFLX2.beatJumpPadMode === "sampler") {
+        return;
+    }
+
     for (let physicalDeck = 1; physicalDeck <= 2; physicalDeck++) {
         const ledStatus = DDJFLX2.getPadLedStatus(physicalDeck, false);
         for (let pad = 1; pad <= 8; pad++) {
@@ -1334,13 +1383,39 @@ DDJFLX2.updateAllLoopBlinkLEDs = function() {
     }
 };
 
+// Shared handler for beat jump pad mode.
+// Odd pads jump backward, even pads jump forward.
+// Pad pairing: 1&2 -> 1 beat, 3&4 -> 2 beats, 5&6 -> 4 beats, 7&8 -> 8 beats.
+DDJFLX2.applyBeatJump = function(control, value, status, group, padNum, shifted) {
+    const deck = DDJFLX2.resolveDeck(group);
+    const ledStatus = DDJFLX2.getPadLedStatus(deck.physicalDeck, shifted);
+
+    if (!value) {
+        midi.sendShortMsg(ledStatus, control, 0x00);
+        return;
+    }
+
+    const isForward = padNum % 2 === 0;
+    const pairIndex = Math.floor((padNum - 1) / 2);
+    const size = (isForward ? 1 : -1) * DDJFLX2.beatJumpSizes[pairIndex] * (shifted ? 2 : 1);
+
+    engine.setValue(group, "beatjump_size", size);
+    engine.setValue(group, "beatjump", size);
+    midi.sendShortMsg(ledStatus, control, 0x7f);
+};
+
 DDJFLX2.samplerPad = function(
     channel,
     control,
     value,
-    _status,
+    status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "sampler") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.samplerPadFromControl(control), false);
+        return;
+    }
+
     if (!value) {
         return;
     }
@@ -1358,9 +1433,14 @@ DDJFLX2.samplerStopPad = function(
     channel,
     control,
     value,
-    _status,
+    status,
     group
 ) {
+    if (DDJFLX2.beatJumpPadMode === "sampler") {
+        DDJFLX2.applyBeatJump(control, value, status, group, DDJFLX2.samplerPadFromControl(control), true);
+        return;
+    }
+
     if (!value) {
         return;
     }

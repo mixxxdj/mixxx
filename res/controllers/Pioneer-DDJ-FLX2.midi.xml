@@ -7,6 +7,33 @@
         <forum>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forum>
         <manual>pioneer_ddj_flx2</manual>
     </info>
+    <settings>
+        <option variable="beatJumpPadMode" type="enum" label="Beat Jump Pad Mode">
+            <description>
+                Replace a pad mode with Beat Jump controls. When enabled, the 8 pads
+                become 4 back/forward pairs jumping 1, 2, 4, and 8 beats. Hold Shift
+                to double the jump sizes (2, 4, 8, 16 beats).
+            </description>
+            <value label="Off (use original pad modes)" default="true">off</value>
+            <value label="Replace Sampler (pad mode 4)">sampler</value>
+            <value label="Replace Pad FX (pad mode 2)">padfx</value>
+        </option>
+        <option variable="padFxMode" type="enum" label="Pad FX Behavior">
+            <description>
+                Override: while a pad is held, the effect slot is force-enabled with
+                mix at 100% and the configured meta value, then fully restored on release.
+                Toggle: each press simply enables or disables the effect slot.
+            </description>
+            <value label="Override (hold to apply, restore on release)" default="true">override</value>
+            <value label="Toggle (press to enable/disable effect slot)">toggle</value>
+        </option>
+        <option variable="padFxMeta" type="real" min="0.0" max="1.0" step="0.05" default="0.75" label="Pad FX Meta Value">
+            <description>
+                Intensity/speed value applied to the effect slot in Override mode.
+                0.0 = minimum, 1.0 = maximum. Has no effect in Toggle mode.
+            </description>
+        </option>
+    </settings>
     <controller id="DDJ-FLX2">
         <scriptfiles>
             <file functionprefix="DDJFLX2" filename="Pioneer-DDJ-FLX2-scripts.js"/>
