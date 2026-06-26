@@ -795,6 +795,22 @@ double AIBroFeature::scoreCandidate(
         return -1.0;
     }
 
+    // Hard filter: compilations, playlists, "best of", mixes, collections
+    {
+        const QString lowerTitle = candidate.title.toLower();
+        if (lowerTitle.contains("compilation") ||
+                lowerTitle.contains("best of") ||
+                lowerTitle.contains("greatest hits") ||
+                lowerTitle.contains("top hits") ||
+                lowerTitle.contains("playlist") ||
+                lowerTitle.contains("full album") ||
+                lowerTitle.contains("album mix") ||
+                lowerTitle.contains("vol.") ||
+                lowerTitle.contains("volume ")) {
+            return -1.0;
+        }
+    }
+
     // Hard filter: remixes (often low quality)
     {
         const QString lowerTitle = candidate.title.toLower();
@@ -825,6 +841,17 @@ double AIBroFeature::scoreCandidate(
             }
         }
         if (specialCharCount > 3) {
+            return -1.0;
+        }
+    }
+
+    // Hard filter: label/compilation uploaders (e.g. "QualityControlVEVO", "Various Artists")
+    {
+        const QString uploaderLower = candidate.uploader.toLower();
+        if (uploaderLower.contains("quality control") ||
+                uploaderLower.contains("qualitycontrol") ||
+                uploaderLower.contains("various artists") ||
+                (uploaderLower.contains("various") && candidate.title.contains("-"))) {
             return -1.0;
         }
     }
@@ -1057,23 +1084,25 @@ void AIBroFeature::findNextSong() {
     // and pick the best-scoring remainder.
     QString query;
     if (!artist.isEmpty() && artist.length() >= 3) {
+        // Rotate between query styles for variety, but always target
+        // specific songs (not compilations or "best of" playlists)
         int style = m_blendCount % 3;
         switch (style) {
         case 0:
-            query = QStringLiteral("%1 official music").arg(artist);
+            query = QStringLiteral("%1 official audio").arg(artist);
             break;
         case 1:
-            query = QStringLiteral("%1 songs playlist").arg(artist);
+            query = QStringLiteral("%1 lyrics").arg(artist);
             break;
         case 2:
         default:
-            query = QStringLiteral("best of %1 music").arg(artist);
+            query = QStringLiteral("%1 popular songs").arg(artist);
             break;
         }
     } else if (!title.isEmpty() && title.length() >= 3) {
         query = title;
     } else {
-        query = QStringLiteral("popular greek music 2024 2025");
+        query = QStringLiteral("popular music 2025");
     }
     kLogger.info() << "AI Bro: searching YouTube for:" << query;
     m_downloading = true;
@@ -1528,8 +1557,9 @@ void AIBroFeature::updateCurrentTrackInfo() {
 }
 
 int AIBroFeature::findAvailableDeck() const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return -1;
+    }
     return (m_iCurrentDeck == 0) ? 1 : 0;
 }
 
@@ -1544,18 +1574,22 @@ double AIBroFeature::getDeckPlayPosition(int deckIndex) const {
 // ===================================================================
 
 double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return 0.0;
+    }
     auto* pPlayer = m_pPlayerManager->getDeck(deckIndex);
-    if (!pPlayer)
+    if (!pPlayer) {
         return 0.0;
+    }
     TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return 0.0;
+    }
 
     double durationSec = pTrack->getDuration();
-    if (durationSec <= 0.0)
+    if (durationSec <= 0.0) {
         return 0.0;
+    }
 
     QString title = pTrack->getTitle().toLower();
     bool isRemix = false;
@@ -1599,22 +1633,26 @@ double AIBroFeature::estimateVocalStartPosition(int deckIndex) const {
 
 QMap<int, QString> AIBroFeature::snapshotTrackLocations() const {
     QMap<int, QString> snapshot;
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return snapshot;
+    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer)
+        if (!pPlayer) {
             continue;
+        }
         TrackPointer pTrack = pPlayer->getLoadedTrack();
-        if (pTrack)
+        if (pTrack) {
             snapshot[i] = pTrack->getLocation();
+        }
     }
     return snapshot;
 }
 
 QString AIBroFeature::findNewManualTrack() {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return {};
+    }
     QMap<int, QString> current = snapshotTrackLocations();
     for (auto it = current.begin(); it != current.end(); ++it) {
         int deck = it.key();
@@ -1640,19 +1678,23 @@ QString AIBroFeature::findNewManualTrack() {
 // ===================================================================
 
 double AIBroFeature::getCurrentPlayingBPM() const {
-    if (!m_pPlayerManager)
+    if (!m_pPlayerManager) {
         return 0.0;
+    }
     for (int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!isDeckPlaying(i))
+        if (!isDeckPlaying(i)) {
             continue;
+        }
         auto* pPlayer = m_pPlayerManager->getDeck(i);
-        if (!pPlayer)
+        if (!pPlayer) {
             continue;
+        }
         TrackPointer pTrack = pPlayer->getLoadedTrack();
         if (pTrack) {
             double bpm = pTrack->getBpm();
-            if (bpm > 0)
+            if (bpm > 0) {
                 return bpm;
+            }
         }
     }
     return 0.0;
@@ -1662,50 +1704,71 @@ double AIBroFeature::getCandidateBPM(
         const mixxx::YouTubeVideoInfo& candidate) const {
     QString title = candidate.title.toLower();
     if (title.contains("drum and bass") || title.contains("dnb") ||
-            title.contains("drum & bass"))
+            title.contains("drum & bass")) {
         return 174.0;
-    if (title.contains("dubstep") || title.contains("dub step"))
+    }
+    if (title.contains("dubstep") || title.contains("dub step")) {
         return 140.0;
-    if (title.contains("techno"))
+    }
+    if (title.contains("techno")) {
         return 130.0;
-    if (title.contains("trance"))
+    }
+    if (title.contains("trance")) {
         return 138.0;
-    if (title.contains("house"))
+    }
+    if (title.contains("house")) {
         return 124.0;
-    if (title.contains("deep house"))
+    }
+    if (title.contains("deep house")) {
         return 122.0;
-    if (title.contains("tech house"))
+    }
+    if (title.contains("tech house")) {
         return 126.0;
-    if (title.contains("progressive"))
+    }
+    if (title.contains("progressive")) {
         return 128.0;
-    if (title.contains("electro"))
+    }
+    if (title.contains("electro")) {
         return 128.0;
+    }
     if (title.contains("hip hop") || title.contains("hip-hop") ||
-            title.contains("rap"))
+            title.contains("rap")) {
         return 90.0;
+    }
     if (title.contains("r&b") || title.contains("rnb") ||
-            title.contains("rhythm and blues"))
+            title.contains("rhythm and blues")) {
         return 85.0;
-    if (title.contains("pop"))
+    }
+    if (title.contains("pop")) {
         return 120.0;
-    if (title.contains("reggaeton") || title.contains("reggae"))
+    }
+    if (title.contains("reggaeton") || title.contains("reggae")) {
         return 95.0;
-    if (title.contains("dancehall"))
+    }
+    if (title.contains("dancehall")) {
         return 100.0;
-    if (title.contains("afrobeats"))
+    }
+    if (title.contains("afrobeats")) {
         return 110.0;
-    if (title.contains("ambient") || title.contains("chill"))
+    }
+    if (title.contains("ambient") || title.contains("chill")) {
         return 90.0;
-    if (title.contains("downtempo"))
+    }
+    if (title.contains("downtempo")) {
         return 85.0;
-    if (title.contains("breakbeat") || title.contains("breaks"))
+    }
+    if (title.contains("breakbeat") || title.contains("breaks")) {
         return 135.0;
-    if (title.contains("garage"))
+    }
+    if (title.contains("garage")) {
         return 130.0;
-    if (title.contains("grime"))
+    }
+    if (title.contains("grime")) {
         return 140.0;
-    if (title.contains("jungle"))
+    }
+    if (title.contains("jungle")) {
         return 170.0;
+    }
     return 0.0;
 }
 

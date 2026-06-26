@@ -793,8 +793,9 @@ bool YouTubeService::applyRemoteConfig(const QJsonObject& config, int remoteVers
     // Validate that each client entry has the required fields.
     for (const QJsonValue& v : clientsArr) {
         const QJsonObject o = v.toObject();
-        if (o.isEmpty())
+        if (o.isEmpty()) {
             continue;
+        }
         if (!o.contains(QStringLiteral("name")) ||
                 !o.contains(QStringLiteral("version")) ||
                 !o.contains(QStringLiteral("id"))) {

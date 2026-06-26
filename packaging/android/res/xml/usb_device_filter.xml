@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- USB device filter for DJ controllers -->
+<!-- DDJ-FLX4: vendor=0x1133 (Pioneer), product=0x0004 -->
+<!-- DDJ-400: vendor=0x1133, product=0x0001 -->
+<!-- Generic MIDI controllers: class=1 (Audio), subclass=3 (MIDI) -->
+<resources>
+    <!-- Pioneer DJ controllers (vendor 0x1133 = 4403) -->
+    <usb-device vendor-id="4403" product-id="4" />
+    <usb-device vendor-id="4403" product-id="1" />
+    <!-- Generic class-based MIDI devices (fallback) -->
+    <usb-device class="1" subclass="3" />
+</resources>
