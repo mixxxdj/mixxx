@@ -1457,8 +1457,8 @@ MiniMixxx.Controller = class {
             return;
         }
 
-        // If shift is pressed, don't update any values.
-        if (!this.shiftActive() && !this.keylockPressed(group)) {
+        // Only adjust pitch based on ShiftPitch setting.
+        if ((MiniMixxx.ShiftPitch === !this.shiftActive()) && !this.keylockPressed(group)) {
             this.pitchSliderLastValue[group] = value;
             return;
         }
