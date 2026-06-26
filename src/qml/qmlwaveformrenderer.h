@@ -386,6 +386,8 @@ class QmlWaveformMark : public QObject {
     Q_PROPERTY(QUrl icon MEMBER m_icon NOTIFY iconChanged)
     Q_PROPERTY(QUrl endPixmap MEMBER m_endPixmap NOTIFY endPixmapChanged)
     Q_PROPERTY(QUrl endIcon MEMBER m_endIcon NOTIFY endIconChanged)
+    Q_PROPERTY(float disabledOpacity MEMBER m_disabledOpacity NOTIFY disabledOpacityChanged)
+    Q_PROPERTY(float enabledOpacity MEMBER m_enabledOpacity NOTIFY enabledOpacityChanged)
     QML_NAMED_ELEMENT(WaveformMark)
   public:
     QString control() const {
@@ -450,8 +452,8 @@ class QmlWaveformMark : public QObject {
     QUrl m_icon;
     QUrl m_endPixmap;
     QUrl m_endIcon;
-    float m_disabledOpacity;
-    float m_enabledOpacity;
+    float m_disabledOpacity{1.0f};
+    float m_enabledOpacity{1.0f};
 };
 
 class QmlWaveformUntilMark : public QObject {
