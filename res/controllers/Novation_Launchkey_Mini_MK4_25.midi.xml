@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+    <info>
+        <name>Novation_Launchkey_Mini_MK4_25</name>
+        <description>Custom DJ Mapping for Launchkey Mini 25 MK4</description>
+    </info>
+    <controller id="Launchkey">
+        <scriptfiles>
+            <file
+                filename="Launchkey_Mini_MK4_25-scripts.js"
+                functionprefix="LaunchkeyJog"
+            />
+        </scriptfiles>
+
+        <controls>
+            <!-- ==================================================== -->
+            <!-- MOD STRIP (SCRATCH CONTROL)                          -->
+            <!-- ==================================================== -->
+            <!-- Mod Strip MSB (CC 1) -->
+            <control>
+                <group>[Master]</group>
+                <key>LaunchkeyJog.handleModStrip_MSB</key>
+                <status>0xB0</status> <midino>0x01</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Mod Strip LSB (CC 33) -->
+            <control>
+                <group>[Master]</group>
+                <key>LaunchkeyJog.handleModStrip_LSB</key>
+                <status>0xB0</status> <midino>0x21</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- DECK SELECTION                                       -->
+            <!-- ==================================================== -->
+            <!-- Toggle Deck 1/2 (Channel 1 Active) -->
+            <control>
+                <group>[Master]</group>
+                <key>LaunchkeyJog.toggleDeck</key>
+                <status>0x94</status> <midino>0x41</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Toggle Deck 1/2 (Channel 2 Active) -->
+            <control>
+                <group>[Master]</group>
+                <key>LaunchkeyJog.toggleDeck</key>
+                <status>0x94</status> <midino>0x47</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- SHIFT MODE                                           -->
+            <!-- ==================================================== -->
+            <!-- Shift Deck 1 -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.handleShift</key>
+                <status>0x94</status> <midino>0x44</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Shift Deck 2 -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.handleShift</key>
+                <status>0x94</status> <midino>0x46</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- TRACK LOADING                                        -->
+            <!-- ==================================================== -->
+            <!-- Load Track / Sync Deck 1 -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.handleLoadTrack</key>
+                <status>0x94</status> <midino>0x41</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Load Track / Sync Deck 2 -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.handleLoadTrack</key>
+                <status>0x94</status> <midino>0x43</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- PAD CONTROLS (DECK 1)                                -->
+            <!-- ==================================================== -->
+            <!-- Pad 1 (Cue) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x3C</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 2 (Play/Pause) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x3D</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 3 (Hotcue 1) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x3E</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 4 (Hotcue 2) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x40</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 5 (Loop Double / Halve / Activate) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x3F</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 6 (Loop Exit / Halve / Double) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x42</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- PAD CONTROLS (DECK 2)                                -->
+            <!-- ==================================================== -->
+            <!-- Pad 1 (Cue) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x48</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 2 (Play/Pause) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x4E</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 3 (Hotcue 1) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x45</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 4 (Hotcue 2) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x47</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 5 (Loop Double / Halve / Activate) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x49</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Pad 6 (Loop Exit / Halve / Double) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.padHandler</key>
+                <status>0x94</status> <midino>0x4B</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- VOLUME & EQUALIZER CONTROLS                          -->
+            <!-- ==================================================== -->
+            <!-- Deck 1 Volume Fader -->
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB4</status> <midino>29</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 1 EQ High -->
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key> <status>0xB4</status> <midino>30</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 1 EQ Mid -->
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key> <status>0xB4</status> <midino>31</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 1 EQ Low -->
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key> <status>0xB4</status> <midino>32</midino>
+                <options><normal /></options>
+            </control>
+
+            <!-- Deck 2 EQ Low -->
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key> <status>0xB4</status> <midino>33</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 2 EQ Mid -->
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key> <status>0xB4</status> <midino>34</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 2 EQ High -->
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key> <status>0xB4</status> <midino>35</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 2 Volume Fader -->
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB4</status> <midino>36</midino>
+                <options><normal /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- PITCH & BEATMATCHING CONTROLS                        -->
+            <!-- ==================================================== -->
+            <!-- Deck 1 Beatmatch (MSB) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.handleBeatmatchD1_MSB</key>
+                <status>0xB4</status> <midino>21</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Deck 1 Beatmatch (LSB) -->
+            <control>
+                <group>[Channel1]</group>
+                <key>LaunchkeyJog.handleBeatmatchD1_LSB</key>
+                <status>0xB4</status> <midino>53</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Deck 1 Pitch/Rate Fader -->
+            <control>
+                <group>[Channel1]</group>
+                <key>rate</key>
+                <status>0xB4</status> <midino>22</midino>
+                <options><normal /></options>
+            </control>
+
+            <!-- Deck 2 Pitch/Rate Fader -->
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <status>0xB4</status> <midino>27</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Deck 2 Beatmatch (MSB) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.handleBeatmatchD2_MSB</key>
+                <status>0xB4</status> <midino>28</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Deck 2 Beatmatch (LSB) -->
+            <control>
+                <group>[Channel2]</group>
+                <key>LaunchkeyJog.handleBeatmatchD2_LSB</key>
+                <status>0xB4</status> <midino>60</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- LIBRARY NAVIGATION                                   -->
+            <!-- ==================================================== -->
+            <!-- Library Navigation (MSB) -->
+            <control>
+                <group>[Library]</group>
+                <key>LaunchkeyJog.handleLibrary_MSB</key>
+                <status>0xB4</status> <midino>23</midino>
+                <options><Script-Binding /></options>
+            </control>
+            <!-- Library Navigation (LSB) -->
+            <control>
+                <group>[Library]</group>
+                <key>LaunchkeyJog.handleLibrary_LSB</key>
+                <status>0xB4</status> <midino>55</midino>
+                <options><Script-Binding /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- HEADPHONE MONITORING & MASTER GAIN                   -->
+            <!-- ==================================================== -->
+            <!-- Headphone Volume -->
+            <control>
+                <group>[Master]</group>
+                <key>headVolume</key>
+                <status>0xB4</status> <midino>24</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Headphone Mix (Cue/Master) -->
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB4</status> <midino>25</midino>
+                <options><normal /></options>
+            </control>
+            <!-- Master Gain (Volume) -->
+            <control>
+                <group>[Master]</group>
+                <key>gain</key> <status>0xB4</status> <midino>26</midino>
+                <options><normal /></options>
+            </control>
+
+            <!-- ==================================================== -->
+            <!-- CROSSFADER STRIP                                     -->
+            <!-- ==================================================== -->
+            <!-- Crossfader Control (E0 Pitch Bend status) -->
+            <control>
+                <group>[Master]</group>
+                <key>LaunchkeyJog.handleCrossfaderStrip</key>
+                <status>0xE0</status>
+                <options><Script-Binding /></options>
+            </control>
+        </controls>
+        <outputs />
+    </controller>
+</MixxxControllerPreset>
