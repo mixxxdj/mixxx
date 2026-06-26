@@ -28,6 +28,8 @@
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
+#include "skin/skin.h"
+#include "skin/skinloader.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -60,20 +62,33 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
+    auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 #ifdef MIXXX_USE_QML
-    if (args.isQml()) {
+    QString mainQmlFilePath;
+    bool loadQml = args.isQml();
+    if (!loadQml && args.getDeveloper()) {
+        mixxx::skin::SkinLoader skinLoader(pCoreServices->getSettings());
+        const mixxx::skin::SkinPointer pSkin = skinLoader.getConfiguredSkin();
+        if (pSkin && pSkin->type() == mixxx::skin::SkinType::QML) {
+            loadQml = true;
+            mainQmlFilePath = pSkin->mainQmlFilePath();
+        }
+    }
+    if (loadQml) {
         // This is a workaround to support Qt 6.4.2, currently shipped on
         // Ubuntu 24.04 See
         // https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-2770811094
         // for further details
         qputenv("QT_QUICK_TABLEVIEW_COMPAT_VERSION", "6.4");
-        mixxx::qml::QmlApplication qmlApplication(pApp, args);
-        exitCode = pApp->exec();
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices, mainQmlFilePath);
+        if (!qmlApplication.isReady()) {
+            exitCode = kFatalErrorOnStartupExitCode;
+        } else {
+            exitCode = pApp->exec();
+        }
     } else
 #endif
     {
-        auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.

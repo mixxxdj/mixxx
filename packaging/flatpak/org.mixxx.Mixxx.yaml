@@ -63,11 +63,17 @@ modules:
   - modules/bungee.yaml
   - name: mixxx
     buildsystem: cmake-ninja
+    run-tests: true
+    build-options:
+      env:
+        GTEST_COLOR: "1"
+        CTEST_OUTPUT_ON_FAILURE: "1"
+        CTEST_PARALLEL_LEVEL: "1"
     config-opts:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DINSTALL_USER_UDEV_RULES=OFF
       - -DBUILD_BENCH=OFF
-      - -DBUILD_TESTING=OFF
+      - -DBUILD_TESTING=ON
     sources:
       - type: dir
         path: ../../

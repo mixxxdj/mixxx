@@ -9,11 +9,14 @@ from urllib.error import HTTPError, URLError
 
 MIXXX_DOWNLOAD_BASE = "https://downloads.mixxx.org/dependencies/"
 DEFAULT_PATTERN = (
-    r'BUILDENV_NAME="(mixxx-deps-[0-9]\.[0-9]-{triplet}-)'
-    r'([a-z0-9]+)"(\s+)BUILDENV_SHA256="([^"]+)"'
+    r'BUILDENV_BRANCH="[^"]+'
+    r'"(\s+)BUILDENV_NAME="mixxx-deps-[0-9]+\.[0-9]+(-{triplet}-)([a-z0-9]+)'
+    r'"(\s+)BUILDENV_SHA256="[^"]+"'
 )
 DEFAULT_REPLACE = (
-    r'BUILDENV_NAME="\g<1>{version}"\g<3>BUILDENV_SHA256="{shasum}"'
+    r'BUILDENV_BRANCH="{channel}"'
+    r'\g<1>BUILDENV_NAME="mixxx-deps-{channel_num}\g<2>{version}"'
+    r'\g<4>BUILDENV_SHA256="{shasum}"'
 )
 PLATFORMS = [
     {
@@ -22,12 +25,16 @@ PLATFORMS = [
         "release_triplet": "arm64-windows-rel",
         "file": "tools/windows_buildenv.bat",
         "pattern": (
-            r"SET BUILDENV_NAME=(mixxx-deps-[0-9]\.[0-9]-{triplet}-)"
-            r"([a-z0-9]+)(\s+)SET BUILDENV_SHA256=([a-f0-9]+)"
+            r"SET BUILDENV_BRANCH=[^\r\n]+"
+            r"(\s+SET VCPKG_TARGET_TRIPLET=[^\r\n]+\s+)"
+            r"SET BUILDENV_NAME=mixxx-deps-[0-9]+\.[0-9]+-{triplet}-[a-z0-9]+"
+            r"(\s+)SET BUILDENV_SHA256=[a-f0-9]+"
         ),
         "replace": (
-            r"SET BUILDENV_NAME=\g<1>{version}\g<3>"
-            r"SET BUILDENV_SHA256={shasum}"
+            r"SET BUILDENV_BRANCH={channel}"
+            r"\g<1>"
+            r"SET BUILDENV_NAME=mixxx-deps-{channel_num}-{triplet}-{version}"
+            r"\g<2>SET BUILDENV_SHA256={shasum}"
         ),
     },
     {
@@ -36,12 +43,16 @@ PLATFORMS = [
         "release_triplet": "x64-windows-rel",
         "file": "tools/windows_buildenv.bat",
         "pattern": (
-            r"SET BUILDENV_NAME=(mixxx-deps-[0-9]\.[0-9]-{triplet}-)"
-            r"([a-z0-9]+)(\s+)SET BUILDENV_SHA256=([a-f0-9]+)"
+            r"SET BUILDENV_BRANCH=[^\r\n]+"
+            r"(\s+SET VCPKG_TARGET_TRIPLET=[^\r\n]+\s+)"
+            r"SET BUILDENV_NAME=mixxx-deps-[0-9]+\.[0-9]+-{triplet}-[a-z0-9]+"
+            r"(\s+)SET BUILDENV_SHA256=[a-f0-9]+"
         ),
         "replace": (
-            r"SET BUILDENV_NAME=\g<1>{version}\g<3>"
-            r"SET BUILDENV_SHA256={shasum}"
+            r"SET BUILDENV_BRANCH={channel}"
+            r"\g<1>"
+            r"SET BUILDENV_NAME=mixxx-deps-{channel_num}-{triplet}-{version}"
+            r"\g<2>SET BUILDENV_SHA256={shasum}"
         ),
     },
     {
@@ -124,7 +135,7 @@ def update(host_os, channel, data):
             file.write(new_content)
 
     except Exception as e:
-        sys.exit(f"FATAL: Could not open {filename} for reading: {e}")
+        sys.exit(f"FATAL: Could not open {filename} for writing: {e}")
         return False
 
     print(
@@ -199,13 +210,13 @@ def is_valid_channel(name):
 
 
 if __name__ == "__main__":
-    channel_prefix = None
+    channel_num = None
     if len(sys.argv) == 2:
-        channel_prefix = sys.argv[1]
+        channel_num = sys.argv[1]
     else:
-        channel_prefix = get_git_branch()
+        channel_num = get_git_branch()
 
-    if not is_valid_channel(channel_prefix):
+    if not is_valid_channel(channel_num):
         print(
             "Usage: %s <channel>\n"
             "  <channel> is a sub folder of /dependencies/ e.g. '2.7'."
@@ -225,9 +236,7 @@ if __name__ == "__main__":
             triplet = host_os[
                 "triplet" if not is_release else "release_triplet"
             ]
-            channel = (
-                channel_prefix if not is_release else f"{channel_prefix}-rel"
-            )
+            channel = channel_num if not is_release else f"{channel_num}-rel"
             latest = None
             try:
                 data = get_raw_releases(os, channel)
@@ -278,6 +287,10 @@ if __name__ == "__main__":
                 )
                 continue
 
+            # Provide channel info for use in pattern/replace strings
+            latest["channel"] = channel
+            latest["channel_num"] = channel_num
+
             # Track the commit hash
             if is_release:
                 release_commits[triplet] = (
@@ -304,7 +317,7 @@ if __name__ == "__main__":
 
     # Check release builds
     release_versions = set(v[0] for v in release_commits.values())
-    print(f"\nRelease builds ({channel_prefix}-rel):")
+    print(f"\nRelease builds ({channel_num}-rel):")
     for triplet, (version, filename) in sorted(release_commits.items()):
         print(f"  {triplet:<25} {version}")
 
@@ -318,7 +331,7 @@ if __name__ == "__main__":
 
     # Check non-release builds
     non_release_versions = set(v[0] for v in non_release_commits.values())
-    print(f"\nNon-release builds ({channel_prefix}):")
+    print(f"\nNon-release builds ({channel_num}):")
     for triplet, (version, filename) in sorted(non_release_commits.items()):
         print(f"  {triplet:<25} {version}")
 

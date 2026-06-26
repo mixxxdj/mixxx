@@ -8,6 +8,7 @@
 #include "qmllibrarytracklistmodel.h"
 
 class Library;
+class KeyboardEventFilter;
 
 namespace mixxx {
 namespace qml {
@@ -32,11 +33,20 @@ class QmlLibraryProxy : public QObject {
         return s_pLibrary.get();
     }
 
+    static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
+        s_pKeyboard = std::move(pKeyboard);
+    }
+
+    static KeyboardEventFilter* getKeyboard() {
+        return s_pKeyboard.get();
+    }
+
     QmlLibraryTrackListModel* model() const;
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
 
   private:
     static inline std::shared_ptr<Library> s_pLibrary;
+    static inline std::shared_ptr<KeyboardEventFilter> s_pKeyboard;
 };
 
 } // namespace qml

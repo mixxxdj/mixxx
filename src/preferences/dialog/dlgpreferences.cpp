@@ -29,6 +29,8 @@
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwaveform.h"
+#include "util/cmdlineargs.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -135,32 +137,37 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
-            pScreensaverManager,
-            pSkinLoader,
-            m_pConfig);
-    connect(pInterfacePage,
-            &DlgPrefInterface::tooltipModeChanged,
-            this,
-            &DlgPreferences::tooltipModeChanged);
-    connect(pInterfacePage,
-            &DlgPrefInterface::reloadUserInterface,
-            this,
-            &DlgPreferences::reloadUserInterface,
-            Qt::DirectConnection);
-    connect(pInterfacePage,
-            &DlgPrefInterface::menuBarAutoHideChanged,
-            this,
-            &DlgPreferences::menuBarAutoHideChanged,
-            Qt::DirectConnection);
-    addPageWidget(PreferencesPage(pInterfacePage,
-                          new QTreeWidgetItem(
-                                  contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Interface"),
-            "ic_preferences_interface.svg");
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+                pScreensaverManager,
+                pSkinLoader,
+                m_pConfig);
+        connect(pInterfacePage,
+                &DlgPrefInterface::tooltipModeChanged,
+                this,
+                &DlgPreferences::tooltipModeChanged);
+        connect(pInterfacePage,
+                &DlgPrefInterface::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+        connect(pInterfacePage,
+                &DlgPrefInterface::menuBarAutoHideChanged,
+                this,
+                &DlgPreferences::menuBarAutoHideChanged,
+                Qt::DirectConnection);
+        addPageWidget(PreferencesPage(pInterfacePage,
+                              new QTreeWidgetItem(
+                                      contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Interface"),
+                "ic_preferences_interface.svg");
+    }
 
-    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
-    if (pSkinLoader) {
+    // Check if the Waveform factory exists (it is not created in QML mode)
+    if (WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -272,10 +279,9 @@ DlgPreferences::~DlgPreferences() {
     }
 
     // When DlgPrefControllers is deleted it manually deletes the controller tree items,
-    // which makes QTreeWidgetItem trigger this signal. If we don't disconnect,
-    // &DlgPreferences::changePage iterates on the PreferencesPage instances in m_allPages,
-    // but the pDlg objects of the controller items are already destroyed by DlgPrefControllers,
-    // which causes a crash when accessed.
+    // which makes QTreeWidgetItem trigger this signal. Currently PreferencesPage
+    // instances in m_allPages are destroyed along with pDlg objects. This disconnect
+    // is kept as a safety measure.
     disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged, this, &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
@@ -352,7 +358,8 @@ void DlgPreferences::onShow() {
     int newWidth = m_geometry[2].toInt();
     int newHeight = m_geometry[3].toInt();
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
@@ -515,7 +522,24 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
-    pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
+    QWidget* pParent = pWidget->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pParent) {
+        return;
+    }
+
+    QWidget* pScrollArea = pParent->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pScrollArea) {
+        return;
+    }
+
+    const int index = pagesWidget->indexOf(pScrollArea);
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_allPages.size()) {
+        return;
+    }
+
+    m_allPages.removeAt(index);
+    pagesWidget->removeWidget(pScrollArea);
+    delete pScrollArea;
 }
 
 void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
@@ -571,7 +595,8 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 
 QRect DlgPreferences::getDefaultGeometry() {
     adjustSize();
-    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }

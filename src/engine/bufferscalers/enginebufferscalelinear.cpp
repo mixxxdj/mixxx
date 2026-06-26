@@ -26,9 +26,20 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear() {
 }
 
 void EngineBufferScaleLinear::onSignalChanged() {
-    m_floorSampleOld = mixxx::SampleBuffer(getOutputSignal().getChannelCount());
-    m_floorSample = mixxx::SampleBuffer(getOutputSignal().getChannelCount());
-    m_ceilSample = mixxx::SampleBuffer(getOutputSignal().getChannelCount());
+    // We only upscale the memory allocation to reduce the likelihood of
+    // impacting the real-time thread. This way, on first load of a STEM (8
+    // channels), we reallocate the right size and keep it allocated till the
+    // scaler is destroyed.
+    const auto channelCount = getOutputSignal().getChannelCount();
+    if (m_floorSampleOld.size() < channelCount) {
+        m_floorSampleOld = mixxx::SampleBuffer(channelCount);
+    }
+    if (m_floorSample.size() < channelCount) {
+        m_floorSample = mixxx::SampleBuffer(channelCount);
+    }
+    if (m_ceilSample.size() < channelCount) {
+        m_ceilSample = mixxx::SampleBuffer(channelCount);
+    }
 }
 
 void EngineBufferScaleLinear::setScaleParameters(double base_rate,
