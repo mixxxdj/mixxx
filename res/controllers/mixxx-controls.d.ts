@@ -656,7 +656,7 @@ declare namespace MixxxControls {
         | 'beat_closest'
 
         /**
-         * Outputs the relative position of the play marker in the section between the the previous and next beat marker.
+         * Outputs the relative position of the play marker in the section between the previous and next beat marker.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
          * @range 0.0 - 1.0, real-valued
@@ -901,6 +901,66 @@ declare namespace MixxxControls {
          * @since New in version 2.0.0.
          */
         | 'beats_adjust_slower'
+
+        /**
+         * Scale the BPM by 2.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback BPM display, beatgrid
+         * @since New in version 2.5.0.
+         */
+        | 'beats_set_double'
+
+        /**
+         * Scale the BPM by 4/3.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback BPM display, beatgrid
+         * @since New in version 2.5.0.
+         */
+        | 'beats_set_fourthirds'
+
+        /**
+         * Scale the BPM by 1/2.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback BPM display, beatgrid
+         * @since New in version 2.5.0.
+         */
+        | 'beats_set_halve'
+
+        /**
+         * Scale the BPM by 3/4.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback BPM display, beatgrid
+         * @since New in version 2.5.0.
+         */
+        | 'beats_set_threefourths'
+
+        /**
+         * Scale the BPM by 3/2.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback BPM display, beatgrid
+         * @since New in version 2.5.0.
+         */
+        | 'beats_set_threehalves'
+
+        /**
+         * Scale the BPM by 2/3.
+         *
+         * @groups [ChannelN], [PreviewDeckN], [SamplerN]
+         * @range binary
+         * @feedback BPM display, beatgrid
+         * @since New in version 2.5.0.
+         */
+        | 'beats_set_twothirds'
 
         /**
          * Adjust beatgrid so closest beat is aligned with the current playposition.
@@ -1506,7 +1566,7 @@ declare namespace MixxxControls {
 
         /**
          * Affects relative playback speed and direction for short instances (additive & is automatically reset to 0).
-         * Use this control to map controller jog wheel turns to pitch bend.
+         * Use it in controller mappings to do pitch-bend with jog wheels. See the example in the Mixxx Wiki -> Controller Scripting -> Scratching and jog wheels.
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
          * @range -3.0..3.0
@@ -2214,7 +2274,9 @@ declare namespace MixxxControls {
         | 'reverseroll'
 
         /**
-         * Affects absolute play speed & direction whether currently playing or not when [ChannelN],scratch2_enable is active. (multiplicative). Use JavaScript engine.scratch functions to manipulate in controller mappings.
+         * Affects absolute play speed & direction whether currently playing or not when [ChannelN],scratch2_enable is active. (multiplicative).
+         * Use JavaScript functions engine.scratchEnable, engine.scratchDisable,  engine.isScratching and  engine.isScratching to manipulate in controller mappings.
+         * See the example in the Mixxx Wiki -> Controller Scripting -> Scratching and jog wheels .
          *
          * @groups [ChannelN], [PreviewDeckN], [SamplerN]
          * @range -3.0..3.0
@@ -4327,7 +4389,7 @@ declare namespace MixxxControls {
              * @range binary
              * @feedback Filter button
              * @since New in version 2.0.0.
-             * @deprecated since  version 2.0.0: Use [QuickEffectRack1_[ChannelN]_Effect1],enabled instead.
+             * @deprecated since  version 2.0.0: Use [QuickEffectRack1_[ChannelN]],enabled instead.
              */
             | 'filter'
 
@@ -4452,16 +4514,6 @@ declare namespace MixxxControls {
              * @deprecated since  version 2.1.0: Use [ChannelN],reloop_toggle instead.
              */
             | 'reloop_exit'
-
-            /**
-             * Affects playback speed and direction (differently whether currently playing or not) (multiplicative).
-             *
-             * @groups [ChannelN], [PreviewDeckN], [SamplerN]
-             * @range -3.0..3.0
-             * @feedback Waveform
-             * @deprecated since  version ??: Use the JavaScript engine.scratch functions instead.
-             */
-            | 'scratch'
 
             /**
              * Outputs the current instantaneous deck volume
