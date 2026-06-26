@@ -22,13 +22,14 @@ class EngineBufferScaleBungeeBufferWindowTest;
 //   m_dTempoRatio  — absolute (unsigned) tempo ratio; 1.0 = original speed.
 //                    Values <MIN_SEEK_SPEED are clamped to 0.0 (stopped).
 //   m_bBackwards   — true when the caller requested a negative tempo ratio.
-//   m_effectiveRate — m_dBaseRate * m_dTempoRatio (always ≥ 0).  Multiplied by
-//                    the signed direction and by framesProduced to compute the
-//                    return value of scaleBuffer(), which EngineBuffer uses to
-//                    advance its playback-position cursor.
+//   m_effectiveRate — m_dBaseRate * m_dTempoRatio (always ≥ 0).  This is the
+//                    source-frame advance per output frame used both for
+//                    Bungee's input-frame timestamps and for scaleBuffer()'s
+//                    returned playback-position advance.
 //   m_request.speed — signed speed passed to Bungee each grain; equals
-//                    ±m_dTempoRatio.  Bungee converts this into its internal
-//                    grain-stepping schedule.
+//                    ±m_effectiveRate.  Bungee's request positions are input
+//                    frame timestamps, so sample-rate conversion must be part
+//                    of this speed rather than only the Mixxx cursor update.
 //
 // ## Input window / InputChunk contract
 //

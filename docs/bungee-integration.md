@@ -31,7 +31,7 @@ EngineBuffer
 | `m_dTempoRatio` | Absolute (unsigned) tempo ratio; `1.0` = original speed. Values below `MIN_SEEK_SPEED` are clamped to `0.0` (stopped). |
 | `m_bBackwards` | `true` when the caller requested a negative tempo ratio (reverse playback). |
 | `m_effectiveRate` | `m_dBaseRate × m_dTempoRatio`; always `≥ 0`. |
-| `m_request.speed` | Signed speed sent to Bungee each grain: `±m_dTempoRatio`. |
+| `m_request.speed` | Signed speed sent to Bungee each grain: `±m_effectiveRate`. Bungee request positions are input-frame timestamps, so sample-rate conversion must be included here. |
 
 `scaleBuffer()` returns `readFramesProcessed = m_effectiveRate × framesProduced`.
 `EngineBuffer` uses this value to advance its playback-position cursor; it must

@@ -111,17 +111,19 @@ void EngineBufferScaleBungee::setScaleParameters(double base_rate,
 
     *pTempoRatio = m_bBackwards ? -speedAbs : speedAbs;
 
-    m_dBaseRate = base_rate;
+    m_dBaseRate = std::isfinite(base_rate) ? std::fabs(base_rate) : 0.0;
     m_dTempoRatio = speedAbs;
     m_dPitchRatio = *pPitchRatio;
     m_effectiveRate = m_dBaseRate * m_dTempoRatio;
 
-    const double pitchScale = fabs(base_rate * *pPitchRatio);
-    if (pitchScale > 0.0) {
+    const double pitchScale = fabs(m_dBaseRate * *pPitchRatio);
+    if (std::isfinite(pitchScale) && pitchScale > 0.0) {
         m_request.pitch = pitchScale;
+    } else {
+        m_request.pitch = 1.0;
     }
 
-    m_request.speed = m_bBackwards ? -m_dTempoRatio : m_dTempoRatio;
+    m_request.speed = m_bBackwards ? -m_effectiveRate : m_effectiveRate;
 
     if (wasBackwards != m_bBackwards) {
         m_bResetNeeded = true;
@@ -334,7 +336,6 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
         return framesToCopy;
     }
 
-    const double signedSpeed = m_bBackwards ? -m_dTempoRatio : m_dTempoRatio;
     const double signedEffectiveRate = (m_bBackwards ? -1.0 : 1.0) * m_effectiveRate;
 
     if (m_bResetNeeded) {
@@ -352,7 +353,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
         }
     }
 
-    m_request.speed = signedSpeed;
+    m_request.speed = signedEffectiveRate;
 
     m_currentInputChunk = m_pStretcher->specifyGrain(m_request);
     const SINT framesNeeded = m_currentInputChunk.end - m_currentInputChunk.begin;
@@ -390,7 +391,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
             muteTail);
     m_pStretcher->synthesiseGrain(m_outputChunk);
     m_pStretcher->next(m_request);
-    m_request.speed = signedSpeed;
+    m_request.speed = signedEffectiveRate;
 
     if (!hasValidOutputChunk()) {
         return 0;
@@ -431,7 +432,7 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
         if (framesProduced > 0) {
             remainingFrames -= framesProduced;
             pOutput += getOutputSignal().frames2samples(framesProduced);
-            readFramesProcessed += m_lastReadFramesProcessed;
+            readFramesProcessed += m_effectiveRate * static_cast<double>(framesProduced);
             lastProcessFailed = false;
             continue;
         }
@@ -490,13 +491,16 @@ void EngineBufferScaleBungee::clear() {
     m_bufferedInputBeginFrame = 0;
     m_bufferedInputEndFrame = 0;
 
+    m_effectiveRate = m_dBaseRate * m_dTempoRatio;
+
     m_request.position = std::numeric_limits<double>::quiet_NaN();
-    m_request.speed = 1.0;
-    m_request.pitch = 1.0;
+    m_request.speed = m_bBackwards ? -m_effectiveRate : m_effectiveRate;
+    const double pitchScale = fabs(m_dBaseRate * m_dPitchRatio);
+    m_request.pitch = std::isfinite(pitchScale) && pitchScale > 0.0
+            ? pitchScale
+            : 1.0;
     m_request.reset = true;
     m_request.resampleMode = resampleMode_autoOut;
-
-    m_effectiveRate = m_dBaseRate * m_dTempoRatio;
 
     m_outputChunk.data = nullptr;
     m_outputChunk.frameCount = 0;
