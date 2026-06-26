@@ -125,6 +125,8 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     // Copy nFrames from m_outputChunk into pDest starting at offsetInChunk.
     // Uses SampleUtil::interleaveBuffer for the stereo fast path.
     void copyOutputFrames(CSAMPLE* pDest, SINT offsetInChunk, SINT nFrames) const;
+    bool hasValidOutputChunk() const;
+    double outputChunkInputFrameDelta(SINT offsetInChunk, SINT nFrames) const;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
@@ -166,6 +168,7 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     // Output frames remaining from the current synthesised grain.
     SINT m_remainingOutputFrames;
     SINT m_outputChunkConsumed;
+    double m_lastReadFramesProcessed;
 
     // Maximum number of frames to request from ReadAheadManager in one call.
     static constexpr SINT kMaxGrainFrames = 4096;

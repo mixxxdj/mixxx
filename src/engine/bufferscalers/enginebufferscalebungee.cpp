@@ -21,6 +21,7 @@ EngineBufferScaleBungee::EngineBufferScaleBungee(ReadAheadManager* pReadAheadMan
           m_bResetNeeded(true),
           m_remainingOutputFrames(0),
           m_outputChunkConsumed(0),
+          m_lastReadFramesProcessed(0.0),
           m_inputBufferFrames(0) {
     m_request.position = std::numeric_limits<double>::quiet_NaN();
     m_request.speed = 1.0;
@@ -279,22 +280,51 @@ void EngineBufferScaleBungee::copyOutputFrames(
     }
 }
 
+bool EngineBufferScaleBungee::hasValidOutputChunk() const {
+    return m_outputChunk.frameCount > 0 &&
+            m_outputChunk.data != nullptr &&
+            m_outputChunk.request[Bungee::OutputChunk::begin] != nullptr &&
+            m_outputChunk.request[Bungee::OutputChunk::end] != nullptr &&
+            std::isfinite(m_outputChunk.request[Bungee::OutputChunk::begin]->position) &&
+            std::isfinite(m_outputChunk.request[Bungee::OutputChunk::end]->position);
+}
+
+double EngineBufferScaleBungee::outputChunkInputFrameDelta(
+        SINT offsetInChunk, SINT nFrames) const {
+    if (!hasValidOutputChunk() || nFrames <= 0) {
+        return 0.0;
+    }
+
+    const double chunkFrames = static_cast<double>(m_outputChunk.frameCount);
+    const double begin =
+            m_outputChunk.request[Bungee::OutputChunk::begin]->position;
+    const double end =
+            m_outputChunk.request[Bungee::OutputChunk::end]->position;
+    const double framesBegin = static_cast<double>(offsetInChunk);
+    const double framesEnd = static_cast<double>(offsetInChunk + nFrames);
+    const double inputBegin = begin + (end - begin) * framesBegin / chunkFrames;
+    const double inputEnd = begin + (end - begin) * framesEnd / chunkFrames;
+    return std::fabs(inputEnd - inputBegin);
+}
+
 SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrames) {
+    m_lastReadFramesProcessed = 0.0;
+
     if (!m_pStretcher || !getOutputSignal().isValid()) {
         return 0;
     }
 
     if (m_remainingOutputFrames > 0 && m_outputChunk.data != nullptr) {
-        const SINT framesToCopy = std::min(m_remainingOutputFrames, maxFrames);
-        const int channelCount = static_cast<int>(getOutputSignal().getChannelCount());
-
-        for (SINT frame = 0; frame < framesToCopy; ++frame) {
-            for (int ch = 0; ch < channelCount; ++ch) {
-                pOutputBuffer[frame * channelCount + ch] =
-                        m_outputChunk.data[m_outputChunkConsumed + frame +
-                                ch * m_outputChunk.channelStride];
-            }
+        if (!hasValidOutputChunk()) {
+            m_remainingOutputFrames = 0;
+            m_outputChunkConsumed = 0;
+            return 0;
         }
+
+        const SINT framesToCopy = std::min(m_remainingOutputFrames, maxFrames);
+        m_lastReadFramesProcessed =
+                outputChunkInputFrameDelta(m_outputChunkConsumed, framesToCopy);
+        copyOutputFrames(pOutputBuffer, m_outputChunkConsumed, framesToCopy);
 
         m_outputChunkConsumed += framesToCopy;
         m_remainingOutputFrames -= framesToCopy;
@@ -362,7 +392,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     m_pStretcher->next(m_request);
     m_request.speed = signedSpeed;
 
-    if (m_outputChunk.frameCount <= 0 || m_outputChunk.data == nullptr) {
+    if (!hasValidOutputChunk()) {
         return 0;
     }
 
@@ -370,6 +400,7 @@ SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrame
     m_outputChunkConsumed = 0;
 
     const SINT framesToCopy = std::min(static_cast<SINT>(m_outputChunk.frameCount), maxFrames);
+    m_lastReadFramesProcessed = outputChunkInputFrameDelta(0, framesToCopy);
     copyOutputFrames(pOutputBuffer, 0, framesToCopy);
     m_outputChunkConsumed = framesToCopy;
     m_remainingOutputFrames = m_outputChunk.frameCount - framesToCopy;
@@ -400,7 +431,7 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
         if (framesProduced > 0) {
             remainingFrames -= framesProduced;
             pOutput += getOutputSignal().frames2samples(framesProduced);
-            readFramesProcessed += m_effectiveRate * framesProduced;
+            readFramesProcessed += m_lastReadFramesProcessed;
             lastProcessFailed = false;
             continue;
         }
@@ -453,6 +484,7 @@ void EngineBufferScaleBungee::clear() {
     m_bResetNeeded = true;
     m_remainingOutputFrames = 0;
     m_outputChunkConsumed = 0;
+    m_lastReadFramesProcessed = 0.0;
     m_currentInputChunk.begin = 0;
     m_currentInputChunk.end = 0;
     m_bufferedInputBeginFrame = 0;
