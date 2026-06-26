@@ -251,6 +251,7 @@ class WTrackMenu : public QMenu {
     void addToAnalysis(AnalyzerTrack::Options options = AnalyzerTrack::Options());
 
     void clearBeats();
+    void clearFingerprintDataForSelection();
     void lockBpm(bool lock);
 
 #ifdef __STEM__

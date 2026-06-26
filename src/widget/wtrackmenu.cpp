@@ -1814,11 +1814,13 @@ void WTrackMenu::slotAnalyze() {
 
 void WTrackMenu::slotReanalyze() {
     clearBeats();
+    clearFingerprintDataForSelection();
     addToAnalysis();
 }
 
 void WTrackMenu::slotReanalyzeWithFixedTempo() {
     clearBeats();
+    clearFingerprintDataForSelection();
     AnalyzerTrack::Options options;
     options.useFixedTempo = true;
     addToAnalysis(options);
@@ -1826,6 +1828,7 @@ void WTrackMenu::slotReanalyzeWithFixedTempo() {
 
 void WTrackMenu::slotReanalyzeWithVariableTempo() {
     clearBeats();
+    clearFingerprintDataForSelection();
     AnalyzerTrack::Options options;
     options.useFixedTempo = false;
     addToAnalysis(options);
@@ -2450,25 +2453,14 @@ void WTrackMenu::slotClearAllMetadata() {
             progressLabelText,
             &trackOperator);
 
-    // Also clear fingerprint data — this is not covered by TrackPointerOperation
-    // because clearFingerprintData works on TrackId + DAO directly (no Track object
-    // needed), and mixing the two paradigms inside a TrackPointerOperation would
-    // require injecting the DAO into it unnecessarily.
-    const TrackIdList trackIds = getTrackIds();
-    TrackFingerprintDao& dao = m_pLibrary->trackCollectionManager()
-                                       ->internalCollection()
-                                       ->getTrackFingerprintDAO();
-
-    // TODO(XXX): This loop runs after the progress dialog closes. For very large
-    // selections it may block the main thread briefly (DB + file deletions, no
-    // audio). A future PR should fold this into a TrackPointerOperation so it
-    // stays inside the progress modal.
-    for (const TrackId& id : std::as_const(trackIds)) {
-        dao.clearFingerprintData(id);
-    }
+    clearFingerprintDataForSelection();
 }
 
 void WTrackMenu::slotClearFingerprint() {
+    clearFingerprintDataForSelection();
+}
+
+void WTrackMenu::clearFingerprintDataForSelection() {
     const TrackIdList trackIds = getTrackIds();
     if (trackIds.empty()) {
         return;
