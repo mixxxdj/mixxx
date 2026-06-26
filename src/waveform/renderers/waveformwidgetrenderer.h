@@ -120,6 +120,15 @@ class WaveformWidgetRenderer {
         return (samplePosition - m_firstDisplayedPosition[type] * m_trackSamples) /
                 2 / m_audioSamplePerPixel;
     }
+    // the reverse function, pixel to track sample
+    inline double transformRendererPositionToSamplePosition(QPoint pos) {
+        int pixelPos = getOrientation() == Qt::Horizontal ? pos.x() : pos.y();
+        double posRange = getLastDisplayedPosition() - getFirstDisplayedPosition();
+        double eventRelPos =
+                static_cast<double>(pixelPos) / getLength();
+        double absPos = (eventRelPos * posRange) + getFirstDisplayedPosition();
+        return getTrackSamples() * absPos;
+    }
 
     int getPlayPosVSample(::WaveformRendererAbstract::PositionSource type =
                                   ::WaveformRendererAbstract::Play) const {
@@ -200,6 +209,28 @@ class WaveformWidgetRenderer {
         m_playMarkerPosition = newPos;
     }
 
+    // FIXME Wrap state/data set/get in one function each?
+    void setHotcueDragInProgress(bool enabled) {
+        m_hotcueDragInProgress = enabled;
+    }
+    bool hotcueDragInProgress() {
+        return m_hotcueDragInProgress;
+    }
+    // Index of the dragged hotcue, 0-based
+    void setHotcueDragIndex(int index) {
+        m_hotcueDragIndex = index;
+    }
+    int getHotcueDragIndex() const {
+        return m_hotcueDragIndex;
+    }
+    // The sample pos where the hotcue is being dragged to
+    void setHotcueDragPos(double dragPos) {
+        m_hotcueDragPos = dragPos;
+    }
+    double getHotcueDragPos() const {
+        return m_hotcueDragPos;
+    }
+
     void setPassThroughEnabled(bool enabled);
 
     bool shouldOnlyDrawBackground() const {
@@ -276,6 +307,10 @@ private:
             QPointF p2,
             QPointF p3);
     void drawPassthroughLabel(QPainter* painter);
+
+    bool m_hotcueDragInProgress;
+    double m_hotcueDragPos;
+    int m_hotcueDragIndex;
 
     bool m_passthroughEnabled;
     double m_pos[2];
