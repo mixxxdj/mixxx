@@ -21,8 +21,13 @@ class FingerprintMatcher {
 
     static constexpr int kSimHashMaxHammingBits = 8;
 
+    /// Fallback threshold for callers that don't supply one to compare().
+    /// CmrtGroupingService overrides this with kCmrtMatchThresholdConfigKey;
+    // Full-fingerprint match threshold. ">80% overlap"
+    static constexpr float kDefaultMatchThreshold = 0.80f;
+
     struct MatchResult {
-        bool isMatch = false;     // score >= kMatchThreshold
+        bool isMatch = false;     // score >= matchThreshold
         float score = 0.0f;       // 0.0-1.0, see scoreFingerprints()
         float offsetItems = 0.0f; // fine offset, fractional Chromaprint items
     };
@@ -33,7 +38,11 @@ class FingerprintMatcher {
 
     /// Full comparison -- requires both fingerprints already loaded from disk.
     /// This is the expensive path: only call after simHashCandidatesMatch().
-    static MatchResult compare(const QVector<quint32>& a, const QVector<quint32>& b);
+    /// matchThreshold sets MatchResult::isMatch's cutoff; defaults to
+    /// kDefaultMatchThreshold for callers with no preference of their own.
+    static MatchResult compare(const QVector<quint32>& a,
+            const QVector<quint32>& b,
+            float matchThreshold = kDefaultMatchThreshold);
 
   private:
     static int findTopOffset(const quint32* a,

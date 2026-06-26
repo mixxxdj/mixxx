@@ -2,6 +2,7 @@
 
 #include "library/dao/trackfingerprintdao.h"
 #include "musicbrainz/fingerprintmatcher.h"
+#include "preferences/usersettings.h"
 
 namespace mixxx {
 
@@ -17,7 +18,7 @@ namespace mixxx {
 /// to avoid.
 class CmrtGroupingService {
   public:
-    explicit CmrtGroupingService(TrackFingerprintDao& fingerprintDao);
+    CmrtGroupingService(TrackFingerprintDao& fingerprintDao, UserSettingsPointer pConfig);
 
     void processTrack(TrackId trackId, const QString& musicbrainzRecordingId);
 
@@ -43,6 +44,7 @@ class CmrtGroupingService {
             double matchScoreOfNewFromOld);
 
     TrackFingerprintDao& m_fingerprintDao; // not owned; lives on worker thread
+    UserSettingsPointer m_pConfig;
 };
 
 } // namespace mixxx

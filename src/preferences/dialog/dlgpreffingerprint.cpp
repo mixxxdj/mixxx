@@ -83,6 +83,11 @@ void DlgPrefFingerprint::slotUpdate() {
             kAcoustIdAutoSubmitConfigKey, false);
     checkBoxAcoustIdAutoSubmit->setChecked(autoSubmit);
 
+    const double matchThreshold = m_pConfig->getValue(
+            kCmrtMatchThresholdConfigKey, kCmrtMatchThresholdDefault);
+    // Stored as a 0.0-1.0 fraction; the spin box shows it as a percentage.
+    spinBoxCmrtMatchThreshold->setValue(matchThreshold * 100.0);
+
     setAcoustIdGroupEnabled(fingerprintEnabled);
 }
 
@@ -101,12 +106,17 @@ void DlgPrefFingerprint::slotApply() {
     m_pConfig->set(
             kAcoustIdAutoSubmitConfigKey,
             ConfigValue{checkBoxAcoustIdAutoSubmit->isChecked()});
+
+    m_pConfig->set(
+            kCmrtMatchThresholdConfigKey,
+            ConfigValue{spinBoxCmrtMatchThreshold->value() / 100.0});
 }
 
 void DlgPrefFingerprint::slotResetToDefaults() {
     checkBoxFingerprintEnabled->setChecked(false);
     lineEditAcoustIdApiKey->clear();
     checkBoxAcoustIdAutoSubmit->setChecked(false);
+    spinBoxCmrtMatchThreshold->setValue(kCmrtMatchThresholdDefault * 100.0);
     // Reflect the cleared state immediately in the UI.
     setAcoustIdGroupEnabled(false);
 }

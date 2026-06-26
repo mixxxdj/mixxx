@@ -72,6 +72,10 @@ extern const ConfigKey kAcoustIdAutoSubmitConfigKey;
 
 extern const ConfigKey kCmrtAutoGroupingEnabledConfigKey;
 
+extern const ConfigKey kCmrtMatchThresholdConfigKey;
+
+extern const double kCmrtMatchThresholdDefault;
+
 } // namespace prefs
 
 } // namespace library

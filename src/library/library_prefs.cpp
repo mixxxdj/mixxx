@@ -144,3 +144,10 @@ const ConfigKey mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("CmrtAutoGroupingEnabled")};
+
+const ConfigKey mixxx::library::prefs::kCmrtMatchThresholdConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CmrtMatchThreshold")};
+
+const double mixxx::library::prefs::kCmrtMatchThresholdDefault = 0.80;

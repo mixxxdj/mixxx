@@ -4,6 +4,7 @@
 #include <cstring>
 
 #include "analyzer/qualityscorer.h"
+#include "library/library_prefs.h"
 
 namespace mixxx {
 
@@ -33,8 +34,10 @@ double scoreTrackQuality(const std::optional<TrackQualityInfo>& info) {
 
 } // namespace
 
-CmrtGroupingService::CmrtGroupingService(TrackFingerprintDao& fingerprintDao)
-        : m_fingerprintDao(fingerprintDao) {
+CmrtGroupingService::CmrtGroupingService(
+        TrackFingerprintDao& fingerprintDao, UserSettingsPointer pConfig)
+        : m_fingerprintDao(fingerprintDao),
+          m_pConfig(pConfig) {
 }
 
 void CmrtGroupingService::processTrack(
@@ -70,6 +73,10 @@ void CmrtGroupingService::processTrack(
     const QVector<quint32> trackFp =
             chromaBytesToVector(m_fingerprintDao.loadChromaFile(trackId));
 
+    const float matchThreshold = static_cast<float>(m_pConfig->getValue(
+            mixxx::library::prefs::kCmrtMatchThresholdConfigKey,
+            mixxx::library::prefs::kCmrtMatchThresholdDefault));
+
     // Check every candidate and keep the best-scoring match rather than
     // stopping at the first one that passes -- with an MBID filter this is
     // usually one candidate anyway, but the no-MBID fallback can hand back
@@ -91,7 +98,8 @@ void CmrtGroupingService::processTrack(
 
         const QVector<quint32> candidateFp = chromaBytesToVector(
                 m_fingerprintDao.loadChromaFile(candidate.canonicalTrackId));
-        const auto matchResult = FingerprintMatcher::compare(trackFp, candidateFp);
+        const auto matchResult = FingerprintMatcher::compare(
+                trackFp, candidateFp, matchThreshold);
         if (matchResult.isMatch &&
                 (!haveBestMatch || matchResult.score > bestMatchResult.score)) {
             haveBestMatch = true;
