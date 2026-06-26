@@ -14,6 +14,7 @@ Rectangle {
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property bool show4decksAvailable: true
+    property alias showMaximizedDecks: maxLibraryDecksButton.checked
     property alias showEffects: showEffectsButton.checked
     property alias showMicAux: showMicAuxButton.checked
     property alias showMixer: showMixerButton.checked
@@ -88,6 +89,16 @@ Rectangle {
     function setShowMixer(enabled) {
         showMixerButton.checked = enabled;
         setControlValueIfInitialized(showMixerControl, enabled ? 1.0 : 0.0);
+    }
+    function setShowMaximizedDecks(enabled) {
+        maxLibraryDecksButton.checked = enabled;
+        setControlValueIfInitialized(maxLibraryDecksControl, enabled ? 1.0 : 0.0);
+    }
+    function setDeckSize(size) {
+        deckSizeControl.value = size;
+        showFullDeckControl.value = size === 2.0 ? 1.0 : 0.0;
+        showCompactDeckControl.value = size === 1.0 ? 1.0 : 0.0;
+        showMiniDeckControl.value = size === 0.0 ? 1.0 : 0.0;
     }
     function broadcastBackgroundColor(status) {
         if (status === 1.0) {
@@ -208,6 +219,13 @@ Rectangle {
 
         group: "[LateNight]"
         key: "max_lib_show_decks"
+
+        onInitializedChanged: {
+            maxLibraryDecksButton.checked = value > 0;
+        }
+        onValueChanged: {
+            maxLibraryDecksButton.checked = value > 0;
+        }
     }
     Mixxx.ControlProxy {
         id: deckSizeControl
@@ -663,12 +681,13 @@ Rectangle {
                 spacing: -2
 
                 LateNightToolbarButton {
+                    id: maxLibraryDecksButton
+
                     buttonWidth: 80
-                    checked: maxLibraryDecksControl.value > 0
                     text: "DECKS"
 
                     onActivated: {
-                        maxLibraryDecksControl.value = checked ? 1.0 : 0.0;
+                        root.setShowMaximizedDecks(checked);
                     }
                 }
                 LateNightToolbarDropButton {
@@ -759,7 +778,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: deckSettingsPopup
 
-        width: 230
+        width: 205
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -782,7 +801,9 @@ Rectangle {
                     text: "Decks"
                 }
 
-                Item { Layout.fillWidth: true } // spacer
+                Item {
+                    Layout.preferredWidth: 10
+                }
 
                 ToolbarMenuInlineChoice {
                     checked: !show4DecksButton.checked
@@ -803,8 +824,8 @@ Rectangle {
             }
             RowLayout {
                 Layout.fillWidth: true
+                Layout.preferredHeight: 18
                 spacing: 5
-                visible: showMixerButton.checked
 
                 Text {
                     color: LateNightTheme.textColor
@@ -816,6 +837,7 @@ Rectangle {
                     id: hideMixerBtn
                     Layout.preferredHeight: 18
                     Layout.fillWidth: true
+                    visible: showMixerButton.checked
 
                     Rectangle {
                         anchors.fill: parent
@@ -843,41 +865,38 @@ Rectangle {
                         }
                     }
                 }
-            }
-            ToolbarMenuChoice {
-                checked: deckSizeControl.value === 2.0 || showFullDeckControl.value > 0
-                text: "Full"
-                visible: !showMixerButton.checked
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 4
+                    visible: !showMixerButton.checked
 
-                onClicked: {
-                    deckSizeControl.value = 2.0;
-                    showFullDeckControl.value = 1.0;
-                    showCompactDeckControl.value = 0.0;
-                    showMiniDeckControl.value = 0.0;
-                }
-            }
-            ToolbarMenuChoice {
-                checked: deckSizeControl.value === 1.0 || showCompactDeckControl.value > 0
-                text: "Compact"
-                visible: !showMixerButton.checked
+                    ToolbarMenuInlineChoice {
+                        checked: deckSizeControl.value === 2.0 || showFullDeckControl.value > 0
+                        text: "Full"
+                        widthOverride: 40
 
-                onClicked: {
-                    deckSizeControl.value = 1.0;
-                    showFullDeckControl.value = 0.0;
-                    showCompactDeckControl.value = 1.0;
-                    showMiniDeckControl.value = 0.0;
-                }
-            }
-            ToolbarMenuChoice {
-                checked: deckSizeControl.value === 0.0 || showMiniDeckControl.value > 0
-                text: "Mini"
-                visible: !showMixerButton.checked
+                        onClicked: {
+                            root.setDeckSize(2.0);
+                        }
+                    }
+                    ToolbarMenuInlineChoice {
+                        checked: deckSizeControl.value === 1.0 || showCompactDeckControl.value > 0
+                        text: "Compact"
+                        widthOverride: 66
 
-                onClicked: {
-                    deckSizeControl.value = 0.0;
-                    showFullDeckControl.value = 0.0;
-                    showCompactDeckControl.value = 0.0;
-                    showMiniDeckControl.value = 1.0;
+                        onClicked: {
+                            root.setDeckSize(1.0);
+                        }
+                    }
+                    ToolbarMenuInlineChoice {
+                        checked: deckSizeControl.value === 0.0 || showMiniDeckControl.value > 0
+                        text: "Mini"
+                        widthOverride: 40
+
+                        onClicked: {
+                            root.setDeckSize(0.0);
+                        }
+                    }
                 }
             }
             RowLayout {
@@ -1086,7 +1105,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: samplerSettingsPopup
 
-        width: 230
+        width: 250
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -1156,6 +1175,7 @@ Rectangle {
                         checked: samplerRowsControl.value === 2.0
                         enabled: showSamplersControl.value > 0
                         text: "16"
+                        widthOverride: 32
 
                         onClicked: {
                             samplerRowsControl.value = 2.0;
@@ -1166,6 +1186,7 @@ Rectangle {
                         checked: samplerRowsControl.value === 4.0
                         enabled: showSamplersControl.value > 0
                         text: "64"
+                        widthOverride: 32
 
                         onClicked: {
                             samplerRowsControl.value = 4.0;
@@ -1586,11 +1607,12 @@ Rectangle {
         id: inlineChoice
         property bool checked: false
         property string text: ""
+        property int widthOverride: 28
 
         signal clicked
 
         Layout.preferredHeight: 18
-        Layout.preferredWidth: 28
+        Layout.preferredWidth: widthOverride
         opacity: enabled ? 1.0 : 0.45
 
         Rectangle {

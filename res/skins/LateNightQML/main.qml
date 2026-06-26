@@ -19,6 +19,7 @@ ApplicationWindow {
     readonly property int numDecks: 4
     readonly property int numSamplers: 64
     readonly property bool show4decks: toolbar.show4decks
+    readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
     readonly property bool showMixer: toolbar.showMixer
     property alias showEffects: toolbar.showEffects
     property alias showSamplers: toolbar.showSamplers
@@ -255,8 +256,9 @@ ApplicationWindow {
 
                     editMode: root.editDeck
                     group: "[Channel1]"
-                    height: root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
                     minimized: root.maximizeLibrary
+                    visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
                         SpringAnimation {
@@ -379,8 +381,9 @@ ApplicationWindow {
 
                     editMode: root.editDeck
                     group: "[Channel2]"
-                    height: root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
                     minimized: root.maximizeLibrary
+                    visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
                         SpringAnimation {
@@ -417,7 +420,7 @@ ApplicationWindow {
 
                     readonly property string group: "[Channel3]"
 
-                    active: root.show4decks
+                    active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
                     height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
 
@@ -461,7 +464,7 @@ ApplicationWindow {
 
                     readonly property string group: "[Channel4]"
 
-                    active: root.show4decks
+                    active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
                     height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
 
@@ -532,7 +535,15 @@ ApplicationWindow {
                     }
                     states: [
                         State {
-                            when: root.maximizeLibrary && root.show4decks
+                            when: root.maximizeLibrary && !root.showMaximizedDecks
+
+                            AnchorChanges {
+                                anchors.top: parent.top
+                                target: library
+                            }
+                        },
+                        State {
+                            when: root.maximizeLibrary && root.showMaximizedDecks && root.show4decks
 
                             AnchorChanges {
                                 anchors.top: deck4.bottom
@@ -540,7 +551,7 @@ ApplicationWindow {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary && !root.show4decks
+                            when: root.maximizeLibrary && root.showMaximizedDecks && !root.show4decks
 
                             AnchorChanges {
                                 anchors.top: deck1.bottom
