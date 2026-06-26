@@ -3938,6 +3938,7 @@ if(QML)
       res/qml/Mixxx/Controls/Spinny.qml
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
+      res/qml/Mixxx/Controls/WaveformOverviewMarkerLayer.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
       res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
