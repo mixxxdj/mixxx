@@ -1,6 +1,7 @@
 #include "library/dao/trackdao.h"
 
 #include <QChar>
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
 #include <QThread>
@@ -399,6 +400,7 @@ bool TrackDAO::updateAcoustIdResult(
             "UPDATE library SET "
             "acoustid_id=:acoustid_id, "
             "acoustid_lookup_status=:acoustid_status, "
+            "acoustid_lookup_at=:acoustid_lookup_at, "
             "musicbrainz_recording_id=:mbid_recording, "
             "musicbrainz_release_id=:mbid_release, "
             "musicbrainz_track_id=:mbid_track, "
@@ -415,6 +417,7 @@ bool TrackDAO::updateAcoustIdResult(
             acoustidLookupStatus.isEmpty()
                     ? QVariant(QMetaType(QMetaType::QString))
                     : acoustidLookupStatus);
+    query.bindValue(":acoustid_lookup_at", QDateTime::currentSecsSinceEpoch());
     query.bindValue(":mbid_recording",
             musicbrainzRecordingId.isEmpty()
                     ? QVariant(QMetaType(QMetaType::QString))
