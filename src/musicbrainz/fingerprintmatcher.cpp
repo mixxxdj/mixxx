@@ -13,9 +13,6 @@ const bool sDebugFingerprintMatcher = true;
 // SimHash pre-filter: how many bits may differ before we still bother
 // reading both .chroma files.
 
-// Full-fingerprint match threshold. ">80% overlap"
-constexpr float kMatchThreshold = 0.80f;
-
 constexpr int kMaxOffsetSearchItems = 120;
 
 constexpr int kMatchBits = 14;
@@ -48,7 +45,7 @@ bool FingerprintMatcher::simHashCandidatesMatch(
 
 // static
 FingerprintMatcher::MatchResult FingerprintMatcher::compare(
-        const QVector<quint32>& a, const QVector<quint32>& b) {
+        const QVector<quint32>& a, const QVector<quint32>& b, float matchThreshold) {
     MatchResult result;
     if (a.isEmpty() || b.isEmpty()) {
         qDebug() << "FingerprintMatcher -> [compare] -> "
@@ -60,13 +57,14 @@ FingerprintMatcher::MatchResult FingerprintMatcher::compare(
     result.score = scoreFingerprints(
             a.constData(), a.size(), b.constData(), b.size(), kMaxOffsetSearchItems, &offset);
     result.offsetItems = offset;
-    result.isMatch = result.score >= kMatchThreshold;
+    result.isMatch = result.score >= matchThreshold;
 
     if (sDebugFingerprintMatcher) {
         qDebug() << "FingerprintMatcher -> [compare] -> result"
                  << "score:" << result.score
                  << "offsetItems:" << result.offsetItems
-                 << "isMatch:" << result.isMatch;
+                 << "isMatch:" << result.isMatch
+                 << "threshold:" << matchThreshold;
     }
     return result;
 }

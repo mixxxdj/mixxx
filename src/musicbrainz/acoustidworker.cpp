@@ -77,7 +77,7 @@ void AcoustIdWorker::doRun() {
     m_pFingerprintDao = std::make_unique<TrackFingerprintDao>(m_pConfig);
     m_pFingerprintDao->initialize(dbConnection);
 
-    m_pGroupingService = std::make_unique<CmrtGroupingService>(*m_pFingerprintDao);
+    m_pGroupingService = std::make_unique<CmrtGroupingService>(*m_pFingerprintDao, m_pConfig);
 
     // QNetworkAccessManager must be created in the thread that uses it.
     // Local QEventLoops in doLookup() and checkConnectivity() provide the
