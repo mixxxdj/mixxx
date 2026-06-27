@@ -4031,6 +4031,10 @@ if(QML)
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
+  # Set QT_QML_MODULE_NO_IMPORT_SCAN to avoid warnings about missing QML plugin
+  # targets. The plugins are loaded dynamically at runtime from the system Qt
+  # installation on Linux.
+  set_target_properties(mixxx PROPERTIES QT_QML_MODULE_NO_IMPORT_SCAN ON)
   qt_finalize_target(mixxx)
 
   install(
