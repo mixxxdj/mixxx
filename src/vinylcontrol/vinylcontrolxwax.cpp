@@ -12,6 +12,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 #include "vinylcontrol/vinylsignalquality.h"
+#include "waveform/visualplayposition.h"
 
 /****** TODO *******
    Stuff to maybe implement here
@@ -325,7 +326,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     }
 
     // Get the playback position in the file in seconds.
-    double filePosition = playPos->get() * m_dOldDuration;
+    const double fractionalPos = m_visualPlayPos->getEnginePlayPos();
+    const double filePosition = fractionalPos * m_dOldDuration;
 
     int reportedMode = static_cast<int>(mode->get());
     bool reportedPlayButton = playButton->toBool();
@@ -478,7 +480,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
-            } else if (playPos->get() >= 1.0 && dVinylPitch > 0) {
+            } else if (fractionalPos >= 1.0 && dVinylPitch > 0) {
                 //end of track, force stop
                 togglePlayButton(false);
                 resetSteadyPitch(0.0, 0.0);
@@ -496,7 +498,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //if we don't have valid position, we're not playing so reset time to current
             //estimate vinyl position
 
-            if (playPos->get() >= 1.0 && dVinylPitch > 0) {
+            if (fractionalPos >= 1.0 && dVinylPitch > 0) {
                 //end of track, force stop
                 togglePlayButton(false);
                 resetSteadyPitch(0.0, 0.0);

@@ -279,10 +279,9 @@ DlgPreferences::~DlgPreferences() {
     }
 
     // When DlgPrefControllers is deleted it manually deletes the controller tree items,
-    // which makes QTreeWidgetItem trigger this signal. If we don't disconnect,
-    // &DlgPreferences::changePage iterates on the PreferencesPage instances in m_allPages,
-    // but the pDlg objects of the controller items are already destroyed by DlgPrefControllers,
-    // which causes a crash when accessed.
+    // which makes QTreeWidgetItem trigger this signal. Currently PreferencesPage
+    // instances in m_allPages are destroyed along with pDlg objects. This disconnect
+    // is kept as a safety measure.
     disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged, this, &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
@@ -523,7 +522,24 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
-    pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
+    QWidget* pParent = pWidget->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pParent) {
+        return;
+    }
+
+    QWidget* pScrollArea = pParent->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pScrollArea) {
+        return;
+    }
+
+    const int index = pagesWidget->indexOf(pScrollArea);
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_allPages.size()) {
+        return;
+    }
+
+    m_allPages.removeAt(index);
+    pagesWidget->removeWidget(pScrollArea);
+    delete pScrollArea;
 }
 
 void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {

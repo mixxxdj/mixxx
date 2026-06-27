@@ -177,8 +177,9 @@ void DlgPrefControllers::destroyControllerWidgets() {
     }
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
+
+        // this triggers the deletion of pControllerDlg, it no longer may be used
         m_pDlgPreferences->removePageWidget(pControllerDlg);
-        delete pControllerDlg;
     }
 
     m_controllerTreeItems.clear();
