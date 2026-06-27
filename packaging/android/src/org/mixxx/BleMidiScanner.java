@@ -76,8 +76,43 @@ public class BleMidiScanner {
                 Log.w(TAG, "Permission denied reading device name for " + address);
             }
 
+            // Fallback to name in scan record if device.getName() returns null
             if (name == null || name.isEmpty()) {
-                name = "Unknown BLE MIDI Device";
+                if (result.getScanRecord() != null) {
+                    name = result.getScanRecord().getDeviceName();
+                }
+            }
+
+            if (name == null) {
+                name = "";
+            }
+
+            // Check if device matches name or UUID
+            boolean isMidi = false;
+            String lowerName = name.toLowerCase();
+            if (lowerName.contains("ddj-") || lowerName.contains("pioneer") || lowerName.contains("flx")) {
+                isMidi = true;
+            }
+
+            if (!isMidi && result.getScanRecord() != null) {
+                java.util.List<ParcelUuid> uuids = result.getScanRecord().getServiceUuids();
+                if (uuids != null) {
+                    for (ParcelUuid uuid : uuids) {
+                        if (uuid.getUuid().equals(BLE_MIDI_SERVICE_UUID)) {
+                            isMidi = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // If it's not a MIDI/Mixxx-compatible device, skip it!
+            if (!isMidi) {
+                return;
+            }
+
+            if (name.isEmpty()) {
+                name = "BLE MIDI Device";
             }
 
             synchronized (sDiscoveredDevices) {
@@ -96,16 +131,15 @@ public class BleMidiScanner {
     };
 
     /**
-     /**
-      * Start a BLE scan for devices advertising the MIDI service.
-      * Also scans for Pioneer DDJ controllers by name pattern.
-      *
-      * Called from C++ via JNI.
-      *
-      * @param context The Android context (typically the Activity)
-      * @param serviceUuid The service UUID to scan for (e.g. BLE MIDI service)
-      * @return true if the scan was started successfully
-      */
+     * Start a BLE scan for devices advertising the MIDI service.
+     * Also scans for Pioneer DDJ controllers by name pattern.
+     *
+     * Called from C++ via JNI.
+     *
+     * @param context The Android context (typically the Activity)
+     * @param serviceUuid The service UUID to scan for (e.g. BLE MIDI service)
+     * @return true if the scan was started successfully
+     */
     public static boolean startScan(Context context, String serviceUuid) {
         sContext = context.getApplicationContext();
 
@@ -134,37 +168,6 @@ public class BleMidiScanner {
             return false;
         }
 
-        // Parse service UUID
-        UUID serviceUuidParsed;
-        try {
-            serviceUuidParsed = UUID.fromString(serviceUuid);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Invalid service UUID: " + serviceUuid);
-            serviceUuidParsed = BLE_MIDI_SERVICE_UUID;
-        }
-
-        ScanFilter scanFilter = new ScanFilter.Builder()
-                                    .setServiceUuid(new ParcelUuid(serviceUuidParsed))
-                                    .build();
-
-        // Also scan by device name for Pioneer DDJ controllers that may not
-        // advertise the MIDI service UUID in their scan response
-        ScanFilter ddjNameFilter = new ScanFilter.Builder()
-                                       .setDeviceName("DDJ-FLX4")
-                                       .build();
-        ScanFilter ddjNameFilter2 = new ScanFilter.Builder()
-                                        .setDeviceName("DDJ-400")
-                                        .build();
-        ScanFilter ddjNameFilter3 = new ScanFilter.Builder()
-                                        .setDeviceName("DDJ-FLX2")
-                                        .build();
-
-        java.util.List<ScanFilter> filters = new java.util.ArrayList<>();
-        filters.add(scanFilter);
-        filters.add(ddjNameFilter);
-        filters.add(ddjNameFilter2);
-        filters.add(ddjNameFilter3);
-
         // Use low-latency scan mode for faster device discovery
         android.bluetooth.le.ScanSettings scanSettings =
             new android.bluetooth.le.ScanSettings.Builder()
@@ -178,12 +181,13 @@ public class BleMidiScanner {
         }
 
         try {
+            // Perform an unfiltered scan (null filters) for maximum robustness across devices
             sLeScanner.startScan(
-                filters,
+                null,
                 scanSettings,
                 sScanCallback);
             sScanning = true;
-            Log.i(TAG, "BLE scan started for MIDI service: " + serviceUuidParsed);
+            Log.i(TAG, "BLE scan started unfiltered (manual scan matching enabled)");
             return true;
         } catch (SecurityException e) {
             Log.e(TAG, "SecurityException starting BLE scan: " + e.getMessage());
