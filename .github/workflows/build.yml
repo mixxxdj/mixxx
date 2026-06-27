@@ -50,7 +50,7 @@ jobs:
       matrix:
         include:
           - name: Ubuntu 24.04
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -173,7 +173,7 @@ jobs:
             artifacts_slug: windows-winarm
             arch: arm64
           - name: Android 15 arm64
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
             cmake_args: >-
               -DBULK=ON
@@ -675,9 +675,9 @@ jobs:
       matrix:
         variant:
           - arch: x86_64
-            runner: ubuntu-24.04
+            runner: ubuntu-26.04
           - arch: aarch64
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-26.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
       - name: "Recover host disk space"

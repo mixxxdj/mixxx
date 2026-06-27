@@ -19,7 +19,7 @@ jobs:
       matrix:
         include:
           - name: Ubuntu 24.04
-            os: ubuntu-24.04
+            os: ubuntu-26.04
             cmake_args: >-
               -DQT6=ON
               -DQML=ON

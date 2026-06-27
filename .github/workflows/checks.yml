@@ -20,7 +20,7 @@ jobs:
           - name: clazy
           - name: clang-tidy
           - name: coverage
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
@@ -159,6 +159,6 @@ jobs:
         continue-on-error: true
         uses: coverallsapp/github-action@v2.3.7
         with:
-          flag-name: ubuntu-24.04
+          flag-name: ubuntu-26.04
           path-to-lcov: build/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
