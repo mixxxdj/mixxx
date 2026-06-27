@@ -1443,8 +1443,7 @@ DDJFLX2.applyBeatJump = function(control, value, status, group, padNum, shifted)
     const pairIndex = Math.floor((padNum - 1) / 2);
     const size = (isForward ? 1 : -1) * DDJFLX2.beatJumpSizes[pairIndex] * (shifted ? 2 : 1);
 
-    engine.setValue(group, "beatjump_size", size);
-    engine.setValue(group, "beatjump", size);
+    engine.setValue(deck.group, "beatjump", size);
     midi.sendShortMsg(ledStatus, control, 0x7f);
 };
 

@@ -135,7 +135,20 @@
                     <script-binding/>
                 </options>
             </control>
-            <control>
+
+            <!-- 
+                Audio Output Level Controls
+
+                The FLX2 controller has two knobs to adjust the output levels
+                of the master and headphones. These knobs send a MIDI event
+                but also adjust the output level at the hardware level.
+
+                Because of this, if we bind the knobs to the software levels
+                two volume adjustments will occur and this ruins the linearity
+                of the control. Thus these have been disabled.
+            -->
+            
+            <!-- <control>
                 <group>[Master]</group>
                 <key>gain</key>
                 <description>Master level MSB</description>
@@ -178,7 +191,7 @@
                     <soft-takeover/>
                     <fourteen-bit-lsb/>
                 </options>
-            </control>
+            </control> -->
 
             <!-- Deck Controls -->
             <control>
