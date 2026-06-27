@@ -52,6 +52,8 @@ class MusicMatcherClient : public QObject {
     void slotTimeout();
 
   private:
+    void searchTrack(const QString& artist, const QString& title);
+    void fetchTrackRadio(const QString& trackId);
     void searchArtist(const QString& query);
     void fetchArtistTopTracks(const QString& artistId);
 
