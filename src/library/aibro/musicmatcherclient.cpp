@@ -79,7 +79,8 @@ void MusicMatcherClient::searchTrack(const QString& artist, const QString& title
         const QJsonObject rootObj = doc.object();
         const QJsonArray data = rootObj["data"].toArray();
         if (data.isEmpty()) {
-            kLogger.info() << "MusicMatcher: track not found on Deezer, falling back to artist search";
+            kLogger.info() << "MusicMatcher: track not found on Deezer, "
+                              "falling back to artist search";
             searchArtist(artist);
             return;
         }
@@ -105,7 +106,8 @@ void MusicMatcherClient::fetchTrackRadio(const QString& trackId) {
         m_pTimer->stop();
 
         if (pReply->error() != QNetworkReply::NoError) {
-            kLogger.warning() << "MusicMatcher: track radio search failed, falling back to artist search";
+            kLogger.warning() << "MusicMatcher: track radio search failed, "
+                                 "falling back to artist search";
             searchArtist(m_originalArtist);
             return;
         }

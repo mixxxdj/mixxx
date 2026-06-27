@@ -1092,7 +1092,9 @@ void AIBroFeature::findNextSong() {
     m_searchTrackSnapshot = snapshotTrackLocations();
 
     if (m_pMusicMatcher) {
-        kLogger.info() << "AI Bro: Querying Deezer MusicMatcher for similar recommendations of:" << artist << "-" << title;
+        kLogger.info() << "AI Bro: Querying Deezer MusicMatcher for similar "
+                          "recommendations of:"
+                       << artist << "-" << title;
         m_pMusicMatcher->findSimilar(artist, title);
     } else {
         slotMusicMatcherSearchFailed(QStringLiteral("MusicMatcherClient unavailable"));
@@ -1819,7 +1821,8 @@ void AIBroFeature::slotMusicMatcherSuggestionsReady(
     const auto& selected = filtered[selectedIdx];
 
     QString query = QStringLiteral("%1 %2 official audio").arg(selected.artist, selected.title);
-    kLogger.info() << "AI Bro: Selected Deezer recommended match:" << selected.artist << "-" << selected.title
+    kLogger.info() << "AI Bro: Selected Deezer recommended match:"
+                   << selected.artist << "-" << selected.title
                    << "(Searching YouTube for:" << query << ")";
 
     if (m_pYouTubeFeature) {
@@ -1832,7 +1835,8 @@ void AIBroFeature::slotMusicMatcherSearchFailed(const QString& error) {
         return;
     }
 
-    kLogger.warning() << "AI Bro: Deezer search failed (" << error << ") — falling back to standard YouTube search";
+    kLogger.warning() << "AI Bro: Deezer search failed (" << error
+                      << ") — falling back to standard YouTube search";
 
     const QString& artist = m_currentTrackArtist;
     const QString& title = m_currentTrackTitle;
