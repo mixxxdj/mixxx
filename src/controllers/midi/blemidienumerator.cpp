@@ -1,5 +1,6 @@
 #include "blemidienumerator.h"
 
+#include "controllers/midi/blemidicontroller.h"
 #include "util/logger.h"
 
 #ifdef Q_OS_ANDROID
@@ -119,9 +120,10 @@ void BleMidiEnumerator::slotOnScanTimeout() {
         return;
     }
 
-    // Iterate the Java List and create MidiController objects
+    // Iterate the Java List and create BleMidiController objects
     jint deviceCount = devices.callMethod<jint>("size", "()I");
-    kLogger.info() << "BLE scan: completed, found" << deviceCount << "BLE MIDI device(s)";
+    kLogger.info() << "BLE scan: completed, found"
+                   << deviceCount << "BLE MIDI device(s)";
 
     QMutexLocker locker(&m_mutex);
 
@@ -145,21 +147,24 @@ void BleMidiEnumerator::slotOnScanTimeout() {
                 "(Ljava/lang/Object;)Ljava/lang/Object;",
                 QJniObject::fromString(QString("address")).object<jstring>());
 
-        QString deviceName = nameObj.isValid() ? nameObj.toString() : QString("BLE MIDI Device");
-        QString deviceAddress = addressObj.isValid() ? addressObj.toString() : QString();
+        QString deviceName = nameObj.isValid() ? nameObj.toString()
+                                               : QString("BLE MIDI Device");
+        QString deviceAddress = addressObj.isValid() ? addressObj.toString()
+                                                     : QString();
 
-        kLogger.info() << "BLE scan: found device" << deviceName << "at" << deviceAddress;
+        kLogger.info() << "BLE scan: found device" << deviceName
+                       << "at" << deviceAddress;
 
-        // TODO: Create a BleMidiController subclass (like PortMidiController)
-        // that implements the pure virtual methods from Controller required for
-        // BLE MIDI device interaction. MidiController is abstract and cannot be
-        // instantiated directly. For now, log the discovery for future integration.
+        // Create a BleMidiController for this BLE MIDI device
+        QString controllerName = deviceName + " (" + deviceAddress + ")";
+        BleMidiController* pController =
+                new BleMidiController(controllerName, deviceAddress);
+        m_devices.push_back(pController);
     }
 
     if (deviceCount > 0) {
-        kLogger.info() << "BLE scan: discovered" << deviceCount
-                       << "BLE MIDI device(s) - connection pending "
-                          "BleMidiController implementation";
+        kLogger.info() << "BLE scan: created" << m_devices.size()
+                       << "BLE MIDI controller(s)";
     }
 #endif
 }

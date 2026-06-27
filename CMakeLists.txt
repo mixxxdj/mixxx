@@ -2126,6 +2126,7 @@ if(QOPENGL)
     mixxx-lib
     PRIVATE
       src/controllers/midi/blemidienumerator.cpp
+      src/controllers/midi/blemidicontroller.cpp
       src/library/aibro/musicmatcherclient.cpp
   )
 else()

@@ -7,6 +7,8 @@
 #include <QtJniTypes>
 #include <cstddef>
 
+#include "controllers/midi/blemidicontroller.h"
+
 namespace mixxx {
 namespace android {
 std::mutex s_androidLock = {};
@@ -122,16 +124,44 @@ void usbDeviceAccessResult(QJniObject device, bool granted) {
 } // namespace mixxx
 
 Q_DECLARE_JNI_CLASS(UsbPermissionClass, "org/mixxx/UsbPermission")
+Q_DECLARE_JNI_CLASS(BleMidiControllerClass, "org/mixxx/BleMidiController")
 
 void usbDeviceAccessResult(JNIEnv*, jobject, jobject device, jboolean granted) {
     mixxx::android::usbDeviceAccessResult(device, granted);
 }
 Q_DECLARE_JNI_NATIVE_METHOD(usbDeviceAccessResult)
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM*, void*) {
+// BLE MIDI Controller JNI callbacks
+void bleMidiNativeOnMidiDataReceived(JNIEnv* env, jobject, jbyteArray data) {
+    if (!data || !env)
+        return;
+    jsize len = env->GetArrayLength(data);
+    if (len <= 0)
+        return;
+
+    QByteArray byteArray(len, Qt::Uninitialized);
+    env->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte*>(byteArray.data()));
+    BleMidiController::onMidiDataReceived(byteArray);
+}
+Q_DECLARE_JNI_NATIVE_METHOD(bleMidiNativeOnMidiDataReceived)
+
+void bleMidiNativeOnConnectionStateChanged(JNIEnv*, jobject, jboolean connected) {
+    __android_log_print(ANDROID_LOG_INFO,
+            "mixxx",
+            "BLE MIDI connection state changed: %d",
+            connected);
+    // TODO: Update UI / notify user
+}
+Q_DECLARE_JNI_NATIVE_METHOD(bleMidiNativeOnConnectionStateChanged)
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     QJniEnvironment env;
     env.registerNativeMethods<QtJniTypes::UsbPermissionClass>({
             Q_JNI_NATIVE_METHOD(usbDeviceAccessResult),
+    });
+    env.registerNativeMethods<QtJniTypes::BleMidiControllerClass>({
+            Q_JNI_NATIVE_METHOD(bleMidiNativeOnMidiDataReceived),
+            Q_JNI_NATIVE_METHOD(bleMidiNativeOnConnectionStateChanged),
     });
     return JNI_VERSION_1_6;
 }

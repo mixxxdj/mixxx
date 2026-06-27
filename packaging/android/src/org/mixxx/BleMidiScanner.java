@@ -96,15 +96,16 @@ public class BleMidiScanner {
     };
 
     /**
-     * Start a BLE scan for devices advertising the MIDI service.
-     *
-     * Called from C++ via JNI as:
-     *   static boolean startScan(Context context, String serviceUuid)
-     *
-     * @param context The Android context (typically the Activity)
-     * @param serviceUuid The service UUID to scan for
-     * @return true if the scan was started successfully
-     */
+     /**
+      * Start a BLE scan for devices advertising the MIDI service.
+      * Also scans for Pioneer DDJ controllers by name pattern.
+      *
+      * Called from C++ via JNI.
+      *
+      * @param context The Android context (typically the Activity)
+      * @param serviceUuid The service UUID to scan for (e.g. BLE MIDI service)
+      * @return true if the scan was started successfully
+      */
     public static boolean startScan(Context context, String serviceUuid) {
         sContext = context.getApplicationContext();
 
@@ -146,6 +147,24 @@ public class BleMidiScanner {
                                     .setServiceUuid(new ParcelUuid(serviceUuidParsed))
                                     .build();
 
+        // Also scan by device name for Pioneer DDJ controllers that may not
+        // advertise the MIDI service UUID in their scan response
+        ScanFilter ddjNameFilter = new ScanFilter.Builder()
+                                       .setDeviceName("DDJ-FLX4")
+                                       .build();
+        ScanFilter ddjNameFilter2 = new ScanFilter.Builder()
+                                        .setDeviceName("DDJ-400")
+                                        .build();
+        ScanFilter ddjNameFilter3 = new ScanFilter.Builder()
+                                        .setDeviceName("DDJ-FLX2")
+                                        .build();
+
+        java.util.List<ScanFilter> filters = new java.util.ArrayList<>();
+        filters.add(scanFilter);
+        filters.add(ddjNameFilter);
+        filters.add(ddjNameFilter2);
+        filters.add(ddjNameFilter3);
+
         // Use low-latency scan mode for faster device discovery
         android.bluetooth.le.ScanSettings scanSettings =
             new android.bluetooth.le.ScanSettings.Builder()
@@ -160,7 +179,7 @@ public class BleMidiScanner {
 
         try {
             sLeScanner.startScan(
-                java.util.Collections.singletonList(scanFilter),
+                filters,
                 scanSettings,
                 sScanCallback);
             sScanning = true;
