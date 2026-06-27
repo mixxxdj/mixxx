@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QJniObject>
 #include <QString>
 
 #include "controllers/midi/midicontroller.h"
