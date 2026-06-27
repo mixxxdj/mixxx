@@ -302,6 +302,13 @@ void MusicMatcherClient::slotTimeout() {
     emit searchFailed("Request timed out");
 }
 
+void MusicMatcherClient::slotSearchFinished() {
+    // Default handler for cases where the reply is finished but we haven't
+    // processed it via the specialized slots. This should not normally
+    // be reached since we use per-reply lambdas.
+    kLogger.info() << "MusicMatcher: search finished (default handler)";
+}
+
 } // namespace mixxx
 
 #include "moc_musicmatcherclient.cpp"
