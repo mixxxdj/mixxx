@@ -1,6 +1,5 @@
 #include "blemidienumerator.h"
 
-#include "controllers/controller.h"
 #include "controllers/midi/midicontroller.h"
 #include "util/logger.h"
 
@@ -153,7 +152,6 @@ void BleMidiEnumerator::slotOnScanTimeout() {
         kLogger.info() << "BLE scan: found device" << deviceName << "at" << deviceAddress;
 
         // Create a MidiController for this BLE MIDI device
-        // The name format matches what ControllerManager expects
         QString controllerName = deviceName + " (" + deviceAddress + ")";
         MidiController* pController = new MidiController(controllerName);
         m_devices.push_back(pController);
