@@ -168,6 +168,6 @@ void BleMidiEnumerator::slotOnScanTimeout() {
     }
 }
 
-#endif // Q_OS_ANDROID
-
 #include "moc_blemidienumerator.cpp"
+
+#endif // Q_OS_ANDROID
