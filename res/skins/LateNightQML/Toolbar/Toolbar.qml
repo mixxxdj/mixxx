@@ -969,7 +969,6 @@ Rectangle {
             }
             ToolbarMenuToggle {
                 control: selectBigSpinnyOrCoverControl
-                enabled: showCoverArtControl.value > 0
                 indent: 14
                 text: "Big Spinny/Cover Art"
             }
@@ -1714,6 +1713,8 @@ Rectangle {
         }
     }
     component ToolbarMenuToggle: Item {
+        id: menuToggle
+
         property bool checked: control ? control.value > 0 : false
         required property var control
         property int indent: 0
@@ -1728,8 +1729,8 @@ Rectangle {
             anchors.fill: parent
 
             onClicked: {
-                if (parent.enabled) {
-                    parent.control.value = parent.checked ? 0.0 : 1.0;
+                if (menuToggle.enabled && menuToggle.control && menuToggle.control.initialized) {
+                    menuToggle.control.value = menuToggle.checked ? 0.0 : 1.0;
                 }
             }
         }
