@@ -33,6 +33,17 @@
                 0.0 = minimum, 1.0 = maximum. Has no effect in Toggle mode.
             </description>
         </option>
+        <option variable="cfxKnobBehavior" type="enum" label="CFX Knob Behavior">
+            <description>
+                Choose the behavior for the CFX (Filter) knob.
+                Dual: Normal controls Filter, Shift + Normal controls Gain.
+                Filter: Normal controls Filter, Shift + Normal is ignored.
+                Gain: Normal controls Gain, Shift + Normal is ignored.
+            </description>
+            <value label="Dual (Filter / Shift+Gain)" default="true">dual</value>
+            <value label="Filter Only">filter</value>
+            <value label="Gain Only">gain</value>
+        </option>
     </settings>
     <controller id="DDJ-FLX2">
         <scriptfiles>

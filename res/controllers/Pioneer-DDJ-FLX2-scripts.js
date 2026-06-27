@@ -171,6 +171,10 @@ var DDJFLX2 = {
         };
         // CFX engine value is already 0..1 from super1LSB.
         const cfxNorm = function(v) { return v; };
+        // Gain engine value maps to absoluteNonLin 0..4 scale (where 1.0 is unity).
+        const gainNorm = function(v) {
+            return script.absoluteNonLinInverse(v, 0, 1, 4, 0, 1);
+        };
 
         const targets = {
             rate: 0.5 - engine.getValue(vgroup, "rate") * 0.5, // rate +1..-1 → 0..1
@@ -179,6 +183,7 @@ var DDJFLX2 = {
             eqMid: eqNorm(engine.getValue(eqGroup, "parameter2")),
             eqLow: eqNorm(engine.getValue(eqGroup, "parameter1")),
             cfx: cfxNorm(engine.getValue(qfxGroup, "super1")),
+            gain: gainNorm(engine.getValue(vgroup, "pregain")),
         };
 
         const tol = this.SOFT_TAKEOVER_TOLERANCE;
@@ -279,6 +284,7 @@ DDJFLX2.init = function() {
     DDJFLX2.beatJumpPadMode = engine.getSetting("beatJumpPadMode") || "off";
     DDJFLX2.padFxMode = engine.getSetting("padFxMode") || "override";
     DDJFLX2.padFxMeta = Number(engine.getSetting("padFxMeta") ?? 0.75);
+    DDJFLX2.cfxKnobBehavior = engine.getSetting("cfxKnobBehavior") || "filter";
 
     for (let i = 1; i <= 4; i++) {
     // Create runtime storage for each virtual deck.
@@ -1053,12 +1059,48 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
 
     const msb = DDJFLX2.vDeck[virtualDeck].cfxMSB || 0;
     const combined = ((msb << 7) + value) / 0x3fff;
-    const val = script.absoluteNonLin(combined * 127, 0, 0.5, 1);
 
-    if (!DDJFLX2.checkSoftTakeover(physicalDeck, "cfx", combined)) {
+    let mode;
+    if (DDJFLX2.cfxKnobBehavior === "filter") {
+        mode = "cfx";
+    } else if (DDJFLX2.cfxKnobBehavior === "gain") {
+        mode = "gain";
+    } else { // "dual"
+        mode = DDJFLX2.isShiftPressed(vgroup) ? "gain" : "cfx";
+    }
+
+    const lastMode = DDJFLX2.vDeck[virtualDeck].cfxLastMode || "cfx";
+
+    const cfxNorm = function(v) { return v; };
+    const gainNorm = function(v) {
+        return script.absoluteNonLinInverse(v, 0, 1, 4, 0, 1);
+    };
+
+    // Detect transition of mode or deck layer to lock soft takeover
+    if (mode !== lastMode) {
+        DDJFLX2.vDeck[virtualDeck].cfxLastMode = mode;
+        const currentEngineVal = (mode === "gain")
+            ? gainNorm(engine.getValue(vgroup, "pregain"))
+            : cfxNorm(engine.getValue(qfxGroup, "super1"));
+
+        const alreadyClose = Math.abs(combined - currentEngineVal) <= DDJFLX2.SOFT_TAKEOVER_TOLERANCE;
+        DDJFLX2.softTakeover[physicalDeck][mode] = {
+            locked: !alreadyClose,
+            target: currentEngineVal
+        };
+    }
+
+    if (!DDJFLX2.checkSoftTakeover(physicalDeck, mode, combined)) {
         return;
     }
-    engine.setValue(qfxGroup, "super1", val);
+
+    if (mode === "gain") {
+        const val = script.absoluteNonLin(combined * 127, 0, 1, 4);
+        engine.setValue(vgroup, "pregain", val);
+    } else {
+        const val = script.absoluteNonLin(combined * 127, 0, 0.5, 1);
+        engine.setValue(qfxGroup, "super1", val);
+    }
 };
 
 DDJFLX2.cueDefault = function(
