@@ -19,7 +19,7 @@ jobs:
     permissions:
       contents: read # for actions/labeler to determine modified files
       pull-requests: write # for actions/labeler to add labels to PRs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     steps:
       - uses: actions/labeler@v6.1.0

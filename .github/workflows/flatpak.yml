@@ -20,7 +20,7 @@ on:
 jobs:
   publish-flatpak:
     name: Publish Flatpak
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Set up SSH Agent"
         shell: bash
