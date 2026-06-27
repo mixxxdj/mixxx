@@ -30,7 +30,8 @@ BleMidiController* BleMidiController::s_pInstance = nullptr;
 
 BleMidiController::BleMidiController(const QString& deviceName,
         const QString& deviceAddress)
-        : m_deviceAddress(deviceName),
+        : MidiController(deviceName),
+          m_deviceAddress(deviceAddress),
           m_connected(false) {
     m_vendorString = "Pioneer";
     m_productString = deviceName;
@@ -40,6 +41,70 @@ BleMidiController::~BleMidiController() {
     if (s_pInstance == this) {
         s_pInstance = nullptr;
     }
+}
+
+bool BleMidiController::isPolling() const {
+    return false; // We use callbacks, not polling
+}
+
+int BleMidiController::open(const QString& resourcePath) {
+    Q_UNUSED(resourcePath);
+    kLogger.info() << "Opening BLE MIDI device" << getName();
+
+    QJniObject activity = QJniObject::callStaticObjectMethod(
+            "org/qtproject/qt/android/QtNative",
+            "activity",
+            "()Landroid/app/Activity;");
+    if (!activity.isValid()) {
+        kLogger.warning() << "BLE: activity not available";
+        return -1;
+    }
+
+    // Register this instance for JNI callbacks
+    s_pInstance = this;
+
+    // Call Java to connect GATT
+    QJniObject addressObj = QJniObject::fromString(m_deviceAddress);
+    QJniObject serviceUuidObj = QJniObject::fromString(QString(kBleMidiServiceUuid));
+    QJniObject charUuidObj = QJniObject::fromString(QString(kBleMidiCharacteristicUuid));
+
+    jboolean result = QJniObject::callStaticMethod<jboolean>(
+            kBleMidiClass,
+            "connect",
+            "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
+            activity.object<jobject>(),
+            addressObj.object<jstring>(),
+            serviceUuidObj.object<jstring>(),
+            charUuidObj.object<jstring>());
+
+    if (!result) {
+        kLogger.warning() << "BLE: failed to connect GATT to" << m_deviceAddress;
+        s_pInstance = nullptr;
+        return -1;
+    }
+
+    kLogger.info() << "BLE: GATT connection initiated to" << m_deviceAddress;
+
+    startEngine();
+    setOpen(true);
+    return 0;
+}
+
+int BleMidiController::close() {
+    kLogger.info() << "Closing BLE MIDI device" << getName();
+
+    QJniObject::callStaticMethod<void>(
+            kBleMidiClass,
+            "disconnect",
+            "()V");
+    if (s_pInstance == this) {
+        s_pInstance = nullptr;
+    }
+
+    stopEngine();
+    m_connected = false;
+    setOpen(false);
+    return 0;
 }
 
 PhysicalTransportProtocol BleMidiController::getPhysicalTransportProtocol() const {

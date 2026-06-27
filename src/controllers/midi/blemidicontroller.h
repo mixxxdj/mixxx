@@ -22,28 +22,13 @@ class BleMidiController : public MidiController {
             const QString& deviceAddress);
     ~BleMidiController() override;
 
-    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
-        return PhysicalTransportProtocol::BlueTooth;
-    }
-
-    QString getVendorString() const override {
-        return m_vendorString;
-    }
-    QString getProductString() const override {
-        return m_productString;
-    }
-    std::optional<uint16_t> getVendorId() const override {
-        return m_vendorId;
-    }
-    std::optional<uint16_t> getProductId() const override {
-        return m_productId;
-    }
-    QString getSerialNumber() const override {
-        return m_serialNumber;
-    }
-    std::optional<uint8_t> getUsbInterfaceNumber() const override {
-        return std::nullopt;
-    }
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override;
+    QString getVendorString() const override;
+    QString getProductString() const override;
+    std::optional<uint16_t> getVendorId() const override;
+    std::optional<uint16_t> getProductId() const override;
+    QString getSerialNumber() const override;
+    std::optional<uint8_t> getUsbInterfaceNumber() const override;
 
     /// Connect to the BLE MIDI device via GATT
     bool connectDevice();
