@@ -18,9 +18,6 @@ const mixxx::Logger kLogger("BleMidiController");
 constexpr const char* kBleMidiServiceUuid = "03B80E5A-EDE8-4B33-A751-6CE34EC4C700";
 constexpr const char* kBleMidiCharacteristicUuid = "7772E5DB-3868-4112-A1C9-F2669D106BF3";
 
-// Client Characteristic Configuration Descriptor
-constexpr const char* kCccDescriptorUuid = "00002902-0000-1000-8000-00805f9b34fb";
-
 // JNI class name for BleMidiController.java
 constexpr const char* kBleMidiClass = "org/mixxx/BleMidiController";
 
