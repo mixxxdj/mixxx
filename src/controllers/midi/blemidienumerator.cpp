@@ -157,7 +157,9 @@ void BleMidiEnumerator::slotOnScanTimeout() {
     }
 
     if (deviceCount > 0) {
-        kLogger.info() << "BLE scan: discovered" << deviceCount << "BLE MIDI device(s) - connection pending BleMidiController implementation";
+        kLogger.info() << "BLE scan: discovered" << deviceCount
+                       << "BLE MIDI device(s) - connection pending "
+                          "BleMidiController implementation";
     }
 #endif
 }
