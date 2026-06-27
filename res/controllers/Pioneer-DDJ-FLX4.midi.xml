@@ -6,6 +6,9 @@
         <description>Controller Midi Mapping for the Pioneer DDJ-FLX4 (based on DDJ-400 mapping)</description>
         <manual>pioneer_ddj_FLX4</manual>
         <forums>https://mixxx.discourse.group/t/pioneer-ddj-flx4</forums>
+        <devices>
+            <product protocol="midi" vendor_id="0x2b73" product_id="0x0045" />
+        </devices>
     </info>
     <controller id="DDJ-FLX4">
         <scriptfiles>
