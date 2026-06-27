@@ -181,6 +181,10 @@ public class BleMidiScanner {
         }
 
         try {
+            // Log scan start with detailed info
+            Log.i(TAG, "BLE scan starting - Bluetooth enabled: " + bluetoothAdapter.isEnabled()
+                + ", location enabled: " + isLocationEnabled(context));
+
             // Perform an unfiltered scan (null filters) for maximum robustness across devices
             sLeScanner.startScan(
                 null,
