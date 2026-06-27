@@ -2,7 +2,6 @@
 
 #ifdef Q_OS_ANDROID
 
-#include <QBluetoothUuid>
 #include <QJniObject>
 #include <QString>
 
