@@ -5,9 +5,9 @@ on:
 
 jobs:
   block-fixup:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-slim
 
     steps:
       - uses: actions/checkout@v7
       - name: Block Fixup Commit Merge
-        uses: 13rac1/block-fixup-merge-action@v2.0.0
+        uses: acolombier/block-fixup-merge-action@master
