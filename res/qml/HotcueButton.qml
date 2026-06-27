@@ -62,5 +62,8 @@ Skin.Button {
         onReleased: {
             hotcueBehavior.releaseSecondary();
         }
+        onCanceled: {
+            hotcueBehavior.releaseSecondary();
+        }
     }
 }

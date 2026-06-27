@@ -40,5 +40,8 @@ Skin.Button {
         onReleased: {
             cueBehavior.releaseSecondary();
         }
+        onCanceled: {
+            cueBehavior.releaseSecondary();
+        }
     }
 }

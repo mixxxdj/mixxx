@@ -2,6 +2,7 @@
 
 #include <QAbstractItemModel>
 #include <QCursor>
+#include <QPoint>
 #include <QQmlEngine>
 #include <cmath>
 

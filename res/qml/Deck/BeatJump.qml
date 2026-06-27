@@ -308,6 +308,7 @@ Rectangle {
             onAccepted: {
                 beatjumpSize.commitText(this.text);
                 this.focus = false;
+                update();
             }
         }
     }
