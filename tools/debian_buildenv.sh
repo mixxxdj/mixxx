@@ -40,6 +40,13 @@ case "$1" in
                 )
         esac
 
+        if [ ! "${VERSION_CODENAME}" = "resolute" ];
+        then
+            PACKAGES_EXTRA+=(
+                qml6-module-qtquick-nativestyle
+            )
+        fi
+
         sudo apt-get update
 
         # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
