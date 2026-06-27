@@ -1,5 +1,4 @@
 import "." as Skin
-import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 
 import "Theme"
@@ -11,35 +10,35 @@ Skin.Button {
     required property string group
 
     activeColor: Theme.deckActiveColor
-    highlight: enabledControl.value
+    highlight: cueBehavior.isActive
 
-    Mixxx.ControlProxy {
-        id: control
+    IntroOutroButtonBehavior {
+        id: cueBehavior
 
         group: root.group
-        key: `${root.keyPrefix}_activate`
-        value: root.down
+        cueType: root.keyPrefix
+        handlePointerInput: false
     }
 
-    Mixxx.ControlProxy {
-        id: enabledControl
-
-        group: root.group
-        key: `${root.keyPrefix}_enabled`
+    onPressed: {
+        cueBehavior.pressPrimary();
     }
-
-    Mixxx.ControlProxy {
-        id: cleanControl
-
-        group: root.group
-        key: `${root.keyPrefix}_clear`
-        value: mousearea.pressed && enabledControl.value
+    onReleased: {
+        cueBehavior.releasePrimary();
+    }
+    onCanceled: {
+        cueBehavior.releasePrimary();
     }
 
     MouseArea {
-        id: mousearea
-
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
+
+        onPressed: function(mouse) {
+            cueBehavior.pressSecondary(mouse.x, mouse.y);
+        }
+        onReleased: {
+            cueBehavior.releaseSecondary();
+        }
     }
 }
