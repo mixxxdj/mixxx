@@ -109,91 +109,16 @@ Item {
                 Repeater {
                     model: 8
 
-                    Item {
+                    Skin.HotcueButton {
                         required property int index
 
                         Layout.column: index % 4
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         Layout.row: parseInt(index / 4)
-
-                        Skin.Hotcue {
-                            id: hotcue
-
-                            readonly property var label: isSet ? root.currentTrack.hotcuesModel.get(index).label : null
-
-                            activate: activator.pressedButtons == Qt.LeftButton
-                            // onIsSetChanged: {
-                            //     if (!isSet)
-                            //         popup.close();
-                            // }
-                            group: root.group
-                            hotcueNumber: index + 1
-                        }
-                        Rectangle {
-                            id: backgroundImage
-
-                            anchors.fill: parent
-                            color: hotcue.isSet ? hotcue.color : '#2B2B2B'
-
-                            MouseArea {
-                                id: activator
-
-                                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                anchors.fill: parent
-                            }
-                        }
-                        DropShadow {
-                            id: effect1
-
-                            anchors.fill: backgroundImage
-                            color: "#80000000"
-                            horizontalOffset: 0
-                            radius: 1.0
-                            source: backgroundImage
-                            verticalOffset: 0
-                        }
-                        InnerShadow {
-                            id: effect2
-
-                            anchors.fill: parent
-                            color: "#353535"
-                            horizontalOffset: 1
-                            radius: 12
-                            samples: 24
-                            source: effect1
-                            spread: 0.2
-                            verticalOffset: 1
-                        }
-                        InnerShadow {
-                            anchors.fill: parent
-                            color: "#353535"
-                            horizontalOffset: -1
-                            radius: 12
-                            samples: 24
-                            source: effect2
-                            spread: 0.2
-                            verticalOffset: -1
-                        }
-                        ColumnLayout {
-                            anchors.centerIn: backgroundImage
-                            spacing: 0
-
-                            Label {
-                                Layout.alignment: Qt.AlignHCenter
-                                color: "#626262"
-                                font.pixelSize: 14
-                                font.weight: Font.Bold
-                                text: `${index + 1}`
-                            }
-                            Label {
-                                Layout.alignment: Qt.AlignHCenter
-                                color: "#626262"
-                                font.pixelSize: 12
-                                text: hotcue.label ?? ""
-                                visible: hotcue.label
-                            }
-                        }
+                        group: root.group
+                        hotcueNumber: index + 1
+                        label: root.currentTrack.hotcuesModel.get(index)?.label
                     }
                 }
             }
