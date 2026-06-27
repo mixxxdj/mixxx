@@ -1,7 +1,5 @@
 #include "blemidienumerator.h"
 
-#include "controllers/controller.h"
-#include "controllers/midi/midicontroller.h"
 #include "util/logger.h"
 
 #ifdef Q_OS_ANDROID
@@ -152,14 +150,14 @@ void BleMidiEnumerator::slotOnScanTimeout() {
 
         kLogger.info() << "BLE scan: found device" << deviceName << "at" << deviceAddress;
 
-        // Create a MidiController for this BLE MIDI device
-        QString controllerName = deviceName + " (" + deviceAddress + ")";
-        MidiController* pController = new MidiController(controllerName);
-        m_devices.push_back(pController);
+        // TODO: Create a BleMidiController subclass (like PortMidiController)
+        // that implements the pure virtual methods from Controller required for
+        // BLE MIDI device interaction. MidiController is abstract and cannot be
+        // instantiated directly. For now, log the discovery for future integration.
     }
 
     if (deviceCount > 0) {
-        kLogger.info() << "BLE scan: created" << m_devices.size() << "MIDI controller(s)";
+        kLogger.info() << "BLE scan: discovered" << deviceCount << "BLE MIDI device(s) - connection pending BleMidiController implementation";
     }
 #endif
 }
