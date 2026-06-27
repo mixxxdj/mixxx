@@ -293,6 +293,24 @@ public class BleMidiScanner {
         return true;
     }
 
+    private static boolean isLocationEnabled(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            android.location.LocationManager lm =
+                (android.location.LocationManager)
+                    context.getSystemService(Context.LOCATION_SERVICE);
+            return lm != null && lm.isLocationEnabled();
+        }
+        // On older versions, check Settings.Secure
+        try {
+            return android.provider.Settings.Secure.getString(
+                       context.getContentResolver(),
+                       android.provider.Settings.Secure.LOCATION_MODE)
+                    .equals("0") == false;
+        } catch (Exception e) {
+            return true; // Assume enabled if we can't check
+        }
+    }
+
     private static Context getContext() {
         return sContext;
     }
