@@ -24,9 +24,9 @@ constexpr const char* kCccDescriptorUuid = "00002902-0000-1000-8000-00805f9b34fb
 // JNI class name for BleMidiController.java
 constexpr const char* kBleMidiClass = "org/mixxx/BleMidiController";
 
-BleMidiController* BleMidiController::s_pInstance = nullptr;
-
 } // namespace
+
+BleMidiController* BleMidiController::s_pInstance = nullptr;
 
 BleMidiController::BleMidiController(const QString& deviceName,
         const QString& deviceAddress)

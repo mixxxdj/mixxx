@@ -50,9 +50,7 @@ class BleMidiController : public MidiController {
     int open(const QString& resourcePath) override;
     int close() override;
     bool sendBytes(const QByteArray& data) override;
-    bool isPolling() const override {
-        return false; // We use callbacks, not polling
-    }
+    bool isPolling() const override;
 
     QString m_deviceAddress;
     QString m_vendorString;
