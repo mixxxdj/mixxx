@@ -1,11 +1,15 @@
 #include "preferences/dialog/dlgpreferences.h"
 
+#include <QApplication>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
+#include <QPalette>
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
+#include <QSlider>
+#include <QStyle>
 #include <QtGlobal>
 
 #include "controllers/dlgprefcontrollers.h"
@@ -293,7 +297,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
         return;
     }
 
-    for (PreferencesPage page : std::as_const(m_allPages)) {
+    for (const PreferencesPage& page : std::as_const(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
             switchToPage(pCurrent->text(0), page.pDlg);
             break;
@@ -318,6 +322,43 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
 
     // Standard event processing
     return QWidget::eventFilter(o, e);
+}
+
+void DlgPreferences::changeEvent(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::PaletteChange ||
+            pEvent->type() == QEvent::ApplicationPaletteChange ||
+            pEvent->type() == QEvent::ThemeChange) {
+        // Re-apply macOS system slider styles based on the current theme mode
+        fixSliderStyle();
+
+        QPalette appPalette = QApplication::palette();
+        setPalette(appPalette);
+
+        // Update m_iconsPath based on the new palette's text color
+        if (!Color::isDimColor(appPalette.text().color())) {
+            m_iconsPath.setPath(":/images/preferences/light/");
+        } else {
+            m_iconsPath.setPath(":/images/preferences/dark/");
+        }
+
+        // Reload tree item icons for all pages
+        for (const PreferencesPage& page : std::as_const(m_allPages)) {
+            if (page.pTreeItem && !page.iconFile.isEmpty()) {
+                page.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(page.iconFile)));
+            }
+        }
+
+        const QList<QWidget*> children = findChildren<QWidget*>();
+        for (QWidget* pChild : children) {
+            pChild->setPalette(appPalette);
+            if (pChild->style()) {
+                pChild->style()->unpolish(pChild);
+                pChild->style()->polish(pChild);
+            }
+            pChild->update();
+        }
+    }
+    QDialog::changeEvent(pEvent);
 }
 
 void DlgPreferences::onHide() {
@@ -461,37 +502,43 @@ bool DlgPreferences::pendingConfigValidOnAllPages() {
     return true;
 }
 
-void DlgPreferences::addPageWidget(PreferencesPage page,
+void DlgPreferences::addPageWidget(const PreferencesPage& page,
         const QString& pageTitle,
         const QString& iconFile) {
+    PreferencesPage pageCopy = page;
+    pageCopy.iconFile = iconFile;
     // Configure the tree button linked to the page
-    page.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
-    page.pTreeItem->setText(0, pageTitle);
-    page.pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    page.pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    pageCopy.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
+    pageCopy.pTreeItem->setText(0, pageTitle);
+    pageCopy.pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    pageCopy.pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotShow);
-    connect(this, &DlgPreferences::closeDlg, page.pDlg, &DlgPreferencePage::slotHide);
-    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotUpdate);
+    connect(this, &DlgPreferences::showDlg, pageCopy.pDlg, &DlgPreferencePage::slotShow);
+    connect(this, &DlgPreferences::closeDlg, pageCopy.pDlg, &DlgPreferencePage::slotHide);
+    connect(this, &DlgPreferences::showDlg, pageCopy.pDlg, &DlgPreferencePage::slotUpdate);
 
-    connect(this, &DlgPreferences::applyPreferences, page.pDlg, &DlgPreferencePage::slotApply);
-    connect(this, &DlgPreferences::cancelPreferences, page.pDlg, &DlgPreferencePage::slotCancel);
+    connect(this, &DlgPreferences::applyPreferences, pageCopy.pDlg, &DlgPreferencePage::slotApply);
+    connect(this,
+            &DlgPreferences::cancelPreferences,
+            pageCopy.pDlg,
+            &DlgPreferencePage::slotCancel);
     connect(this,
             &DlgPreferences::resetToDefaults,
-            page.pDlg,
+            pageCopy.pDlg,
             &DlgPreferencePage::slotResetToDefaults);
 
     // Add a new scroll area to the stacked pages widget containing the page
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
 
-    sa->setWidget(page.pDlg);
+    sa->setWidget(pageCopy.pDlg);
     pagesWidget->addWidget(sa);
-    m_allPages.append(page);
+    m_allPages.append(pageCopy);
 
     int iframe = 2 * sa->frameWidth();
     m_pageSizeHint = m_pageSizeHint.expandedTo(
-            page.pDlg->sizeHint() + QSize(iframe, iframe));
+            pageCopy.pDlg->sizeHint() + QSize(iframe, iframe));
+    fixSliderStyle();
 }
 
 DlgPreferencePage* DlgPreferences::currentPage() {
@@ -597,8 +644,7 @@ void DlgPreferences::fixSliderStyle() {
     //   - the groove is not correctly centered vertically
     //   - the handle is cut off at the top
     // The style below is based on sliders in the macOS system settings dialogs.
-    if (darkAppearance()) {
-        setStyleSheet(R"--(
+    const QString styleSheetStr = darkAppearance() ? R"--(
 QSlider::handle:horizontal {
     background-color: #8f8c8b; 
     border-radius: 4px;
@@ -615,9 +661,8 @@ QSlider::groove:horizontal {
     margin-left: 8px; 
     margin-right: 8px;
 }
-)--");
-    } else {
-        setStyleSheet(R"--(
+)--"
+                                                   : R"--(
 QSlider::handle:horizontal {
     background-color: #ffffff;
     border-radius: 4px;
@@ -635,7 +680,11 @@ QSlider::groove:horizontal {
     margin-left: 8px;
     margin-right: 8px;
 }
-)--");
+)--";
+
+    const QList<QSlider*> sliders = findChildren<QSlider*>();
+    for (QSlider* pSlider : sliders) {
+        pSlider->setStyleSheet(styleSheetStr);
     }
-#endif // __APPLE__
+#endif // Q_OS_MACOS
 }
