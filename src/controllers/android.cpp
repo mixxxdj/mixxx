@@ -154,7 +154,7 @@ void bleMidiNativeOnConnectionStateChanged(JNIEnv*, jobject, jboolean connected)
 }
 Q_DECLARE_JNI_NATIVE_METHOD(bleMidiNativeOnConnectionStateChanged)
 
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* /*vm*/, void*) {
     QJniEnvironment env;
     env.registerNativeMethods<QtJniTypes::UsbPermissionClass>({
             Q_JNI_NATIVE_METHOD(usbDeviceAccessResult),
