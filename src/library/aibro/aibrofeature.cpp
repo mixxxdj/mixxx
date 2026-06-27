@@ -1773,8 +1773,9 @@ void AIBroFeature::slotMusicMatcherSuggestionsReady(
 
     for (const auto& s : suggestions) {
         // Skip empty or invalid
-        if (!s.isValid())
+        if (!s.isValid()) {
             continue;
+        }
 
         // Skip same song
         if (s.title.toLower().trimmed() == m_currentTrackTitle.toLower().trimmed()) {
@@ -1795,8 +1796,9 @@ void AIBroFeature::slotMusicMatcherSuggestionsReady(
                 break;
             }
         }
-        if (alreadyPlayed)
+        if (alreadyPlayed) {
             continue;
+        }
 
         filtered.append(s);
     }

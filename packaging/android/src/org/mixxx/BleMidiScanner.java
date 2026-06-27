@@ -240,7 +240,7 @@ public class BleMidiScanner {
      *
      * @return List of device info maps with "address" and "name" keys
      */
-    public static List getDiscoveredDevices() {
+    public static List<Map<String, String>> getDiscoveredDevices() {
         List<Map<String, String>> result = new ArrayList<>();
         synchronized (sDiscoveredDevices) {
             for (Map.Entry<String, String> entry : sDiscoveredDevices.entrySet()) {

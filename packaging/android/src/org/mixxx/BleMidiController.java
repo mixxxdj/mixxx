@@ -128,6 +128,7 @@ public class BleMidiController {
      *
      * @param hexData Hex-encoded MIDI data (including BLE MIDI timestamp header)
      */
+    @SuppressWarnings("deprecation")
     public static void writeMidiData(String hexData) {
         if (!sConnected || sMidiCharacteristic == null || sGattConnection == null) {
             return;
@@ -143,6 +144,7 @@ public class BleMidiController {
     }
 
     // GATT callback for connection state changes and characteristic notifications
+    @SuppressWarnings("deprecation")
     private static final BluetoothGattCallback sGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
