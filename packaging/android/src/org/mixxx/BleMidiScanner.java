@@ -35,7 +35,7 @@ public class BleMidiScanner {
 
     // Standard BLE MIDI Service UUID defined by the MIDI specification
     private static final UUID BLE_MIDI_SERVICE_UUID =
-            UUID.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700");
+        UUID.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700");
 
     // Maps BluetoothDevice address -> device name (null if unavailable)
     private static final Map<String, String> sDiscoveredDevices = new HashMap<>();
@@ -65,8 +65,8 @@ public class BleMidiScanner {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     if (ContextCompat.checkSelfPermission(
-                                    getContext(), Manifest.permission.BLUETOOTH_CONNECT)
-                            == PackageManager.PERMISSION_GRANTED) {
+                            getContext(), Manifest.permission.BLUETOOTH_CONNECT)
+                        == PackageManager.PERMISSION_GRANTED) {
                         name = device.getName();
                     }
                 } else {
@@ -115,7 +115,7 @@ public class BleMidiScanner {
 
         // Verify Bluetooth is available and enabled
         BluetoothManager bluetoothManager =
-                (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+            (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
             Log.e(TAG, "Bluetooth not supported on this device");
             return false;
@@ -143,15 +143,15 @@ public class BleMidiScanner {
         }
 
         ScanFilter scanFilter = new ScanFilter.Builder()
-                .setServiceUuid(new ParcelUuid(serviceUuidParsed))
-                .build();
+                                    .setServiceUuid(new ParcelUuid(serviceUuidParsed))
+                                    .build();
 
         // Use low-latency scan mode for faster device discovery
         android.bluetooth.le.ScanSettings scanSettings =
-                new android.bluetooth.le.ScanSettings.Builder()
-                        .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY)
-                        .setCallbackType(android.bluetooth.le.ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
-                        .build();
+            new android.bluetooth.le.ScanSettings.Builder()
+                .setScanMode(android.bluetooth.le.ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setCallbackType(android.bluetooth.le.ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                .build();
 
         // Clear previous results
         synchronized (sDiscoveredDevices) {
@@ -160,9 +160,9 @@ public class BleMidiScanner {
 
         try {
             sLeScanner.startScan(
-                    java.util.Collections.singletonList(scanFilter),
-                    scanSettings,
-                    sScanCallback);
+                java.util.Collections.singletonList(scanFilter),
+                scanSettings,
+                sScanCallback);
             sScanning = true;
             Log.i(TAG, "BLE scan started for MIDI service: " + serviceUuidParsed);
             return true;
@@ -240,12 +240,12 @@ public class BleMidiScanner {
     private static boolean hasRequiredPermissions(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 Log.w(TAG, "BLUETOOTH_SCAN permission not granted");
                 return false;
             }
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 Log.w(TAG, "BLUETOOTH_CONNECT permission not granted");
                 return false;
             }
@@ -254,10 +254,10 @@ public class BleMidiScanner {
         // Location permission is needed for BLE scanning on Android 6-11
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED
-                    && ContextCompat.checkSelfPermission(
-                                    context, Manifest.permission.ACCESS_COARSE_LOCATION)
-                            != PackageManager.PERMISSION_GRANTED) {
+                    != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(
+                       context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
                 Log.w(TAG, "Location permission not granted (required for BLE scan on < Android 12)");
                 return false;
             }
