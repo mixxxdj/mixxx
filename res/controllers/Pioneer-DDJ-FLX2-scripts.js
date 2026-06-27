@@ -162,16 +162,18 @@ var DDJFLX2 = {
         const qfxGroup = `[QuickEffectRack1_${  vgroup  }]`;
 
         // EQ engine values are on the absoluteNonLin 0..4 scale (where 1.0 is unity).
-        // We normalise this to a linear 0..1 scale for soft takeover comparison:
+        // Normalise this to a linear 0..1 scale for soft takeover comparison:
         // - 0.0 engine maps to 0.0 normalised
-        // - 1.0 engine (unity) maps to 0.25 normalised
+        // - 1.0 engine (unity) maps to 0.5 normalised
         // - 4.0 engine (max) maps to 1.0 normalised
-        const eqNorm = function(v) { return v / 4; };
+        const eqNorm = function(v) {
+            return script.absoluteNonLinInverse(v, 0, 1, 4, 0, 1);
+        };
         // CFX engine value is already 0..1 from super1LSB.
         const cfxNorm = function(v) { return v; };
 
         const targets = {
-            rate: engine.getValue(vgroup,   "rate")   * 0.5 + 0.5, // rate -1..1 → 0..1
+            rate: 0.5 - engine.getValue(vgroup, "rate") * 0.5, // rate +1..-1 → 0..1
             volume: engine.getValue(vgroup,   "volume"),
             eqHigh: eqNorm(engine.getValue(eqGroup, "parameter3")),
             eqMid: eqNorm(engine.getValue(eqGroup, "parameter2")),
