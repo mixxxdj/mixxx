@@ -35,7 +35,6 @@ QList<Controller*> BleMidiEnumerator::queryDevices() {
 }
 
 void BleMidiEnumerator::startScan() {
-#ifdef Q_OS_ANDROID
     constexpr const char* kBleMidiServiceUuid = "03B80E5A-EDE8-4B33-A751-6CE34EC4C700";
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
@@ -76,10 +75,6 @@ void BleMidiEnumerator::startScan() {
 
     m_pScanTimer->start();
     kLogger.info() << "BLE scan: started for MIDI service";
-#else
-    Q_UNUSED(m_pConfig);
-    kLogger.info() << "BLE scan: not supported on this platform";
-#endif
 }
 
 void BleMidiEnumerator::rescan() {
@@ -87,19 +82,14 @@ void BleMidiEnumerator::rescan() {
 }
 
 bool BleMidiEnumerator::isConnected() const {
-#ifdef Q_OS_ANDROID
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
     jboolean result = QJniObject::callStaticMethod<jboolean>(
             kBleScannerClass, "isConnected", "()Z");
     return result;
-#else
-    return false;
-#endif
 }
 
 void BleMidiEnumerator::slotOnScanTimeout() {
-#ifdef Q_OS_ANDROID
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
     m_scanning = false;

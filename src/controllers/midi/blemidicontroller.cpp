@@ -18,40 +18,22 @@ const mixxx::Logger kLogger("BleMidiController");
 constexpr const char* kBleMidiServiceUuid = "03B80E5A-EDE8-4B33-A751-6CE34EC4C700";
 constexpr const char* kBleMidiCharacteristicUuid = "7772E5DB-3868-4112-A1C9-F2669D106BF3";
 
+// Client Characteristic Configuration Descriptor
+constexpr const char* kCccDescriptorUuid = "00002902-0000-1000-8000-00805f9b34fb";
+
+// JNI class name for BleMidiController.java
 constexpr const char* kBleMidiClass = "org/mixxx/BleMidiController";
 
-// Singleton pointer for JNI callbacks
-BleMidiController* s_pInstance = nullptr;
+BleMidiController* BleMidiController::s_pInstance = nullptr;
+
 } // namespace
 
 BleMidiController::BleMidiController(const QString& deviceName,
         const QString& deviceAddress)
-        : MidiController(deviceName),
-          m_deviceAddress(deviceAddress),
-          m_connected(false),
-          m_midiBufferIndex(0),
-          m_inSysex(false) {
-    // Extract product info from device name
+        : m_deviceAddress(deviceName),
+          m_connected(false) {
+    m_vendorString = "Pioneer";
     m_productString = deviceName;
-    m_serialNumber = deviceAddress;
-
-    // Try to detect Pioneer DDJ-FLX4 from the name
-    if (deviceName.contains("DDJ-FLX4", Qt::CaseInsensitive)) {
-        m_vendorString = "AlphaTheta Corporation";
-        m_vendorId = 0x2B73;
-        m_productId = 0x0045;
-    } else if (deviceName.contains("DDJ-400", Qt::CaseInsensitive)) {
-        m_vendorString = "AlphaTheta Corporation";
-        m_vendorId = 0x2B73;
-        m_productId = 0x0043;
-    } else if (deviceName.contains("DDJ-FLX2", Qt::CaseInsensitive)) {
-        m_vendorString = "AlphaTheta Corporation";
-        m_vendorId = 0x2B73;
-        m_productId = 0x0049;
-    }
-
-    setInputDevice(true);
-    setOutputDevice(true);
 }
 
 BleMidiController::~BleMidiController() {
@@ -60,71 +42,37 @@ BleMidiController::~BleMidiController() {
     }
 }
 
-int BleMidiController::open(const QString& resourcePath) {
-    kLogger.info() << "Opening BLE MIDI device" << getName();
-
-#ifdef Q_OS_ANDROID
-    QJniObject activity = QJniObject::callStaticObjectMethod(
-            "org/qtproject/qt/android/QtNative",
-            "activity",
-            "()Landroid/app/Activity;");
-    if (!activity.isValid()) {
-        kLogger.warning() << "BLE: activity not available";
-        return -1;
-    }
-
-    // Register this instance for JNI callbacks
-    s_pInstance = this;
-
-    // Call Java to connect GATT
-    QJniObject addressObj = QJniObject::fromString(m_deviceAddress);
-    QJniObject serviceUuidObj = QJniObject::fromString(QString(kBleMidiServiceUuid));
-    QJniObject charUuidObj = QJniObject::fromString(QString(kBleMidiCharacteristicUuid));
-
-    jboolean result = QJniObject::callStaticMethod<jboolean>(
-            kBleMidiClass,
-            "connect",
-            "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
-            activity.object<jobject>(),
-            addressObj.object<jstring>(),
-            serviceUuidObj.object<jstring>(),
-            charUuidObj.object<jstring>());
-
-    if (!result) {
-        kLogger.warning() << "BLE: failed to connect GATT to" << m_deviceAddress;
-        s_pInstance = nullptr;
-        return -1;
-    }
-
-    kLogger.info() << "BLE: GATT connection initiated to" << m_deviceAddress;
-#endif
-
-    startEngine();
-    setOpen(true);
-    return 0;
+PhysicalTransportProtocol BleMidiController::getPhysicalTransportProtocol() const {
+    return PhysicalTransportProtocol::BlueTooth;
 }
 
-int BleMidiController::close() {
-    kLogger.info() << "Closing BLE MIDI device" << getName();
+QString BleMidiController::getVendorString() const {
+    return m_vendorString;
+}
 
-#ifdef Q_OS_ANDROID
-    QJniObject::callStaticMethod<void>(
-            kBleMidiClass,
-            "disconnect",
-            "()V");
-    if (s_pInstance == this) {
-        s_pInstance = nullptr;
-    }
-#endif
+QString BleMidiController::getProductString() const {
+    return m_productString;
+}
 
-    stopEngine();
-    m_connected = false;
-    setOpen(false);
-    return 0;
+std::optional<uint16_t> BleMidiController::getVendorId() const {
+    // DDJ-FLX4 USB vendor ID
+    return 0x2B73;
+}
+
+std::optional<uint16_t> BleMidiController::getProductId() const {
+    // DDJ-FLX4 USB product ID
+    return 0x0045;
+}
+
+QString BleMidiController::getSerialNumber() const {
+    return m_serialNumber;
+}
+
+std::optional<uint8_t> BleMidiController::getUsbInterfaceNumber() const {
+    return std::nullopt;
 }
 
 bool BleMidiController::connectDevice() {
-#ifdef Q_OS_ANDROID
     QJniObject activity = QJniObject::callStaticObjectMethod(
             "org/qtproject/qt/android/QtNative",
             "activity",
@@ -148,19 +96,13 @@ bool BleMidiController::connectDevice() {
 
     m_connected = result;
     return result;
-#else
-    Q_UNUSED(m_deviceAddress);
-    return false;
-#endif
 }
 
 void BleMidiController::disconnectDevice() {
-#ifdef Q_OS_ANDROID
     QJniObject::callStaticMethod<void>(
             kBleMidiClass,
             "disconnect",
             "()V");
-#endif
     m_connected = false;
 }
 
@@ -304,7 +246,6 @@ bool BleMidiController::poll() {
 void BleMidiController::sendShortMsg(unsigned char status,
         unsigned char byte1,
         unsigned char byte2) {
-#ifdef Q_OS_ANDROID
     // BLE MIDI write: wrap in timestamp header
     // Format: [timestamp_high | timestamp_low] [status] [data1] [data2]
     QByteArray packet;
@@ -324,14 +265,9 @@ void BleMidiController::sendShortMsg(unsigned char status,
             "writeMidiData",
             "(Ljava/lang/String;)V",
             jData.object<jstring>());
-#endif
-    Q_UNUSED(status);
-    Q_UNUSED(byte1);
-    Q_UNUSED(byte2);
 }
 
 bool BleMidiController::sendBytes(const QByteArray& data) {
-#ifdef Q_OS_ANDROID
     QByteArray packet;
     qint64 nowMs = QDateTime::currentMSecsSinceEpoch();
     unsigned char tsHigh = 0x80 | ((nowMs >> 7) & 0x3F);
