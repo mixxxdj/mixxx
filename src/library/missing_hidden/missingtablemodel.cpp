@@ -64,8 +64,11 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 
 void MissingTableModel::relocateTrack(
         const QModelIndex& index, const mixxx::FileInfo& newLocation) {
-    TrackPointer pTrack = getTrack(index);
-    if (m_pTrackCollectionManager->relocateTrack(*pTrack, newLocation)) {
+    TrackId trackId = getTrackId(index);
+    if (!trackId.isValid()) {
+        return;
+    }
+    if (m_pTrackCollectionManager->relocateTrack(trackId, newLocation)) {
         select(); // Repopulate the data model
     }
 }

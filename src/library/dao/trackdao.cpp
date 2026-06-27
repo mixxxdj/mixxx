@@ -1779,12 +1779,10 @@ bool TrackDAO::updateTrack(const Track& track) const {
 }
 
 // Relocate the file linked to the track
-bool TrackDAO::relocateTrack(const Track& track, const mixxx::FileInfo& newLocation) const {
-    const TrackId trackId = track.getId();
+bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLocation) const {
     DEBUG_ASSERT(trackId.isValid());
 
     kLogger.debug() << "Relocating track" << trackId
-                    << "from" << track.getLocation()
                     << "to" << newLocation;
 
     SqlTransaction transaction(m_database);
