@@ -141,7 +141,9 @@ QmlApplication::QmlApplication(
                 VersionStore::applicationName(),
                 message,
                 QMessageBox::Ok | QMessageBox::Cancel);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
         msgBox.setOption(QMessageBox::Option::DontUseNativeDialog);
+#endif
         msgBox.setWindowModality(Qt::ApplicationModal);
         msgBox.setDefaultButton(QMessageBox::Cancel);
         msgBox.exec();
