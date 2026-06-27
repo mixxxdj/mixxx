@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef Q_OS_ANDROID
-
 #include <QJniObject>
 #include <QString>
 
@@ -69,5 +67,3 @@ class BleMidiController : public MidiController {
     int m_midiBufferIndex;
     bool m_inSysex;
 };
-
-#endif // Q_OS_ANDROID
