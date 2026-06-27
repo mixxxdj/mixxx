@@ -52,6 +52,8 @@ class BleMidiController : public MidiController {
     bool sendBytes(const QByteArray& data) override;
     bool isPolling() const override;
 
+    static BleMidiController* s_pInstance;
+
     QString m_deviceAddress;
     QString m_vendorString;
     QString m_productString;
