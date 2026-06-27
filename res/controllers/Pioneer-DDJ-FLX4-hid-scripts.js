@@ -47,7 +47,7 @@ PioneerDDJFLX4HID.shutdown = function() {
 // Raw packet logger - prints hex dump of every incoming HID report.
 // Disable by setting debugHidPackets = false once offsets are verified.
 // ---------------------------------------------------------------------------
-PioneerDDJFLX4HID.logRawPacket = function[data] {
+PioneerDDJFLX4HID.logRawPacket = function(data) {
     if (!PioneerDDJFLX4HID.debugHidPackets) return;
     var hex = [];
     for (var i = 0; i < data.length && i < 80; i++) {
@@ -71,122 +71,6 @@ PioneerDDJFLX4HID.logRawPacket = function[data] {
 //
 // NOTE: These offsets are based on the DDJ-FLX4 USB descriptor analysis.
 // They may need adjustment - enable debugHidPackets to verify.
-// ---------------------------------------------------------------------------
-PioneerDDJFLX4HID.registerInputPackets = function() {
-    var mainPacket = new HIDPacket("main", 0x01, function(packet, data) {
-        PioneerDDJFLX4HID.logRawPacket(data);
-    });
-
-    // ---- Deck 1 buttons (byte offsets are relative to data start, after report ID) ----
-
-    // Shift buttons
-    mainPacket.addControl("[Channel1]", "!shift", 0, "B", 0x40);
-    mainPacket.addControl("[Channel2]", "!shift", 14, "B", 0x40);
-
-    // Play/Pause
-    mainPacket.addControl("[Channel1]", "!play", 0, "B", 0x01);
-    mainPacket.addControl("[Channel2]", "!play", 14, "B", 0x01);
-
-    // Cue
-    mainPacket.addControl("[Channel1]", "!cue_default", 0, "B", 0x02);
-    mainPacket.addControl("[Channel2]", "!cue_default", 14, "B", 0x02);
-
-    // Sync
-    mainPacket.addControl("[Channel1]", "!sync", 0, "B", 0x08);
-    mainPacket.addControl("[Channel2]", "!sync", 14, "B", 0x08);
-
-    // Loop In / Loop Out / Reloop
-    mainPacket.addControl("[Channel1]", "!loop_in", 1, "B", 0x04);
-    mainPacket.addControl("[Channel2]", "!loop_in", 15, "B", 0x04);
-    mainPacket.addControl("[Channel1]", "!loop_out", 1, "B", 0x08);
-    mainPacket.addControl("[Channel2]", "!loop_out", 15, "B", 0x08);
-    mainPacket.addControl("[Channel1]", "!reloop_exit", 1, "B", 0x10);
-    mainPacket.addControl("[Channel2]", "!reloop_exit", 15, "B", 0x10);
-
-    // Jog touch
-    mainPacket.addControl("[Channel1]", "!jog_touch", 2, "B", 0x01);
-    mainPacket.addControl("[Channel2]", "!jog_touch", 16, "B", 0x01);
-
-    // Browse knob press
-    mainPacket.addControl("[Library]", "!browse_press", 12, "B", 0x01);
-
-    // Load buttons
-    mainPacket.addControl("[Channel1]", "!LoadSelectedTrack", 12, "B", 0x04);
-    mainPacket.addControl("[Channel2]", "!LoadSelectedTrack", 12, "B", 0x08);
-
-    // ---- Pad mode buttons ----
-    mainPacket.addControl("[Channel1]", "!hotcue_mode", 3, "B", 0x01);
-    mainPacket.addControl("[Channel2]", "!hotcue_mode", 17, "B", 0x01);
-    mainPacket.addControl("[Channel1]", "!beatloop_mode", 3, "B", 0x04);
-    mainPacket.addControl("[Channel2]", "!beatloop_mode", 17, "B", 0x04);
-    mainPacket.addControl("[Channel1]", "!beatjump_mode", 3, "B", 0x08);
-    mainPacket.addControl("[Channel2]", "!beatjump_mode", 17, "B", 0x08);
-    mainPacket.addControl("[Channel1]", "!sampler_mode", 3, "B", 0x10);
-    mainPacket.addControl("[Channel2]", "!sampler_mode", 17, "B", 0x10);
-
-    // ---- Performance pads (8 pads per deck) ----
-    mainPacket.addControl("[Channel1]", "!pad_1", 4, "B", 0x01);
-    mainPacket.addControl("[Channel1]", "!pad_2", 4, "B", 0x02);
-    mainPacket.addControl("[Channel1]", "!pad_3", 4, "B", 0x04);
-    mainPacket.addControl("[Channel1]", "!pad_4", 4, "B", 0x08);
-    mainPacket.addControl("[Channel1]", "!pad_5", 4, "B", 0x10);
-    mainPacket.addControl("[Channel1]", "!pad_6", 4, "B", 0x20);
-    mainPacket.addControl("[Channel1]", "!pad_7", 4, "B", 0x40);
-    mainPacket.addControl("[Channel1]", "!pad_8", 4, "B", 0x80);
-
-    mainPacket.addControl("[Channel2]", "!pad_1", 18, "B", 0x01);
-    mainPacket.addControl("[Channel2]", "!pad_2", 18, "B", 0x02);
-    mainPacket.addControl("[Channel2]", "!pad_3", 18, "B", 0x04);
-    mainPacket.addControl("[Channel2]", "!pad_4", 18, "B", 0x08);
-    mainPacket.addControl("[Channel2]", "!pad_5", 18, "B", 0x10);
-    mainPacket.addControl("[Channel2]", "!pad_6", 18, "B", 0x20);
-    mainPacket.addControl("[Channel2]", "!pad_7", 18, "B", 0x40);
-    mainPacket.addControl("[Channel2]", "!pad_8", 18, "B", 0x80);
-
-    // ---- Analog controls (faders, knobs as 7-bit or 14-bit values) ----
-
-    // Channel faders (7-bit)
-    mainPacket.addControl("[Channel1]", "volume", 6, "B");
-    mainPacket.addControl("[Channel2]", "volume", 20, "B");
-
-    // Crossfader (7-bit)
-    mainPacket.addControl("[Master]", "crossfader", 24, "B");
-
-    // Tempo faders (7-bit)
-    mainPacket.addControl("[Channel1]", "rate", 7, "B");
-    mainPacket.addControl("[Channel2]", "rate", 21, "B");
-
-    // EQ knobs (7-bit each)
-    mainPacket.addControl("[Channel1]", "filterHigh", 8, "B");
-    mainPacket.addControl("[Channel1]", "filterMid", 9, "B");
-    mainPacket.addControl("[Channel1]", "filterLow", 10, "B");
-    mainPacket.addControl("[Channel2]", "filterHigh", 22, "B");
-    mainPacket.addControl("[Channel2]", "filterMid", 23, "B");
-    mainPacket.addControl("[Channel2]", "filterLow", 24, "B");
-
-    // Trim/Gain (7-bit)
-    mainPacket.addControl("[Channel1]", "pregain", 5, "B");
-    mainPacket.addControl("[Channel2]", "pregain", 19, "B");
-
-    // PFL (headphone cue)
-    mainPacket.addControl("[Channel1]", "!pfl", 1, "B", 0x20);
-    mainPacket.addControl("[Channel2]", "!pfl", 15, "B", 0x20);
-
-    // Browse knob rotation (relative/encoder)
-    mainPacket.addControl("[Library]", "!browse_rotate", 13, "B", undefined, true);
-
-    this.controller.registerInputPacket(mainPacket);
-
-    // ---- Jog wheel packet (Report ID 0x02) ----
-    var jogPacket = new HIDPacket("jog", 0x02);
-
-    // Jog wheel delta values (signed 16-bit)
-    jogPacket.addControl("[Channel1]", "!jog_wheel", 0, "h");
-    jogPacket.addControl("[Channel2]", "!jog_wheel", 2, "h");
-
-    this.controller.registerInputPacket(jogPacket);
-};
-
 // ---------------------------------------------------------------------------
 // Output packet registration (LED feedback)
 // ---------------------------------------------------------------------------
