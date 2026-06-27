@@ -79,9 +79,9 @@ void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgMissing::activateButtons(int nbSelected) {
-    btnPurge->setEnabled(nbSelected >= 1);
-    btnRelocate->setEnabled(nbSelected == 1);
+void DlgMissing::activateButtons(int numRowsSelected) {
+    btnPurge->setEnabled(numRowsSelected >= 1);
+    btnRelocate->setEnabled(numRowsSelected == 1);
 }
 
 void DlgMissing::selectionChanged([[maybe_unused]] const QItemSelection& selected,
