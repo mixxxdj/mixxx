@@ -1,5 +1,6 @@
 #include "blemidienumerator.h"
 
+#include "controllers/controller.h"
 #include "controllers/midi/midicontroller.h"
 #include "util/logger.h"
 
