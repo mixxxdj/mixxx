@@ -14,10 +14,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-
-import java.util.UUID;
-
 import androidx.core.content.ContextCompat;
+import java.util.UUID;
 
 /**
  * BLE MIDI GATT controller for Mixxx.
@@ -33,13 +31,13 @@ public class BleMidiController {
 
     // Standard BLE MIDI Service and Characteristic UUIDs
     private static final UUID BLE_MIDI_SERVICE_UUID =
-            UUID.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700");
+        UUID.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700");
     private static final UUID BLE_MIDI_CHARACTERISTIC_UUID =
-            UUID.fromString("7772E5DB-3868-4112-A1C9-F2669D106BF3");
+        UUID.fromString("7772E5DB-3868-4112-A1C9-F2669D106BF3");
 
     // Client Characteristic Configuration Descriptor
     private static final UUID CCC_DESCRIPTOR_UUID =
-            UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+        UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     private static BluetoothGatt sGattConnection = null;
     private static BluetoothGattCharacteristic sMidiCharacteristic = null;
@@ -58,7 +56,7 @@ public class BleMidiController {
      * @return true if connection was initiated successfully
      */
     public static boolean connect(Context context, String address,
-            String serviceUuid, String characteristicUuid) {
+        String serviceUuid, String characteristicUuid) {
         if (sConnected && sGattConnection != null) {
             Log.i(TAG, "Already connected to a device, disconnect first");
             return false;
@@ -70,7 +68,7 @@ public class BleMidiController {
         }
 
         BluetoothManager bluetoothManager =
-                (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+            (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager == null) {
             Log.e(TAG, "Bluetooth not supported");
             return false;
@@ -203,10 +201,10 @@ public class BleMidiController {
 
                 // Enable notifications via CCC descriptor
                 BluetoothGattDescriptor descriptor =
-                        sMidiCharacteristic.getDescriptor(CCC_DESCRIPTOR_UUID);
+                    sMidiCharacteristic.getDescriptor(CCC_DESCRIPTOR_UUID);
                 if (descriptor != null) {
                     descriptor.setValue(
-                            BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                     gatt.writeDescriptor(descriptor);
                 } else {
                     Log.w(TAG, "CCC descriptor not found");
@@ -221,7 +219,7 @@ public class BleMidiController {
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
-                BluetoothGattCharacteristic characteristic) {
+            BluetoothGattCharacteristic characteristic) {
             if (BLE_MIDI_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
                 byte[] data = characteristic.getValue();
                 if (data != null && data.length > 0) {
@@ -233,7 +231,7 @@ public class BleMidiController {
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt,
-                BluetoothGattDescriptor descriptor, int status) {
+            BluetoothGattDescriptor descriptor, int status) {
             if (CCC_DESCRIPTOR_UUID.equals(descriptor.getUuid())) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     Log.i(TAG, "BLE MIDI notifications enabled successfully");
@@ -254,7 +252,7 @@ public class BleMidiController {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
+                + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
@@ -262,7 +260,7 @@ public class BleMidiController {
     private static boolean hasBluetoothPermissions(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
-                    == PackageManager.PERMISSION_GRANTED;
+                == PackageManager.PERMISSION_GRANTED;
         }
         return true;
     }
