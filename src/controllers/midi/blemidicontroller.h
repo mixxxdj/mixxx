@@ -1,13 +1,12 @@
 #pragma once
 
+#ifdef Q_OS_ANDROID
+
 #include <QBluetoothUuid>
+#include <QJniObject>
 #include <QString>
 
 #include "controllers/midi/midicontroller.h"
-
-#ifdef Q_OS_ANDROID
-#include <QJniObject>
-#endif
 
 /// BLE MIDI controller implementation for Android.
 ///
@@ -86,3 +85,5 @@ class BleMidiController : public MidiController {
     int m_midiBufferIndex;
     bool m_inSysex;
 };
+
+#endif // Q_OS_ANDROID

@@ -1,15 +1,15 @@
 #include "blemidicontroller.h"
 
-#include "controllers/midi/midioutputhandler.h"
-#include "moc_blemidicontroller.cpp"
-#include "util/logger.h"
-
 #ifdef Q_OS_ANDROID
+
 #include <QtCore/private/qandroidextras_p.h>
 
 #include <QJniEnvironment>
 #include <QJniObject>
-#endif
+
+#include "controllers/midi/midioutputhandler.h"
+#include "moc_blemidicontroller.cpp"
+#include "util/logger.h"
 
 namespace {
 const mixxx::Logger kLogger("BleMidiController");
@@ -347,7 +347,6 @@ bool BleMidiController::sendBytes(const QByteArray& data) {
             "(Ljava/lang/String;)V",
             jData.object<jstring>());
     return true;
-#else
-    return false;
-#endif
 }
+
+#endif // Q_OS_ANDROID

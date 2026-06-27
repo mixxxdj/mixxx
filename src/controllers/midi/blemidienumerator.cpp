@@ -1,14 +1,14 @@
 #include "blemidienumerator.h"
 
-#include "controllers/midi/blemidicontroller.h"
-#include "util/logger.h"
-
 #ifdef Q_OS_ANDROID
+
 #include <QtCore/private/qandroidextras_p.h>
 
 #include <QJniEnvironment>
 #include <QJniObject>
-#endif
+
+#include "controllers/midi/blemidicontroller.h"
+#include "util/logger.h"
 
 namespace {
 
@@ -166,7 +166,8 @@ void BleMidiEnumerator::slotOnScanTimeout() {
         kLogger.info() << "BLE scan: created" << m_devices.size()
                        << "BLE MIDI controller(s)";
     }
-#endif
 }
+
+#endif // Q_OS_ANDROID
 
 #include "moc_blemidienumerator.cpp"

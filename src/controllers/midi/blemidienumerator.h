@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef Q_OS_ANDROID
+
 #include <QList>
 #include <QMutex>
 #include <QObject>
@@ -32,3 +34,5 @@ class BleMidiEnumerator : public MidiEnumerator {
     bool m_scanning;
     mutable QMutex m_mutex;
 };
+
+#endif // Q_OS_ANDROID
