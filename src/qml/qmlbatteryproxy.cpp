@@ -7,7 +7,7 @@ namespace qml {
 
 QmlBatteryProxy::QmlBatteryProxy(QObject* parent)
         : QObject(parent),
-          m_pBattery(Battery::getBattery(this)) {
+          m_pBattery(Battery::getBattery()) {
     if (m_pBattery) {
         connect(m_pBattery.data(),
                 &Battery::stateChanged,
@@ -30,7 +30,7 @@ bool QmlBatteryProxy::isCharging() const {
 }
 
 int QmlBatteryProxy::minutesLeft() const {
-    return m_pBattery ? m_pBattery->getMinutesLeft() : 0;
+    return m_pBattery ? m_pBattery->getMinutesLeft() : Battery::TIME_UNKNOWN;
 }
 
 bool QmlBatteryProxy::isBatteryAvailable() const {

@@ -9,6 +9,10 @@ Image {
     property var dischargingSources: []
 
     function batterySource() {
+        if (!Mixxx.Battery.isBatteryAvailable) {
+            return "";
+        }
+
         const percentage = Math.max(0, Math.min(100, Mixxx.Battery.percentage));
         if (Mixxx.Battery.isCharging && percentage >= 99) {
             return chargedSource;

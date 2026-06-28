@@ -8,12 +8,16 @@
 namespace mixxx {
 namespace qml {
 
+namespace {
+const QString kInactiveDurationText = QStringLiteral("--:--");
+} // namespace
+
 QmlRecordingProxy::QmlRecordingProxy(
         std::shared_ptr<RecordingManager> pRecordingManager,
         QObject* parent)
         : QObject(parent),
           m_pRecordingManager(std::move(pRecordingManager)),
-          m_durationText(QStringLiteral("00:00")) {
+          m_durationText(kInactiveDurationText) {
     if (!m_pRecordingManager) {
         return;
     }
@@ -47,10 +51,10 @@ void QmlRecordingProxy::slotDurationRecorded(const QString& durationText) {
 }
 
 void QmlRecordingProxy::slotRecordingActiveChanged(bool isRecording) {
-    if (isRecording || m_durationText == QStringLiteral("00:00")) {
+    if (isRecording || m_durationText == kInactiveDurationText) {
         return;
     }
-    m_durationText = QStringLiteral("00:00");
+    m_durationText = kInactiveDurationText;
     emit durationTextChanged();
 }
 
