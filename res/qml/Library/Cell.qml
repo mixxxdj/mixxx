@@ -1,4 +1,3 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import "../Theme"
@@ -6,7 +5,7 @@ import "../Theme"
 Rectangle {
     id: root
 
-    readonly property alias dragImage: dragImageEffect
+    readonly property alias dragImage: dragImageSource
 
     Drag.dragType: Drag.Automatic
     Drag.mimeData: {
@@ -85,17 +84,6 @@ Rectangle {
                 }
             }
         }
-    }
-    DropShadow {
-        id: dragImageEffect
-
-        anchors.fill: dragImageSource
-        color: "#80000000"
-        horizontalOffset: 0
-        radius: 10.0
-        source: dragImageSource
-        verticalOffset: 0
-        visible: false
     }
     Rectangle {
         id: border
