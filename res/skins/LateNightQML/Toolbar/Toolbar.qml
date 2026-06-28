@@ -63,11 +63,35 @@ Rectangle {
         selectBigSpinnyOrCoverControl.value = 0.0;
         toolbarDefaultsControl.value = 1.0;
     }
-    function openPopupForButton(popup, button) {
+    function closeSettingsPopups() {
+        deckSettingsPopup.close();
+        effectSettingsPopup.close();
+        librarySettingsPopup.close();
+        micAuxSettingsPopup.close();
+        mixerSettingsPopup.close();
+        samplerSettingsPopup.close();
+        waveformSettingsPopup.close();
+    }
+    function positionPopupForButton(popup, button) {
         const mapped = button.mapToItem(root, 0, 0);
         popup.x = Math.max(0, Math.min(root.width - popup.width, mapped.x));
         popup.y = root.height + 2;
+    }
+    function openPopupForButton(popup, button) {
+        if (button.wasPopupOpenOnPress || (popup.visible && popup.anchorButton === button)) {
+            popup.close();
+            button.wasPopupOpenOnPress = false;
+            return;
+        }
+        closeSettingsPopups();
+        popup.anchorButton = button;
+        positionPopupForButton(popup, button);
         popup.open();
+        Qt.callLater(function() {
+            if (popup.visible && popup.anchorButton === button) {
+                positionPopupForButton(popup, button);
+            }
+        });
     }
     function setControlValueIfInitialized(control, value) {
         if (control.initialized) {
@@ -778,7 +802,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: deckSettingsPopup
 
-        width: 205
+        minimumWidth: 205
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -790,6 +814,7 @@ Rectangle {
 
             RowLayout {
                 Layout.fillWidth: true
+                Layout.minimumWidth: implicitWidth
                 Layout.preferredHeight: 22
                 spacing: 5
 
@@ -824,6 +849,7 @@ Rectangle {
             }
             RowLayout {
                 Layout.fillWidth: true
+                Layout.minimumWidth: implicitWidth
                 Layout.preferredHeight: 18
                 spacing: 5
 
@@ -837,6 +863,7 @@ Rectangle {
                     id: hideMixerBtn
                     Layout.preferredHeight: 18
                     Layout.fillWidth: true
+                    implicitWidth: hideMixerText.implicitWidth + 8
                     visible: showMixerButton.checked
 
                     Rectangle {
@@ -846,6 +873,7 @@ Rectangle {
                     }
 
                     Text {
+                        id: hideMixerText
                         anchors.left: parent.left
                         anchors.leftMargin: 4
                         anchors.verticalCenter: parent.verticalCenter
@@ -867,13 +895,14 @@ Rectangle {
                 }
                 RowLayout {
                     Layout.fillWidth: true
+                    Layout.minimumWidth: implicitWidth
                     spacing: 4
                     visible: !showMixerButton.checked
 
                     ToolbarMenuInlineChoice {
                         checked: deckSizeControl.value === 2.0 || showFullDeckControl.value > 0
                         text: "Full"
-                        widthOverride: 40
+                        minimumWidth: 40
 
                         onClicked: {
                             root.setDeckSize(2.0);
@@ -882,7 +911,7 @@ Rectangle {
                     ToolbarMenuInlineChoice {
                         checked: deckSizeControl.value === 1.0 || showCompactDeckControl.value > 0
                         text: "Compact"
-                        widthOverride: 66
+                        minimumWidth: 66
 
                         onClicked: {
                             root.setDeckSize(1.0);
@@ -891,7 +920,7 @@ Rectangle {
                     ToolbarMenuInlineChoice {
                         checked: deckSizeControl.value === 0.0 || showMiniDeckControl.value > 0
                         text: "Mini"
-                        widthOverride: 40
+                        minimumWidth: 40
 
                         onClicked: {
                             root.setDeckSize(0.0);
@@ -901,6 +930,7 @@ Rectangle {
             }
             RowLayout {
                 Layout.fillWidth: true
+                Layout.minimumWidth: implicitWidth
                 spacing: 5
 
                 ToolbarMenuToggle {
@@ -1026,7 +1056,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: effectSettingsPopup
 
-        width: 230
+        minimumWidth: 230
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -1041,7 +1071,9 @@ Rectangle {
                 property bool checked: showEffectRackControl.value > 0
 
                 Layout.fillWidth: true
+                Layout.minimumWidth: implicitWidth
                 implicitHeight: 22
+                implicitWidth: effectUnitsHeaderContent.implicitWidth
 
                 MouseArea {
                     anchors.fill: parent
@@ -1052,6 +1084,8 @@ Rectangle {
                 }
 
                 RowLayout {
+                    id: effectUnitsHeaderContent
+
                     anchors.fill: parent
                     spacing: 5
 
@@ -1104,7 +1138,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: samplerSettingsPopup
 
-        width: 250
+        minimumWidth: 250
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -1119,7 +1153,9 @@ Rectangle {
                 property bool checked: showSamplersControl.value > 0
 
                 Layout.fillWidth: true
+                Layout.minimumWidth: implicitWidth
                 implicitHeight: 22
+                implicitWidth: samplersHeaderContent.implicitWidth
 
                 MouseArea {
                     anchors.fill: parent
@@ -1130,6 +1166,8 @@ Rectangle {
                 }
 
                 RowLayout {
+                    id: samplersHeaderContent
+
                     anchors.fill: parent
                     spacing: 5
 
@@ -1174,7 +1212,7 @@ Rectangle {
                         checked: samplerRowsControl.value === 2.0
                         enabled: showSamplersControl.value > 0
                         text: "16"
-                        widthOverride: 32
+                        minimumWidth: 32
 
                         onClicked: {
                             samplerRowsControl.value = 2.0;
@@ -1185,7 +1223,7 @@ Rectangle {
                         checked: samplerRowsControl.value === 4.0
                         enabled: showSamplersControl.value > 0
                         text: "64"
-                        widthOverride: 32
+                        minimumWidth: 32
 
                         onClicked: {
                             samplerRowsControl.value = 4.0;
@@ -1203,6 +1241,7 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 22
+                Layout.minimumWidth: implicitWidth
                 Layout.preferredHeight: 18
                 spacing: 3
                 enabled: showSamplersControl.value > 0
@@ -1278,6 +1317,7 @@ Rectangle {
                 }
 
                 Text {
+                    id: samplerBankText
                     color: LateNightTheme.textColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
@@ -1290,7 +1330,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: librarySettingsPopup
 
-        width: 140
+        minimumWidth: 140
 
         ToolbarMenuSection {
             title: "Library"
@@ -1308,7 +1348,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: micAuxSettingsPopup
 
-        width: 140
+        minimumWidth: 140
 
         ToolbarMenuSection {
             title: "Mic/Aux"
@@ -1395,7 +1435,7 @@ Rectangle {
         Layout.alignment: Qt.AlignVCenter
         Layout.preferredHeight: 20
         Layout.preferredWidth: buttonWidth
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: Qt.ArrowCursor
 
         onClicked: {
             checked = !checked;
@@ -1445,11 +1485,16 @@ Rectangle {
         id: dropButton
 
         required property var popup
+        property bool wasPopupOpenOnPress: false
 
         Layout.alignment: Qt.AlignVCenter
         Layout.preferredHeight: 20
         Layout.preferredWidth: 18
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: Qt.ArrowCursor
+
+        onPressed: {
+            wasPopupOpenOnPress = popup.visible && popup.anchorButton === dropButton;
+        }
 
         LateNightToolbarButtonBackground {
             active: dropButton.popup.visible
@@ -1531,7 +1576,7 @@ Rectangle {
         Layout.alignment: Qt.AlignVCenter
         Layout.preferredHeight: 20
         Layout.preferredWidth: 72
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: Qt.ArrowCursor
 
         LateNightToolbarButtonBackground {
             active: recordingIndicator.active
@@ -1606,12 +1651,12 @@ Rectangle {
         id: inlineChoice
         property bool checked: false
         property string text: ""
-        property int widthOverride: 28
+        property int minimumWidth: 28
 
         signal clicked
 
         Layout.preferredHeight: 18
-        Layout.preferredWidth: widthOverride
+        Layout.preferredWidth: Math.max(minimumWidth, inlineChoiceText.implicitWidth + 8)
         opacity: enabled ? 1.0 : 0.45
 
         Rectangle {
@@ -1633,6 +1678,8 @@ Rectangle {
             }
         }
         Text {
+            id: inlineChoiceText
+
             anchors.centerIn: parent
             color: inlineMouseArea.containsMouse ? "#ffffff" : (inlineChoice.checked ? LateNightTheme.primaryDeckTextColor : "#777777")
             font.family: "Open Sans"
@@ -1758,10 +1805,24 @@ Rectangle {
         }
     }
     component ToolbarSettingsPopup: Popup {
+        id: toolbarSettingsPopup
+
+        property var anchorButton: null
+        property int minimumWidth: 190
+
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         modal: false
         padding: 3
-        width: 190
+        width: Math.min(root.width, Math.max(minimumWidth, contentColumn.implicitWidth + leftPadding + rightPadding))
+
+        onClosed: {
+            anchorButton = null;
+        }
+        onWidthChanged: {
+            if (visible && anchorButton) {
+                root.positionPopupForButton(toolbarSettingsPopup, anchorButton);
+            }
+        }
 
         background: Rectangle {
             border.color: "#585858"
@@ -1770,6 +1831,8 @@ Rectangle {
             radius: 2
         }
         contentItem: ColumnLayout {
+            id: contentColumn
+
             spacing: 0
         }
     }
