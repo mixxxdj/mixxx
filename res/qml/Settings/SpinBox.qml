@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import Qt5Compat.GraphicalEffects
 import "../Theme"
 
 SpinBox {
@@ -44,6 +43,10 @@ SpinBox {
 
             anchors.fill: parent
             color: Theme.accentColor
+            border {
+                color: "#0E2A54"
+                width: 1
+            }
 
             Text {
                 id: textLabel
@@ -55,30 +58,6 @@ SpinBox {
                 text: `${root.textFromValue(root.value, root.locale)}${root.suffix}` ?? ""
                 verticalAlignment: Text.AlignVCenter
             }
-        }
-        InnerShadow {
-            id: bottomInnerEffect
-
-            anchors.fill: parent
-            color: "#0E2A54"
-            horizontalOffset: -1
-            radius: 8
-            samples: 32
-            source: content
-            spread: 0.4
-            verticalOffset: -1
-        }
-        InnerShadow {
-            id: topInnerEffect
-
-            anchors.fill: parent
-            color: "#0E2A54"
-            horizontalOffset: 1
-            radius: 8
-            samples: 32
-            source: bottomInnerEffect
-            spread: 0.4
-            verticalOffset: 1
         }
     }
     down.indicator: Indicator {
@@ -113,9 +92,12 @@ SpinBox {
             id: content
 
             anchors.fill: parent
-            border.width: 0
             color: Theme.darkGray2
             radius: 2
+            border {
+                color: "#40000000"
+                width: 1
+            }
 
             Text {
                 anchors.fill: parent
@@ -126,30 +108,6 @@ SpinBox {
                 text: indicator.text
                 verticalAlignment: Text.AlignVCenter
             }
-        }
-        InnerShadow {
-            id: bottomInnerEffect
-
-            anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: -2
-            radius: 4
-            samples: 16
-            source: content
-            spread: 0.3
-            verticalOffset: -2
-        }
-        InnerShadow {
-            id: topInnerEffect
-
-            anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: 2
-            radius: 4
-            samples: 16
-            source: bottomInnerEffect
-            spread: 0.3
-            verticalOffset: 2
         }
     }
 }

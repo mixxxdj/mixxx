@@ -1,5 +1,5 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
+import QtQuick.Effects
 import QtQuick.Controls
 import "../Theme"
 
@@ -154,27 +154,25 @@ Item {
                 anchors.fill: parent
                 color: Theme.accentColor
                 radius: 7
+                border {
+                    color: "#0E2A54"
+                    width: 1
+                }
             }
-            InnerShadow {
-                id: handleEffect1
-
+            Rectangle {
                 anchors.fill: parent
-                color: "#0E2A54"
-                horizontalOffset: 0
-                radius: 16.0
-                samples: 16
+                radius: 7
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.25) }
+                    GradientStop { position: 0.4; color: "transparent" }
+                }
+            }
+            MultiEffect {
+                anchors.fill: parent
                 source: handle
-                verticalOffset: 0
-            }
-            DropShadow {
-                id: handleEffect2
-
-                anchors.fill: parent
-                color: Qt.alpha(Theme.darkGray, 0.25)
-                horizontalOffset: 0
-                radius: 12.0
-                source: handleEffect1
-                verticalOffset: 0
+                shadowEnabled: true
+                shadowColor: Qt.alpha(Theme.darkGray, 0.25)
+                shadowBlur: 0.1
             }
         }
 
@@ -200,28 +198,17 @@ Item {
             anchors.margins: 4
             color: Theme.darkGray2
             radius: 4
+            border {
+                color: "#353535"
+                width: 1
+            }
         }
-        DropShadow {
-            id: dropSetting
-
+        MultiEffect {
             anchors.fill: backgroundInput
-            color: Theme.darkGray
-            horizontalOffset: 0
-            radius: 4.0
             source: backgroundInput
-            verticalOffset: 0
-        }
-        InnerShadow {
-            id: effect2
-
-            anchors.fill: backgroundInput
-            color: "#353535"
-            horizontalOffset: 0
-            radius: 12
-            samples: 24
-            source: dropSetting
-            spread: 0.2
-            verticalOffset: 0
+            shadowEnabled: true
+            shadowColor: Theme.darkGray
+            shadowBlur: 0.15
         }
         Item {
             anchors.fill: parent

@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Qt5Compat.GraphicalEffects
 import Mixxx 1.0 as Mixxx
 import "." as Setting
 import "../Deck" as DeckComponents
@@ -528,6 +527,10 @@ Category {
 
                                                 anchors.fill: parent
                                                 color: Theme.accentColor
+                                                border {
+                                                    color: "#0E2A54"
+                                                    width: 1
+                                                }
 
                                                 Text {
                                                     id: textLabel
@@ -539,30 +542,6 @@ Category {
                                                     text: (126.0).toFixed(bpmPrecisionInput.value)
                                                     verticalAlignment: Text.AlignVCenter
                                                 }
-                                            }
-                                            InnerShadow {
-                                                id: bottomInnerEffect
-
-                                                anchors.fill: parent
-                                                color: "#0E2A54"
-                                                horizontalOffset: -1
-                                                radius: 8
-                                                samples: 32
-                                                source: content
-                                                spread: 0.4
-                                                verticalOffset: -1
-                                            }
-                                            InnerShadow {
-                                                id: topInnerEffect
-
-                                                anchors.fill: parent
-                                                color: "#0E2A54"
-                                                horizontalOffset: 1
-                                                radius: 8
-                                                samples: 32
-                                                source: bottomInnerEffect
-                                                spread: 0.4
-                                                verticalOffset: 1
                                             }
                                         }
 

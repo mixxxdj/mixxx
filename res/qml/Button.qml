@@ -1,5 +1,5 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick 2
+import QtQuick.Effects
 import QtQuick.Controls 2
 import "Theme"
 
@@ -14,58 +14,30 @@ AbstractButton {
     implicitHeight: 26
     implicitWidth: 52
 
-    background: Item {
+    background: Rectangle {
+        id: backgroundImage
+
         anchors.fill: parent
-
-        Rectangle {
-            id: backgroundImage
-
-            anchors.fill: parent
-            color: '#2B2B2B'
-            radius: 2
-        }
-        DropShadow {
-            id: effect1
-
-            anchors.fill: backgroundImage
-            color: "#80000000"
-            horizontalOffset: 0
-            radius: 1.0
-            source: backgroundImage
-            verticalOffset: 0
-        }
-        InnerShadow {
-            id: effect2
-
-            anchors.fill: backgroundImage
-            color: "#353535"
-            horizontalOffset: 1
-            radius: 1
-            samples: 16
-            source: effect1
-            verticalOffset: 1
-        }
-        InnerShadow {
-            anchors.fill: backgroundImage
-            color: "#353535"
-            horizontalOffset: -1
-            radius: 1
-            samples: 16
-            source: effect2
-            verticalOffset: -1
+        color: '#2B2B2B'
+        radius: 2
+        border {
+            color: '#1C1C1C'
+            width: 1
         }
     }
     contentItem: Item {
         anchors.fill: parent
 
-        Glow {
+        MultiEffect {
             id: labelGlow
 
             anchors.fill: parent
-            color: label.color
-            radius: 1
             source: label
-            spread: 0.1
+            shadowEnabled: true
+            shadowColor: label.color
+            shadowBlur: 0.05
+            shadowHorizontalOffset: 0
+            shadowVerticalOffset: 0
         }
         Label {
             id: label
@@ -89,15 +61,14 @@ AbstractButton {
             fillMode: Image.PreserveAspectFit
             height: icon.height
             source: icon.source
-            visible: false
             width: icon.width
-        }
-        ColorOverlay {
-            anchors.fill: image
-            antialiasing: true
-            color: root.normalColor
-            source: image
-            visible: icon.source != null
+
+            layer.enabled: icon.source != null
+            layer.effect: MultiEffect {
+                brightness: 1.0
+                colorization: 1.0
+                colorizationColor: root.normalColor
+            }
         }
     }
     states: [

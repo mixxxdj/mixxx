@@ -26,10 +26,12 @@ Item {
         key: "reverse"
 
         contentItem: Shape {
+            property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
             anchors.fill: parent
             antialiasing: true
-            layer.enabled: true
-            layer.samples: 4
+            layer.enabled: multiSamplingLevel > 1
+            layer.samples: multiSamplingLevel
 
             ShapePath {
                 fillColor: root.buttonColor
@@ -75,10 +77,12 @@ Item {
             anchors.fill: parent
 
             Shape {
+                property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                 antialiasing: true
                 height: 10
-                layer.enabled: true
-                layer.samples: 4
+                layer.enabled: multiSamplingLevel > 1
+                layer.samples: multiSamplingLevel
                 width: 15
 
                 anchors {
