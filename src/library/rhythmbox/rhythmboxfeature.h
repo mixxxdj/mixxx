@@ -36,6 +36,11 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
             const QVariant& playlist_name) override;
 
   private:
+    // returns the path to the database parts if they exist or an empty string
+    static QString maybeDatabaseFolder(void);
+    static QString maybeDatabaseFilePath(void);
+    static QString maybePlaylistsFilePath(void);
+
     // Removes all rows from a given table
     void clearTable(const QString& table_name);
     // reads the properties of a track and executes a SQL statement
