@@ -45,6 +45,8 @@ Variables:
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
         <BeatColor>#ffffff</BeatColor>
+        <DownbeatColor>#ffe0a0</DownbeatColor>
+        <BarCounterColor>#b4ffffff</BarCounterColor>
         <PlayPosColor>#FF4300</PlayPosColor>
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>

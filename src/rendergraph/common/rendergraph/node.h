@@ -8,4 +8,6 @@ class Node;
 } // namespace rendergraph
 
 class rendergraph::Node : public rendergraph::NodeInterface<rendergraph::BaseNode> {
+  public:
+    void setUsePreprocess(bool value);
 };

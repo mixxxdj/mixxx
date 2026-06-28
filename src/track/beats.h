@@ -387,6 +387,14 @@ class Beats : private std::enable_shared_from_this<Beats> {
         return m_lastMarkerBpm;
     }
 
+    int beatsPerBar() const {
+        return m_beatsPerBar;
+    }
+
+    int downbeatOffset() const {
+        return m_downbeatOffset;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
@@ -418,6 +426,9 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// failure.
     std::optional<BeatsPointer> trySetBpm(mixxx::Bpm bpm) const;
 
+    std::optional<BeatsPointer> trySetBeatsPerBar(int beatsPerBar) const;
+    std::optional<BeatsPointer> trySetDownbeatOffset(int downbeatOffset) const;
+
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
     ///
@@ -445,6 +456,9 @@ class Beats : private std::enable_shared_from_this<Beats> {
 
     // The sub-version of this beatgrid.
     const QString m_subVersion;
+
+    int m_beatsPerBar{0};
+    int m_downbeatOffset{0};
 };
 
 } // namespace mixxx

@@ -47,6 +47,9 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
     void setHighVisualGain(double gain) {
         m_highVisualGain = static_cast<CSAMPLE_GAIN>(gain);
     }
+    void setNormalizeWaveform(bool normalize) {
+        m_normalizeWaveform = normalize;
+    }
     virtual void setOptions(WaveformRendererSignalBase::Options) {
     }
 
@@ -55,6 +58,7 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
             float* pLowGain,
             float* pMidGain,
             float* highGain);
+    float getTrackPeak();
 
   protected:
     std::unique_ptr<ControlProxy> m_pEQEnabled;
@@ -72,6 +76,10 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
     CSAMPLE_GAIN m_lowVisualGain;
     CSAMPLE_GAIN m_midVisualGain;
     CSAMPLE_GAIN m_highVisualGain;
+
+    bool m_normalizeWaveform;
+    ConstWaveformPointer m_pCachedPeakWaveform;
+    float m_cachedTrackPeak;
 
     float m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
     float m_signalColor_r, m_signalColor_g, m_signalColor_b;

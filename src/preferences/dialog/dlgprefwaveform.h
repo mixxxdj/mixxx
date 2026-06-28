@@ -57,6 +57,10 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetPlayMarkerPosition(int position);
     void slotSetUntilMarkShowBeats(bool checked);
     void slotSetUntilMarkShowTime(bool checked);
+    void slotSetShowBarCounter(bool checked);
+    void slotSetBeatsPerBar(int value);
+    void slotSetDownbeatsEnabled(bool checked);
+    void slotSetNormalizeWaveform(bool checked);
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
     void slotSetUntilMarkTextHeightLimit(int index);

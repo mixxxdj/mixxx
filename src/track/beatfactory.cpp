@@ -52,7 +52,9 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<mixxx::audio::FramePos>& beats,
         const QHash<QString, QString>& extraVersionInfo,
         bool fixedTempo,
-        mixxx::audio::SampleRate sampleRate) {
+        mixxx::audio::SampleRate sampleRate,
+        int beatsPerBar,
+        int downbeatOffset) {
     DEBUG_ASSERT(sampleRate.isValid());
 #ifdef DEBUG_PRINT_BEATS
     for (mixxx::audio::FramePos beat : beats) {
@@ -81,15 +83,27 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
                 constantRegions, sampleRate, &firstBeat);
         if (firstBeat.isValid()) {
             firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
-            auto pGrid = mixxx::Beats::fromConstTempo(
+            mixxx::BeatsPointer pGrid = mixxx::Beats::fromConstTempo(
                     sampleRate, firstBeat.toNearestFrameBoundary(), constBPM, subVersion);
+            if (pGrid && beatsPerBar > 0) {
+                pGrid = pGrid->trySetBeatsPerBar(beatsPerBar).value_or(pGrid);
+            }
+            if (pGrid && downbeatOffset > 0) {
+                pGrid = pGrid->trySetDownbeatOffset(downbeatOffset).value_or(pGrid);
+            }
             return pGrid;
         } else {
             qWarning() << "Failed to create beat grid: Invalid first beat";
         }
     } else if (version == BEAT_MAP_VERSION) {
         QVector<mixxx::audio::FramePos> ironedBeats = BeatUtils::getBeats(constantRegions);
-        auto pBeatMap = mixxx::Beats::fromBeatPositions(sampleRate, ironedBeats, subVersion);
+        mixxx::BeatsPointer pBeatMap = mixxx::Beats::fromBeatPositions(sampleRate, ironedBeats, subVersion);
+        if (pBeatMap && beatsPerBar > 0) {
+            pBeatMap = pBeatMap->trySetBeatsPerBar(beatsPerBar).value_or(pBeatMap);
+        }
+        if (pBeatMap && downbeatOffset > 0) {
+            pBeatMap = pBeatMap->trySetDownbeatOffset(downbeatOffset).value_or(pBeatMap);
+        }
         return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";

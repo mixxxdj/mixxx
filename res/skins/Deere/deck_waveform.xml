@@ -28,6 +28,8 @@
         <SignalRGBLowColor></SignalRGBLowColor>
         <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <BeatColor>#ffffff</BeatColor>
+        <DownbeatColor>#ffe0a0</DownbeatColor>
+        <BarCounterColor>#b4ffffff</BarCounterColor>
         <PlayPosColor>#00FF00</PlayPosColor>
         <EndOfTrackColor>#EA0000</EndOfTrackColor>
         <SlipBorderOutlineColor>#f08c00</SlipBorderOutlineColor>

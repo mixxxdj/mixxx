@@ -10,6 +10,8 @@
     <SignalLowColor></SignalLowColor>
     <SignalColor>#191F24</SignalColor>
     <BeatColor>#FFFFFF</BeatColor>
+    <DownbeatColor>#FFE0A0</DownbeatColor>
+    <BarCounterColor>#b4191F24</BarCounterColor>
     <PlayPosColor>#00FF00</PlayPosColor>
     <EndOfTrackColor>#EA0000</EndOfTrackColor>
     <PassthroughLabelColor><Variable name="PassthroughLabelColorWaveform"/></PassthroughLabelColor>
