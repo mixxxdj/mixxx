@@ -1,8 +1,9 @@
 import "." as Skin
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 import "Theme"
 
 ComboBox {
@@ -28,37 +29,12 @@ ComboBox {
             color: '#232323'
             radius: 4
         }
-        InnerShadow {
-            id: bottomInnerEffect
-
+        MultiEffect {
             anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: -2
-            radius: 4
-            samples: 16
             source: background
-            spread: 0.3
-            verticalOffset: -2
-        }
-        InnerShadow {
-            id: topInnerEffect
-
-            anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: 2
-            radius: 4
-            samples: 16
-            source: bottomInnerEffect
-            spread: 0.3
-            verticalOffset: 2
-        }
-        DropShadow {
-            anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: 0
-            radius: 4.0
-            source: topInnerEffect
-            verticalOffset: 0
+            shadowEnabled: true
+            shadowColor: "#40000000"
+            shadowBlur: 0.06
         }
     }
     contentItem: Text {
@@ -111,17 +87,25 @@ ComboBox {
                 id: content
 
                 anchors.fill: parent
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowColor: "#000000"
+                    shadowBlur: 0.1
+                }
 
                 Shape {
                     id: listIndicator
+
+                    property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
 
                     anchors.right: parent.right
                     anchors.rightMargin: 3
                     anchors.top: parent.top
                     antialiasing: true
                     height: 20
-                    layer.enabled: true
-                    layer.samples: 4
+                    layer.enabled: multiSamplingLevel > 1
+                    layer.samples: multiSamplingLevel
                     width: 20
 
                     ShapePath {
@@ -218,14 +202,6 @@ ComboBox {
                         }
                     }
                 }
-            }
-            DropShadow {
-                anchors.fill: parent
-                color: "#000000"
-                horizontalOffset: 0
-                radius: 8.0
-                source: content
-                verticalOffset: 0
             }
         }
     }
