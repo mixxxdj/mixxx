@@ -8,6 +8,7 @@ import re
 import sys
 import tinycss.css21
 
+
 RE_CPP_CLASSNAME = re.compile(r"^\s*class\s+([\w_]+)")
 RE_CPP_OBJNAME = re.compile(r'setObjectName\(.*"([^"]+)"')
 RE_UI_OBJNAME = re.compile(r'<widget[^>]+name="([^"]+)"')

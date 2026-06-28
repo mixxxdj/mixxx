@@ -24,7 +24,6 @@ just add somethink like this to your JavaScript controller mapping:
 Optionally, you can also supply a Mixxx XML mapping file to this script. It
 will use that information to present information about available MIDI messages.
 """
-
 import argparse
 import queue
 import sys
