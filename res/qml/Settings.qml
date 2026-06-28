@@ -239,6 +239,8 @@ Popup {
                                         root.activeCategory.selectedIndex = index;
                                     }
                                 }
+                                parent.forceActiveFocus();
+                                showCategories.checked = false;
                             }
                         }
                     }
