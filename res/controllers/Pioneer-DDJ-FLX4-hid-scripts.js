@@ -248,13 +248,7 @@ PioneerDDJFLX4HID.browseHandler = function(field) {
 
 // Link controls to handlers
 PioneerDDJFLX4HID.registerInputPackets = function() {
-    var mainPacket = new HIDPacket("main", 0, function(packet, changedData) {
-        // Log raw packet data when debugging
-        if (PioneerDDJFLX4HID.debugHidPackets) {
-            var keys = Object.keys(changedData);
-            HIDDebug("DDJ-FLX4 HID fields: " + JSON.stringify(changedData));
-        }
-    });
+    var mainPacket = new HIDPacket("control", 0);
 
     // ---- Deck 1 buttons ----
     mainPacket.addControl("[Channel1]", "!shift", 0, "B", 0x40);
@@ -356,7 +350,10 @@ PioneerDDJFLX4HID.registerInputPackets = function() {
 
     this.controller.registerInputPacket(mainPacket);
 
-    // Jog wheel packet
+    // Jog wheel values are typically in separate HID reports
+    // On Android, they may come in the same report as main controls.
+    // Register with reportId=0 so any data not matching main controls is captured.
+    // TODO: Determine actual jog wheel offsets on Android once raw data is verified.
     var jogPacket = new HIDPacket("jog", 0);
     jogPacket.addControl("[Channel1]", "!jog_wheel", 0, "h");
     jogPacket.addControl("[Channel2]", "!jog_wheel", 2, "h");
