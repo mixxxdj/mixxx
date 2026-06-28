@@ -46,7 +46,7 @@ jobs:
           # There are too many files in the repo that have formatting issues. We'll
           # disable these checks for now when pushing directly (but still run these
           # on Pull Requests!).
-          SKIP: ${{ inputs.pull_request && 'no-commit-to-branch' || 'clang-format,eslint,no-commit-to-branch' }}
+          SKIP: ${{ inputs.pull_request && 'no-commit-to-branch,gersemi' || 'clang-format,eslint,no-commit-to-branch' }}
           # https://github.com/paleite/eslint-plugin-diff?tab=readme-ov-file#ci-setup
           ESLINT_PLUGIN_DIFF_COMMIT: ${{ inputs.pull_request && 'HEAD^1' || '' }}
           # pre-commit/action@v3.0.1 internally uses actions/cache@v4 (Node.js 20).

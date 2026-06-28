@@ -20,6 +20,7 @@ Samples auto-save in your Mixxx config when you exit.
 
 ## Sources
 
-All samples are freely licensed for use in Mixxx:
+All samples sourced from:
+- myinstants.com - popular DJ sound effects collection
 - Community-contributed DJ sound effects
 - Short audio clips suitable for pad triggering
