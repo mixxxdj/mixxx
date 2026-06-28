@@ -42,8 +42,8 @@ DlgMissing::DlgMissing(
     connect(btnSelect, &QPushButton::clicked, this, &DlgMissing::selectAll);
     connect(btnRelocate,
             &QPushButton::clicked,
-            m_pTrackTableView,
-            &WTrackTableView::slotRelocateTrack);
+            this,
+            &DlgMissing::slotRelocateTrack);
     connect(m_pTrackTableView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -77,6 +77,15 @@ QString DlgMissing::currentSearch() {
 
 void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
+}
+
+void DlgMissing::slotRelocateTrack() {
+    const QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
+    if (indices.count() != 1) {
+        return;
+    }
+
+    m_pMissingTableModel->relocateTrack(indices.first());
 }
 
 void DlgMissing::activateButtons(int numRowsSelected) {
