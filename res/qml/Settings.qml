@@ -4,7 +4,7 @@ import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 import "Theme"
 import "Settings" as Settings
 
@@ -119,13 +119,13 @@ Popup {
                                 fillMode: Image.PreserveAspectFit
                                 height: 24
                                 source: "images/gear.svg"
-                                visible: false
-                            }
-                            ColorOverlay {
-                                anchors.fill: handleImage
-                                antialiasing: true
-                                color: parent.ListView.isCurrentItem ? Theme.accentColor : Theme.midGray
-                                source: handleImage
+
+                                layer.enabled: true
+                                layer.effect: MultiEffect {
+                                    brightness: 1.0
+                                    colorization: 1.0
+                                    colorizationColor: parent.ListView.isCurrentItem ? Theme.accentColor : Theme.midGray
+                                }
                             }
                             Text {
                                 anchors.left: handleImage.right

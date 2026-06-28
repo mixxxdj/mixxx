@@ -1,5 +1,4 @@
 import Mixxx.Controls 1.0 as MixxxControls
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
 
@@ -24,26 +23,24 @@ MixxxControls.Fader {
     handle: Item {
         id: handleItem
 
-        height: handleImage.paintedHeight
-        width: handleImage.paintedWidth
+        height: handleImage.implicitHeight
+        width: handleImage.implicitWidth
         x: root.horizontal ? (root.visualPosition * (root.width - width)) : ((root.width - width) / 2)
         y: root.vertical ? (root.visualPosition * (root.height - height)) : ((root.height - height) / 2)
 
-        DropShadow {
-            color: "#80000000"
-            height: parent.height + 5
-            radius: 5
-            source: handleImage
-            verticalOffset: 5
+        Rectangle {
+            y: 5
             width: parent.width + 5
+            height: parent.height + 5
+            color: "#40000000"
+            radius: 3
         }
-    }
+        Image {
+            id: handleImage
 
-    Image {
-        id: handleImage
-
-        fillMode: Image.PreserveAspectFit
-        source: Theme.imgSliderHandle
-        visible: false
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectFit
+            source: Theme.imgSliderHandle
+        }
     }
 }
