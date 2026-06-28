@@ -36,7 +36,7 @@ class ChannelGroup {
     }
 
   private:
-    unsigned char m_channelBase;           // base (first) channel used on device
+    unsigned char m_channelBase; // base (first) channel used on device
     mixxx::audio::ChannelCount m_channels; // number of channels used (s/b 2 in most cases)
 };
 
@@ -50,53 +50,53 @@ inline bool operator!=(
 ///
 /// TODO: Choose a better name for this class
 class AudioPath {
-  public:
+public:
     /// Predefined types.
     ///
     /// If you add a new type here, be sure to add it to the various
     /// methods including getStringFromType, isIndexed, getTypeFromInt,
     /// channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     /// (if necessary), etc.
-    enum class AudioPathType : int {
-        Main,
-        Headphones,
-        Booth,
-        Bus,
-        Deck,
-        VinylControl,
-        Microphone,
-        Auxiliary,
-        RecordBroadcast,
-        Invalid, // if this isn't last bad things will happen -bkgood
-    };
-    AudioPath(unsigned char channelBase, mixxx::audio::ChannelCount channels);
-    virtual ~AudioPath() = default;
-    AudioPathType getType() const;
-    ChannelGroup getChannelGroup() const;
-    unsigned char getIndex() const;
-    bool channelsClash(const AudioPath& other) const;
-    QString getString() const;
-    static QString getStringFromType(AudioPathType type);
-    static QString getTrStringFromType(AudioPathType type, unsigned char index);
-    static AudioPathType getTypeFromString(QString string);
-    static bool isIndexed(AudioPathType type);
-    static AudioPathType getTypeFromInt(int typeInt);
+  enum class AudioPathType : int {
+      Main,
+      Headphones,
+      Booth,
+      Bus,
+      Deck,
+      VinylControl,
+      Microphone,
+      Auxiliary,
+      RecordBroadcast,
+      Invalid, // if this isn't last bad things will happen -bkgood
+  };
+  AudioPath(unsigned char channelBase, mixxx::audio::ChannelCount channels);
+  virtual ~AudioPath() = default;
+  AudioPathType getType() const;
+  ChannelGroup getChannelGroup() const;
+  unsigned char getIndex() const;
+  bool channelsClash(const AudioPath& other) const;
+  QString getString() const;
+  static QString getStringFromType(AudioPathType type);
+  static QString getTrStringFromType(AudioPathType type, unsigned char index);
+  static AudioPathType getTypeFromString(QString string);
+  static bool isIndexed(AudioPathType type);
+  static AudioPathType getTypeFromInt(int typeInt);
 
-    /// Returns the minimum number of channels needed on a sound device for an
-    /// AudioPathType.
-    static mixxx::audio::ChannelCount minChannelsForType(AudioPathType type);
+  /// Returns the minimum number of channels needed on a sound device for an
+  /// AudioPathType.
+  static mixxx::audio::ChannelCount minChannelsForType(AudioPathType type);
 
-    // Returns the maximum number of channels needed on a sound device for an
-    // AudioPathType.
-    static mixxx::audio::ChannelCount maxChannelsForType(AudioPathType type);
+  // Returns the maximum number of channels needed on a sound device for an
+  // AudioPathType.
+  static mixxx::audio::ChannelCount maxChannelsForType(AudioPathType type);
 
-    uint hashValue() const {
+  uint hashValue() const {
         // Exclude m_channelGroup from hash value!
         // See also: operator==()
         // TODO: Why??
         return (static_cast<int>(m_type) << 8) |
                 m_index;
-    }
+  }
     friend qhash_seed_t qHash(
             const AudioPath& path,
             qhash_seed_t seed = 0) {
@@ -145,40 +145,27 @@ class AudioOutput : public AudioPath {
             mixxx::audio::ChannelCount channels,
             unsigned char index = 0);
     ~AudioOutput() override = default;
-    QDomElement toXML(QDomElement* element) const;
-    static AudioOutput fromXML(const QDomElement& xml);
+    QDomElement toXML(QDomElement *element) const;
+    static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
     bool isHidden() const {
         return m_type == AudioPathType::RecordBroadcast;
     }
 
-    int getLatencyOffsetMs() const {
-        return m_latencyOffsetMs;
-    }
-    void setLatencyOffsetMs(int latencyOffsetMs) {
-        m_latencyOffsetMs = latencyOffsetMs;
-    }
-
   protected:
     void setType(AudioPathType type) override;
-
-  private:
-    int m_latencyOffsetMs = 0;
 };
 
 // This class is required to add the buffer, without changing the hash used as ID
 class AudioOutputBuffer : public AudioOutput {
   public:
     AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
-            : AudioOutput(out),
-              m_pBuffer(pBuffer) {
+           : AudioOutput(out),
+             m_pBuffer(pBuffer) {
 
-              };
+    };
     ~AudioOutputBuffer() override = default;
-    inline const CSAMPLE* getBuffer() const {
-        return m_pBuffer;
-    }
-
+    inline const CSAMPLE* getBuffer() const { return m_pBuffer; }
   private:
     const CSAMPLE* m_pBuffer;
 };
@@ -192,8 +179,8 @@ class AudioInput : public AudioPath {
             mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount(),
             unsigned char index = 0);
     ~AudioInput() override;
-    QDomElement toXML(QDomElement* element) const;
-    static AudioInput fromXML(const QDomElement& xml);
+    QDomElement toXML(QDomElement *element) const;
+    static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
     // implemented for regularity with AudioOutput
     bool isHidden() const {
@@ -211,15 +198,14 @@ class AudioInputBuffer : public AudioInput {
     AudioInputBuffer(const AudioInput& id, CSAMPLE* pBuffer)
             : AudioInput(id),
               m_pBuffer(pBuffer) {
+
     }
     ~AudioInputBuffer() override = default;
-    inline CSAMPLE* getBuffer() const {
-        return m_pBuffer;
-    }
-
+    inline CSAMPLE* getBuffer() const { return m_pBuffer; }
   private:
     CSAMPLE* m_pBuffer;
 };
+
 
 class AudioSource {
   public:
@@ -281,8 +267,7 @@ class SoundDeviceId final {
     QString debugName() const;
 
     SoundDeviceId()
-            : portAudioIndex(-1) {
-    }
+       : portAudioIndex(-1) {}
 };
 
 /// This must be registered with QMetaType::registerComparators for
@@ -291,7 +276,9 @@ class SoundDeviceId final {
 inline bool operator==(
         const SoundDeviceId& lhs,
         const SoundDeviceId& rhs) {
-    return lhs.name == rhs.name && lhs.alsaHwDevice == rhs.alsaHwDevice && lhs.portAudioIndex == rhs.portAudioIndex;
+    return lhs.name == rhs.name
+            && lhs.alsaHwDevice == rhs.alsaHwDevice
+            && lhs.portAudioIndex == rhs.portAudioIndex;
 }
 
 inline bool operator!=(

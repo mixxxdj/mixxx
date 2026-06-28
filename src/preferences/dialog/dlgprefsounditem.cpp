@@ -38,16 +38,11 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSoundItem::channelChanged);
-    connect(latencySpinBox,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this,
-            [this](double value) {
-                m_latencyOffsetMs = static_cast<int>(value);
-            });
     refreshDevices(devices);
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
+
 }
 
 /// Slot called when the parent preferences pane updates its list of sound
@@ -103,15 +98,16 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         channelComboBox->blockSignals(true);
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
-                channelsForType >= minChannelsForType;
-                --channelsForType) {
+                 channelsForType >= minChannelsForType; --channelsForType) {
             for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
-                    i += channelsForType) {
+                     i += channelsForType) {
                 QString channelString;
                 if (channelsForType == 1) {
                     channelString = tr("Channel %1").arg(i);
                 } else {
-                    channelString = tr("Channels %1 - %2").arg(QString::number(i), QString::number(i + channelsForType - 1));
+                    channelString = tr("Channels %1 - %2").arg(
+                            QString::number(i),
+                            QString::number(i + channelsForType - 1));
                 }
 
                 // Because QComboBox supports QPoint natively (via QVariant) we
@@ -119,7 +115,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
                 // and y is the channel count. We use i - 1 because the channel
                 // base is 0-indexed.
                 channelComboBox->addItem(channelString,
-                        QPoint(i - 1, channelsForType));
+                                         QPoint(i - 1, channelsForType));
             }
         }
         channelComboBox->setCurrentIndex(-1); // clear selection
@@ -158,14 +154,14 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
 /// @note If there are multiple AudioPaths matching this instance's type
 ///       and index (if applicable), then only the first one is used. A more
 ///       advanced preferences pane may one day allow multiples.
-void DlgPrefSoundItem::loadPath(const SoundManagerConfig& config) {
+void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
         const auto inputDeviceMap = config.getInputs();
         for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
-                        it.value().getChannelGroup().getChannelCount());
+                            it.value().getChannelGroup().getChannelCount());
                 return;
             }
         }
@@ -175,9 +171,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig& config) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
-                        it.value().getChannelGroup().getChannelCount());
-                m_latencyOffsetMs = it.value().getLatencyOffsetMs();
-                latencySpinBox->setValue(m_latencyOffsetMs);
+                            it.value().getChannelGroup().getChannelCount());
                 return;
             }
         }
@@ -198,8 +192,7 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     // to store the channel info. x is the channel base and y is the channel
     // count.
     QPoint channelData = channelComboBox->itemData(
-                                                channelComboBox->currentIndex())
-                                 .toPoint();
+        channelComboBox->currentIndex()).toPoint();
     int channelBase = channelData.x();
     const auto channelCount = mixxx::audio::ChannelCount(channelData.y());
 
@@ -211,11 +204,9 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
                 pDevice->getDeviceId(),
                 AudioInput(m_type, channelBase, channelCount, m_index));
     } else {
-        AudioOutput output(m_type, channelBase, channelCount, m_index);
-        output.setLatencyOffsetMs(m_latencyOffsetMs);
         config->addOutput(
                 pDevice->getDeviceId(),
-                output);
+                AudioOutput(m_type, channelBase, channelCount, m_index));
     }
 }
 
@@ -223,7 +214,6 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
 void DlgPrefSoundItem::save() {
     m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
-    m_savedLatencyOffsetMs = m_latencyOffsetMs;
 }
 
 /// Slot called to reload Item with previously saved settings.
@@ -236,8 +226,6 @@ void DlgPrefSoundItem::reload() {
     if (newChannel > -1) {
         channelComboBox->setCurrentIndex(newChannel);
     }
-    latencySpinBox->setValue(m_savedLatencyOffsetMs);
-    m_latencyOffsetMs = m_savedLatencyOffsetMs;
 }
 
 /// Gets the currently selected SoundDevice
@@ -249,7 +237,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     }
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (selection == pDevice->getDeviceId()) {
-            // qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId();
+            //qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId();
             return pDevice;
         }
     }
@@ -280,7 +268,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
 /// Selects a channel in the channel combo box given a channel number,
 /// or selects the first channel if the given channel isn't found.
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
-        unsigned int channels) {
+                                  unsigned int channels) {
     // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
     // to store the channel info. x is the channel base and y is the channel
     // count.

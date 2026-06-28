@@ -33,35 +33,6 @@
    <item>
     <widget class="QComboBox" name="channelComboBox"/>
    </item>
-   <item>
-    <widget class="QDoubleSpinBox" name="latencySpinBox">
-     <property name="suffix">
-      <string> ms</string>
-     </property>
-     <property name="decimals">
-      <number>1</number>
-     </property>
-     <property name="minimum">
-      <double>0.0</double>
-     </property>
-     <property name="maximum">
-      <double>500.0</double>
-     </property>
-     <property name="singleStep">
-      <double>0.1</double>
-     </property>
-     <property name="value">
-      <double>0.0</double>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="calibrateButton">
-     <property name="text">
-      <string>Calibrate</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>
