@@ -1290,8 +1290,6 @@ add_library(
   src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
   src/controllers/midi/midicontroller.cpp
   src/controllers/midi/midienumerator.cpp
-  $<$<BOOL:${ANDROID}>:src/controllers/midi/blemidicontroller.cpp>
-  $<$<BOOL:${ANDROID}>:src/controllers/midi/blemidienumerator.cpp>
   src/controllers/midi/midimessage.cpp
   src/controllers/midi/midioutputhandler.cpp
   src/controllers/midi/midiutils.cpp

@@ -7,8 +7,6 @@
 #include <QtJniTypes>
 #include <cstddef>
 
-#include "controllers/midi/blemidicontroller.h"
-
 namespace mixxx {
 namespace android {
 std::mutex s_androidLock = {};
@@ -33,18 +31,10 @@ const QJniObject& getIntent() {
     QJniObject context = QNativeInterface::QAndroidApplication::context();
 
     s_usbManager = QJniObject("org/mixxx/UsbPermission");
-    // On Android 12+ (API 31+), PendingIntent must be FLAG_MUTABLE for
-    // permission dialogs to work. FLAG_IMMUTABLE causes the dialog to
-    // silently not appear.
-    jint flagMutable = QJniObject::getStaticField<jint>(
-            "android/app/PendingIntent", "FLAG_MUTABLE");
-    jint flagImmutable = QJniObject::getStaticField<jint>(
-            "android/app/PendingIntent", "FLAG_IMMUTABLE");
-    // Use FLAG_MUTABLE on API 31+, fallback to FLAG_IMMUTABLE on older versions
-    jint apiLevel = QJniObject::getStaticField<jint>(
-            "android/os/Build$VERSION", "SDK_INT");
-    jint pendingIntentFlag = (apiLevel >= 31) ? flagMutable : flagImmutable;
-
+    jint FLAG_IMMUTABLE =
+            QJniObject::getStaticField<jint>(
+                    "android/app/PendingIntent",
+                    "FLAG_IMMUTABLE");
     QtJniTypes::String ACTION_USB_PERMISSION =
             QJniObject::fromString("org.mixxx.permissions.USB_PERMISSION");
     QtJniTypes::Intent intent = QJniObject("android/content/Intent",
@@ -61,7 +51,7 @@ const QJniObject& getIntent() {
                     context,
                     0,
                     intent,
-                    pendingIntentFlag);
+                    FLAG_IMMUTABLE);
 
     if (!s_intent.isValid()) {
         __android_log_print(ANDROID_LOG_WARN, "mixxx", "pending intent is invalid!");
@@ -124,66 +114,16 @@ void usbDeviceAccessResult(QJniObject device, bool granted) {
 } // namespace mixxx
 
 Q_DECLARE_JNI_CLASS(UsbPermissionClass, "org/mixxx/UsbPermission")
-Q_DECLARE_JNI_CLASS(BleMidiControllerClass, "org/mixxx/BleMidiController")
 
 void usbDeviceAccessResult(JNIEnv*, jobject, jobject device, jboolean granted) {
     mixxx::android::usbDeviceAccessResult(device, granted);
 }
 Q_DECLARE_JNI_NATIVE_METHOD(usbDeviceAccessResult)
 
-// BLE MIDI Controller JNI callbacks
-void nativeOnMidiDataReceived(JNIEnv* env, jobject, jstring deviceAddress, jbyteArray data) {
-    if (!data || !env)
-        return;
-    jsize len = env->GetArrayLength(data);
-    if (len <= 0)
-        return;
-
-    QByteArray byteArray(len, Qt::Uninitialized);
-    env->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte*>(byteArray.data()));
-    BleMidiController::onMidiDataReceived(byteArray);
-}
-Q_DECLARE_JNI_NATIVE_METHOD(nativeOnMidiDataReceived)
-
-void nativeOnDeviceConnected(JNIEnv* env, jobject, jstring deviceAddress, jstring deviceName) {
-    if (!env)
-        return;
-    auto addr = env->GetStringUTFChars(deviceAddress, nullptr);
-    auto name = deviceName ? env->GetStringUTFChars(deviceName, nullptr) : nullptr;
-    __android_log_print(ANDROID_LOG_INFO,
-            "mixxx",
-            "BLE MIDI device connected: %s (%s)",
-            name ? name : "?",
-            addr ? addr : "?");
-    if (addr)
-        env->ReleaseStringUTFChars(deviceAddress, addr);
-    if (name)
-        env->ReleaseStringUTFChars(deviceName, name);
-}
-Q_DECLARE_JNI_NATIVE_METHOD(nativeOnDeviceConnected)
-
-void nativeOnDeviceDisconnected(JNIEnv* env, jobject, jstring deviceAddress) {
-    if (!env)
-        return;
-    auto addr = env->GetStringUTFChars(deviceAddress, nullptr);
-    __android_log_print(ANDROID_LOG_INFO,
-            "mixxx",
-            "BLE MIDI device disconnected: %s",
-            addr ? addr : "?");
-    if (addr)
-        env->ReleaseStringUTFChars(deviceAddress, addr);
-}
-Q_DECLARE_JNI_NATIVE_METHOD(nativeOnDeviceDisconnected)
-
-JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* /*vm*/, void*) {
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM*, void*) {
     QJniEnvironment env;
     env.registerNativeMethods<QtJniTypes::UsbPermissionClass>({
             Q_JNI_NATIVE_METHOD(usbDeviceAccessResult),
-    });
-    env.registerNativeMethods<QtJniTypes::BleMidiControllerClass>({
-            Q_JNI_NATIVE_METHOD(nativeOnMidiDataReceived),
-            Q_JNI_NATIVE_METHOD(nativeOnDeviceConnected),
-            Q_JNI_NATIVE_METHOD(nativeOnDeviceDisconnected),
     });
     return JNI_VERSION_1_6;
 }

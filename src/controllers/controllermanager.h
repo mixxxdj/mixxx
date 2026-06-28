@@ -40,18 +40,8 @@ class ControllerManager : public QObject {
     }
     QString getConfiguredMappingFileForDevice(const QString& name) const;
 
-    /// Trigger BLE MIDI scan for wireless controllers (e.g. DDJ-FLX4)
-    void startBleScan();
-    /// Check if a BLE device is currently connected
-    bool isBleConnected() const;
-
     /// Prevent other parts of Mixxx from having to manually connect to our slots
-    void setUpDevices() {
-        qDebug() << "ControllerManager::setUpDevices() called, invoking slotSetUpDevices";
-        QMetaObject::invokeMethod(this,
-                &ControllerManager::slotSetUpDevices,
-                Qt::QueuedConnection);
-    };
+    void setUpDevices() { emit requestSetUpDevices(); };
 
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
@@ -110,7 +100,4 @@ class ControllerManager : public QObject {
     QSharedPointer<MappingInfoEnumerator> m_pMainThreadSystemMappingEnumerator;
     /// Accessed only from the ControllerManager thread via slotPollDevices().
     bool m_skipPoll;
-#ifdef __ANDROID__
-    class BleMidiEnumerator* m_pBleScanEnumerator = nullptr;
-#endif
 };
