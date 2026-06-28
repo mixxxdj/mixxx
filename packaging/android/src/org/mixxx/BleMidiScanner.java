@@ -182,7 +182,11 @@ public class BleMidiScanner {
 
         try {
             // Log scan start with detailed info
-            Log.i(TAG, "BLE scan starting - Bluetooth enabled: " + bluetoothAdapter.isEnabled() + ", location enabled: " + isLocationEnabled(context));
+            Log.i(TAG,
+                    "BLE scan starting - Bluetooth enabled: "
+                            + bluetoothAdapter.isEnabled()
+                            + ", location enabled: "
+                            + isLocationEnabled(context));
 
             // Perform an unfiltered scan (null filters) for maximum robustness across devices
             sLeScanner.startScan(
@@ -303,10 +307,10 @@ public class BleMidiScanner {
         // On older versions, check Settings.Secure
         try {
             return android.provider.Settings.Secure.getString(
-                       context.getContentResolver(),
-                       android.provider.Settings.Secure.LOCATION_MODE)
-                    .equals("0")
-                == false;
+                            context.getContentResolver(),
+                            android.provider.Settings.Secure.LOCATION_MODE)
+                            .equals("0")
+                    == false;
         } catch (Exception e) {
             return true; // Assume enabled if we can't check
         }
