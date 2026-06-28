@@ -8,7 +8,7 @@ Rectangle {
 
     required property bool selected
 
-    property alias capabilities: track.capabilities
+    property alias track: trackData
 
     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
