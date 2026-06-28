@@ -292,6 +292,7 @@ public class BleMidiScanner {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     private static boolean isLocationEnabled(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             android.location.LocationManager lm =
@@ -302,9 +303,9 @@ public class BleMidiScanner {
         // On older versions, check Settings.Secure
         try {
             return android.provider.Settings.Secure.getString(
-                                                       context.getContentResolver(),
-                                                       android.provider.Settings.Secure.LOCATION_MODE)
-                       .equals("0")
+                       context.getContentResolver(),
+                       android.provider.Settings.Secure.LOCATION_MODE)
+                    .equals("0")
                 == false;
         } catch (Exception e) {
             return true; // Assume enabled if we can't check
