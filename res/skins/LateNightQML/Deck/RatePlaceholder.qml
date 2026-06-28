@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
-import "../../../qml" as Skin
+import Mixxx.Controls 1.0 as MixxxControls
 import "../LateNightTheme"
 
 Item {
@@ -45,6 +45,12 @@ Item {
         id: bpmProxy
         group: root.group
         key: "bpm"
+    }
+
+    Mixxx.ControlProxy {
+        id: rateProxy
+        group: root.group
+        key: "rate"
     }
 
     Mixxx.ControlProxy {
@@ -228,8 +234,9 @@ Item {
             Item {
                 id: sliderContainer
                 Layout.preferredWidth: 54
-                Layout.fillHeight: true
-                Layout.minimumHeight: 118
+                Layout.preferredHeight: 121
+                Layout.minimumHeight: 121
+                Layout.alignment: Qt.AlignVCenter
 
                 // Rate range labels: top = negative direction, center = default, bottom = positive direction
                 Text {
@@ -276,24 +283,50 @@ Item {
                     horizontalAlignment: Text.AlignRight
                 }
 
-                Skin.ControlFader {
+                MixxxControls.Fader {
                     id: rateSlider
-                    anchors.centerIn: parent
+                    x: 5
+                    y: 2
                     width: 40
-                    height: Math.min(119, parent.height - 4)
+                    height: 119
+                    bar: true
                     barColor: "#888888"
-                    barMargin: 0
+                    barMargin: 7
                     barStart: 0.5
-                    bg: LateNightTheme.assetDeckRateSliderBackground
-                    fg: LateNightTheme.assetDeckRateSliderHandle
-                    group: root.group
-                    key: "rate"
+                    from: -1
+                    to: 1
+                    value: rateProxy.value
 
-                    handleImage {
-                        width: 34
-                        height: 18
-                        sourceSize.width: 34
-                        sourceSize.height: 18
+                    onMoved: function(value) {
+                        rateProxy.value = value;
+                    }
+
+                    TapHandler {
+                        onDoubleTapped: {
+                            rateSetDefaultProxy.value = 1;
+                        }
+                    }
+
+                    TapHandler {
+                        acceptedButtons: Qt.RightButton
+                        onTapped: {
+                            rateSetDefaultProxy.value = 1;
+                        }
+                    }
+
+                    background: Image {
+                        anchors.fill: parent
+                        fillMode: Image.PreserveAspectFit
+                        source: LateNightTheme.assetDeckRateSliderBackground
+                    }
+
+                    handle: Image {
+                        width: 40
+                        height: 17
+                        x: (rateSlider.width - width) / 2
+                        y: rateSlider.visualPosition * (rateSlider.height - height)
+                        fillMode: Image.PreserveAspectFit
+                        source: LateNightTheme.assetDeckRateSliderHandle
                     }
                 }
 
@@ -301,8 +334,8 @@ Item {
                     id: rateCenterAsset
                     width: 5
                     height: 5
-                    x: rateSlider.x - 3
-                    y: rateSlider.y + rateSlider.height / 2 - height / 2
+                    x: 2
+                    y: 59
                     z: rateSlider.z + 1
                     source: rateSetDefaultProxy.value > 0 ? LateNightTheme.optionalDeckRateCenterActive : LateNightTheme.optionalDeckRateCenterInactive
                     fillMode: Image.PreserveAspectFit
@@ -312,8 +345,8 @@ Item {
                 Rectangle {
                     width: 5
                     height: 5
-                    x: rateSlider.x - 3
-                    y: rateSlider.y + rateSlider.height / 2 - height / 2
+                    x: 2
+                    y: 59
                     z: rateSlider.z + 1
                     radius: 1
                     color: rateSetDefaultProxy.value > 0 ? "#00ffff" : "#4f4f4f"

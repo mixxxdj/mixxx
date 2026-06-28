@@ -17,6 +17,12 @@ Item {
     }
 
     Mixxx.ControlProxy {
+        id: trackLoadedProxy
+        group: root.group
+        key: "track_loaded"
+    }
+
+    Mixxx.ControlProxy {
         id: keyNotationProxy
         group: "[Library]"
         key: "key_notation"
@@ -55,6 +61,8 @@ Item {
     readonly property color stripTopColor: keyDistance < 0 ? colorForKey(keyProxy.value) : colorForKey(scaledKey(keyProxy.value, 1))
     readonly property color stripBottomColor: keyDistance < 0 ? colorForKey(scaledKey(keyProxy.value, -1)) : colorForKey(keyProxy.value)
     readonly property string displayKeyText: keyDisplayText(keyProxy.value, keyNotationProxy.value)
+    readonly property bool showKeyColorStrip: trackLoadedProxy.value > 0 && displayKeyText.length > 0
+    readonly property int keyTextX: showKeyColorStrip ? 30 : 26
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color keyTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
 
@@ -93,6 +101,7 @@ Item {
         y: 0
         width: 4
         height: 20
+        visible: root.showKeyColorStrip
 
         Rectangle {
             anchors.left: parent.left
@@ -113,9 +122,9 @@ Item {
 
     // Key text display
     Rectangle {
-        x: 30
+        x: root.keyTextX
         y: 0
-        width: root.width - 50
+        width: root.width - root.keyTextX - 20
         height: 20
         color: LateNightTheme.deckTopRowBackgroundColor
 
@@ -155,7 +164,7 @@ Item {
             anchors.fill: parent
             anchors.leftMargin: 6
             anchors.rightMargin: 6
-            text: root.displayKeyText.length > 0 ? root.displayKeyText : "--"
+            text: root.displayKeyText
             font.family: "Open Sans"
             font.pixelSize: 12
             font.weight: Font.Medium

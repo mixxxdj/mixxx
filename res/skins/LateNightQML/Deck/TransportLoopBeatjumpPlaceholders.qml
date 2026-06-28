@@ -215,7 +215,12 @@ Item {
         }
 
         Item {
-            Layout.preferredWidth: 8
+            Layout.preferredWidth: 2
+        }
+
+        Item {
+            Layout.fillWidth: true
+            Layout.maximumWidth: 80
         }
 
         // Loop controls (behavior in progress)
@@ -262,7 +267,12 @@ Item {
         }
 
         Item {
-            Layout.preferredWidth: 8
+            Layout.preferredWidth: 2
+        }
+
+        Item {
+            Layout.fillWidth: true
+            Layout.maximumWidth: 80
         }
 
         // Beatjump controls (behavior in progress)
