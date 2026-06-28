@@ -180,9 +180,10 @@ QList<Controller*> HidEnumerator::queryDevices() {
                 HidController* newDevice = new HidController(std::move(deviceInfo));
                 m_devices.push_back(newDevice);
             } else {
-                qInfo() << "Skipping non-HID interface" << ifaceIdx
-                        << "class" << ifaceClass
-                        << "on device" << usbDevice->callMethod<jstring>("getProductName").toString();
+                qInfo() << "Skipping non-HID interface" << ifaceIdx << "class"
+                        << ifaceClass << "on device"
+                        << usbDevice->callMethod<jstring>("getProductName")
+                                   .toString();
             }
         }
     }
