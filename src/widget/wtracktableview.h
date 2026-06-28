@@ -2,6 +2,8 @@
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
+#include <memory>
+#include <vector>
 
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
@@ -216,4 +218,5 @@ class WTrackTableView : public WLibraryTableView {
     ControlProxy* m_pSortOrder;
 
     int m_dropRow;
+    std::vector<std::unique_ptr<QAbstractItemDelegate>> m_columnDelegates;
 };
