@@ -5,7 +5,6 @@ import logging
 import subprocess
 import typing
 
-
 Line = typing.NamedTuple(
     "Line",
     [("sourcefile", str), ("number", int), ("text", str), ("added", bool)],
