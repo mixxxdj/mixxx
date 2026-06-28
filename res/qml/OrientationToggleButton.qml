@@ -1,38 +1,18 @@
-import "." as Skin
-import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
-import QtQuick 2.12
+import "." as Skin import Mixxx 1.0 as Mixxx import Mixxx.Controls 1.0 as MixxxControls import QtQuick 2.12
 
-Item {
-    id: root
+        Item{
+                id:root
 
-    required property string group
-    required property string key
-    property alias orientation: orientationSlider.value
-    property color color: "white"
+                required property string group required property string key property alias orientation:orientationSlider.value property color color: "white"
 
-    implicitWidth: 56
-    implicitHeight: 26
+                implicitWidth: 56 implicitHeight: 26
 
-    Skin.Fader {
-        id: orientationSlider
+                Skin.Fader{
+                        id:orientationSlider
 
-        anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        anchors.topMargin: 2
-        anchors.bottomMargin: 2
-        wheelEnabled: false
-        live: false
-        from: 0
-        to: 2
-        stepSize: 1
-        value: control.value
-        orientation: Qt.Horizontal
-        snapMode: MixxxControls.Slider.SnapOnRelease
-        onMoved: function(value) {
-            if (value != control.value)
-                control.value = value;
+                        anchors.fill:parent anchors.leftMargin: 10 anchors.rightMargin: 10 anchors.topMargin: 2 anchors.bottomMargin: 2 wheelEnabled: false live: false from: 0 to: 2 stepSize: 1 value:control.value orientation:Qt.Horizontal snapMode:MixxxControls.Slider.SnapOnRelease onMoved:function(value){
+                                if (value != control.value)
+                                                control.value = value;
         }
 
         background: Rectangle {
