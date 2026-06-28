@@ -1,7 +1,14 @@
 #include "qml/qmlskincontrolcreator.h"
 
+#include <QtDebug>
+
+#include "control/controlobject.h"
 #include "moc_qmlskincontrolcreator.cpp"
 #include "util/assert.h"
+
+namespace {
+const QString kSkinGroup = QStringLiteral("[Skin]");
+} // namespace
 
 namespace mixxx {
 namespace qml {
@@ -108,8 +115,19 @@ void QmlSkinControlCreator::createControl() {
     if (!m_isComponentComplete) {
         return;
     }
+    m_pControl.reset();
+
     if (!m_key.isValid()) {
-        m_pControl.reset();
+        return;
+    }
+    if (m_key.group != kSkinGroup) {
+        qWarning() << "QmlSkinControlCreator: Cannot create non-skin control"
+                   << m_key.group << m_key.item;
+        return;
+    }
+    if (ControlObject::exists(m_key)) {
+        qWarning() << "QmlSkinControlCreator: Cannot create already existing skin control"
+                   << m_key.group << m_key.item;
         return;
     }
 

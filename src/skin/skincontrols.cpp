@@ -7,36 +7,28 @@ const QString kSkinGroup = QStringLiteral("[Skin]");
 } // namespace
 
 SkinControls::SkinControls()
-        : m_showEffectRack(
-                  ConfigKey(kSkinGroup, QStringLiteral("show_effectrack")),
+        : m_showEffectRack(ConfigKey(kSkinGroup, QStringLiteral("show_effectrack")),
                   true,
                   true),
-          m_showLibraryCoverArt(
-                  ConfigKey(
-                          kSkinGroup, QStringLiteral("show_library_coverart")),
+          m_showLibraryCoverArt(ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")),
                   true,
                   true),
-          m_showMicrophones(
-                  ConfigKey(kSkinGroup, QStringLiteral("show_microphones")),
+          m_showMicrophones(ConfigKey(kSkinGroup, QStringLiteral("show_microphones")),
                   true,
                   true),
-          m_showPreviewDecks(
-                  ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")),
+          m_showPreviewDecks(ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")),
                   true,
                   true),
           m_showSamplers(ConfigKey(kSkinGroup, QStringLiteral("show_samplers")),
                   true,
                   true),
-          m_show4EffectUnits(
-                  ConfigKey(kSkinGroup, QStringLiteral("show_4effectunits")),
+          m_show4EffectUnits(ConfigKey(kSkinGroup, QStringLiteral("show_4effectunits")),
                   true,
                   false),
           m_showCoverArt(ConfigKey(kSkinGroup, QStringLiteral("show_coverart")),
                   true,
                   true),
-          m_showMaximizedLibrary(
-                  ConfigKey(
-                          kSkinGroup, QStringLiteral("show_maximized_library")),
+          m_showMaximizedLibrary(ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")),
                   true,
                   false),
           m_showMixer(ConfigKey(kSkinGroup, QStringLiteral("show_mixer")),
@@ -48,8 +40,7 @@ SkinControls::SkinControls()
           m_showSpinnies(ConfigKey(kSkinGroup, QStringLiteral("show_spinnies")),
                   true,
                   true),
-          m_showVinylControl(
-                  ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
+          m_showVinylControl(ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
                   true,
                   false) {
     m_showEffectRack.setButtonMode(mixxx::control::ButtonMode::Toggle);
