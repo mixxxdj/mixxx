@@ -150,6 +150,9 @@ class LoopingControl : public EngineControl {
 
     // Move the loop by beats.
     void slotLoopMove(double beats);
+    void slotLoopMoveSizeChangeRequest(double beats);
+    void slotLoopMoveForward(double pressed);
+    void slotLoopMoveBackward(double pressed);
 
     void slotLoopScale(double scaleFactor);
     void slotLoopDouble(double pressed);
@@ -258,6 +261,9 @@ class LoopingControl : public EngineControl {
     QList<BeatJumpControl*> m_beatJumps;
 
     ControlObject* m_pCOLoopMove;
+    ControlObject* m_pCOLoopMoveSize;
+    ControlPushButton* m_pCOLoopMoveForward;
+    ControlPushButton* m_pCOLoopMoveBackward;
     QList<LoopMoveControl*> m_loopMoves;
 
     // objects below are written from an engine worker thread
