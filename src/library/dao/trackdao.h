@@ -165,6 +165,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void addTracksFinish(bool rollback = false);
 
     bool updateTrack(const Track& track) const;
+    bool relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLocation) const;
 
     void hideAllTracks(const QDir& rootDir) const;
 

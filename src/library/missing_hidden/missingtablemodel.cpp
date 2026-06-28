@@ -1,9 +1,13 @@
 #include "library/missing_hidden/missingtablemodel.h"
 
+#include <qfiledialog.h>
+
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_missingtablemodel.cpp"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 
 namespace {
 
@@ -60,6 +64,39 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
+}
+
+void MissingTableModel::relocateTrack(const QModelIndex& index) {
+    TrackPointer pTrack = getTrack(index);
+    if (!pTrack) {
+        return;
+    }
+
+    QString location = QFileInfo(pTrack->getLocation()).absolutePath();
+    if (location.isEmpty() || !QDir(location).exists()) {
+        location = QDir::homePath();
+    }
+
+    const QString newLocation = QFileDialog::getOpenFileName(
+            nullptr,
+            tr("Locate missing file: %1").arg(pTrack->getTitle()),
+            location,
+            QString("Audio Files (%1)")
+                    .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
+
+    if (newLocation.isEmpty()) {
+        return;
+    }
+
+    const mixxx::FileInfo fileInfo(newLocation);
+    const TrackId trackId = pTrack->getId();
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    if (m_pTrackCollectionManager->relocateTrack(trackId, fileInfo)) {
+        select(); // Repopulate the data model
+    }
 }
 
 bool MissingTableModel::isColumnInternal(int column) {

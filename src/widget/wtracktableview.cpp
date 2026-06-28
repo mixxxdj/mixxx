@@ -1,5 +1,7 @@
 #include "widget/wtracktableview.h"
 
+#include <qlogging.h>
+
 #include <QDrag>
 #include <QModelIndex>
 #include <QScrollBar>

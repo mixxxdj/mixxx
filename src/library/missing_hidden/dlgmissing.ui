@@ -77,6 +77,22 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="btnRelocate">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Relocate the source file of the selected track from the library.</string>
+         </property>
+         <property name="text">
+          <string>Relocate</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

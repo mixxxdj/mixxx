@@ -1777,6 +1777,42 @@ bool TrackDAO::updateTrack(const Track& track) const {
     return true;
 }
 
+// Relocate the file linked to the track
+bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLocation) const {
+    DEBUG_ASSERT(trackId.isValid());
+
+    kLogger.debug() << "Relocating track" << trackId
+                    << "to" << newLocation;
+
+    SqlTransaction transaction(m_database);
+    FwdSqlQuery query(m_database,
+            "UPDATE track_locations SET "
+            "location = :location,"
+            "directory = :directory,"
+            "filename = :filename,"
+            "filesize = :filesize,"
+            "fs_deleted = 0,"
+            "needs_verification = 0 "
+            "WHERE id=(SELECT location FROM library WHERE id =:trackId)");
+    query.bindValue(":location", newLocation.location());
+    query.bindValue(":directory", newLocation.locationPath());
+    query.bindValue(":filename", newLocation.fileName());
+    query.bindValue(":filesize", QVariant::fromValue(newLocation.sizeInBytes()));
+    query.bindValue(":trackId", trackId.toVariant());
+
+    if (query.hasError() || !query.execPrepared()) {
+        return false;
+    }
+
+    if (query.numRowsAffected() == 0) {
+        kLogger.warning() << "relocateTrack had no effect: trackId " << trackId << "invalid.";
+        return false;
+    }
+    transaction.commit();
+
+    return true;
+}
+
 // Make sure that `directory` in in track_locations table is indeed a
 // directory path. This works around / removes residues of a bug where tracks
 // are falsely marked missing because `directory` == `location`.

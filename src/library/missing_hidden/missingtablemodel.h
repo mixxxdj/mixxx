@@ -23,4 +23,7 @@ class MissingTableModel final : public BaseSqlTableModel {
     Capabilities getCapabilities() const final;
 
     QString modelKey(bool noSearch) const override;
+
+  public slots:
+    void relocateTrack(const QModelIndex& index);
 };
