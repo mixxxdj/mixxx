@@ -48,7 +48,7 @@ repos:
       - id: trailing-whitespace
         exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|tsv|vert)$
       - id: no-commit-to-branch
-#protect main and any branch that has a semver - like name
+        #protect main and any branch that has a semver - like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
   - repo: https://github.com/codespell-project/codespell
     rev: v2.4.2
