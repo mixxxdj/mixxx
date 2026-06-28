@@ -47,8 +47,10 @@ class ControllerManager : public QObject {
 
     /// Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() {
-        qDebug() << "ControllerManager::setUpDevices() called, emitting requestSetUpDevices";
-        emit requestSetUpDevices();
+        qDebug() << "ControllerManager::setUpDevices() called, invoking slotSetUpDevices";
+        QMetaObject::invokeMethod(this,
+                &ControllerManager::slotSetUpDevices,
+                Qt::QueuedConnection);
     };
 
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
