@@ -38,6 +38,10 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #endif
 
+#ifdef __BUNGEE__
+#include "engine/bufferscalers/enginebufferscalebungee.h"
+#endif
+
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"
 #endif
@@ -281,6 +285,9 @@ EngineBuffer::EngineBuffer(const QString& group,
 #ifdef __RUBBERBAND__
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
 #endif
+#ifdef __BUNGEE__
+    m_pScaleBungee = new EngineBufferScaleBungee(m_pReadAheadManager);
+#endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
     m_pScaleVinyl = m_pScaleLinear;
     m_pScale = m_pScaleVinyl;
@@ -336,6 +343,9 @@ EngineBuffer::~EngineBuffer() {
     delete m_pScaleST;
 #ifdef __RUBBERBAND__
     delete m_pScaleRB;
+#endif
+#ifdef __BUNGEE__
+    delete m_pScaleBungee;
 #endif
 
     delete m_pKeylock;
@@ -881,6 +891,11 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         m_pScaleKeylock = m_pScaleRB;
         break;
 #endif
+#ifdef __BUNGEE__
+    case KeylockEngine::Bungee:
+        m_pScaleKeylock = m_pScaleBungee;
+        break;
+#endif
     default:
         slotKeylockEngineChanged(static_cast<double>(defaultKeylockEngine()));
         break;
@@ -1232,6 +1247,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     m_pScaleST->setSignal(m_sampleRate, m_channelCount);
 #ifdef __RUBBERBAND__
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
+#endif
+#ifdef __BUNGEE__
+    m_pScaleBungee->setSignal(m_sampleRate, m_channelCount);
 #endif
 
     bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;

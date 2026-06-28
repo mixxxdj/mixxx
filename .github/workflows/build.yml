@@ -55,6 +55,7 @@ jobs:
               -DQT6=ON
               -DQML=ON
               -DBULK=ON
+              -DBUNGEE=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
