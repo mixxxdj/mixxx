@@ -67,10 +67,6 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
 
-#ifdef __PIPEWIRE__
-    m_pPipewireEnumerator->initialize();
-#endif
-
     queryDevices();
 
     if (!m_config.readFromDisk()) {
