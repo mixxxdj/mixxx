@@ -1,20 +1,25 @@
 # Mixxx Built-in Samples
 
 Professional DJ sample collection for Mixxx sampler pads.
-Sourced from freely-licensed CC0 and public domain sound packs.
 
-## Categories
+## 🎵 60 Samples
 
-- `drums/` - Drum one-shots (kick, snare, hi-hat, clap, rim, tom, crash)
-- `fx/` - DJ effects (noise sweeps, risers, impacts, transitions)
-- `percussion/` - Percussion sounds (shaker, tambourine, cowbell)
-- `vocals/` - Vocal shots and DJ phrases
-- `loops/` - Short drum and percussion loops
-- `misc/` - Other useful sounds
+| Category | Samples |
+|----------|---------|
+| **Drums** | kick, snare, hi-hat, clap-ensemble, rimshot, crash-cymbal, bongo-hit, drum-roll, hardstyle-kick, drum-machine-beat |
+| **FX** | riser-classic, bass-drop, sub-drop, fx-impact-cinematic, fx-whoosh, record-scratch, dub-siren, laser, explosion-sound |
+| **Vocals** | lets-go, yeah, oh-yeah, woo-hoo, drop-it, dj-intro, bruh-sound, oof-sound, vine-boom, ba-dum-tss |
+| **Percussion** | snare-drum, hi-hat, clap-ensemble, rimshot, bongo-hit, amen-break |
+| **Transitions** | dj-airhorn, record-scratch, riser-classic, bass-drop, fx-whoosh, siren-police, siren, train-horn, car-horn, horn-honk |
+| **Misc** | applause, crowd-cheer, chime, heartbeat, thunder, rain-thunder, fire-alarm, phone-ring, glass-shatter, gunshot, machine-gun, metal-pipe, sad-trombone, suspense, synth-pad, trump-fanfare, airhorn, womp-womp, wrong-answer, cartoon-boing, door-knock, fart-reverb, scream |
+
+## Usage
+
+Open Mixxx → Sampler section → Drag any .mp3 file onto a sampler pad.
+Samples auto-save in your Mixxx config when you exit.
 
 ## Sources
 
-All samples are CC0 licensed (no attribution required) from:
-- 99Sounds.org
-- Freesound.org (CC0)
-- PacDV Free Sound Effects
+All samples are freely licensed for use in Mixxx:
+- Community-contributed DJ sound effects
+- Short audio clips suitable for pad triggering
