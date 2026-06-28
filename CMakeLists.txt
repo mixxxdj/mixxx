@@ -1,54 +1,54 @@
 cmake_minimum_required(VERSION 3.21)
-#lint_cmake : -readability / wonkycase
+# lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
 
-#CMAKE_CXX_COMPILER_ID : Distinguish between "AppleClang" and "Clang"
+# CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
 endif()
 
-#MACOSX_RPATH is set by default
+# MACOSX_RPATH is set by default
 if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-#Support new IN_LIST if () operator
+# Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
 endif()
 
-#Enforce interprocedural optimization
+# Enforce interprocedural optimization
 if(POLICY CMP0069)
   cmake_policy(SET CMP0069 NEW)
 endif()
 
-#Let AUTOMOC and AUTOUIC process GENERATED files
+# Let AUTOMOC and AUTOUIC process GENERATED files
 if(POLICY CMP0071)
   cmake_policy(SET CMP0071 NEW)
 endif()
 
-#Propagate interface link properties
+# Propagate interface link properties
 if(POLICY CMP0099)
-#This avoids a warning when qt deals with different behaviours controlled by this policy
-#in its cmake functions.See
-#https: // github.com/qt/qtbase/commit/e3e1007f9778d8fc629a06f7d3d216bb7f81351b
+  # This avoids a warning when qt deals with different behaviours controlled by this policy
+  # in its cmake functions. See
+  # https://github.com/qt/qtbase/commit/e3e1007f9778d8fc629a06f7d3d216bb7f81351b
   cmake_policy(SET CMP0099 NEW)
 endif()
 
-#Add support for cmake_dependent_option
+# Add support for cmake_dependent_option
 if(POLICY CMP0127)
   cmake_policy(SET CMP0127 NEW)
 endif()
 
-#An imported target missing its location property fails during generation.
+# An imported target missing its location property fails during generation.
 if(POLICY CMP0111)
   cmake_policy(SET CMP0111 NEW)
 endif()
 
-#Set the timestamp of extracted files to the time of the extraction instead of
-#the archived timestamp to make sure that dependent files are rebuilt if the
-#URL changes.
+# Set the timestamp of extracted files to the time of the extraction instead of
+# the archived timestamp to make sure that dependent files are rebuilt if the
+# URL changes.
 if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
@@ -117,10 +117,10 @@ if(
     endif()
   endif()
 
-#Extract the filename from the URL
+  # Extract the filename from the URL
   get_filename_component(FILENAME_WITH_EXTENSION "${BUILDENV_URL}" NAME)
 
-#Remove the extension from the filename(note that our buildenv names contain two dots)
+  # Remove the extension from the filename (note that our buildenv names contain two dots)
   string(
     REGEX REPLACE
     "\\.[^.]*$"
@@ -148,12 +148,12 @@ if(
         STATUS
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
-#Retry the download up to 3 times — downloads.mixxx.org occasionally
-#serves a 0 - byte response(CDN cache miss / origin hiccup) which then
-#fails the SHA256 check below and torpedoes the whole CI matrix.The
-#CMake `file(DOWNLOAD …)` command has no native retry, so we wrap it.
-#Each attempt deletes the previous attempt's truncated file so we
-#never reuse a corrupt cache.
+      # Retry the download up to 3 times — downloads.mixxx.org occasionally
+      # serves a 0-byte response (CDN cache miss / origin hiccup) which then
+      # fails the SHA256 check below and torpedoes the whole CI matrix. The
+      # CMake `file(DOWNLOAD …)` command has no native retry, so we wrap it.
+      # Each attempt deletes the previous attempt's truncated file so we
+      # never reuse a corrupt cache.
       set(_buildenv_download_attempts 3)
       set(_buildenv_download_ok FALSE)
       foreach(_attempt RANGE 1 ${_buildenv_download_attempts})
@@ -192,7 +192,7 @@ if(
         )
       endif()
     else()
-#Reference to suppress intentionally unused variable warnings
+      # Reference to suppress intentionally unused variable warnings
       set(_dummy "${BUILDENV_URL}")
     endif()
 
@@ -222,16 +222,16 @@ if(
       WORKING_DIRECTORY ${BUILDENV_BASEPATH}
     )
   else()
-#Reference to suppress intentionally unused variable warnings
+    # Reference to suppress intentionally unused variable warnings
     set(_dummy "${BUILDENV_SHA256}")
   endif()
 else()
-#Reference to suppress intentionally unused variable warnings
+  # Reference to suppress intentionally unused variable warnings
   set(_dummy "${BUILDENV_URL} ${BUILDENV_BASEPATH} ${BUILDENV_SHA256}")
 endif()
 
-#Use this function to throw an error because the build environment is not set
-#up correctly.
+# Use this function to throw an error because the build environment is not set
+# up correctly.
 function(fatal_error_missing_env)
   if(WIN32)
     if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -263,7 +263,7 @@ function(fatal_error_missing_env)
       )
     endif()
   elseif(UNIX AND NOT APPLE AND NOT ANDROID)
-#Linux, BSD, Solaris, Minix
+    # Linux, BSD, Solaris, Minix
     if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
@@ -307,7 +307,7 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
   endif()
 endif()
 if(WIN32)
-#Check if we are running from "Visual Studio 20XX Developer Command Prompt"
+  # Check if we are running from "Visual Studio 20XX Developer Command Prompt"
   if(NOT DEFINED ENV{INCLUDE})
     message(
       FATAL_ERROR
@@ -316,7 +316,7 @@ if(WIN32)
   endif()
 endif()
 if(WIN32)
-#Check if we are running from "Visual Studio 20XX Developer Command Prompt"
+  # Check if we are running from "Visual Studio 20XX Developer Command Prompt"
   if(NOT DEFINED ENV{INCLUDE})
     message(
       FATAL_ERROR
@@ -325,16 +325,16 @@ if(WIN32)
   endif()
 endif()
 
-#We use here ENV{MIXXX_VCPKG_ROOT } as a workaround to find the overlay folders
-#in manifest mode https: // github.com/microsoft/vcpkg/issues/12289.
-#Note : VCPKG_ROOT, the default location for the vcpkg cli tool is later
-#adjusted by CMAKE_TOOLCHAIN_FILE.
+# We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
+# in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
+# Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
+# adjusted by CMAKE_TOOLCHAIN_FILE.
 if(DEFINED ENV{MIXXX_VCPKG_ROOT} AND NOT DEFINED MIXXX_VCPKG_ROOT)
   set(MIXXX_VCPKG_ROOT "$ENV{MIXXX_VCPKG_ROOT}")
 endif()
 
 if(DEFINED MIXXX_VCPKG_ROOT)
-#Validate MIXXX_VCPKG_ROOT points to a vcpkg root to avoid confusing follow - up errors.
+  # Validate MIXXX_VCPKG_ROOT points to a vcpkg root to avoid confusing follow-up errors.
   set(_vcpkg_toolchain "${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
   if(NOT EXISTS "${_vcpkg_toolchain}")
     file(TO_NATIVE_PATH "${_vcpkg_toolchain}" _vcpkg_toolchain_native)
@@ -351,8 +351,8 @@ if(DEFINED MIXXX_VCPKG_ROOT)
     EXISTS "${MIXXX_VCPKG_ROOT}/overlay/ports"
     OR NOT EXISTS "${MIXXX_VCPKG_ROOT}/ports"
   )
-#MIXXX_VCPKG_ROOT points to our vcpkg environment
-#and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
+    # MIXXX_VCPKG_ROOT points to our vcpkg environment
+    # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
     message(STATUS "Using MIXXX_VCPKG_ROOT: ${MIXXX_VCPKG_ROOT}")
   else()
     message(
@@ -363,7 +363,7 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
-#required for manifest mode
+    # required for manifest mode
     set(VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/ports")
     if(APPLE)
       list(APPEND VCPKG_OVERLAY_PORTS "${MIXXX_VCPKG_ROOT}/overlay/osx")
@@ -373,7 +373,7 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_TRIPLETS)
-#required for manifest mode
+    # required for manifest mode
     set(VCPKG_OVERLAY_TRIPLETS "${MIXXX_VCPKG_ROOT}/overlay/triplets")
   endif()
 
@@ -402,12 +402,12 @@ set(
   FORCE
 )
 
-#Set a default build type if none was specified
-#See https: // blog.kitware.com/cmake-and-the-default-build-type/ for details.
+# Set a default build type if none was specified
+# See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
 set(default_build_type "RelWithDebInfo")
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git" AND NOT WIN32 AND NOT ANDROID)
-#On Windows and Android, Debug builds are linked to unoptimized libs
-#generating unusable slow Mixxx builds.
+  # On Windows and Android, Debug builds are linked to unoptimized libs
+  # generating unusable slow Mixxx builds.
   set(default_build_type "Debug")
 endif()
 
@@ -424,7 +424,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
       "Choose the type of build."
       FORCE
     )
-#Set the possible values of build type for cmake - gui
+    # Set the possible values of build type for cmake-gui
     set_property(
       CACHE CMAKE_BUILD_TYPE
       PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo"
@@ -450,10 +450,10 @@ cmake_dependent_option(
 
 if(QT6)
   if(ANDROID)
-#Android uses GLESv3.Enable MIXXX_USE_QOPENGL so the allshader
-#waveform renderers(which support GLES) are compiled.This gives
-#hardware - accelerated waveform rendering instead of the slow
-#QPainter software fallback.
+    # Android uses GLESv3. Enable MIXXX_USE_QOPENGL so the allshader
+    # waveform renderers (which support GLES) are compiled. This gives
+    # hardware-accelerated waveform rendering instead of the slow
+    # QPainter software fallback.
     set(QOPENGL ON CACHE INTERNAL "Enabled on Android for GLES rendering")
   else()
     set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
@@ -488,20 +488,20 @@ if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
       ""
     )
   endif()
-#Enabling this causes Qt's FindWrapRt C++ compile check to fail as it tries
-#to run `clang - scan - deps` (because we set the C++ standard to 20).Emscripten
-#does not ship this binary yet, though.Potentially relevant upstream bug:
-#https: // github.com/emscripten-core/emscripten/issues/21042
+  # Enabling this causes Qt's FindWrapRt C++ compile check to fail as it tries
+  # to run `clang-scan-deps` (because we set the C++ standard to 20). Emscripten
+  # does not ship this binary yet, though. Potentially relevant upstream bug:
+  # https://github.com/emscripten-core/emscripten/issues/21042
   set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 elseif(APPLE)
-#Check if xcode - select is installed
+  # Check if xcode-select is installed
   execute_process(
     COMMAND xcode-select -v
     RESULT_VARIABLE XCODE_SELECT_RESULT
     OUTPUT_QUIET
   )
   if(XCODE_SELECT_RESULT)
-#xcode - select command failed, meaning it is not installed or not configured properly
+    # xcode-select command failed, meaning it is not installed or not configured properly
     message(
       FATAL_ERROR
       "'xcode-select -v' failed with '${XCODE_SELECT_RESULT}'. You may need to install Xcode and run 'sudo xcode-select --install'."
@@ -512,7 +512,7 @@ elseif(APPLE)
     message(STATUS "Targeting macOS (${VCPKG_TARGET_TRIPLET})")
     set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Target macOS")
     if(VCPKG_TARGET_TRIPLET MATCHES "^arm64-")
-#Minimum macOS version for arm64 Support
+      # Minimum macOS version for arm64 Support
       set(
         CMAKE_OSX_DEPLOYMENT_TARGET
         11.0
@@ -528,7 +528,7 @@ elseif(APPLE)
       )
     else()
       if(QT6)
-#Minimum macOS version supported by Qt 6.5
+        # Minimum macOS version supported by Qt 6.5
         set(
           CMAKE_OSX_DEPLOYMENT_TARGET
           11.0
@@ -536,14 +536,14 @@ elseif(APPLE)
           "Minimum macOS version the build will be able to run on"
         )
       else()
-#Minimum macOS version supported by Qt 5.12
+        # Minimum macOS version supported by Qt 5.12
         set(
           CMAKE_OSX_DEPLOYMENT_TARGET
           10.12
           CACHE STRING
           "Minimum macOS version the build will be able to run on"
         )
-#Needed for deployment target < 10.14
+        # Needed for deployment target < 10.14
         add_compile_options(-fno-aligned-allocation)
       endif()
     endif()
@@ -565,8 +565,7 @@ elseif(APPLE)
 endif()
 
 project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
-        # Work around missing version suffixes support
-        # https://gitlab.kitware.com/cmake/cmake/-/issues/16716
+# Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
@@ -575,7 +574,7 @@ set(
   "Mixxx is Free DJ software that gives you everything you need to perform live mixes."
 )
 
-#Used for force control of color output
+# Used for force control of color output
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
@@ -586,11 +585,11 @@ include(GNUInstallDirs)
 include(DefaultOption)
 include(IsStaticLibrary)
 
-#Verify VCPKG settings
+# Verify VCPKG settings
 if(DEFINED _VCPKG_INSTALLED_DIR)
   if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
-#Fail early if this part of CMAKE_PREFIX_PATH does not exist
-#else the library lookups below will fail with misleading error messages
+    # Fail early if this part of CMAKE_PREFIX_PATH does not exist
+    # else the library lookups below will fail with misleading error messages
     message(
       STATUS
       "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
@@ -603,10 +602,10 @@ if(DEFINED _VCPKG_INSTALLED_DIR)
 endif()
 
 #######################################################################
-#Compilers and toolchains
+# Compilers and toolchains
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#GNU is GNU GCC
+  # GNU is GNU GCC
   set(GNU_GCC true)
 else()
   set(GNU_GCC false)
@@ -617,25 +616,25 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(LLVM_CLANG false)
     set(MSVC true)
   else()
-#using regular Clang or AppleClang
+    # using regular Clang or AppleClang
     set(LLVM_CLANG true)
   endif()
 else()
   set(LLVM_CLANG false)
 endif()
 
-#CMake implicitly sets the variable MSVC to true for Microsoft
-#Visual C++ or another compiler simulating Visual C++.
-#https: // cmake.org/cmake/help/latest/variable/MSVC.html
+# CMake implicitly sets the variable MSVC to true for Microsoft
+# Visual C++ or another compiler simulating Visual C++.
+# https://cmake.org/cmake/help/latest/variable/MSVC.html
 
 #######################################################################
 
 set(CMAKE_CXX_STANDARD 20)
 if(MSVC)
-#Ensure MSVC populates __cplusplus correctly.
+  # Ensure MSVC populates __cplusplus correctly.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
-#Remove unreferenced code and data
-#Since c++ 11 they can safely be removed to speed up linking.
+  # Remove unreferenced code and data
+  # Since c++11 they can safely be removed to speed up linking.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:inline")
 
   if(NOT DEFINED MSVC_TOOLSET_VERSION OR MSVC_TOOLSET_VERSION VERSION_LESS 143)
@@ -649,10 +648,10 @@ if(MSVC)
   endif()
 endif()
 
-#Speed up builds on HDDs and prevent wearing of SDDs
+# Speed up builds on HDDs and prevent wearing of SDDs
 #
-#This is only applies to gcc / clang, therefore this option is forcibly set to
-#ON on all other compilers.
+# This is only applies to gcc/clang, therefore this option is forcibly set to
+# ON on all other compilers.
 cmake_dependent_option(
   BUILD_LOW_MEMORY
   "Store temporary build files on disk by disabling the build option -pipe"
@@ -664,10 +663,10 @@ if(NOT BUILD_LOW_MEMORY)
   add_compile_options(-pipe)
 endif()
 
-#Coverage
+# Coverage
 #
-#This is only available with GCC, therefore this option is forcibly set to OFF
-#for all other compilers.
+# This is only available with GCC, therefore this option is forcibly set to OFF
+# for all other compilers.
 cmake_dependent_option(
   COVERAGE
   "Coverage (i.e. gcov) support"
@@ -680,10 +679,10 @@ if(COVERAGE)
   add_link_options(--coverage -fprofile-arcs -ftest-coverage)
 endif()
 
-#Profiling
+# Profiling
 #
-#This is only available on Linux, therefore this option is forcibly set to OFF
-#on all other platforms.
+# This is only available on Linux, therefore this option is forcibly set to OFF
+# on all other platforms.
 cmake_dependent_option(
   PROFILING
   "Profiling (e.g. gprof) support"
@@ -697,7 +696,7 @@ if(PROFILING)
 endif()
 
 #
-#Optimizations
+# Optimizations
 #
 
 set(
@@ -714,33 +713,31 @@ string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 
-#CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
-#We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset(IPO disabled) to save
-#build time at the cost of a bigger memory footprint at run - time.
-#See https://github.com/mixxxdj/mixxx/pull/3589 for some test results
-#Note : IPO has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
-#Uncomment the following code to enable IPO for Release builds
-# if (NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT
-#         CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL
-#                                   "off")
-#include(CheckIPOSupported)
-#check_ipo_supported(RESULT HAVE_IPO)
-#if (HAVE_IPO)
-#set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-#endif()
+# CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
+# We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) to save
+# build time at the cost of a bigger memory footprint at run-time.
+# See https://github.com/mixxxdj/mixxx/pull/3589 for some test results
+# Note: IPO has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
+# Uncomment the following code to enable IPO for Release builds
+#if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
+#  include(CheckIPOSupported)
+#  check_ipo_supported(RESULT HAVE_IPO)
+#  if(HAVE_IPO)
+#    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+#  endif()
 #endif()
 
 if(MSVC)
-#Microsoft Visual Studio Compiler
+  # Microsoft Visual Studio Compiler
   add_compile_options(/UTF8)
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x64|x86_64|AMD64)$")
-#Target architecture is x64->x64 has always SSE and SSE2 instruction sets
+    # Target architecture is x64 -> x64 has always SSE and SSE2 instruction sets
     message(STATUS "x64 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-#Define gcc / clang style defines for SSE and SSE2 for compatibility
+    # Define gcc/clang style defines for SSE and SSE2 for compatibility
     add_compile_definitions("__SSE__" "__SSE2__")
   endif()
 
-#Needed for sccache
+  # Needed for sccache
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
     string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
@@ -771,33 +768,29 @@ if(MSVC)
   endif()
 
   if(NOT OPTIMIZE STREQUAL "off")
-#Use the fastest floating point math library
-#http: // msdn.microsoft.com/en-us/library/e7s85ffb.aspx
-#http: // msdn.microsoft.com/en-us/library/ms235601.aspx
+    # Use the fastest floating point math library
+    # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
+    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
     add_compile_options(/fp:fast)
 
-#Suggested for unused code removal
-#http: // msdn.microsoft.com/en-us/library/ms235601.aspx
-#http: // msdn.microsoft.com/en-us/library/xsa71f43.aspx
-#http: // msdn.microsoft.com/en-us/library/bxwfs976.aspx
+    # Suggested for unused code removal
+    # http://msdn.microsoft.com/en-us/library/ms235601.aspx
+    # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
+    # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
 
-#For repeated local development builds, /                                    \
-        INCREMENTAL offers much faster build times with the same performance \
-                of the executable,
-#unless link time code generation(like CMAKE_INTERPROCEDURAL_OPTIMIZATION) \
-        is used,                                                           \
-        which is contrary to incremental linking.
+    # For repeated local development builds, /INCREMENTAL offers much faster build times with the same performance of the executable,
+    # unless link time code generation (like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-#Optimize Debug Builds as well, to have "normal" behavior of Mixxx during development
+      # Optimize Debug Builds as well, to have "normal" behavior of Mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
       string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Ob0" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
 
       add_compile_options(/O2) # this implies /Od2
-#Remove / RTC1 flag set by CMAKE by default(conflicts with / O2)
+      # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
       string(
         REPLACE
         "/RTC1"
@@ -807,10 +800,8 @@ if(MSVC)
       )
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-#For some reasons cmake uses / \
-        Ob1 in RelWithDebInfo  \
-                https: // gitlab.kitware.com/cmake/cmake/-/issues/20812
-#/ O2 is applied by CMake and this implies / Od2
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
+      # /O2 is applied by CMake and this implies /Od2
       string(
         REPLACE
         "/Ob1"
@@ -826,16 +817,14 @@ if(MSVC)
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
       )
 
-#Reduce the size of the binary in RelWithDebInfo builds
-#Do not use / OPT : ICF because it has no effect.
-#https: // github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      # Reduce the size of the binary in RelWithDebInfo builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
 
-#/ INCREMENTAL is incompatible with / OPT : REF, but it's the CMake default for RelWithDebInfo
-#The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the \
-                GUI or                                                       \
-        in CMakeSettings.json,
-#therefore we can't rely on the default.
+      # /INCREMENTAL is incompatible with /OPT:REF, but it's the CMake default for RelWithDebInfo
+      # The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the GUI or in CMakeSettings.json,
+      # therefore we can't rely on the default.
       string(
         FIND
         CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
@@ -855,34 +844,34 @@ if(MSVC)
           "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}"
         )
       endif()
-#Note : CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the / GL and / LTCG flags for us
+      # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-#Reduce the size of the binary in Release builds
-#Do not use / OPT : ICF because it has no effect.
-#https: // github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      # Reduce the size of the binary in Release builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-#Target architecture is x86 with SSE and SSE2
+        # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-#Define gcc / clang style defines for SSE and SSE2 for compatibility
+        # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
-#Set compiler option for SSE / SSE2
+        # Set compiler option for SSE/SSE2
         add_compile_options(/arch:SSE2)
       endif()
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling optimizations for native system, specified by user")
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-#Target architecture is x86 with SSE and SSE2
+        # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-#Define gcc / clang style defines for SSE and SSE2 for compatibility
+        # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
-#Define the target processor instruction and other compiler optimization flags here:
-#https: // docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
-#add_compile_options(/ arch : AVX512)
+      # Define the target processor instruction and other compiler optimization flags here:
+      # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+      # add_compile_options(/arch:AVX512)
       message(
         FATAL_ERROR
         "User need to set the MSVC compiler flags for the native processor here!"
@@ -901,9 +890,9 @@ if(MSVC)
       )
     endif()
   else()
-#OPTIMIZE = off
+    # OPTIMIZE=off
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-#Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -923,7 +912,7 @@ if(MSVC)
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-#Remove optimize flags set by cmake defaults
+      # Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -938,9 +927,7 @@ if(MSVC)
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
       )
-#For some reasons cmake uses / \
-        Ob1 in RelWithDebInfo  \
-                https: // gitlab.kitware.com/cmake/cmake/-/issues/20812
+      # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
       string(
         REPLACE
         "/Ob1"
@@ -961,47 +948,47 @@ if(MSVC)
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
   if(NOT OPTIMIZE STREQUAL "off")
-#Common flags to all optimizations.
-#- ffast - math will prevent a performance penalty by denormals
-#(floating point values almost Zero are treated as Zero)
-#unfortunately that work only on 64 bit CPUs or with sse2 enabled
-#The following optimisation flags makes the engine code ~3 times
-#faster, measured on a Atom CPU.
+    # Common flags to all optimizations.
+    # -ffast-math will prevent a performance penalty by denormals
+    # (floating point values almost Zero are treated as Zero)
+    # unfortunately that work only on 64 bit CPUs or with sse2 enabled
+    # The following optimisation flags makes the engine code ~3 times
+    # faster, measured on a Atom CPU.
     add_compile_options(-ffast-math -funroll-loops)
     if(EMSCRIPTEN)
-#Optimize for size + speed when targeting Emscripten / WebAssembly
-#This is recommended as we use asyncify:
-#See https: // doc.qt.io/qt-6/wasm.html#asyncify
+      # Optimize for size + speed when targeting Emscripten/WebAssembly
+      # This is recommended as we use asyncify:
+      # See https://doc.qt.io/qt-6/wasm.html#asyncify
       add_compile_options(-Os)
     elseif(ANDROID)
-#Android : -Oz is applied per - target below(after qt_add_executable)
-#to allow Thin LTO + gc - sections to cooperate.Still apply - O2 here
-#for any third - party static libs built in - tree that don't get the
-#per - target flags(e.g.PortAudioRingBuffer).
+      # Android: -Oz is applied per-target below (after qt_add_executable)
+      # to allow Thin LTO + gc-sections to cooperate. Still apply -O2 here
+      # for any third-party static libs built in-tree that don't get the
+      # per-target flags (e.g. PortAudioRingBuffer).
       add_compile_options(-O2)
     else()
       add_compile_options(-O3)
     endif()
-#set - fomit - frame - pointer when we don't profile and are not using
-#Clang sanitizers.
-#Note : It is only included in - O on machines where it does not
-#interfere with debugging
+    # set -fomit-frame-pointer when we don't profile and are not using
+    # Clang sanitizers.
+    # Note: It is only included in -O on machines where it does not
+    # interfere with debugging
     if(NOT PROFILING AND NOT SANITIZERS)
       add_compile_options(-fomit-frame-pointer)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
-#portable : sse2 CPU(>= Pentium 4)
+      # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
         if(NOT EMSCRIPTEN)
           add_compile_options(-mtune=generic)
         endif()
-#- mtune = generic picks the most common, but compatible options.
-#on arm platforms equivalent to - march = arch
+        # -mtune=generic picks the most common, but compatible options.
+        # on arm platforms equivalent to -march=arch
         if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-#the sse flags are not set by default on 32 bit builds
-#but are not supported on arm builds
+          # the sse flags are not set by default on 32 bit builds
+          # but are not supported on arm builds
           add_compile_options(-msse2)
           if(EMSCRIPTEN)
             add_compile_options(-msimd128)
@@ -1009,29 +996,29 @@ elseif(GNU_GCC OR LLVM_CLANG)
             add_compile_options(-mfpmath=sse)
           endif()
         endif()
-#TODO(rryan) : macOS can use SSE3, and possibly SSE 4.1 once
-#we require macOS 10.12.
-#https: // stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
+        # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
+        # we require macOS 10.12.
+        # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
       elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7.*)$") # but not armv8
         add_compile_options(-mfloat-abi=hard -mfpu=neon)
       endif()
-#this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-#This should be our default build for distribution
-#It's a little sketchy, but turning on SSE2 will gain
-# 100 % performance in our filter code and allows us to
-#turns on denormal zeroing.
-#We don 't really support CPU' s earlier than Pentium 4,
-#which is the class of CPUs this decision affects.
-#The downside of this is that we aren't truly
-#i386 compatible, so builds that claim 'i386' will crash.
-#-- rryan 2 / 2011
-#Note : SSE2 is a core part of x64 CPUs
+      # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+      # This should be our default build for distribution
+      # It's a little sketchy, but turning on SSE2 will gain
+      # 100% performance in our filter code and allows us to
+      # turns on denormal zeroing.
+      # We don't really support CPU's earlier than Pentium 4,
+      # which is the class of CPUs this decision affects.
+      # The downside of this is that we aren't truly
+      # i386 compatible, so builds that claim 'i386' will crash.
+      # -- rryan 2/2011
+      # Note: SSE2 is a core part of x64 CPUs
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
       add_compile_options(-march=native)
-#Note : requires gcc >= 4.2.0
-#macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-#are set automatically
+      # Note: requires gcc >= 4.2.0
+      # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+      # are set automatically
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7.*)$") # but not armv8
         add_compile_options(-mfloat-abi=hard -mfpu=neon)
       endif()
@@ -1039,8 +1026,8 @@ elseif(GNU_GCC OR LLVM_CLANG)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message("Enabling pure i386 code")
         add_compile_options(-mtune=generic)
-#- mtune = generic pick the most common, but compatible options.
-#on arm platforms equivalent to - march = arch
+        # -mtune=generic pick the most common, but compatible options.
+        # on arm platforms equivalent to -march=arch
       endif()
     else()
       message(
@@ -1056,13 +1043,13 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 
 if(WIN32)
-#Add support for lib prefix on Windows
+  # Add support for lib prefix on Windows
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
 
 if(MSVC)
   if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
-#With MSVC, PCH is faster than caching
+    # With MSVC, PCH is faster than caching
     set(CMAKE_DISABLE_PRECOMPILE_HEADERS OFF)
   endif()
   set(
@@ -1072,7 +1059,7 @@ if(MSVC)
     "Disable precompiled headers"
   )
 
-#sccache support
+  # sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
   if(SCCACHE_EXECUTABLE)
     message(STATUS "Found sccache: ${SCCACHE_EXECUTABLE}")
@@ -1092,7 +1079,7 @@ if(MSVC)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}")
   endif()
 else()
-#ccache support
+  # ccache support
   find_program(CCACHE_EXECUTABLE "ccache")
   if(CCACHE_EXECUTABLE)
     message(STATUS "Found ccache: ${CCACHE_EXECUTABLE}")
@@ -1113,7 +1100,7 @@ else()
 
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
-#without this compiler messages in `make` backend would be uncolored
+      # without this compiler messages in `make` backend would be uncolored
       set(
         CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}"
@@ -1147,9 +1134,7 @@ else()
 endif()
 
 if(NOT MSVC)
-#Try to configure mold as linker via - fuse - ld = mold,             \
-                                              support from gcc 12.1, \
-                                              gcc 11.2.0 - 16 or clang
+  # Try to configure mold as linker via -fuse-ld=mold, support from gcc 12.1, gcc 11.2.0-16 or clang
   execute_process(
     COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=mold -Wl,--version
     ERROR_QUIET
@@ -1160,7 +1145,7 @@ if(NOT MSVC)
     set(MOLD_FUSE_FOUND TRUE)
   endif()
   if(NOT MOLD_FUSE_FOUND)
-#check if the symlink ld is in the mold folder for older compiler
+    # check if the symlink ld is in the mold folder for older compiler
     find_program(MOLD_SYMLINK "${CMAKE_INSTALL_LIBEXECDIR}/mold/ld")
     get_filename_component(MOLD_SYMLINK_DIRECTORY ${MOLD_SYMLINK} DIRECTORY)
   endif()
@@ -1182,7 +1167,7 @@ if(NOT MSVC)
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
   else()
-#Try to configure lld as linker
+    # Try to configure lld as linker
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
       ERROR_QUIET
@@ -1206,7 +1191,7 @@ if(NOT MSVC)
         )
       endif()
     endif()
-#LLD 10.0.0 does not work because of https: // bugs.llvm.org/show_bug.cgi?id=45769
+    # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
     default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
     if(LLD_SUPPORT)
       if(LLD_VERSION_STRING)
@@ -1234,7 +1219,7 @@ set(
   "CMAKE_CXX_CLANG_TIDY equivalent that only applies to mixxx sources, not bundled dependencies"
 )
 
-#Mixxx itself
+# Mixxx itself
 add_library(
   mixxx-lib
   STATIC
@@ -1816,9 +1801,9 @@ add_library(
   src/waveform/widgets/simplesignalwaveformwidget.cpp
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/waveform/widgets/glwaveformwidgetabstract.cpp
-#endif
+  #endif
   src/waveform/widgets/glvsynctestwidget.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
@@ -1888,10 +1873,10 @@ add_library(
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
   src/widget/wslidercomposed.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/widget/wspinny.cpp
   src/widget/wspinnybase.cpp
-#endif
+  #endif
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
@@ -1902,10 +1887,10 @@ add_library(
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
   src/widget/wtrackwidgetgroup.cpp
-#if !defined(Q_OS_ANDROID)
+  #if !defined(Q_OS_ANDROID)
   src/widget/wvumeter.cpp
   src/widget/wvumeterbase.cpp
-#endif
+  #endif
   src/widget/wvumeterlegacy.cpp
   src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
@@ -2076,11 +2061,9 @@ if(NOT QML)
   target_sources(
     mixxx-lib
     PRIVATE
-#The following sources need to be in the QML target in order to get \
-        QML_ELEMENT properly interpreted.
-#However, if we build Mixxx without QML support, these are still required, \
-        so it gets appended to the
-#main target
+      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+      # main target
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
   )
@@ -2088,7 +2071,7 @@ else()
   target_sources(
     mixxx-lib
     PRIVATE
-#The following source depends of QML being available but aren't part of the new QML UI
+      # The following source depends of QML being available but aren't part of the new QML UI
       src/controllers/controllerenginethreadcontrol.cpp
       src/controllers/controllerscreenpreview.cpp
   )
@@ -2137,17 +2120,8 @@ if(QOPENGL)
       src/widget/wspinnyglsl.cpp
       src/widget/wvumeterglsl.cpp
   )
-
-#BLE MIDI enumerator(Android BLE for DDJ - FLX4 wireless) + Music Matcher(Deezer)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/controllers/midi/blemidienumerator.cpp
-      src/controllers/midi/blemidicontroller.cpp
-      src/library/aibro/musicmatcherclient.cpp
-  )
 else()
-#Qt5 fallback only — QGLWidget was removed in Qt6
+  # Qt5 fallback only — QGLWidget was removed in Qt6
   if(NOT QT6)
     target_sources(
       mixxx-lib
@@ -2158,8 +2132,8 @@ else()
         src/widget/wglwidgetqglwidget.cpp
     )
   endif()
-#Provide stub WGLWidget implementations for Android(QOPENGL = OFF)
-#so the linker can resolve virtual method symbols
+  # Provide stub WGLWidget implementations for Android (QOPENGL=OFF)
+  # so the linker can resolve virtual method symbols
   if(ANDROID)
     target_sources(mixxx-lib PRIVATE src/widget/wglwidgetqopengl_stub.cpp)
   endif()
@@ -2184,22 +2158,22 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
 endif()
 
 if(ANDROID)
-#Define QT_OPENGL_ES_2 so the deprecated desktop - GL - only renderers
-#(which include QOpenGLFunctions_2_1) are properly excluded on Android.
+  # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
+  # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
 endif()
 
 if(APPLE)
   enable_language(OBJC OBJCXX)
 
-#Enable Automatic Reference Counting(ARC) when compiling Objective - C(++).
-#This frees us from having to worry about memory management when interfacing
-#with Apple frameworks(e.g.as in itunesmacosimporter.mm) since the compiler
-#will automatically insert retain / release calls on Objective - C objects.
+  # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
+  # This frees us from having to worry about memory management when interfacing
+  # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
+  # will automatically insert retain/release calls on Objective-C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
 
-#Disable deprecation warnings for OpenGL on macOS as we won't switch to
-#Apple's Metal API in the foreseeable future.
+  # Disable deprecation warnings for OpenGL on macOS as we won't switch to
+  # Apple's Metal API in the foreseeable future.
   target_compile_definitions(mixxx-lib PUBLIC GL_SILENCE_DEPRECATION)
 
   target_sources(mixxx-lib PRIVATE src/util/appleosversion.mm)
@@ -2259,13 +2233,13 @@ if(APPLE)
 endif()
 
 if(EMSCRIPTEN)
-#We need asyncify to support asynchronous calls(e.g.QDialog::exec)
-#when targeting Emscripten / WebAssembly.
-#See https: // doc.qt.io/qt-6/wasm.html#asyncify
+  # We need asyncify to support asynchronous calls (e.g. QDialog::exec)
+  # when targeting Emscripten/WebAssembly.
+  # See https://doc.qt.io/qt-6/wasm.html#asyncify
   target_link_options(mixxx-lib PUBLIC -sASYNCIFY)
 endif()
 
-#QML Debugging
+# QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
   message(
@@ -2284,7 +2258,7 @@ if(MSVC)
       PUBLIC
         /W3 # Warning Level 3 (production quality)
         /wd4200 # C4200: nonstandard extension used: zero-sized array in struct/union
-#Note : Even with CMAKE_C_STANDARD = 99 MSVC does not complain about C99 flexible array members
+      # Note: Even with CMAKE_C_STANDARD = 99 MSVC does not complain about C99 flexible array members
     )
     target_compile_definitions(
       mixxx-lib
@@ -2294,7 +2268,7 @@ if(MSVC)
     )
   endif()
 else()
-#TODO : Add - Wtrampolines, not yet supported by clazy
+  # TODO: Add -Wtrampolines, not yet supported by clazy
   target_compile_options(
     mixxx-lib
     PUBLIC
@@ -2358,10 +2332,10 @@ target_compile_definitions(
     $<$<NOT:$<CONFIG:Debug>>:MIXXX_BUILD_RELEASE>
 )
 
-#Mac - specific options
+# Mac-specific options
 #
-#These options are OFF by default, and since they are only available on macOS,
-#they are forcibly set to OFF on all other platforms.
+# These options are OFF by default, and since they are only available on macOS,
+# they are forcibly set to OFF on all other platforms.
 cmake_dependent_option(
   MACOS_BUNDLE
   "Install files to proper locations to make an .app bundle"
@@ -2380,10 +2354,10 @@ if(MACAPPSTORE)
   target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
 endif()
 
-#Windows - specific options
+# Windows-specific options
 if(WIN32)
-#https: // docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
-#_WIN32_WINNT_WIN7 = 0x0601
+  # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
+  # _WIN32_WINNT_WIN7 = 0x0601
   target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
   target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
   if(MSVC)
@@ -2392,7 +2366,7 @@ if(WIN32)
 endif()
 
 #
-#Installation directories
+# Installation directories
 #
 set(MIXXX_INSTALL_BINDIR ".")
 set(MIXXX_INSTALL_DATADIR ".")
@@ -2440,23 +2414,23 @@ endif()
 if(WIN32)
   target_compile_definitions(mixxx-lib PUBLIC __WINDOWS__)
 
-#Helps prevent duplicate symbols
+  # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
 
-#Need this on Windows until we have UTF16 support in Mixxx use stl min max
-#defines
-#http: // connect.microsoft.com/VisualStudio/feedback/details/553420/std-cpp-
-#max - and-std - cpp - min - not-available - in - visual - c - 2010
+  # Need this on Windows until we have UTF16 support in Mixxx use stl min max
+  # defines
+  # http://connect.microsoft.com/VisualStudio/feedback/details/553420/std-cpp-
+  # max-and-std-cpp-min-not-available-in-visual-c-2010
   target_compile_definitions(mixxx-lib PUBLIC NOMINMAX UNICODE)
 
-#shoutidjc / shout.h checks for WIN32 to see if we are on Windows.
+  # shoutidjc/shout.h checks for WIN32 to see if we are on Windows.
   target_compile_definitions(mixxx-lib PUBLIC WIN32)
 
   target_link_libraries(mixxx-lib PRIVATE comctl32 shell32)
 
   if(MSVC)
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
-#Force MSVS to generate a manifest(MSVC2010)
+    # Force MSVS to generate a manifest (MSVC2010)
     target_link_options(mixxx-lib PUBLIC /manifest)
   endif()
 elseif(UNIX)
@@ -2474,18 +2448,17 @@ elseif(UNIX)
   endif()
 endif()
 
-#The mixxx executable
+# The mixxx executable
 if(QT6)
   find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
-#This is the first package form the environment, \
-        if this fails give hints how to install the environment
+  # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
   endif()
-#qt_add_executable() is the recommended initial call for qt_finalize_target()
-#below that takes care of the correct object order in the resulting binary
-#According to https: // doc.qt.io/qt-6/qt-finalize-target.html it is importand for
-#builds with Qt < 3.21
+  # qt_add_executable() is the recommended initial call for qt_finalize_target()
+  # below that takes care of the correct object order in the resulting binary
+  # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
+  # builds with Qt < 3.21
   if(ANDROID)
     target_compile_definitions(
       mixxx-lib
@@ -2548,28 +2521,28 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
-#Use C++ 23 for Android(NDK r28 Clang 19 supports it fully).
-#Desktop stays at C++ 20 because GCC 13 on Ubuntu 24.04 doesn't fully support C++23.
+    # Use C++23 for Android (NDK r28 Clang 19 supports it fully).
+    # Desktop stays at C++20 because GCC 13 on Ubuntu 24.04 doesn't fully support C++23.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -fPIC")
 
-# ─── Android performance & size optimizations ───────────────────────
-#- O2 + full LTO gives the best perf / size tradeoff on ARM64.
-#- Oz sacrifices ~10 - 15 % perf for ~5 % size savings which is not
-#worth it for a DJ app where audio DSP latency matters.
+    # ─── Android performance & size optimizations ───────────────────────
+    # -O2 + full LTO gives the best perf/size tradeoff on ARM64.
+    # -Oz sacrifices ~10-15% perf for ~5% size savings which is not
+    # worth it for a DJ app where audio DSP latency matters.
     target_compile_options(
       mixxx-lib
       PUBLIC -O2 -ffunction-sections -fdata-sections
     )
-#Full LTO(not Thin LTO) for release builds — maximizes cross - TU
-#inlining and dead - code elimination.With NDK r28 Clang 19 this is
-#stable and produces measurably smaller + faster binaries.
+    # Full LTO (not Thin LTO) for release builds — maximizes cross-TU
+    # inlining and dead-code elimination. With NDK r28 Clang 19 this is
+    # stable and produces measurably smaller+faster binaries.
     target_compile_options(mixxx-lib PUBLIC -flto=full)
     target_link_options(mixxx-lib PUBLIC -flto=full)
 
-#Locate the NDK's bundled libomp.so dynamically. The path used to be
-#hardcoded to `lib / clang / 18 / ...` which broke every time the NDK was
-#bumped(r27 ships Clang 18, r28 ships Clang 19, r29 + will ship newer).
-#Glob the single Clang version directory the NDK installs and pick that.
+    # Locate the NDK's bundled libomp.so dynamically. The path used to be
+    # hardcoded to `lib/clang/18/...` which broke every time the NDK was
+    # bumped (r27 ships Clang 18, r28 ships Clang 19, r29+ will ship newer).
+    # Glob the single Clang version directory the NDK installs and pick that.
     file(
       GLOB _android_clang_runtime_dirs
       LIST_DIRECTORIES true
@@ -2584,8 +2557,8 @@ if(QT6)
         "Is the NDK installed correctly?"
       )
     endif()
-#Pick the highest - numbered(most recent) entry; an NDK normally ships
-#exactly one but be defensive if a side - by - side install ever happens.
+    # Pick the highest-numbered (most recent) entry; an NDK normally ships
+    # exactly one but be defensive if a side-by-side install ever happens.
     list(SORT _android_clang_runtime_dirs)
     list(GET _android_clang_runtime_dirs -1 _android_clang_runtime_dir)
     set(
@@ -2599,10 +2572,10 @@ if(QT6)
         "missing. Did the NDK layout change?"
       )
     endif()
-#Ship a stripped copy of libomp.so.The NDK ships it unstripped
-#(~600 KiB); `llvm - strip -- strip - unneeded` brings it down to ~200 KiB
-#without affecting OpenMP runtime behaviour.The stripped copy lives
-#in the build dir so the NDK install is left untouched.
+    # Ship a stripped copy of libomp.so. The NDK ships it unstripped
+    # (~600 KiB); `llvm-strip --strip-unneeded` brings it down to ~200 KiB
+    # without affecting OpenMP runtime behaviour. The stripped copy lives
+    # in the build dir so the NDK install is left untouched.
     set(
       _android_strip
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/llvm-strip"
@@ -2632,26 +2605,26 @@ if(QT6)
       mixxx
       PROPERTIES QT_ANDROID_EXTRA_LIBS "${_android_libomp_stripped}"
     )
-# 16 KB page - size compatibility.Pixel 8a / 9 series and any device
-#exposing `ro.product.cpu.pagesize = 16384` refuse to load.so files
-#whose segments aren't aligned to 16 KB. NDK r28 enables this by
-#default for new projects but Mixxx overrides linker flags above —
-#re - apply explicitly so we benefit on the new devices and don't
-#silently regress to 4 KB - only loads.The `android + relr` relocation
-#packing format collapses RELATIVE relocations into a bitmap(saves
-#roughly 5–10 % off `libmixxx - lib.so` and a comparable share of the
-#compressed APK) and is supported by every Android version we ship to.
+    # 16 KB page-size compatibility. Pixel 8a / 9 series and any device
+    # exposing `ro.product.cpu.pagesize=16384` refuse to load .so files
+    # whose segments aren't aligned to 16 KB. NDK r28 enables this by
+    # default for new projects but Mixxx overrides linker flags above —
+    # re-apply explicitly so we benefit on the new devices and don't
+    # silently regress to 4 KB-only loads. The `android+relr` relocation
+    # packing format collapses RELATIVE relocations into a bitmap (saves
+    # roughly 5–10 % off `libmixxx-lib.so` and a comparable share of the
+    # compressed APK) and is supported by every Android version we ship to.
     target_link_options(
       mixxx-lib
       PUBLIC
         "LINKER:-z,max-page-size=16384"
         "LINKER:--pack-dyn-relocs=android+relr"
-#Dead - code / dead - data elimination(requires - ffunction - sections
-# and -fdata - sections above).Saves 10 - 20 % on the final.so.
+        # Dead-code / dead-data elimination (requires -ffunction-sections
+        # and -fdata-sections above). Saves 10-20 % on the final .so.
         "LINKER:--gc-sections"
-#Identical Code Folding — merges functions with the same body.
-#"safe" mode only folds functions whose address is never taken,
-#so it cannot break function - pointer comparisons.
+        # Identical Code Folding — merges functions with the same body.
+        # "safe" mode only folds functions whose address is never taken,
+        # so it cannot break function-pointer comparisons.
         "LINKER:--icf=safe"
     )
     add_custom_target(
@@ -2660,18 +2633,18 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
         ${CMAKE_CURRENT_BINARY_DIR}/android
-#We deliberately copy a subset of res / to keep the APK small.The bits
-#we drop are pure desktop - platform clutter on Android(and DeX, the
-#primary target for this build, doesn't need icon themes from
-#res / linux or res / osx either).Approximate APK savings from this
-#filter : ~80 MiB raw / ~25 - 35 MiB compressed.Re - add a directory
-#below if you genuinely need it on Android.
-#- res / linux, res / osx  → desktop - only icon themes / Info.plist
-#- res / Mixxx - Keyboard - Shortcuts.pdf → ~360 KiB doc, never opened
-#- res / skins / {Deere, Shade, Tango, * 64 Samplers }  → ~12 MiB; we ship
-#only LateNight(the default skin returned by SkinLoader) plus
-#the shared*.qss helpers
-#- res / translations/* except English  → ~70 MiB of .qm files; the
+      # We deliberately copy a subset of res/ to keep the APK small. The bits
+      # we drop are pure desktop-platform clutter on Android (and DeX, the
+      # primary target for this build, doesn't need icon themes from
+      # res/linux or res/osx either). Approximate APK savings from this
+      # filter: ~80 MiB raw / ~25-35 MiB compressed. Re-add a directory
+      # below if you genuinely need it on Android.
+      #   - res/linux, res/osx  → desktop-only icon themes / Info.plist
+      #   - res/Mixxx-Keyboard-Shortcuts.pdf → ~360 KiB doc, never opened
+      #   - res/skins/{Deere,Shade,Tango,*64 Samplers}  → ~12 MiB; we ship
+      #     only LateNight (the default skin returned by SkinLoader) plus
+      #     the shared *.qss helpers
+      #   - res/translations/* except English  → ~70 MiB of .qm files; the
       #     user runs the app in English and would otherwise have to find
       #     Settings → Preferences to switch back. Re-add specific locales
       #     here if needed.
@@ -4297,7 +4270,6 @@ if(QML)
     RESOURCE_PREFIX /mixxx.org/imports
     OPTIONAL_IMPORTS Mixxx
     QML_FILES
-      res/qml/Mixxx/Controls/Slider.qml
       res/qml/Mixxx/Controls/Knob.qml
       res/qml/Mixxx/Controls/Fader.qml
       res/qml/Mixxx/Controls/Spinny.qml
