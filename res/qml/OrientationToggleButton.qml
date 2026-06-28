@@ -1,5 +1,6 @@
 import "." as Skin
 import Mixxx 1.0 as Mixxx
+import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick 2.12
 
 Item {
@@ -28,12 +29,10 @@ Item {
         stepSize: 1
         value: control.value
         orientation: Qt.Horizontal
-        snapMode: Fader.SnapOnRelease
-        onMoved: {
-            // The slider's `value` is not updated until after the move ended.
-            const val = valueAt(visualPosition);
-            if (val != control.value)
-                control.value = val;
+        snapMode: MixxxControls.Slider.SnapOnRelease
+        onMoved: function(value) {
+            if (value != control.value)
+                control.value = value;
         }
 
         background: Rectangle {

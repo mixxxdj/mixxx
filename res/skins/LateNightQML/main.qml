@@ -1,5 +1,5 @@
 import "../../qml" as Skin
-import "../../qml/Theme"
+import "LateNightTheme"
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
@@ -17,7 +17,7 @@ ApplicationWindow {
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
 
-    color: Theme.backgroundColor
+    color: LateNightTheme.backgroundColor
     height: 1008
     minimumHeight: 300
     minimumWidth: 680
@@ -153,7 +153,7 @@ ApplicationWindow {
         Rectangle {
             id: toolbar
 
-            color: Theme.toolbarBackgroundColor
+            color: LateNightTheme.toolbarBackgroundColor
             height: 36
             radius: 1
             width: parent.width
@@ -164,7 +164,7 @@ ApplicationWindow {
                 Skin.Button {
                     id: show4DecksButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     text: "4 Decks"
                     visible: root.height > 515
@@ -172,7 +172,7 @@ ApplicationWindow {
                 Skin.Button {
                     id: maximizeLibraryButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     text: "Library"
 
@@ -194,21 +194,21 @@ ApplicationWindow {
                 Skin.Button {
                     id: showEffectsButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     text: "Effects"
                 }
                 Skin.Button {
                     id: showAuxButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     text: "Aux"
                 }
                 Skin.Button {
                     id: showSamplersButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     text: "Sampler"
                 }
@@ -218,14 +218,14 @@ ApplicationWindow {
                 Skin.Button {
                     id: editDeckButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     text: "Edit"
                 }
                 Skin.Button {
                     id: showDevToolsButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checkable: true
                     checked: devToolsWindow.visible
                     text: "Develop"
@@ -247,7 +247,7 @@ ApplicationWindow {
                 Skin.Button {
                     id: showPreferencesButton
 
-                    activeColor: Theme.white
+                    activeColor: LateNightTheme.white
                     checked: settingsPopup.opened
                     icon.height: 16
                     icon.source: "images/gear.svg"
@@ -275,11 +275,11 @@ ApplicationWindow {
             handle: Rectangle {
                 id: handleDelegate
 
-                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.libraryPanelSplitterHandleActive : Theme.libraryPanelSplitterHandle
+                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? LateNightTheme.libraryPanelSplitterHandleActive : LateNightTheme.libraryPanelSplitterHandle
                 property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 3
 
                 clip: true
-                color: Theme.libraryPanelSplitterBackground
+                color: LateNightTheme.libraryPanelSplitterBackground
                 implicitHeight: 4
                 implicitWidth: 8
 
@@ -379,7 +379,7 @@ ApplicationWindow {
                         orientation: Gradient.Horizontal
 
                         GradientStop {
-                            color: Theme.darkGray
+                            color: LateNightTheme.darkGray
                             position: 0
                         }
                         GradientStop {
@@ -405,7 +405,7 @@ ApplicationWindow {
                             position: 0
                         }
                         GradientStop {
-                            color: Theme.darkGray
+                            color: LateNightTheme.darkGray
                             position: 1
                         }
                     }

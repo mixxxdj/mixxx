@@ -62,6 +62,14 @@
                     <value color="#FFFFFF" label="White">white</value>
                 </option>
             </row>
+            <option
+                variable="intValue"
+                type="integer"
+                min="20"
+                max="500"
+                step="2"
+                default="50"
+                label="Int value"/>
          </group>
     </settings>
     <controller id="DummyDevice">

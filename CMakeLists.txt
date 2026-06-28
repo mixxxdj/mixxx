@@ -1584,6 +1584,9 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
+  src/soundio/networkenumerator.cpp
+  src/soundio/portaudioenumerator.cpp
+  src/soundio/sounddeviceenumerator.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
   src/soundio/sounddeviceportaudio.cpp
@@ -2918,6 +2921,7 @@ if(BUILD_TESTING)
     src/test/looping_control_test.cpp
     src/test/main.cpp
     src/test/mathutiltest.cpp
+    src/test/matrixapitest.cpp
     src/test/metadatatest.cpp
     #TODO: make this build again
     #src/test/metaknob_link_test.cpp
@@ -2939,6 +2943,7 @@ if(BUILD_TESTING)
     src/test/rgbcolor_test.cpp
     src/test/rotary_test.cpp
     src/test/samplebuffertest.cpp
+    src/test/savitzkygolaytest.cpp
     src/test/schemamanager_test.cpp
     src/test/searchqueryparsertest.cpp
     src/test/seratobeatgridtest.cpp
@@ -3011,6 +3016,7 @@ if(BUILD_TESTING)
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
+        src/test/qmlkeyutilstest.cpp
         src/test/qmlskincontrolcreatortest.cpp
         src/test/themeqml_test.cpp
     )
@@ -3023,7 +3029,7 @@ if(BUILD_TESTING)
   set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
   target_link_libraries(
     mixxx-test
-    PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
+    PRIVATE mixxx-lib mixxx-gitinfostore mixxx-xwax GTest::gtest GTest::gmock
   )
 
   if(BUILD_BENCH)
@@ -3217,6 +3223,12 @@ target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
+if(NOT TARGET SQLite3::SQLite3) # CMake < 4.3
+  # This will allow to use the new name while still permitting it to
+  # compile with older versions of CMake.
+  add_library(SQLite3::SQLite3 ALIAS SQLite::SQLite3)
+endif()
+
 # For LOCALECOMPARE we call directly sqlite functions to the database opened by
 # Qt. It only works without crashing when Mixxx links to the same sqlite
 # library as Qt. On vcpkg builds, the custom FindSQLite3.cmake wrapper ensures
@@ -3261,12 +3273,12 @@ if(LOCALECOMPARE)
       endif()
     endif()
   else()
-    target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
+    target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
   endif()
 elseif(SQLite3_FOUND)
   # When LOCALECOMPARE is OFF (manually set) but SQLite3 is found (static Qt builds),
   # we still need to link SQLite3 unconditionally
-  target_link_libraries(mixxx-lib PRIVATE SQLite::SQLite3)
+  target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
@@ -3781,6 +3793,7 @@ if(QT6)
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
     # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
     list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+    set(QT_NO_PRIVATE_MODULE_WARNING ON)
   endif()
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
@@ -3791,6 +3804,7 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickDialogs2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
@@ -3872,6 +3886,14 @@ if(QML)
     endforeach()
   endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
+  set_source_files_properties(
+    res/qml/Mixxx/MathUtils.mjs
+    PROPERTIES QT_RESOURCE_ALIAS MathUtils.mjs
+  )
+  set_source_files_properties(
+    res/qml/Mixxx/PlayerDropArea.qml
+    PROPERTIES QT_RESOURCE_ALIAS PlayerDropArea.qml
+  )
   qt_add_qml_module(mixxx-qml-lib
     URI Mixxx
     VERSION 1.0
@@ -3912,11 +3934,13 @@ if(QML)
     RESOURCE_PREFIX /mixxx.org/imports
     OPTIONAL_IMPORTS Mixxx
     QML_FILES
+      res/qml/Mixxx/Controls/Slider.qml
       res/qml/Mixxx/Controls/Knob.qml
       res/qml/Mixxx/Controls/Fader.qml
       res/qml/Mixxx/Controls/Spinny.qml
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
+      res/qml/Mixxx/Controls/WaveformOverviewMarkerLayer.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
       res/qml/Mixxx/Controls/WaveformDisplay.qml
   )
@@ -3932,12 +3956,14 @@ if(QML)
       src/qml/qmlbeatsmodel.cpp
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlconfigproxy.cpp
+      src/qml/qmlconfigproxybase.cpp
       src/qml/qmlcontrolproxy.cpp
       src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
       src/qml/qmleffectmanifestparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp
+      src/qml/qmlkeyutils.cpp
       src/qml/qmllegacylibraryitem.cpp
       src/qml/qmllibraryproxy.cpp
       src/qml/qmllibrarysource.cpp
@@ -4263,6 +4289,40 @@ else()
           applocal
       )
 
+      # FIXME: Install using IMPORTED_RUNTIME_ARTIFACTS seems to create plugins in the wrong place, leading to packaging issue and runtime problems.
+      install(
+        DIRECTORY "${Qt6_DIR}/../../Qt${QT_VERSION_MAJOR}/plugins/multimedia"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt${QT_VERSION_MAJOR}/plugins"
+        COMPONENT applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2QuickImpl
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2Utils
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
       #install qml6-module-qt5compat-graphicaleffects
       install(
         DIRECTORY
@@ -4278,6 +4338,13 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
         COMPONENT applocal
       )
+      # Qt6MultimediaQuick doesn't seem to be included in any defined target but it is required.
+      install(
+        FILES
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/bin/Qt6MultimediaQuick$<$<CONFIG:Debug>:d>${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal
+      )
 
       # install qml6-module-qtqml-workerscript
       install(
@@ -4291,6 +4358,14 @@ else()
       install(
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Controls"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # install qml6-module-qtquick-dialogs
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Dialogs"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
         COMPONENT applocal
       )
@@ -4861,31 +4936,37 @@ endif()
 
 # FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
 # so copy it into the Windows and macOS packages, but do not link to it.
-if(APPLE AND MACOS_BUNDLE)
-  find_library(FDK_AAC_LIBRARY fdk-aac)
-  if(FDK_AAC_LIBRARY)
-    message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
-    file(
-      COPY ${FDK_AAC_LIBRARY}
-      DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install"
-      FOLLOW_SYMLINK_CHAIN
-    )
-    install(
-      DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install/"
-      DESTINATION "${MIXXX_INSTALL_PREFIX}/Contents/Frameworks"
-    )
+find_package(FdkAac QUIET)
+if(FdkAac_FOUND)
+  if(WIN32)
+    if(FdkAac_DLL)
+      message(
+        STATUS
+        "Found fdk-aac DLL: ${FdkAac_DLL} (found version \"${FdkAac_VERSION}\")"
+      )
+      install(FILES "${FdkAac_DLL}" DESTINATION "${MIXXX_INSTALL_BINDIR}")
+    else()
+      message(STATUS "Could NOT find fdk-aac.dll (FdkAac_DLL not set)")
+    endif()
   else()
-    message(STATUS "Could NOT find libfdk-aac.dylib")
+    message(
+      STATUS
+      "Found fdk-aac: ${FdkAac_LIBRARY} (found version \"${FdkAac_VERSION}\")"
+    )
+    if(APPLE AND MACOS_BUNDLE)
+      file(
+        COPY "${FdkAac_LIBRARY}"
+        DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install"
+        FOLLOW_SYMLINK_CHAIN
+      )
+      install(
+        DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib/fdk-aac-install/"
+        DESTINATION "${MIXXX_INSTALL_PREFIX}/Contents/Frameworks"
+      )
+    endif()
   endif()
-elseif(WIN32)
-  # On Windows find_library finds the .lib file, but the installer needs the .dll file.
-  find_file(FDK_AAC_DLL fdk-aac.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
-  if(FDK_AAC_DLL)
-    message(STATUS "Found fdk-aac DLL: ${FDK_AAC_DLL}")
-    install(FILES ${FDK_AAC_DLL} DESTINATION ${MIXXX_INSTALL_BINDIR})
-  else()
-    message(STATUS "Could NOT find fdk-aac.dll")
-  endif()
+else()
+  message(STATUS "Could NOT find fdk-aac (FdkAac_FOUND is FALSE)")
 endif()
 
 # Google PerfTools
@@ -5188,6 +5269,9 @@ if(HID)
     )
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __HID__)
+  endif()
 endif()
 
 # USB Bulk controller support
@@ -5215,6 +5299,9 @@ if(BULK)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __BULK__)
   target_link_libraries(mixxx-lib PRIVATE LibUSB::LibUSB)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __BULK__)
+  endif()
 endif()
 
 # Vinyl Control
@@ -5253,6 +5340,7 @@ if(VINYLCONTROL)
       lib/xwax/filters.c
       lib/xwax/ringbuffer.c
       lib/xwax/pitch_kalman.c
+      lib/xwax/fmatrix.c
   )
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
@@ -5302,7 +5390,7 @@ target_precompile_headers(
   mixxx-lib
   PUBLIC ${MIXXX_LIB_PRECOMPILED_HEADER} ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
-if(BUILD_TESTING)
+if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 endif()
 
@@ -5349,7 +5437,7 @@ set(CPACK_GIT_COMMIT_DATE ${GIT_COMMIT_DATE})
 # Detailed version information, git info and package file name are set from
 # CPackConfig.cmake, not here.
 
-set(CPACK_SOURCE_IGNORE_FILES "\\\\.#;/#;.*~;\\\\.o$")
+set(CPACK_SOURCE_IGNORE_FILES "\\\\.#;/#;.*~$;\\\\.o$")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.git/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.github/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")

@@ -12,6 +12,7 @@
 #include <QVariant>
 #include <memory>
 
+#include "qml/qmlconfigproxy.h"
 #include "test/mixxxtest.h"
 
 namespace {
@@ -19,6 +20,7 @@ namespace {
 class ThemeQmlTest : public MixxxTest {
   protected:
     QObject* loadTheme() {
+        mixxx::qml::QmlConfigProxy::registerUserSettings(config());
         m_engine.addImportPath(QStringLiteral(RESOURCE_FOLDER "/qml"));
 
         QQmlComponent component(&m_engine);
@@ -49,10 +51,64 @@ QtObject {
         return pTheme;
     }
 
+    QObject* loadLateNightTheme(const QString& schemeName) {
+        config()->set(ConfigKey(QStringLiteral("[Config]"), QStringLiteral("Scheme")), schemeName);
+        mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+        m_engine.addImportPath(QStringLiteral(RESOURCE_FOLDER "/qml"));
+
+        QQmlComponent component(&m_engine);
+        component.setData(R"(
+import QtQuick 2.12
+import "LateNightTheme"
+
+QtObject {
+    readonly property var theme: LateNightTheme
+}
+)",
+                QUrl::fromLocalFile(QStringLiteral(
+                        RESOURCE_FOLDER "/skins/LateNightQML/latenightthemeqml_test.qml")));
+
+        std::unique_ptr<QObject> pRoot(component.create());
+        EXPECT_FALSE(component.isError()) << qPrintable(component.errorString());
+        EXPECT_TRUE(pRoot) << qPrintable(component.errorString());
+        if (!pRoot) {
+            return nullptr;
+        }
+
+        QObject* pTheme = pRoot->property("theme").value<QObject*>();
+        EXPECT_TRUE(pTheme);
+        if (!pTheme) {
+            return nullptr;
+        }
+
+        m_pThemeRoot = std::move(pRoot);
+        return pTheme;
+    }
+
   private:
     QQmlEngine m_engine;
     std::unique_ptr<QObject> m_pThemeRoot;
 };
+
+void assertLateNightAssetPropertiesReferenceExistingFiles(const QObject* pTheme) {
+    const QMetaObject* pMetaObject = pTheme->metaObject();
+    for (int i = pMetaObject->propertyOffset(); i < pMetaObject->propertyCount(); ++i) {
+        const QMetaProperty property = pMetaObject->property(i);
+        const QString propertyName = QString::fromLatin1(property.name());
+        if (!propertyName.startsWith(QStringLiteral("asset"))) {
+            continue;
+        }
+
+        SCOPED_TRACE(property.name());
+
+        const QUrl assetUrl = property.read(pTheme).toUrl();
+        ASSERT_TRUE(assetUrl.isLocalFile()) << qPrintable(assetUrl.toString());
+
+        const QFileInfo assetFileInfo(assetUrl.toLocalFile());
+        EXPECT_TRUE(assetFileInfo.exists())
+                << qPrintable(assetFileInfo.absoluteFilePath());
+    }
+}
 
 } // namespace
 
@@ -99,4 +155,18 @@ TEST_F(ThemeQmlTest, ImagePropertiesReferenceExistingSvgs) {
         EXPECT_TRUE(imageFileInfo.exists())
                 << qPrintable(imageFileInfo.absoluteFilePath());
     }
+}
+
+TEST_F(ThemeQmlTest, LateNightClassicAssetPropertiesReferenceExistingFiles) {
+    const QObject* pTheme = loadLateNightTheme(QStringLiteral("Classic"));
+    ASSERT_TRUE(pTheme);
+
+    assertLateNightAssetPropertiesReferenceExistingFiles(pTheme);
+}
+
+TEST_F(ThemeQmlTest, LateNightPaleMoonAssetPropertiesReferenceExistingFiles) {
+    const QObject* pTheme = loadLateNightTheme(QStringLiteral("PaleMoon"));
+    ASSERT_TRUE(pTheme);
+
+    assertLateNightAssetPropertiesReferenceExistingFiles(pTheme);
 }

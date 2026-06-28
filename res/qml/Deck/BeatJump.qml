@@ -26,6 +26,14 @@ Rectangle {
         group: root.group
         key: "track_loaded"
     }
+    BeatSizeSpinBoxBehavior {
+        id: beatjumpSize
+
+        decrementKey: "beatjump_size_halve"
+        group: root.group
+        incrementKey: "beatjump_size_double"
+        key: "beatjump_size"
+    }
     Skin.ControlButton {
         id: jumpBackButton
 
@@ -202,13 +210,15 @@ Rectangle {
             topMargin: 22
         }
     }
-    Skin.ControlButton {
+    Skin.Button {
         id: jumpSizeHalfButton
 
-        group: root.group
         implicitHeight: 28
         implicitWidth: 22
-        key: "beatjump_size_halve"
+
+        onPressed: {
+            beatjumpSize.step(-1);
+        }
 
         contentItem: Item {
             anchors.fill: parent
@@ -284,49 +294,33 @@ Rectangle {
             source: backgroundImage
             verticalOffset: 0
         }
-        Mixxx.ControlProxy {
-            id: beatjumpSize
-
-            group: root.group
-            key: "beatjump_size"
-        }
         TextInput {
             function update() {
                 this.text = Qt.binding(function () {
-                    return beatjumpSize.value < 1 ? `1/${1 / beatjumpSize.value}` : beatjumpSize.value;
+                    return beatjumpSize.valueText;
                 });
             }
 
             anchors.centerIn: backgroundImage
             color: root.buttonColor
-            text: beatjumpSize.value < 1 ? `1/${1 / beatjumpSize.value}` : beatjumpSize.value
+            text: beatjumpSize.valueText
 
             onAccepted: {
+                beatjumpSize.commitText(this.text);
                 this.focus = false;
-                let [numerator, denominator] = this.text.split("/");
-                if (denominator !== undefined) {
-                    denominator = parseInt(denominator);
-                    if (Number.isNaN(denominator)) {
-                        return update();
-                    }
-                } else {
-                    denominator = 1;
-                }
-                numerator = parseInt(numerator);
-                if (Number.isNaN(numerator)) {
-                    return update();
-                }
-                beatjumpSize.value = numerator / denominator;
+                update();
             }
         }
     }
-    Skin.ControlButton {
+    Skin.Button {
         id: jumpSizeDoubleButton
 
-        group: root.group
         implicitHeight: 28
         implicitWidth: 22
-        key: "beatjump_size_double"
+
+        onPressed: {
+            beatjumpSize.step(1);
+        }
 
         contentItem: Item {
             anchors.fill: parent

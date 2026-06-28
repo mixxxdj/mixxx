@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QSharedPointer>
 #include <QString>
 
 #include "control/pollingcontrolproxy.h"
@@ -9,6 +10,7 @@
 
 class PollingControlProxy;
 class ControlProxy;
+class VisualPlayPosition;
 struct VinylSignalQualityReport;
 
 class VinylControl : public QObject {
@@ -33,8 +35,9 @@ class VinylControl : public QObject {
 
     //The ControlObject used to start/stop playback of the song.
     ControlProxy* playButton;
-    //The ControlObject used to read the playback position in the song.
-    ControlProxy* playPos;
+    // Playback position in the song. VisualPlayPosition is updated at engine
+    // rate, unlike the rate-limited playposition CO.
+    QSharedPointer<VisualPlayPosition> m_visualPlayPos;
     ControlProxy* trackSamples;
     ControlProxy* trackSampleRate;
     //The ControlObject used to change the playback position in the song.
