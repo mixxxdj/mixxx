@@ -1,172 +1,313 @@
 package org.mixxx;
 
-import android.Manifest;
-import android.bluetooth.BluetoothAdapter;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
-import androidx.core.content.ContextCompat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * BLE MIDI GATT controller for Mixxx.
+ * BLE MIDI Controller for Mixxx
  *
- * Connects to a BLE MIDI device via BluetoothGatt, discovers the
- * BLE MIDI service and characteristic, enables notifications,
- * and forwards received MIDI data to the C++ layer via JNI.
+ * Implements the Apple BLE MIDI protocol based on the BLE-MIDI-for-Android library
+ * by K.Shoji (https://github.com/kshoji/BLE-MIDI-for-Android).
  *
- * Also supports writing MIDI data back to the device for LED feedback.
+ * This handles GATT connection, service discovery, MIDI characteristic notification,
+ * and BLE MIDI protocol parsing.
+ *
+ * Called from C++ via JNI.
  */
 public class BleMidiController {
     private static final String TAG = "MixxxBleMidiCtrl";
 
-    // Standard BLE MIDI Service and Characteristic UUIDs
+    // Standard BLE MIDI UUIDs (Apple spec)
     private static final UUID BLE_MIDI_SERVICE_UUID =
         UUID.fromString("03B80E5A-EDE8-4B33-A751-6CE34EC4C700");
     private static final UUID BLE_MIDI_CHARACTERISTIC_UUID =
-        UUID.fromString("7772E5DB-3868-4112-A1C9-F2669D106BF3");
+        UUID.fromString("7772E5DB-3868-4112-A1A9-F2669D106BF3");
 
-    // Client Characteristic Configuration Descriptor
+    // Client Characteristic Configuration Descriptor UUID
     private static final UUID CCC_DESCRIPTOR_UUID =
         UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    private static BluetoothGatt sGattConnection = null;
-    private static BluetoothGattCharacteristic sMidiCharacteristic = null;
-    private static String sDeviceAddress = null;
-    private static volatile boolean sConnected = false;
+    private static BluetoothGatt sGatt;
+    private static BluetoothGattCharacteristic sMidiCharacteristic;
+    private static boolean sConnected = false;
+    private static Context sContext;
+
+    // BLE MIDI protocol parsing state
+    private static final int MIDI_STATE_TIMESTAMP = 0;
+    private static final int MIDI_STATE_WAIT = 1;
+    private static final int MIDI_STATE_SIGNAL_2BYTES_2 = 21;
+    private static final int MIDI_STATE_SIGNAL_3BYTES_2 = 31;
+    private static final int MIDI_STATE_SIGNAL_3BYTES_3 = 32;
+    private static final int MIDI_STATE_SIGNAL_SYSEX = 41;
+    private static int sMidiState = MIDI_STATE_TIMESTAMP;
+    private static int sRunningStatus = 0;
+
+    // JNI callback — called from native code to handle MIDI data
+    private static native void nativeOnMidiDataReceived(byte[] data);
+    private static native void nativeOnConnectionStateChanged(boolean connected);
 
     /**
-     * Connect to a BLE MIDI device via GATT.
+     * Connect to a BLE MIDI device by address.
      *
-     * Called from C++ via JNI.
+     * Called from C++ via JNI as:
+     *   static boolean connect(Context context, String address, String serviceUuid, String charUuid)
      *
-     * @param context Android context
-     * @param address Bluetooth MAC address of the device
-     * @param serviceUuid BLE MIDI service UUID (hex string)
-     * @param characteristicUuid BLE MIDI characteristic UUID (hex string)
-     * @return true if connection was initiated successfully
+     * @param context The Android context
+     * @param deviceAddress The BLE device MAC address
+     * @param serviceUuid The BLE MIDI service UUID (ignored, we use the standard one)
+     * @param charUuid The BLE MIDI characteristic UUID (ignored, we use the standard one)
+     * @return true if connection initiated successfully
      */
-    public static boolean connect(Context context, String address,
-        String serviceUuid, String characteristicUuid) {
-        if (sConnected && sGattConnection != null) {
-            Log.i(TAG, "Already connected to a device, disconnect first");
-            return false;
-        }
+    @SuppressLint("MissingPermission")
+    public static boolean connect(Context context, String deviceAddress, String serviceUuid, String charUuid) {
+        sContext = context.getApplicationContext();
 
-        if (!hasBluetoothPermissions(context)) {
-            Log.w(TAG, "Missing Bluetooth permissions for GATT connection");
-            return false;
-        }
-
-        BluetoothManager bluetoothManager =
-            (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        if (bluetoothManager == null) {
-            Log.e(TAG, "Bluetooth not supported");
-            return false;
-        }
-
-        BluetoothAdapter adapter = bluetoothManager.getAdapter();
-        if (adapter == null || !adapter.isEnabled()) {
-            Log.w(TAG, "Bluetooth adapter not available or not enabled");
-            return false;
-        }
-
-        BluetoothDevice device = adapter.getRemoteDevice(address);
+        BluetoothDevice device = BleMidiScanner.getDeviceByAddress(deviceAddress);
         if (device == null) {
-            Log.e(TAG, "Device not found: " + address);
+            Log.e(TAG, "Device not found in scan results: " + deviceAddress);
             return false;
         }
 
-        sDeviceAddress = address;
-        Log.i(TAG, "Connecting GATT to: " + device.getName() + " [" + address + "]");
-
-        try {
-            sGattConnection = device.connectGatt(context, false, sGattCallback);
-            return sGattConnection != null;
-        } catch (SecurityException e) {
-            Log.e(TAG, "SecurityException connecting GATT: " + e.getMessage());
-            return false;
-        }
+        Log.i(TAG, "Connecting to BLE MIDI device: " + deviceAddress);
+        sGatt = device.connectGatt(sContext, false, sGattCallback);
+        return sGatt != null;
     }
 
     /**
      * Disconnect from the current BLE MIDI device.
      */
+    @SuppressLint("MissingPermission")
     public static void disconnect() {
-        if (sGattConnection != null) {
-            try {
-                sGattConnection.disconnect();
-                sGattConnection.close();
-            } catch (SecurityException e) {
-                Log.w(TAG, "SecurityException disconnecting: " + e.getMessage());
-            }
-            sGattConnection = null;
-            sMidiCharacteristic = null;
-            sConnected = false;
-            Log.i(TAG, "Disconnected from BLE MIDI device");
+        if (sGatt != null) {
+            sGatt.disconnect();
+            sGatt.close();
+            sGatt = null;
         }
+        sConnected = false;
+        sMidiCharacteristic = null;
     }
 
     /**
      * Check if currently connected to a BLE MIDI device.
      */
     public static boolean isConnected() {
-        return sConnected;
+        return sConnected && sMidiCharacteristic != null;
     }
 
     /**
-     * Write MIDI data to the BLE MIDI characteristic.
+     * Send MIDI data to the connected BLE device.
+     * Called from C++ via JNI with hex-encoded data.
      *
-     * @param hexData Hex-encoded MIDI data (including BLE MIDI timestamp header)
+     * @param hexData Hex-encoded MIDI bytes to send
      */
-    @SuppressWarnings("deprecation")
+    @SuppressLint("MissingPermission")
     public static void writeMidiData(String hexData) {
-        if (!sConnected || sMidiCharacteristic == null || sGattConnection == null) {
+        if (sGatt == null || sMidiCharacteristic == null || !sConnected) {
             return;
         }
 
-        try {
-            byte[] data = hexStringToByteArray(hexData);
-            sMidiCharacteristic.setValue(data);
-            sGattConnection.writeCharacteristic(sMidiCharacteristic);
-        } catch (SecurityException e) {
-            Log.w(TAG, "SecurityException writing MIDI: " + e.getMessage());
+        // Decode hex string to bytes
+        byte[] midiData = hexStringToByteArray(hexData);
+        if (midiData == null || midiData.length == 0) {
+            return;
+        }
+
+        // Wrap data in BLE MIDI protocol header
+        byte[] packet = wrapBleMidiPacket(midiData);
+        if (packet == null) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            sGatt.writeCharacteristic(sMidiCharacteristic, packet,
+                BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+        } else {
+            sMidiCharacteristic.setValue(packet);
+            sMidiCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+            sGatt.writeCharacteristic(sMidiCharacteristic);
         }
     }
 
-    // GATT callback for connection state changes and characteristic notifications
-    @SuppressWarnings("deprecation")
+    /**
+     * Convert hex string to byte array.
+     */
+    private static byte[] hexStringToByteArray(String hex) {
+        if (hex == null || hex.length() % 2 != 0) {
+            return null;
+        }
+        byte[] data = new byte[hex.length() / 2];
+        for (int i = 0; i < hex.length(); i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
+                + Character.digit(hex.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    /**
+     * Wrap raw MIDI data in BLE MIDI protocol packet.
+     * Format: [timestamp_high(1)] [timestamp_low(1) + status(1)] [data(0-2)] ...
+     * Timestamp is 13-bit, incremented at ~1ms intervals.
+     */
+    private static int sTimestamp = 0;
+
+    private static byte[] wrapBleMidiPacket(byte[] midiData) {
+        if (midiData == null || midiData.length == 0) {
+            return null;
+        }
+
+        sTimestamp = (sTimestamp + 1) & 0x1FFF; // 13-bit counter
+
+        byte tsHigh = (byte) ((sTimestamp >> 7) & 0x01);
+        byte tsLow = (byte) (sTimestamp & 0x7F);
+
+        byte[] packet = new byte[1 + midiData.length];
+        packet[0] = (byte) (tsHigh | 0x80); // header with timestamp high bit
+        packet[1] = (byte) (tsLow | 0x80); // timestamp low + marker
+
+        // Copy MIDI data, adding marker bytes as needed
+        int pktIdx = 1;
+        for (int i = 0; i < midiData.length; i++) {
+            if ((midiData[i] & 0x80) != 0) {
+                // Status byte — add timestamp low marker before it
+                pktIdx++;
+                if (pktIdx >= packet.length) {
+                    packet = Arrays.copyOf(packet, packet.length + 1);
+                }
+                packet[pktIdx] = tsLow;
+            }
+            pktIdx++;
+            if (pktIdx >= packet.length) {
+                packet = Arrays.copyOf(packet, packet.length + 1);
+            }
+            packet[pktIdx] = midiData[i];
+        }
+
+        return Arrays.copyOf(packet, pktIdx + 1);
+    }
+
+    /**
+     * Parse BLE MIDI packet and extract raw MIDI bytes.
+     * Handles the BLE MIDI protocol's timestamp headers.
+     */
+    private static void parseBleMidiPacket(byte[] packet) {
+        if (packet == null || packet.length < 2) {
+            return;
+        }
+
+        int pos = 0;
+        while (pos < packet.length) {
+            byte b = packet[pos];
+
+            // Check if this is a header byte (bit 7 set)
+            if ((b & 0x80) != 0) {
+                pos++;
+                if (pos >= packet.length)
+                    break;
+                // Next byte is timestamp low (also has bit 7 set)
+                pos++;
+                continue;
+            }
+
+            // This is a MIDI data byte
+            // Parse MIDI message based on running status
+            int statusByte = b & 0x7F;
+            if ((b & 0x80) != 0) {
+                // Status byte
+                sRunningStatus = statusByte;
+                pos++;
+                continue;
+            }
+
+            // Data byte — use running status
+            int msgType = sRunningStatus & 0xF0;
+            int channel = sRunningStatus & 0x0F;
+
+            switch (msgType) {
+                case 0x80: // Note Off (3 bytes)
+                case 0x90: // Note On (3 bytes)
+                case 0xA0: // Poly Pressure (3 bytes)
+                case 0xB0: // Control Change (3 bytes)
+                case 0xE0: // Pitch Bend (3 bytes)
+                    if (pos + 1 < packet.length) {
+                        byte[] midiMsg = new byte[] {(byte) sRunningStatus, b, packet[pos + 1]};
+                        nativeOnMidiDataReceived(midiMsg);
+                        pos += 2;
+                    } else {
+                        pos++;
+                    }
+                    break;
+
+                case 0xC0: // Program Change (2 bytes)
+                case 0xD0: // Channel Pressure (2 bytes)
+                    byte[] midiMsg = new byte[] {(byte) sRunningStatus, b};
+                    nativeOnMidiDataReceived(midiMsg);
+                    pos++;
+                    break;
+
+                case 0xF0: // System message
+                    if (sRunningStatus == 0xF0) {
+                        // SysEx — collect until 0xF7
+                        // For now, just pass through
+                        pos++;
+                    } else if (sRunningStatus == 0xF1 || sRunningStatus == 0xF3) {
+                        // MTC Quarter Frame / Song Select (2 bytes)
+                        if (pos + 1 < packet.length) {
+                            byte[] sysMsg = new byte[] {(byte) sRunningStatus, packet[pos + 1]};
+                            nativeOnMidiDataReceived(sysMsg);
+                            pos += 2;
+                        } else {
+                            pos++;
+                        }
+                    } else if (sRunningStatus == 0xF2) {
+                        // Song Position Pointer (3 bytes)
+                        if (pos + 1 < packet.length) {
+                            byte[] sysMsg = new byte[] {(byte) sRunningStatus, b, packet[pos + 1]};
+                            nativeOnMidiDataReceived(sysMsg);
+                            pos += 2;
+                        } else {
+                            pos++;
+                        }
+                    } else {
+                        // F4-F6, F8-FF are single byte messages
+                        byte[] sysMsg = new byte[] {(byte) sRunningStatus};
+                        nativeOnMidiDataReceived(sysMsg);
+                        pos++;
+                    }
+                    break;
+
+                default:
+                    pos++;
+                    break;
+            }
+        }
+    }
+
+    /**
+     * GATT callback for BLE MIDI device connection and data transfer.
+     */
+    @SuppressLint("MissingPermission")
     private static final BluetoothGattCallback sGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                Log.i(TAG, "GATT connected to " + sDeviceAddress);
-                sConnected = true;
-                try {
-                    gatt.discoverServices();
-                } catch (SecurityException e) {
-                    Log.e(TAG, "SecurityException discovering services: " + e.getMessage());
-                }
+                Log.i(TAG, "GATT connected, discovering services...");
+                sGatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                Log.i(TAG, "GATT disconnected from " + sDeviceAddress);
+                Log.i(TAG, "GATT disconnected");
                 sConnected = false;
                 sMidiCharacteristic = null;
-                try {
-                    gatt.close();
-                } catch (SecurityException e) {
-                    // Ignore
-                }
-                sGattConnection = null;
-                // Notify C++ of disconnection
                 nativeOnConnectionStateChanged(false);
             }
         }
@@ -178,92 +319,77 @@ public class BleMidiController {
                 return;
             }
 
-            Log.i(TAG, "Services discovered, looking for BLE MIDI service");
-
+            // Find BLE MIDI service
             BluetoothGattService midiService = gatt.getService(BLE_MIDI_SERVICE_UUID);
             if (midiService == null) {
-                Log.w(TAG, "BLE MIDI service not found on device");
-                // Log all services for debugging
+                Log.e(TAG, "BLE MIDI service not found on device");
+                // List available services for debugging
                 for (BluetoothGattService service : gatt.getServices()) {
-                    Log.d(TAG, "Found service: " + service.getUuid());
+                    Log.d(TAG, "  Available service: " + service.getUuid());
                 }
                 return;
             }
 
+            Log.i(TAG, "BLE MIDI service found");
+
+            // Get the MIDI I/O characteristic
             sMidiCharacteristic = midiService.getCharacteristic(BLE_MIDI_CHARACTERISTIC_UUID);
             if (sMidiCharacteristic == null) {
-                Log.w(TAG, "BLE MIDI characteristic not found in service");
+                Log.e(TAG, "BLE MIDI characteristic not found");
+                // List available characteristics for debugging
+                for (BluetoothGattCharacteristic ch : midiService.getCharacteristics()) {
+                    Log.d(TAG, "  Available characteristic: " + ch.getUuid());
+                }
                 return;
             }
 
-            Log.i(TAG, "BLE MIDI characteristic found, enabling notifications");
+            Log.i(TAG, "BLE MIDI characteristic found, enabling notifications...");
 
-            try {
-                gatt.setCharacteristicNotification(sMidiCharacteristic, true);
+            // Enable notifications on the characteristic
+            gatt.setCharacteristicNotification(sMidiCharacteristic, true);
 
-                // Enable notifications via CCC descriptor
-                BluetoothGattDescriptor descriptor =
-                    sMidiCharacteristic.getDescriptor(CCC_DESCRIPTOR_UUID);
-                if (descriptor != null) {
-                    descriptor.setValue(
+            // Write to the CCC descriptor to enable notifications
+            BluetoothGattDescriptor descriptor = sMidiCharacteristic.getDescriptor(CCC_DESCRIPTOR_UUID);
+            if (descriptor != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    gatt.writeDescriptor(descriptor,
                         BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                    gatt.writeDescriptor(descriptor);
                 } else {
-                    Log.w(TAG, "CCC descriptor not found");
+                    descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                    gatt.writeDescriptor(descriptor);
                 }
-
-                // Notify C++ of successful connection
-                nativeOnConnectionStateChanged(true);
-            } catch (SecurityException e) {
-                Log.e(TAG, "SecurityException enabling notifications: " + e.getMessage());
             }
+
+            sConnected = true;
+            nativeOnConnectionStateChanged(true);
+            Log.i(TAG, "BLE MIDI device connected and ready");
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt,
             BluetoothGattCharacteristic characteristic) {
-            if (BLE_MIDI_CHARACTERISTIC_UUID.equals(characteristic.getUuid())) {
-                byte[] data = characteristic.getValue();
-                if (data != null && data.length > 0) {
-                    Log.d(TAG, "MIDI data received: " + data.length + " bytes");
-                    nativeOnMidiDataReceived(data);
-                }
+            byte[] data = characteristic.getValue();
+            if (data != null && data.length > 0) {
+                parseBleMidiPacket(data);
+            }
+        }
+
+        @Override
+        public void onCharacteristicChanged(BluetoothGatt gatt,
+            BluetoothGattCharacteristic characteristic, byte[] value) {
+            if (value != null && value.length > 0) {
+                parseBleMidiPacket(value);
             }
         }
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt,
             BluetoothGattDescriptor descriptor, int status) {
-            if (CCC_DESCRIPTOR_UUID.equals(descriptor.getUuid())) {
-                if (status == BluetoothGatt.GATT_SUCCESS) {
-                    Log.i(TAG, "BLE MIDI notifications enabled successfully");
-                } else {
-                    Log.w(TAG, "Failed to enable BLE MIDI notifications: " + status);
-                }
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.i(TAG, "Notifications enabled successfully");
+            } else {
+                Log.w(TAG, "Failed to enable notifications: " + status);
             }
         }
     };
-
-    // JNI callbacks to C++
-    private static native void nativeOnMidiDataReceived(byte[] data);
-    private static native void nativeOnConnectionStateChanged(boolean connected);
-
-    // Utility: convert hex string to byte array
-    private static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
-    }
-
-    private static boolean hasBluetoothPermissions(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            return ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT)
-                == PackageManager.PERMISSION_GRANTED;
-        }
-        return true;
-    }
 }

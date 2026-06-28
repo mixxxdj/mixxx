@@ -207,6 +207,28 @@ public class BleMidiScanner {
     }
 
     /**
+     * Get a BluetoothDevice by its MAC address.
+     * Uses the BluetoothAdapter to resolve the address.
+     *
+     * Called from BleMidiController.java.
+     *
+     * @param address The MAC address of the BLE device
+     * @return The BluetoothDevice, or null if not found
+     */
+    public static BluetoothDevice getDeviceByAddress(String address) {
+        try {
+            BluetoothManager bluetoothManager =
+                (BluetoothManager) sContext.getSystemService(Context.BLUETOOTH_SERVICE);
+            if (bluetoothManager != null && bluetoothManager.getAdapter() != null) {
+                return bluetoothManager.getAdapter().getRemoteDevice(address);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get device by address: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Set the connection state.
      *
      * @param connected true if a device is connected
