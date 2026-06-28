@@ -87,30 +87,6 @@ public class BleMidiScanner {
                 name = "";
             }
 
-            // Check if device matches name or UUID
-            boolean isMidi = false;
-            String lowerName = name.toLowerCase();
-            if (lowerName.contains("ddj-") || lowerName.contains("pioneer") || lowerName.contains("flx")) {
-                isMidi = true;
-            }
-
-            if (!isMidi && result.getScanRecord() != null) {
-                java.util.List<ParcelUuid> uuids = result.getScanRecord().getServiceUuids();
-                if (uuids != null) {
-                    for (ParcelUuid uuid : uuids) {
-                        if (uuid.getUuid().equals(BLE_MIDI_SERVICE_UUID)) {
-                            isMidi = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // If it's not a MIDI/Mixxx-compatible device, skip it!
-            if (!isMidi) {
-                return;
-            }
-
             if (name.isEmpty()) {
                 name = "BLE MIDI Device";
             }
