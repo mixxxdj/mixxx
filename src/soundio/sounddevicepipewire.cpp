@@ -26,24 +26,6 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
 }
 
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
-    std::set<uint8_t> inChans;
-    for (auto& input : m_audioInputs) {
-        ChannelGroup channelGroup = input.getChannelGroup();
-        uint8_t highChannel = channelGroup.getChannelBase() + channelGroup.getChannelCount();
-        for (uint8_t i = channelGroup.getChannelBase(); i < highChannel; i++) {
-            inChans.insert(i);
-        }
-    }
-
-    std::set<uint8_t> outChans;
-    for (auto& output : m_audioOutputs) {
-        ChannelGroup channelGroup = output.getChannelGroup();
-        uint8_t highChannel = channelGroup.getChannelBase() + channelGroup.getChannelCount();
-        for (uint8_t i = channelGroup.getChannelBase(); i < highChannel; i++) {
-            outChans.insert(i);
-        }
-    }
-
     m_error = m_pEnumerator->openDevice(*this, m_sampleRate, m_configFramesPerBuffer);
     if (m_error.empty()) {
         return SoundDeviceStatus::Ok;
@@ -235,7 +217,7 @@ std::span<const SoundDevicePipewire::Port> SoundDevicePipewire::getPortsByPath(
     case AudioPath::AudioPathType::Auxiliary:
     case AudioPath::AudioPathType::RecordBroadcast:
         return std::span{m_outPorts}.subspan(channelBase, channelCount);
-    case AudioPath::AudioPathType::Invalid:
+    default:
         return std::span<SoundDevicePipewire::Port>{};
     }
 }
