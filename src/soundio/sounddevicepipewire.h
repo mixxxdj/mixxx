@@ -24,7 +24,7 @@ class SoundDevicePipewire : public SoundDevice {
     void writeProcess(SINT) override {
     }
     QString getError() const override {
-        return {};
+        return m_error.c_str();
     }
 
     mixxx::audio::SampleRate getDefaultSampleRate() const override;
@@ -36,8 +36,18 @@ class SoundDevicePipewire : public SoundDevice {
             uint32_t outPortId,
             uint32_t inNodeId,
             uint32_t inPortId);
-    void registerDevicePort(uint32_t id, const struct spa_dict* props);
-    void unregisterDevicePort(uint32_t id);
+    void registerPort(uint32_t id, const struct spa_dict* props);
+    void unregisterPort(uint32_t id);
+    void registerLink(uint32_t id, spa_direction direction);
+    void unregisterLink(uint32_t id, spa_direction direction);
+
+    std::span<const uint32_t> getInLinks() const {
+        return m_inLinks;
+    }
+
+    std::span<const uint32_t> getOutLinks() const {
+        return m_outLinks;
+    }
 
     struct Port {
         uint32_t id;
@@ -56,4 +66,8 @@ class SoundDevicePipewire : public SoundDevice {
     PipewireEnumerator* m_pEnumerator;
     std::vector<Port> m_inPorts;
     std::vector<Port> m_outPorts;
+
+    std::vector<uint32_t> m_inLinks;
+    std::vector<uint32_t> m_outLinks;
+    std::string m_error;
 };
