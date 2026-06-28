@@ -5,8 +5,8 @@
 #include <spa/utils/defs.h>
 
 #include <QObject>
-#include <set>
 
+#include "audio/types.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -29,17 +29,21 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void initialize();
 
     bool isOpen(uint32_t id);
-    void openDevice(uint32_t id,
-            const std::set<uint8_t>& inChans,
-            const std::set<uint8_t>& outChans,
-            mixxx::audio::SampleRate rate,
-            uint32_t framesPerBuffer);
+    std::string openDevice(const SoundDevicePipewire& device,
+            mixxx::audio::SampleRate sampleRate,
+            SINT framesPerBuffer);
     void closeDevice(uint32_t id);
-    mixxx::audio::SampleRate getDefaultSampleRate() const;
+    mixxx::audio::SampleRate getDefaultSampleRate() const {
+        return m_defaultSampleRate;
+    }
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
+
+  private slots:
+    void registerInput(const AudioInput& input, AudioDestination* dest);
+    void registerOutput(const AudioOutput& output, AudioSource* src);
 
   private:
     static void registryEventGlobalOuter(void* data,
@@ -103,11 +107,14 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void writeInput(const float* input, int channel, int framesPerBuffer, int offset = 0);
     void writeOutput(float* output, int channel, int framesPerBuffer, int offset = 0);
 
-    void createLink(uint32_t outNodeId,
+    std::string createLink(uint32_t outNodeId,
             uint32_t outPortId,
             uint32_t inNodeI,
             uint32_t inPortId);
+    void destroyLink(uint32_t id);
+
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
+    void setLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
 
     struct Link {
         uint32_t input;
@@ -115,7 +122,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     };
 
     struct Port {
-        uint32_t nodeId;
+        uint32_t node;
     };
 
     struct Node {};
@@ -137,27 +144,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     spa_hook m_pwFilterListener;
     spa_hook m_pwMetadataListener;
 
-    struct Device {
-        struct Port {
-            void* pPortData;
-
-            // these are our own indices, and are not assigned by
-            // pipewire in any way
-            uint32_t devicePort;
-            uint32_t filterPort;
-        };
-
-        // inputs correspond to filter inputs and soundDevice outputs
-        std::vector<Port> inputs;
-        // outputs correspond to filter outputs and soundDevice inputs
-        std::vector<Port> outputs;
-    };
-
-    using SoundDeviceMap = std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>>;
-    std::atomic<std::shared_ptr<SoundDeviceMap>> m_soundDevices;
-
-    using DeviceMap = std::unordered_map<uint32_t, Device>;
-    std::atomic<std::shared_ptr<DeviceMap>> m_openedDevices;
+    std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
+    std::vector<uint32_t> m_openedDevices;
 
     bool m_initialized;
     uint64_t xrun_duration;
@@ -167,10 +155,12 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     mixxx::audio::SampleRate m_sampleRate;
     mixxx::audio::SampleRate m_defaultSampleRate;
 
-    uint32_t m_framesPerBuffer;
+    QHash<AudioInput, std::pair<uint32_t*, uint32_t*>> m_inputs;
+    QHash<AudioOutput, std::pair<uint32_t*, uint32_t*>> m_outputs;
 
     PollingControlProxy m_audioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
+    uint32_t m_framesPerBuffer;
 };
