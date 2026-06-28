@@ -1,8 +1,11 @@
+// EXPERIMENT: learning Mixxx reverb code flow
 #include "effects/backends/builtin/reverbeffect.h"
 
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
+#include <QDebug>
+
 
 // static
 QString ReverbEffect::getId() {
@@ -77,6 +80,7 @@ void ReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
 }
 
+
 void ReverbEffect::processChannel(
         ReverbGroupState* pState,
         const CSAMPLE* pInput,
@@ -84,6 +88,7 @@ void ReverbEffect::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
+            
     Q_UNUSED(groupFeatures);
 
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
