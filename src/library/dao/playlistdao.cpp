@@ -47,7 +47,7 @@ void PlaylistDAO::populatePlaylistMembershipCache() {
     }
 }
 
-int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
+int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden, const int parentId, const bool isFolder) {
     //qDebug() << "PlaylistDAO::createPlaylist"
     //         << QThread::currentThread()
     //         << m_database.connectionName();
@@ -75,11 +75,20 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     //qDebug() << "Inserting playlist" << name << "at position" << position;
 
     query.prepare(QStringLiteral(
-            "INSERT INTO Playlists (name, position, hidden, date_created, date_modified) "
-            "VALUES (:name, :position, :hidden,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"));
+            "INSERT INTO Playlists (name, position, hidden, date_created, date_modified, parent_id, is_folder) "
+            "VALUES (:name, :position, :hidden, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, :parent_id, :is_folder)"));
     query.bindValue(":name", name);
     query.bindValue(":position", position);
     query.bindValue(":hidden", static_cast<int>(hidden));
+
+    
+    // Handle the parentId parameter. If it is kInvalidPlaylistId, we want to insert a NULL value into the database. Otherwise, we insert the actual parentId value.
+    if (parentId == kInvalidPlaylistId) {
+        query.bindValue(":parent_id", QVariant(QVariant::Int));
+    } else {
+        query.bindValue(":parent_id", parentId);
+    }
+    query.bindValue(":is_folder", isFolder ? 1 : 0);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -597,7 +606,7 @@ QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) co
     query.prepare(
             mixxx::DbConnection::collateLexicographically(
                     QString("SELECT id, name FROM Playlists "
-                            "WHERE hidden = %1 "
+                            "WHERE hidden = %1 AND parent_id IS NULL"
                             "ORDER BY name")
                             .arg(hidden)));
 
@@ -615,6 +624,43 @@ QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) co
     }
     return playlists;
 }
+
+QList<QPair<int, QString>> PlaylistDAO::getPlaylistsInFolder(const int parentId, const HiddenType hidden) const {
+    QSqlQuery query(m_database);
+    
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT id, name FROM Playlists "
+                            "WHERE hidden = %1 AND parent_id = %2 "
+                            "ORDER BY is_folder DESC, name") // First list folders, then sort by name
+                            .arg(QString::number(hidden), QString::number(parentId))));
+
+    QList<QPair<int, QString>> playlists;
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return playlists;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        const QString name = query.value(1).toString();
+        playlists.append(qMakePair(id, name));
+    }
+    return playlists;
+}
+
+bool PlaylistDAO::isFolder(const int playlistId) const {
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("SELECT is_folder FROM Playlists WHERE id = :id"));
+    query.bindValue(":id", playlistId);
+    
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt() == 1;
+    }
+    return false;
+}
+
 QList<QPair<int, QString>> PlaylistDAO::getUnlockedPlaylists(const HiddenType hidden) const {
     // qDebug() << "PlaylistDAO::getPlaylists(hidden =" << hidden
     //          << QThread::currentThread() << m_database.connectionName();

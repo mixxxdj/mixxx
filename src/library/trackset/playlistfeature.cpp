@@ -3,6 +3,8 @@
 #include <QMenu>
 #include <QSqlTableModel>
 #include <QtDebug>
+#include <QInputDialog>
+#include <QMessageBox>
 
 #include "library/library.h"
 #include "library/parser.h"
@@ -69,6 +71,11 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
+
+
+    QAction* pCreateFolderAction = menu.addAction(tr("New Folder"));
+    connect(pCreateFolderAction, &QAction::triggered, this, &PlaylistFeature::slotCreateFolder);
+
     menu.addSeparator();
     menu.addAction(m_pUnlockPlaylistsAction);
     menu.addAction(m_pDeleteAllUnlockedPlaylistsAction);
@@ -227,10 +234,116 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
                 playlistTableModel
                         .data(playlistTableModel.index(row, durationColumn))
                         .toInt();
+
         BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = id;
         idAndLabel.label = createPlaylistLabel(name, count, duration);
         playlistLabels.append(idAndLabel);
+    }
+    return playlistLabels;
+}
+
+QList<PlaylistFeature::ExtendedPlaylistLabel> PlaylistFeature::createExtendedPlaylistLabels() {
+    QSqlDatabase database =
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
+
+    QList<PlaylistFeature::ExtendedPlaylistLabel> playlistLabels;
+    QString queryString = QStringLiteral(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
+            "AS SELECT "
+            "  Playlists.id AS id, "
+            "  Playlists.name AS name, "
+            "  Playlists.parent_id AS parent_id, "
+            "  Playlists.is_folder AS is_folder, "
+            "  LOWER(Playlists.name) AS sort_name, "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
+            "    AS count, "
+            "  SUM(case library.mixxx_deleted "
+            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks "
+            "  ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library "
+            "  ON PlaylistTracks.track_id = library.id "
+            "  WHERE Playlists.hidden = %2 "
+            "  GROUP BY Playlists.id")
+                                  .arg(m_countsDurationTableName,
+                                          QString::number(
+                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
+
+
+    queryString.append(
+            mixxx::DbConnection::collateLexicographically(
+                    " ORDER BY is_folder DESC, sort_name"));
+                    
+    QSqlQuery query(database);
+    if (!query.exec(queryString)) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, database);
+    playlistTableModel.setTable(m_countsDurationTableName);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
+    int parentIdColumn = record.indexOf("parent_id");
+    int isFolderColumn = record.indexOf("is_folder");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {        
+        int id =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, idColumn))
+                        .toInt();
+        QString name =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, nameColumn))
+                        .toString();
+
+
+        QVariant parentVal = 
+                playlistTableModel
+                        .data(playlistTableModel.index(row, parentIdColumn));
+
+        int parentId = 
+                parentVal
+                        .isNull() ? kInvalidPlaylistId : parentVal
+                        .toInt();
+
+        bool isFolder = 
+                playlistTableModel
+                        .data(playlistTableModel.index(row, isFolderColumn))
+                        .toInt() == 1;
+
+        int count =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, countColumn))
+                        .toInt();
+        int duration =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, durationColumn))
+                        .toInt();
+
+        PlaylistFeature::ExtendedPlaylistLabel item;
+        item.id = id;
+        item.parentId = parentId;
+        item.isFolder = isFolder;
+
+        // If the playlidt is a folder we don't show the count and duration, just the name of the folder
+        if (isFolder) {
+            item.label = name;
+        } else {
+            item.label = createPlaylistLabel(name, count, duration);
+        }
+
+        playlistLabels.append(item);
+
     }
     return playlistLabels;
 }
@@ -344,31 +457,54 @@ void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
+    QHash<int, TreeItem*> folderMap;
     int selectedRow = -1;
-
     int row = 0;
-    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+
+    const QList<ExtendedPlaylistLabel> playlistLabels = createExtendedPlaylistLabels();
+
     for (const auto& idAndLabel : playlistLabels) {
         int playlistId = idAndLabel.id;
         QString playlistLabel = idAndLabel.label;
 
-        if (selectedId == playlistId) {
-            // save index for selection
-            selectedRow = row;
-        }
 
-        // Create the TreeItem whose parent is the invisible root item
+        if (idAndLabel.parentId == kInvalidPlaylistId) {
+            if (selectedId == playlistId) {
+                selectedRow = row;
+            }
+
         auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
         pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
-        decorateChild(pItem.get(), playlistId);
+        if (idAndLabel.isFolder) {
+            pItem->setIcon(QIcon::fromTheme(QStringLiteral("folder")));
+            folderMap[playlistId] = pItem.get();
+        } else {
+            decorateChild(pItem.get(), playlistId);
+        }
+
         childrenToAdd.push_back(std::move(pItem));
-
         ++row;
+        }
+        
+    else {
+        if (folderMap.contains(idAndLabel.parentId)) {
+            TreeItem* pChildNode = folderMap[idAndLabel.parentId]->appendChild(playlistLabel, playlistId);
+            if (pChildNode) {
+                pChildNode->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+                if (idAndLabel.isFolder) {
+                    pChildNode->setIcon(QIcon::fromTheme(QStringLiteral("folder")));
+                    folderMap[playlistId] = pChildNode;
+                } else {
+                    decorateChild(pChildNode, playlistId);
+                }
+            }
+        }
     }
+}
 
-    // Append all the newly created TreeItems in a dynamic way to the childmodel
     m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
+    
     if (selectedRow == -1) {
         return QModelIndex();
     }
@@ -466,4 +602,28 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QStringLiteral("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                         .arg(createPlaylistLink));
     return html;
+}
+
+void PlaylistFeature::slotCreateFolder() {
+    QString name = QInputDialog::getText(
+            m_pSidebarWidget,
+            tr("New Folder"),
+            tr("Enter folder name:"));
+
+    if (name.isEmpty()) {
+        return;
+    }
+
+    // kInvalidPlaylistId (-1) is used to indicate that the new playlist has no parent folder, i.e. it is a top-level playlist.
+    int folderId = m_playlistDao.createPlaylist(
+            name, PlaylistDAO::PLHT_NOT_HIDDEN, kInvalidPlaylistId, true);
+
+    if (folderId != kInvalidPlaylistId) {
+        slotPlaylistTableChanged(folderId);
+    } else {
+        QMessageBox::warning(
+                m_pSidebarWidget,
+                tr("Playlists"),
+                tr("An error occurred while creating folder: %1").arg(name));
+    }
 }

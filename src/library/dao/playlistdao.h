@@ -35,7 +35,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void initialize(const QSqlDatabase& database) override;
 
     // Create a playlist, fails with -1 if already exists
-    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
+    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN, const int parentId = kInvalidPlaylistId, const bool isFolder = false);
     // Create a playlist, appends "(n)" if already exists, name becomes the new name
     int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
@@ -68,6 +68,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     unsigned int playlistCount() const;
     // Get all playlist ids and names of a specific type
     QList<QPair<int, QString>> getPlaylists(const HiddenType hidden) const;
+    // Get playlist ids and names that belong to a specific folder
+    QList<QPair<int, QString>> getPlaylistsInFolder(const int parentId, const HiddenType hidden) const;
+    // Check if a playlist ID is actually a folder
+    bool isFolder(const int playlistId) const;
     QList<QPair<int, QString>> getUnlockedPlaylists(const HiddenType hidden) const;
     // Find out the name of the playlist at the given Id
     QString getPlaylistName(const int playlistId) const;

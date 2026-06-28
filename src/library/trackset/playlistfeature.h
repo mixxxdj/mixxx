@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QVariant>
+#include <QList>
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
@@ -16,6 +17,13 @@ class PlaylistFeature : public BasePlaylistFeature {
     Q_OBJECT
 
   public:
+    struct ExtendedPlaylistLabel {
+        int id;
+        QString label;
+        int parentId;
+        bool isFolder;
+    };
+
     PlaylistFeature(
             Library* pLibrary,
             UserSettingsPointer pConfig);
@@ -40,10 +48,13 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotOrderTracksByCurrentPosition();
     void slotUnlockAllPlaylists();
     void slotDeleteAllUnlockedPlaylists();
+    void slotCreateFolder();
 
   protected:
+
     void decorateChild(TreeItem* pChild, int playlistId) override;
-    QList<IdAndLabel> createPlaylistLabels();
+    QList<IdAndLabel> createPlaylistLabels(); // Need for QML support
+    QList<ExtendedPlaylistLabel> createExtendedPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
 
   private:
