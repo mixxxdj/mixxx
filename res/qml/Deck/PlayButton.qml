@@ -23,8 +23,9 @@ Skin.ControlButton {
             anchors.topMargin: 6
             antialiasing: true
             height: 32
-            layer.enabled: true
-            layer.samples: 4
+            property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+            layer.enabled: multiSamplingLevel > 1
+            layer.samples: multiSamplingLevel
             visible: !root.minimized
             width: 30
 
