@@ -1,8 +1,8 @@
 #pragma once
 
 #include "preferences/dialog/ui_dlgprefsounditem.h"
-#include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerutil.h"
 
 class SoundManagerConfig;
 
@@ -15,13 +15,15 @@ class SoundManagerConfig;
 class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT
   public:
-    DlgPrefSoundItem(QWidget* parent, AudioPathType type,
-            const QList<SoundDevicePointer>& devices,
-            bool isInput, unsigned int index = 0);
+    DlgPrefSoundItem(QWidget* parent, AudioPathType type, const QList<SoundDevicePointer>& devices, bool isInput, unsigned int index = 0);
     virtual ~DlgPrefSoundItem();
 
-    AudioPathType type() const { return m_type; };
-    unsigned int index() const { return m_index; };
+    AudioPathType type() const {
+        return m_type;
+    };
+    unsigned int index() const {
+        return m_index;
+    };
     bool isInput() {
         return m_isInput;
     }
@@ -50,7 +52,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void deviceChanged(int index);
     void channelChanged();
     void loadPath(const SoundManagerConfig& config);
-    void writePath(SoundManagerConfig *config) const;
+    void writePath(SoundManagerConfig* config) const;
     void save();
     void reload();
 
