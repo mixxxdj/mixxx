@@ -1,18 +1,26 @@
 #include "qmlapplication.h"
 
+#include <QAction>
 #include <QCoreApplication>
+#include <QKeySequence>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QTextDocument>
 #include <utility>
 
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmldlgpreferencesproxy.h"
+#include "qml/qmlrecordingproxy.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -117,6 +125,8 @@ QmlApplication::QmlApplication(
 #endif
     }
 
+    setupSpinnyCoverControls();
+
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
     std::shared_ptr<QDialog> pDlgPreferences = m_pCoreServices->makeDlgPreferences();
@@ -125,10 +135,62 @@ QmlApplication::QmlApplication(
     // the QQmlApplicationEngine.
     pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
 
+    auto showNoInputConfiguredWarning = [pDlgPreferences](
+                                                const QString& message) {
+        QMessageBox msgBox(QMessageBox::Warning,
+                VersionStore::applicationName(),
+                message,
+                QMessageBox::Ok | QMessageBox::Cancel);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+        msgBox.setOption(QMessageBox::Option::DontUseNativeDialog);
+#endif
+        msgBox.setWindowModality(Qt::ApplicationModal);
+        msgBox.setDefaultButton(QMessageBox::Cancel);
+        msgBox.exec();
+        if (msgBox.clickedButton() == msgBox.button(QMessageBox::Ok)) {
+            pDlgPreferences->show();
+            pDlgPreferences->raise();
+            pDlgPreferences->activateWindow();
+        }
+    };
+
+    connect(m_pCoreServices->getPlayerManager().get(),
+            &PlayerManager::noDeckPassthroughInputConfigured,
+            this,
+            [showNoInputConfiguredWarning]() {
+                showNoInputConfiguredWarning(
+                        tr("There is no input device selected for this "
+                           "passthrough control.\n"
+                           "Please select an input device in the sound "
+                           "hardware preferences first."));
+            });
+    connect(m_pCoreServices->getPlayerManager().get(),
+            &PlayerManager::noVinylControlInputConfigured,
+            this,
+            [showNoInputConfiguredWarning]() {
+                showNoInputConfiguredWarning(
+                        tr("There is no input device selected for this vinyl "
+                           "control.\n"
+                           "Please select an input device in the sound "
+                           "hardware preferences first."));
+            });
+
     // Since DlgPreferences is only meant to be used in the main QML engine, it
     // follows a strict singleton pattern design
     QmlDlgPreferencesProxy::s_pInstance =
             std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
+    QmlRecordingProxy::s_pRecordingManager = m_pCoreServices->getRecordingManager();
+
+    m_pMenuBar = std::make_unique<QMenuBar>();
+    QMenu* pApplicationMenu = m_pMenuBar->addMenu(QCoreApplication::applicationName());
+    QAction* pPreferencesAction = pApplicationMenu->addAction(tr("&Preferences"));
+    pPreferencesAction->setMenuRole(QAction::PreferencesRole);
+    pPreferencesAction->setShortcut(QKeySequence::Preferences);
+    connect(pPreferencesAction, &QAction::triggered, this, [pDlgPreferences]() {
+        pDlgPreferences->show();
+        pDlgPreferences->raise();
+        pDlgPreferences->activateWindow();
+    });
 
     const QStringList visualGroups =
             m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
@@ -206,10 +268,56 @@ void QmlApplication::slotFrameSwapped() {
 
 QmlApplication::~QmlApplication() {
     // Delete all the QML singletons in order to prevent leak detection in CoreService
+    QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
     m_visualsManager.reset();
     m_pAppEngine.reset();
     m_pCoreServices.reset();
+}
+
+void QmlApplication::setupSpinnyCoverControls() {
+    m_pShowSpinny = make_parented<ControlProxy>("[Skin]", "show_spinnies", this);
+    m_pShowCover = make_parented<ControlProxy>("[Skin]", "show_coverart", this);
+    m_pSelectBigSpinnyCover = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "select_big_spinny_or_cover"), true);
+    m_pSelectBigSpinnyCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
+
+    m_pShowSpinnyAndOrCover = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_spinny_or_cover"));
+    m_pShowSpinnyAndOrCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pShowSpinnyAndOrCover->setReadOnly();
+
+    m_pShowSmallSpinnyCover = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_small_spinny_or_cover"));
+    m_pShowSmallSpinnyCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pShowSmallSpinnyCover->setReadOnly();
+
+    m_pShowBigSpinnyCover = std::make_unique<ControlPushButton>(
+            ConfigKey("[Skin]", "show_big_spinny_or_cover"));
+    m_pShowBigSpinnyCover->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pShowBigSpinnyCover->setReadOnly();
+
+    m_pShowSpinny->connectValueChanged(this, &QmlApplication::updateSpinnyCoverControls);
+    m_pShowCover->connectValueChanged(this, &QmlApplication::updateSpinnyCoverControls);
+    connect(m_pSelectBigSpinnyCover.get(),
+            &ControlObject::valueChanged,
+            this,
+            &QmlApplication::updateSpinnyCoverControls);
+
+    updateSpinnyCoverControls();
+}
+
+void QmlApplication::updateSpinnyCoverControls() {
+    m_pShowSpinnyAndOrCover->setAndConfirm(
+            (m_pShowSpinny->toBool() || m_pShowCover->toBool()) ? 1.0 : 0.0);
+    m_pShowSmallSpinnyCover->setAndConfirm(
+            (m_pShowSpinnyAndOrCover->toBool() && !m_pSelectBigSpinnyCover->toBool())
+                    ? 1.0
+                    : 0.0);
+    m_pShowBigSpinnyCover->setAndConfirm(
+            (m_pShowSpinnyAndOrCover->toBool() && m_pSelectBigSpinnyCover->toBool())
+                    ? 1.0
+                    : 0.0);
 }
 
 bool QmlApplication::loadQml(const QString& path) {
