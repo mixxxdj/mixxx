@@ -1,4 +1,3 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -79,24 +78,14 @@ RowLayout {
                 radius: 7
                 color: Theme.accentColor
             }
-            InnerShadow {
-                id: handleEffect1
+            Rectangle {
                 anchors.fill: parent
-                samples: 16
-                horizontalOffset: 0
-                verticalOffset: 0
-                radius: 16.0
-                color: "#0E2A54"
-                source: handle
-            }
-            DropShadow {
-                id: handleEffect2
-                anchors.fill: parent
-                source: handleEffect1
-                horizontalOffset: 0
-                verticalOffset: 0
-                radius: 12.0
-                color: Qt.alpha(Theme.darkGray, 0.25)
+                radius: 7
+                color: "transparent"
+                border {
+                    color: "#40000000"
+                    width: 1
+                }
             }
         }
     }
@@ -116,26 +105,6 @@ RowLayout {
             color: Theme.darkGray2
             anchors.fill: parent
             anchors.margins: 4
-        }
-        DropShadow {
-            id: dropSetting
-            anchors.fill: parent
-            horizontalOffset: 0
-            verticalOffset: 0
-            radius: 4.0
-            color: Theme.darkGray
-            source: backgroundInput
-        }
-        InnerShadow {
-            id: effect2
-            anchors.fill: parent
-            source: dropSetting
-            spread: 0.2
-            radius: 12
-            samples: 24
-            horizontalOffset: 0
-            verticalOffset: 0
-            color: "#353535"
         }
         Item {
             anchors.fill: parent

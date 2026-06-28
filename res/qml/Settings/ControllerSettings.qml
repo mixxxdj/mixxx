@@ -4,8 +4,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt.labs.qmlmodels
-import Qt5Compat.GraphicalEffects
-
 import ".." as Skin
 import "../Theme"
 
@@ -188,6 +186,10 @@ ColumnLayout {
 
                         anchors.fill: parent
                         color: Theme.accentColor
+                        border {
+                            color: "#0E2A54"
+                            width: 1
+                        }
 
                         Text {
                             id: textLabel
@@ -199,30 +201,6 @@ ColumnLayout {
                             text: spinBox.textFromValue(spinBox.value, spinBox.locale) ?? ""
                             verticalAlignment: Text.AlignVCenter
                         }
-                    }
-                    InnerShadow {
-                        id: bottomInnerEffect
-
-                        anchors.fill: parent
-                        color: "#0E2A54"
-                        horizontalOffset: -1
-                        radius: 8
-                        samples: 32
-                        source: content
-                        spread: 0.4
-                        verticalOffset: -1
-                    }
-                    InnerShadow {
-                        id: topInnerEffect
-
-                        anchors.fill: parent
-                        color: "#0E2A54"
-                        horizontalOffset: 1
-                        radius: 8
-                        samples: 32
-                        source: bottomInnerEffect
-                        spread: 0.4
-                        verticalOffset: 1
                     }
                 }
                 down.indicator: Indicator {
@@ -389,9 +367,12 @@ ColumnLayout {
             id: content
 
             anchors.fill: parent
-            border.width: 0
             color: Theme.darkGray2
             radius: 2
+            border {
+                color: "#40000000"
+                width: 1
+            }
 
             Text {
                 anchors.fill: parent
@@ -402,30 +383,6 @@ ColumnLayout {
                 text: indicator.text
                 verticalAlignment: Text.AlignVCenter
             }
-        }
-        InnerShadow {
-            id: bottomInnerEffect
-
-            anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: -2
-            radius: 4
-            samples: 16
-            source: content
-            spread: 0.3
-            verticalOffset: -2
-        }
-        InnerShadow {
-            id: topInnerEffect
-
-            anchors.fill: parent
-            color: "#40000000"
-            horizontalOffset: 2
-            radius: 4
-            samples: 16
-            source: bottomInnerEffect
-            spread: 0.3
-            verticalOffset: 2
         }
     }
 }

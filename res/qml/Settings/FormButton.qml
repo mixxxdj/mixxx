@@ -1,5 +1,5 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
+import QtQuick.Effects
 import QtQuick.Controls 2.12
 import "../Theme"
 
@@ -24,54 +24,42 @@ AbstractButton {
             anchors.fill: parent
             color: root.backgroundColor
             radius: 4
-            visible: false
+            border {
+                color: 'transparent'
+                width: 1
+            }
         }
-        InnerShadow {
-            id: bottomInnerEffect
-
+        Rectangle {
             anchors.fill: parent
-            color: "transparent"
-            horizontalOffset: -1
-            radius: 8
-            samples: 16
+            radius: 4
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.35) }
+                GradientStop { position: 0.25; color: "transparent" }
+                GradientStop { position: 0.75; color: "transparent" }
+                GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.12) }
+            }
+        }
+        MultiEffect {
+            anchors.fill: parent
             source: backgroundImage
-            spread: 0.3
-            verticalOffset: -1
-        }
-        InnerShadow {
-            id: topInnerEffect
-
-            anchors.fill: parent
-            color: "transparent"
-            horizontalOffset: 1
-            radius: 8
-            samples: 16
-            source: bottomInnerEffect
-            spread: 0.3
-            verticalOffset: 1
-        }
-        DropShadow {
-            id: dropEffect
-
-            anchors.fill: parent
-            color: "#0E0E0E"
-            horizontalOffset: 0
-            radius: 4.0
-            source: topInnerEffect
-            verticalOffset: 0
+            shadowEnabled: true
+            shadowColor: "#0E0E0E"
+            shadowBlur: 0.15
         }
     }
     contentItem: Item {
         anchors.fill: parent
 
-        Glow {
+        MultiEffect {
             id: labelGlow
 
             anchors.fill: parent
-            color: label.color
-            radius: 1
             source: label
-            spread: 0.1
+            shadowEnabled: true
+            shadowColor: label.color
+            shadowBlur: 0.05
+            shadowHorizontalOffset: 0
+            shadowVerticalOffset: 0
         }
         Label {
             id: label
@@ -95,15 +83,14 @@ AbstractButton {
             fillMode: Image.PreserveAspectFit
             height: icon.height
             source: icon.source
-            visible: false
             width: icon.width
-        }
-        ColorOverlay {
-            anchors.fill: image
-            antialiasing: true
-            color: root.normalColor
-            source: image
-            visible: icon.source != null
+
+            layer.enabled: icon.source != null
+            layer.effect: MultiEffect {
+                brightness: 1.0
+                colorization: 1.0
+                colorizationColor: root.normalColor
+            }
         }
     }
     states: [
@@ -118,10 +105,7 @@ AbstractButton {
                 label.color: root.pressedColor
             }
             PropertyChanges {
-                bottomInnerEffect.color: '#353535'
-            }
-            PropertyChanges {
-                topInnerEffect.color: '#353535'
+                backgroundImage.border.color: '#353535'
             }
             PropertyChanges {
                 labelGlow.visible: true
@@ -138,10 +122,7 @@ AbstractButton {
                 label.color: root.activeColor
             }
             PropertyChanges {
-                bottomInnerEffect.color: '#353535'
-            }
-            PropertyChanges {
-                topInnerEffect.color: '#353535'
+                backgroundImage.border.color: '#353535'
             }
             PropertyChanges {
                 labelGlow.visible: true

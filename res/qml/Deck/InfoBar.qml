@@ -166,10 +166,12 @@ Rectangle {
                         Shape {
                             id: star
 
+                            property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                             antialiasing: true
                             height: 14
-                            layer.enabled: true
-                            layer.samples: 4
+                            layer.enabled: multiSamplingLevel > 1
+                            layer.samples: multiSamplingLevel
                             width: 16
 
                             ShapePath {

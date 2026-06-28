@@ -1,6 +1,5 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Layouts
 import QtQuick.Shapes
@@ -135,6 +134,11 @@ Item {
 
                             anchors.fill: parent
                             color: hotcue.isSet ? hotcue.color : '#2B2B2B'
+                            radius: 1
+                            border {
+                                color: '#1C1C1C'
+                                width: 1
+                            }
 
                             MouseArea {
                                 id: activator
@@ -142,38 +146,6 @@ Item {
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                                 anchors.fill: parent
                             }
-                        }
-                        DropShadow {
-                            id: effect1
-
-                            anchors.fill: backgroundImage
-                            color: "#80000000"
-                            horizontalOffset: 0
-                            radius: 1.0
-                            source: backgroundImage
-                            verticalOffset: 0
-                        }
-                        InnerShadow {
-                            id: effect2
-
-                            anchors.fill: parent
-                            color: "#353535"
-                            horizontalOffset: 1
-                            radius: 12
-                            samples: 24
-                            source: effect1
-                            spread: 0.2
-                            verticalOffset: 1
-                        }
-                        InnerShadow {
-                            anchors.fill: parent
-                            color: "#353535"
-                            horizontalOffset: -1
-                            radius: 12
-                            samples: 24
-                            source: effect2
-                            spread: 0.2
-                            verticalOffset: -1
                         }
                         ColumnLayout {
                             anchors.centerIn: backgroundImage
@@ -231,31 +203,23 @@ Item {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
 
-                        Item {
-                            id: content
+                        Rectangle {
+                            id: backgroundColor
 
                             anchors.fill: parent
-                            visible: false
-
-                            Rectangle {
-                                id: backgroundColor
-
-                                anchors.fill: parent
-                                color: stem.color
-                                opacity: 0.75
-                                radius: 1
-                            }
+                            color: stem.color
+                            opacity: 0.75
+                            radius: 1
                         }
-                        InnerShadow {
-                            anchors.fill: parent
+                        Rectangle {
+                            anchors {
+                                bottom: parent.bottom
+                                left: parent.left
+                                right: parent.right
+                            }
+                            height: 4
                             color: "#4b000000"
-                            horizontalOffset: 0
-                            radius: 4.0
-                            samples: 24
-                            smooth: true
-                            source: content
-                            spread: 0
-                            verticalOffset: 4
+                            radius: 1
                         }
                         Item {
                             id: stemButton
@@ -268,52 +232,17 @@ Item {
                                 left: parent.left
                                 top: parent.top
                             }
-                            Item {
+                            Rectangle {
                                 id: contentStemButton
 
                                 anchors.fill: parent
-                                visible: false
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: stem.color
-                                    opacity: stemMute.value ? 0.6 : 1.0
+                                color: stem.color
+                                opacity: stemMute.value ? 0.6 : 1.0
+                                radius: 1
+                                border {
+                                    color: '#1C1C1C'
+                                    width: 1
                                 }
-                            }
-                            DropShadow {
-                                id: effect1
-
-                                anchors.fill: parent
-                                color: "#80000000"
-                                horizontalOffset: 0
-                                radius: 2.0
-                                source: contentStemButton
-                                spread: 0.5
-                                verticalOffset: 0
-                            }
-                            InnerShadow {
-                                id: effect2
-
-                                anchors.fill: parent
-                                color: "#353535"
-                                horizontalOffset: 2
-                                radius: 4.0
-                                samples: 24
-                                smooth: true
-                                source: effect1
-                                spread: 0.4
-                                verticalOffset: 2
-                            }
-                            InnerShadow {
-                                anchors.fill: parent
-                                color: "#353535"
-                                horizontalOffset: -2
-                                radius: 4.0
-                                samples: 24
-                                smooth: true
-                                source: effect2
-                                spread: 0.4
-                                verticalOffset: -2
                             }
                             Item {
                                 anchors.fill: parent
@@ -492,10 +421,12 @@ Item {
             implicitHeight: 30
 
             contentItem: Shape {
+                property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                 anchors.fill: parent
                 antialiasing: true
-                layer.enabled: true
-                layer.samples: 4
+                layer.enabled: multiSamplingLevel > 1
+                layer.samples: multiSamplingLevel
 
                 ShapePath {
                     fillColor: '#D9D9D9'
