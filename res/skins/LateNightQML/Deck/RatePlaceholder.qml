@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
+import "../../../qml" as Skin
 import "../LateNightTheme"
 
 Item {
@@ -30,28 +31,12 @@ Item {
         }
     }
 
-    function rateValueToSliderParameter(value) {
-        return Math.max(0, Math.min(1, (value + 1.0) / 2.0));
-    }
-
-    function sliderParameterToRateValue(parameter) {
-        return Math.max(-1, Math.min(1, parameter * 2.0 - 1.0));
-    }
-
-    function sliderHandleCenterY() {
-        return sliderHandle.y + sliderHandle.height / 2;
-    }
-
-    function sliderCenterY() {
-        return sliderTrack.y + sliderTrack.height / 2;
-    }
-
     function rateRangeTopLabelY(labelHeight) {
-        return sliderTrack.y - labelHeight / 2;
+        return rateSlider.y - labelHeight / 2;
     }
 
     function rateRangeBottomLabelY(labelHeight) {
-        return sliderTrack.y + sliderTrack.height - labelHeight / 2;
+        return rateSlider.y + rateSlider.height - labelHeight / 2;
     }
 
     property real previousSyncEnabledValue: syncEnabledProxy.value
@@ -60,12 +45,6 @@ Item {
         id: bpmProxy
         group: root.group
         key: "bpm"
-    }
-
-    Mixxx.ControlProxy {
-        id: rateProxy
-        group: root.group
-        key: "rate"
     }
 
     Mixxx.ControlProxy {
@@ -297,23 +276,34 @@ Item {
                     horizontalAlignment: Text.AlignRight
                 }
 
-                Image {
-                    id: sliderTrack
+                Skin.ControlFader {
+                    id: rateSlider
                     anchors.centerIn: parent
                     width: 40
                     height: Math.min(119, parent.height - 4)
-                    source: LateNightTheme.assetDeckRateSliderBackground
-                    fillMode: Image.PreserveAspectFit
-                    opacity: 0.82
+                    barColor: "#888888"
+                    barMargin: 0
+                    barStart: 0.5
+                    bg: LateNightTheme.assetDeckRateSliderBackground
+                    fg: LateNightTheme.assetDeckRateSliderHandle
+                    group: root.group
+                    key: "rate"
+
+                    handleImage {
+                        width: 34
+                        height: 18
+                        sourceSize.width: 34
+                        sourceSize.height: 18
+                    }
                 }
 
                 Image {
                     id: rateCenterAsset
                     width: 5
                     height: 5
-                    x: sliderTrack.x - 3
-                    y: sliderTrack.y + sliderTrack.height / 2 - height / 2
-                    z: sliderHandle.z + 1
+                    x: rateSlider.x - 3
+                    y: rateSlider.y + rateSlider.height / 2 - height / 2
+                    z: rateSlider.z + 1
                     source: rateSetDefaultProxy.value > 0 ? LateNightTheme.optionalDeckRateCenterActive : LateNightTheme.optionalDeckRateCenterInactive
                     fillMode: Image.PreserveAspectFit
                     visible: root.hasLegacyRateCenterAsset
@@ -322,75 +312,13 @@ Item {
                 Rectangle {
                     width: 5
                     height: 5
-                    x: sliderTrack.x - 3
-                    y: sliderTrack.y + sliderTrack.height / 2 - height / 2
-                    z: sliderHandle.z + 1
+                    x: rateSlider.x - 3
+                    y: rateSlider.y + rateSlider.height / 2 - height / 2
+                    z: rateSlider.z + 1
                     radius: 1
                     color: rateSetDefaultProxy.value > 0 ? "#00ffff" : "#4f4f4f"
                     border.color: "#0c0c0c"
                     visible: !root.hasLegacyRateCenterAsset
-                }
-
-                Rectangle {
-                    id: rateSliderBar
-                    width: 2
-                    x: sliderTrack.x + 20 - width / 2
-                    y: Math.min(root.sliderCenterY(), root.sliderHandleCenterY())
-                    height: Math.abs(root.sliderCenterY() - root.sliderHandleCenterY())
-                    z: 1
-                    color: "#888888"
-                    radius: 1
-                    visible: height > 0.5
-                }
-
-                // Functional rate slider handle
-                Image {
-                    id: sliderHandle
-                    width: 34
-                    height: 18
-                    source: LateNightTheme.assetDeckRateSliderHandle
-                    fillMode: Image.PreserveAspectFit
-                    z: 2
-                    x: (sliderContainer.width - width) / 2
-
-                    // Map [ChannelN],rate directly so short Sync rate updates are reflected.
-                    y: {
-                        var trackTop = sliderTrack.y;
-                        var trackUsable = sliderTrack.height - sliderHandle.height;
-                        var parameter = root.rateValueToSliderParameter(rateProxy.value);
-                        return trackTop + (1.0 - parameter) * trackUsable;
-                    }
-                }
-
-                MouseArea {
-                    anchors.fill: sliderTrack
-                    property bool dragging: false
-
-                    function updateRate(mouseY) {
-                        var trackUsable = sliderTrack.height - sliderHandle.height;
-                        var halfHandle = sliderHandle.height / 2;
-                        var relY = mouseY - halfHandle;
-                        var normalized = 1.0 - Math.max(0, Math.min(1, relY / trackUsable));
-                        rateProxy.value = root.sliderParameterToRateValue(normalized);
-                    }
-
-                    onPressed: function(mouse) {
-                        dragging = true;
-                        updateRate(mouse.y);
-                    }
-                    onPositionChanged: function(mouse) {
-                        if (dragging) {
-                            updateRate(mouse.y);
-                        }
-                    }
-                    onReleased: {
-                        dragging = false;
-                    }
-
-                    // Double-click resets rate to default
-                    onDoubleClicked: {
-                        rateSetDefaultProxy.value = 1;
-                    }
                 }
             }
 
