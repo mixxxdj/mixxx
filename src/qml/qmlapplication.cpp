@@ -86,7 +86,7 @@ QmlApplication::QmlApplication(
     // is taken and the gate remains in effect as designed.
     const bool viaNewUiFlag = CmdlineArgs::Instance().isQml();
 
-    if (configVersion == VersionStore::FUTURE_UNSTABLE) {
+    if (configVersion == VersionStore::FUTURE_UNSTABLE || configVersion.isEmpty()) {
         qDebug() << "Generating a new user profile for safe testing with unstable code";
     } else if (!viaNewUiFlag) {
         qDebug() << "QmlApplication: QML skin loaded via preferences, "
