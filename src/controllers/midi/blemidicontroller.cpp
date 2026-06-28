@@ -20,6 +20,7 @@ constexpr const char* kBleMidiCharacteristicUuid = "7772E5DB-3868-4112-A1C9-F266
 
 // JNI class name for BleMidiController.java
 constexpr const char* kBleMidiClass = "org/mixxx/BleMidiController";
+constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
 } // namespace
 
@@ -48,40 +49,25 @@ int BleMidiController::open(const QString& resourcePath) {
     Q_UNUSED(resourcePath);
     kLogger.info() << "Opening BLE MIDI device" << getName();
 
-    QJniObject activity = QJniObject::callStaticObjectMethod(
-            "org/qtproject/qt/android/QtNative",
-            "activity",
-            "()Landroid/app/Activity;");
-    if (!activity.isValid()) {
-        kLogger.warning() << "BLE: activity not available";
-        return -1;
-    }
-
     // Register this instance for JNI callbacks
     s_pInstance = this;
 
-    // Call Java to connect GATT
-    QJniObject addressObj = QJniObject::fromString(m_deviceAddress);
-    QJniObject serviceUuidObj = QJniObject::fromString(QString(kBleMidiServiceUuid));
-    QJniObject charUuidObj = QJniObject::fromString(QString(kBleMidiCharacteristicUuid));
+    // Check if already connected by Java side (automatic during scan)
+    bool alreadyConnected = QJniObject::callStaticMethod<jboolean>(
+            kBleScannerClass,
+            "isConnected",
+            "()Z");
 
-    jboolean result = QJniObject::callStaticMethod<jboolean>(
-            kBleMidiClass,
-            "connect",
-            "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
-            activity.object<jobject>(),
-            addressObj.object<jstring>(),
-            serviceUuidObj.object<jstring>(),
-            charUuidObj.object<jstring>());
-
-    if (!result) {
-        kLogger.warning() << "BLE: failed to connect GATT to" << m_deviceAddress;
-        s_pInstance = nullptr;
-        return -1;
+    if (alreadyConnected) {
+        kLogger.info() << "BLE device already connected:" << m_deviceAddress;
+        startEngine();
+        setOpen(true);
+        return 0;
     }
 
-    kLogger.info() << "BLE: GATT connection initiated to" << m_deviceAddress;
-
+    // Not yet connected - the Java BLE scanner will connect automatically
+    // during the scan cycle. We accept the device as "opening" and wait.
+    kLogger.info() << "BLE device pending connection:" << m_deviceAddress;
     startEngine();
     setOpen(true);
     return 0;
@@ -91,8 +77,8 @@ int BleMidiController::close() {
     kLogger.info() << "Closing BLE MIDI device" << getName();
 
     QJniObject::callStaticMethod<void>(
-            kBleMidiClass,
-            "disconnect",
+            kBleScannerClass,
+            "disconnectAll",
             "()V");
     if (s_pInstance == this) {
         s_pInstance = nullptr;
@@ -321,11 +307,13 @@ void BleMidiController::sendShortMsg(unsigned char status,
     packet.append(byte1);
     packet.append(byte2);
 
+    QJniObject jAddress = QJniObject::fromString(m_deviceAddress);
     QJniObject jData = QJniObject::fromString(QString(packet.toHex()));
     QJniObject::callStaticMethod<void>(
-            kBleMidiClass,
+            kBleScannerClass,
             "writeMidiData",
-            "(Ljava/lang/String;)V",
+            "(Ljava/lang/String;Ljava/lang/String;)V",
+            jAddress.object<jstring>(),
             jData.object<jstring>());
 }
 
@@ -338,11 +326,13 @@ bool BleMidiController::sendBytes(const QByteArray& data) {
     packet.append(tsLow);
     packet.append(data);
 
+    QJniObject jAddress = QJniObject::fromString(m_deviceAddress);
     QJniObject jData = QJniObject::fromString(QString(packet.toHex()));
     QJniObject::callStaticMethod<void>(
-            kBleMidiClass,
+            kBleScannerClass,
             "writeMidiData",
-            "(Ljava/lang/String;)V",
+            "(Ljava/lang/String;Ljava/lang/String;)V",
+            jAddress.object<jstring>(),
             jData.object<jstring>());
     return true;
 }

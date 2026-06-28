@@ -192,6 +192,10 @@ void ControllerManager::slotInitialize() {
         m_pBleScanEnumerator = static_cast<BleMidiEnumerator*>(m_enumerators.back().get());
 #endif
     } // Mutex locker released here
+#ifdef __ANDROID__
+    // Start BLE scan early so devices are found before setUpDevices iterates
+    startBleScan();
+#endif
     emit initialized();
 }
 

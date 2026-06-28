@@ -132,7 +132,7 @@ void usbDeviceAccessResult(JNIEnv*, jobject, jobject device, jboolean granted) {
 Q_DECLARE_JNI_NATIVE_METHOD(usbDeviceAccessResult)
 
 // BLE MIDI Controller JNI callbacks
-void bleMidiNativeOnMidiDataReceived(JNIEnv* env, jobject, jbyteArray data) {
+void nativeOnMidiDataReceived(JNIEnv* env, jobject, jstring deviceAddress, jbyteArray data) {
     if (!data || !env)
         return;
     jsize len = env->GetArrayLength(data);
@@ -143,16 +143,37 @@ void bleMidiNativeOnMidiDataReceived(JNIEnv* env, jobject, jbyteArray data) {
     env->GetByteArrayRegion(data, 0, len, reinterpret_cast<jbyte*>(byteArray.data()));
     BleMidiController::onMidiDataReceived(byteArray);
 }
-Q_DECLARE_JNI_NATIVE_METHOD(bleMidiNativeOnMidiDataReceived)
+Q_DECLARE_JNI_NATIVE_METHOD(nativeOnMidiDataReceived)
 
-void bleMidiNativeOnConnectionStateChanged(JNIEnv*, jobject, jboolean connected) {
+void nativeOnDeviceConnected(JNIEnv* env, jobject, jstring deviceAddress, jstring deviceName) {
+    if (!env)
+        return;
+    auto addr = env->GetStringUTFChars(deviceAddress, nullptr);
+    auto name = deviceName ? env->GetStringUTFChars(deviceName, nullptr) : nullptr;
     __android_log_print(ANDROID_LOG_INFO,
             "mixxx",
-            "BLE MIDI connection state changed: %d",
-            connected);
-    // TODO: Update UI / notify user
+            "BLE MIDI device connected: %s (%s)",
+            name ? name : "?",
+            addr ? addr : "?");
+    if (addr)
+        env->ReleaseStringUTFChars(deviceAddress, addr);
+    if (name)
+        env->ReleaseStringUTFChars(deviceName, name);
 }
-Q_DECLARE_JNI_NATIVE_METHOD(bleMidiNativeOnConnectionStateChanged)
+Q_DECLARE_JNI_NATIVE_METHOD(nativeOnDeviceConnected)
+
+void nativeOnDeviceDisconnected(JNIEnv* env, jobject, jstring deviceAddress) {
+    if (!env)
+        return;
+    auto addr = env->GetStringUTFChars(deviceAddress, nullptr);
+    __android_log_print(ANDROID_LOG_INFO,
+            "mixxx",
+            "BLE MIDI device disconnected: %s",
+            addr ? addr : "?");
+    if (addr)
+        env->ReleaseStringUTFChars(deviceAddress, addr);
+}
+Q_DECLARE_JNI_NATIVE_METHOD(nativeOnDeviceDisconnected)
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* /*vm*/, void*) {
     QJniEnvironment env;
@@ -160,8 +181,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* /*vm*/, void*) {
             Q_JNI_NATIVE_METHOD(usbDeviceAccessResult),
     });
     env.registerNativeMethods<QtJniTypes::BleMidiControllerClass>({
-            Q_JNI_NATIVE_METHOD(bleMidiNativeOnMidiDataReceived),
-            Q_JNI_NATIVE_METHOD(bleMidiNativeOnConnectionStateChanged),
+            Q_JNI_NATIVE_METHOD(nativeOnMidiDataReceived),
+            Q_JNI_NATIVE_METHOD(nativeOnDeviceConnected),
+            Q_JNI_NATIVE_METHOD(nativeOnDeviceDisconnected),
     });
     return JNI_VERSION_1_6;
 }

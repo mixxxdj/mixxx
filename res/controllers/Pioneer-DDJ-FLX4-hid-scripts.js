@@ -304,7 +304,7 @@ PioneerDDJFLX4HID.registerInputPackets = function() {
     // Analog controls
     mainPacket.addControl("[Channel1]", "volume", 6, "B");
     mainPacket.addControl("[Channel2]", "volume", 20, "B");
-    mainPacket.addControl("[Master]", "crossfader", 24, "B");
+    mainPacket.addControl("[Master]", "crossfader", 25, "B");
     mainPacket.addControl("[Channel1]", "rate", 7, "B");
     mainPacket.addControl("[Channel2]", "rate", 21, "B");
     mainPacket.addControl("[Channel1]", "filterHigh", 8, "B");

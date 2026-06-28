@@ -21,7 +21,7 @@ BleMidiEnumerator::BleMidiEnumerator(UserSettingsPointer pConfig)
           m_pScanTimer(new QTimer(this)),
           m_scanning(false) {
     m_pScanTimer->setSingleShot(true);
-    m_pScanTimer->setInterval(10000);
+    m_pScanTimer->setInterval(4000);
     connect(m_pScanTimer, &QTimer::timeout, this, &BleMidiEnumerator::slotOnScanTimeout);
 }
 
@@ -31,6 +31,12 @@ BleMidiEnumerator::~BleMidiEnumerator() {
 
 QList<Controller*> BleMidiEnumerator::queryDevices() {
     QMutexLocker locker(&m_mutex);
+    // If we're not scanning and have no devices, start a scan
+    if (!m_scanning && m_devices.isEmpty()) {
+        locker.unlock();
+        startScan();
+        locker.relock();
+    }
     return m_devices;
 }
 
