@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
+import "../Controls" as Controls
 import "../LateNightTheme"
 
-Rectangle {
+Controls.Panel {
     id: root
 
     implicitHeight: root.minimized ? 80 : 206
@@ -26,7 +27,6 @@ Rectangle {
     readonly property bool showVinylControls: honorSkinVisibilityControls && showVinylControlsProxy.value > 0
 
     color: LateNightTheme.deckPanelColor
-    radius: 1
 
     Mixxx.ControlProxy {
         id: selectBigSpinnyProxy
@@ -328,35 +328,4 @@ Rectangle {
         group: root.group
     }
 
-    Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        height: 1
-        color: "#333333"
-    }
-
-    Rectangle {
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: 1
-        color: "#282828"
-    }
-
-    Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 1
-        color: "#0c0c0c"
-    }
-
-    Rectangle {
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: 1
-        color: LateNightTheme.deckTopRowBackgroundColor
-    }
 }

@@ -23,6 +23,8 @@ QtObject {
     readonly property color deckPanelColor: "#1e1e20"
     readonly property color deckPanelBorderDark: "#0c0c0c"
     readonly property color deckPanelBorderLight: "#333333"
+    readonly property color deckPanelBorderLeft: "#282828"
+    readonly property color deckPanelBorderRight: deckTopRowBackgroundColor
     readonly property color overviewBorderTopColor: "#0d0d0d"
     readonly property color overviewBorderLeftColor: "#121212"
     readonly property color overviewBorderBottomColor: "#2a2a2a"

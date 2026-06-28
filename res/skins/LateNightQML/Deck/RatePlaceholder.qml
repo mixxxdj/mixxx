@@ -96,7 +96,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: 1
-            color: "#0c0c0c"
+            color: LateNightTheme.deckPanelBorderDark
         }
 
         Rectangle {
@@ -104,7 +104,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: 1
-            color: "#333333"
+            color: LateNightTheme.deckPanelBorderLight
         }
     }
 
@@ -317,7 +317,7 @@ Item {
                     z: rateSlider.z + 1
                     radius: 1
                     color: rateSetDefaultProxy.value > 0 ? "#00ffff" : "#4f4f4f"
-                    border.color: "#0c0c0c"
+                    border.color: LateNightTheme.deckPanelBorderDark
                     visible: !root.hasLegacyRateCenterAsset
                 }
             }

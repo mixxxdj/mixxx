@@ -67,7 +67,7 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: 1
-            color: "#333333"
+            color: LateNightTheme.deckPanelBorderLight
         }
 
         Rectangle {
@@ -75,7 +75,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: 1
-            color: "#333333"
+            color: LateNightTheme.deckPanelBorderLight
         }
     }
 
