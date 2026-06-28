@@ -26,6 +26,7 @@ import java.util.UUID;
  *
  * Called from C++ via JNI.
  */
+@SuppressWarnings("deprecation")
 public class BleMidiController {
     private static final String TAG = "MixxxBleMidiCtrl";
 
