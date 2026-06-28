@@ -4,7 +4,7 @@ import "../LateNightTheme"
 Item {
     id: root
 
-    property url backgroundSource: LateNightTheme.legacySubRegionButton("square")
+    property url backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
     property url iconSource: ""
     property string label: ""
     property color labelColor: LateNightTheme.textColorMuted

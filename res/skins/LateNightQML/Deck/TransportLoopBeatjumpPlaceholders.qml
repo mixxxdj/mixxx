@@ -100,7 +100,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 42
                 Layout.preferredHeight: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("medium")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("medium")
                 iconSource: LateNightTheme.assetDeckCueButton
                 group: root.group
                 key: "cue_default"
@@ -120,7 +120,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("square")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 activeBackgroundSuffix: "active"
                 iconSource: LateNightTheme.assetDeckReverseButton
                 activeIconSuffix: LateNightTheme.playCueActiveIconSuffix
@@ -140,7 +140,7 @@ Item {
                 Layout.columnSpan: 2
                 Layout.preferredWidth: 68
                 Layout.preferredHeight: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("play")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("play")
                 iconSource: LateNightTheme.assetDeckPlayButton
                 group: root.group
                 key: "play"
@@ -172,10 +172,10 @@ Item {
             Repeater {
                 model: root.show8Hotcues ? 8 : 4
 
-                delegate: LegacyIconButton {
+                delegate: LateNightIconButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    iconSource: LateNightTheme.legacyButton("btn__" + (index + 1) + ".svg")
+                    iconSource: LateNightTheme.lateNightButton("btn__" + (index + 1) + ".svg")
                     contentOpacity: 1.0
                     inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
                 }
@@ -204,7 +204,7 @@ Item {
                     LateNightTheme.assetDeckOutroEndButton
                 ]
 
-                delegate: LegacyIconButton {
+                delegate: LateNightIconButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
                     iconSource: modelData
@@ -228,7 +228,7 @@ Item {
             Layout.preferredHeight: 52
             visible: root.showLoopControls
 
-            LegacyIconButton {
+            LateNightIconButton {
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 iconSource: LateNightTheme.assetDeckLoopButton
@@ -251,7 +251,7 @@ Item {
                     LateNightTheme.assetDeckLoopAnchorStartButton
                 ]
 
-                delegate: LegacyIconButton {
+                delegate: LateNightIconButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
                     iconSource: modelData
@@ -283,7 +283,7 @@ Item {
                 valueText: root.beatSizeText(beatjumpSizeProxy.value)
             }
 
-            LegacyIconButton {
+            LateNightIconButton {
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 iconSource: LateNightTheme.assetDeckBeatjumpLeftButton
@@ -291,7 +291,7 @@ Item {
                 inactiveColor: LateNightTheme.deckDimButtonInactiveColor
             }
 
-            LegacyIconButton {
+            LateNightIconButton {
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 iconSource: LateNightTheme.assetDeckBeatjumpRightButton

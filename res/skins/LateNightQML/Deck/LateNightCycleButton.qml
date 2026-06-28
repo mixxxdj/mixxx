@@ -3,7 +3,7 @@ import "../../../qml" as Skin
 import "../LateNightTheme"
 
 // A LateNight-styled button that cycles through N states.
-LegacyIconButton {
+LateNightIconButton {
     id: root
 
     required property string group

@@ -139,7 +139,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 21
                 Layout.preferredHeight: 18
-                backgroundSource: LateNightTheme.legacyButton("btn__.svg")
+                backgroundSource: LateNightTheme.lateNightButton("btn__.svg")
                 iconSource: LateNightTheme.assetDeckSlipButton
                 activeIconSuffix: root.activeSuffix
                 stretchIcon: true
@@ -155,7 +155,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 21
                 Layout.preferredHeight: 18
-                backgroundSource: LateNightTheme.legacyButton("btn__.svg")
+                backgroundSource: LateNightTheme.lateNightButton("btn__.svg")
                 iconSource: LateNightTheme.assetDeckQuantizeButton
                 activeIconSuffix: root.activeSuffix
                 stretchIcon: true
@@ -172,7 +172,7 @@ Item {
                 id: curposBtn
                 Layout.preferredWidth: 21
                 Layout.preferredHeight: 18
-                backgroundSource: LateNightTheme.legacyButton("btn__.svg")
+                backgroundSource: LateNightTheme.lateNightButton("btn__.svg")
                 iconSource: LateNightTheme.assetDeckBeatCurposButton
                 activeIconSuffix: root.activeSuffix
                 stretchIcon: true
@@ -202,7 +202,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 21
                 Layout.preferredHeight: 18
-                backgroundSource: LateNightTheme.legacyButton("btn__.svg")
+                backgroundSource: LateNightTheme.lateNightButton("btn__.svg")
                 iconSource: LateNightTheme.assetDeckEjectButton
                 activeIconSuffix: root.activeSuffix
                 stretchIcon: true
@@ -218,7 +218,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 21
                 Layout.preferredHeight: 18
-                backgroundSource: LateNightTheme.legacyButton("btn__.svg")
+                backgroundSource: LateNightTheme.lateNightButton("btn__.svg")
                 iconSource: LateNightTheme.assetDeckRepeatButton
                 activeIconSuffix: root.activeSuffix
                 stretchIcon: true
@@ -234,7 +234,7 @@ Item {
             LateNightControlButton {
                 Layout.preferredWidth: 21
                 Layout.preferredHeight: 18
-                backgroundSource: LateNightTheme.legacyButton("btn__.svg")
+                backgroundSource: LateNightTheme.lateNightButton("btn__.svg")
                 iconSource: LateNightTheme.assetDeckKeylockButton
                 activeIconSuffix: root.activeSuffix
                 stretchIcon: true

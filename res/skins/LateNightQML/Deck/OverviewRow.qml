@@ -34,7 +34,7 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 height: 1
-                color: "#0d0d0d"
+                color: LateNightTheme.overviewBorderTopColor
             }
 
             Rectangle {
@@ -42,7 +42,7 @@ Item {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: 1
-                color: "#121212"
+                color: LateNightTheme.overviewBorderLeftColor
             }
 
             Rectangle {
@@ -50,7 +50,7 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 height: 1
-                color: "#2a2a2a"
+                color: LateNightTheme.overviewBorderBottomColor
             }
 
             Rectangle {
@@ -58,7 +58,7 @@ Item {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: 1
-                color: "#252525"
+                color: LateNightTheme.overviewBorderRightColor
             }
 
             MixxxControls.WaveformOverview {
@@ -85,7 +85,7 @@ Item {
                 anchors.right: parent.right
                 anchors.top: parent.top
                 height: 1
-                color: "#0d0d0d"
+                color: LateNightTheme.overviewBorderTopColor
             }
 
             Rectangle {
@@ -93,7 +93,7 @@ Item {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: 1
-                color: "#121212"
+                color: LateNightTheme.overviewBorderLeftColor
             }
 
             Rectangle {
@@ -101,7 +101,7 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 height: 1
-                color: "#2a2a2a"
+                color: LateNightTheme.overviewBorderBottomColor
             }
 
             Rectangle {
@@ -109,7 +109,7 @@ Item {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: 1
-                color: "#252525"
+                color: LateNightTheme.overviewBorderRightColor
             }
 
             DeckSettingsPlaceholder {

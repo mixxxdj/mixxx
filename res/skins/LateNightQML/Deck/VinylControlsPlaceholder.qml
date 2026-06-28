@@ -36,7 +36,7 @@ Item {
 
             Image {
                 anchors.fill: parent
-                source: LateNightTheme.legacyTopRegionButton("medium")
+                source: LateNightTheme.lateNightTopRegionButton("medium")
                 fillMode: Image.Stretch
                 opacity: vinylEnabledProxy.value > 0 ? 0.95 : 0.72
             }
@@ -74,7 +74,7 @@ Item {
         LateNightCycleButton {
             Layout.preferredWidth: 46
             Layout.preferredHeight: 20
-            backgroundSource: LateNightTheme.legacyTopRegionButton("medium")
+            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
             group: root.group
             key: "vinylcontrol_mode"
@@ -86,7 +86,7 @@ Item {
         LateNightCycleButton {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 20
-            backgroundSource: LateNightTheme.legacyTopRegionButton("medium")
+            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
             group: root.group
             key: "vinylcontrol_cueing"
@@ -98,7 +98,7 @@ Item {
         LateNightControlButton {
             Layout.preferredWidth: 35
             Layout.preferredHeight: 20
-            backgroundSource: LateNightTheme.legacyTopRegionButton("medium")
+            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
             label: "PASS"
             labelPixelSize: 9
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor

@@ -12,18 +12,18 @@ Rectangle {
     required property string group
     property bool minimized: false
     property bool editMode: false
-    property bool honorLegacyVisibilityControls: false
-    readonly property bool showBeatjumpControls: !honorLegacyVisibilityControls || showBeatjumpControlsProxy.value > 0
+    property bool honorSkinVisibilityControls: false
+    readonly property bool showBeatjumpControls: !honorSkinVisibilityControls || showBeatjumpControlsProxy.value > 0
     readonly property bool showBigSpinnyOrCover: selectBigSpinnyProxy.value > 0
-    readonly property bool showHotcues: !honorLegacyVisibilityControls || showHotcuesProxy.value > 0
-    readonly property bool show8Hotcues: !honorLegacyVisibilityControls || show8HotcuesProxy.value > 0
-    readonly property bool showIntroOutroCues: !honorLegacyVisibilityControls || showIntroOutroCuesProxy.value > 0
-    readonly property bool showKeyControls: !honorLegacyVisibilityControls || showKeyControlsProxy.value > 0
-    readonly property bool showLoopControls: !honorLegacyVisibilityControls || showLoopControlsProxy.value > 0
-    readonly property bool showRateControlButtons: !honorLegacyVisibilityControls || showRateControlButtonsProxy.value > 0
-    readonly property bool showRateControls: !honorLegacyVisibilityControls || showRateControlsProxy.value > 0
+    readonly property bool showHotcues: !honorSkinVisibilityControls || showHotcuesProxy.value > 0
+    readonly property bool show8Hotcues: !honorSkinVisibilityControls || show8HotcuesProxy.value > 0
+    readonly property bool showIntroOutroCues: !honorSkinVisibilityControls || showIntroOutroCuesProxy.value > 0
+    readonly property bool showKeyControls: !honorSkinVisibilityControls || showKeyControlsProxy.value > 0
+    readonly property bool showLoopControls: !honorSkinVisibilityControls || showLoopControlsProxy.value > 0
+    readonly property bool showRateControlButtons: !honorSkinVisibilityControls || showRateControlButtonsProxy.value > 0
+    readonly property bool showRateControls: !honorSkinVisibilityControls || showRateControlsProxy.value > 0
     readonly property bool showSmallSpinnyOrCover: selectBigSpinnyProxy.value <= 0 && !root.minimized
-    readonly property bool showVinylControls: honorLegacyVisibilityControls && showVinylControlsProxy.value > 0
+    readonly property bool showVinylControls: honorSkinVisibilityControls && showVinylControlsProxy.value > 0
 
     color: LateNightTheme.deckPanelColor
     radius: 1
@@ -156,12 +156,12 @@ Rectangle {
                                 source: {
                                     if (index === 0) {
                                         return fxAssignButton.active
-                                            ? LateNightTheme.legacyButton("btn_embedded_library_active.svg")
-                                            : LateNightTheme.legacyButton("btn_embedded_library.svg");
+                                            ? LateNightTheme.lateNightButton("btn_embedded_library_active.svg")
+                                            : LateNightTheme.lateNightButton("btn_embedded_library.svg");
                                     } else {
                                         return fxAssignButton.active
-                                            ? LateNightTheme.legacyButton("btn_embedded_grid_active.svg")
-                                            : LateNightTheme.legacyButton("btn_embedded_grid.svg");
+                                            ? LateNightTheme.lateNightButton("btn_embedded_grid_active.svg")
+                                            : LateNightTheme.lateNightButton("btn_embedded_grid.svg");
                                     }
                                 }
                                 fillMode: Image.Stretch
@@ -357,6 +357,6 @@ Rectangle {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: 1
-        color: "#181818"
+        color: LateNightTheme.deckTopRowBackgroundColor
     }
 }

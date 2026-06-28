@@ -409,7 +409,7 @@ Item {
                 LateNightControlButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    backgroundSource: LateNightTheme.legacyTopRegionButton("square")
+                    backgroundSource: LateNightTheme.lateNightTopRegionButton("square")
                     iconSource: LateNightTheme.assetDeckMinusButton
                     group: root.group
                     key: rateDirProxy.value >= 0 ? "rate_perm_up" : "rate_perm_down"
@@ -422,7 +422,7 @@ Item {
                 LateNightControlButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    backgroundSource: LateNightTheme.legacyTopRegionButton("square")
+                    backgroundSource: LateNightTheme.lateNightTopRegionButton("square")
                     iconSource: LateNightTheme.assetDeckArrowLeftUpButton
                     group: root.group
                     key: rateDirProxy.value >= 0 ? "rate_temp_up" : "rate_temp_down"
@@ -435,7 +435,7 @@ Item {
                 LateNightControlButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    backgroundSource: LateNightTheme.legacyTopRegionButton("square")
+                    backgroundSource: LateNightTheme.lateNightTopRegionButton("square")
                     iconSource: LateNightTheme.assetDeckArrowRightDownButton
                     group: root.group
                     key: rateDirProxy.value >= 0 ? "rate_temp_down" : "rate_temp_up"
@@ -448,7 +448,7 @@ Item {
                 LateNightControlButton {
                     Layout.preferredWidth: 26
                     Layout.preferredHeight: 26
-                    backgroundSource: LateNightTheme.legacyTopRegionButton("square")
+                    backgroundSource: LateNightTheme.lateNightTopRegionButton("square")
                     iconSource: LateNightTheme.assetDeckPlusButton
                     group: root.group
                     key: rateDirProxy.value >= 0 ? "rate_perm_down" : "rate_perm_up"

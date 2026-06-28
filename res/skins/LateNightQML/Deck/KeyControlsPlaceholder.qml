@@ -117,7 +117,7 @@ Item {
         y: 0
         width: root.width - 50
         height: 20
-        color: "#181818"
+        color: LateNightTheme.deckTopRowBackgroundColor
 
         Rectangle {
             anchors.left: parent.left

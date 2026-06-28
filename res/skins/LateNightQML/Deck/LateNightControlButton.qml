@@ -2,7 +2,7 @@ import QtQuick
 import "../../../qml" as Skin
 
 // A LateNight-styled button wrapper around shared Mixxx.ControlProxy behavior.
-LegacyIconButton {
+LateNightIconButton {
     id: root
 
     required property string group
