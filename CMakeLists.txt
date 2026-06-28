@@ -565,8 +565,7 @@ elseif(APPLE)
 endif()
 
 project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
-#Work around missing version suffixes support \
-        https: // gitlab.kitware.com/cmake/cmake/-/issues/16716
+#Work around missing version suffixes support https: // gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
@@ -717,12 +716,10 @@ message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 #CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
 #We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset(IPO disabled) to save
 #build time at the cost of a bigger memory footprint at run - time.
-#See https: // github.com/mixxxdj/mixxx/pull/3589 for some test results
+#See https:                                    // github.com/mixxxdj/mixxx/pull/3589 for some test results
 #Note : IPO has caused issues on Fedora https: // bugzilla.rpmfusion.org/show_bug.cgi?id=5829
 #Uncomment the following code to enable IPO for Release builds
-#if (NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT                 \
-                CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL \
-                                          "off")
+#if (NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
 #include(CheckIPOSupported)
 #check_ipo_supported(RESULT HAVE_IPO)
 #if (HAVE_IPO)
@@ -782,23 +779,18 @@ if(MSVC)
     #http: // msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
 
-#For repeated local development builds, /                                    \
-        INCREMENTAL offers much faster build times with the same performance \
-                of the executable,
-#unless link time code generation(like CMAKE_INTERPROCEDURAL_OPTIMIZATION) \
-        is used,                                                           \
-        which is contrary to incremental linking.
+    #For repeated local development builds, / INCREMENTAL offers much faster build times with the same performance of the executable,
+    #unless link time code generation(like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-#Optimize Debug Builds as well, \
-        to have "normal" behavior of Mixxx during development
+      #Optimize Debug Builds as well, to have "normal" behavior of Mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
       string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/Ob0" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS}")
 
       add_compile_options(/O2) # this implies /Od2
-#Remove / RTC1 flag set by CMAKE by default(conflicts with / O2)
+      #Remove / RTC1 flag set by CMAKE by default(conflicts with / O2)
       string(
         REPLACE
         "/RTC1"
@@ -808,10 +800,8 @@ if(MSVC)
       )
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-#For some reasons cmake uses / \
-        Ob1 in RelWithDebInfo  \
-                https: // gitlab.kitware.com/cmake/cmake/-/issues/20812
-#/ O2 is applied by CMake and this implies / Od2
+      #For some reasons cmake uses / Ob1 in RelWithDebInfo https: // gitlab.kitware.com/cmake/cmake/-/issues/20812
+      #/ O2 is applied by CMake and this implies / Od2
       string(
         REPLACE
         "/Ob1"
@@ -827,16 +817,14 @@ if(MSVC)
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
       )
 
-#Reduce the size of the binary in RelWithDebInfo builds
-#Do not use / OPT : ICF because it has no effect.
-#https: // github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      #Reduce the size of the binary in RelWithDebInfo builds
+      #Do not use / OPT : ICF because it has no effect.
+      #https: // github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
 
-#/ INCREMENTAL is incompatible with / OPT : REF, but it's the CMake default for RelWithDebInfo
-#The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the \
-                GUI or                                                       \
-        in CMakeSettings.json,
-#therefore we can't rely on the default.
+      #/ INCREMENTAL is incompatible with / OPT : REF, but it's the CMake default for RelWithDebInfo
+      #The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the GUI or in CMakeSettings.json,
+      #therefore we can't rely on the default.
       string(
         FIND
         CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
@@ -856,35 +844,34 @@ if(MSVC)
           "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}"
         )
       endif()
-#Note : CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the / GL and / LTCG flags for us
+      #Note : CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the / GL and / LTCG flags for us
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-#Reduce the size of the binary in Release builds
-#Do not use / OPT : ICF because it has no effect.
-#https: // github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      #Reduce the size of the binary in Release builds
+      #Do not use / OPT : ICF because it has no effect.
+      #https: // github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-#Target architecture is x86 with SSE and SSE2
+        #Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-#Define gcc / clang style defines for SSE and SSE2 for compatibility
+        #Define gcc / clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
-#Set compiler option for SSE / SSE2
+        #Set compiler option for SSE / SSE2
         add_compile_options(/arch:SSE2)
       endif()
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling optimizations for native system, specified by user")
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86)$")
-#Target architecture is x86 with SSE and SSE2
+        #Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SSE2 CPU optimizations (>= Pentium 4)")
-#Define gcc / clang style defines for SSE and SSE2 for compatibility
+        #Define gcc / clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
-#Define the target processor instruction and other compiler optimization flags \
-        here:
-#https: // docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
-#add_compile_options(/ arch : AVX512)
+      #Define the target processor instruction and other compiler optimization flags here:
+      #https: // docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+      #add_compile_options(/ arch : AVX512)
       message(
         FATAL_ERROR
         "User need to set the MSVC compiler flags for the native processor here!"
@@ -903,9 +890,9 @@ if(MSVC)
       )
     endif()
   else()
-#OPTIMIZE = off
+    #OPTIMIZE = off
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-#Remove optimize flags set by cmake defaults
+      #Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -925,7 +912,7 @@ if(MSVC)
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-#Remove optimize flags set by cmake defaults
+      #Remove optimize flags set by cmake defaults
       string(
         REPLACE
         "/O2"
@@ -940,9 +927,7 @@ if(MSVC)
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
       )
-#For some reasons cmake uses / \
-        Ob1 in RelWithDebInfo  \
-                https: // gitlab.kitware.com/cmake/cmake/-/issues/20812
+      #For some reasons cmake uses / Ob1 in RelWithDebInfo https: // gitlab.kitware.com/cmake/cmake/-/issues/20812
       string(
         REPLACE
         "/Ob1"
@@ -963,47 +948,47 @@ if(MSVC)
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
   if(NOT OPTIMIZE STREQUAL "off")
-#Common flags to all optimizations.
-#- ffast - math will prevent a performance penalty by denormals
-#(floating point values almost Zero are treated as Zero)
-#unfortunately that work only on 64 bit CPUs or with sse2 enabled
-#The following optimisation flags makes the engine code ~3 times
-#faster, measured on a Atom CPU.
+    #Common flags to all optimizations.
+    #- ffast - math will prevent a performance penalty by denormals
+    #(floating point values almost Zero are treated as Zero)
+    #unfortunately that work only on 64 bit CPUs or with sse2 enabled
+    #The following optimisation flags makes the engine code ~3 times
+    #faster, measured on a Atom CPU.
     add_compile_options(-ffast-math -funroll-loops)
     if(EMSCRIPTEN)
-#Optimize for size + speed when targeting Emscripten / WebAssembly
-#This is recommended as we use asyncify:
-#See https: // doc.qt.io/qt-6/wasm.html#asyncify
+      #Optimize for size + speed when targeting Emscripten / WebAssembly
+      #This is recommended as we use asyncify:
+      #See https: // doc.qt.io/qt-6/wasm.html#asyncify
       add_compile_options(-Os)
     elseif(ANDROID)
-#Android : -Oz is applied per - target below(after qt_add_executable)
-#to allow Thin LTO + gc - sections to cooperate.Still apply - O2 here
-#for any third - party static libs built in - tree that don't get the
-#per - target flags(e.g.PortAudioRingBuffer).
+      #Android : -Oz is applied per - target below(after qt_add_executable)
+      #to allow Thin LTO + gc - sections to cooperate.Still apply - O2 here
+      #for any third - party static libs built in - tree that don't get the
+      #per - target flags(e.g.PortAudioRingBuffer).
       add_compile_options(-O2)
     else()
       add_compile_options(-O3)
     endif()
-#set - fomit - frame - pointer when we don't profile and are not using
-#Clang sanitizers.
-#Note : It is only included in - O on machines where it does not
-#interfere with debugging
+    #set - fomit - frame - pointer when we don't profile and are not using
+    #Clang sanitizers.
+    #Note : It is only included in - O on machines where it does not
+    #interfere with debugging
     if(NOT PROFILING AND NOT SANITIZERS)
       add_compile_options(-fomit-frame-pointer)
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
-#portable : sse2 CPU(>= Pentium 4)
+      #portable : sse2 CPU(>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
         if(NOT EMSCRIPTEN)
           add_compile_options(-mtune=generic)
         endif()
-#- mtune = generic picks the most common, but compatible options.
-#on arm platforms equivalent to - march = arch
+        #- mtune = generic picks the most common, but compatible options.
+        #on arm platforms equivalent to - march = arch
         if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
-#the sse flags are not set by default on 32 bit builds
-#but are not supported on arm builds
+          #the sse flags are not set by default on 32 bit builds
+          #but are not supported on arm builds
           add_compile_options(-msse2)
           if(EMSCRIPTEN)
             add_compile_options(-msimd128)
@@ -1011,29 +996,29 @@ elseif(GNU_GCC OR LLVM_CLANG)
             add_compile_options(-mfpmath=sse)
           endif()
         endif()
-#TODO(rryan) : macOS can use SSE3, and possibly SSE 4.1 once
-#we require macOS 10.12.
-#https: // stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
+        #TODO(rryan) : macOS can use SSE3, and possibly SSE 4.1 once
+        #we require macOS 10.12.
+        #https: // stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
       elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7.*)$") # but not armv8
         add_compile_options(-mfloat-abi=hard -mfpu=neon)
       endif()
-#this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-#This should be our default build for distribution
-#It's a little sketchy, but turning on SSE2 will gain
-# 100 % performance in our filter code and allows us to
-#turns on denormal zeroing.
-#We don 't really support CPU' s earlier than Pentium 4,
-#which is the class of CPUs this decision affects.
-#The downside of this is that we aren't truly
-#i386 compatible, so builds that claim 'i386' will crash.
-#-- rryan 2 / 2011
-#Note : SSE2 is a core part of x64 CPUs
+      #this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+      #This should be our default build for distribution
+      #It's a little sketchy, but turning on SSE2 will gain
+      # 100 % performance in our filter code and allows us to
+      #turns on denormal zeroing.
+      #We don 't really support CPU' s earlier than Pentium 4,
+      #which is the class of CPUs this decision affects.
+      #The downside of this is that we aren't truly
+      #i386 compatible, so builds that claim 'i386' will crash.
+      #-- rryan 2 / 2011
+      #Note : SSE2 is a core part of x64 CPUs
     elseif(OPTIMIZE STREQUAL "native")
       message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
       add_compile_options(-march=native)
-#Note : requires gcc >= 4.2.0
-#macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-#are set automatically
+      #Note : requires gcc >= 4.2.0
+      #macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
+      #are set automatically
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7.*)$") # but not armv8
         add_compile_options(-mfloat-abi=hard -mfpu=neon)
       endif()
@@ -1041,8 +1026,8 @@ elseif(GNU_GCC OR LLVM_CLANG)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message("Enabling pure i386 code")
         add_compile_options(-mtune=generic)
-#- mtune = generic pick the most common, but compatible options.
-#on arm platforms equivalent to - march = arch
+        #- mtune = generic pick the most common, but compatible options.
+        #on arm platforms equivalent to - march = arch
       endif()
     else()
       message(
@@ -1058,13 +1043,13 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 
 if(WIN32)
-#Add support for lib prefix on Windows
+  #Add support for lib prefix on Windows
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
 
 if(MSVC)
   if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
-#With MSVC, PCH is faster than caching
+    #With MSVC, PCH is faster than caching
     set(CMAKE_DISABLE_PRECOMPILE_HEADERS OFF)
   endif()
   set(
@@ -1074,7 +1059,7 @@ if(MSVC)
     "Disable precompiled headers"
   )
 
-#sccache support
+  #sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
   if(SCCACHE_EXECUTABLE)
     message(STATUS "Found sccache: ${SCCACHE_EXECUTABLE}")
@@ -1094,7 +1079,7 @@ if(MSVC)
     set(CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}")
   endif()
 else()
-#ccache support
+  #ccache support
   find_program(CCACHE_EXECUTABLE "ccache")
   if(CCACHE_EXECUTABLE)
     message(STATUS "Found ccache: ${CCACHE_EXECUTABLE}")
@@ -1115,7 +1100,7 @@ else()
 
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
-#without this compiler messages in `make` backend would be uncolored
+      #without this compiler messages in `make` backend would be uncolored
       set(
         CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}"
@@ -1149,9 +1134,7 @@ else()
 endif()
 
 if(NOT MSVC)
-#Try to configure mold as linker via - fuse - ld = mold,             \
-                                              support from gcc 12.1, \
-                                              gcc 11.2.0 - 16 or clang
+  #Try to configure mold as linker via - fuse - ld = mold, support from gcc 12.1, gcc 11.2.0 - 16 or clang
   execute_process(
     COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=mold -Wl,--version
     ERROR_QUIET
@@ -1162,7 +1145,7 @@ if(NOT MSVC)
     set(MOLD_FUSE_FOUND TRUE)
   endif()
   if(NOT MOLD_FUSE_FOUND)
-#check if the symlink ld is in the mold folder for older compiler
+    #check if the symlink ld is in the mold folder for older compiler
     find_program(MOLD_SYMLINK "${CMAKE_INSTALL_LIBEXECDIR}/mold/ld")
     get_filename_component(MOLD_SYMLINK_DIRECTORY ${MOLD_SYMLINK} DIRECTORY)
   endif()
@@ -1184,7 +1167,7 @@ if(NOT MSVC)
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
   else()
-#Try to configure lld as linker
+    #Try to configure lld as linker
     execute_process(
       COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
       ERROR_QUIET
@@ -1208,8 +1191,7 @@ if(NOT MSVC)
         )
       endif()
     endif()
-#LLD 10.0.0 does not work because of \
-        https: // bugs.llvm.org/show_bug.cgi?id=45769
+    #LLD 10.0.0 does not work because of https: // bugs.llvm.org/show_bug.cgi?id=45769
     default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
     if(LLD_SUPPORT)
       if(LLD_VERSION_STRING)
@@ -2079,11 +2061,9 @@ if(NOT QML)
   target_sources(
     mixxx-lib
     PRIVATE
-#The following sources need to be in the QML target in order to get \
-        QML_ELEMENT properly interpreted.
-#However, if we build Mixxx without QML support, these are still required, \
-        so it gets appended to the
-#main target
+      #The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+      #However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+      #main target
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
   )
@@ -2091,7 +2071,7 @@ else()
   target_sources(
     mixxx-lib
     PRIVATE
-#The following source depends of QML being available but aren't part of the new QML UI
+      #The following source depends of QML being available but aren't part of the new QML UI
       src/controllers/controllerenginethreadcontrol.cpp
       src/controllers/controllerscreenpreview.cpp
   )
@@ -2141,8 +2121,7 @@ if(QOPENGL)
       src/widget/wvumeterglsl.cpp
   )
 
-#BLE MIDI enumerator(Android BLE for DDJ - FLX4 wireless) + \
-        Music Matcher(Deezer)
+  #BLE MIDI enumerator(Android BLE for DDJ - FLX4 wireless) + Music Matcher(Deezer)
   target_sources(
     mixxx-lib
     PRIVATE
@@ -2151,7 +2130,7 @@ if(QOPENGL)
       src/library/aibro/musicmatcherclient.cpp
   )
 else()
-#Qt5 fallback only — QGLWidget was removed in Qt6
+  #Qt5 fallback only — QGLWidget was removed in Qt6
   if(NOT QT6)
     target_sources(
       mixxx-lib
@@ -2162,8 +2141,8 @@ else()
         src/widget/wglwidgetqglwidget.cpp
     )
   endif()
-#Provide stub WGLWidget implementations for Android(QOPENGL = OFF)
-#so the linker can resolve virtual method symbols
+  #Provide stub WGLWidget implementations for Android(QOPENGL = OFF)
+  #so the linker can resolve virtual method symbols
   if(ANDROID)
     target_sources(mixxx-lib PRIVATE src/widget/wglwidgetqopengl_stub.cpp)
   endif()
@@ -2188,22 +2167,22 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
 endif()
 
 if(ANDROID)
-#Define QT_OPENGL_ES_2 so the deprecated desktop - GL - only renderers
-#(which include QOpenGLFunctions_2_1) are properly excluded on Android.
+  #Define QT_OPENGL_ES_2 so the deprecated desktop - GL - only renderers
+  #(which include QOpenGLFunctions_2_1) are properly excluded on Android.
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
 endif()
 
 if(APPLE)
   enable_language(OBJC OBJCXX)
 
-#Enable Automatic Reference Counting(ARC) when compiling Objective - C(++).
-#This frees us from having to worry about memory management when interfacing
-#with Apple frameworks(e.g.as in itunesmacosimporter.mm) since the compiler
-#will automatically insert retain / release calls on Objective - C objects.
+  #Enable Automatic Reference Counting(ARC) when compiling Objective - C(++).
+  #This frees us from having to worry about memory management when interfacing
+  #with Apple frameworks(e.g.as in itunesmacosimporter.mm) since the compiler
+  #will automatically insert retain / release calls on Objective - C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
 
-#Disable deprecation warnings for OpenGL on macOS as we won't switch to
-#Apple's Metal API in the foreseeable future.
+  #Disable deprecation warnings for OpenGL on macOS as we won't switch to
+  #Apple's Metal API in the foreseeable future.
   target_compile_definitions(mixxx-lib PUBLIC GL_SILENCE_DEPRECATION)
 
   target_sources(mixxx-lib PRIVATE src/util/appleosversion.mm)
@@ -2263,9 +2242,9 @@ if(APPLE)
 endif()
 
 if(EMSCRIPTEN)
-#We need asyncify to support asynchronous calls(e.g.QDialog::exec)
-#when targeting Emscripten / WebAssembly.
-#See https: // doc.qt.io/qt-6/wasm.html#asyncify
+  #We need asyncify to support asynchronous calls(e.g.QDialog::exec)
+  #when targeting Emscripten / WebAssembly.
+  #See https: // doc.qt.io/qt-6/wasm.html#asyncify
   target_link_options(mixxx-lib PUBLIC -sASYNCIFY)
 endif()
 
@@ -2288,8 +2267,7 @@ if(MSVC)
       PUBLIC
         /W3 # Warning Level 3 (production quality)
         /wd4200 # C4200: nonstandard extension used: zero-sized array in struct/union
-#Note : Even with CMAKE_C_STANDARD = \
-        99 MSVC does not complain about C99 flexible array members
+      #Note : Even with CMAKE_C_STANDARD = 99 MSVC does not complain about C99 flexible array members
     )
     target_compile_definitions(
       mixxx-lib
@@ -2299,7 +2277,7 @@ if(MSVC)
     )
   endif()
 else()
-#TODO : Add - Wtrampolines, not yet supported by clazy
+  #TODO : Add - Wtrampolines, not yet supported by clazy
   target_compile_options(
     mixxx-lib
     PUBLIC
@@ -2482,16 +2460,14 @@ endif()
 #The mixxx executable
 if(QT6)
   find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
-#This is the first package form the environment, \
-        if this fails give hints how to install the environment
+  #This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
   endif()
-#qt_add_executable() is the recommended initial call for qt_finalize_target()
-#below that takes care of the correct object order in the resulting binary
-#According to \
-        https: // doc.qt.io/qt-6/qt-finalize-target.html it is importand for
-#builds with Qt < 3.21
+  #qt_add_executable() is the recommended initial call for qt_finalize_target()
+  #below that takes care of the correct object order in the resulting binary
+  #According to https: // doc.qt.io/qt-6/qt-finalize-target.html it is importand for
+  #builds with Qt < 3.21
   if(ANDROID)
     target_compile_definitions(
       mixxx-lib
@@ -2554,28 +2530,28 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
-#Use C++ 23 for Android(NDK r28 Clang 19 supports it fully).
-#Desktop stays at C++ 20 because GCC 13 on Ubuntu 24.04 doesn't fully support C++23.
+    #Use C++ 23 for Android(NDK r28 Clang 19 supports it fully).
+    #Desktop stays at C++ 20 because GCC 13 on Ubuntu 24.04 doesn't fully support C++23.
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++23 -fPIC")
 
-# ─── Android performance & size optimizations ───────────────────────
-#- O2 + full LTO gives the best perf / size tradeoff on ARM64.
-#- Oz sacrifices ~10 - 15 % perf for ~5 % size savings which is not
-#worth it for a DJ app where audio DSP latency matters.
+    # ─── Android performance & size optimizations ───────────────────────
+    #- O2 + full LTO gives the best perf / size tradeoff on ARM64.
+    #- Oz sacrifices ~10 - 15 % perf for ~5 % size savings which is not
+    #worth it for a DJ app where audio DSP latency matters.
     target_compile_options(
       mixxx-lib
       PUBLIC -O2 -ffunction-sections -fdata-sections
     )
-#Full LTO(not Thin LTO) for release builds — maximizes cross - TU
-#inlining and dead - code elimination.With NDK r28 Clang 19 this is
-#stable and produces measurably smaller + faster binaries.
+    #Full LTO(not Thin LTO) for release builds — maximizes cross - TU
+    #inlining and dead - code elimination.With NDK r28 Clang 19 this is
+    #stable and produces measurably smaller + faster binaries.
     target_compile_options(mixxx-lib PUBLIC -flto=full)
     target_link_options(mixxx-lib PUBLIC -flto=full)
 
-#Locate the NDK's bundled libomp.so dynamically. The path used to be
-#hardcoded to `lib / clang / 18 / ...` which broke every time the NDK was
-#bumped(r27 ships Clang 18, r28 ships Clang 19, r29 + will ship newer).
-#Glob the single Clang version directory the NDK installs and pick that.
+    #Locate the NDK's bundled libomp.so dynamically. The path used to be
+    #hardcoded to `lib / clang / 18 / ...` which broke every time the NDK was
+    #bumped(r27 ships Clang 18, r28 ships Clang 19, r29 + will ship newer).
+    #Glob the single Clang version directory the NDK installs and pick that.
     file(
       GLOB _android_clang_runtime_dirs
       LIST_DIRECTORIES true
@@ -2590,8 +2566,8 @@ if(QT6)
         "Is the NDK installed correctly?"
       )
     endif()
-#Pick the highest - numbered(most recent) entry; an NDK normally ships
-#exactly one but be defensive if a side - by - side install ever happens.
+    #Pick the highest - numbered(most recent) entry; an NDK normally ships
+    #exactly one but be defensive if a side - by - side install ever happens.
     list(SORT _android_clang_runtime_dirs)
     list(GET _android_clang_runtime_dirs -1 _android_clang_runtime_dir)
     set(
@@ -2605,10 +2581,10 @@ if(QT6)
         "missing. Did the NDK layout change?"
       )
     endif()
-#Ship a stripped copy of libomp.so.The NDK ships it unstripped
-#(~600 KiB); `llvm - strip -- strip - unneeded` brings it down to ~200 KiB
-#without affecting OpenMP runtime behaviour.The stripped copy lives
-#in the build dir so the NDK install is left untouched.
+    #Ship a stripped copy of libomp.so.The NDK ships it unstripped
+    #(~600 KiB); `llvm - strip -- strip - unneeded` brings it down to ~200 KiB
+    #without affecting OpenMP runtime behaviour.The stripped copy lives
+    #in the build dir so the NDK install is left untouched.
     set(
       _android_strip
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/llvm-strip"
@@ -2638,26 +2614,26 @@ if(QT6)
       mixxx
       PROPERTIES QT_ANDROID_EXTRA_LIBS "${_android_libomp_stripped}"
     )
-# 16 KB page - size compatibility.Pixel 8a / 9 series and any device
-#exposing `ro.product.cpu.pagesize = 16384` refuse to load.so files
-#whose segments aren't aligned to 16 KB. NDK r28 enables this by
-#default for new projects but Mixxx overrides linker flags above —
-#re - apply explicitly so we benefit on the new devices and don't
-#silently regress to 4 KB - only loads.The `android + relr` relocation
-#packing format collapses RELATIVE relocations into a bitmap(saves
-#roughly 5–10 % off `libmixxx - lib.so` and a comparable share of the
-#compressed APK) and is supported by every Android version we ship to.
+    # 16 KB page - size compatibility.Pixel 8a / 9 series and any device
+    #exposing `ro.product.cpu.pagesize = 16384` refuse to load.so files
+    #whose segments aren't aligned to 16 KB. NDK r28 enables this by
+    #default for new projects but Mixxx overrides linker flags above —
+    #re - apply explicitly so we benefit on the new devices and don't
+    #silently regress to 4 KB - only loads.The `android + relr` relocation
+    #packing format collapses RELATIVE relocations into a bitmap(saves
+    #roughly 5–10 % off `libmixxx - lib.so` and a comparable share of the
+    #compressed APK) and is supported by every Android version we ship to.
     target_link_options(
       mixxx-lib
       PUBLIC
         "LINKER:-z,max-page-size=16384"
         "LINKER:--pack-dyn-relocs=android+relr"
-#Dead - code / dead - data elimination(requires - ffunction - sections
-# and -fdata - sections above).Saves 10 - 20 % on the final.so.
+        #Dead - code / dead - data elimination(requires - ffunction - sections
+        # and -fdata - sections above).Saves 10 - 20 % on the final.so.
         "LINKER:--gc-sections"
-#Identical Code Folding — merges functions with the same body.
-#"safe" mode only folds functions whose address is never taken,
-#so it cannot break function - pointer comparisons.
+        #Identical Code Folding — merges functions with the same body.
+        #"safe" mode only folds functions whose address is never taken,
+        #so it cannot break function - pointer comparisons.
         "LINKER:--icf=safe"
     )
     add_custom_target(
@@ -2666,18 +2642,18 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
         ${CMAKE_CURRENT_BINARY_DIR}/android
-#We deliberately copy a subset of res / to keep the APK small.The bits
-#we drop are pure desktop - platform clutter on Android(and DeX, the
-#primary target for this build, doesn't need icon themes from
-#res / linux or res / osx either).Approximate APK savings from this
-#filter : ~80 MiB raw / ~25 - 35 MiB compressed.Re - add a directory
-#below if you genuinely need it on Android.
-#- res / linux, res / osx  → desktop - only icon themes / Info.plist
-#- res / Mixxx - Keyboard - Shortcuts.pdf → ~360 KiB doc, never opened
-#- res / skins / {Deere, Shade, Tango, * 64 Samplers }  → ~12 MiB; we ship
-#only LateNight(the default skin returned by SkinLoader) plus
-#the shared*.qss helpers
-#- res / translations/* except English  → ~70 MiB of .qm files; the
+      #We deliberately copy a subset of res / to keep the APK small.The bits
+      #we drop are pure desktop - platform clutter on Android(and DeX, the
+      #primary target for this build, doesn't need icon themes from
+      #res / linux or res / osx either).Approximate APK savings from this
+      #filter : ~80 MiB raw / ~25 - 35 MiB compressed.Re - add a directory
+      #below if you genuinely need it on Android.
+      #- res / linux, res / osx  → desktop - only icon themes / Info.plist
+      #- res / Mixxx - Keyboard - Shortcuts.pdf → ~360 KiB doc, never opened
+      #- res / skins / {Deere, Shade, Tango, * 64 Samplers }  → ~12 MiB; we ship
+      #only LateNight(the default skin returned by SkinLoader) plus
+      #the shared*.qss helpers
+      #- res / translations/* except English  → ~70 MiB of .qm files; the
       #     user runs the app in English and would otherwise have to find
       #     Settings → Preferences to switch back. Re-add specific locales
       #     here if needed.
