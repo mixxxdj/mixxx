@@ -78,7 +78,7 @@ Item {
         Rectangle {
             Layout.preferredWidth: 76
             Layout.fillHeight: true
-            color: "#19191a"
+            color: LateNightTheme.overviewSettingsBackgroundColor
 
             Rectangle {
                 anchors.left: parent.left

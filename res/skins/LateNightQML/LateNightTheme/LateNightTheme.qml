@@ -35,6 +35,7 @@ QtObject {
     readonly property color textColor: white
     readonly property color textColorMuted: "#696969"
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
+    readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
     readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
     readonly property color secondaryDeckTextColor: isClassic ? "#0bd9d1" : "#85bdbb"

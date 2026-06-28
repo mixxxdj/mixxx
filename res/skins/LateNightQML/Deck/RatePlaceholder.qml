@@ -17,7 +17,7 @@ Item {
     implicitHeight: 202
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color bpmTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
-    readonly property color rateTextColor: LateNightTheme.deckReadonlyTextColor
+    readonly property color rateTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
     readonly property bool hasLegacyRateCenterAsset: LateNightTheme.optionalDeckRateCenterInactive.toString().length > 0
 
     function syncLeaderIconSource() {
