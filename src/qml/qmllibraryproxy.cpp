@@ -2,8 +2,11 @@
 
 #include <QAbstractItemModel>
 #include <QCursor>
+#include <QDir>
+#include <QFile>
 #include <QPoint>
 #include <QQmlEngine>
+#include <QStyle>
 #include <cmath>
 
 #include "control/controlobject.h"
@@ -29,6 +32,55 @@ const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorI
 const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_color_index");
 
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
+
+QString lateNightTrackMenuStyleSheet() {
+    UserSettingsPointer pConfig = QmlConfigProxy::get();
+    VERIFY_OR_DEBUG_ASSERT(pConfig) {
+        return {};
+    }
+
+    const QString resourcePath = pConfig->getResourcePath();
+    const QString skinsRoot = QDir::fromNativeSeparators(
+            resourcePath + QStringLiteral("skins/"));
+    const QString lateNightSkinRoot = QDir::fromNativeSeparators(
+            resourcePath + QStringLiteral("skins/LateNight"));
+    QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
+    QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinRoot});
+
+    const QString configScheme = pConfig->getValue(
+            ConfigKey(QStringLiteral("[Config]"), QStringLiteral("Scheme")));
+    const QString qssName =
+            configScheme.compare(QStringLiteral("Classic"), Qt::CaseInsensitive) == 0
+            ? QStringLiteral("style_classic.qss")
+            : QStringLiteral("style_palemoon.qss");
+    QString style;
+
+    const auto appendStyleFile = [&style](const QString& path) {
+        QFile file(path);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            qWarning() << "QmlLibraryProxy: could not open" << path
+                       << "- deck track menu styling may be incomplete";
+            return false;
+        }
+        style.append(QString::fromUtf8(file.readAll()) + QChar('\n'));
+        return true;
+    };
+
+    appendStyleFile(skinsRoot + QStringLiteral("default.qss"));
+    appendStyleFile(skinsRoot + QStringLiteral("LateNight/style.qss"));
+    if (!appendStyleFile(skinsRoot + QStringLiteral("LateNight/") + qssName)) {
+        return {};
+    }
+
+    style.replace(QStringLiteral("url(skins:"),
+            QStringLiteral("url(") + skinsRoot);
+    style.replace(QStringLiteral("url(\"skins:"),
+            QStringLiteral("url(\"") + skinsRoot);
+    style.replace(QStringLiteral("url('skins:"),
+            QStringLiteral("url('") + skinsRoot);
+
+    return style;
+}
 
 CuePointer findDeckHotcue(QmlTrackProxy* track, int hotcueNumber) {
     if (!track || !track->internal() || hotcueNumber <= 0) {
@@ -314,6 +366,15 @@ void QmlLibraryProxy::ensureDeckTrackMenu() {
             QmlConfigProxy::get(),
             s_pLibrary.get(),
             WTrackMenu::kDeckTrackMenuFeatures);
+    const QString styleSheet = lateNightTrackMenuStyleSheet();
+    if (!styleSheet.isEmpty()) {
+        m_pDeckTrackMenu->setStyleSheet(styleSheet);
+        if (QStyle* pStyle = m_pDeckTrackMenu->style()) {
+            pStyle->unpolish(m_pDeckTrackMenu.get());
+            pStyle->polish(m_pDeckTrackMenu.get());
+        }
+        m_pDeckTrackMenu->ensurePolished();
+    }
     connect(m_pDeckTrackMenu.get(),
             &WTrackMenu::trackMenuVisible,
             this,
