@@ -126,9 +126,9 @@ Popup {
                             anchors.verticalCenter: parent.verticalCenter
                             fillMode: Image.PreserveAspectFit
                             height: 24
-                            layer.enabled: true
                             source: "images/gear.svg"
 
+                            layer.enabled: true
                             layer.effect: MultiEffect {
                                 brightness: 1.0
                                 colorization: 1.0

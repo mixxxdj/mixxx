@@ -9,6 +9,7 @@ Rectangle {
     required property bool selected
 
     property alias track: trackData
+    readonly property alias dragImage: dragImageSource
 
     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
