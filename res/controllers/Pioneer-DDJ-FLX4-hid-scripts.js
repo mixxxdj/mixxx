@@ -248,8 +248,12 @@ PioneerDDJFLX4HID.browseHandler = function(field) {
 
 // Link controls to handlers
 PioneerDDJFLX4HID.registerInputPackets = function() {
-    var mainPacket = new HIDPacket("main", 0x01, function(packet, data) {
-        PioneerDDJFLX4HID.logRawPacket(data);
+    var mainPacket = new HIDPacket("main", 0, function(packet, changedData) {
+        // Log raw packet data when debugging
+        if (PioneerDDJFLX4HID.debugHidPackets) {
+            var keys = Object.keys(changedData);
+            HIDDebug("DDJ-FLX4 HID fields: " + JSON.stringify(changedData));
+        }
     });
 
     // ---- Deck 1 buttons ----
@@ -353,7 +357,7 @@ PioneerDDJFLX4HID.registerInputPackets = function() {
     this.controller.registerInputPacket(mainPacket);
 
     // Jog wheel packet
-    var jogPacket = new HIDPacket("jog", 0x02);
+    var jogPacket = new HIDPacket("jog", 0);
     jogPacket.addControl("[Channel1]", "!jog_wheel", 0, "h");
     jogPacket.addControl("[Channel2]", "!jog_wheel", 2, "h");
     jogPacket.setCallback("[Channel1]", "!jog_wheel", PioneerDDJFLX4HID.jogHandler);
