@@ -565,8 +565,8 @@ elseif(APPLE)
 endif()
 
 project(mixxx VERSION 2.7.0 LANGUAGES C CXX)
-#Work around missing version suffixes support \
-        https://gitlab.kitware.com/cmake/cmake/-/issues/16716
+        # Work around missing version suffixes support
+        # https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
@@ -717,12 +717,12 @@ message(STATUS "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
 #CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
 #We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset(IPO disabled) to save
 #build time at the cost of a bigger memory footprint at run - time.
-#See https: // github.com/mixxxdj/mixxx/pull/3589 for some test results
-#Note : IPO has caused issues on Fedora https: // bugzilla.rpmfusion.org/show_bug.cgi?id=5829
+#See https://github.com/mixxxdj/mixxx/pull/3589 for some test results
+#Note : IPO has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
 #Uncomment the following code to enable IPO for Release builds
-#if (NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT                 \
-                CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL \
-                                          "off")
+# if (NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT
+#         CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL
+#                                   "off")
 #include(CheckIPOSupported)
 #check_ipo_supported(RESULT HAVE_IPO)
 #if (HAVE_IPO)
