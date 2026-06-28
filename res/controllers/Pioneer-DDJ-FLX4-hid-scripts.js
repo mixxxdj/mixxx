@@ -43,6 +43,11 @@ PioneerDDJFLX4HID.shutdown = function() {
     HIDDebug("PioneerDDJFLX4HID: Shutdown");
 };
 
+// HID input entry point - called by Mixxx script engine for each HID report
+PioneerDDJFLX4HID.incomingData = function(data, length) {
+    PioneerDDJFLX4HID.controller.parsePacket(data, length);
+};
+
 // ---------------------------------------------------------------------------
 // Raw packet logger - prints hex dump of every incoming HID report.
 // Disable by setting debugHidPackets = false once offsets are verified.
