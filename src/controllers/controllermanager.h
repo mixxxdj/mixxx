@@ -46,7 +46,10 @@ class ControllerManager : public QObject {
     bool isBleConnected() const;
 
     /// Prevent other parts of Mixxx from having to manually connect to our slots
-    void setUpDevices() { emit requestSetUpDevices(); };
+    void setUpDevices() {
+        qDebug() << "ControllerManager::setUpDevices() called, emitting requestSetUpDevices";
+        emit requestSetUpDevices();
+    };
 
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
