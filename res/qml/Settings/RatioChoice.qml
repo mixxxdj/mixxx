@@ -1,8 +1,9 @@
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 import "../Theme"
 import ".." as Skin
 
@@ -79,6 +80,16 @@ Item {
                         anchors.fill: parent
                         color: root.selected == modelData ? Theme.accentColor : 'transparent'
                         radius: height / 2
+                        border {
+                            color: root.selected == modelData ? "#0E2A54" : 'transparent'
+                            width: 1
+                        }
+
+                        layer.effect: MultiEffect {
+                            shadowEnabled: true
+                            shadowColor: "#0E2A54"
+                            shadowBlur: 1
+                        }
 
                         Text {
                             anchors.fill: parent
@@ -109,32 +120,6 @@ Item {
                             }
                         }
                     }
-                    InnerShadow {
-                        id: bottomOptionInnerEffect
-
-                        anchors.fill: parent
-                        color: "#0E2A54"
-                        horizontalOffset: -1
-                        radius: 8
-                        samples: 32
-                        source: contentOption
-                        spread: 0.4
-                        verticalOffset: -1
-                        visible: root.selected == modelData
-                    }
-                    InnerShadow {
-                        id: topOptionInnerEffect
-
-                        anchors.fill: parent
-                        color: "#0E2A54"
-                        horizontalOffset: 1
-                        radius: 8
-                        samples: 32
-                        source: bottomOptionInnerEffect
-                        spread: 0.4
-                        verticalOffset: 1
-                        visible: root.selected == modelData
-                    }
                 }
             }
         }
@@ -153,7 +138,10 @@ Item {
             return root.options[value];
         }
         to: root.options.length - 1
-        value: root.options.indexOf(root.selected)
+        Binding on value {
+            delayed: true
+            value: root.options.indexOf(root.selected)
+        }
         valueFromText: function (text) {
             for (var i = 0; i < root.options.length; ++i) {
                 if (root.options[i].toLowerCase().indexOf(text.toLowerCase()) === 0)
@@ -171,48 +159,34 @@ Item {
         contentItem: Item {
             width: contentSpin.textWidth + 2 * contentSpin.spacing
 
-            Rectangle {
-                id: content
-
-                anchors.fill: parent
-                color: Theme.accentColor
-                radius: height / 2
-
-                Text {
-                    id: textLabel
+                Rectangle {
+                    id: content
 
                     anchors.fill: parent
-                    color: Theme.white
-                    font: contentSpin.font
-                    horizontalAlignment: Text.AlignHCenter
-                    text: contentSpin.textFromValue(contentSpin.value, contentSpin.locale) ?? ""
-                    verticalAlignment: Text.AlignVCenter
+                    color: Theme.accentColor
+                    radius: height / 2
+                    border {
+                        color: "#0E2A54"
+                        width: 1
+                    }
+
+                    layer.effect: MultiEffect {
+                        shadowEnabled: true
+                        shadowColor: "#0E2A54"
+                        shadowBlur: 1
+                    }
+
+                    Text {
+                        id: textLabel
+
+                        anchors.fill: parent
+                        color: Theme.white
+                        font: contentSpin.font
+                        horizontalAlignment: Text.AlignHCenter
+                        text: contentSpin.textFromValue(contentSpin.value, contentSpin.locale) ?? ""
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
-            }
-            InnerShadow {
-                id: bottomInnerEffect
-
-                anchors.fill: parent
-                color: "#0E2A54"
-                horizontalOffset: -1
-                radius: 8
-                samples: 32
-                source: content
-                spread: 0.4
-                verticalOffset: -1
-            }
-            InnerShadow {
-                id: topInnerEffect
-
-                anchors.fill: parent
-                color: "#0E2A54"
-                horizontalOffset: 1
-                radius: 8
-                samples: 32
-                source: bottomInnerEffect
-                spread: 0.4
-                verticalOffset: 1
-            }
         }
         down.indicator: Indicator {
             text: "<"
@@ -223,10 +197,16 @@ Item {
             x: contentSpin.mirrored ? 0 : parent.width - width
         }
 
-        onValueChanged: {
-            root.selected = contentSpin.textFromValue(value) ?? "";
+        function updatePopup(){
             popup.tooltip = root.tooltips[contentSpin.value] ?? "";
             popup.x = contentSpin.width / 2 - popup.width / 2;
+        }
+
+        Component.onCompleted: updatePopup()
+
+        onValueChanged: {
+            root.selected = contentSpin.textFromValue(value) ?? "";
+            updatePopup()
         }
 
         MouseArea {
@@ -247,16 +227,16 @@ Item {
             }
         }
     }
-    DropShadow {
+    MultiEffect {
         id: dropRatio
 
         anchors.fill: contentList.visible ? contentList : contentSpin
-        anchors.margins: 0
-        color: "#80000000"
-        horizontalOffset: 0
-        radius: 4.0
         source: contentList.visible ? contentList : contentSpin
-        verticalOffset: 0
+        autoPaddingEnabled: true
+        shadowEnabled: true
+        shadowColor: "#B0000000"
+        shadowBlur: 0.24
+        blurMultiplier: 0.24
     }
     Popup {
         id: popup
@@ -279,12 +259,14 @@ Item {
                 anchors.fill: parent
 
                 Shape {
+                    property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     antialiasing: true
                     height: width
-                    layer.enabled: true
-                    layer.samples: 4
+                    layer.enabled: multiSamplingLevel > 1
+                    layer.samples: multiSamplingLevel
                     width: 20
 
                     ShapePath {
@@ -323,13 +305,14 @@ Item {
                     }
                 }
             }
-            DropShadow {
+            MultiEffect {
                 anchors.fill: parent
-                color: "#000000"
-                horizontalOffset: 0
-                radius: 8.0
                 source: contentPopup
-                verticalOffset: 0
+                autoPaddingEnabled: true
+                shadowEnabled: true
+                shadowColor: "#B0000000"
+                shadowBlur: 0.24
+                blurMultiplier: 0.24
             }
         }
     }
