@@ -16,7 +16,7 @@ const mixxx::Logger kLogger("BleMidiController");
 
 // Standard BLE MIDI Service and Characteristic UUIDs
 constexpr const char* kBleMidiServiceUuid = "03B80E5A-EDE8-4B33-A751-6CE34EC4C700";
-constexpr const char* kBleMidiCharacteristicUuid = "7772E5DB-3868-4112-A1C9-F2669D106BF3";
+constexpr const char* kBleMidiCharacteristicUuid = "7772E5DB-3868-4112-A1A9-F2669D106BF3";
 
 // JNI class name for BleMidiController.java
 constexpr const char* kBleMidiClass = "org/mixxx/BleMidiController";
@@ -155,135 +155,13 @@ void BleMidiController::disconnectDevice() {
 }
 
 void BleMidiController::onMidiDataReceived(const QByteArray& data) {
-    if (!s_pInstance)
+    if (!s_pInstance || data.isEmpty())
         return;
 
-    // Parse BLE MIDI data
-    // BLE MIDI format: each packet starts with a timestamp byte (high bit set),
-    // followed by timestamp-low byte and then MIDI messages.
-    // See: https://www.midi.org/specifications/item/bluetooth-le-midi
-    const char* pData = data.constData();
-    int len = data.size();
-
-    if (len < 2)
-        return;
-
-    int offset = 0;
-
-    // Skip timestamp header bytes
-    // First byte: timestamp_high (bit 7 = 1)
-    // Second byte: timestamp_low (bit 7 = 1)
-    if (offset < len && (pData[offset] & 0x80)) {
-        offset++; // timestamp_high
-    }
-    if (offset < len && (pData[offset] & 0x80)) {
-        offset++; // timestamp_low
-    }
-
-    // Process remaining MIDI bytes
-    while (offset < len) {
-        unsigned char byte = pData[offset];
-
-        if (byte == 0xF0) {
-            // SysEx start
-            s_pInstance->m_inSysex = true;
-            s_pInstance->m_midiBuffer[0] = byte;
-            s_pInstance->m_midiBufferIndex = 1;
-            offset++;
-        } else if (byte == 0xF7 && s_pInstance->m_inSysex) {
-            // SysEx end
-            if (s_pInstance->m_midiBufferIndex < 1024) {
-                s_pInstance->m_midiBuffer[s_pInstance->m_midiBufferIndex++] = byte;
-            }
-            // Process complete SysEx
-            QByteArray sysexData(
-                    reinterpret_cast<const char*>(s_pInstance->m_midiBuffer),
-                    s_pInstance->m_midiBufferIndex);
-            s_pInstance->receive(sysexData, mixxx::Duration());
-            s_pInstance->m_inSysex = false;
-            s_pInstance->m_midiBufferIndex = 0;
-            offset++;
-        } else if (s_pInstance->m_inSysex) {
-            // SysEx data byte - check for timestamp
-            if ((byte & 0x80) && offset + 1 < len && (pData[offset + 1] & 0x80)) {
-                // This is a timestamp byte pair, skip it
-                offset += 2;
-            } else {
-                if (s_pInstance->m_midiBufferIndex < 1024) {
-                    s_pInstance->m_midiBuffer[s_pInstance->m_midiBufferIndex++] = byte;
-                }
-                offset++;
-            }
-        } else if (byte & 0x80) {
-            // Status byte - check for timestamp
-            if (offset + 1 < len && (pData[offset + 1] & 0x80)) {
-                // Next byte is also high-bit = timestamp, skip this timestamp pair
-                offset += 2;
-                if (offset >= len)
-                    break;
-                byte = pData[offset];
-                if (!(byte & 0x80))
-                    break; // Not a status byte after timestamp
-            }
-
-            unsigned char status = byte;
-            unsigned char type = status & 0xF0;
-
-            if (type == 0xC0 || type == 0xD0) {
-                // 2-byte message (Program Change, Channel Pressure)
-                if (offset + 1 < len) {
-                    unsigned char data1 = pData[offset + 1];
-                    if (data1 & 0x80) {
-                        // Timestamp, try to skip
-                        offset++;
-                        continue;
-                    }
-                    s_pInstance->receive(QByteArray(1, status) +
-                                    QByteArray(1, data1),
-                            mixxx::Duration());
-                    offset += 2;
-                } else {
-                    offset++;
-                }
-            } else if (status == 0xF1 || status == 0xF3) {
-                // 2-byte system common
-                if (offset + 1 < len) {
-                    unsigned char data1 = pData[offset + 1];
-                    s_pInstance->receive(QByteArray(1, status) +
-                                    QByteArray(1, data1),
-                            mixxx::Duration());
-                    offset += 2;
-                } else {
-                    offset++;
-                }
-            } else if (type == 0x80 || type == 0x90 || type == 0xA0 ||
-                    type == 0xB0 || type == 0xE0) {
-                // 3-byte message (Note On/Off, CC, etc.)
-                if (offset + 2 < len) {
-                    unsigned char data1 = pData[offset + 1];
-                    unsigned char data2 = pData[offset + 2];
-                    if (data1 & 0x80 || data2 & 0x80) {
-                        // Timestamp interference, skip byte by byte
-                        offset++;
-                        continue;
-                    }
-                    s_pInstance->receive(QByteArray(1, status) +
-                                    QByteArray(1, data1) +
-                                    QByteArray(1, data2),
-                            mixxx::Duration());
-                    offset += 3;
-                } else {
-                    offset++;
-                }
-            } else {
-                // Unknown or single-byte message
-                offset++;
-            }
-        } else {
-            // Data byte without status - skip (running status not handled here)
-            offset++;
-        }
-    }
+    // Java already strips BLE MIDI protocol headers — we receive raw MIDI bytes.
+    // Pass them directly to Mixxx's MIDI subsystem.
+    kLogger.info() << "BLE MIDI received" << data.size() << "bytes";
+    s_pInstance->receive(data, mixxx::Duration());
 }
 
 bool BleMidiController::poll() {
