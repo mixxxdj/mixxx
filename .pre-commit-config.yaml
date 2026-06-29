@@ -133,7 +133,6 @@ repos:
     rev: 1.4.3
     hooks:
       - id: cmakelint
-        exclude: ^CMakeLists\.txt$
   - repo: local
     hooks:
       - id: qsscheck

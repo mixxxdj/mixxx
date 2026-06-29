@@ -27,12 +27,146 @@ void MusicMatcherClient::findSimilar(const QString& artist, const QString& title
     m_limit = limit;
     m_pendingArtistId.clear();
 
-    if (artist.isEmpty()) {
-        emit searchFailed("Artist name is empty");
+    if (artist.isEmpty() && title.isEmpty()) {
+        emit searchFailed("Artist and title are both empty");
         return;
     }
 
-    searchArtist(artist);
+    if (!title.isEmpty()) {
+        searchTrack(artist, title);
+    } else {
+        searchArtist(artist);
+    }
+}
+
+void MusicMatcherClient::searchTrack(const QString& artist, const QString& title) {
+    m_pTimer->start();
+    QUrl url(QStringLiteral("https://api.deezer.com/search"));
+    QUrlQuery urlQuery;
+
+    // Attempt strict search first
+    QString queryStr;
+    if (!artist.isEmpty()) {
+        queryStr = QStringLiteral("track:\"%1\" artist:\"%2\"").arg(title, artist);
+    } else {
+        queryStr = title;
+    }
+
+    urlQuery.addQueryItem(QStringLiteral("q"), queryStr);
+    urlQuery.addQueryItem(QStringLiteral("limit"), QStringLiteral("3"));
+    url.setQuery(urlQuery);
+
+    kLogger.info() << "MusicMatcher: searching track on Deezer:" << queryStr;
+
+    QNetworkReply* pReply = m_pNam->get(QNetworkRequest(url));
+    connect(pReply, &QNetworkReply::finished, this, [this, pReply, artist, title]() {
+        pReply->deleteLater();
+        m_pTimer->stop();
+
+        if (pReply->error() != QNetworkReply::NoError) {
+            kLogger.warning() << "MusicMatcher: track search failed, falling back to artist search:"
+                              << pReply->errorString();
+            searchArtist(artist);
+            return;
+        }
+
+        QJsonDocument doc = QJsonDocument::fromJson(pReply->readAll());
+        if (doc.isNull() || !doc.object().contains("data")) {
+            searchArtist(artist);
+            return;
+        }
+
+        const QJsonObject rootObj = doc.object();
+        const QJsonArray data = rootObj["data"].toArray();
+        if (data.isEmpty()) {
+            kLogger.info() << "MusicMatcher: track not found on Deezer, "
+                              "falling back to artist search";
+            searchArtist(artist);
+            return;
+        }
+
+        // Selected first matching track ID
+        QString trackId = QString::number(data.first().toObject()["id"].toInteger());
+        fetchTrackRadio(trackId);
+    });
+}
+
+void MusicMatcherClient::fetchTrackRadio(const QString& trackId) {
+    m_pTimer->start();
+    QUrl url(QStringLiteral("https://api.deezer.com/track/%1/radio").arg(trackId));
+    QUrlQuery urlQuery;
+    urlQuery.addQueryItem(QStringLiteral("limit"), QString::number(m_limit));
+    url.setQuery(urlQuery);
+
+    kLogger.info() << "MusicMatcher: fetching related tracks from Deezer track radio:" << trackId;
+
+    QNetworkReply* pReply = m_pNam->get(QNetworkRequest(url));
+    connect(pReply, &QNetworkReply::finished, this, [this, pReply]() {
+        pReply->deleteLater();
+        m_pTimer->stop();
+
+        if (pReply->error() != QNetworkReply::NoError) {
+            kLogger.warning() << "MusicMatcher: track radio search failed, "
+                                 "falling back to artist search";
+            searchArtist(m_originalArtist);
+            return;
+        }
+
+        QJsonDocument doc = QJsonDocument::fromJson(pReply->readAll());
+        if (doc.isNull() || !doc.object().contains("data")) {
+            searchArtist(m_originalArtist);
+            return;
+        }
+
+        const QJsonObject rootObj = doc.object();
+        const QJsonArray data = rootObj["data"].toArray();
+        if (data.isEmpty()) {
+            searchArtist(m_originalArtist);
+            return;
+        }
+
+        QList<MusicMatcherSuggestion> results;
+        static const QRegularExpression kLiveRe(
+                QStringLiteral("\\b(live|concert|performance|unplugged|acoustic)\\b"),
+                QRegularExpression::CaseInsensitiveOption);
+        static const QRegularExpression kInstrumentalRe(
+                QStringLiteral("\\b(instrumental|karaoke|beat|type\\s*beat)\\b"),
+                QRegularExpression::CaseInsensitiveOption);
+        static const QRegularExpression kAwardRe(
+                QStringLiteral("\\b(award|grammy|oscar|billboard|mtv|bet|ama)\\b"),
+                QRegularExpression::CaseInsensitiveOption);
+        static const QRegularExpression kFestivalRe(
+                QStringLiteral("\\b(festival|coachella|lollapalooza|tomorrowland|ultra)\\b"),
+                QRegularExpression::CaseInsensitiveOption);
+
+        for (const QJsonValue& val : data) {
+            QJsonObject obj = val.toObject();
+            MusicMatcherSuggestion s;
+            s.trackId = QString::number(obj["id"].toInteger());
+            s.title = obj["title"].toString();
+
+            QJsonObject artistObj = obj["artist"].toObject();
+            s.artist = artistObj["name"].toString();
+
+            QJsonObject albumObj = obj["album"].toObject();
+            s.album = albumObj["title"].toString();
+
+            s.duration = obj["duration"].toInt();
+            s.sourceUrl = obj["link"].toString();
+
+            QString titleLower = s.title.toLower();
+            s.isLive = kLiveRe.match(titleLower).hasMatch();
+            s.isInstrumental = kInstrumentalRe.match(titleLower).hasMatch();
+            s.isAward = kAwardRe.match(titleLower).hasMatch();
+            s.isFestival = kFestivalRe.match(titleLower).hasMatch();
+
+            results.append(s);
+        }
+
+        m_suggestions = results;
+        kLogger.info() << "MusicMatcher: found" << results.size() << "radio recommendations";
+        emit suggestionsReady(results);
+    });
 }
 
 void MusicMatcherClient::searchArtist(const QString& query) {
@@ -166,6 +300,13 @@ void MusicMatcherClient::fetchArtistTopTracks(const QString& artistId) {
 void MusicMatcherClient::slotTimeout() {
     kLogger.warning() << "MusicMatcher: request timed out";
     emit searchFailed("Request timed out");
+}
+
+void MusicMatcherClient::slotSearchFinished() {
+    // Default handler for cases where the reply is finished but we haven't
+    // processed it via the specialized slots. This should not normally
+    // be reached since we use per-reply lambdas.
+    kLogger.info() << "MusicMatcher: search finished (default handler)";
 }
 
 } // namespace mixxx

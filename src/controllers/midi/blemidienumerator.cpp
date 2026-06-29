@@ -1,14 +1,14 @@
 #include "blemidienumerator.h"
 
-#include "controllers/controller.h"
-#include "util/logger.h"
-
 #ifdef Q_OS_ANDROID
+
 #include <QtCore/private/qandroidextras_p.h>
 
 #include <QJniEnvironment>
 #include <QJniObject>
-#endif
+
+#include "controllers/midi/blemidicontroller.h"
+#include "util/logger.h"
 
 namespace {
 
@@ -21,7 +21,7 @@ BleMidiEnumerator::BleMidiEnumerator(UserSettingsPointer pConfig)
           m_pScanTimer(new QTimer(this)),
           m_scanning(false) {
     m_pScanTimer->setSingleShot(true);
-    m_pScanTimer->setInterval(10000);
+    m_pScanTimer->setInterval(4000);
     connect(m_pScanTimer, &QTimer::timeout, this, &BleMidiEnumerator::slotOnScanTimeout);
 }
 
@@ -31,11 +31,16 @@ BleMidiEnumerator::~BleMidiEnumerator() {
 
 QList<Controller*> BleMidiEnumerator::queryDevices() {
     QMutexLocker locker(&m_mutex);
+    // If we're not scanning and have no devices, start a scan
+    if (!m_scanning && m_devices.isEmpty()) {
+        locker.unlock();
+        startScan();
+        locker.relock();
+    }
     return m_devices;
 }
 
 void BleMidiEnumerator::startScan() {
-#ifdef Q_OS_ANDROID
     constexpr const char* kBleMidiServiceUuid = "03B80E5A-EDE8-4B33-A751-6CE34EC4C700";
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
@@ -76,10 +81,6 @@ void BleMidiEnumerator::startScan() {
 
     m_pScanTimer->start();
     kLogger.info() << "BLE scan: started for MIDI service";
-#else
-    Q_UNUSED(m_pConfig);
-    kLogger.info() << "BLE scan: not supported on this platform";
-#endif
 }
 
 void BleMidiEnumerator::rescan() {
@@ -87,37 +88,23 @@ void BleMidiEnumerator::rescan() {
 }
 
 bool BleMidiEnumerator::isConnected() const {
-#ifdef Q_OS_ANDROID
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
-    QJniObject activity = QJniObject::callStaticObjectMethod(
-            "org/qtproject/qt/android/QtNative",
-            "activity",
-            "()Landroid/app/Activity;");
-    if (!activity.isValid()) {
-        return false;
-    }
     jboolean result = QJniObject::callStaticMethod<jboolean>(
             kBleScannerClass, "isConnected", "()Z");
     return result;
-#else
-    return false;
-#endif
 }
 
 void BleMidiEnumerator::slotOnScanTimeout() {
-#ifdef Q_OS_ANDROID
     constexpr const char* kBleScannerClass = "org/mixxx/BleMidiScanner";
 
     m_scanning = false;
 
-    QJniObject activity = QJniObject::callStaticObjectMethod(
-            "org/qtproject/qt/android/QtNative",
-            "activity",
-            "()Landroid/app/Activity;");
-    if (!activity.isValid()) {
-        return;
-    }
+    // Stop the BLE scan to save battery
+    QJniObject::callStaticMethod<void>(
+            kBleScannerClass,
+            "stopScan",
+            "()V");
 
     QJniObject devices = QJniObject::callStaticObjectMethod(
             kBleScannerClass,
@@ -125,11 +112,58 @@ void BleMidiEnumerator::slotOnScanTimeout() {
             "()Ljava/util/List;");
 
     if (!devices.isValid()) {
+        kLogger.warning() << "BLE scan: failed to get discovered devices";
         return;
     }
 
-    kLogger.info() << "BLE scan: completed, checking results";
-#endif
+    // Iterate the Java List and create BleMidiController objects
+    jint deviceCount = devices.callMethod<jint>("size", "()I");
+    kLogger.info() << "BLE scan: completed, found"
+                   << deviceCount << "BLE MIDI device(s)";
+
+    QMutexLocker locker(&m_mutex);
+
+    // Clear previous devices that are no longer found
+    m_devices.clear();
+
+    for (jint i = 0; i < deviceCount; i++) {
+        QJniObject deviceMap = devices.callMethod<jobject>(
+                "get", "(I)Ljava/lang/Object;", i);
+        if (!deviceMap.isValid()) {
+            continue;
+        }
+
+        // Extract device info from the Map
+        QJniObject nameObj = deviceMap.callObjectMethod(
+                "get",
+                "(Ljava/lang/Object;)Ljava/lang/Object;",
+                QJniObject::fromString(QString("name")).object<jstring>());
+        QJniObject addressObj = deviceMap.callObjectMethod(
+                "get",
+                "(Ljava/lang/Object;)Ljava/lang/Object;",
+                QJniObject::fromString(QString("address")).object<jstring>());
+
+        QString deviceName = nameObj.isValid() ? nameObj.toString()
+                                               : QString("BLE MIDI Device");
+        QString deviceAddress = addressObj.isValid() ? addressObj.toString()
+                                                     : QString();
+
+        kLogger.info() << "BLE scan: found device" << deviceName
+                       << "at" << deviceAddress;
+
+        // Create a BleMidiController for this BLE MIDI device
+        QString controllerName = deviceName + " (" + deviceAddress + ")";
+        BleMidiController* pController =
+                new BleMidiController(controllerName, deviceAddress);
+        m_devices.push_back(pController);
+    }
+
+    if (deviceCount > 0) {
+        kLogger.info() << "BLE scan: created" << m_devices.size()
+                       << "BLE MIDI controller(s)";
+    }
 }
 
 #include "moc_blemidienumerator.cpp"
+
+#endif // Q_OS_ANDROID

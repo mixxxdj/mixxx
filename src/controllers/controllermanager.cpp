@@ -32,10 +32,6 @@
 #include "controllers/bulk/bulkenumerator.h"
 #endif
 
-#ifdef __ANDROID__
-#include "controllers/midi/blemidienumerator.h"
-#endif
-
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
 
 // Poll every 1ms (where possible) for good controller response
@@ -185,11 +181,6 @@ void ControllerManager::slotInitialize() {
 #endif
 #ifdef __HID__
         m_enumerators.push_back(std::make_unique<HidEnumerator>());
-#endif
-#ifdef __ANDROID__
-        m_enumerators.push_back(std::make_unique<BleMidiEnumerator>(m_pConfig));
-        // Keep raw pointer for BLE scan access (ownership is in m_enumerators)
-        m_pBleScanEnumerator = static_cast<BleMidiEnumerator*>(m_enumerators.back().get());
 #endif
     } // Mutex locker released here
     emit initialized();
@@ -511,18 +502,3 @@ QList<QString> ControllerManager::getMappingPaths(UserSettingsPointer pConfig) {
     scriptPaths.append(resourceMappingsPath(pConfig));
     return scriptPaths;
 }
-
-#ifdef __ANDROID__
-void ControllerManager::startBleScan() {
-    if (m_pBleScanEnumerator) {
-        m_pBleScanEnumerator->startScan();
-    }
-}
-
-bool ControllerManager::isBleConnected() const {
-    if (m_pBleScanEnumerator) {
-        return m_pBleScanEnumerator->isConnected();
-    }
-    return false;
-}
-#endif

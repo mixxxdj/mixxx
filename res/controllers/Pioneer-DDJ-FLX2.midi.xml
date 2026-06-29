@@ -6,6 +6,9 @@
         <description>2-deck USB and Bluetooth MIDI controller with support for 4-deck mode.</description>
         <forum>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forum>
         <manual>pioneer_ddj_flx2</manual>
+        <devices>
+            <product protocol="midi" vendor_id="0x2b73" product_id="0x0049" />
+        </devices>
     </info>
     <controller id="DDJ-FLX2">
         <scriptfiles>

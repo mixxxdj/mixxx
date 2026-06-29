@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset mixxxVersion="2.6" schemaVersion="1">
+  <info>
+    <name>Pioneer DDJ-FLX4 HID</name>
+    <author>djsugar</author>
+    <description>HID mapping for Pioneer DDJ-FLX4 via USB HID interface (Android). This mapping handles the controller when it is detected as an HID device (interface #5, VID 0x2B73, PID 0x0045) rather than MIDI, which is the typical case on Android.</description>
+    <manual>pioneer_ddj_FLX4</manual>
+    <forums>https://mixxx.discourse.group/t/pioneer-ddj-flx4</forums>
+    <devices>
+      <product protocol="hid" vendor_id="0x2b73" product_id="0x0045" interface_number="0x5" />
+    </devices>
+  </info>
+  <controller id="DDJ-FLX4">
+    <scriptfiles>
+      <file filename="common-hid-packet-parser.js" functionprefix="" />
+      <file filename="Pioneer-DDJ-FLX4-hid-scripts.js" functionprefix="PioneerDDJFLX4HID" />
+    </scriptfiles>
+  </controller>
+</MixxxControllerPreset>

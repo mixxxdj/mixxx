@@ -31,18 +31,10 @@ const QJniObject& getIntent() {
     QJniObject context = QNativeInterface::QAndroidApplication::context();
 
     s_usbManager = QJniObject("org/mixxx/UsbPermission");
-    // On Android 12+ (API 31+), PendingIntent must be FLAG_MUTABLE for
-    // permission dialogs to work. FLAG_IMMUTABLE causes the dialog to
-    // silently not appear.
-    jint flagMutable = QJniObject::getStaticField<jint>(
-            "android/app/PendingIntent", "FLAG_MUTABLE");
-    jint flagImmutable = QJniObject::getStaticField<jint>(
-            "android/app/PendingIntent", "FLAG_IMMUTABLE");
-    // Use FLAG_MUTABLE on API 31+, fallback to FLAG_IMMUTABLE on older versions
-    jint apiLevel = QJniObject::getStaticField<jint>(
-            "android/os/Build$VERSION", "SDK_INT");
-    jint pendingIntentFlag = (apiLevel >= 31) ? flagMutable : flagImmutable;
-
+    jint FLAG_IMMUTABLE =
+            QJniObject::getStaticField<jint>(
+                    "android/app/PendingIntent",
+                    "FLAG_IMMUTABLE");
     QtJniTypes::String ACTION_USB_PERMISSION =
             QJniObject::fromString("org.mixxx.permissions.USB_PERMISSION");
     QtJniTypes::Intent intent = QJniObject("android/content/Intent",
@@ -59,7 +51,7 @@ const QJniObject& getIntent() {
                     context,
                     0,
                     intent,
-                    pendingIntentFlag);
+                    FLAG_IMMUTABLE);
 
     if (!s_intent.isValid()) {
         __android_log_print(ANDROID_LOG_WARN, "mixxx", "pending intent is invalid!");

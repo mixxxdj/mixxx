@@ -38,21 +38,6 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         openLocalFile(mappingsPath);
     });
 
-#ifdef __ANDROID__
-    connect(btnSearchBluetooth, &QPushButton::clicked, this, [this]() {
-        m_pControllerManager->startBleScan();
-        btnSearchBluetooth->setEnabled(false);
-        btnSearchBluetooth->setText(tr("Scanning..."));
-        QTimer::singleShot(15000, this, [this]() {
-            btnSearchBluetooth->setEnabled(true);
-            btnSearchBluetooth->setText(tr("Search for Bluetooth Controllers"));
-        });
-    });
-    btnSearchBluetooth->setVisible(true);
-#else
-    btnSearchBluetooth->setVisible(false);
-#endif
-
     // Connections
     connect(m_pControllerManager.get(),
             &ControllerManager::devicesChanged,
