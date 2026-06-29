@@ -302,6 +302,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             this,
             &DlgPrefSound::addMainOutputClicked);
 
+    // Add output button in Output tab
+    connect(addOutputButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSound::addMainOutputClicked);
+
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
