@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QApplication>
-#include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QString>
 #include <QTimer>

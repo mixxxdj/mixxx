@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "moc_qmlskincontrolcreator.cpp"
 #include "util/assert.h"
 
