@@ -152,8 +152,18 @@ class AudioOutput : public AudioPath {
         return m_type == AudioPathType::RecordBroadcast;
     }
 
+    int getLatencyOffsetMs() const {
+        return m_latencyOffsetMs;
+    }
+    void setLatencyOffsetMs(int latencyOffsetMs) {
+        m_latencyOffsetMs = latencyOffsetMs;
+    }
+
   protected:
     void setType(AudioPathType type) override;
+
+  private:
+    int m_latencyOffsetMs = 0;
 };
 
 // This class is required to add the buffer, without changing the hash used as ID

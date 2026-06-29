@@ -234,7 +234,8 @@ AudioOutput::AudioOutput(AudioPathType type,
         unsigned char channelBase,
         mixxx::audio::ChannelCount channels,
         unsigned char index)
-        : AudioPath(channelBase, channels) {
+        : AudioPath(channelBase, channels),
+          m_latencyOffsetMs(0) {
     // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
@@ -252,6 +253,7 @@ QDomElement AudioOutput::toXML(QDomElement *element) const {
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
     element->setAttribute("channel_count", m_channelGroup.getChannelCount().value());
+    element->setAttribute("latency_offset", m_latencyOffsetMs);
     return *element;
 }
 
@@ -270,7 +272,9 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     if (!channels.isValid()) {
         channels = mixxx::audio::ChannelCount::stereo();
     }
-    return AudioOutput(type, channel, channels, index);
+    AudioOutput output(type, channel, channels, index);
+    output.setLatencyOffsetMs(xml.attribute("latency_offset", "0").toInt());
+    return output;
 }
 
 // static
