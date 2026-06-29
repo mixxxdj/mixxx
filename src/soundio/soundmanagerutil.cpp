@@ -50,6 +50,24 @@ AudioPathType AudioPath::getType() const {
     return m_type;
 }
 
+AudioPath::Direction AudioPath::getDirection() const {
+    switch (getType()) {
+    case AudioPathType::Main:
+    case AudioPathType::Headphones:
+    case AudioPathType::Booth:
+    case AudioPathType::Bus:
+    case AudioPathType::Deck:
+        return AudioPath::Direction::Output;
+    case AudioPathType::VinylControl:
+    case AudioPathType::Microphone:
+    case AudioPathType::Auxiliary:
+    case AudioPathType::RecordBroadcast:
+    default:
+        // to simplify the enum we return input on invalid paths as well.
+        return AudioPath::Direction::Input;
+    }
+}
+
 /// @return This AudioPath's ChannelGroup instance.
 ChannelGroup AudioPath::getChannelGroup() const {
     return m_channelGroup;

@@ -205,21 +205,8 @@ std::span<const SoundDevicePipewire::Port> SoundDevicePipewire::getPortsByPath(
     unsigned char channelBase = channelGroup.getChannelBase();
     unsigned char channelCount = channelGroup.getChannelCount().value();
 
-    switch (path.getType()) {
-    case AudioPath::AudioPathType::Main:
-    case AudioPath::AudioPathType::Headphones:
-    case AudioPath::AudioPathType::Booth:
-    case AudioPath::AudioPathType::Bus:
-    case AudioPath::AudioPathType::Deck:
-        return std::span{m_inPorts}.subspan(channelBase, channelCount);
-    case AudioPath::AudioPathType::VinylControl:
-    case AudioPath::AudioPathType::Microphone:
-    case AudioPath::AudioPathType::Auxiliary:
-    case AudioPath::AudioPathType::RecordBroadcast:
-        return std::span{m_outPorts}.subspan(channelBase, channelCount);
-    default:
-        return std::span<SoundDevicePipewire::Port>{};
-    }
+    const auto& ports = path.getDirection() == AudioPath::Direction::Input ? m_outPorts : m_inPorts;
+    return std::span{ports}.subspan(channelBase, channelCount);
 }
 
 void SoundDevicePipewire::registerLink(uint32_t id, spa_direction direction) {

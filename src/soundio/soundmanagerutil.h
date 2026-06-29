@@ -69,6 +69,12 @@ public:
       RecordBroadcast,
       Invalid, // if this isn't last bad things will happen -bkgood
   };
+
+  enum class Direction {
+      Input,
+      Output
+  };
+
   AudioPath(unsigned char channelBase, mixxx::audio::ChannelCount channels);
   virtual ~AudioPath() = default;
   AudioPathType getType() const;
@@ -81,6 +87,7 @@ public:
   static AudioPathType getTypeFromString(QString string);
   static bool isIndexed(AudioPathType type);
   static AudioPathType getTypeFromInt(int typeInt);
+  AudioPath::Direction getDirection() const;
 
   /// Returns the minimum number of channels needed on a sound device for an
   /// AudioPathType.

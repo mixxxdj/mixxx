@@ -84,6 +84,7 @@ PipewireEnumerator::~PipewireEnumerator() {
     pw_thread_loop_stop(m_ppwThreadLoop);
 
     if (m_ppwFilter) {
+        spa_hook_remove(&m_pwFilterListener);
         pw_filter_destroy(m_ppwFilter);
     }
 
@@ -111,7 +112,6 @@ PipewireEnumerator::~PipewireEnumerator() {
 
 void PipewireEnumerator::initialize() {
     if (m_initialized) {
-        qWarning() << "PipewireEnumerator::initialize already initialized";
         return;
     }
 
@@ -158,6 +158,14 @@ void PipewireEnumerator::initialize() {
                     nullptr));
 
     pw_filter_add_listener(m_ppwFilter, &m_pwFilterListener, &filter_events, this);
+
+    for (const auto& input : m_pSoundManager->registeredInputs()) {
+        createInputPorts(input);
+    }
+
+    for (const auto& output : m_pSoundManager->registeredOutputs()) {
+        createOutputPorts(output);
+    }
 
     int res = pw_filter_connect(m_ppwFilter,
             PW_FILTER_FLAG_RT_PROCESS,
@@ -526,10 +534,11 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
     const uint64_t framesPerBuffer = pos->clock.duration;
 
     if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
-        qWarning() << "PipewireEnumerator::callback rate requested"
-                   << m_sampleRate << "provided" << sampleRate
-                   << "buffer size requested" << m_framesPerBuffer << "provided"
-                   << framesPerBuffer;
+        qWarning() << "PipewireEnumerator::callback"
+                      "requested"
+                   << m_framesPerBuffer << "samples at" << m_sampleRate << "hz,"
+                                                                           "provided"
+                   << framesPerBuffer << "samples at" << sampleRate << "hz";
         setLatency(sampleRate, framesPerBuffer);
     }
 
@@ -667,72 +676,55 @@ void PipewireEnumerator::registerInput(const AudioInput& input, AudioDestination
         return;
     }
 
-    pw_thread_loop_lock(m_ppwThreadLoop);
-    pw_properties* props = pw_properties_new(
-            // see pipewire/keys.h header
-            PW_KEY_FORMAT_DSP,
-            "32 bit float mono audio",
-            nullptr);
-    pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FL", input.getString().toStdString().c_str());
-    void* portFL = pw_filter_add_port(m_ppwFilter,
-            SPA_DIRECTION_INPUT,
-            PW_FILTER_PORT_FLAG_MAP_BUFFERS,
-            sizeof(uint32_t),
-            props,
-            nullptr,
-            0);
-
-    props = pw_properties_new(
-            // see pipewire/keys.h header
-            PW_KEY_FORMAT_DSP,
-            "32 bit float mono audio",
-            nullptr);
-    pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FR", input.getString().toStdString().c_str());
-    void* portFR = pw_filter_add_port(m_ppwFilter,
-            SPA_DIRECTION_INPUT,
-            PW_FILTER_PORT_FLAG_MAP_BUFFERS,
-            sizeof(uint32_t),
-            props,
-            nullptr,
-            0);
-    pw_thread_loop_unlock(m_ppwThreadLoop);
-    m_inputs.insert(input,
-            std::pair{static_cast<uint32_t*>(portFL),
-                    static_cast<uint32_t*>(portFR)});
+    if (m_initialized) {
+        pw_thread_loop_lock(m_ppwThreadLoop);
+        createInputPorts(input);
+        pw_thread_loop_unlock(m_ppwThreadLoop);
+    }
 }
 
 void PipewireEnumerator::registerOutput(const AudioOutput& output, AudioSource*) {
-    pw_thread_loop_lock(m_ppwThreadLoop);
+    if (m_initialized) {
+        pw_thread_loop_lock(m_ppwThreadLoop);
+        createOutputPorts(output);
+        pw_thread_loop_unlock(m_ppwThreadLoop);
+    }
+}
+
+// need to pw_thread_loop_lock before calling this
+uint32_t* PipewireEnumerator::createPorts(const AudioPath& path, bool channel) {
+    spa_direction direction = path.getDirection() == AudioPath::Direction::Input
+            ? SPA_DIRECTION_INPUT
+            : SPA_DIRECTION_OUTPUT;
+
     pw_properties* props = pw_properties_new(
             // see pipewire/keys.h header
             PW_KEY_FORMAT_DSP,
             "32 bit float mono audio",
             nullptr);
-    pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FL", output.getString().toStdString().c_str());
-    void* portFL = pw_filter_add_port(m_ppwFilter,
-            SPA_DIRECTION_OUTPUT,
+    pw_properties_setf(props,
+            PW_KEY_PORT_NAME,
+            channel ? "%s:FR" : "%s:FL",
+            path.getString().toStdString().c_str());
+    return static_cast<uint32_t*>(pw_filter_add_port(m_ppwFilter,
+            direction,
             PW_FILTER_PORT_FLAG_MAP_BUFFERS,
             sizeof(uint32_t),
             props,
             nullptr,
-            0);
-    props = pw_properties_new(
-            // see pipewire/keys.h header
-            PW_KEY_FORMAT_DSP,
-            "32 bit float mono audio",
-            nullptr);
-    pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FR", output.getString().toStdString().c_str());
-    void* portFR = pw_filter_add_port(m_ppwFilter,
-            SPA_DIRECTION_OUTPUT,
-            PW_FILTER_PORT_FLAG_MAP_BUFFERS,
-            sizeof(uint32_t),
-            props,
-            nullptr,
-            0);
-    pw_thread_loop_unlock(m_ppwThreadLoop);
-    m_outputs.insert(output,
-            std::pair{static_cast<uint32_t*>(portFL),
-                    static_cast<uint32_t*>(portFR)});
+            0));
+}
+
+// need to pw_thread_loop_lock before calling this
+void PipewireEnumerator::createInputPorts(const AudioInput& input) {
+    auto ports = std::pair{createPorts(input, false), createPorts(input, true)};
+    m_inputs.insert(input, ports);
+}
+
+// need to pw_thread_loop_lock before calling this
+void PipewireEnumerator::createOutputPorts(const AudioOutput& output) {
+    auto ports = std::pair{createPorts(output, false), createPorts(output, true)};
+    m_outputs.insert(output, ports);
 }
 
 void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int framesPerBuffer) {
