@@ -49,7 +49,7 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             this,
             &DlgPrefSoundItem::removeClicked);
     refreshDevices(devices);
- }
+}
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
 

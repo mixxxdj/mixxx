@@ -46,7 +46,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
      void configuredDeviceNotFound();
 +    void removeClicked();
 
-   private slots:
+   public slots:
     void refreshDevices(const QList<SoundDevicePointer>& devices);
     void deviceChanged(int index);
     void channelChanged();
