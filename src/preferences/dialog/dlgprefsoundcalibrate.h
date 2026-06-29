@@ -47,3 +47,7 @@ class DlgPrefSoundCalibrate : public QDialog {
     class QPushButton* m_pCancelButton;
     class QLabel* m_pExplanationLabel;
 };
+
+/// Show the latency calibration dialog for a given output item.
+/// Defined in dlgprefsoundcalibrate.cpp to avoid AUTOMOC conflicts.
+void showLatencyCalibrationDialog(QWidget* parent, class DlgPrefSoundItem* item);

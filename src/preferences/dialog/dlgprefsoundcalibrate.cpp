@@ -8,7 +8,6 @@
 #include <QSlider>
 #include <QVBoxLayout>
 
-#include "moc_dlgprefsoundcalibrate.cpp"
 #include "util/math.h"
 
 DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
@@ -197,3 +196,8 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
 }
 
 #include "moc_dlgprefsoundcalibrate.cpp"
+
+void showLatencyCalibrationDialog(QWidget* parent, DlgPrefSoundItem* item) {
+    DlgPrefSoundCalibrate dialog(parent, item);
+    dialog.exec();
+}

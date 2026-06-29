@@ -9,8 +9,12 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
-#include "preferences/dialog/dlgprefsoundcalibrate.h"
 #include "preferences/dialog/dlgprefsounditem.h"
+
+// Forward declaration to avoid AUTOMOC cross-include issues
+// (defined in dlgprefsoundcalibrate.cpp)
+void showLatencyCalibrationDialog(QWidget* parent, class DlgPrefSoundItem* item);
+
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
@@ -1088,10 +1092,7 @@ void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
     if (!pItem) {
         return;
     }
-
-    // Show a calibration dialog for fine-tuning the latency offset
-    DlgPrefSoundCalibrate calibrateDialog(this, pItem);
-    calibrateDialog.exec();
+    showLatencyCalibrationDialog(this, pItem);
 }
 
 void DlgPrefSound::updateRemoveButtonVisibility() {
