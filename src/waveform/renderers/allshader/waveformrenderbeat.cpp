@@ -4,6 +4,7 @@
 
 #include "moc_waveformrenderbeat.cpp"
 #include "rendergraph/geometry.h"
+#include "rendergraph/geometrynode.h"
 #include "rendergraph/material/unicolormaterial.h"
 #include "rendergraph/vertexupdaters/vertexupdater.h"
 #include "skin/legacy/skincontext.h"
@@ -21,11 +22,23 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
     initForRectangles<UniColorMaterial>(0);
     setUsePreprocess(true);
+
+    auto pDownbeatNode = std::make_unique<GeometryNode>();
+    pDownbeatNode->initForRectangles<UniColorMaterial>(0);
+    m_pDownbeatNode = appendChildNode(std::move(pDownbeatNode));
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinContext) {
     m_color = QColor(skinContext.selectString(node, QStringLiteral("BeatColor")));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
+
+    const QString downbeatColorStr = skinContext.selectString(
+            node, QStringLiteral("DownbeatColor"));
+    if (downbeatColorStr.isEmpty()) {
+        m_downbeatColor = m_color;
+    } else {
+        m_downbeatColor = WSkinColor::getCorrectColor(QColor(downbeatColorStr)).toRgb();
+    }
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
@@ -38,6 +51,8 @@ void WaveformRenderBeat::preprocess() {
     if (!preprocessInner()) {
         geometry().allocate(0);
         markDirtyGeometry();
+        m_pDownbeatNode->geometry().allocate(0);
+        m_pDownbeatNode->markDirtyGeometry();
     }
 }
 
@@ -56,16 +71,19 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
+    QColor beatColor = m_color;
+    QColor downbeatColor = m_downbeatColor;
+
 #ifndef __SCENEGRAPH__
     int alpha = m_waveformRenderer->getBeatGridAlpha();
     if (alpha == 0) {
         return false;
     }
-    m_color.setAlphaF(alpha / 100.0f);
+    beatColor.setAlphaF(alpha / 100.0f);
+    downbeatColor.setAlphaF(alpha / 100.0f);
 #endif
 
-    if (!m_color.alpha()) {
-        // Don't render the beatgrid lines is there are fully transparent
+    if (!beatColor.alpha() && !downbeatColor.alpha()) {
         return true;
     }
 
@@ -91,24 +109,41 @@ bool WaveformRenderBeat::preprocessInner() {
     }
 
     const float rendererBreadth = m_waveformRenderer->getBreadth();
+    const float beatHeight = m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    // Count the number of beats in the range to reserve space in the m_vertices vector.
-    // Note that we could also use
-    //   int numBearsInRange = trackBeats->numBeatsInRange(startPosition, endPosition);
-    // for this, but there have been reports of that method failing with a DEBUG_ASSERT.
-    int numBeatsInRange = 0;
+    const auto firstMarker = trackBeats->cfirstmarker();
+
+    const int downbeatOffset = trackBeats->downbeatOffset();
+
+    int numRegularBeats = 0;
+    int numDownbeats = 0;
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
             ++it) {
-        numBeatsInRange++;
+        const int globalBeatIndex = it - firstMarker;
+        const int adjustedIndex = globalBeatIndex - downbeatOffset;
+        const int mod = m_beatsPerBar > 0
+                ? ((adjustedIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                : 1;
+        if (mod == 0) {
+            numDownbeats++;
+        } else {
+            numRegularBeats++;
+        }
     }
 
-    const int reserved = numBeatsInRange * numVerticesPerLine;
-    geometry().allocate(reserved);
+    // Update regular beat geometry (on this node)
+    const int reservedBeats = numRegularBeats * numVerticesPerLine;
+    geometry().allocate(reservedBeats);
+    VertexUpdater beatUpdater{geometry().vertexDataAs<Geometry::Point2D>()};
 
-    VertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::Point2D>()};
+    // Update downbeat geometry (on child node)
+    const int reservedDownbeats = numDownbeats * numVerticesPerLine;
+    m_pDownbeatNode->geometry().allocate(reservedDownbeats);
+    VertexUpdater downbeatUpdater{
+            m_pDownbeatNode->geometry().vertexDataAs<Geometry::Point2D>()};
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -120,18 +155,34 @@ bool WaveformRenderBeat::preprocessInner() {
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
+        const int globalBeatIndex = it - firstMarker;
+        const int adjustedIndex = globalBeatIndex - downbeatOffset;
+        const int mod = m_beatsPerBar > 0
+                ? ((adjustedIndex % m_beatsPerBar) + m_beatsPerBar) % m_beatsPerBar
+                : 1;
+        const bool isDownbeat = (mod == 0);
+
         const float x1 = static_cast<float>(xBeatPoint);
-        const float x2 = x1 + 1.f;
+        // Downbeats are 2px wide, regular beats are 1px wide
+        const float x2 = x1 + (isDownbeat ? 2.f : 1.f);
 
-        vertexUpdater.addRectangle({x1, 0.f},
-                {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth});
+        if (isDownbeat) {
+            downbeatUpdater.addRectangle({x1, 0.f}, {x2, beatHeight});
+        } else {
+            beatUpdater.addRectangle({x1, 0.f}, {x2, beatHeight});
+        }
     }
+
+    DEBUG_ASSERT(reservedBeats == beatUpdater.index());
+    DEBUG_ASSERT(reservedDownbeats == downbeatUpdater.index());
+
     markDirtyGeometry();
-
-    DEBUG_ASSERT(reserved == vertexUpdater.index());
-
-    material().setUniform(1, m_color);
+    material().setUniform(1, beatColor);
     markDirtyMaterial();
+
+    m_pDownbeatNode->markDirtyGeometry();
+    m_pDownbeatNode->material().setUniform(1, downbeatColor);
+    m_pDownbeatNode->markDirtyMaterial();
 
     return true;
 }

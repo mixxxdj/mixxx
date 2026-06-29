@@ -23,6 +23,7 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "track/phrases.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
@@ -71,6 +72,76 @@ struct memory_cue_loop_t {
     QString comment;
     mixxx::RgbColor::optional_t color;
 };
+
+mixxx::PhraseType mapRekordboxPhraseKind(
+        rekordbox_anlz_t::track_mood_t mood,
+        kaitai::kstruct* pKind) {
+    switch (mood) {
+    case rekordbox_anlz_t::TRACK_MOOD_HIGH: {
+        auto* pHigh = static_cast<rekordbox_anlz_t::phrase_high_t*>(pKind);
+        switch (pHigh->id()) {
+        case rekordbox_anlz_t::MOOD_HIGH_PHRASE_INTRO:
+            return mixxx::PhraseType::Intro;
+        case rekordbox_anlz_t::MOOD_HIGH_PHRASE_UP:
+            return mixxx::PhraseType::BuildUp;
+        case rekordbox_anlz_t::MOOD_HIGH_PHRASE_DOWN:
+            return mixxx::PhraseType::Verse;
+        case rekordbox_anlz_t::MOOD_HIGH_PHRASE_CHORUS:
+            return mixxx::PhraseType::Chorus;
+        case rekordbox_anlz_t::MOOD_HIGH_PHRASE_OUTRO:
+            return mixxx::PhraseType::Outro;
+        default:
+            return mixxx::PhraseType::Other;
+        }
+    }
+    case rekordbox_anlz_t::TRACK_MOOD_MID: {
+        auto* pMid = static_cast<rekordbox_anlz_t::phrase_mid_t*>(pKind);
+        switch (pMid->id()) {
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_INTRO:
+            return mixxx::PhraseType::Intro;
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_VERSE_1:
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_VERSE_2:
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_VERSE_3:
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_VERSE_4:
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_VERSE_5:
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_VERSE_6:
+            return mixxx::PhraseType::Verse;
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_BRIDGE:
+            return mixxx::PhraseType::Bridge;
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_CHORUS:
+            return mixxx::PhraseType::Chorus;
+        case rekordbox_anlz_t::MOOD_MID_PHRASE_OUTRO:
+            return mixxx::PhraseType::Outro;
+        default:
+            return mixxx::PhraseType::Other;
+        }
+    }
+    case rekordbox_anlz_t::TRACK_MOOD_LOW: {
+        auto* pLow = static_cast<rekordbox_anlz_t::phrase_low_t*>(pKind);
+        switch (pLow->id()) {
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_INTRO:
+            return mixxx::PhraseType::Intro;
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_VERSE_1:
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_VERSE_1B:
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_VERSE_1C:
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_VERSE_2:
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_VERSE_2B:
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_VERSE_2C:
+            return mixxx::PhraseType::Verse;
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_BRIDGE:
+            return mixxx::PhraseType::Bridge;
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_CHORUS:
+            return mixxx::PhraseType::Chorus;
+        case rekordbox_anlz_t::MOOD_LOW_PHRASE_OUTRO:
+            return mixxx::PhraseType::Outro;
+        default:
+            return mixxx::PhraseType::Other;
+        }
+    }
+    default:
+        return mixxx::PhraseType::Other;
+    }
+}
 
 bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Creating Rekordbox library table: " << tableName;
@@ -456,14 +527,14 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     const mixxx::DbConnectionPooler dbConnectionPooler(dbConnectionPool);
     QSqlDatabase database = mixxx::DbConnectionPooled(dbConnectionPool);
 
-    //Open the database connection in this thread.
+    // Open the database connection in this thread.
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
         qDebug() << "Failed to open database for Rekordbox parser."
                  << database.lastError();
         return QString();
     }
 
-    //Give thread a low priority
+    // Give thread a low priority
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
@@ -891,6 +962,13 @@ void readAnalyze(TrackPointer track,
     QList<memory_cue_loop_t> memoryCuesAndLoops;
     int lastHotCueIndex = 0;
 
+    struct raw_phrase_t {
+        uint16_t beatNumber;
+        mixxx::PhraseType type;
+    };
+    QVector<raw_phrase_t> rawPhrases;
+    uint16_t phraseEndBeat = 0;
+
     for (const auto& section : *anlz.sections()) {
         switch (section->fourcc()) {
         case rekordbox_anlz_t::SECTION_TAGS_BEAT_GRID: {
@@ -1045,13 +1123,79 @@ void readAnalyze(TrackPointer track,
                                     static_cast<int>(
                                             cueExtendedEntry->color_green()),
                                     static_cast<int>(cueExtendedEntry
-                                                    ->color_blue()))));
+                                                             ->color_blue()))));
                 } break;
                 }
             }
         } break;
+        case rekordbox_anlz_t::SECTION_TAGS_SONG_STRUCTURE: {
+            auto* pSongStructureTag =
+                    static_cast<rekordbox_anlz_t::song_structure_tag_t*>(
+                            section->body());
+            auto* pBody = pSongStructureTag->body();
+            if (!pBody) {
+                break;
+            }
+            auto mood = pBody->mood();
+            phraseEndBeat = pBody->end_beat();
+            for (const auto& entry : *pBody->entries()) {
+                raw_phrase_t raw;
+                raw.beatNumber = entry->beat();
+                raw.type = mapRekordboxPhraseKind(mood, entry->kind());
+                rawPhrases.append(raw);
+            }
+        } break;
         default:
             break;
+        }
+    }
+
+    // Convert raw PSSI phrase entries to Phrases using the beat grid
+    if (!rawPhrases.isEmpty()) {
+        mixxx::BeatsPointer pBeats = track->getBeats();
+        if (pBeats) {
+            auto firstMarker = pBeats->cfirstmarker();
+            mixxx::PhrasesPointer pPhrases =
+                    std::make_shared<const mixxx::Phrases>();
+
+            for (int i = 0; i < rawPhrases.size(); ++i) {
+                // Beat numbers are 1-based
+                int startBeatIdx = rawPhrases[i].beatNumber - 1;
+                int endBeatIdx;
+                if (i + 1 < rawPhrases.size()) {
+                    endBeatIdx = rawPhrases[i + 1].beatNumber - 1;
+                } else {
+                    endBeatIdx = phraseEndBeat > 0
+                            ? phraseEndBeat - 1
+                            : startBeatIdx + 32;
+                }
+
+                if (startBeatIdx < 0 || endBeatIdx <= startBeatIdx) {
+                    continue;
+                }
+
+                auto startIt = firstMarker + startBeatIdx;
+                auto endIt = firstMarker + endBeatIdx;
+                auto startPos = *startIt;
+                auto endPos = *endIt;
+
+                if (!startPos.isValid() || !endPos.isValid()) {
+                    continue;
+                }
+
+                mixxx::Phrase phrase(startPos, endPos, rawPhrases[i].type);
+                auto result = pPhrases->tryAddPhrase(phrase);
+                if (result.has_value()) {
+                    pPhrases = *result;
+                }
+            }
+
+            if (!pPhrases->isEmpty()) {
+                track->trySetPhrases(pPhrases);
+                qDebug() << "Imported" << pPhrases->size()
+                         << "Rekordbox phrases for"
+                         << track->getTitle();
+            }
         }
     }
 
@@ -1472,9 +1616,9 @@ QString RekordboxFeature::formatRootViewHtml() const {
     }
     html.append(QString("</ul>"));
 
-    //Colorize links in lighter blue, instead of QT default dark blue.
-    //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://github.com/mixxxdj/mixxx/issues/9103
+    // Colorize links in lighter blue, instead of QT default dark blue.
+    // Links are still different from regular text, but readable on dark/light backgrounds.
+    // https://github.com/mixxxdj/mixxx/issues/9103
     html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
                         .arg(refreshLink));
     return html;
@@ -1490,7 +1634,7 @@ void RekordboxFeature::activate() {
     m_devicesFuture = QtConcurrent::run(findRekordboxDevices);
     m_devicesFutureWatcher.setFuture(m_devicesFuture);
     m_title = tr("(loading) Rekordbox");
-    //calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
+    // calls a slot in the sidebar model such that 'Rekordbox (isLoading)' is displayed.
     emit featureIsLoading(this, true);
 
     emit enableCoverArtDisplay(true);
@@ -1503,7 +1647,7 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
         return;
     }
 
-    //access underlying TreeItem object
+    // access underlying TreeItem object
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (!(item && item->getData().isValid())) {
         return;

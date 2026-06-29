@@ -18,6 +18,7 @@ add_library(
   geometry.cpp
   geometrynode.cpp
   material.cpp
+  node.cpp
   materialshader.cpp
   rendergraph/context.h
   texture.cpp

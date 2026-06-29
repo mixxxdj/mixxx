@@ -169,6 +169,7 @@ class WaveformWidgetFactory : public QObject,
 
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
+    void setShowBarCounter(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
@@ -182,6 +183,9 @@ class WaveformWidgetFactory : public QObject,
     }
     bool getUntilMarkShowTime() const {
         return m_untilMarkShowTime;
+    }
+    bool getShowBarCounter() const {
+        return m_showBarCounter;
     }
     Qt::Alignment getUntilMarkAlign() const {
         return m_untilMarkAlign;
@@ -234,6 +238,11 @@ class WaveformWidgetFactory : public QObject,
     }
     static bool isOverviewNormalizedDefault();
 
+    void setNormalizeWaveform(bool normalize);
+    bool getNormalizeWaveform() const {
+        return m_normalizeWaveform;
+    }
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
@@ -263,6 +272,8 @@ class WaveformWidgetFactory : public QObject,
 
     void untilMarkShowBeatsChanged(bool value);
     void untilMarkShowTimeChanged(bool value);
+    void showBarCounterChanged(bool value);
+    void normalizeWaveformChanged(bool value);
     void untilMarkAlignChanged(Qt::Alignment align);
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
@@ -327,9 +338,11 @@ class WaveformWidgetFactory : public QObject,
     bool m_zoomSync;
     double m_visualGain[BandCount];
     bool m_overviewNormalized;
+    bool m_normalizeWaveform;
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
+    bool m_showBarCounter;
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;

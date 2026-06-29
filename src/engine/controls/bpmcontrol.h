@@ -90,7 +90,7 @@ class BpmControl : public EngineControl {
     // target_percentage.
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
-                                           const double& target_percentage);
+            const double& target_percentage);
     double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
@@ -116,6 +116,11 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslateMatchAlignment(double);
     void slotToggleBpmLock(double);
     void slotBeatsUndoAdjustment(double value);
+    void slotSetDownbeat(double);
+    void slotDownbeatOffsetChanged(double);
+    void slotPhraseAdd(double);
+    void slotPhraseType(double);
+    void slotPhraseRemove(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -178,6 +183,12 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pTranslateBeats;
     // Button that translates beats to match another playing deck
     std::unique_ptr<ControlPushButton> m_pBeatsTranslateMatchAlignment;
+
+    std::unique_ptr<ControlObject> m_pDownbeatOffset;
+    std::unique_ptr<ControlPushButton> m_pSetDownbeat;
+    std::unique_ptr<ControlPushButton> m_pPhraseAdd;
+    std::unique_ptr<ControlObject> m_pPhraseType;
+    std::unique_ptr<ControlPushButton> m_pPhraseRemove;
 
     PollingControlProxy m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;

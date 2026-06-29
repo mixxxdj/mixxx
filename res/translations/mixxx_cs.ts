@@ -8749,6 +8749,28 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
         <source>Clear Cached Waveforms</source>
         <translation>Smazat průběhové křivky uložené do vyrovnávací paměti</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Zobrazí aktuální pozici taktu a doby (např. «12.1») u značky přehrávání.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Počítadlo taktů/dob</translation>
+    </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normalizuje zobrazení průběhu na špičkovou amplitudu stopy. Užitečné pro stopy s normalizací hlasitosti, které by jinak vypadaly jako tenké čáry.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Normalizovat průběh na špičku</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

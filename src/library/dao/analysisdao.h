@@ -2,8 +2,9 @@
 
 #include <QDir>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
+#include "preferences/usersettings.h"
+#include "track/phrases.h"
 #include "track/trackid.h"
 #include "waveform/waveform.h"
 
@@ -16,7 +17,8 @@ class AnalysisDao : public DAO {
     enum AnalysisType {
         TYPE_UNKNOWN = 0,
         TYPE_WAVEFORM,
-        TYPE_WAVESUMMARY
+        TYPE_WAVESUMMARY,
+        TYPE_PHRASES
     };
 
     struct AnalysisInfo {
@@ -56,6 +58,9 @@ class AnalysisDao : public DAO {
             TrackId trackId,
             ConstWaveformPointer pWaveform,
             ConstWaveformPointer pWaveSummary);
+
+    void saveTrackPhrases(TrackId trackId, mixxx::PhrasesPointer pPhrases);
+    mixxx::PhrasesPointer loadTrackPhrases(TrackId trackId);
 
   private:
     QDir getAnalysisStoragePath() const;

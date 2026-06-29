@@ -1,8 +1,10 @@
 #include "woverview.h"
 
+#include <QAction>
 #include <QBrush>
 #include <QColor>
 #include <QGuiApplication>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
@@ -15,6 +17,8 @@
 #include "mixer/playermanager.h"
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "track/beats.h"
+#include "track/phrases.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
 #include "util/dnd.h"
@@ -22,6 +26,7 @@
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "util/timer.h"
+#include "waveform/renderers/phrasecolors.h"
 #include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -140,8 +145,7 @@ WOverview::WOverview(
 
     setMouseTracking(true);
 
-    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
-            this, &WOverview::onTrackAnalyzerProgress);
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress, this, &WOverview::onTrackAnalyzerProgress);
 
     connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
 }
@@ -168,6 +172,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     if (!m_labelTextColor.isValid()) {
         m_labelTextColor = Qt::white;
     }
+
+    m_phraseColors = mixxx::readPhraseColors(node, context);
 
     bool okay = false;
     int labelFontSize = context.selectInt(node, "LabelFontSize", &okay);
@@ -324,7 +330,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
-    //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
+    // qDebug() << "WOverview::slotWaveformSummaryUpdated()";
 
     TrackPointer pTrack(m_pCurrentTrack);
     if (!pTrack) {
@@ -365,7 +371,7 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack); // only used in DEBUG_ASSERT
-    //qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
+    // qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
     if (m_pCurrentTrack) {
@@ -376,7 +382,7 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
-    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
+    // qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(),
@@ -387,6 +393,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &Track::cuesUpdated,
                 this,
                 &WOverview::receiveCuesUpdated);
+        disconnect(m_pCurrentTrack.get(),
+                &Track::phrasesUpdated,
+                this,
+                QOverload<>::of(&WOverview::update));
     }
 
     m_waveformSourceImage = QImage();
@@ -410,6 +420,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
         connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
+        connect(pNewTrack.get(),
+                &Track::phrasesUpdated,
+                this,
+                QOverload<>::of(&WOverview::update));
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -418,14 +432,14 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 }
 
 void WOverview::onEndOfTrackChange(double v) {
-    //qDebug() << "WOverview::onEndOfTrackChange()" << v;
+    // qDebug() << "WOverview::onEndOfTrackChange()" << v;
     m_endOfTrack = v > 0.0;
     update();
 }
 
 void WOverview::onMarkChanged(double v) {
     Q_UNUSED(v);
-    //qDebug() << "WOverview::onMarkChanged()" << v;
+    // qDebug() << "WOverview::onMarkChanged()" << v;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
         update();
@@ -434,7 +448,7 @@ void WOverview::onMarkChanged(double v) {
 
 void WOverview::onMarkRangeChange(double v) {
     Q_UNUSED(v);
-    //qDebug() << "WOverview::onMarkRangeChange()" << v;
+    // qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
 
@@ -493,12 +507,11 @@ void WOverview::slotScalingChanged() {
     update();
 }
 
-void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
+void WOverview::updateCues(const QList<CuePointer>& loadedCues) {
     for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
-        if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
-            && pMark->getSamplePosition() != Cue::kNoPosition) {
+        if (pMark != nullptr && pMark->isValid() && pMark->isVisible() && pMark->getSamplePosition() != Cue::kNoPosition) {
             QColor newColor = mixxx::RgbColor::toQColor(currentCue->getColor());
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor, m_dimBrightThreshold);
@@ -585,7 +598,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
         unsetCursor();
         return;
     }
-    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
+    // qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
         if (m_bLeftClickDragging) {
@@ -612,7 +625,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
-    //qDebug() << "WOverview::mousePressEvent" << e->pos();
+    // qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
@@ -642,6 +655,10 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             m_timeRulerPos = e->pos();
         }
     } else if (e->button() == Qt::RightButton) {
+        if (e->modifiers().testFlag(Qt::ControlModifier)) {
+            showPhraseContextMenu(e);
+            return;
+        }
         if (m_bLeftClickDragging) {
             // Abort dragging
             m_iPickupPos = m_iPlayPos;
@@ -682,6 +699,104 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
             }
         }
     }
+}
+
+void WOverview::showPhraseContextMenu(QMouseEvent* e) {
+    const double trackSamples = getTrackSamples();
+    if (!m_pCurrentTrack || trackSamples <= 0.0) {
+        return;
+    }
+
+    static constexpr mixxx::PhraseType kPhraseTypes[] = {
+            mixxx::PhraseType::Intro,
+            mixxx::PhraseType::Verse,
+            mixxx::PhraseType::Chorus,
+            mixxx::PhraseType::BuildUp,
+            mixxx::PhraseType::Drop,
+            mixxx::PhraseType::Bridge,
+            mixxx::PhraseType::Outro,
+            mixxx::PhraseType::Other,
+    };
+
+    const int clickPos = (m_orientation == Qt::Horizontal)
+            ? math_clamp(e->pos().x(), 0, width() - 1)
+            : math_clamp(e->pos().y(), 0, height() - 1);
+    const auto clickFramePos = mixxx::audio::FramePos::fromEngineSamplePos(
+            positionToValue(clickPos) * trackSamples);
+
+    mixxx::PhrasesPointer pPhrases = m_pCurrentTrack->getPhrases();
+    if (!pPhrases) {
+        pPhrases = std::make_shared<const mixxx::Phrases>();
+    }
+
+    int hitIndex = -1;
+    for (int i = 0; i < pPhrases->size(); ++i) {
+        const auto& phrase = pPhrases->phrases().at(i);
+        if (clickFramePos >= phrase.startPosition() &&
+                clickFramePos < phrase.endPosition()) {
+            hitIndex = i;
+            break;
+        }
+    }
+
+    QMenu menu(this);
+    const TrackPointer pTrack = m_pCurrentTrack;
+
+    if (hitIndex >= 0) {
+        QMenu* pTypeMenu = menu.addMenu(tr("Change phrase type"));
+        for (const mixxx::PhraseType type : kPhraseTypes) {
+            QAction* pAction = pTypeMenu->addAction(mixxx::Phrase::defaultLabel(type));
+            connect(pAction, &QAction::triggered, this, [pTrack, pPhrases, hitIndex, type]() {
+                const auto updated = pPhrases->trySetPhraseType(hitIndex, type);
+                if (updated) {
+                    pTrack->trySetPhrases(*updated);
+                }
+            });
+        }
+        QAction* pRemove = menu.addAction(tr("Remove phrase"));
+        connect(pRemove, &QAction::triggered, this, [pTrack, pPhrases, hitIndex]() {
+            const auto updated = pPhrases->tryRemovePhrase(hitIndex);
+            if (updated) {
+                pTrack->trySetPhrases(*updated);
+            }
+        });
+    } else {
+        // New phrase: start at the nearest beat, end at the next phrase
+        // boundary (or the end of the track).
+        mixxx::audio::FramePos start = clickFramePos;
+        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        if (pBeats) {
+            const auto closest = pBeats->findClosestBeat(clickFramePos);
+            if (closest.isValid()) {
+                start = closest;
+            }
+        }
+        auto end = mixxx::audio::FramePos::fromEngineSamplePos(trackSamples);
+        for (const auto& phrase : pPhrases->phrases()) {
+            if (phrase.startPosition() > start && phrase.startPosition() < end) {
+                end = phrase.startPosition();
+            }
+        }
+        if (end <= start) {
+            return;
+        }
+        QMenu* pAddMenu = menu.addMenu(tr("Add phrase here"));
+        for (const mixxx::PhraseType type : kPhraseTypes) {
+            QAction* pAction = pAddMenu->addAction(mixxx::Phrase::defaultLabel(type));
+            connect(pAction, &QAction::triggered, this, [pTrack, pPhrases, start, end, type]() {
+                const auto updated = pPhrases->tryAddPhrase(mixxx::Phrase(start, end, type));
+                if (updated) {
+                    pTrack->trySetPhrases(*updated);
+                }
+            });
+        }
+    }
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    menu.exec(e->globalPosition().toPoint());
+#else
+    menu.exec(e->globalPos());
+#endif
 }
 
 void WOverview::slotCueMenuPopupAboutToHide() {
@@ -740,6 +855,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
             const auto gain = static_cast<CSAMPLE_GAIN>(length() - 2) /
                     static_cast<CSAMPLE_GAIN>(trackSamples);
 
+            drawPhrases(&painter, offset, gain);
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
             drawPickupPosition(&painter);
@@ -1010,6 +1126,53 @@ void WOverview::drawRangeMarks(QPainter* pPainter, const float& offset, const fl
         } else {
             pPainter->drawRect(QRectF(QPointF(-2.0, startPosition),
                     QPointF(width() + 1.0, endPosition)));
+        }
+    }
+}
+
+void WOverview::drawPhrases(QPainter* pPainter, const float offset, const float gain) {
+    mixxx::PhrasesPointer pPhrases = m_pCurrentTrack->getPhrases();
+    if (!pPhrases || pPhrases->isEmpty()) {
+        return;
+    }
+
+    PainterScope painterScope(pPainter);
+    QFont font = pPainter->font();
+    font.setPixelSize(m_iLabelFontSize);
+    pPainter->setFont(font);
+
+    for (const auto& phrase : pPhrases->phrases()) {
+        const qreal startPosition =
+                offset + phrase.startPosition().toEngineSamplePos() * gain;
+        const qreal endPosition =
+                offset + phrase.endPosition().toEngineSamplePos() * gain;
+        if (endPosition < 0.0 || endPosition <= startPosition) {
+            continue;
+        }
+
+        // Semi-transparent coloured background segment (alpha is baked into the
+        // phrase colour) so the waveform stays visible through it.
+        const QColor color = mixxx::phraseColor(m_phraseColors, phrase.type());
+        if (m_orientation == Qt::Horizontal) {
+            pPainter->fillRect(
+                    QRectF(QPointF(startPosition, 0.0),
+                            QPointF(endPosition, height())),
+                    color);
+        } else {
+            pPainter->fillRect(
+                    QRectF(QPointF(0.0, startPosition),
+                            QPointF(width(), endPosition)),
+                    color);
+        }
+
+        // Phrase label at the start of the segment (horizontal overview only).
+        if (m_orientation == Qt::Horizontal) {
+            const QString label = phrase.label().isEmpty()
+                    ? mixxx::Phrase::defaultLabel(phrase.type())
+                    : phrase.label();
+            pPainter->setPen(m_labelTextColor);
+            pPainter->drawText(
+                    QPointF(startPosition + 3.0, m_iLabelFontSize + 1.0), label);
         }
     }
 }

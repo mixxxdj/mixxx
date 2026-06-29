@@ -132,8 +132,10 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
           m_overviewNormalized(kOverviewNormalizedDefault),
+          m_normalizeWaveform(false),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
+          m_showBarCounter(true),
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextPointSize(24),
           m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(0)),
@@ -424,6 +426,17 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
             ConfigKey(kWaveformGroup, QStringLiteral("OverviewNormalized")),
             kOverviewNormalizedDefault);
 
+    int normalizeWaveform =
+            m_config->getValueString(
+                            ConfigKey(kWaveformGroup, QStringLiteral("NormalizeWaveform")))
+                    .toInt(&ok);
+    if (ok) {
+        setNormalizeWaveform(static_cast<bool>(normalizeWaveform));
+    } else {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("NormalizeWaveform")),
+                m_normalizeWaveform);
+    }
+
     emit visualGainChanged(
             m_visualGain[BandIndex::AllBand],
             m_visualGain[BandIndex::Low],
@@ -455,6 +468,17 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     } else {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")),
                 m_untilMarkShowTime);
+    }
+
+    int showBarCounter =
+            m_config->getValueString(
+                            ConfigKey(kWaveformGroup, QStringLiteral("ShowBarCounter")))
+                    .toInt(&ok);
+    if (ok) {
+        setShowBarCounter(static_cast<bool>(showBarCounter));
+    } else {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ShowBarCounter")),
+                m_showBarCounter);
     }
 
     setUntilMarkAlign(toUntilMarkAlign(
@@ -1454,6 +1478,24 @@ void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
                 m_untilMarkShowTime);
     }
     emit untilMarkShowTimeChanged(value);
+}
+
+void WaveformWidgetFactory::setShowBarCounter(bool value) {
+    m_showBarCounter = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ShowBarCounter")),
+                m_showBarCounter);
+    }
+    emit showBarCounterChanged(value);
+}
+
+void WaveformWidgetFactory::setNormalizeWaveform(bool value) {
+    m_normalizeWaveform = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("NormalizeWaveform")),
+                m_normalizeWaveform);
+    }
+    emit normalizeWaveformChanged(value);
 }
 
 void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {

@@ -8,6 +8,7 @@
 #include "engine/enginebuffer.h"
 #include "moc_bpmcontrol.cpp"
 #include "track/beatutils.h"
+#include "track/phrases.h"
 #include "track/track.h"
 #include "util/duration.h"
 #include "util/logger.h"
@@ -74,8 +75,7 @@ BpmControl::BpmControl(const QString& group,
     m_dUserOffset.setValue(0.0);
 
     m_pRateRatio = std::make_unique<ControlProxy>(group, "rate_ratio", this);
-    m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
-                                      Qt::DirectConnection);
+    m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm, Qt::DirectConnection);
 
     m_pLocalBpm = std::make_unique<ControlObject>(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = std::make_unique<ControlPushButton>(
@@ -285,6 +285,41 @@ BpmControl::BpmControl(const QString& group,
     m_pBeatsUndoPossible = std::make_unique<ControlObject>(
             ConfigKey(group, "beats_undo_possible"));
     m_pBeatsUndoPossible->setReadOnly();
+
+    m_pDownbeatOffset = std::make_unique<ControlObject>(
+            ConfigKey(group, "downbeat_offset"));
+    connect(m_pDownbeatOffset.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotDownbeatOffsetChanged,
+            Qt::DirectConnection);
+
+    m_pSetDownbeat = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "set_downbeat"));
+    connect(m_pSetDownbeat.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotSetDownbeat,
+            Qt::DirectConnection);
+
+    m_pPhraseAdd = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "phrase_add"));
+    connect(m_pPhraseAdd.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotPhraseAdd,
+            Qt::DirectConnection);
+
+    m_pPhraseType = std::make_unique<ControlObject>(
+            ConfigKey(group, "phrase_type"));
+
+    m_pPhraseRemove = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "phrase_remove"));
+    connect(m_pPhraseRemove.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotPhraseRemove,
+            Qt::DirectConnection);
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -477,7 +512,7 @@ void BpmControl::slotScaleBpm(mixxx::Beats::BpmScale bpmScale) {
 
 // static
 double BpmControl::shortestPercentageChange(const double& current_percentage,
-                                            const double& target_percentage) {
+        const double& target_percentage) {
     if (current_percentage == target_percentage) {
         return 0.0;
     } else if (current_percentage < target_percentage) {
@@ -495,8 +530,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
         // my: 0.98 target: 0.99 backwards: -0.99
         const double backwardsDistance = target_percentage - current_percentage - 1.0;
 
-        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
-                forwardDistance : backwardsDistance;
+        return (fabs(forwardDistance) < fabs(backwardsDistance)) ? forwardDistance : backwardsDistance;
     } else { // current_percentage > target_percentage
         // Invariant: forwardDistance - backwardsDistance == 1.0
 
@@ -506,8 +540,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
         // my: 0.99 target:0.01 backwards: -0.98
         const double backwardsDistance = target_percentage - current_percentage;
 
-        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
-                forwardDistance : backwardsDistance;
+        return (fabs(forwardDistance) < fabs(backwardsDistance)) ? forwardDistance : backwardsDistance;
     }
 }
 
@@ -627,9 +660,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
             delta = math_clamp(delta, -kSyncDeltaCap, kSyncDeltaCap);
 
             // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
-            adjustment = 1.0 + math_clamp(
-                    m_dLastSyncAdjustment - 1.0 + delta,
-                    -kSyncAdjustmentCap, kSyncAdjustmentCap);
+            adjustment = 1.0 + math_clamp(m_dLastSyncAdjustment - 1.0 + delta, -kSyncAdjustmentCap, kSyncAdjustmentCap);
         } else {
             // We are in sync, no adjustment needed.
             adjustment = 1.0;
@@ -865,7 +896,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
         newPlayPosition = thisPrevBeatPosition;
     } else if (thisNearNextBeat && !otherNearNextBeat) {
         newPlayPosition = thisNextBeatPosition;
-    } else { //!thisNearNextBeat && otherNearNextBeat
+    } else { //! thisNearNextBeat && otherNearNextBeat
         thisPrevBeatPosition = pBeats->findNthBeat(thisPosition, -2);
         newPlayPosition = thisPrevBeatPosition;
     }
@@ -1187,6 +1218,7 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
     updateLocalBpm();
     resetSyncAdjustment();
+    m_pDownbeatOffset->set(pBeats ? pBeats->downbeatOffset() : 0);
     TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     m_pBeatsUndoPossible->forceSet(pTrack ? pTrack->canUndoBeatsChange() : 0);
 }
@@ -1244,6 +1276,50 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
+    }
+}
+
+void BpmControl::slotDownbeatOffsetChanged(double v) {
+    const int offset = static_cast<int>(v);
+    if (offset < 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats) {
+        const auto newBeats = pBeats->trySetDownbeatOffset(offset);
+        if (newBeats) {
+            pTrack->trySetBeats(*newBeats);
+        }
+    }
+}
+
+void BpmControl::slotSetDownbeat(double v) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto currentPosition = frameInfo().currentPosition;
+    const auto closestBeat = pBeats->findClosestBeat(currentPosition);
+    if (!closestBeat.isValid()) {
+        return;
+    }
+    const auto firstMarker = pBeats->cfirstmarker();
+    const auto beatIt = pBeats->iteratorFrom(closestBeat);
+    const int beatIndex = beatIt - firstMarker;
+    const auto newBeats = pBeats->trySetDownbeatOffset(beatIndex);
+    if (newBeats) {
+        pTrack->trySetBeats(*newBeats);
     }
 }
 
@@ -1357,4 +1433,76 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures, double speed
 
 double BpmControl::getRateRatio() const {
     return m_pRateRatio->get();
+}
+
+void BpmControl::slotPhraseAdd(double v) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto currentPosition = frameInfo().currentPosition;
+    const auto closestBeat = pBeats->findClosestBeat(currentPosition);
+    if (!closestBeat.isValid()) {
+        return;
+    }
+
+    const int typeValue = static_cast<int>(m_pPhraseType->get());
+    auto phraseType = mixxx::PhraseType::Other;
+    if (typeValue >= 0 && typeValue <= static_cast<int>(mixxx::PhraseType::Other)) {
+        phraseType = static_cast<mixxx::PhraseType>(typeValue);
+    }
+
+    const int beatsPerBar = 4;
+    const int barsPerPhrase = 8;
+    const int beatsPerPhrase = beatsPerBar * barsPerPhrase;
+    auto startIt = pBeats->iteratorFrom(closestBeat);
+    auto endIt = startIt + beatsPerPhrase;
+    const auto endPos = *endIt;
+
+    mixxx::Phrase phrase(closestBeat, endPos, phraseType);
+    mixxx::PhrasesPointer pPhrases = pTrack->getPhrases();
+    if (!pPhrases) {
+        pPhrases = std::make_shared<const mixxx::Phrases>();
+    }
+    auto result = pPhrases->tryAddPhrase(std::move(phrase));
+    if (result) {
+        pTrack->trySetPhrases(*result);
+    }
+}
+
+void BpmControl::slotPhraseType(double v) {
+    Q_UNUSED(v);
+}
+
+void BpmControl::slotPhraseRemove(double v) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    mixxx::PhrasesPointer pPhrases = pTrack->getPhrases();
+    if (!pPhrases || pPhrases->isEmpty()) {
+        return;
+    }
+    const auto currentPosition = frameInfo().currentPosition;
+    const auto& phrases = pPhrases->phrases();
+    for (int i = 0; i < phrases.size(); ++i) {
+        if (currentPosition >= phrases[i].startPosition() &&
+                currentPosition < phrases[i].endPosition()) {
+            auto result = pPhrases->tryRemovePhrase(i);
+            if (result) {
+                pTrack->trySetPhrases(*result);
+            }
+            return;
+        }
+    }
 }

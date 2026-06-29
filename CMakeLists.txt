@@ -1176,6 +1176,7 @@ add_library(
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
+  src/analyzer/analyzerphrase.cpp
   src/analyzer/analyzerscheduledtrack.cpp
   src/analyzer/analyzersilence.cpp
   src/analyzer/analyzerthread.cpp
@@ -1609,6 +1610,7 @@ add_library(
   src/track/beatfactory.cpp
   src/track/beats.cpp
   src/track/beatutils.cpp
+  src/track/phrases.cpp
   src/track/bpm.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
@@ -1712,6 +1714,7 @@ add_library(
   src/waveform/renderers/waveformoverviewrenderer.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrenderphrase.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
   src/waveform/renderers/waveformrendererendoftrack.cpp
   src/waveform/renderers/waveformrendererfilteredsignal.cpp
@@ -2025,7 +2028,9 @@ if(QOPENGL)
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
       src/waveform/renderers/allshader/waveformrenderbackground.cpp
+      src/waveform/renderers/allshader/waveformrenderbarcounter.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderphrase.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererslipmode.cpp
@@ -2859,8 +2864,10 @@ if(BUILD_TESTING)
     src-mixxx-test
     src/test/analyserwaveformtest.cpp
     src/test/analyzersilence_test.cpp
+    src/test/waveform_normalize_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/beats_bar_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
@@ -2930,6 +2937,7 @@ if(BUILD_TESTING)
     src/test/mock_networkaccessmanager.cpp
     src/test/musicbrainzrecordingstasktest.cpp
     src/test/performancetimer_test.cpp
+    src/test/phrasestest.cpp
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
@@ -3986,7 +3994,9 @@ if(QML)
       src/qml/qmlsoundmanagerproxy.cpp
       src/qml/qmlpreferencesproxy.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
+      src/waveform/renderers/allshader/waveformrenderbarcounter.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderphrase.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererpreroll.cpp

@@ -402,7 +402,7 @@ Select from different types of displays for the waveform, which differ primarily
           <double>0.500000000000000</double>
          </property>
          <property name="maximum">
-          <double>5.000000000000000</double>
+          <double>10.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
@@ -421,7 +421,7 @@ Select from different types of displays for the waveform, which differ primarily
           <double>0.500000000000000</double>
          </property>
          <property name="maximum">
-          <double>5.000000000000000</double>
+          <double>10.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
@@ -440,7 +440,7 @@ Select from different types of displays for the waveform, which differ primarily
           <double>0.500000000000000</double>
          </property>
          <property name="maximum">
-          <double>5.000000000000000</double>
+          <double>10.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
@@ -459,10 +459,20 @@ Select from different types of displays for the waveform, which differ primarily
           <double>0.500000000000000</double>
          </property>
          <property name="maximum">
-          <double>5.000000000000000</double>
+          <double>10.000000000000000</double>
          </property>
          <property name="singleStep">
           <double>0.100000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="4">
+        <widget class="QCheckBox" name="normalizeWaveformCheckBox">
+         <property name="toolTip">
+          <string>Normalize the waveform display to the track's peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</string>
+         </property>
+         <property name="text">
+          <string>Normalize waveform to peak</string>
          </property>
         </widget>
        </item>
@@ -493,8 +503,18 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
+     <item row="12" column="1" colspan="2">
+      <widget class="QCheckBox" name="showBarCounterCheckBox">
+       <property name="toolTip">
+        <string>Show the current bar and beat position (e.g. "12.1") at the play marker.</string>
+       </property>
+       <property name="text">
+        <string>Bar/beat counter</string>
+       </property>
+      </widget>
+     </item>
 
-     <item row="12" column="1" colspan="4">
+     <item row="13" column="1" colspan="4">
       <layout class="QHBoxLayout" name="marker_option_layout">
        <item>
         <layout class="QVBoxLayout" name="marker_options_placement_layout">
@@ -578,7 +598,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout><!-- marker_option_layout -->
      </item>
 
-     <item row="13" column="1" colspan="4">
+     <item row="14" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires waveform acceleration.</string>
@@ -589,7 +609,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="14" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="stemOpacityLabel">
        <property name="text">
         <string>Stem</string>
@@ -602,7 +622,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="14" column="1" colspan="4">
+     <item row="15" column="1" colspan="4">
       <layout class="QGridLayout" name="stemOpacityGridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="stemOpacityMainLabel">
@@ -679,7 +699,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="15" column="1" colspan="4">
+     <item row="16" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel2">
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -785,6 +805,16 @@ Select from different types of displays for the waveform overview, which differ 
       <widget class="QCheckBox" name="enableWaveformGenerationWithAnalysis">
        <property name="text">
         <string>Generate waveforms when analyzing library</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enablePhraseAnalysis">
+       <property name="text">
+        <string>Detect phrases when analyzing library</string>
+       </property>
+       <property name="toolTip">
+        <string>Automatically detect phrase boundaries (intro, verse, chorus, drop, outro) based on energy changes in the track.</string>
        </property>
       </widget>
      </item>
@@ -901,8 +931,10 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>lowVisualGain</tabstop>
   <tabstop>midVisualGain</tabstop>
   <tabstop>highVisualGain</tabstop>
+  <tabstop>normalizeWaveformCheckBox</tabstop>
   <tabstop>untilMarkShowBeatsCheckBox</tabstop>
   <tabstop>untilMarkShowTimeCheckBox</tabstop>
+  <tabstop>showBarCounterCheckBox</tabstop>
   <tabstop>untilMarkAlignComboBox</tabstop>
   <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>untilMarkTextHeightLimitComboBox</tabstop>
@@ -913,6 +945,7 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>overview_scale_allReplayGain</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
   <tabstop>enableWaveformGenerationWithAnalysis</tabstop>
+  <tabstop>enablePhraseAnalysis</tabstop>
   <tabstop>clearCachedWaveforms</tabstop>
  </tabstops>
  <buttongroups>

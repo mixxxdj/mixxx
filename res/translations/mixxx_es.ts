@@ -8769,6 +8769,28 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
         <source>Clear Cached Waveforms</source>
         <translation>Las formas de onda claras en caché</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Muestra la posición actual del compás y tiempo (ej. «12.1») en el marcador de reproducción.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Contador de compás/tiempo</translation>
+    </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normaliza la visualización de la forma de onda a la amplitud máxima de la pista. Útil para pistas con normalización de sonoridad que de otro modo aparecerían como líneas finas.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Normalizar forma de onda al pico</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

@@ -8773,6 +8773,28 @@ Kies uit verschillende soorten weergaven voor de waveform, die voornamelijk vers
         <source>Clear Cached Waveforms</source>
         <translation>Wis gebufferde Waveforms</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Toont de huidige maat- en telpositie (bijv. «12.1») bij de afspeelmarkering.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Maat/tel-teller</translation>
+    </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Normaliseert de golfvormweergave naar de piekamplitude van de track. Handig voor loudness-genormaliseerde tracks die anders als dunne lijnen zouden verschijnen.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Golfvorm normaliseren naar piek</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

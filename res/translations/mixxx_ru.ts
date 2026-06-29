@@ -8746,6 +8746,28 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Clear Cached Waveforms</source>
         <translation>Очистить кэшированные осциллограммы</translation>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Показывает текущую позицию такта и доли (напр. «12.1») у маркера воспроизведения.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Счётчик тактов/долей</translation>
+    </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Нормализует отображение волновой формы по пиковой амплитуде трека. Полезно для треков с нормализацией громкости, которые иначе выглядели бы как тонкие линии.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Нормализовать волновую форму по пику</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

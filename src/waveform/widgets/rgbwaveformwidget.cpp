@@ -10,6 +10,7 @@
 #include "waveform/renderers/waveformrendererrgb.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrenderphrase.h"
 
 RGBWaveformWidget::RGBWaveformWidget(const QString& group,
         QWidget* parent,
@@ -18,6 +19,7 @@ RGBWaveformWidget::RGBWaveformWidget(const QString& group,
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
+    addRenderer<WaveformRenderPhrase>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererRGB>(options);
     addRenderer<WaveformRenderBeat>();
@@ -38,5 +40,5 @@ void RGBWaveformWidget::castToQWidget() {
 
 void RGBWaveformWidget::paintEvent(QPaintEvent* event) {
     QPainter painter(this);
-    draw(&painter,event);
+    draw(&painter, event);
 }

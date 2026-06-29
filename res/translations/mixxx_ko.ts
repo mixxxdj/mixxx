@@ -8536,6 +8536,28 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"/>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>재생 마커에 현재 마디 및 박자 위치(예: «12.1»)를 표시합니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>마디/박 카운터</translation>
+    </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>트랙의 피크 진폭에 맞게 파형 표시를 정규화합니다. 그렇지 않으면 얇은 선으로 표시되는 라우드니스 정규화 트랙에 유용합니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>파형을 피크로 정규화</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>

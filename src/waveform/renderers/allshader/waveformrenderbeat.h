@@ -9,6 +9,10 @@
 class QDomNode;
 class SkinContext;
 
+namespace rendergraph {
+class GeometryNode;
+} // namespace rendergraph
+
 namespace allshader {
 class WaveformRenderBeat;
 } // namespace allshader
@@ -35,10 +39,20 @@ class allshader::WaveformRenderBeat final
     void setColor(const QColor& color) {
         m_color = color;
     }
+    void setDownbeatColor(const QColor& color) {
+        m_downbeatColor = color;
+    }
+    void setBeatsPerBar(int beatsPerBar) {
+        m_beatsPerBar = beatsPerBar;
+    }
 
   private:
     QColor m_color;
+    QColor m_downbeatColor;
+    int m_beatsPerBar{4};
     bool m_isSlipRenderer;
+
+    rendergraph::GeometryNode* m_pDownbeatNode{};
 
     bool preprocessInner();
 

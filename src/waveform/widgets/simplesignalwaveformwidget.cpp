@@ -10,12 +10,14 @@
 #include "waveform/renderers/waveformrenderersimplesignal.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrenderphrase.h"
 
 SimpleSignalWaveformWidget::SimpleSignalWaveformWidget(const QString& group, QWidget* parent)
         : NonGLWaveformWidgetAbstract(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
+    addRenderer<WaveformRenderPhrase>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererSimpleSignal>();
     addRenderer<WaveformRenderBeat>();

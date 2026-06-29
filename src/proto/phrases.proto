@@ -1,0 +1,27 @@
+syntax = "proto2";
+
+package mixxx.track.io;
+
+option optimize_for = LITE_RUNTIME;
+
+enum PhraseType {
+  PHRASE_INTRO = 0;
+  PHRASE_VERSE = 1;
+  PHRASE_CHORUS = 2;
+  PHRASE_BUILDUP = 3;
+  PHRASE_DROP = 4;
+  PHRASE_BRIDGE = 5;
+  PHRASE_OUTRO = 6;
+  PHRASE_OTHER = 7;
+}
+
+message Phrase {
+  optional int32 start_frame_position = 1;
+  optional int32 end_frame_position = 2;
+  optional PhraseType type = 3 [default = PHRASE_OTHER];
+  optional string label = 4;
+}
+
+message PhraseList {
+  repeated Phrase phrase = 1;
+}

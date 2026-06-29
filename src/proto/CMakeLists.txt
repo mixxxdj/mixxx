@@ -35,6 +35,7 @@ protobuf_generate(
     beats.proto
     headers.proto
     keys.proto
+    phrases.proto
     skin.proto
     waveform.proto
 )

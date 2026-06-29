@@ -8208,6 +8208,28 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Clear Cached Waveforms</source>
         <translation type="unfinished"/>
     </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="499"/>
+        <source>Show the current bar and beat position (e.g. &quot;12.1&quot;) at the play marker.</source>
+        <translation>Εμφανίζει την τρέχουσα θέση μέτρου και χτύπου (π.χ. «12.1») στο δείκτη αναπαραγωγής.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="502"/>
+        <source>Bar/beat counter</source>
+        <translation>Μετρητής μέτρου/χτύπου</translation>
+    </message>
+
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="472"/>
+        <source>Normalize the waveform display to the track&apos;s peak amplitude. Useful for loudness-normalized tracks that would otherwise appear as thin lines.</source>
+        <translation>Κανονικοποιεί την εμφάνιση κυματομορφής στο μέγιστο πλάτος του κομματιού. Χρήσιμο για κομμάτια με κανονικοποίηση έντασης που διαφορετικά θα εμφανίζονταν ως λεπτές γραμμές.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
+        <source>Normalize waveform to peak</source>
+        <translation>Κανονικοποίηση κυματομορφής στην κορυφή</translation>
+    </message>
 </context>
 <context>
     <name>DlgPreferences</name>
