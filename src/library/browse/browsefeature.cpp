@@ -173,6 +173,29 @@ QVariant BrowseFeature::title() {
     return QVariant(tr("Computer"));
 }
 
+QList<QUrl> BrowseFeature::collectTrackUrls(const QModelIndex& index) {
+    if (!index.isValid()) {
+        return {};
+    }
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pItem || !pItem->getData().isValid()) {
+        return {};
+    }
+
+    const QString path = pItem->getData().toString();
+    if (path.isEmpty() || path == QUICK_LINK_NODE || path == DEVICE_NODE) {
+        return {};
+    }
+
+    mixxx::FileInfo dirInfo(path);
+    if (!dirInfo.hasLocation() || !dirInfo.isDir()) {
+        return {};
+    }
+
+    // Just return the directory and the receiver will resolve urls recursively
+    return QList<QUrl>{dirInfo.toQUrl()};
+}
+
 void BrowseFeature::slotAddQuickLink() {
     const QString path = getLastRightClickedPath();
     if (path.isEmpty()) {

@@ -221,18 +221,12 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(true);
 }
 
-bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
-    if (pSource) {
-        // We don't accept internal drags onto Tracks as all tracks with a
-        // source are already in the library.
-        return false;
-    }
-
+bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls) {
     const QList<mixxx::FileInfo> fileInfos =
             // collect all tracks, accept playlist files
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, nullptr);
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     if (trackIds.size() == 0) {
         return false;
     }

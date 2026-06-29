@@ -214,6 +214,26 @@ QString CrateFeature::formatRootViewHtml() const {
     return html;
 }
 
+QList<QUrl> CrateFeature::collectTrackUrls(const QModelIndex& index) {
+    CrateId crateId(crateIdFromIndex(index));
+    if (!crateId.isValid()) {
+        return {};
+    }
+    // Create a new table model since the main one might have an active search.
+    std::unique_ptr<CrateTableModel> pCrateTableModel =
+            std::make_unique<CrateTableModel>(this, m_pLibrary->trackCollectionManager());
+    pCrateTableModel->selectCrate(crateId);
+    pCrateTableModel->select();
+    int rows = pCrateTableModel->rowCount();
+    QList<QUrl> trackUrls;
+    trackUrls.reserve(rows);
+    for (int i = 0; i < rows; ++i) {
+        const QModelIndex trackIndex = pCrateTableModel->index(i, 0);
+        trackUrls.push_back(pCrateTableModel->getTrackUrl(trackIndex));
+    }
+    return trackUrls;
+}
+
 std::unique_ptr<TreeItem> CrateFeature::newTreeItemForCrateSummary(
         const CrateSummary& crateSummary) {
     auto pTreeItem = TreeItem::newRoot(this);
@@ -236,8 +256,7 @@ void CrateFeature::updateTreeItemForCrateSummary(
     pTreeItem->setIcon(crateSummary.isLocked() ? m_lockedCrateIcon : QIcon());
 }
 
-bool CrateFeature::dropAcceptChild(
-        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+bool CrateFeature::dropAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
@@ -251,7 +270,7 @@ bool CrateFeature::dropAcceptChild(
             // collect all tracks, accept playlist files
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     if (trackIds.isEmpty()) {
         return false;
     }
