@@ -99,6 +99,11 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
     updateLabel();
 }
 
+void WTrackProperty::slotPinnedTrackChanged(TrackPointer pTrack) {
+    slotLoadingTrack(TrackPointer(), TrackPointer());
+    slotTrackLoaded(pTrack);
+}
+
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
         setText(getPropertyStringFromTrack(m_displayProperty));
