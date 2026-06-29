@@ -137,6 +137,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class TrackCollection;
     friend class TrackAnalysisScheduler;
 
+    void resetPlayedState();
+
     QList<TrackId> resolveTrackIds(
             const QStringList& pathList,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
