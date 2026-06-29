@@ -93,7 +93,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg {
     void updateRemoveButtonVisibility();
     void initializePaths();
     void connectSoundItem(DlgPrefSoundItem* item);
-    void calibrateOutputItem(DlgPrefSoundItem* pItem);
     void loadSettings(const SoundManagerConfig& config);
     void insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout);
     void checkLatencyCompensation();
