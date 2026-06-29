@@ -537,19 +537,17 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::calibrateOutputItem);
 }
 
-void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
+void DlgPrefSound::insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout) {
     int pos;
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
-        DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
-            pLayout->itemAt(pos)->widget()));
+        DlgPrefSoundItem* pOther(qobject_cast<DlgPrefSoundItem*>(
+                pLayout->itemAt(pos)->widget()));
         if (!pOther) { // not a sound item, skip
             continue;
         }
         if (pItem->type() < pOther->type()) {
             break;
-        } else if (pItem->type() == pOther->type()
-            && AudioPath::isIndexed(pItem->type())
-            && pItem->index() < pOther->index()) {
+        } else if (pItem->type() == pOther->type() && AudioPath::isIndexed(pItem->type()) && pItem->index() < pOther->index()) {
             break;
         }
     }
@@ -767,7 +765,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                                 JackAudioBufferSizeIndex::Size4096fpp));
     } else {
         DEBUG_ASSERT(sampleRateComboBox->itemData(sampleRateIndex)
-                             .canConvert<mixxx::audio::SampleRate>());
+                        .canConvert<mixxx::audio::SampleRate>());
         double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
                                     .value<mixxx::audio::SampleRate>()
                                     .toDouble();
@@ -808,9 +806,9 @@ void DlgPrefSound::refreshDevices() {
         m_inputDevices.clear();
     } else {
         m_outputDevices =
-            m_pSoundManager->getDeviceList(m_config.getAPI(), true, false);
+                m_pSoundManager->getDeviceList(m_config.getAPI(), true, false);
         m_inputDevices =
-            m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
+                m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
     }
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);

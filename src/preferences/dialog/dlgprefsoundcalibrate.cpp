@@ -1,11 +1,11 @@
 #include "preferences/dialog/dlgprefsoundcalibrate.h"
 
 #include <QApplication>
+#include <QDoubleSpinBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QSlider>
-#include <QDoubleSpinBox>
 #include <QVBoxLayout>
 
 #include "moc_dlgprefsoundcalibrate.cpp"
@@ -13,29 +13,26 @@
 
 DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
         DlgPrefSoundItem* pSoundItem)
-    : QDialog(parent),
-      m_pSoundItem(pSoundItem),
-      m_currentOffsetMs(0.0),
-      m_fineOffsetMs(0.0),
-      m_playingTone(false),
-      m_pStatusLabel(nullptr),
-      m_pOffsetSpinbox(nullptr),
-      m_pFineSlider(nullptr),
-      m_pAutoCalibrateButton(nullptr),
-      m_pPlayToneButton(nullptr),
-      m_pApplyButton(nullptr),
-      m_pCancelButton(nullptr),
-      m_pExplanationLabel(nullptr) {
-
-    m_currentOffsetMs = pSoundItem ?
-            static_cast<double>(pSoundItem->getLatencyOffsetMs()) : 0.0;
+        : QDialog(parent),
+          m_pSoundItem(pSoundItem),
+          m_currentOffsetMs(0.0),
+          m_fineOffsetMs(0.0),
+          m_playingTone(false),
+          m_pStatusLabel(nullptr),
+          m_pOffsetSpinbox(nullptr),
+          m_pFineSlider(nullptr),
+          m_pAutoCalibrateButton(nullptr),
+          m_pPlayToneButton(nullptr),
+          m_pApplyButton(nullptr),
+          m_pCancelButton(nullptr),
+          m_pExplanationLabel(nullptr) {
+    m_currentOffsetMs = pSoundItem ? static_cast<double>(pSoundItem->getLatencyOffsetMs()) : 0.0;
 
     setupUi();
 
     m_pSyncTimer = new QTimer(this);
     m_pSyncTimer->setInterval(1000); // 1 second interval
-    connect(m_pSyncTimer, &QTimer::timeout,
-            this, &DlgPrefSoundCalibrate::updateReferenceTone);
+    connect(m_pSyncTimer, &QTimer::timeout, this, &DlgPrefSoundCalibrate::updateReferenceTone);
 }
 
 void DlgPrefSoundCalibrate::setupUi() {
@@ -46,15 +43,15 @@ void DlgPrefSoundCalibrate::setupUi() {
 
     // Explanation text
     m_pExplanationLabel = new QLabel(
-        tr("This tool the output devices by playing "
-           "a rhythmic click. Adjust the offset until the click aligns "
-           "with the audio you hear from your other output.<br><br>"
-           "<b>Manual mode:</b> Click \"Play Click\" to hear a periodic "
-           "beep on this output. Adjust the spins until it syncs with "
-           "your other output.<br>"
-           "<b>Auto-calibrate:</b> If you have a loopback connection "
-           "(output cable connected to input), it can estimate the "
-           "offset automatically."));
+            tr("This tool the output devices by playing "
+               "a rhythmic click. Adjust the offset until the click aligns "
+               "with the audio you hear from your other output.<br><br>"
+               "<b>Manual mode:</b> Click \"Play Click\" to hear a periodic "
+               "beep on this output. Adjust the spins until it syncs with "
+               "your other output.<br>"
+               "<b>Auto-calibrate:</b> If you have a loopback connection "
+               "(output cable connected to input), it can estimate the "
+               "offset automatically."));
     m_pExplanationLabel->setWordWrap(true);
     pMainLayout->addWidget(m_pExplanationLabel);
 
@@ -110,17 +107,13 @@ void DlgPrefSoundCalibrate::setupUi() {
     // Connections
     connect(m_pOffsetSpinbox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this, &DlgPrefSoundCalibrate::onOffsetChanged);
-    connect(m_pFineSlider, &QSlider::valueChanged,
-            this, &DlgPrefSoundCalibrate::onFineSliderChanged);
-    connect(m_pAutoCalibrateButton, &QPushButton::clicked,
-            this, &DlgPrefSoundCalibrate::onAutoCalibrateClicked);
-    connect(m_pPlayToneButton, &QPushButton::toggled,
-            this, &DlgPrefSoundCalibrate::onPlayToneToggled);
-    connect(m_pApplyButton, &QPushButton::clicked,
-            this, &DlgPrefSoundCalibrate::onApplyClicked);
-    connect(m_pCancelButton, &QPushButton::clicked,
-            this, &QDialog::reject);
+            this,
+            &DlgPrefSoundCalibrate::onOffsetChanged);
+    connect(m_pFineSlider, &QSlider::valueChanged, this, &DlgPrefSoundCalibrate::onFineSliderChanged);
+    connect(m_pAutoCalibrateButton, &QPushButton::clicked, this, &DlgPrefSoundCalibrate::onAutoCalibrateClicked);
+    connect(m_pPlayToneButton, &QPushButton::toggled, this, &DlgPrefSoundCalibrate::onPlayToneToggled);
+    connect(m_pApplyButton, &QPushButton::clicked, this, &DlgPrefSoundCalibrate::onApplyClicked);
+    connect(m_pCancelButton, &QPushButton::clicked, this, &QDialog::reject);
 }
 
 void DlgPrefSoundCalibrate::onOffsetChanged(double value) {
@@ -154,15 +147,17 @@ void DlgPrefSoundCalibrate::onPlayToneToggled(bool checked) {
 
 void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
     m_pAutoCalibrateButton->setEnabled(false);
-    m_pStatusLabel->setText(tr("Auto-calibrating... Play loopback click "
-                               "and record through input."));
+    m_pStatusLabel->setText(tr(
+            "Auto-calibrating... Play loopback click "
+            "and record through input."));
 
     // TODO: Implement loopback detection once AudioLatencyCalibrator
     // is wired into the audio.
     // For now, set a placeholder value
     m_pAutoCalibrateButton->setEnabled(true);
-    m_pStatusLabel->setText(tr("Auto-calibrate not yet available. "
-                               "Use manual mode: play click and adjust."));
+    m_pStatusLabel->setText(tr(
+            "Auto-calibrate not yet available. "
+            "Use manual mode: play click and adjust."));
 }
 
 void DlgPrefSoundCalibrate::updateReferenceTone() {
@@ -188,7 +183,6 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
     totalMs = math_clamp(totalMs, 0, 500);
     m_pStatusLabel->setText(
             tr("Total offset: %1 ms. %2")
-            .arg(totalMs)
-            .arg(m_playingTone ? tr("Listening for sync...") :
-                                 tr("Press Play Click to hear.")));
+                    .arg(totalMs)
+                    .arg(m_playingTone ? tr("Listening for sync...") : tr("Press Play Click to hear.")));
 }

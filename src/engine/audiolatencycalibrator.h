@@ -1,8 +1,8 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QObject>
 #include <QVector>
-#include <QElapsedTimer>
 
 #include "engine/engine.h"
 
@@ -95,7 +95,7 @@ class AudioLatencyCalibrator : public QObject {
     QElapsedTimer m_timer;
     bool m_referencePlayed;
 
-    static constexpr int kReferencePulseLength = 480;  // ~10ms at 48kHz
-    static constexpr int kMaxRecordingFrames = 48000;   // 1 second at 48kHz
-    static constexpr int kCorrelationWindow = 4800;     // Search window for correlation (100ms)
+    static constexpr int kReferencePulseLength = 480; // ~10ms at 48kHz
+    static constexpr int kMaxRecordingFrames = 48000; // 1 second at 48kHz
+    static constexpr int kCorrelationWindow = 4800;   // Search window for correlation (100ms)
 };

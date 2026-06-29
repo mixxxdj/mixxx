@@ -25,8 +25,9 @@ class SoundManager;
 // on EngineMaster that emits every time a channel is added, and a slot here
 // that updates the dialog accordingly.
 
-class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
+class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg {
     Q_OBJECT;
+
   public:
     DlgPrefSound(QWidget* parent,
             std::shared_ptr<SoundManager> soundManager,
@@ -38,8 +39,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool okayToClose() const override;
 
   signals:
-    void loadPaths(const SoundManagerConfig &config);
-    void writePaths(SoundManagerConfig *config);
+    void loadPaths(const SoundManagerConfig& config);
+    void writePaths(SoundManagerConfig* config);
     void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
     void updatingAPI();
@@ -90,9 +91,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
   private:
     void updateRemoveButtonVisibility();
     void initializePaths();
-    void connectSoundItem(DlgPrefSoundItem *item);
-    void loadSettings(const SoundManagerConfig &config);
-    void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
+    void connectSoundItem(DlgPrefSoundItem* item);
+    void loadSettings(const SoundManagerConfig& config);
+    void insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout);
     void checkLatencyCompensation();
 
     std::shared_ptr<SoundManager> m_pSoundManager;

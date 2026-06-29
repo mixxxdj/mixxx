@@ -158,16 +158,15 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         channelComboBox->blockSignals(true);
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
-                 channelsForType >= minChannelsForType; --channelsForType) {
+                channelsForType >= minChannelsForType;
+                --channelsForType) {
             for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
-                     i += channelsForType) {
+                    i += channelsForType) {
                 QString channelString;
                 if (channelsForType == 1) {
                     channelString = tr("Channel %1").arg(i);
                 } else {
-                    channelString = tr("Channels %1 - %2").arg(
-                            QString::number(i),
-                            QString::number(i + channelsForType - 1));
+                    channelString = tr("Channels %1 - %2").arg(QString::number(i), QString::number(i + channelsForType - 1));
                 }
 
                 // Because QComboBox supports QPoint natively (via QVariant) we
@@ -175,7 +174,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
                 // and y is the channel count. We use i - 1 because the channel
                 // base is 0-indexed.
                 channelComboBox->addItem(channelString,
-                                         QPoint(i - 1, channelsForType));
+                        QPoint(i - 1, channelsForType));
             }
         }
         channelComboBox->setCurrentIndex(-1); // clear selection
@@ -207,14 +206,14 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
 /// object.
 /// @note If there are multiple AudioPaths matching this instance's type
 ///       and index (if applicable), then only the first one is used.
-void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
+void DlgPrefSoundItem::loadPath(const SoundManagerConfig& config) {
     if (m_isInput) {
         const auto inputDeviceMap = config.getInputs();
         for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
-                            it.value().getChannelGroup().getChannelCount());
+                        it.value().getChannelGroup().getChannelCount());
                 return;
             }
         }
@@ -224,7 +223,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
-                            it.value().getChannelGroup().getChannelCount());
+                        it.value().getChannelGroup().getChannelCount());
                 setLatencyOffsetMs(it.value().getLatencyOffsetMs());
                 return;
             }
@@ -245,7 +244,8 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     // to store the channel info. x is the channel base and y is the channel
     // count.
     QPoint channelData = channelComboBox->itemData(
-        channelComboBox->currentIndex()).toPoint();
+                                                channelComboBox->currentIndex())
+                                 .toPoint();
     int channelBase = channelData.x();
     const auto channelCount = mixxx::audio::ChannelCount(channelData.y());
 
@@ -319,7 +319,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
 /// Selects a channel in the channel combo box given a channel number,
 /// or selects the first channel if the given channel isn't found.
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
-                                  unsigned int channels) {
+        unsigned int channels) {
     int index = channelComboBox->findData(QPoint(channelBase, channels));
     if (index == -1) {
         channelComboBox->setCurrentIndex(0); // 1

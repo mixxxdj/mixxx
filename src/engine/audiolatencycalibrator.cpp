@@ -85,7 +85,7 @@ void AudioLatencyCalibrator::generateReferencePulse() {
     for (int i = 0; i < kReferencePulseLength; ++i) {
         // A single-sample impulse is ideal for cross-correlation
         // Use a short burst for robustness
-        if (i < 48) {  // 1ms at 48kHz
+        if (i < 48) { // 1ms at 48kHz
             m_referenceSignal[i] = 1.0f;
         } else {
             m_referenceSignal[i] = 0.0f;
@@ -113,7 +113,7 @@ void AudioLatencyCalibrator::computeOffset() {
     }
 
     // Cross-correlation: find the offset where reference best matches recorded
-    int searchStart = 0;  // Start searching from beginning
+    int searchStart = 0; // Start searching from beginning
     int searchEnd = qMin(kCorrelationWindow, m_recordedSignal.size() - kReferencePulseLength);
 
     CSAMPLE bestCorrelation = -1.0;
@@ -142,5 +142,5 @@ void AudioLatencyCalibrator::computeOffset() {
     m_state = State::Idle;
     emit calibrationComplete(m_suggestedOffsetMs);
     emit statusUpdate(QString("Calibration complete. Suggested offset: %1 ms")
-            .arg(m_suggestedOffsetMs, 0, 'f', 1));
+                    .arg(m_suggestedOffsetMs, 0, 'f', 1));
 }
