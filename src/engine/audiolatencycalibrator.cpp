@@ -102,7 +102,7 @@ void AudioLatencyCalibrator::computeOffset() {
 
     // Normalize recorded signal
     CSAMPLE maxVal = 0.0;
-    for (const CSAMPLE& s : m_recordedSignal) {
+    for (const CSAMPLE& s : std::as_const(m_recordedSignal)) {
         maxVal = qMax(maxVal, qAbs(s));
     }
 
