@@ -265,6 +265,21 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");
 
+    add("toggle_horizontal_layout")
+            << tr("Toggle Horizontal Layout")
+            << tr("Switches between a vertical 'classic' layout and a "
+                  "horizontal layout.")
+            << tr("In the horizontal layout a library pane is created besides "
+                  "the performance pane,")
+            << tr("With a splitter the size of the panes can be adjusted in "
+                  "order to use eg 2 screens.");
+
+    add("toggle_horizontal_layout_library_left")
+            << tr("Toggle Horizontal Layout Library Left")
+            << tr("Choose the position of the library pane:")
+            << tr("unchecked: library on the right,")
+            << tr("checked: library on the left,");
+
     add("show_waveforms")
             << tr("Show/hide the scrolling waveforms");
 
