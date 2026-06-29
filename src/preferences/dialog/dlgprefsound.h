@@ -16,6 +16,7 @@
 class ControlObject;
 class ControlProxy;
 class DlgPrefSoundItem;
+class DlgPrefSoundCalibrate;
 class PlayerManager;
 class SoundDevice;
 class SoundDeviceId;

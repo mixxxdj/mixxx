@@ -1934,7 +1934,6 @@ set(
   src/controllers/defs_controllers.h
   src/defs_urls.h
   src/effects/defs.h
-  src/engine/audiolatencycalibrator.h
   src/engine/channelhandle.h
   src/engine/engine.h
   src/errordialoghandler.h

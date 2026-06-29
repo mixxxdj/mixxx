@@ -144,3 +144,5 @@ void AudioLatencyCalibrator::computeOffset() {
     emit statusUpdate(QString("Calibration complete. Suggested offset: %1 ms")
                     .arg(m_suggestedOffsetMs, 0, 'f', 1));
 }
+
+#include "moc_audiolatencycalibrator.cpp"

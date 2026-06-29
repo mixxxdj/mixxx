@@ -186,3 +186,5 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
                     .arg(totalMs)
                     .arg(m_playingTone ? tr("Listening for sync...") : tr("Press Play Click to hear.")));
 }
+
+#include "moc_dlgprefsoundcalibrate.cpp"

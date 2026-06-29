@@ -2,7 +2,6 @@
 
 #include <QPoint>
 
-#include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 
@@ -341,3 +340,5 @@ int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice& device) const {
         return device.getNumOutputChannels() >= needed;
     }
 }
+
+#include "moc_dlgprefsounditem.cpp"

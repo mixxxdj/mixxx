@@ -9,7 +9,6 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
-#include "moc_dlgprefsound.cpp"
 #include "preferences/dialog/dlgprefsoundcalibrate.h"
 #include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/soundmanager.h"
@@ -1193,3 +1192,5 @@ void DlgPrefSound::checkLatencyCompensation() {
 bool DlgPrefSound::okayToClose() const {
     return m_configValid;
 }
+
+#include "moc_dlgprefsound.cpp"
