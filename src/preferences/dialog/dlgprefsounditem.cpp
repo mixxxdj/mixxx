@@ -165,7 +165,11 @@ void DlgPrefSoundItem::deviceChanged(int index) {
                 if (channelsForType == 1) {
                     channelString = tr("Channel %1").arg(i);
                 } else {
-                    channelString = tr("Channels %1 - %2").arg(QString::number(i), QString::number(i + channelsForType - 1));
+                    channelString =
+                            tr("Channels %1 - %2")
+                                    .arg(QString::number(i),
+                                            QString::number(
+                                                    i + channelsForType - 1));
                 }
 
                 // Because QComboBox supports QPoint natively (via QVariant) we

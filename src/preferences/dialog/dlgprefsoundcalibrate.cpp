@@ -109,9 +109,18 @@ void DlgPrefSoundCalibrate::setupUi() {
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &DlgPrefSoundCalibrate::onOffsetChanged);
-    connect(m_pFineSlider, &QSlider::valueChanged, this, &DlgPrefSoundCalibrate::onFineSliderChanged);
-    connect(m_pAutoCalibrateButton, &QPushButton::clicked, this, &DlgPrefSoundCalibrate::onAutoCalibrateClicked);
-    connect(m_pPlayToneButton, &QPushButton::toggled, this, &DlgPrefSoundCalibrate::onPlayToneToggled);
+    connect(m_pFineSlider,
+            &QSlider::valueChanged,
+            this,
+            &DlgPrefSoundCalibrate::onFineSliderChanged);
+    connect(m_pAutoCalibrateButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSoundCalibrate::onAutoCalibrateClicked);
+    connect(m_pPlayToneButton,
+            &QPushButton::toggled,
+            this,
+            &DlgPrefSoundCalibrate::onPlayToneToggled);
     connect(m_pApplyButton, &QPushButton::clicked, this, &DlgPrefSoundCalibrate::onApplyClicked);
     connect(m_pCancelButton, &QPushButton::clicked, this, &QDialog::reject);
 }
@@ -181,10 +190,10 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
     int totalMs = static_cast<int>(
             std::round(m_currentOffsetMs + m_fineOffsetMs));
     totalMs = math_clamp(totalMs, 0, 500);
-    m_pStatusLabel->setText(
-            tr("Total offset: %1 ms. %2")
+    m_pStatusLabel->setText(tr("Total offset: %1 ms. %2")
                     .arg(totalMs)
-                    .arg(m_playingTone ? tr("Listening for sync...") : tr("Press Play Click to hear.")));
+                    .arg(m_playingTone ? tr("Listening for sync...")
+                                       : tr("Press Play Click to hear.")));
 }
 
 #include "moc_dlgprefsoundcalibrate.cpp"

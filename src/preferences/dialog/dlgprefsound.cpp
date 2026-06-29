@@ -546,7 +546,9 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout) {
         }
         if (pItem->type() < pOther->type()) {
             break;
-        } else if (pItem->type() == pOther->type() && AudioPath::isIndexed(pItem->type()) && pItem->index() < pOther->index()) {
+        } else if (pItem->type() == pOther->type() &&
+                AudioPath::isIndexed(pItem->type()) &&
+                pItem->index() < pOther->index()) {
             break;
         }
     }

@@ -137,7 +137,9 @@ void AudioLatencyCalibrator::computeOffset() {
     }
 
     // Convert offset from samples to milliseconds
-    m_suggestedOffsetMs = (static_cast<double>(bestOffset) / static_cast<double>(m_sampleRate)) * 1000.0;
+    m_suggestedOffsetMs = (static_cast<double>(bestOffset) /
+                                  static_cast<double>(m_sampleRate)) *
+            1000.0;
 
     m_state = State::Idle;
     emit calibrationComplete(m_suggestedOffsetMs);
