@@ -33,18 +33,10 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     }
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
 
-    int getLatencyOffsetMs() const {
-        return m_latencyOffsetMs;
-    }
-    void setLatencyOffsetMs(int ms) {
-        m_latencyOffsetMs = ms;
-    }
-
   signals:
     void selectedDeviceChanged();
     void selectedChannelsChanged();
     void configuredDeviceNotFound();
-    void removeClicked();
 
   public slots:
     void refreshDevices(const QList<SoundDevicePointer>& devices);
@@ -70,6 +62,4 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
     bool m_emitSettingChanged;
-    int m_latencyOffsetMs = 0;
-    int m_savedLatencyOffsetMs = 0;
 };

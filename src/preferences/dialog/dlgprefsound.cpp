@@ -522,10 +522,6 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
     }
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
-    connect(pItem,
-            &DlgPrefSoundItem::removeClicked,
-            this,
-            &DlgPrefSound::slotRemoveOutputItem);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -1046,20 +1042,6 @@ void DlgPrefSound::addMainOutputClicked() {
     // Register the output with the sound manager first
     // This will trigger the outputRegistered signal which calls addPath
     m_pSoundManager->registerOutput(output, nullptr);
-}
-
-void DlgPrefSound::slotRemoveOutputItem() {
-    auto* pItem = qobject_cast<DlgPrefSoundItem*>(sender());
-    if (!pItem) {
-        return;
-    }
-    // Find the parent layout and remove the widget
-    auto* pLayout = qobject_cast<QVBoxLayout*>(
-            pItem->parentWidget()->layout());
-    if (pLayout) {
-        pLayout->removeWidget(pItem);
-    }
-    pItem->deleteLater();
 }
 
 void DlgPrefSound::mainMonoMixdownChanged(double value) {

@@ -38,16 +38,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSoundItem::channelChanged);
-    connect(latencySpinBox,
-            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            this,
-            [this](double value) {
-                m_latencyOffsetMs = static_cast<int>(value);
-            });
-    connect(removeButton,
-            &QPushButton::clicked,
-            this,
-            &DlgPrefSoundItem::removeClicked);
     refreshDevices(devices);
 }
 
@@ -182,8 +172,6 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
                             it.value().getChannelGroup().getChannelCount());
-                m_latencyOffsetMs = it.value().getLatencyOffsetMs();
-                latencySpinBox->setValue(m_latencyOffsetMs);
                 return;
             }
         }
@@ -216,11 +204,9 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
                 pDevice->getDeviceId(),
                 AudioInput(m_type, channelBase, channelCount, m_index));
     } else {
-        AudioOutput output(m_type, channelBase, channelCount, m_index);
-        output.setLatencyOffsetMs(m_latencyOffsetMs);
         config->addOutput(
                 pDevice->getDeviceId(),
-                output);
+                AudioOutput(m_type, channelBase, channelCount, m_index));
     }
 }
 
@@ -228,7 +214,6 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
 void DlgPrefSoundItem::save() {
     m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
-    m_savedLatencyOffsetMs = m_latencyOffsetMs;
 }
 
 /// Slot called to reload Item with previously saved settings.
@@ -241,8 +226,6 @@ void DlgPrefSoundItem::reload() {
     if (newChannel > -1) {
         channelComboBox->setCurrentIndex(newChannel);
     }
-    latencySpinBox->setValue(m_savedLatencyOffsetMs);
-    m_latencyOffsetMs = m_savedLatencyOffsetMs;
 }
 
 /// Gets the currently selected SoundDevice
