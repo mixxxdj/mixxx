@@ -347,7 +347,13 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
+
+
     // Setup the sources view
+    pSidebarWidget->setRootIsDecorated(true);
+    pSidebarWidget->setItemsExpandable(true);
+    pSidebarWidget->setIndentation(18);
+
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(m_pSidebarModel,
             &SidebarModel::selectIndex,

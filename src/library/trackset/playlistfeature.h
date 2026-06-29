@@ -39,6 +39,7 @@ class PlaylistFeature : public BasePlaylistFeature {
   public slots:
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+    void slotCreatePlaylist() override;
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
@@ -49,6 +50,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotUnlockAllPlaylists();
     void slotDeleteAllUnlockedPlaylists();
     void slotCreateFolder();
+
+    int getParentIdForNewItem() const;
 
   protected:
 
@@ -64,4 +67,8 @@ class PlaylistFeature : public BasePlaylistFeature {
     parented_ptr<QAction> m_pOrderByCurrentPosAction;
     parented_ptr<QAction> m_pUnlockPlaylistsAction;
     parented_ptr<QAction> m_pDeleteAllUnlockedPlaylistsAction;
+    parented_ptr<QAction> m_pMovePlaylistAction;
+
+  private slots:
+    void slotMovePlaylist();
 };

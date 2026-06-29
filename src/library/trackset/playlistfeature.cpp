@@ -4,6 +4,7 @@
 #include <QSqlTableModel>
 #include <QtDebug>
 #include <QInputDialog>
+#include <QLineEdit>
 #include <QMessageBox>
 
 #include "library/library.h"
@@ -13,6 +14,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include <unordered_map>
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
@@ -61,6 +63,12 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
+
+    m_pMovePlaylistAction = make_parented<QAction>(tr("Move to Folder"), this);
+    connect(m_pMovePlaylistAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotMovePlaylist);
 }
 
 QVariant PlaylistFeature::title() {
@@ -81,6 +89,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pDeleteAllUnlockedPlaylistsAction);
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction);
+    menu.addAction(m_pMovePlaylistAction);
 #ifdef __ENGINEPRIME__
     menu.addSeparator();
     menu.addAction(m_pExportAllPlaylistsToEngineAction);
@@ -106,6 +115,10 @@ void PlaylistFeature::onRightClickChild(
 
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreatePlaylistAction);
+
+    QAction* pCreateFolderAction = menu.addAction(tr("New Folder"));
+    connect(pCreateFolderAction, &QAction::triggered, this, &PlaylistFeature::slotCreateFolder);
+
     menu.addSeparator();
     // TODO If playlist is selected and has more than one track selected
     // show "Shuffle selected tracks", else show "Shuffle playlist"?
@@ -126,6 +139,7 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.addAction(m_pExportTrackFilesAction);
+    menu.addAction(m_pMovePlaylistAction);
 #ifdef __ENGINEPRIME__
     menu.addAction(m_pExportPlaylistToEngineAction);
 #endif
@@ -247,104 +261,101 @@ QList<PlaylistFeature::ExtendedPlaylistLabel> PlaylistFeature::createExtendedPla
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
-    QList<PlaylistFeature::ExtendedPlaylistLabel> playlistLabels;
-    QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
-            "AS SELECT "
+    QSqlQuery dropQuery(database);
+    dropQuery.exec(QStringLiteral("DROP VIEW IF EXISTS %1").arg(m_countsDurationTableName));
+
+    QString createViewString = QStringLiteral(
+            "CREATE TEMPORARY VIEW %1 AS "
+            "SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
             "  Playlists.parent_id AS parent_id, "
             "  Playlists.is_folder AS is_folder, "
             "  LOWER(Playlists.name) AS sort_name, "
-            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-            "    AS count, "
-            "  SUM(case library.mixxx_deleted "
-            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) AS count, "
+            "  SUM(case library.mixxx_deleted when 0 then library.duration else 0 end) AS durationSeconds "
             "FROM Playlists "
-            "LEFT JOIN PlaylistTracks "
-            "  ON PlaylistTracks.playlist_id = Playlists.id "
-            "LEFT JOIN library "
-            "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = %2 "
-            "  GROUP BY Playlists.id")
-                                  .arg(m_countsDurationTableName,
-                                          QString::number(
-                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
+            "LEFT JOIN PlaylistTracks ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library ON PlaylistTracks.track_id = library.id "
+            "WHERE Playlists.hidden = %2 "
+            "GROUP BY Playlists.id")
+            .arg(m_countsDurationTableName, QString::number(PlaylistDAO::PLHT_NOT_HIDDEN));
 
-
-    queryString.append(
-            mixxx::DbConnection::collateLexicographically(
-                    " ORDER BY is_folder DESC, sort_name"));
-                    
-    QSqlQuery query(database);
-    if (!query.exec(queryString)) {
-        LOG_FAILED_QUERY(query);
+    QSqlQuery createQuery(database);
+    if (!createQuery.exec(createViewString)) {
+        LOG_FAILED_QUERY(createQuery);
     }
 
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable(m_countsDurationTableName);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
+    struct TempItem {
+        QString name;
+        int parentId;
+        bool isFolder;
+        int count;
+        int duration;
+    };
+    QHash<int, TempItem> allItemsCache;
+    QList<int> orderedIds;
+
+    QString selectString = QStringLiteral("SELECT id, name, parent_id, is_folder, count, durationSeconds FROM %1 ")
+                           .arg(m_countsDurationTableName);
+    selectString.append(mixxx::DbConnection::collateLexicographically(" ORDER BY is_folder DESC, sort_name"));
+
+    QSqlQuery selectQuery(database);
+    if (!selectQuery.exec(selectString)) {
+        LOG_FAILED_QUERY(selectQuery);
     }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-    int parentIdColumn = record.indexOf("parent_id");
-    int isFolderColumn = record.indexOf("is_folder");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {        
-        int id =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, idColumn))
-                        .toInt();
-        QString name =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, nameColumn))
-                        .toString();
+    while (selectQuery.next()) {
+        int id = selectQuery.value(0).toInt();
+        TempItem ti;
+        ti.name = selectQuery.value(1).toString();
+        ti.parentId = selectQuery.value(2).isNull() ? kInvalidPlaylistId : selectQuery.value(2).toInt();
+        ti.isFolder = selectQuery.value(3).toInt() == 1;
+        ti.count = selectQuery.value(4).toInt();
+        ti.duration = selectQuery.value(5).toInt();
 
+        allItemsCache[id] = ti;
+        orderedIds.append(id);
+    }
 
-        QVariant parentVal = 
-                playlistTableModel
-                        .data(playlistTableModel.index(row, parentIdColumn));
+    QList<PlaylistFeature::ExtendedPlaylistLabel> playlistLabels;
 
-        int parentId = 
-                parentVal
-                        .isNull() ? kInvalidPlaylistId : parentVal
-                        .toInt();
+    for (int id : orderedIds) {
+        const TempItem& ti = allItemsCache[id];
+        QString prefix = "";
 
-        bool isFolder = 
-                playlistTableModel
-                        .data(playlistTableModel.index(row, isFolderColumn))
-                        .toInt() == 1;
+        if (ti.parentId != kInvalidPlaylistId) {
+            int currentParentId = ti.parentId;
+            QStringList parentNames;
 
-        int count =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, countColumn))
-                        .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, durationColumn))
-                        .toInt();
+            while (currentParentId != kInvalidPlaylistId) {
+                if (allItemsCache.contains(currentParentId)) {
+                    parentNames.prepend(allItemsCache[currentParentId].name);
+                    currentParentId = allItemsCache[currentParentId].parentId;
+                } else {
+                    break;
+                }
+            }
+
+            if (!parentNames.isEmpty()) {
+                prefix = parentNames.join(QStringLiteral(" > ")) + QStringLiteral(" > ");
+            }
+        }
 
         PlaylistFeature::ExtendedPlaylistLabel item;
         item.id = id;
-        item.parentId = parentId;
-        item.isFolder = isFolder;
+        item.parentId = ti.parentId;
+        item.isFolder = ti.isFolder;
 
-        // If the playlidt is a folder we don't show the count and duration, just the name of the folder
-        if (isFolder) {
-            item.label = name;
+        if (ti.isFolder) {
+            item.label = prefix + ti.name;
         } else {
-            item.label = createPlaylistLabel(name, count, duration);
+            item.label = prefix + createPlaylistLabel(ti.name, ti.count, ti.duration);
         }
 
         playlistLabels.append(item);
-
     }
+
     return playlistLabels;
 }
 
@@ -455,60 +466,129 @@ void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
-    // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
-    std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
-    QHash<int, TreeItem*> folderMap;
-    int selectedRow = -1;
-    int row = 0;
-
+    // Build a hierarchical tree from the flat list using parent_id.
     const QList<ExtendedPlaylistLabel> playlistLabels = createExtendedPlaylistLabels();
+
+    // Map of id -> owned TreeItem and parent mapping
+    std::unordered_map<int, std::unique_ptr<TreeItem>> items;
+    std::unordered_map<int, int> parentMap;
+    items.reserve(playlistLabels.size());
 
     for (const auto& idAndLabel : playlistLabels) {
         int playlistId = idAndLabel.id;
-        QString playlistLabel = idAndLabel.label;
-
-
-        if (idAndLabel.parentId == kInvalidPlaylistId) {
-            if (selectedId == playlistId) {
-                selectedRow = row;
-            }
-
-        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        parentMap[playlistId] = idAndLabel.parentId;
+        // Strip textual parent prefix like "A > B > " to get the raw visible name
+        QString label = idAndLabel.label;
+        const QString kDelimiter = QStringLiteral(" > ");
+        int lastPos = label.lastIndexOf(kDelimiter);
+        QString displayLabel = (lastPos != -1) ? label.mid(lastPos + kDelimiter.size()) : label;
+        auto pItem = std::make_unique<TreeItem>(displayLabel, playlistId);
         pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
-
         if (idAndLabel.isFolder) {
             pItem->setIcon(QIcon::fromTheme(QStringLiteral("folder")));
-            folderMap[playlistId] = pItem.get();
         } else {
             decorateChild(pItem.get(), playlistId);
         }
+        items.emplace(playlistId, std::move(pItem));
+    }
 
-        childrenToAdd.push_back(std::move(pItem));
-        ++row;
-        }
-        
-    else {
-        if (folderMap.contains(idAndLabel.parentId)) {
-            TreeItem* pChildNode = folderMap[idAndLabel.parentId]->appendChild(playlistLabel, playlistId);
-            if (pChildNode) {
-                pChildNode->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
-                if (idAndLabel.isFolder) {
-                    pChildNode->setIcon(QIcon::fromTheme(QStringLiteral("folder")));
-                    folderMap[playlistId] = pChildNode;
+    // Assemble tree robustly even if children come before parents
+    std::vector<std::unique_ptr<TreeItem>> rootItemsToAdd;
+    rootItemsToAdd.reserve(playlistLabels.size());
+
+    // Lookup of placed items' raw pointers by id
+    std::unordered_map<int, TreeItem*> placed;
+
+    bool progress = true;
+    while (progress) {
+        progress = false;
+        for (auto it = items.begin(); it != items.end(); ++it) {
+            int id = it->first;
+            if (!it->second) continue; // already moved
+            int parentId = parentMap[id];
+
+            if (parentId == kInvalidPlaylistId) {
+                // top-level -> move to root
+                rootItemsToAdd.push_back(std::move(it->second));
+                placed[id] = rootItemsToAdd.back().get();
+                progress = true;
+            } else {
+                // try to attach to parent
+                auto placedParent = placed.find(parentId);
+                if (placedParent != placed.end()) {
+                    TreeItem* pParent = placedParent->second;
+                    pParent->insertChild(pParent->childRows(), std::move(it->second));
+                    placed[id] = pParent->child(pParent->childRows() - 1);
+                    progress = true;
                 } else {
-                    decorateChild(pChildNode, playlistId);
+                    // parent might still be in items (not yet placed)
+                    auto parentIt = items.find(parentId);
+                    if (parentIt != items.end() && parentIt->second) {
+                        // attach child directly into parent's unique_ptr
+                        parentIt->second->insertChild(parentIt->second->childRows(), std::move(it->second));
+                        placed[id] = parentIt->second->child(parentIt->second->childRows() - 1);
+                        progress = true;
+                    }
                 }
             }
+            if (progress) break; // restart iteration since map changed
         }
     }
-}
 
-    m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
-    
-    if (selectedRow == -1) {
+    // Any remaining unplaced items (due to missing parents) are placed at top-level
+    for (auto it = items.begin(); it != items.end(); ++it) {
+        if (it->second) {
+            rootItemsToAdd.push_back(std::move(it->second));
+        }
+    }
+
+    // Insert into sidebar model
+    m_pSidebarModel->insertTreeItemRows(std::move(rootItemsToAdd), 0);
+
+    if (selectedId == kInvalidPlaylistId) {
         return QModelIndex();
     }
-    return m_pSidebarModel->index(selectedRow, 0);
+
+    // Find the TreeItem for selectedId and build its QModelIndex
+    TreeItem* pRoot = m_pSidebarModel->getRootItem();
+    TreeItem* pFound = nullptr;
+    std::function<void(TreeItem*)> findRec = [&](TreeItem* node) {
+        if (!node || pFound) return;
+        if (node->getData().toInt() == selectedId) {
+            pFound = node;
+            return;
+        }
+        for (auto* ch : node->children()) {
+            findRec(ch);
+            if (pFound) return;
+        }
+    };
+    // Search children of root
+    for (auto* child : pRoot->children()) {
+        findRec(child);
+        if (pFound) break;
+    }
+
+    if (!pFound) {
+        return QModelIndex();
+    }
+
+    std::function<QModelIndex(TreeItem*)> indexForItem = [&](TreeItem* item) -> QModelIndex {
+        if (!item || item->isRoot() || item->parent() == pRoot) {
+            return QModelIndex();
+        }
+        TreeItem* parent = item->parent();
+        QModelIndex parentIndex = indexForItem(parent);
+        return m_pSidebarModel->index(item->parentRow(), 0, parentIndex);
+    };
+
+    // If parent is root, parentIndex should be invalid and index() with row on root will work.
+    TreeItem* parentOfFound = pFound->parent();
+    QModelIndex parentIndex = QModelIndex();
+    if (parentOfFound && parentOfFound != pRoot) {
+        parentIndex = indexForItem(parentOfFound);
+    }
+    return m_pSidebarModel->index(pFound->parentRow(), 0, parentIndex);
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
@@ -521,7 +601,6 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
             type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
@@ -604,19 +683,50 @@ QString PlaylistFeature::getRootViewHtml() const {
     return html;
 }
 
+int PlaylistFeature::getParentIdForNewItem() const {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return kInvalidPlaylistId;
+    }
+
+    int clickedId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (clickedId == kInvalidPlaylistId) {
+        return kInvalidPlaylistId;
+    }
+
+    if (m_playlistDao.isFolder(clickedId)) {
+        return clickedId;
+    }
+
+    TreeItem* pClickedItem = m_pSidebarModel->getItem(m_lastRightClickedIndex);
+    if (!pClickedItem) {
+        return kInvalidPlaylistId;
+    }
+
+    TreeItem* pParentItem = pClickedItem->parent();
+    if (pParentItem && !pParentItem->isRoot()) {
+        bool ok = false;
+        int parentCandidate = pParentItem->getData().toInt(&ok);
+        if (ok) {
+            return parentCandidate;
+        }
+    }
+    return kInvalidPlaylistId;
+}
+
 void PlaylistFeature::slotCreateFolder() {
     QString name = QInputDialog::getText(
             m_pSidebarWidget,
             tr("New Folder"),
-            tr("Enter folder name:"));
+            tr("Enter folder name:"))
+                    .trimmed();
 
     if (name.isEmpty()) {
         return;
     }
 
-    // kInvalidPlaylistId (-1) is used to indicate that the new playlist has no parent folder, i.e. it is a top-level playlist.
-    int folderId = m_playlistDao.createPlaylist(
-            name, PlaylistDAO::PLHT_NOT_HIDDEN, kInvalidPlaylistId, true);
+    int parentId = getParentIdForNewItem();
+    int folderId = m_playlistDao.createUniquePlaylist(
+            &name, PlaylistDAO::PLHT_NOT_HIDDEN, parentId, true);
 
     if (folderId != kInvalidPlaylistId) {
         slotPlaylistTableChanged(folderId);
@@ -625,5 +735,79 @@ void PlaylistFeature::slotCreateFolder() {
                 m_pSidebarWidget,
                 tr("Playlists"),
                 tr("An error occurred while creating folder: %1").arg(name));
+    }
+}
+
+void PlaylistFeature::slotCreatePlaylist() {
+    QString name;
+    bool validNameGiven = false;
+
+    int parentId = getParentIdForNewItem();
+    while (!validNameGiven) {
+        bool ok = false;
+        name = QInputDialog::getText(nullptr,
+                tr("Create New Playlist"),
+                tr("Enter name for new playlist:"),
+                QLineEdit::Normal,
+                tr("New Playlist"),
+                &ok)
+                       .trimmed();
+        if (!ok) {
+            return;
+        }
+
+        parentId = getParentIdForNewItem();
+        int existingId = m_playlistDao.getPlaylistIdFromName(name, parentId);
+
+        if (existingId != kInvalidPlaylistId) {
+            QMessageBox::warning(nullptr,
+                    tr("Playlist Creation Failed"),
+                    tr("A playlist by that name already exists."));
+        } else if (name.isEmpty()) {
+            QMessageBox::warning(nullptr,
+                    tr("Playlist Creation Failed"),
+                    tr("A playlist cannot have a blank name."));
+        } else {
+            validNameGiven = true;
+        }
+    }
+
+    int playlistId = m_playlistDao.createPlaylist(name, PlaylistDAO::PLHT_NOT_HIDDEN, parentId, false);
+
+    if (playlistId == kInvalidPlaylistId) {
+        QMessageBox::warning(nullptr,
+                tr("Playlist Creation Failed"),
+                tr("An unknown error occurred while creating playlist: ") + name);
+    }
+}
+
+void PlaylistFeature::slotMovePlaylist() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) return;
+
+    // Build list of folders
+    QList<QPair<int, QString>> folders = m_playlistDao.getAllFolders();
+    QStringList names;
+    QList<int> ids;
+    names << tr("Top Level");
+    ids << kInvalidPlaylistId;
+    for (const auto& p : folders) {
+        ids << p.first;
+        names << p.second;
+    }
+
+    bool ok = false;
+    QString chosen = QInputDialog::getItem(m_pSidebarWidget, tr("Move Playlist"), tr("Select destination folder:"), names, 0, false, &ok);
+    if (!ok) return;
+
+    int idx = names.indexOf(chosen);
+    if (idx < 0) return;
+    int destId = ids.value(idx, kInvalidPlaylistId);
+
+    if (!m_playlistDao.movePlaylist(playlistId, destId)) {
+        QMessageBox::warning(m_pSidebarWidget, tr("Playlists"), tr("Failed to move playlist."));
     }
 }

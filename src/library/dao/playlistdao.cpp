@@ -102,20 +102,59 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden, co
     return playlistId;
 }
 
-int PlaylistDAO::createUniquePlaylist(QString* pName, const HiddenType hidden) {
-    int playlistId = getPlaylistIdFromName(*pName);
+bool PlaylistDAO::movePlaylist(int playlistId, int newParentId) {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("UPDATE Playlists SET parent_id = :parent_id, date_modified = CURRENT_TIMESTAMP WHERE id = :id"));
+    if (newParentId == kInvalidPlaylistId) {
+        query.bindValue(":parent_id", QVariant(QVariant::Int));
+    } else {
+        query.bindValue(":parent_id", newParentId);
+    }
+    query.bindValue(":id", playlistId);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    transaction.commit();
+    emit added(playlistId); // trigger feature refresh
+    return true;
+}
+
+QList<QPair<int, QString>> PlaylistDAO::getAllFolders() const {
+    QSqlQuery query(m_database);
+    query.prepare(
+            mixxx::DbConnection::collateLexicographically(
+                    QString("SELECT id, name FROM Playlists WHERE is_folder = 1 ORDER BY name")));
+
+    QList<QPair<int, QString>> folders;
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return folders;
+    }
+
+    while (query.next()) {
+        const int id = query.value(0).toInt();
+        const QString name = query.value(1).toString();
+        folders.append(qMakePair(id, name));
+    }
+    return folders;
+}
+
+int PlaylistDAO::createUniquePlaylist(QString* pName, const HiddenType hidden, const int parentId, const bool isFolder) {
+    int playlistId = getPlaylistIdFromName(*pName, parentId);
     int i = 1;
 
     if (playlistId != kInvalidPlaylistId) {
         // Calculate a unique name
-        *pName += "(%1)";
+        QString baseName = *pName + " (%1)";
         while (playlistId != kInvalidPlaylistId) {
             i++;
-            playlistId = getPlaylistIdFromName(pName->arg(i));
+            playlistId = getPlaylistIdFromName(baseName.arg(i), parentId);
         }
-        *pName = pName->arg(i);
+        *pName = baseName.arg(i);
     }
-    return createPlaylist(*pName, hidden);
+    return createPlaylist(*pName, hidden, parentId, isFolder);
 }
 
 QString PlaylistDAO::getPlaylistName(const int playlistId) const {
@@ -185,13 +224,20 @@ QList<TrackId> PlaylistDAO::getAutoDJTrackIds() const {
     return getTrackIds(iAutoDJPlaylistId);
 }
 
-int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
+int PlaylistDAO::getPlaylistIdFromName(const QString& name, const int parentId) const {
     //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
-            "SELECT id FROM Playlists WHERE name = :name"));
+            "SELECT id FROM Playlists WHERE name = :name AND parent_id IS :parent_id"));
     query.bindValue(":name", name);
+
+    if (parentId == kInvalidPlaylistId) {
+        query.bindValue(":parent_id", QVariant(QVariant::Int));
+    } else {
+        query.bindValue(":parent_id", parentId);
+    }
+
     if (query.exec()) {
         if (query.next()) {
             return query.value(query.record().indexOf("id")).toInt();
@@ -604,11 +650,11 @@ QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) co
 
     QSqlQuery query(m_database);
     query.prepare(
-            mixxx::DbConnection::collateLexicographically(
+                mixxx::DbConnection::collateLexicographically(
                     QString("SELECT id, name FROM Playlists "
-                            "WHERE hidden = %1 AND parent_id IS NULL"
-                            "ORDER BY name")
-                            .arg(hidden)));
+                        "WHERE hidden = %1 AND parent_id IS NULL "
+                        "ORDER BY name")
+                        .arg(hidden)));
 
     QList<QPair<int, QString>> playlists;
 
