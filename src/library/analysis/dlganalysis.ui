@@ -139,7 +139,7 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="toolTip">
-          <string>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</string>
+          <string>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Also computes Chromaprint fingerprints if fingerprint analysis is enabled in Preferences. Does not generate waveforms to save disk space.</string>
          </property>
          <property name="text">
           <string>Analyze</string>

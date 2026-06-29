@@ -124,3 +124,8 @@ const ConfigKey mixxx::library::prefs::kSidebarHoverExpandDelayConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("sidebar_hover_expand_delay")};
+
+const ConfigKey mixxx::library::prefs::kFingerprintAnalysisEnabledConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("FingerprintAnalysisEnabled")};
