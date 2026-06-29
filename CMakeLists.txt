@@ -1431,6 +1431,8 @@ add_library(
   src/engine/filters/enginefiltermoogladder4.cpp
   src/engine/positionscratchcontroller.cpp
   src/engine/readaheadmanager.cpp
+  src/engine/audiolatencycalibrator.cpp
+  src/preferences/dialog/dlgprefsoundcalibrate.cpp
   src/engine/sidechain/enginenetworkstream.cpp
   src/engine/sidechain/enginerecord.cpp
   src/engine/sidechain/enginesidechain.cpp
@@ -1932,6 +1934,7 @@ set(
   src/controllers/defs_controllers.h
   src/defs_urls.h
   src/effects/defs.h
+  src/engine/audiolatencycalibrator.h
   src/engine/channelhandle.h
   src/engine/engine.h
   src/errordialoghandler.h

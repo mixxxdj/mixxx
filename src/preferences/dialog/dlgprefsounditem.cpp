@@ -30,6 +30,24 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
             QVariant::fromValue(SoundDeviceId()));
 
+    // Hide remove button for inputs (only outputs support add/remove)
+    if (m_isInput) {
+        removeButton->hide();
+    }
+
+    // Hide calibrator button for inputs
+    if (m_isInput) {
+        calibrateButton->hide();
+    }
+
+    // Hide latency UI for non-Main output types (only Main needs offset calibration)
+    // For now show for all outputs; hide for inputs
+    if (m_isInput) {
+        latencySpinBox->hide();
+        latencyLabel->hide();
+        calibrateButton->hide();
+    }
+
     connect(deviceComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -38,11 +56,53 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSoundItem::channelChanged);
+    connect(removeButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSoundItem::removeButtonClicked);
+    connect(latencySpinBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefSoundItem::latencyOffsetChanged);
+    connect(calibrateButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSoundItem::calibrateButtonClicked);
+
     refreshDevices(devices);
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
+}
 
+void DlgPrefSoundItem::latencyOffsetChanged(double value) {
+    m_latencyOffsetMs = static_cast<int>(value);
+    if (m_emitSettingChanged) {
+        emit selectedDeviceChanged();
+    }
+}
+
+void DlgPrefSoundItem::removeButtonClicked() {
+    emit removeRequested(this);
+}
+
+void DlgPrefSoundItem::calibrateButtonClicked() {
+    emit calibrateRequested(this);
+}
+
+void DlgPrefSoundItem::setLatencyOffsetMs(int ms) {
+    m_latencyOffsetMs = ms;
+    latencySpinBox->blockSignals(true);
+    latencySpinBox->setValue(static_cast<double>(ms));
+    latencySpinBox->blockSignals(false);
+}
+
+void DlgPrefSoundItem::updateRemoveButtonVisibility(bool showRemove) {
+    if (!m_isInput && showRemove) {
+        removeButton->show();
+    } else {
+        removeButton->hide();
+    }
 }
 
 /// Slot called when the parent preferences pane updates its list of sound
@@ -137,12 +197,6 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
     // Go through the list of occupied channel indices and pick the first unoccupied
     for (int i = 0; i < channelComboBox->count(); i++) {
         if (!selectedChannels.contains(i)) {
-            // TODO(xxx) Some ideas to improve auto-select:
-            // * check selected indices and new selection for channel overlap, e.g.
-            //   if the device has 4 channels and ch.1/2 + ch.3/4 are already selected
-            //   don't select next index (ch.1) but fall back to ch.1/2?
-            // * if there are only mono indices selected, try to pick the next mono
-            //   channel index instead of suggesting index 0 (ch.1/)
             channelComboBox->setCurrentIndex(i);
             return;
         }
@@ -152,8 +206,7 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
 /// Slot called to load the respective AudioPath from a SoundManagerConfig
 /// object.
 /// @note If there are multiple AudioPaths matching this instance's type
-///       and index (if applicable), then only the first one is used. A more
-///       advanced preferences pane may one day allow multiples.
+///       and index (if applicable), then only the first one is used.
 void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
         const auto inputDeviceMap = config.getInputs();
@@ -172,6 +225,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
                             it.value().getChannelGroup().getChannelCount());
+                setLatencyOffsetMs(it.value().getLatencyOffsetMs());
                 return;
             }
         }
@@ -180,8 +234,7 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
 }
 
 /// Slot called when the underlying DlgPrefSound wants this Item to
-/// record its respective path with the SoundManagerConfig instance at
-/// config.
+/// record its respective path with the SoundManagerConfig instance at config.
 void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     SoundDevicePointer pDevice = getDevice();
     if (!pDevice) {
@@ -196,17 +249,16 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     int channelBase = channelData.x();
     const auto channelCount = mixxx::audio::ChannelCount(channelData.y());
 
-    // check config for occupied channels of this device
-    // auto-select next free channel (pair)
-
     if (m_isInput) {
         config->addInput(
                 pDevice->getDeviceId(),
                 AudioInput(m_type, channelBase, channelCount, m_index));
     } else {
+        AudioOutput output(m_type, channelBase, channelCount, m_index);
+        output.setLatencyOffsetMs(m_latencyOffsetMs);
         config->addOutput(
                 pDevice->getDeviceId(),
-                AudioOutput(m_type, channelBase, channelCount, m_index));
+                output);
     }
 }
 
@@ -214,6 +266,7 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
 void DlgPrefSoundItem::save() {
     m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
+    m_savedLatencyOffsetMs = m_latencyOffsetMs;
 }
 
 /// Slot called to reload Item with previously saved settings.
@@ -226,6 +279,7 @@ void DlgPrefSoundItem::reload() {
     if (newChannel > -1) {
         channelComboBox->setCurrentIndex(newChannel);
     }
+    setLatencyOffsetMs(m_savedLatencyOffsetMs);
 }
 
 /// Gets the currently selected SoundDevice
@@ -237,7 +291,6 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     }
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (selection == pDevice->getDeviceId()) {
-            //qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId();
             return pDevice;
         }
     }
@@ -248,14 +301,12 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
 
 /// Selects a device in the device combo box given a SoundDevice' internal name,
 /// or selects "None" if the device is nullptr or isn't found.
-/// Called only internally via DlPrefSound::loadPaths()
 void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     int index = deviceComboBox->findData(QVariant::fromValue(device));
     if (index == -1) {
         deviceComboBox->setCurrentIndex(0); // None
         emit selectedDeviceChanged();
         if (device != SoundDeviceId()) {
-            // Notify DlgPrefSound that the device that can't be found.
             emit configuredDeviceNotFound();
         }
     } else {
@@ -269,12 +320,8 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
 /// or selects the first channel if the given channel isn't found.
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
                                   unsigned int channels) {
-    // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
-    // to store the channel info. x is the channel base and y is the channel
-    // count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
     if (index == -1) {
-        // channel(s) not found
         channelComboBox->setCurrentIndex(0); // 1
         emit selectedChannelsChanged();
     } else {

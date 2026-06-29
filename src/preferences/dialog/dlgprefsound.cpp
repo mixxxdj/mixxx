@@ -1,6 +1,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 
-#include <QMessageBox>
+#include <QPoint>
 #include <QtDebug>
 #include <algorithm>
 #include <vector>
@@ -10,6 +10,7 @@
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefsound.cpp"
+#include "preferences/dialog/dlgprefsoundcalibrate.h"
 #include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
@@ -459,6 +460,8 @@ void DlgPrefSound::initializePaths() {
 
     sortFilterAdd(m_pSoundManager->registeredOutputs());
     sortFilterAdd(m_pSoundManager->registeredInputs());
+
+    updateRemoveButtonVisibility();
 }
 
 void DlgPrefSound::addPath(const AudioOutput& output) {
@@ -478,6 +481,8 @@ void DlgPrefSound::addPath(const AudioOutput& output) {
     connectSoundItem(pSoundItem);
 
     setScrollSafeGuardForAllInputWidgets(pSoundItem);
+
+    updateRemoveButtonVisibility();
 }
 
 void DlgPrefSound::addPath(const AudioInput& input) {
@@ -522,6 +527,14 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
     }
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
+    connect(pItem,
+            &DlgPrefSoundItem::removeRequested,
+            this,
+            &DlgPrefSound::removeOutputItem);
+    connect(pItem,
+            &DlgPrefSoundItem::calibrateRequested,
+            this,
+            &DlgPrefSound::calibrateOutputItem);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -1042,6 +1055,63 @@ void DlgPrefSound::addMainOutputClicked() {
     // Register the output with the sound manager first
     // This will trigger the outputRegistered signal which calls addPath
     m_pSoundManager->registerOutput(output, nullptr);
+
+    updateRemoveButtonVisibility();
+}
+
+void DlgPrefSound::removeOutputItem(DlgPrefSoundItem* pItem) {
+    if (!pItem) {
+        return;
+    }
+
+    // Count main outputs - can't remove if only one remains
+    int mainCount = 0;
+    for (const QObject* pObj : outputTab->children()) {
+        const auto* pExisting = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (pExisting && pExisting->type() == AudioPathType::Main) {
+            mainCount++;
+        }
+    }
+    if (mainCount <= 1) {
+        return; // must have at least one main output
+    }
+
+    // Remove from outputTab layout and delete
+    outputTab->layout()->removeWidget(pItem);
+    m_selectedOutputChannelIndices.remove(pItem);
+    pItem->deleteLater();
+
+    updateRemoveButtonVisibility();
+    settingChanged();
+}
+
+void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
+    if (!pItem) {
+        return;
+    }
+
+    // Show a calibration dialog for fine-tuning the latency offset
+    DlgPrefSoundCalibrate calibrateDialog(this, pItem);
+    calibrateDialog.exec();
+}
+
+void DlgPrefSound::updateRemoveButtonVisibility() {
+    int mainCount = 0;
+    for (const QObject* pObj : outputTab->children()) {
+        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (pItem && pItem->type() == AudioPathType::Main && !pItem->isInput()) {
+            mainCount++;
+        }
+    }
+
+    // Show remove button only if there's more than one main output
+    bool showRemove = (mainCount > 1);
+    for (const QObject* pObj : outputTab->children()) {
+        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (pItem && !pItem->isInput()) {
+            pItem->updateRemoveButtonVisibility(showRemove);
+        }
+    }
 }
 
 void DlgPrefSound::mainMonoMixdownChanged(double value) {

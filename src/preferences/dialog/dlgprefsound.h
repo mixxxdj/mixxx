@@ -64,6 +64,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void addMainOutputClicked();
 
   private slots:
+    void removeOutputItem(DlgPrefSoundItem* pItem);
+    void calibrateOutputItem(DlgPrefSoundItem* pItem);
     void addPath(const AudioOutput& output);
     void addPath(const AudioInput& input);
     void loadSettings();
@@ -86,6 +88,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 #endif
 
   private:
+    void updateRemoveButtonVisibility();
     void initializePaths();
     void connectSoundItem(DlgPrefSoundItem *item);
     void loadSettings(const SoundManagerConfig &config);
