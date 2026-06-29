@@ -1183,12 +1183,15 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             if (type != mixxx::CueType::Invalid && position.isValid()) {
                 updateCurrentlyPreviewingIndex(index);
                 m_bypassCueSetByPlay = true;
+                // Seek before activating the saved loop, else quantize might
+                // cause an undesired seek, potentially to/past loop end
+                // which would throw us out of the loop.
+                seekAbs(position);
                 if (type == mixxx::CueType::Loop) {
                     setCurrentSavedLoopControlAndActivate(pControl);
                 } else if (pControl->getStatus() == HotcueControl::Status::Set) {
                     pControl->setStatus(HotcueControl::Status::Active);
                 }
-                seekAbs(position);
                 m_pPlay->set(1.0);
             }
         }
