@@ -1106,8 +1106,8 @@ void DlgPrefSound::updateRemoveButtonVisibility() {
 
     // Show remove button only if there's more than one main output
     bool showRemove = (mainCount > 1);
-    for (const QObject* pObj : outputTab->children()) {
-        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+    for (auto* pObj : outputTab->children()) {
+        auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj);
         if (pItem && !pItem->isInput()) {
             pItem->updateRemoveButtonVisibility(showRemove);
         }

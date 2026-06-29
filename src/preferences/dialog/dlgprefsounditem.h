@@ -28,7 +28,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     unsigned int index() const {
         return m_index;
     };
-    bool isInput() {
+    bool isInput() const {
         return m_isInput;
     }
     const SoundDeviceId getDeviceId() {
