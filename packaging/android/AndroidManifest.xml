@@ -39,11 +39,19 @@
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
-            android:exported="true">
+            android:resizeableActivity="true"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/usb_device_filter" />
 
           <meta-data
                 android:name="android.app.lib_name"
@@ -59,7 +67,8 @@
 
           <meta-data
                 android:name="android.app.arguments"
-                android:value="--new-ui --log-level debug --developer" />
+                android:value="--new-ui --log-level debug --developer --log-max-file-size 10000000000" />
+
         </activity>
 
         <provider
