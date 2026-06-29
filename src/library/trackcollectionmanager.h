@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "library/dao/directorydao.h"
+#include "musicbrainz/acoustidworker.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -46,6 +47,12 @@ class TrackCollectionManager: public QObject,
     const QList<ExternalTrackCollection*>& externalCollections() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_externalCollections;
+    }
+
+    /// Returns the AcoustID background worker, or nullptr in test mode.
+    /// Used by AnalysisFeature to wake the worker after a batch finishes.
+    mixxx::AcoustIdWorker* acoustIdWorker() const {
+        return m_pAcoustIdWorker.get();
     }
 
     TrackPointer getTrackById(
@@ -135,4 +142,6 @@ class TrackCollectionManager: public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+
+    std::unique_ptr<mixxx::AcoustIdWorker> m_pAcoustIdWorker;
 };

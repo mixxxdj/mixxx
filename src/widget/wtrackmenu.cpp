@@ -13,6 +13,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
+#include "library/dao/trackfingerprintdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
@@ -461,6 +462,12 @@ void WTrackMenu::createActions() {
         m_pClearCommentAction = make_parented<QAction>(tr("Comment"), m_pClearMetadataMenu);
         connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
 
+        m_pClearFingerprintAction = make_parented<QAction>(tr("Fingerprint"), m_pClearMetadataMenu);
+        connect(m_pClearFingerprintAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearFingerprint);
+
         m_pClearAllMetadataAction = make_parented<QAction>(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
 
@@ -571,6 +578,12 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotReanalyzeWithVariableTempo);
+
+        m_pAnalyzeFingerprintAction = make_parented<QAction>(tr("Analyze fingerprint"), this);
+        connect(m_pAnalyzeFingerprintAction.get(),
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotAnalyzeFingerprint);
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -736,6 +749,7 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
         m_pClearMetadataMenu->addSeparator();
+        m_pClearMetadataMenu->addAction(m_pClearFingerprintAction);
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
@@ -746,6 +760,8 @@ void WTrackMenu::setupActions() {
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pAnalyzeFingerprintAction.get());
         addMenu(m_pAnalyzeMenu);
     }
 
@@ -2431,6 +2447,51 @@ void WTrackMenu::slotClearAllMetadata() {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+
+    // Also clear fingerprint data — this is not covered by TrackPointerOperation
+    // because clearFingerprintData works on TrackId + DAO directly (no Track object
+    // needed), and mixing the two paradigms inside a TrackPointerOperation would
+    // require injecting the DAO into it unnecessarily.
+    const TrackIdList trackIds = getTrackIds();
+    TrackFingerprintDao& dao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getTrackFingerprintDAO();
+
+    // TODO(XXX): This loop runs after the progress dialog closes. For very large
+    // selections it may block the main thread briefly (DB + file deletions, no
+    // audio). A future PR should fold this into a TrackPointerOperation so it
+    // stays inside the progress modal.
+    for (const TrackId& id : std::as_const(trackIds)) {
+        dao.clearFingerprintData(id);
+    }
+}
+
+void WTrackMenu::slotClearFingerprint() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.empty()) {
+        return;
+    }
+
+    TrackFingerprintDao& dao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getTrackFingerprintDAO();
+
+    // We use a simple loop here rather than TrackPointerOperation because
+    // clearFingerprintData() works directly on TrackId and does not need an
+    // in-memory TrackPointer — it only touches the DB and the .chroma file.
+    // Using applyTrackPointerOperation would load each track into memory
+    // unnecessarily and would not give us access to the DAO.
+    int cleared = 0;
+    for (const TrackId& id : std::as_const(trackIds)) {
+        if (dao.clearFingerprintData(id)) {
+            ++cleared;
+        }
+    }
+
+    // TODO(XXX): Add a progress dialog when
+    // fingerprint clearing moves into a TrackPointerOperation.
+
+    Q_UNUSED(cleared);
 }
 
 namespace {
@@ -3031,4 +3092,14 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         DEBUG_ASSERT(!"unreachable");
         return false;
     }
+}
+
+void WTrackMenu::slotAnalyzeFingerprint() {
+    // Schedule selected tracks for fingerprint-only analysis.
+    // WithFingerprint | LowPriority — does not re-run beats, waveform, or
+    // any other analyzer. Useful for back-filling fingerprints on a library
+    // that was fully analyzed before fingerprinting was enabled.
+    AnalyzerTrack::Options options;
+    options.fingerprintOnly = true;
+    addToAnalysis(options);
 }
