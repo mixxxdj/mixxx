@@ -421,6 +421,8 @@ void WTrackMenu::createActions() {
                         slotUpdateExternalTrackCollection(pExternalTrackCollection);
                     });
         }
+        m_pMarkAsPlayedAction = make_parented<QAction>(tr("Mark as Played"), m_pMetadataMenu);
+        connect(m_pMarkAsPlayedAction, &QAction::triggered, this, &WTrackMenu::slotMarkAsPlayed);
     }
 
     if (featureIsEnabled(Feature::Reset)) {
@@ -720,6 +722,9 @@ void WTrackMenu::setupActions() {
         m_pHotcueMenu->addAction(m_pSortHotcuesByPositionCompressAction);
         m_pHotcueMenu->addAction(m_pSortHotcuesByPositionAction);
         addMenu(m_pHotcueMenu);
+
+        m_pMetadataMenu->addSeparator();
+        m_pMetadataMenu->addAction(m_pMarkAsPlayedAction);
     }
 
     if (featureIsEnabled(Feature::Reset)) {
@@ -2053,6 +2058,24 @@ void WTrackMenu::slotClearPlayCount() {
             tr("Resetting play count of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             ResetPlayCounterTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+void WTrackMenu::slotMarkAsPlayed() {
+    const auto progressLabelText =
+            tr("Marking %n track(s) as played", "", getTrackCount());
+
+    class MarkPlayedTrackPointerOperation : public mixxx::TrackPointerOperation {
+      private:
+        void doApply(
+                const TrackPointer& pTrack) const override {
+            pTrack->updatePlayedStatusKeepPlayCount(true);
+        }
+    };
+
+    const auto trackOperator = MarkPlayedTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
