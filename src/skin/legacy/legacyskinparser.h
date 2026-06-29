@@ -23,6 +23,7 @@ class ControllerManager;
 class SkinContext;
 class WLabel;
 class WStemLabel;
+class WStemControlBorder;
 class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
@@ -79,6 +80,7 @@ class LegacySkinParser : public QObject, public SkinParser {
 
 #ifdef __STEM__
     QWidget* parseStemLabelWidget(const QDomElement& element);
+    QWidget* parseStemControlBorderWidget(const QDomElement& element);
 #endif
     QWidget* parseBpmEditor(const QDomElement& node);
     QWidget* parseText(const QDomElement& node);

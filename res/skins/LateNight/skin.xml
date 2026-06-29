@@ -89,6 +89,11 @@
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
+      <!-- Stems -->
+      <attribute persist="true" config_key="[Channel1],stem_controls_expanded">0</attribute>
+      <attribute persist="true" config_key="[Channel2],stem_controls_expanded">0</attribute>
+      <attribute persist="true" config_key="[Channel3],stem_controls_expanded">0</attribute>
+      <attribute persist="true" config_key="[Channel4],stem_controls_expanded">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
     <!-- Library -->
@@ -410,6 +415,42 @@
         <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
         <SetVariable name="BgColor"><Variable name="BgColorOverview_34"/></SetVariable>
       </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Stem_Expander_1_Singleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/stem/stem_expand_button.xml">
+          <SetVariable name="ChanNum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Stem_Expander_2_Singleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/stem/stem_expand_button.xml">
+          <SetVariable name="ChanNum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Stem_Expander_3_Singleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/stem/stem_expand_button.xml">
+          <SetVariable name="ChanNum">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Stem_Expander_4_Singleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/stem/stem_expand_button.xml">
+          <SetVariable name="ChanNum">4</SetVariable>
+        </Template>
       </Children>
     </SingletonDefinition>
 

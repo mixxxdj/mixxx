@@ -81,6 +81,7 @@
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
 #ifdef __STEM__
+#include "widget/wstemcontrolborder.h"
 #include "widget/wstemlabel.h"
 #endif
 #include "widget/wtime.h"
@@ -595,6 +596,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "StemLabel") {
 #ifdef __STEM__
         result = wrapWidget(parseStemLabelWidget(node));
+    } else if (nodeName == "StemControlBorder") {
+        result = wrapWidget(parseStemControlBorderWidget(node));
 #endif
     } else if (nodeName == "Knob") {
         result = wrapWidget(parseStandardWidget<WKnob>(node));
@@ -1042,6 +1045,41 @@ QWidget* LegacySkinParser::parseStemLabelWidget(const QDomElement& element) {
 
     return pLabel;
 }
+
+QWidget* LegacySkinParser::parseStemControlBorderWidget(const QDomElement& element) {
+    WStemControlBorder* pBorder = new WStemControlBorder(m_pParent);
+
+    pBorder->setup(element, *m_pContext);
+
+    commonWidgetSetup(element, pBorder);
+
+    QString group = lookupNodeGroup(element);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(element,
+                *m_pContext,
+                QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+
+    connect(pPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            pBorder,
+            &WStemControlBorder::slotTrackLoaded);
+
+    connect(pPlayer,
+            &BaseTrackPlayer::trackUnloaded,
+            pBorder,
+            &WStemControlBorder::slotTrackUnloaded);
+
+    TrackPointer pTrack = pPlayer->getLoadedTrack();
+    if (pTrack) {
+        pBorder->slotTrackLoaded(pTrack);
+    }
+
+    return pBorder;
+}
+
 #endif
 
 QWidget* LegacySkinParser::parseBpmEditor(const QDomElement& node) {

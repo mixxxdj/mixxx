@@ -182,6 +182,7 @@ WSearchLineEdit,
 #FxRackFillerL,
 #FxRackFillerR,
 #SamplerExpandBox,
+#StemExpandBox,
 #MicAuxRackFiller {
   border-top: 1px solid #222;
   border-left: 1px solid #222;
@@ -1000,6 +1001,10 @@ WEffectSelector,
   padding: 0px 1px 0px 1px;
 }
 
+#StemExpandBox {
+  padding: 0px 1px 0px 1px;
+}
+
 #SamplerMini {
   padding: 1px;
   }
@@ -1493,6 +1498,7 @@ WPushButton#PlayPreview {
 
 WPushButton#FxExpand,
 WPushButton#SamplerExpand,
+WPushButton#StemExpand,
 #FxAssignButtons WPushButton,
 #VinylControls WPushButton,
 #KeyControls WPushButton,
@@ -1728,6 +1734,7 @@ WPushButton#FxFocusButton[displayValue="0"],
 WPushButton#FxExpand[displayValue="0"],
 WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
+WPushButton#StemExpand[displayValue="0"],
 #BeatgridControlsToggle,
 #StemControlsToggle,
 #SamplerControlsMini WPushButton,
@@ -1957,6 +1964,13 @@ WPushButton#BpmLockToggle[value="1"] {
   image: url(skins:LateNight/classic/buttons/btn__expand_dim.svg) no-repeat left center;
   }
   #SamplerExpand[value="1"] {
+    image: url(skins:LateNight/classic/buttons/btn__collapse_dim.svg) no-repeat left center;
+  }
+
+#StemExpand[value="0"] {
+  image: url(skins:LateNight/classic/buttons/btn__expand_dim.svg) no-repeat left center;
+  }
+  #StemExpand[value="1"] {
     image: url(skins:LateNight/classic/buttons/btn__collapse_dim.svg) no-repeat left center;
   }
 

@@ -761,6 +761,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Expand/Collapse Samplers")
             << tr("Toggle expanded samplers view.");
 
+    add("expand_stem_controls")
+            << tr("Expand/Collapse Stem Controls")
+            << tr("Toggle expanded Stem Controls view.");
+
     // Status displays and toggle buttons
     add("recording_duration")
             << tr("Recording Duration")
