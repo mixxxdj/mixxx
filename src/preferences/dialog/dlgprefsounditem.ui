@@ -2,13 +2,11 @@
 <ui version="4.0">
  <class>DlgPrefSoundItem</class>
  <widget class="QWidget" name="DlgPrefSoundItem">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
+  <property name="minimumSize">
+   <size>
     <width>420</width>
-    <height>26</height>
-   </rect>
+    <height>32</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string extracomment="Constructs new sound items inside the Sound Hardware Preferences, representing an AudioPath and SoundDevice">Sound Item Preferences</string>
@@ -47,10 +45,24 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="deviceComboBox"/>
+    <widget class="QComboBox" name="deviceComboBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>2</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="channelComboBox"/>
+    <widget class="QComboBox" name="channelComboBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QLabel" name="latencyLabel">
