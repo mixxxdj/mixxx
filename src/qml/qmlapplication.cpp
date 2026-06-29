@@ -1,6 +1,7 @@
 #include "qmlapplication.h"
 
 #include <QCoreApplication>
+#include <QMenuBar>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
@@ -11,6 +12,7 @@
 #include <QPushButton>
 #endif
 
+#include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"

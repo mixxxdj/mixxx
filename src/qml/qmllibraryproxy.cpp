@@ -9,6 +9,7 @@
 #include "qml/qmltrackproxy.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "widget/wtrackmenu.h"
 
 namespace mixxx {
 namespace qml {
