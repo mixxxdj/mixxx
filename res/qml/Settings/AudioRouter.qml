@@ -316,8 +316,61 @@ Rectangle {
     function update(api) {
         console.log(`Using sound api: ${api} ${typeof api}`);
         root.inputs = generateDeviceList(api, manager.availableInputDevices(api), root.inputs);
-        root.outputs = generateDeviceList(api, manager.availableOutputDevices(api), root.outputs);
+        let availableOutputs = manager.availableOutputDevices(api);
+        root.outputDevices = {};
+        for (let dev of availableOutputs) {
+            let card = root.friendlyName(api, dev.displayName)[0] || "Unnamed card";
+            root.outputDevices[card] = dev;
+        }
+        root.outputs = generateDeviceList(api, availableOutputs, root.outputs);
         root.loadConnections();
+    }
+    function addOutput(device) {
+        if (!device)
+            return false;
+        let api = Mixxx.SoundManager.getAPI();
+        let [cardName, deviceName] = root.friendlyName(api, device.displayName);
+        cardName = !cardName ? "Unnamed card" : cardName;
+        deviceName = !deviceName ? "Default" : deviceName;
+        if (root.outputs[cardName] && root.outputs[cardName].gateways[deviceName]) {
+            return false;
+        }
+        if (!root.outputs[cardName]) {
+            root.outputs[cardName] = {
+                gateways: {},
+                channelCount: 0
+            };
+        }
+        root.outputs[cardName].gateways[deviceName] = {
+            name: deviceName,
+            node: null,
+            device: device,
+            channels: device.channelCount
+        };
+        root.outputs[cardName].channelCount += device.channelCount;
+        root.hasChanges = true;
+        outputList.model = Object.keys(root.outputs);
+        return true;
+    }
+    function removeOutput(deviceName) {
+        if (!deviceName || !root.outputs[deviceName])
+            return;
+        // Disconnect any active connections on this device's gateways
+        let device = root.outputs[deviceName];
+        for (let address of Object.keys(device.gateways)) {
+            let gateway = device.gateways[address];
+            if (gateway.node) {
+                for (let i = 0; i < gateway.node.count; i++) {
+                    let item = gateway.node.itemAt(i);
+                    if (item && item.edgeItem && item.edgeItem.connection) {
+                        root.entityOnDisconnect(item.edgeItem.connection);
+                    }
+                }
+            }
+        }
+        delete root.outputs[deviceName];
+        root.hasChanges = true;
+        outputList.model = Object.keys(root.outputs);
     }
     function updateHiddenConnectionCount() {
         root.hiddenConnections = 0;
@@ -528,12 +581,43 @@ Rectangle {
             Layout.minimumWidth: 200
             visible: root.mode != AudioRouter.Mode.Legacy
 
-            Text {
+            RowLayout {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.margins: 15
-                color: '#626262'
-                font.pixelSize: 14
-                text: "Outputs"
+
+                Text {
+                    Layout.fillWidth: true
+                    color: '#626262'
+                    font.pixelSize: 14
+                    text: "Outputs"
+                }
+                Button {
+                    id: addOutputButton
+
+                    text: "+"
+                    visible: Object.keys(root.outputDevices).length > 0
+
+                    onClicked: {
+                        let api = Mixxx.SoundManager.getAPI();
+                        let available = manager.availableOutputDevices(api);
+                        for (let dev of available) {
+                            root.addOutput(dev);
+                        }
+                    }
+                }
+                RoundButton {
+                    id: removeOutputButton
+
+                    text: "-"
+                    visible: Object.keys(root.outputs).length > 0
+
+                    onClicked: {
+                        let keys = Object.keys(root.outputs);
+                        if (keys.length > 0) {
+                            root.removeOutput(keys[keys.length - 1]);
+                        }
+                    }
+                }
             }
             ListView {
                 id: outputList
@@ -605,6 +689,22 @@ Rectangle {
                         }
 
                         target: outputList
+                    }
+
+                    RoundButton {
+                        id: removePerDeviceButton
+
+                        text: "-"
+                        width: 24
+                        height: 24
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 4
+                        z: 20
+
+                        onClicked: {
+                            root.removeOutput(modelData);
+                        }
                     }
                 }
             }
