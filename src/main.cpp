@@ -144,6 +144,7 @@ int runMixxx(QGuiApplication* pApp, const CmdlineArgs& args) {
 #endif
 
         pCoreServices->getControllerManager()->setUpDevices();
+        qDebug() << "ControllerManager::setUpDevices() returned";
 
         // If startup produced a fatal error, then don't even start the
         // Qt event loop.

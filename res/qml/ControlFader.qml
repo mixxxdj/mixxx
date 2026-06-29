@@ -10,9 +10,7 @@ Skin.Fader {
 
     value: control.parameter
 
-    onMoved: function(value) {
-        control.parameter = value;
-    }
+    onMoved: control.parameter = value
 
     Mixxx.ControlProxy {
         id: control
@@ -22,9 +20,5 @@ Skin.Fader {
     }
     TapHandler {
         onDoubleTapped: control.reset()
-    }
-    TapHandler {
-        acceptedButtons: Qt.RightButton
-        onTapped: control.reset()
     }
 }

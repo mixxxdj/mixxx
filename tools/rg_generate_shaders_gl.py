@@ -8,6 +8,7 @@ You can use it like this:
         ../src/rendergraph/shaders/generated_shaders_gl.cmake \\
         ../src/rendergraph/shaders/*.{vert,frag}
 """
+
 import argparse
 import logging
 import os

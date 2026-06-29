@@ -9,6 +9,9 @@
             and a Pioneer-like workflow without automation gimmicks.</description>
     <manual />
     <forums />
+    <devices>
+      <product protocol="midi" vendor_id="0x2b73" product_id="0x0045" />
+    </devices>
   </info>
   <controller id="DDJ-FLX4">
     <scriptfiles>

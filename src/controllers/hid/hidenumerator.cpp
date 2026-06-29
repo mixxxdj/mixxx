@@ -148,7 +148,7 @@ QList<Controller*> HidEnumerator::queryDevices() {
     deviceListObject = deviceListObject.callMethod<jobject>("values", "()Ljava/util/Collection;");
     QJniArray<QJniObject> deviceList = QJniArray<QJniObject>(
             deviceListObject.callMethod<jobjectArray>("toArray"));
-    __android_log_print(ANDROID_LOG_VERBOSE,
+    __android_log_print(ANDROID_LOG_INFO,
             "mixxx",
             "found %d USB devices for HID enumerator",
             deviceList.size());
@@ -160,7 +160,8 @@ QList<Controller*> HidEnumerator::queryDevices() {
             auto usbInterface = usbDevice->callMethod<jobject>("getInterface",
                     "(I)Landroid/hardware/usb/UsbInterface;",
                     ifaceIdx);
-            if (usbInterface.callMethod<jint>("getInterfaceClass") == LIBUSB_CLASS_HID) {
+            jint ifaceClass = usbInterface.callMethod<jint>("getInterfaceClass");
+            if (ifaceClass == LIBUSB_CLASS_HID) {
                 auto deviceInfo = mixxx::hid::DeviceInfo(usbDevice, usbInterface);
 
                 if (!recognizeDevice(deviceInfo)) {
@@ -178,6 +179,11 @@ QList<Controller*> HidEnumerator::queryDevices() {
 
                 HidController* newDevice = new HidController(std::move(deviceInfo));
                 m_devices.push_back(newDevice);
+            } else {
+                qInfo() << "Skipping non-HID interface" << ifaceIdx << "class"
+                        << ifaceClass << "on device"
+                        << usbDevice->callMethod<jstring>("getProductName")
+                                   .toString();
             }
         }
     }
