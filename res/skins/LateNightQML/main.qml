@@ -40,6 +40,104 @@ ApplicationWindow {
             value = root.numSamplers;
         }
     }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_waveforms"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_hotcues"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_8_hotcues"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_intro_outro_cues"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_loop_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_beatjump_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_rate_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_rate_control_buttons"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_key_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_eq_knobs"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_eq_kill_buttons"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_xfader"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_main_head_mixer"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "equal_4deck_waveforms"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "timing_shift_buttons"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_superknobs"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_sampler_fx"
+        persist: true
+    }
     Column {
         id: content
 
