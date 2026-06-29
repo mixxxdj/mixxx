@@ -530,8 +530,6 @@ static double quantize_phase(struct timecoder *tc)
 {
     unsigned diff = ((tc->quadrant - tc->last_quadrant) % 4);
     static unsigned long long direction_change_counter = 0;
-    const unsigned int forwards_diff = (tc->def->flags & SWITCH_PHASE) ? 1 : 3;
-    const unsigned int backwards_diff = (tc->def->flags & SWITCH_PHASE) ? 3 : 1;
 
     /* Check for a displacement of four quadrants */
     if (diff == 0 && !tc->direction_changed) {
@@ -539,7 +537,7 @@ static double quantize_phase(struct timecoder *tc)
     }
     
     /* Check for a displacement of three quadrants */
-    if ((tc->forwards && diff == forwards_diff) || (!tc->forwards && diff == backwards_diff)) {
+    if ((tc->forwards && diff == 3) || (!tc->forwards && diff == 1)) {
         return (3.0 / tc->def->resolution) / 4.0;
     }
     
@@ -565,8 +563,15 @@ static void track_quadrature_phase(struct timecoder *tc, bool direction_changed)
 
     bool pos = tc->primary.swapped ? tc->primary.positive : tc->secondary.positive;
     bool add = tc->secondary.swapped ? 0b1 : 0b0;
+    unsigned int quadrant =  (!pos << 1) | add;
+    if (tc->def->flags & SWITCH_PHASE) {
+        // this technically also causes a quarter phase offset (compared to the pitch if
+        // it wasn't offset), but thats currently irrevelant. The phase-preserving
+        // transformation would be `(!quadrant) & 0b11`
+        quadrant ^= 0b11;
+    }
 
-    tc->quadrant = (!pos << 1) | add;
+    tc->quadrant = quadrant;
 }
 
 /*
