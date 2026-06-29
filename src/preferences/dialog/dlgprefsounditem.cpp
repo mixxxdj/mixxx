@@ -44,8 +44,12 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             [this](double value) {
                 m_latencyOffsetMs = static_cast<int>(value);
             });
+    connect(removeButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSoundItem::removeClicked);
     refreshDevices(devices);
-}
+ }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
 
