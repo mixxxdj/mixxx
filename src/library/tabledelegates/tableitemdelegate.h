@@ -23,6 +23,8 @@ class TableItemDelegate : public DefaultDelegate {
             const QColor borderColor,
             const QRect& rect);
 
+    static bool isEndMarkerRow(const QModelIndex& index);
+
   protected:
     static void paintItemBackground(
             QPainter* painter,

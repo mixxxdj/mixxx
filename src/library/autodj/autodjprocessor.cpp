@@ -430,7 +430,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
 
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
-            qDebug() << "Queue is empty now, disable Auto DJ";
+            qDebug() << "Queue is empty or end marker is at the head of the queue, disable Auto DJ";
             m_enabledAutoDJ.setAndConfirm(0.0);
             emitAutoDJStateChanged(m_eState);
             emit autoDJError(ADJ_QUEUE_EMPTY);
@@ -899,8 +899,15 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     }
 
     while (true) {
-        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(
-                m_pAutoDJTableModel->index(0, 0));
+        QModelIndex topIndex = m_pAutoDJTableModel->index(0, 0);
+
+        if (m_pAutoDJTableModel->isEndMarker(topIndex)) {
+            m_pAutoDJTableModel->removeTrack(topIndex);
+            // End marker reached. Return null to stop AutoDJ.
+            return TrackPointer();
+        }
+
+        TrackPointer pNextTrack = m_pAutoDJTableModel->getTrack(topIndex);
 
         if (pNextTrack) {
             if (pNextTrack->getFileInfo().checkFileExists()) {
