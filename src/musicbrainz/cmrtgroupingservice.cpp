@@ -198,8 +198,18 @@ void CmrtGroupingService::handleMatchedCandidate(TrackId newTrackId,
         double newTrackQualityScore) {
     const double offsetSeconds =
             matchResult.offsetItems * FingerprintMatcher::kItemDurationSeconds;
-    const double canonicalQualityScore = scoreTrackQuality(
-            m_fingerprintDao.getTrackQualityInfo(candidate.canonicalTrackId));
+    // Canonical's score was already computed and stored in cmrt_members when
+    // it became canonical (createNewGroup()/replaceCanonical()) -- reuse it
+    // instead of re-deriving it from TrackQualityInfo every time a new track
+    // matches into this group.
+    double canonicalQualityScore =
+            m_fingerprintDao.getMemberQualityScore(candidate.canonicalTrackId);
+    if (canonicalQualityScore < 0.0) {
+        // Shouldn't happen -- every canonical has a member row -- but fall
+        // back rather than let an unscored canonical always lose ties.
+        canonicalQualityScore = scoreTrackQuality(
+                m_fingerprintDao.getTrackQualityInfo(candidate.canonicalTrackId));
+    }
 
     if (sDebugCmrtGroupingService) {
         qDebug() << "CmrtGroupingService -> [handleMatchedCandidate] ->"
