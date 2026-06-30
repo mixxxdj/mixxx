@@ -3,11 +3,13 @@
 #include <QSqlDatabase>
 
 #include "analyzer/analyzerprogress.h"
+#include "library/dao/analysisdao.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
 #include "waveform/overviewtype.h"
+#include "waveform/waveform.h"
 
 class WaveformSignalColors;
 
@@ -27,6 +29,8 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             TrackId trackId,
             const QObject* pRequester,
             QSize desiredSize);
+
+    ConstWaveformPointer fetchWaveformSummary(TrackId trackId);
 
     struct FutureResult {
         FutureResult()
@@ -52,6 +56,8 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
 
     void overviewChanged(TrackId);
 
+    void analyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+
   protected:
     OverviewCache(UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr m_pDbConnectionPool);
@@ -70,6 +76,8 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
   private:
     UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    AnalysisDao m_analysisDao;
 
     QSet<TrackId> m_currentlyLoading;
     QSet<TrackId> m_tracksWithoutOverview;
