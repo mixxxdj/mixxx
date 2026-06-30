@@ -1098,7 +1098,13 @@ void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
     if (!pItem) {
         return;
     }
+    // Disable output tab to prevent touch events from reaching other
+    // output item buttons while the modal dialog is open.
+    // On Android, the QPA can bypass Qt's modal dialog blocking and
+    // deliver touch events to the parent window's widgets.
+    outputTab->setEnabled(false);
     showLatencyCalibrationDialog(this, pItem);
+    outputTab->setEnabled(true);
 }
 
 void DlgPrefSound::updateRemoveButtonVisibility() {
