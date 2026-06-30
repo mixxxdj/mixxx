@@ -287,6 +287,8 @@ Popup {
                                 if (root.activeCategory?.selectedIndex || root.activeCategory?.selectedIndex === 0) {
                                     root.activeCategory.selectedIndex = index;
                                 }
+                                parent.forceActiveFocus();
+                                showCategories.checked = false;
                             }
                         }
                     }
