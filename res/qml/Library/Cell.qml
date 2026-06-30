@@ -6,20 +6,22 @@ import "../Theme"
 Rectangle {
     id: root
 
-    readonly property alias dragImage: dragImageEffect
+    required property bool selected
 
-    Drag.dragType: Drag.Automatic
-    Drag.mimeData: {
-        "text/uri-list": file_url.toString(),
-        "text/plain": file_url.toString()
-    }
-    Drag.supportedActions: Qt.CopyAction
-    anchors.fill: parent
+    property alias track: trackData
+    readonly property alias dragImage: dragImageSource
+
     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
+
+    LibraryComponent.Track {
+        id: trackData
+
+        view: TableView.view
+        anchors.fill: parent
+    }
 
     Item {
         id: dragImageSource
-
         height: 85
         visible: false
         width: 190
@@ -46,20 +48,20 @@ Rectangle {
                     asynchronous: true
                     clip: true
                     fillMode: Image.PreserveAspectFit
-                    source: cover_art
+                    source: cover_art ?? ""
                 }
                 ColumnLayout {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    Text {
-                        color: Theme.textColor
-                        text: track ? track.title : 'Unknown title'
-                    }
-                    Text {
-                        color: Theme.midGray
-                        text: track ? track.artist : 'Unknown artist'
-                    }
+                    // Text {
+                    //     color: Theme.textColor
+                    //     text: track ? track.title : 'Unknown title'
+                    // }
+                    // Text {
+                    //     color: Theme.midGray
+                    //     text: track ? track.artist : 'Unknown artist'
+                    // }
                 }
             }
             Rectangle {
