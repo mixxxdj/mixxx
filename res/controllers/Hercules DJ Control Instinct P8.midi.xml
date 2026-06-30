@@ -1,0 +1,1950 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
+  <info>
+    <name>Hercules DJ Control Instinct P8</name>
+    <author>Piff+Hubert+STi+Piega</author>
+    <description>Hercules DJ Control Instinct P8 - 20180620
+
+Based on:
+- previous work by Piff and Hubert
+- User Manual http://ts.hercules.com/download/sound/manuals/DJC_Instinct_P8/DJControl_InstinctP8_User_Manual_EN.pdf
+- MIDI Mapping Version 1.1 http://ts.hercules.com/download/sound/MIDI_Mapping/DJ_InstinctP8/DJControl_Instinct_P8_MIDI_Command_List.pdf</description>
+    <wiki>https://mixxx.org/wiki/doku.php/hercules_dj_control_instinct_p8</wiki>
+    <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9155</forums>
+  </info>
+  <controller id="DJControlInstinctP8">
+    <scriptfiles>
+      <file functionprefix="DJControlInstinctP8" filename="Hercules-DJ-Control-Instinct-P8-scripts.js" />
+    </scriptfiles>
+    <controls>
+      <!-- Note:
+                - Shift keys mostly affect the corresponding deck only
+                - Browser Knob, Browser Button, and Scratch Button are
+                  affected by any Shift key
+                - Load A/B, -/+, Mode, and the Wheel Buttons are not affected
+                  by any Shift key
+                - LEDs are affected by the corresponding Shift key
+                - Shift keys, Load A/B, -/+, and Mode have no LED
+                - Loop Knobs (and shifted) are affected by corresponding mode
+                - Loop Button (and shifted) are not affected by mode
+
+                - A LED command is documented for Shift B and Mode, though
+                - LED commands for Shift+PFL are not documented
+                - B0 7F 7F (update all controls) reports:
+                    - 46, 44, 48, 56, 40, 42, 50, 52, 54
+                    - 47, 45, 49, 56, 41, 42, 50, 52, 54 (Shift A)
+                    - 46, 44, 48, 56, 40, 43, 51, 53, 55 (Shift B)
+                    - 47, 45, 49, 56, 41, 43, 51, 53, 55 (Shift Both)
+                      MA, LA, HA, XF, VA, VB, BB, MB, HB
+
+                - Wheels seem to have a resolution of 256/turn
+                - Encoder knobs seem to have a resolution of 24/turn. This
+                  causes only small movements of adjustment knobs.
+
+                - Hercules maps Shift+Volume, Shift+Equalizers, and Shift+Play
+                  to decks C and D.
+                  As not all functions can be mapped for 4 decks the few
+                  possible ones are commented out.
+
+                - As soft-takeover does not work well mappings for
+                  Shift+Equalizer and Shift+Volume are commented out.
+            -->
+      <!-- Deck A Play/Cue/Sync -->
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <description>Play/Pause Deck A</description>
+        <status>0x90</status>
+        <midino>0x21</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_cdj</key>
+        <description>Cue Deck A</description>
+        <status>0x90</status>
+        <midino>0x22</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <description>Sync Deck A (1s: Sync Lock)</description>
+        <status>0x90</status>
+        <midino>0x23</midino>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[Channel3]</group><key>play</key><description>Play/Pause Deck C (Shift+Play)</description>
+                <status>0x90</status><midino>0x24</midino></control>-->
+      <control>
+        <group>[Channel1]</group>
+        <key>play_stutter</key>
+        <description>Play/Stutter Deck A (Shift+Play)</description>
+        <status>0x90</status>
+        <midino>0x24</midino>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_gotoandstop</key>
+        <description>Go to Cue and Stop Deck A (Shift+Cue)</description>
+        <status>0x90</status>
+        <midino>0x25</midino>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[Channel1]</group><key>sync_master</key><description>Sync Lock Deck A (Shift+Sync)</description>
+                <status>0x90</status><midino>0x26</midino></control>-->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_set_default</key>
+        <description>Pitch Reset Deck A (Shift+Sync)</description>
+        <status>0x90</status>
+        <midino>0x26</midino>
+      </control>
+      <!-- Browser Button -->
+      <control>
+        <group>[Library]</group>
+        <key>MoveFocusForward</key>
+        <description>Move Focus Forward (Tab) (Browser Button)</description>
+        <status>0x90</status>
+        <midino>0x2B</midino>
+        <options>
+          <selectknob />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveFocusBackward</key>
+        <description>Move Focus Backward (Shift+Tab) (Shift+Browser Button)</description>
+        <status>0x90</status>
+        <midino>0x2C</midino>
+        <options>
+          <selectknob />
+        </options>
+      </control>
+      <!-- Scratch Button -->
+      <control>
+        <group>[Master]</group>
+        <key>DJControlInstinctP8.scratch</key>
+        <description>Scratch</description>
+        <status>0x90</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[AutoDJ]</group>
+        <key>enabled</key>
+        <description>AutoDJ On/Off (Shift+Scratch)</description>
+        <status>0x90</status>
+        <midino>0x2E</midino>
+      </control>
+      <!-- Shift Deck B 0x90 0x2F -->
+      <!-- Mode 0x90 0x30 -->
+      <!-- Mode+Pad selects mode (Loop/FX/Sample/Cue) for the corresponding deck (hardwired, pad messages are suppressed) -->
+      <!-- Deck B Play/Cue/Sync -->
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <description>Play/Pause Deck B</description>
+        <status>0x90</status>
+        <midino>0x51</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_cdj</key>
+        <description>Cue Deck B</description>
+        <status>0x90</status>
+        <midino>0x52</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <description>Sync Deck B (1s: Sync Lock)</description>
+        <status>0x90</status>
+        <midino>0x53</midino>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[Channel4]</group><key>play</key><description>Play/Pause Deck D (Shift+Play)</description>
+                <status>0x90</status><midino>0x54</midino></control>-->
+      <control>
+        <group>[Channel2]</group>
+        <key>play_stutter</key>
+        <description>Play/Stutter Deck B (Shift+Play)</description>
+        <status>0x90</status>
+        <midino>0x54</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_gotoandstop</key>
+        <description>Go to Cue and Stop Deck B (Shift+Cue)</description>
+        <status>0x90</status>
+        <midino>0x55</midino>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[Channel2]</group><key>sync_master</key><description>Sync Lock Deck B (Shift+Sync)</description>
+                <status>0x90</status><midino>0x56</midino></control>-->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_set_default</key>
+        <description>Pitch Reset Deck B (Shift+Sync)</description>
+        <status>0x90</status>
+        <midino>0x56</midino>
+      </control>
+      <!-- Pre-Fader-Listen -->
+      <control>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <description>Pre-Fader-Listen Deck A</description>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <description>Pre-Fader-Listen Deck B</description>
+        <status>0x90</status>
+        <midino>0x5C</midino>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headGain_down</key>
+        <description>Headphone Gain Down</description>
+        <status>0x90</status>
+        <midino>0x5D</midino>
+      </control>
+      <!-- Shift+Minus routes PFL to headphones (hardwired, emits message for Minus, though) -->
+      <control>
+        <group>[Master]</group>
+        <key>headGain_up</key>
+        <description>Headphone Gain Up</description>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+      </control>
+      <!-- Shift+Plus routes Master to headphones (hardwired, emits message for Plus, though) -->
+      <!-- Load A/B -->
+      <control>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
+        <description>Load A</description>
+        <status>0x90</status>
+        <midino>0x5F</midino>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>LoadSelectedTrack</key>
+        <description>Load B</description>
+        <status>0x90</status>
+        <midino>0x60</midino>
+      </control>
+      <!-- Hercules maps these to collapse/expand when in folder list -->
+      <!-- Wheel Button/Touch -->
+      <!-- The touch detection is quite sensitive so that a pitch reset can be issued while trying to adjust the pitch -->
+      <!--            <control><group>[Channel1]</group><key>rate_set_default</key><description>Pitch Reset Deck A (Jog-Wheel Touch)</description>
+                <status>0x90</status><midino>0x61</midino></control>-->
+      <!--            <control><group>[Channel2]</group><key>rate_set_default</key><description>Pitch Reset Deck B (Jog-Wheel Touch)</description>
+                <status>0x90</status><midino>0x62</midino></control>-->
+      <!-- Shift Deck A 0x90 0x63 -->
+      <!-- Pre-Fader-Listen -->
+      <!-- Hercules -->
+      <!--            <control><group>[Channel3]</group><key>pfl</key><description>Pre-Fader-Listen Deck C (Shift+PFL)</description>
+                <status>0x90</status><midino>0x64</midino></control>-->
+      <!--            <control><group>[Channel4]</group><key>pfl</key><description>Pre-Fader-Listen Deck D (Shift+PFL)</description>
+                <status>0x90</status><midino>0x65</midino></control>-->
+      <!-- Wheel Turn (not pressed) -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJControlInstinctP8.jogWheel</key>
+        <description>Pitch Bend Deck A (Jog-Wheel)</description>
+        <status>0xB0</status>
+        <midino>0x30</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>DJControlInstinctP8.pitch</key>
+        <description>Pitch Deck A (Shift+Jog-Wheel)</description>
+        <status>0xB0</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJControlInstinctP8.jogWheel</key>
+        <description>Pitch Bend Deck B (Jog-Wheel)</description>
+        <status>0xB0</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>DJControlInstinctP8.pitch</key>
+        <description>Pitch Deck B (Shift+Jog-Wheel)</description>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Browser Knob -->
+      <control>
+        <group>[Library]</group>
+        <key>MoveVertical</key>
+        <description>Move Vertical (Browser Knob)</description>
+        <status>0xB0</status>
+        <midino>0x38</midino>
+        <options>
+          <selectknob />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <description>Master Gain (Shift+Browser Knob)</description>
+        <status>0xB0</status>
+        <midino>0x39</midino>
+        <options>
+          <diff />
+        </options>
+      </control>
+      <!-- Alternative -->
+      <!--            <control><group>[Library]</group><key>MoveHorizontal</key><description>Move Horizontal (Shift+Knob)</description>
+                <status>0xB0</status><midino>0x39</midino><options><selectknob/></options></control>-->
+      <!-- Mixer -->
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <description>Volume Deck A</description>
+        <status>0xB0</status>
+        <midino>0x40</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[Channel3]</group><key>volume</key><description>Volume Deck C (Shift+Volume)</description>
+                <status>0xB0</status><midino>0x41</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <description>Volume Deck B</description>
+        <status>0xB0</status>
+        <midino>0x42</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[Channel4]</group><key>volume</key><description>Volume Deck D (Shift+Volume)</description>
+                <status>0xB0</status><midino>0x43</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <description>Equalizer Low Deck A</description>
+        <status>0xB0</status>
+        <midino>0x44</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[EqualizerRack1_[Channel3]_Effect1]</group><key>parameter1</key><description>Equalizer Low Deck C (Shift+Low)</description>
+                <status>0xB0</status><midino>0x45</midino><options><soft-takeover/></options></control>-->
+      <!-- Alternative -->
+      <!--            <control><group>[Master]</group><key>balance</key><description>Master Balance (Shift+Low Deck A)</description>
+                <status>0xB0</status><midino>0x45</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <description>Equalizer Mid Deck A</description>
+        <status>0xB0</status>
+        <midino>0x46</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[EqualizerRack1_[Channel3]_Effect1]</group><key>parameter2</key><description>Equalizer Mid Deck C (Shift+Mid)</description>
+                <status>0xB0</status><midino>0x47</midino><options><soft-takeover/></options></control>-->
+      <!-- Alternative -->
+      <!--            <control><group>[Master]</group><key>gain</key><description>Master Gain (Shift+Mid Deck A)</description>
+                <status>0xB0</status><midino>0x47</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <description>Equalizer High Deck A</description>
+        <status>0xB0</status>
+        <midino>0x48</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[EqualizerRack1_[Channel3]_Effect1]</group><key>parameter3</key><description>Equalizer High Deck A (Shift+High)</description>
+                <status>0xB0</status><midino>0x49</midino><options><soft-takeover/></options></control>-->
+      <!-- Alternative -->
+      <!--            <control><group>[Channel1]</group><key>pregain</key><description>Pre-Fader Gain Deck A (Shift+High Deck A)</description>
+                <status>0xB0</status><midino>0x49</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <description>Equalizer Low Deck B</description>
+        <status>0xB0</status>
+        <midino>0x50</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[EqualizerRack1_[Channel4]_Effect1]</group><key>parameter1</key><description>Equalizer Low Deck D (Shift+Low)</description>
+                <status>0xB0</status><midino>0x51</midino><options><soft-takeover/></options></control>-->
+      <!-- Alternative -->
+      <!--            <control><group>[Master]</group><key>headMix</key><description>Headphone Cue/Main Mix (Shift+Low Deck B)</description>
+                <status>0xB0</status><midino>0x51</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <description>Equalizer Mid Deck B</description>
+        <status>0xB0</status>
+        <midino>0x52</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[EqualizerRack1_[Channel4]_Effect1]</group><key>parameter2</key><description>Equalizer Mid Deck D (Shift+Mid)</description>
+                <status>0xB0</status><midino>0x53</midino><options><soft-takeover/></options></control>-->
+      <!-- Alternative -->
+      <!--            <control><group>[Master]</group><key>headGain</key><description>Headphone Gain (Shift+Mid Deck B)</description>
+                <status>0xB0</status><midino>0x53</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <description>Equalizer High Deck B</description>
+        <status>0xB0</status>
+        <midino>0x54</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Hercules -->
+      <!--            <control><group>[EqualizerRack1_[Channel4]_Effect1]</group><key>parameter3</key><description>Equalizer High Deck D (Shift+High)</description>
+                <status>0xB0</status><midino>0x55</midino><options><soft-takeover/></options></control>-->
+      <!-- Alternative -->
+      <!--            <control><group>[Channel2]</group><key>pregain</key><description>Pre-Fader Gain Deck B (Shift+High Deck B)</description>
+                <status>0xB0</status><midino>0x55</midino><options><soft-takeover/></options></control>-->
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <description>Crossfader</description>
+        <status>0xB0</status>
+        <midino>0x56</midino>
+        <options>
+          <soft-takeover />
+        </options>
+      </control>
+      <!-- Deck A Loops -->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJControlInstinctP8.loopHalveDouble</key>
+        <description>Loop Halve/Double (Loop Knob)</description>
+        <status>0xB0</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Hercules: adjust filter frequency -->
+      <!--            <control><group>[Channel1]</group><key>???</key><description>Adjust Filter Frequency (Shift+Loop Knob)</description>
+                <status>0xB0</status><midino>0x35</midino><options><script-binding/></options></control>-->
+      <control>
+        <group>[Channel1]</group>
+        <key>DJControlInstinctP8.LoopMove</key>
+        <description>Loop Move (Shift+Loop Knob)</description>
+        <status>0xB0</status>
+        <midino>0x35</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>reloop_toggle</key>
+        <description>Loop Toggle (Loop Button)</description>
+        <status>0x90</status>
+        <midino>0x57</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Hercules: toggle filter -->
+      <!-- Shift+Loop Button 0x90 059 -->
+      <control>
+        <group>[Channel1]</group>
+        <key>beatloop_1_toggle</key>
+        <description>Loop 1 Beat (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatloop_2_toggle</key>
+        <description>Loop 2 Beats (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatloop_4_toggle</key>
+        <description>Loop 4 Beats (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatloop_8_toggle</key>
+        <description>Loop 8 Beats (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_in</key>
+        <description>Loop In (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_out</key>
+        <description>Loop Out (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x1E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_halve</key>
+        <description>Loop Halve (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_double</key>
+        <description>Loop Double (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Deck B Loops -->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJControlInstinctP8.loopHalveDouble</key>
+        <description>Loop Halve/Double (Loop Knob)</description>
+        <status>0xB0</status>
+        <midino>0x36</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Hercules: adjust filter frequency -->
+      <!--            <control><group>[Channel2]</group><key>???</key><description>Adjust Filter Frequency (Shift+Loop Knob)</description>
+                <status>0xB0</status><midino>0x37</midino><options><script-binding/></options></control>-->
+      <control>
+        <group>[Channel2]</group>
+        <key>DJControlInstinctP8.LoopMove</key>
+        <description>Loop Move (Shift+Loop Knob)</description>
+        <status>0xB0</status>
+        <midino>0x37</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>reloop_toggle</key>
+        <description>Loop Toggle (Loop Button)</description>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Hercules: toggle filter -->
+      <!-- Shift+Loop Button 0x90 0x5A -->
+      <control>
+        <group>[Channel2]</group>
+        <key>beatloop_1_toggle</key>
+        <description>Loop 1 Beat (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x49</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatloop_2_toggle</key>
+        <description>Loop 2 Beats (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatloop_4_toggle</key>
+        <description>Loop 4 Beats (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatloop_8_toggle</key>
+        <description>Loop 8 Beats (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_in</key>
+        <description>Loop In (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_out</key>
+        <description>Loop Out (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x4E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_halve</key>
+        <description>Loop Halve (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x4F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_double</key>
+        <description>Loop Double (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x50</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Deck A FX -->
+      <!-- Hercules functionality requires scripting -->
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>super1</key>
+        <description>FX Super (Knob)</description>
+        <status>0xB0</status>
+        <midino>0x57</midino>
+        <options>
+          <diff />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>mix</key>
+        <description>FX Mix (Shift+Knob)</description>
+        <status>0xB0</status>
+        <midino>0x58</midino>
+        <options>
+          <diff />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <description>FX 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <description>FX 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <description>FX 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <description>FXU 1 on Deck A (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Deck A FX + Shift for AutoDJ -->
+      <control>
+        <group>[AutoDJ]</group>
+        <key>fade_now</key>
+        <description>AutoDJ Fade Now (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[AutoDJ]</group>
+        <key>skip_next</key>
+        <description>AutoDJ Skip Next (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Playlist]</group>
+        <key>AutoDjAddBottom</key>
+        <description>AutoDJ Add Current Track (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- 0x90 0x10 Shift+Pad 4 -->
+      <!-- Deck B FX -->
+      <!-- Hercules functionality requires scripting -->
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>super1</key>
+        <description>FX Super (Knob)</description>
+        <status>0xB0</status>
+        <midino>0x63</midino>
+        <options>
+          <diff />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>mix</key>
+        <description>FX Mix (Shift+Knob)</description>
+        <status>0xB0</status>
+        <midino>0x64</midino>
+        <options>
+          <diff />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <description>FX 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x39</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <description>FX 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x3A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <description>FX 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x3B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <description>FXU 2 on Deck B (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x3C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Deck B FX + Shift for Preview -->
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>LoadSelectedTrackAndPlay</key>
+        <description>Preview 1 Load and Play (FX Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x3D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>play</key>
+        <description>Preview 1 Play (FX Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x3E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>back</key>
+        <description>Preview 1 REW (FX Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x3F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>fwd</key>
+        <description>Preview 1 FF (FX Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Samples -->
+      <control>
+        <group>[Sampler1]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler1]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler1]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x41</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x42</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x43</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>cue_gotoandplay</key>
+        <description>(Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x44</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler1]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler2]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler3]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Sampler4]</group>
+        <key>cue_gotoandstop</key>
+        <description>(Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Deck A Hotcues -->
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_activate</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_activate</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_3_activate</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_4_activate</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_clear</key>
+        <description>Clear Hotcue 1 (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_clear</key>
+        <description>Clear Hotcue 2 (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_3_clear</key>
+        <description>Clear Hotcue 3 (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_4_clear</key>
+        <description>Clear Hotcue 4 (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- Deck B Hotcues -->
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x31</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x32</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_activate</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_activate</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_clear</key>
+        <description>Clear Hotcue 1 (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_clear</key>
+        <description>Clear Hotcue 2 (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x36</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_clear</key>
+        <description>Clear Hotcue 3 (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x37</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_clear</key>
+        <description>Clear Hotcue 4 (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x38</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+    </controls>
+    <outputs>
+      <!-- Deck A Play/Cue/Sync -->
+      <output>
+        <group>[Channel1]</group>
+        <key>beat_active</key>
+        <description>Play Deck A (Play)</description>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <description>Cue Deck A (Cue)</description>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <description>Sync Deck A (Sync)</description>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <description>Play Deck A (Shift+Play)</description>
+        <status>0x90</status>
+        <midino>0x24</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <description>Cue Deck A (Shift+Cue)</description>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <description>Sync Deck A (Shift+Sync)</description>
+        <status>0x90</status>
+        <midino>0x26</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Scratch Button -->
+      <!-- 0x90 0x2D Scratch, signaled by script -->
+      <output>
+        <group>[AutoDJ]</group>
+        <key>enabled</key>
+        <description>AutoDJ (Shift+Scratch)</description>
+        <status>0x90</status>
+        <midino>0x2E</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Deck B Play/Cue/Sync -->
+      <output>
+        <group>[Channel2]</group>
+        <key>beat_active</key>
+        <description>Play Deck B (Play)</description>
+        <status>0x90</status>
+        <midino>0x51</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <description>Cue Deck B (Cue)</description>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <description>Sync Deck B (Sync)</description>
+        <status>0x90</status>
+        <midino>0x53</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <description>Play Deck B (Shift+Play)</description>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <description>Cue Deck B (Shift+Cue)</description>
+        <status>0x90</status>
+        <midino>0x55</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <description>Sync Deck B (Shift+Sync)</description>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Pre-Fader-Listen -->
+      <output>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <description>Pre-Fader-Listen Deck A (PFL)</description>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <description>Pre-Fader-Listen Deck B (PFL)</description>
+        <status>0x90</status>
+        <midino>0x5C</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Hercules -->
+      <!--            <output><group>[Channel3]</group><key>pfl</key><description>Pre-Fader-Listen Deck C (Shift+PFL)</description>
+                <status>0x90</status><midino>0x64</midino><minimum>0.5</minimum></output>-->
+      <!--            <output><group>[Channel4]</group><key>pfl</key><description>Pre-Fader-Listen Deck D (Shift+PFL)</description>
+                <status>0x90</status><midino>0x65</midino><minimum>0.5</minimum></output>-->
+      <!-- Deck A Loops -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <output>
+        <group>[Channel1]</group>
+        <key>beatloop_1_enabled</key>
+        <description>Loop 1 Beat (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>beatloop_2_enabled</key>
+        <description>Loop 2 Beat (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>beatloop_4_enabled</key>
+        <description>Loop 4 Beat (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>beatloop_8_enabled</key>
+        <description>Loop 8 Beat (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <description>Loop In (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x1D</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <description>Loop Out (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x1E</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+		<!--<output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <description>Loop ??? (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>loop_enabled</key>
+        <description>Loop ??? (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>-->
+      <!-- Deck B Loops -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <output>
+        <group>[Channel2]</group>
+        <key>beatloop_1_enabled</key>
+        <description>Loop 1 Beat (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x49</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beatloop_2_enabled</key>
+        <description>Loop 2 Beat (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beatloop_4_enabled</key>
+        <description>Loop 4 Beat (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beatloop_8_enabled</key>
+        <description>Loop 8 Beat (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <description>Loop In (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <description>Loop Out (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x4E</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+		<!--<output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <description>Loop ??? (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x4F</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>loop_enabled</key>
+        <description>Loop ??? (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x50</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>-->
+      <!-- Deck A FX -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <!-- blue = 0x7D -->
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <description>FX 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <description>FX 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <description>FX 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <description>FXU 1 on Deck A (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>enabled</key>
+        <description>FX 1 (Shift + Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect2]</group>
+        <key>enabled</key>
+        <description>FX 2 (Shift + Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1_Effect3]</group>
+        <key>enabled</key>
+        <description>FX 3 (Shift + Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>group_[Channel1]_enable</key>
+        <description>FXU 1 on Deck A (Shift + Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Deck B FX -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <!-- blue = 0x7D -->
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <description>FX 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x39</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <description>FX 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x3A</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <description>FX 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x3B</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <description>FXU 2 on Deck B (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x3C</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>enabled</key>
+        <description>FX 1 (Shift + Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x3D</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect2]</group>
+        <key>enabled</key>
+        <description>FX 2 (Shift + Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x3E</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2_Effect3]</group>
+        <key>enabled</key>
+        <description>FX 3 (Shift + Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x3F</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>group_[Channel2]_enable</key>
+        <description>FXU 2 on Deck B (Shift + Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <on>0x7D</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Deck A Samples -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <!-- Hercules: loaded = red, playing = purple -->
+      <!-- just mapping the play_indicator to purple -->
+      <output>
+        <group>[Sampler1]</group>
+        <key>play_indicator</key>
+        <description>(Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler2]</group>
+        <key>play_indicator</key>
+        <description>(Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler3]</group>
+        <key>play_indicator</key>
+        <description>(Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler4]</group>
+        <key>play_indicator</key>
+        <description>(Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler1]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler2]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler3]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler4]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Deck B Samples -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <!-- Hercules: loaded = red, playing = purple -->
+      <!-- just mapping the play_indicator to purple -->
+      <output>
+        <group>[Sampler1]</group>
+        <key>play_indicator</key>
+        <description>(Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x41</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler2]</group>
+        <key>play_indicator</key>
+        <description>(Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x42</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler3]</group>
+        <key>play_indicator</key>
+        <description>(Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x43</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler4]</group>
+        <key>play_indicator</key>
+        <description>(Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x44</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler1]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler2]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler3]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Sampler4]</group>
+        <key>play_indicator</key>
+        <description>(Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <on>0x7F</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Deck A Hotcues -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <!-- Deck B Hotcues -->
+      <!-- blue = 0x7D -->
+      <!-- red = 0x7E -->
+      <!-- purple = 0x7F -->
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x31</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x32</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_1_enabled</key>
+        <description>Hotcue 1 (Shift+Pad 1)</description>
+        <status>0x90</status>
+        <midino>0x35</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_2_enabled</key>
+        <description>Hotcue 2 (Shift+Pad 2)</description>
+        <status>0x90</status>
+        <midino>0x36</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_3_enabled</key>
+        <description>Hotcue 3 (Shift+Pad 3)</description>
+        <status>0x90</status>
+        <midino>0x37</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>hotcue_4_enabled</key>
+        <description>Hotcue 4 (Shift+Pad 4)</description>
+        <status>0x90</status>
+        <midino>0x38</midino>
+        <on>0x7E</on>
+        <minimum>0.5</minimum>
+      </output>
+    </outputs>
+  </controller>
+</MixxxControllerPreset>
