@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSlider>
+#include <QTouchEvent>
 #include <QVBoxLayout>
 
 #include "util/math.h"
@@ -204,5 +205,42 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
 
 void showLatencyCalibrationDialog(QWidget* parent, DlgPrefSoundItem* item) {
     DlgPrefSoundCalibrate dialog(parent, item);
+    // Install a global event filter during QDialog::exec() to block all
+    // mouse/touch events except those targeting the calibration dialog.
+    // On Android, the QPA can deliver touch events to parent-window widgets
+    // behind modal dialogs because they're queued before the dialog opens.
+    // The filter intercepts QApplication-level notify() and swallows any
+    // mouse/touch event whose target is NOT the dialog or its children.
+    class TouchBlockFilter : public QObject {
+    public:
+        explicit TouchBlockFilter(DlgPrefSoundCalibrate* pDialog)
+                : m_pDialog(pDialog) {}
+    protected:
+        bool eventFilter(QObject* pObj, QEvent* pEvent) override {
+            // Block mouse/touch events for all targets EXCEPT the dialog
+            switch (pEvent->type()) {
+            case QEvent::MouseButtonPress:
+            case QEvent::MouseButtonRelease:
+            case QEvent::MouseButtonDblClick:
+            case QEvent::TouchBegin:
+            case QEvent::TouchUpdate:
+            case QEvent::TouchEnd:
+                // Allow events targeting the dialog or its children
+                for (QObject* p = pObj; p; p = p->parent()) {
+                    if (p == m_pDialog) {
+                        return false;
+                    }
+                }
+                return true; // block
+            default:
+                return false;
+            }
+        }
+    private:
+        DlgPrefSoundCalibrate* m_pDialog;
+    };
+    TouchBlockFilter blocker(&dialog);
+    qApp->installEventFilter(&blocker);
     dialog.exec();
+    qApp->removeEventFilter(&blocker);
 }
