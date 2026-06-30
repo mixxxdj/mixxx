@@ -58,7 +58,8 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     connect(removeButton,
             &QPushButton::clicked,
             this,
-            &DlgPrefSoundItem::removeButtonClicked);
+            &DlgPrefSoundItem::removeButtonClicked,
+            Qt::QueuedConnection);
     connect(latencySpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -66,7 +67,8 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     connect(calibrateButton,
             &QPushButton::clicked,
             this,
-            &DlgPrefSoundItem::calibrateButtonClicked);
+            &DlgPrefSoundItem::calibrateButtonClicked,
+            Qt::QueuedConnection);
 
     refreshDevices(devices);
 }
