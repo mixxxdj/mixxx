@@ -90,21 +90,21 @@ Rectangle {
                             anchors.fill: parent
                             color: depth == 0 ? Theme.midGray2 : 'transparent'
 
-                            MouseArea {
-                                id: rowMouseArea
+                            TapHandler {
+                                id: rowTapHandler
 
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                anchors.fill: parent
-                                hoverEnabled: true
 
-                                onClicked: event => {
+                                onTapped: (eventPoint, button) => {
                                     treeView.selectionModel.select(treeView.selectionModel.model.index(row, 0), ItemSelectionModel.Rows | ItemSelectionModel.Select | ItemSelectionModel.Clear | ItemSelectionModel.Current);
                                     treeView.model.activate(index);
                                     if (isTreeNode && hasChildren) {
                                         treeView.toggleExpanded(row);
                                     }
-                                    event.accepted = true;
                                 }
+                            }
+                            HoverHandler {
+                                id: rowHoverHandler
                             }
                             Rectangle {
                                 anchors.bottom: parent.bottom
@@ -158,7 +158,7 @@ Rectangle {
                                     id: newItem
 
                                     height: parent.height
-                                    visible: rowMouseArea.containsMouse && isTreeNode && hasChildren
+                                    visible: rowHoverHandler.hovered && isTreeNode && hasChildren
 
                                     anchors {
                                         right: parent.right
