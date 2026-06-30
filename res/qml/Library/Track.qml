@@ -7,12 +7,14 @@ import "../Theme"
 Item {
     id: root
 
+    readonly property var library: Mixxx.Library
+
     required property var capabilities
     required property var view
-    property var _lazyTrack: null
-    // property alias drag: dragHandler
-    readonly property var library: Mixxx.Library
+
     property alias tap: tapHandler
+
+    property var _lazyTrack: null
 
     function hasCapabilities(caps) {
         return (root.capabilities & caps) == caps;

@@ -13,7 +13,7 @@ Rectangle {
     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
     LibraryComponent.Track {
-        id: track
+        id: trackData
 
         view: TableView.view
         anchors.fill: parent

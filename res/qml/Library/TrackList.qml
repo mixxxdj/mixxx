@@ -43,7 +43,7 @@ Rectangle {
         id: columnSelectionMenu
 
         Instantiator {
-            model: root.model.defaultColumns
+            model: root.sidebar.tracklist.columns
 
             delegate: Action {
                 property var data: view.getColumn(index)
@@ -100,7 +100,6 @@ Rectangle {
         anchors.top: parent.top
         syncView: view
         movableColumns: true
-        flickableDirection: Flickable.VerticalFlick
         clip: true
 
         delegate: Item {
@@ -341,7 +340,7 @@ Rectangle {
             }
             DelegateChoice {
                 Cell {
-                    capabilities: root.sidebar.tracklist ? root.sidebar.tracklist.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
+                    track.capabilities: root.sidebar.tracklist ? root.sidebar.tracklist.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
                     // required property bool selected
 
                     // readonly property alias dragImage: dragImageSource
@@ -353,7 +352,7 @@ Rectangle {
                     // }
                     // Drag.supportedActions: Qt.CopyAction
                     // anchors.fill: parent
-                    // color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
+                    color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
 
                     Text {
                         // required property string display
