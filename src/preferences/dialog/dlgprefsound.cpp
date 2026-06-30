@@ -247,7 +247,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             [this](const AudioOutput& output, AudioSource* source) {
                 Q_UNUSED(source);
                 addPath(output);
-                loadSettings();
             });
 
     connect(m_pSoundManager.get(),
@@ -256,7 +255,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             [this](const AudioInput& input, AudioDestination* dest) {
                 Q_UNUSED(dest);
                 addPath(input);
-                loadSettings();
             });
 
     m_pAudioLatencyOverloadCount = make_parented<ControlProxy>(
@@ -1088,6 +1086,8 @@ void DlgPrefSound::removeOutputItem(DlgPrefSoundItem* pItem) {
     // Remove from outputTab layout and delete
     outputTab->layout()->removeWidget(pItem);
     m_selectedOutputChannelIndices.remove(pItem);
+    pItem->hide();
+    pItem->disconnect();
     pItem->deleteLater();
 
     updateRemoveButtonVisibility();
