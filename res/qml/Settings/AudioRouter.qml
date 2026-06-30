@@ -598,10 +598,43 @@ Rectangle {
                     visible: Object.keys(root.outputDevices).length > 0
 
                     onClicked: {
+                        // Add a new stereo output gateway on devices that have
+                        // room. Skips devices already fully allocated.
+                        // Each click adds the next available gateway (#2, #3...).
                         let api = Mixxx.SoundManager.getAPI();
                         let available = manager.availableOutputDevices(api);
+                        let added = false;
                         for (let dev of available) {
-                            root.addOutput(dev);
+                            let [cardName, deviceName] = root.friendlyName(api, dev.displayName);
+                            cardName = !cardName ? "Unnamed card" : cardName;
+                            deviceName = !deviceName ? "Default" : deviceName;
+                            let existing = root.outputs[cardName];
+                            if (!existing) {
+                                continue; // should not happen after update()
+                            }
+                            // Find the next free gateway name
+                            let newName = deviceName;
+                            let suffix = 2;
+                            while (existing.gateways[newName]) {
+                                newName = `${deviceName} #${suffix}`;
+                                suffix++;
+                            }
+                            // Check if device has enough channels for another stereo pair
+                            if (existing.channelCount + 2 > dev.channelCount) {
+                                continue;
+                            }
+                            existing.gateways[newName] = {
+                                name: newName,
+                                node: null,
+                                device: dev,
+                                channels: dev.channelCount
+                            };
+                            existing.channelCount += 2;
+                            added = true;
+                        }
+                        if (added) {
+                            root.hasChanges = true;
+                            outputList.model = Object.keys(root.outputs);
                         }
                     }
                 }
