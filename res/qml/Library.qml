@@ -113,10 +113,12 @@ Item {
         }
         LibraryComponent.TrackList {
             SplitView.fillHeight: true
+            SplitView.minimumHeight: 200
+            SplitView.preferredWidth: root.width * 0.75
 
             // FIXME: this is necessary to prevent the header label to render outside of the table when horizontally scrolling: https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-3311914346
             clip: true
-            model: root.sidebar.tracklist
+            model: librarySources
         }
     }
 }
