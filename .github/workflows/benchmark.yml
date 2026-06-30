@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 24.04
+          - name: Ubuntu 26.04
             os: ubuntu-26.04
             cmake_args: >-
               -DQT6=ON
@@ -121,7 +121,7 @@ jobs:
 
       - name: "[macOS] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.2
-        # Ubuntu 24.04 should use the CMake version from the repos.
+        # Ubuntu 26.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
           # This should always match the minimum required version in
@@ -130,7 +130,7 @@ jobs:
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.2
-        # Ubuntu 24.04 should use the CMake version from the repos.
+        # Ubuntu 26.04 should use the CMake version from the repos.
         # On windows-11-arm this action installs the x64 version which has unwanted side effects
         if: matrix.os == 'windows-2022'
         with:

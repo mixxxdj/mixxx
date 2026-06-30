@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v6
       - name: Add clazy PPA
         if: matrix.name == 'clazy'
-        # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 24.04
+        # Ubuntu2404 comes with v1.11, which is too old for the Qt6.4 shipped with Ubuntu 26.04
         run: |
           sudo add-apt-repository ppa:daschuer/clazy
           sudo apt update
