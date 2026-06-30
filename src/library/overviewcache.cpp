@@ -2,10 +2,12 @@
 
 #include <QFutureWatcher>
 #include <QPixmapCache>
+#include <QPointer>
 #include <QSqlDatabase>
 #include <QtConcurrentRun>
 
 #include "library/dao/analysisdao.h"
+#include "library/dao/trackdao.h"
 #include "moc_overviewcache.cpp"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
@@ -40,8 +42,12 @@ OverviewCache::OverviewCache(UserSettingsPointer pConfig,
           m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 }
 
-void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
-    if (analyzerProgress < 1.0) {
+void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress progress) {
+    // Always forward the raw progress so listeners that need to draw
+    // the partial waveform during analysis (e.g. QmlWaveformOverview)
+    // can repaint on every tick.
+    emit analyzerProgress(trackId, progress);
+    if (progress < 1.0) {
         return;
     }
     m_tracksWithoutOverview.remove(trackId);
@@ -238,6 +244,21 @@ void OverviewCache::requestWaveformSummary(TrackId trackId, const QObject* pRequ
 
     m_currentlyLoadingWaveform.insert(trackId);
 
+    // The async load carries `pRequester` verbatim and will eventually
+    // dispatch the result back to it. If `pRequester` is destroyed while
+    // the load is still in flight, its `slotWaveformSummaryReady` is
+    // auto-disconnected by Qt, no one adopts the loaded waveform, and
+    // `m_currentlyLoadingWaveform` would only be cleared when the
+    // background job finishes — meanwhile other requesters interested in
+    // the same track are silently blocked. Drop the pending entry as
+    // soon as the requester goes away so a new load can be started by
+    // any other listener still alive.
+    if (pRequester) {
+        QObject::connect(pRequester, &QObject::destroyed, this, [this, trackId] {
+            m_currentlyLoadingWaveform.remove(trackId);
+        });
+    }
+
     QFutureWatcher<FutureWaveformResult>* watcher =
             new QFutureWatcher<FutureWaveformResult>(this);
     QFuture<FutureWaveformResult> future = QtConcurrent::run(
@@ -251,6 +272,35 @@ void OverviewCache::requestWaveformSummary(TrackId trackId, const QObject* pRequ
             this,
             &OverviewCache::waveformSummaryPrepared);
     watcher->setFuture(future);
+}
+
+void OverviewCache::requestWaveformSummary(
+        const QString& trackLocation, const QObject* pRequester) {
+    if (trackLocation.isEmpty()) {
+        return;
+    }
+    if (!m_pTrackDAO) {
+        // Without a TrackDAO we cannot translate a file location into
+        // a TrackId. The TrackId-based overload is the only available
+        // path in that case.
+        return;
+    }
+
+    // Resolve the location into a TrackId on the GUI thread. The
+    // query is a single indexed lookup on `track_locations.location`,
+    // which is essentially instantaneous, so doing it on the GUI
+    // thread is preferable to introducing an extra round-trip through
+    // the worker pool and lets us reuse the existing TrackId-based
+    // dedup logic and async machinery. `TrackDAO` is owned by
+    // `TrackCollection` and lives on the GUI thread, so its
+    // pre-initialised `QSqlDatabase` connection is valid here.
+    const TrackId trackId = m_pTrackDAO->getTrackIdByLocation(trackLocation);
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    // Delegate to the existing TrackId-based load path.
+    requestWaveformSummary(trackId, pRequester);
 }
 
 // static
@@ -276,9 +326,18 @@ OverviewCache::FutureWaveformResult OverviewCache::prepareWaveformSummary(
             analysisDao.getAnalysesForTrackByType(
                     trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
 
-    if (!analyses.isEmpty()) {
-        result.pWaveform = ConstWaveformPointer(
-                WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
+    // Only load analyses whose version is compatible with the current
+    // format, mirroring the logic in `AnalyzerWaveform::shouldAnalyze`.
+    // Loading an incompatible (e.g. `VC_REMOVE`) waveform would yield a
+    // `Waveform` with invalid data, producing a garbled overview.
+    for (const AnalysisDao::AnalysisInfo& analysis : std::as_const(analyses)) {
+        const WaveformFactory::VersionClass vc =
+                WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
+        if (vc == WaveformFactory::VC_USE) {
+            result.pWaveform = ConstWaveformPointer(
+                    WaveformFactory::loadWaveformFromAnalysis(analysis));
+            break;
+        }
     }
 
     return result;
@@ -291,6 +350,16 @@ void OverviewCache::waveformSummaryPrepared() {
     watcher->deleteLater();
 
     m_currentlyLoadingWaveform.remove(res.trackId);
+
+    // The async job captured `pRequester` as a raw pointer; it may have
+    // been deleted on the GUI thread while the load was in flight.
+    // Re-check on the GUI thread before handing the (possibly dangling)
+    // pointer to listeners, so they don't compare against `this` with
+    // a dangling address.
+    QPointer<QObject> requesterGuard(const_cast<QObject*>(res.requester));
+    if (requesterGuard.isNull()) {
+        return;
+    }
 
     emit waveformSummaryReady(res.requester, res.trackId, res.pWaveform);
 }

@@ -329,13 +329,9 @@ Rectangle {
                     colorLow: Theme.green
                     colorMid: Theme.blue
                     renderer: Mixxx.WaveformOverview.Renderer.Filtered
-                    track: null // Lazy loaded
+                    trackUrl: file_url
                     implicitHeight: 30
                     implicitWidth: 30
-
-                    Component.onCompleted: {
-                        waveformOverview.track = TableView.view.model?.getTrackByRow(row)
-                    }
                 }
             }
             DelegateChoice {

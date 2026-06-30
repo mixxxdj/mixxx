@@ -5,6 +5,7 @@
 #include "moc_qmlwaveformoverview.cpp"
 #include "qmlplayerproxy.h"
 #include "qmltrackproxy.h"
+#include "track/globaltrackcache.h"
 #include "track/track.h"
 
 namespace {
@@ -24,7 +25,8 @@ QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
           m_renderer(Renderer::RGB),
           m_colorHigh(0xFF0000),
           m_colorMid(0x00FF00),
-          m_colorLow(0x0000FF) {
+          m_colorLow(0x0000FF),
+          m_trackIdForUrl() {
     if (m_pCache) {
         connect(m_pCache,
                 &OverviewCache::overviewChanged,
@@ -34,7 +36,42 @@ QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
                 &OverviewCache::waveformSummaryReady,
                 this,
                 &QmlWaveformOverview::slotWaveformSummaryReady);
+        connect(m_pCache,
+                &OverviewCache::analyzerProgress,
+                this,
+                &QmlWaveformOverview::slotAnalyzerProgress);
     }
+    // Any change to a property that affects the rendered output must
+    // invalidate the cached pixmap (its key encodes the property value)
+    // and request a repaint, otherwise the item would keep displaying
+    // the stale cached pixmap until some unrelated event triggers
+    // `update()`.
+    connect(this, &QmlWaveformOverview::rendererChanged, this, [this] {
+        invalidatePixmapCacheForCurrent();
+        update();
+    });
+    connect(this, &QmlWaveformOverview::colorHighChanged, this, [this](const QColor&) {
+        invalidatePixmapCacheForCurrent();
+        update();
+    });
+    connect(this, &QmlWaveformOverview::colorMidChanged, this, [this](const QColor&) {
+        invalidatePixmapCacheForCurrent();
+        update();
+    });
+    connect(this, &QmlWaveformOverview::colorLowChanged, this, [this](const QColor&) {
+        invalidatePixmapCacheForCurrent();
+        update();
+    });
+    // A new `trackUrl` may resolve to a different track in the
+    // database: drop the previously loaded `trackUrl`-mode waveform
+    // and any cached pixmap for it so the next `paint()` re-requests
+    // and re-renders cleanly.
+    connect(this, &QmlWaveformOverview::trackUrlChanged, this, [this] {
+        invalidatePixmapCacheForCurrent();
+        m_waveformSummary.reset();
+        m_trackIdForUrl = TrackId();
+        update();
+    });
 }
 
 QmlTrackProxy* QmlWaveformOverview::getTrack() const {
@@ -45,6 +82,14 @@ void QmlWaveformOverview::setTrack(QmlTrackProxy* pTrack) {
     if (m_pTrack == pTrack) {
         return;
     }
+
+    // Invalidate any cached pixmap for the track/URL we are leaving.
+    // In `trackUrl` mode this also drops the resolved waveform and
+    // TrackId, since they are owned by this item rather than by a
+    // `Track`.
+    invalidatePixmapCacheForCurrent();
+    m_waveformSummary.reset();
+    m_trackIdForUrl = TrackId();
 
     if (m_pTrack != nullptr && m_pTrack->internal() != nullptr) {
         m_pTrack->internal()->disconnect(this);
@@ -76,15 +121,63 @@ void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
 
 void QmlWaveformOverview::slotWaveformUpdated() {
     // The waveform summary changed (cleared/finished/replaced) so any
-    // cached pixmap for the current track is now stale.
-    if (m_pTrack && m_pTrack->internal()) {
-        invalidatePixmapCache(m_pTrack->internal()->getId());
-    }
+    // cached pixmap for the current track is now stale. This slot is
+    // only connected in `track` mode, so dispatch via the helper.
+    invalidatePixmapCacheForCurrent();
     update();
 }
 
 void QmlWaveformOverview::slotOverviewChanged(TrackId trackId) {
     if (m_pTrack && m_pTrack->internal() && m_pTrack->internal()->getId() == trackId) {
+        // `track` mode: the track's in-memory analysis was replaced
+        // (cleared/finished/regenerated) so any cached pixmap is
+        // stale. Repainting will re-read the live waveform.
+        invalidatePixmapCache(trackId);
+        update();
+    } else if (!m_pTrack && m_trackIdForUrl.isValid() && m_trackIdForUrl == trackId) {
+        // `trackUrl` mode: the waveform for the resolved track was
+        // replaced (cleared/finished/regenerated). Resync our local
+        // snapshot from the live `Track` in the `GlobalTrackCache`
+        // rather than clearing it and forcing an async DB round-trip
+        // (which would briefly leave the item blank and could be
+        // dropped by the OverviewCache dedup if a load for this
+        // `TrackId` is still in flight). If the `Track` is no longer
+        // cached (or its waveform was cleared), fall back to
+        // `nullptr` so `paint()` re-requests from the DB on the next
+        // call.
+        invalidatePixmapCache(trackId);
+        if (TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId)) {
+            m_waveformSummary = pTrack->getWaveformSummary();
+        } else {
+            m_waveformSummary.reset();
+        }
+        update();
+    }
+}
+
+void QmlWaveformOverview::slotAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
+    Q_UNUSED(analyzerProgress);
+    if (m_pTrack && m_pTrack->internal() && m_pTrack->internal()->getId() == trackId) {
+        // `track` mode: the `Track`'s waveform summary is mutated
+        // in-place by `AnalyzerWaveform` (it bumps `setCompletion`
+        // on every chunk) but `waveformSummaryUpdated` is only
+        // emitted at the start and at the end of analysis. Without
+        // this repaint trigger the overview stays blank (or stale)
+        // for the entire analysis. Repainting re-reads the live
+        // partial waveform.
+        invalidatePixmapCache(trackId);
+        update();
+    } else if (!m_pTrack && m_trackIdForUrl.isValid() && m_trackIdForUrl == trackId) {
+        // `trackUrl` mode: there is no `Track` object owned by this
+        // item, but the analyzer is mutating the live `Track` held
+        // in the `GlobalTrackCache`. Drop our snapshot of the
+        // previously loaded waveform summary and adopt the live one
+        // so `paint()` draws the partial progress.
+        if (TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId)) {
+            if (ConstWaveformPointer pWaveform = pTrack->getWaveformSummary()) {
+                m_waveformSummary = pWaveform;
+            }
+        }
         invalidatePixmapCache(trackId);
         update();
     }
@@ -96,38 +189,65 @@ void QmlWaveformOverview::slotWaveformSummaryReady(const QObject* pRequester,
     if (pRequester != this || !pWaveform) {
         return;
     }
-    if (!m_pTrack || !m_pTrack->internal()) {
-        return;
-    }
-    TrackPointer pTrack = m_pTrack->internal();
-    if (pTrack->getId() != trackId) {
-        return;
-    }
-    // Adopt the loaded summary into the track. `Track::setWaveformSummary`
-    // emits `waveformSummaryUpdated`, which `slotWaveformUpdated` listens
-    // to, so the item will repaint asynchronously.
-    if (!pTrack->getWaveformSummary()) {
-        pTrack->setWaveformSummary(pWaveform);
+    if (m_pTrack && m_pTrack->internal()) {
+        // `track` mode: adopt the loaded summary into the `Track`.
+        // `Track::setWaveformSummary` emits `waveformSummaryUpdated`,
+        // which `slotWaveformUpdated` listens to, so the item will
+        // repaint asynchronously.
+        TrackPointer pTrack = m_pTrack->internal();
+        if (pTrack->getId() != trackId) {
+            return;
+        }
+        if (!pTrack->getWaveformSummary()) {
+            pTrack->setWaveformSummary(pWaveform);
+        }
+    } else if (!m_trackUrl.isEmpty()) {
+        // `trackUrl` mode: we own the loaded summary locally. Cache
+        // the resolved `TrackId` so the pixmap cache key works the
+        // same way as in `track` mode.
+        m_waveformSummary = pWaveform;
+        m_trackIdForUrl = trackId;
+        update();
     }
 }
 
 void QmlWaveformOverview::paint(QPainter* pPainter) {
-    if (!m_pTrack) {
-        return;
-    }
-    TrackPointer pTrack = m_pTrack->internal();
-    if (!pTrack) {
-        return;
-    }
+    // Resolve the waveform to draw and the `TrackId` to use as the
+    // pixmap cache key, depending on which mode is active. `track`
+    // mode takes precedence per the property documentation.
+    ConstWaveformPointer pWaveform;
+    TrackId trackId;
 
-    ConstWaveformPointer pWaveform = pTrack->getWaveformSummary();
-    if (!pWaveform) {
-        // The track has no analysis loaded in memory. Ask the
-        // OverviewCache to fetch it asynchronously from the analysis
-        // database. `slotWaveformSummaryReady` will push the result back
-        // into the track (which triggers a repaint via
-        // `waveformSummaryUpdated`).
-        m_pCache->requestWaveformSummary(pTrack->getId(), this);
+    if (m_pTrack && m_pTrack->internal()) {
+        // `track` mode: read the in-memory analysis and, if missing,
+        // request it asynchronously from the cache (keyed by
+        // `TrackId`). `slotWaveformSummaryReady` will push the result
+        // back into the `Track`, which triggers a repaint via
+        // `waveformSummaryUpdated`.
+        TrackPointer pTrack = m_pTrack->internal();
+        trackId = pTrack->getId();
+        pWaveform = pTrack->getWaveformSummary();
+        if (!pWaveform) {
+            if (trackId.isValid() && m_pCache) {
+                m_pCache->requestWaveformSummary(trackId, this);
+            }
+            return;
+        }
+    } else if (!m_trackUrl.isEmpty()) {
+        // `trackUrl` mode: the waveform summary is owned locally by
+        // this item (loaded asynchronously via `OverviewCache`,
+        // which resolves the file URL to a `TrackId` and then reads
+        // the analysis database).
+        pWaveform = m_waveformSummary;
+        trackId = m_trackIdForUrl;
+        if (!pWaveform) {
+            const QString location = m_trackUrl.toLocalFile();
+            if (!location.isEmpty() && m_pCache) {
+                m_pCache->requestWaveformSummary(location, this);
+            }
+            return;
+        }
+    } else {
         return;
     }
 
@@ -156,7 +276,20 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
     if (size.isEmpty()) {
         return;
     }
-    const QString cacheKey = pixmapCacheKey(pTrack->getId(), size, waveformCompletion);
+    if (!trackId.isValid()) {
+        // Without a `TrackId` we can't build a stable cache key, so
+        // fall back to rendering on every paint. This only happens in
+        // `trackUrl` mode for files that aren't in the library
+        // database (and thus have no analysis either); in normal
+        // cases `slotWaveformSummaryReady` populates `m_trackIdForUrl`
+        // before we get here.
+        const QPixmap pixmap = renderWaveformToPixmap(pWaveform, nextCompletion);
+        if (!pixmap.isNull()) {
+            pPainter->drawPixmap(0, 0, pixmap);
+        }
+        return;
+    }
+    const QString cacheKey = pixmapCacheKey(trackId, size, waveformCompletion);
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
         pPainter->drawPixmap(0, 0, pixmap);
@@ -168,7 +301,7 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         return;
     }
     QPixmapCache::insert(cacheKey, pixmap);
-    m_cacheKeysByTrackId.insert(pTrack->getId(), cacheKey);
+    m_cacheKeysByTrackId.insert(trackId, cacheKey);
     pPainter->drawPixmap(0, 0, pixmap);
 }
 
@@ -249,6 +382,17 @@ void QmlWaveformOverview::invalidatePixmapCache(TrackId trackId) {
         QPixmapCache::remove(key);
     }
     m_cacheKeysByTrackId.remove(trackId);
+}
+
+void QmlWaveformOverview::invalidatePixmapCacheForCurrent() {
+    if (m_pTrack && m_pTrack->internal()) {
+        const TrackId trackId = m_pTrack->internal()->getId();
+        if (trackId.isValid()) {
+            invalidatePixmapCache(trackId);
+        }
+    } else if (m_trackIdForUrl.isValid()) {
+        invalidatePixmapCache(m_trackIdForUrl);
+    }
 }
 
 void QmlWaveformOverview::drawRgb(QPainter* pPainter,

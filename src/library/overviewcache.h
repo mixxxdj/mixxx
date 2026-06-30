@@ -3,6 +3,7 @@
 #include <QSqlDatabase>
 
 #include "analyzer/analyzerprogress.h"
+#include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
@@ -10,12 +11,22 @@
 #include "waveform/overviewtype.h"
 #include "waveform/waveform.h"
 
+class TrackDAO;
 class WaveformSignalColors;
 
 class OverviewCache : public QObject, public Singleton<OverviewCache> {
     Q_OBJECT
   public:
     void onTrackSummaryChanged(TrackId);
+
+    /// Inject the library's `TrackDAO`. Used by the
+    /// `requestWaveformSummary(QString)` overload to resolve a
+    /// track file location into a `TrackId` through the library
+    /// database. Must be called once after `createInstance`, before
+    /// any location-based request is made.
+    void setTrackDAO(TrackDAO* pTrackDAO) {
+        m_pTrackDAO = pTrackDAO;
+    }
 
     QPixmap requestCachedOverview(
             mixxx::OverviewType type,
@@ -36,6 +47,17 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     /// was stored). This is a no-op if `trackId` is invalid or if a
     /// load for that track is already pending.
     void requestWaveformSummary(TrackId trackId, const QObject* pRequester);
+
+    /// Variant of `requestWaveformSummary` that resolves the track by
+    /// its file location rather than its `TrackId`. The location is
+    /// translated to a `TrackId` through the library database (a
+    /// single indexed query on the GUI thread) and then the existing
+    /// `TrackId`-based load path is reused. This is useful for tracks
+    /// that are not in the database (no valid `TrackId`) but whose
+    /// file URL is known, e.g. for tracks shown in browse/external
+    /// table views. If no track matches `trackLocation` the call is
+    /// a no-op.
+    void requestWaveformSummary(const QString& trackLocation, const QObject* pRequester);
 
     struct FutureResult {
         FutureResult()
@@ -72,6 +94,15 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
 
     void overviewChanged(TrackId);
 
+    /// Emitted on every analyzer progress update for `trackId`,
+    /// including partial progress while analysis is in flight.
+    /// Connect to this signal to repaint waveform overview
+    /// visualizations during analysis (the `Track` itself only emits
+    /// `waveformSummaryUpdated` once at the start and once at the
+    /// end of analysis, so it can't drive progressive drawing on its
+    /// own).
+    void analyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+
     void waveformSummaryReady(
             const QObject* pRequester,
             TrackId trackId,
@@ -101,6 +132,11 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
   private:
     UserSettingsPointer m_pConfig;
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    /// Borrowed pointer to the library's `TrackDAO` (lives on the GUI
+    /// thread, owned by `TrackCollection`). Used to resolve track file
+    /// locations to `TrackId`s in `requestWaveformSummary(QString)`.
+    TrackDAO* m_pTrackDAO = nullptr;
 
     QSet<TrackId> m_currentlyLoading;
     QSet<TrackId> m_currentlyLoadingWaveform;
