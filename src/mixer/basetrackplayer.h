@@ -51,6 +51,10 @@ class BaseTrackPlayer : public BasePlayer {
         return false;
     };
 
+    virtual bool isTrackPaused() const {
+        return false;
+    }
+
   public slots:
 #ifdef __STEM__
     virtual void slotLoadTrack(TrackPointer pTrack,
@@ -74,9 +78,12 @@ class BaseTrackPlayer : public BasePlayer {
     void selectedStems(mixxx::StemChannelSelection stemMask);
 #endif
     void playerEmpty();
+    void trackLoadFailed(TrackPointer pFailedTrack);
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);
+    void trackPaused(TrackPointer pPausedTrack);
+    void trackResumed(TrackPointer pResumedTrack);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -108,6 +115,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     bool isTrackMenuControlAvailable() final;
     /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
+
+    bool isTrackPaused() const override;
 
   public slots:
 #ifdef __STEM__

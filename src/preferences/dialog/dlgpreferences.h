@@ -20,6 +20,7 @@ class DlgPrefSound;
 class EffectsManager;
 class Library;
 class SoundManager;
+class ScrobblingManager;
 class VinylControlManager;
 
 namespace mixxx {
@@ -52,6 +53,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
+            std::shared_ptr<ScrobblingManager> pScrobblingManager,
             std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 

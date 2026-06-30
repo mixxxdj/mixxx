@@ -105,5 +105,6 @@
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
         <file>shaders/stackedsignal.frag</file>
+        <file>images/icons/128x128/apps/mixxx.png</file>
     </qresource>
 </RCC>
