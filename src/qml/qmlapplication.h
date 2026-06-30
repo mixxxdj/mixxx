@@ -32,12 +32,8 @@ class QmlApplication : public QObject {
             const QString& mainQmlFilePath = QString());
     ~QmlApplication() override;
 
-    bool isReady() const {
-        return m_loadSucceeded;
-    }
-
   public slots:
-    bool loadQml(const QString& path);
+    void loadQml(const QString& path);
 
 #if defined(Q_OS_ANDROID)
   private slots:
@@ -65,7 +61,6 @@ class QmlApplication : public QObject {
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
     std::unique_ptr<QMenuBar> m_pMenuBar;
-    bool m_loadSucceeded;
     QmlAutoReload m_autoReload;
 
 #if defined(Q_OS_ANDROID)
