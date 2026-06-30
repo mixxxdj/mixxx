@@ -55,9 +55,7 @@ Rectangle {
                         required property int hasChildren
                         required property var icon
                         readonly property real indentation: 40
-                        // FIXME The signature for that function has changed after Qt 6.4.2 (currently shipped on Ubuntu 24.04)
-                        // See https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-2770811094 for further details
-                        readonly property var index: treeView.modelIndex(column, row)
+                        readonly property var index: treeView.index(row, column)
 
                         // Rotate indicator when expanded by the user
                         // (requires TreeView to have a selectionModel)
