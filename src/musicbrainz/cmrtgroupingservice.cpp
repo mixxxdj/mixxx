@@ -253,8 +253,7 @@ void CmrtGroupingService::replaceCanonical(int groupId,
     newMember.groupId = groupId;
     newMember.trackId = newCanonicalId;
     newMember.offsetFromCanonical = 0.0;
-    newMember.qualityScore =
-            scoreTrackQuality(m_fingerprintDao.getTrackQualityInfo(newCanonicalId));
+    newMember.qualityScore = newCanonicalQualityScore;
     newMember.addedAt = QDateTime::currentDateTimeUtc();
     m_fingerprintDao.addCmrtMember(newMember);
     m_fingerprintDao.updateCmrtGroupTrackCount(groupId, +1);
