@@ -114,7 +114,12 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         // handle this -- bkgood
         return QObject::tr("Invalid");
     case AudioPathType::Main:
-        //: Audio path indetifier
+        //: Audio path identifier. Index is appended for additional Main
+        //: outputs (e.g. "Main 2", "Main 3").
+        if (index > 0) {
+            return QString("%1 %2").arg(QObject::tr("Main"),
+                                        QString::number(index + 1));
+        }
         return QObject::tr("Main");
     case AudioPathType::Headphones:
         //: Audio path indetifier
@@ -192,6 +197,7 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
 /// @note This method is static.
 bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
+    case AudioPathType::Main:
     case AudioPathType::Bus:
     case AudioPathType::Deck:
     case AudioPathType::VinylControl:
