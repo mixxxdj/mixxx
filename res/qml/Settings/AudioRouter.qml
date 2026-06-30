@@ -642,11 +642,11 @@ Rectangle {
                     id: removeOutputButton
 
                     text: "-"
-                    visible: Object.keys(root.outputs).length > 0
+                    visible: Object.keys(root.outputs).length > 1
 
                     onClicked: {
                         let keys = Object.keys(root.outputs);
-                        if (keys.length > 0) {
+                        if (keys.length > 1) {
                             root.removeOutput(keys[keys.length - 1]);
                         }
                     }
@@ -734,6 +734,7 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.margins: 4
                         z: 20
+                        visible: Object.keys(root.outputs).length > 1
 
                         onClicked: {
                             root.removeOutput(modelData);
