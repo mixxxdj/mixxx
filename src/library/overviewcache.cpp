@@ -223,3 +223,74 @@ void OverviewCache::overviewPrepared() {
 
     emit overviewReady(res.requester, res.trackId, !pixmap.isNull());
 }
+
+void OverviewCache::requestWaveformSummary(TrackId trackId, const QObject* pRequester) {
+    if (!trackId.isValid()) {
+        return;
+    }
+    // Avoid duplicate concurrent loads for the same track. If a load is
+    // already pending, the requester will be notified through the
+    // existing in-flight job (i.e. it will simply receive an
+    // `overviewChanged` since the (re)analysis will update the track).
+    if (m_currentlyLoadingWaveform.contains(trackId)) {
+        return;
+    }
+
+    m_currentlyLoadingWaveform.insert(trackId);
+
+    QFutureWatcher<FutureWaveformResult>* watcher =
+            new QFutureWatcher<FutureWaveformResult>(this);
+    QFuture<FutureWaveformResult> future = QtConcurrent::run(
+            &OverviewCache::prepareWaveformSummary,
+            m_pConfig,
+            m_pDbConnectionPool,
+            trackId,
+            pRequester);
+    connect(watcher,
+            &QFutureWatcher<FutureWaveformResult>::finished,
+            this,
+            &OverviewCache::waveformSummaryPrepared);
+    watcher->setFuture(future);
+}
+
+// static
+OverviewCache::FutureWaveformResult OverviewCache::prepareWaveformSummary(
+        const UserSettingsPointer pConfig,
+        const mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        TrackId trackId,
+        const QObject* pRequester) {
+    FutureWaveformResult result;
+    result.trackId = trackId;
+    result.requester = pRequester;
+
+    if (!trackId.isValid()) {
+        return result;
+    }
+
+    mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
+
+    AnalysisDao analysisDao(pConfig);
+    analysisDao.initialize(mixxx::DbConnectionPooled(pDbConnectionPool));
+
+    QList<AnalysisDao::AnalysisInfo> analyses =
+            analysisDao.getAnalysesForTrackByType(
+                    trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
+
+    if (!analyses.isEmpty()) {
+        result.pWaveform = ConstWaveformPointer(
+                WaveformFactory::loadWaveformFromAnalysis(analyses.first()));
+    }
+
+    return result;
+}
+
+void OverviewCache::waveformSummaryPrepared() {
+    QFutureWatcher<FutureWaveformResult>* watcher =
+            static_cast<QFutureWatcher<FutureWaveformResult>*>(sender());
+    FutureWaveformResult res = watcher->result();
+    watcher->deleteLater();
+
+    m_currentlyLoadingWaveform.remove(res.trackId);
+
+    emit waveformSummaryReady(res.requester, res.trackId, res.pWaveform);
+}
