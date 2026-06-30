@@ -1,0 +1,14 @@
+name: asio
+buildsystem: simple
+build-commands:
+  - cp -r asio/include/asio ${FLATPAK_DEST}/include/
+  - cp asio/include/asio.hpp ${FLATPAK_DEST}/include/
+sources:
+  - type: archive
+    url: https://github.com/chriskohlhoff/asio/archive/refs/tags/asio-1-28-0.tar.gz
+    sha256: 226438b0798099ad2a202563a83571ce06dd13b570d8fded4840dbc1f97fa328
+    dest-filename: asio.tar.gz
+cleanup:
+  - /include
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/asio asio/LICENSE_1_0.txt
