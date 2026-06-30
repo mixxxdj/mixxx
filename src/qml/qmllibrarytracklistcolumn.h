@@ -16,13 +16,14 @@ namespace qml {
 
 class QmlLibraryTrackListColumn : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString label MEMBER m_label FINAL)
+    Q_PROPERTY(QString label MEMBER m_label NOTIFY labelChanged)
     Q_PROPERTY(int fillSpan MEMBER m_fillSpan FINAL)
     Q_PROPERTY(int columnIdx MEMBER m_columnIdx FINAL)
     Q_PROPERTY(double preferredWidth MEMBER m_preferredWidth FINAL)
-    Q_PROPERTY(double autoHideWidth MEMBER m_autoHideWidth FINAL)
-    Q_PROPERTY(QQmlComponent* delegate READ delegate WRITE setDelegate FINAL)
+    Q_PROPERTY(double autoHideWidth MEMBER m_autoHideWidth NOTIFY autoHideWidthChanged)
+    Q_PROPERTY(Display display MEMBER m_display NOTIFY displayChanged)
     Q_PROPERTY(Role role MEMBER m_role FINAL)
+    Q_PROPERTY(ColumnType columnType MEMBER m_columnType FINAL)
     QML_NAMED_ELEMENT(TrackListColumn)
   public:
     enum class SQLColumns {
@@ -36,6 +37,12 @@ class QmlLibraryTrackListColumn : public QObject {
         Bitrate = ColumnCache::COLUMN_LIBRARYTABLE_BITRATE,
     };
     Q_ENUM(SQLColumns)
+    enum class Display {
+        Auto,
+        Show,
+        Hide
+    };
+    Q_ENUM(Display)
     enum class Role {
         Location,
         Artist,
@@ -43,6 +50,12 @@ class QmlLibraryTrackListColumn : public QObject {
         Cover,
     };
     Q_ENUM(Role)
+    enum class ColumnType {
+        Default,
+        Overview,
+        AlbumArt,
+    };
+    Q_ENUM(ColumnType)
     explicit QmlLibraryTrackListColumn(QObject* parent = nullptr)
             : QObject(parent) {
     }
@@ -52,13 +65,17 @@ class QmlLibraryTrackListColumn : public QObject {
             int columnIdx,
             double preferredWidth,
             double autoHideWidth,
-            QQmlComponent* delegate,
-            Role role);
+            Role role,
+            ColumnType columnType = ColumnType::Default,
+            Display display = Display::Auto);
     const QString& label() const {
         return m_label;
     }
     Role role() const {
         return m_role;
+    }
+    ColumnType columnType() const {
+        return m_columnType;
     }
     int fillSpan() const {
         return m_fillSpan;
@@ -72,21 +89,21 @@ class QmlLibraryTrackListColumn : public QObject {
     double autoHideWidth() const {
         return m_autoHideWidth;
     }
-    QQmlComponent* delegate() const {
-        return m_pDelegate;
-    }
-    void setDelegate(QQmlComponent* delegate) {
-        m_pDelegate = qml_owned_ptr(delegate);
-    }
 
   private:
-    QString m_label;
-    Role m_role;
+    QString m_label{};
+    Role m_role{};
+    ColumnType m_columnType{ColumnType::Default};
     int m_fillSpan{0};
     int m_columnIdx{-1};
+    Display m_display{Display::Auto};
     double m_preferredWidth{-1};
     double m_autoHideWidth{-1};
-    qml_owned_ptr<QQmlComponent> m_pDelegate;
+
+  signals:
+    void displayChanged();
+    void labelChanged();
+    void autoHideWidthChanged();
 };
 } // namespace qml
 } // namespace mixxx
