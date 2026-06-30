@@ -118,7 +118,7 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         //: outputs (e.g. "Main 2", "Main 3").
         if (index > 0) {
             return QString("%1 %2").arg(QObject::tr("Main"),
-                                        QString::number(index + 1));
+                    QString::number(index + 1));
         }
         return QObject::tr("Main");
     case AudioPathType::Headphones:
