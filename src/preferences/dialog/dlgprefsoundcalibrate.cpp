@@ -121,7 +121,11 @@ void DlgPrefSoundCalibrate::setupUi() {
             this,
             &DlgPrefSoundCalibrate::onPlayToneToggled,
             Qt::QueuedConnection);
-    connect(m_pApplyButton, &QPushButton::clicked, this, &DlgPrefSoundCalibrate::onApplyClicked, Qt::QueuedConnection);
+    connect(m_pApplyButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSoundCalibrate::onApplyClicked,
+            Qt::QueuedConnection);
     connect(m_pCancelButton, &QPushButton::clicked, this, &QDialog::reject, Qt::QueuedConnection);
 }
 
