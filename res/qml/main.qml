@@ -3,13 +3,17 @@ import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Window
 import QtQuick.Shapes
+import QtQuick.Window 2.12
 import Qt5Compat.GraphicalEffects
 import "Theme"
 
 ApplicationWindow {
     id: root
+
+    readonly property bool isMobile: Qt.platform.os === "android" || Qt.platform.os === "ios"
+    readonly property int designWidth: 1792
+    readonly property int designHeight: 1008
 
     property alias editDeck: editDeckButton.checked
     property var focusedDeck: null
@@ -22,13 +26,16 @@ ApplicationWindow {
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
 
+    readonly property bool _showLibrary: maximizeLibrary || height - mixer.height >= 400
+
     color: Theme.backgroundColor
-    height: 1008
-    minimumHeight: 300
-    minimumWidth: 680
+    height: isMobile ? Screen.height : designHeight
+    minimumHeight: isMobile ? 0 : 300
+    minimumWidth: isMobile ? 0 : 680
     visible: true
-    visibility: Mixxx.Config.configStartInFullscreenKey ? Window.FullScreen : Window.Windowed
-    width: 1792
+    width: isMobile ? Screen.width : designWidth
+    visibility: Mixxx.Config.configStartInFullscreenKey || isMobile ? Window.FullScreen : Window.Windowed
+
 
     Mixxx.ControlProxy {
         group: "[App]"
@@ -232,8 +239,8 @@ ApplicationWindow {
             Item {
                 id: waveforms
 
-                SplitView.fillHeight: !library.active
-                SplitView.preferredHeight: library.active ? 120 : undefined
+                SplitView.fillHeight: !_showLibrary
+                SplitView.preferredHeight: _showLibrary ? 120 : undefined
                 visible: !root.maximizeLibrary
 
                 FadeBehavior on visible {
@@ -342,8 +349,8 @@ ApplicationWindow {
                 }
             }
             Item {
-                SplitView.fillHeight: library.active
-                SplitView.maximumHeight: library.active ? undefined : mixer.height
+                SplitView.fillHeight: _showLibrary
+                SplitView.maximumHeight: _showLibrary ? undefined : mixer.height
                 SplitView.minimumHeight: mixer.height
 
                 Deck {
@@ -615,7 +622,7 @@ ApplicationWindow {
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - mixer.height >= 400
+                    active: true
                     width: parent.width
 
                     sourceComponent: Component {
