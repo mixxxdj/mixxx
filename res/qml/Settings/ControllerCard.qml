@@ -6,7 +6,7 @@ import QtQuick.Dialogs
 import QtQuick.Shapes 1.6
 import Qt.labs.qmlmodels
 import QtMultimedia
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 import ".." as Skin
 import "../Theme"
 
@@ -726,14 +726,13 @@ Item {
             }
         }
     }
-    DropShadow {
+    MultiEffect {
         anchors.fill: root
         anchors.margins: 8
-        color: "#000000"
-        horizontalOffset: 0
-        radius: root.focused ? 0 : 8.0
         source: content
-        verticalOffset: 0
+        shadowEnabled: !root.focused
+        shadowColor: "#000000"
+        shadowBlur: 0.1
     }
 
     component Settings: ControllerSettings {

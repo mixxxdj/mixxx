@@ -1,7 +1,7 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
+import QtQuick.Effects
 import QtQuick.Shapes
 import QtQuick.Controls 2.12
 import "../Theme"
@@ -46,11 +46,13 @@ Rectangle {
             anchors.fill: parent
 
             Shape {
+                property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                 anchors.centerIn: parent
                 antialiasing: true
                 height: 14
-                layer.enabled: true
-                layer.samples: 4
+                layer.enabled: multiSamplingLevel > 1
+                layer.samples: multiSamplingLevel
                 width: 21
 
                 ShapePath {
@@ -138,11 +140,13 @@ Rectangle {
             anchors.fill: parent
 
             Shape {
+                property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                 anchors.centerIn: parent
                 antialiasing: true
                 height: 14
-                layer.enabled: true
-                layer.samples: 4
+                layer.enabled: multiSamplingLevel > 1
+                layer.samples: multiSamplingLevel
                 width: 21
 
                 ShapePath {
@@ -224,11 +228,13 @@ Rectangle {
             anchors.fill: parent
 
             Shape {
+                property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                 anchors.centerIn: parent
                 antialiasing: true
                 height: 10
-                layer.enabled: true
-                layer.samples: 4
+                layer.enabled: multiSamplingLevel > 1
+                layer.samples: multiSamplingLevel
                 width: 12
 
                 ShapePath {
@@ -276,23 +282,17 @@ Rectangle {
 
             anchors.fill: parent
             color: '#2B2B2B'
+            border {
+                color: '#353535'
+                width: 1
+            }
         }
-        DropShadow {
+        MultiEffect {
             anchors.fill: backgroundImage
-            color: "#80000000"
-            horizontalOffset: 0
-            radius: 1.0
             source: backgroundImage
-            verticalOffset: 0
-        }
-        InnerShadow {
-            anchors.fill: backgroundImage
-            color: "#353535"
-            horizontalOffset: -0
-            radius: 1
-            samples: 16
-            source: backgroundImage
-            verticalOffset: 0
+            shadowEnabled: true
+            shadowColor: "#80000000"
+            shadowBlur: 0.05
         }
         TextInput {
             function update() {
@@ -326,11 +326,13 @@ Rectangle {
             anchors.fill: parent
 
             Shape {
+                property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
                 anchors.centerIn: parent
                 antialiasing: true
                 height: 10
-                layer.enabled: true
-                layer.samples: 4
+                layer.enabled: multiSamplingLevel > 1
+                layer.samples: multiSamplingLevel
                 width: 12
 
                 ShapePath {

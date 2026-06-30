@@ -1,25 +1,26 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
+import "." as LibraryComponent
 import "../Theme"
 
 Rectangle {
     id: root
 
-    readonly property alias dragImage: dragImageEffect
+    required property bool selected
 
-    Drag.dragType: Drag.Automatic
-    Drag.mimeData: {
-        "text/uri-list": file_url.toString(),
-        "text/plain": file_url.toString()
-    }
-    Drag.supportedActions: Qt.CopyAction
-    anchors.fill: parent
+    property alias capabilities: track.capabilities
+
     color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
+
+    LibraryComponent.Track {
+        id: track
+
+        view: TableView.view
+        anchors.fill: parent
+    }
 
     Item {
         id: dragImageSource
-
         height: 85
         visible: false
         width: 190
@@ -52,14 +53,14 @@ Rectangle {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
 
-                    Text {
-                        color: Theme.textColor
-                        text: track ? track.title : 'Unknown title'
-                    }
-                    Text {
-                        color: Theme.midGray
-                        text: track ? track.artist : 'Unknown artist'
-                    }
+                    // Text {
+                    //     color: Theme.textColor
+                    //     text: track ? track.title : 'Unknown title'
+                    // }
+                    // Text {
+                    //     color: Theme.midGray
+                    //     text: track ? track.artist : 'Unknown artist'
+                    // }
                 }
             }
             Rectangle {
@@ -86,16 +87,32 @@ Rectangle {
             }
         }
     }
-    DropShadow {
-        id: dragImageEffect
 
-        anchors.fill: dragImageSource
-        color: "#80000000"
-        horizontalOffset: 0
-        radius: 10.0
-        source: dragImageSource
-        verticalOffset: 0
-        visible: false
+    Drag.dragType: Qt.platform.os === "android" ? Drag.None : Drag.Automatic
+    Drag.mimeData: {
+        "text/uri-list": file_url.toString(),
+        "text/plain": file_url.toString()
+    }
+    Drag.supportedActions: Qt.CopyAction
+
+    DragHandler {
+        id: dragHandler
+        // enabled: false
+        enabled: Qt.platform.os !== "android"
+        onActiveChanged: {
+            root.Drag.imageSource = cover_art
+            root.Drag.active = true
+            console.log(`dragHandler: ${root.Drag.active}`)
+        //     if (active) {
+        //         dragImageSource.grabToImage(function(result) {
+        //             console.log(`dragHandler: ${result}`)
+        //             parent.Drag.imageSource = result.url
+        //             parent.Drag.active = true
+        //         }, Qt.size(dragImageSource.width, dragImageSource.height))
+        //     } else {
+        //         parent.Drag.active = false
+            // }
+        }
     }
     Rectangle {
         id: border
