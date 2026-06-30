@@ -65,6 +65,8 @@ class TrackCollectionManager: public QObject,
     QList<TrackId> resolveTrackIdsFromUrls(
             const QList<QUrl>& urls,
             bool addMissing) const;
+    QList<TrackId> resolveTrackIdsFromUrls(
+            const QList<QUrl>& urls);
     QList<TrackId> resolveTrackIdsFromLocations(
             const QList<QString>& locations) const;
 

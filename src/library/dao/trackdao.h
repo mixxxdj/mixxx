@@ -147,6 +147,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class LibraryScanner;
     friend class TrackCollection;
     friend class TrackAnalysisScheduler;
+    friend class OverviewCache;
     FRIEND_TEST(TrackDAOTest, markTrackLocationsAsVerifiedRecoversPresentFilesOnly);
 
     QString findLastTimeAddedToHistory(TrackId trackId) const;
