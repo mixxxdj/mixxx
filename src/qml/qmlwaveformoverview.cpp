@@ -1,12 +1,22 @@
 #include "qml/qmlwaveformoverview.h"
 
+#include <QPixmapCache>
+
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_qmlwaveformoverview.cpp"
+#include "qmllibraryproxy.h"
 #include "qmlplayerproxy.h"
 #include "qmltrackproxy.h"
+#include "track/globaltrackcache.h"
 #include "track/track.h"
+#include "track/trackid.h"
+#include "util/assert.h"
 
 namespace {
 constexpr double kDesiredChannelHeight = 255;
+
+constexpr const char* kPixmapCachePrefix = "QmlWaveformOverview";
 } // namespace
 
 namespace mixxx {
@@ -19,7 +29,32 @@ QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
           m_renderer(Renderer::RGB),
           m_colorHigh(0xFF0000),
           m_colorMid(0x00FF00),
-          m_colorLow(0x0000FF) {
+          m_colorLow(0x0000FF),
+          m_trackId() {
+    connect(OverviewCache::instance(),
+            &OverviewCache::overviewChanged,
+            this,
+            &QmlWaveformOverview::slotOverviewChanged);
+    connect(OverviewCache::instance(),
+            &OverviewCache::analyzerProgress,
+            this,
+            &QmlWaveformOverview::slotWaveformUpdated);
+    connect(this,
+            &QmlWaveformOverview::rendererChanged,
+            this,
+            &QmlWaveformOverview::slotWaveformUpdated);
+    connect(this,
+            &QmlWaveformOverview::colorHighChanged,
+            this,
+            &QmlWaveformOverview::slotWaveformUpdated);
+    connect(this,
+            &QmlWaveformOverview::colorMidChanged,
+            this,
+            &QmlWaveformOverview::slotWaveformUpdated);
+    connect(this,
+            &QmlWaveformOverview::colorLowChanged,
+            this,
+            &QmlWaveformOverview::slotWaveformUpdated);
 }
 
 QmlTrackProxy* QmlWaveformOverview::getTrack() const {
@@ -31,18 +66,50 @@ void QmlWaveformOverview::setTrack(QmlTrackProxy* pTrack) {
         return;
     }
 
+    invalidatePixmapCacheForCurrent();
+    m_waveformSummary.reset();
+    m_trackUrl = QUrl();
+    m_trackId = TrackId();
+
     if (m_pTrack != nullptr && m_pTrack->internal() != nullptr) {
         m_pTrack->internal()->disconnect(this);
     }
 
     m_pTrack = pTrack;
 
-    if (m_pTrack != nullptr && pTrack->internal() != nullptr) {
-        connect(pTrack->internal().get(),
+    if (m_pTrack != nullptr && m_pTrack->internal() != nullptr) {
+        m_trackId = m_pTrack->internal()->getId();
+        m_waveformSummary = m_pTrack->internal()->getWaveformSummary();
+        connect(m_pTrack->internal().get(),
                 &Track::waveformSummaryUpdated,
                 this,
                 &QmlWaveformOverview::slotWaveformUpdated);
     }
+    slotWaveformUpdated();
+}
+
+void QmlWaveformOverview::setTrackUrl(const QUrl& trackUrl) {
+    if (m_trackUrl == trackUrl) {
+        return;
+    }
+
+    m_waveformSummary.reset();
+    if (m_pTrack != nullptr && m_pTrack->internal() != nullptr) {
+        m_pTrack->internal()->disconnect(this);
+    }
+    m_pTrack = nullptr;
+
+    Library* pLibrary = QmlLibraryProxy::get();
+    VERIFY_OR_DEBUG_ASSERT(pLibrary) {
+        return;
+    }
+
+    auto trackIds = pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls({trackUrl});
+    VERIFY_OR_DEBUG_ASSERT(trackIds.size() == 1) {
+        return;
+    }
+    m_trackId = trackIds.first();
+    m_waveformSummary = OverviewCache::instance()->fetchWaveformSummary(m_trackId);
     slotWaveformUpdated();
 }
 
@@ -60,31 +127,35 @@ void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
 }
 
 void QmlWaveformOverview::slotWaveformUpdated() {
+    invalidatePixmapCacheForCurrent();
     update();
 }
 
+void QmlWaveformOverview::slotOverviewChanged(TrackId trackId) {
+    if (!m_trackId.isValid() || m_trackId != trackId) {
+        return;
+    }
+    if (m_pTrack && m_pTrack->internal()) {
+        m_waveformSummary = m_pTrack->internal()->getWaveformSummary();
+    } else {
+        m_waveformSummary = OverviewCache::instance()->fetchWaveformSummary(m_trackId);
+    }
+    slotWaveformUpdated();
+}
+
 void QmlWaveformOverview::paint(QPainter* pPainter) {
-    if (!m_pTrack) {
-        return;
-    }
-    TrackPointer pTrack = m_pTrack->internal();
-    if (!pTrack) {
+    if (!m_waveformSummary || !m_trackId.isValid()) {
         return;
     }
 
-    ConstWaveformPointer pWaveform = pTrack->getWaveformSummary();
-    if (!pWaveform) {
-        return;
-    }
-
-    const int dataSize = pWaveform->getDataSize();
+    const int dataSize = m_waveformSummary->getDataSize();
     if (dataSize == 0) {
         return;
     }
 
     constexpr int actualCompletion = 0;
     // Always multiple of 2
-    const int waveformCompletion = pWaveform->getCompletion();
+    const int waveformCompletion = m_waveformSummary->getCompletion();
     // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - actualCompletion;
 
@@ -97,42 +168,92 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
 
     const int nextCompletion = actualCompletion + completionIncrement;
 
+    const QString cacheKey = pixmapCacheKey(m_trackId);
+    QPixmap pixmap;
+    if (QPixmapCache::find(cacheKey, &pixmap)) {
+        pPainter->drawPixmap(0, 0, pixmap);
+    } else {
+        pixmap = renderWaveformToPixmap(m_waveformSummary, nextCompletion);
+        VERIFY_OR_DEBUG_ASSERT(!pixmap.isNull()) {
+        }
+        else {
+            QPixmapCache::insert(cacheKey, pixmap);
+        }
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(!pixmap.isNull()) {
+        return;
+    }
+    pPainter->drawPixmap(0, 0, pixmap);
+}
+
+QPixmap QmlWaveformOverview::renderWaveformToPixmap(
+        ConstWaveformPointer pWaveform, int nextCompletion) const {
+    constexpr int actualCompletion = 0;
+
+    const QSize size(qRound(width()), qRound(height()));
+    if (size.isEmpty()) {
+        return QPixmap();
+    }
+
+    const qreal desiredWidth = static_cast<qreal>(pWaveform->getDataSize()) / 2;
+
+    QPixmap pixmap(size);
+    pixmap.fill(Qt::transparent);
+    QPainter pPainter(&pixmap);
+
     const Channels channels = m_channels;
-    pPainter->save();
+    pPainter.save();
 
     switch (channels) {
     case static_cast<int>(ChannelFlag::LeftChannel):
         // Draw both channels.
         // Set the y axis to half the height of the item
-        pPainter->translate(0.0, height());
+        pPainter.translate(0.0, height());
         // Set the x axis to half the height of the item
-        pPainter->scale(width() / desiredWidth, height() / kDesiredChannelHeight);
+        pPainter.scale(width() / desiredWidth, height() / kDesiredChannelHeight);
         break;
     case static_cast<int>(ChannelFlag::RightChannel):
         // Set the x axis to half the height of the item
-        pPainter->scale(width() / desiredWidth, height() / kDesiredChannelHeight);
+        pPainter.scale(width() / desiredWidth, height() / kDesiredChannelHeight);
         break;
     default:
         // Draw both channels.
         // Set the y axis to half the height of the item
-        pPainter->translate(0.0, height() / 2);
+        pPainter.translate(0.0, height() / 2);
         // Set the x axis to half the height of the item
-        pPainter->scale(width() / desiredWidth, height() / (2 * kDesiredChannelHeight));
+        pPainter.scale(width() / desiredWidth, height() / (2 * kDesiredChannelHeight));
     }
 
-    Renderer renderer = m_renderer;
+    const Renderer renderer = m_renderer;
     for (int currentCompletion = actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
         switch (renderer) {
         case Renderer::Filtered:
-            drawFiltered(pPainter, channels, pWaveform, currentCompletion);
+            drawFiltered(&pPainter, channels, pWaveform, currentCompletion);
             break;
         default:
-            drawRgb(pPainter, channels, pWaveform, currentCompletion);
+            drawRgb(&pPainter, channels, pWaveform, currentCompletion);
         }
     }
-    pPainter->restore();
+    pPainter.restore();
+    pPainter.end();
+    return pixmap;
+}
+
+// static
+QString QmlWaveformOverview::pixmapCacheKey(TrackId trackId) {
+    return QStringLiteral("%1_%2")
+            .arg(QString::fromLatin1(kPixmapCachePrefix),
+                    trackId.toString());
+}
+
+void QmlWaveformOverview::invalidatePixmapCacheForCurrent() {
+    if (!m_trackId.isValid()) {
+        return;
+    }
+    QPixmapCache::remove(pixmapCacheKey(m_trackId));
 }
 
 void QmlWaveformOverview::drawRgb(QPainter* pPainter,
