@@ -620,6 +620,10 @@ void SoundManager::registerMainOutput(const AudioOutput& output) {
     emit outputRegistered(output, m_pEngineMixer);
 }
 
+void SoundManager::unregisterOutput(const AudioOutput& output) {
+    m_registeredSources.remove(output);
+}
+
 void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
     // Vinyl control inputs are registered twice, once for timecode and once for
     // passthrough, each with different outputs. So unlike outputs, do not assert

@@ -1050,10 +1050,12 @@ void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
 
 void DlgPrefSound::addMainOutputClicked() {
     // Count existing main outputs to determine the next index
+    // Skip items pending deletion (from deleteLater) to avoid reusing indices
     int mainCount = 0;
     for (const QObject* pObj : outputTab->children()) {
         const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
-        if (pItem && pItem->type() == AudioPathType::Main) {
+        if (pItem && pItem->type() == AudioPathType::Main &&
+                pItem->isVisible()) {
             mainCount++;
         }
     }
@@ -1076,6 +1078,7 @@ void DlgPrefSound::removeOutputItem(DlgPrefSoundItem* pItem) {
     }
 
     // Count main outputs - can't remove if only one remains
+    // Skip items pending deletion (from deleteLater) to avoid counting them
     int mainCount = 0;
     for (const QObject* pObj : outputTab->children()) {
         const auto* pExisting = qobject_cast<const DlgPrefSoundItem*>(pObj);
@@ -1086,6 +1089,13 @@ void DlgPrefSound::removeOutputItem(DlgPrefSoundItem* pItem) {
     if (mainCount <= 1) {
         return; // must have at least one main output
     }
+
+    // Unregister the output from SoundManager so it can be re-added later
+    AudioPathType type = pItem->type();
+    unsigned int index = pItem->index();
+    unsigned char channelBase = index * 2;
+    AudioOutput output(type, channelBase, mixxx::audio::ChannelCount::stereo(), index);
+    m_pSoundManager->unregisterOutput(output);
 
     // Remove from outputTab layout and delete
     outputTab->layout()->removeWidget(pItem);
@@ -1130,7 +1140,8 @@ void DlgPrefSound::updateRemoveButtonVisibility() {
     int mainCount = 0;
     for (const QObject* pObj : outputTab->children()) {
         const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
-        if (pItem && pItem->type() == AudioPathType::Main && !pItem->isInput()) {
+        if (pItem && pItem->type() == AudioPathType::Main && !pItem->isInput() &&
+                pItem->isVisible()) {
             mainCount++;
         }
     }
@@ -1139,7 +1150,7 @@ void DlgPrefSound::updateRemoveButtonVisibility() {
     bool showRemove = (mainCount > 1);
     for (auto* pObj : outputTab->children()) {
         auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj);
-        if (pItem && !pItem->isInput()) {
+        if (pItem && !pItem->isInput() && pItem->isVisible()) {
             pItem->updateRemoveButtonVisibility(showRemove);
         }
     }

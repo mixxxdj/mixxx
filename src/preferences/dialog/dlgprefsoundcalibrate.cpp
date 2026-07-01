@@ -201,6 +201,10 @@ void DlgPrefSoundCalibrate::onApplyClicked() {
         int totalMs = static_cast<int>(m_currentOffsetMs + m_fineOffsetMs);
         totalMs = math_clamp(totalMs, 0, 500);
         m_pSoundItem->setLatencyOffsetMs(totalMs);
+        // setLatencyOffsetMs blocks signals to avoid double-emit from the
+        // spinbox, so we must manually notify the preferences dialog that
+        // a change was made. Otherwise slotApply would skip the save.
+        emit m_pSoundItem->selectedDeviceChanged();
     }
     accept();
 }

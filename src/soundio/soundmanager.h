@@ -89,6 +89,10 @@ class SoundManager : public QObject {
     // Use this instead of registerOutput(output, nullptr) when adding
     // additional Main outputs via the UI.
     void registerMainOutput(const AudioOutput& output);
+    /// Remove a previously registered output so a new one with the same
+    /// parameters can be registered (e.g. after removing and re-adding).
+    /// Does nothing if the output is not registered.
+    void unregisterOutput(const AudioOutput& output);
     void registerInput(const AudioInput& input, AudioDestination* dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
