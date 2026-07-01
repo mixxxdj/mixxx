@@ -5,6 +5,7 @@
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"
+#include "util/path.h"
 #include "util/string.h"
 
 namespace {
