@@ -1220,13 +1220,14 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
                 pProgress->deleteLater();
 
                 if (offsetsMs.isEmpty()) {
-                    QMessageBox::warning(
-                            this, tr("Calibration Failed"),
+                    QMessageBox::warning(this,
+                            tr("Calibration Failed"),
                             tr("Could not measure offsets. Make sure:\n"
                                "1. A microphone input is configured on the\n"
                                "   Input tab and Apply was clicked\n"
                                "2. The microphone can hear all outputs\n"
-                               "3. The phone's RECORD_AUDIO permission is granted"));
+                               "3. The phone's RECORD_AUDIO permission is "
+                               "granted"));
                     m_pCalibrator->deleteLater();
                     m_pCalibrator = nullptr;
                     return;
