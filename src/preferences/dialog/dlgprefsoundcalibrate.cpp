@@ -54,7 +54,7 @@ void DlgPrefSoundCalibrate::setupUi() {
     QHBoxLayout* pOffsetLayout = new QHBoxLayout();
     pOffsetLayout->addWidget(new QLabel(tr("Coarse offset (ms):")));
     m_pOffsetSpinbox = new QDoubleSpinBox();
-    m_pOffsetSpinbox->setRange(0, 500);
+    m_pOffsetSpinbox->setRange(0, 2000);
     m_pOffsetSpinbox->setDecimals(0);
     m_pOffsetSpinbox->setSuffix(" ms");
     m_pOffsetSpinbox->setValue(m_currentOffsetMs);
@@ -178,8 +178,8 @@ void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
     if (baselineMs < 1.0) {
         baselineMs = 10.0;
     }
-    if (baselineMs > 200.0) {
-        baselineMs = 200.0;
+    if (baselineMs > 2000.0) {
+        baselineMs = 2000.0;
     }
 
     m_currentOffsetMs = baselineMs;
@@ -199,7 +199,7 @@ void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
 void DlgPrefSoundCalibrate::onApplyClicked() {
     if (m_pSoundItem) {
         int totalMs = static_cast<int>(m_currentOffsetMs + m_fineOffsetMs);
-        totalMs = math_clamp(totalMs, 0, 500);
+        totalMs = math_clamp(totalMs, 0, 2000);
         m_pSoundItem->setLatencyOffsetMs(totalMs);
         // setLatencyOffsetMs blocks signals to avoid double-emit from the
         // spinbox, so we must manually notify the preferences dialog that
@@ -212,7 +212,7 @@ void DlgPrefSoundCalibrate::onApplyClicked() {
 void DlgPrefSoundCalibrate::updateStatusLabel() {
     int totalMs = static_cast<int>(
             std::round(m_currentOffsetMs + m_fineOffsetMs));
-    totalMs = math_clamp(totalMs, 0, 500);
+    totalMs = math_clamp(totalMs, 0, 2000);
     m_pStatusLabel->setText(tr("Total offset: %1 ms").arg(totalMs));
 }
 
