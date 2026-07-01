@@ -19,7 +19,6 @@ DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
           m_pSoundItem(pSoundItem),
           m_currentOffsetMs(0.0),
           m_fineOffsetMs(0.0),
-          m_playingTone(false),
           m_framesPerBuffer(framesPerBuffer > 0 ? framesPerBuffer : 1024),
           m_sampleRate(sampleRate > 0 ? sampleRate : 44100),
           m_outputLatencyMs(outputLatencyMs),
@@ -27,7 +26,6 @@ DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
           m_pOffsetSpinbox(nullptr),
           m_pFineSlider(nullptr),
           m_pAutoCalibrateButton(nullptr),
-          m_pPlayToneButton(nullptr),
           m_pApplyButton(nullptr),
           m_pCancelButton(nullptr),
           m_pExplanationLabel(nullptr) {
@@ -35,9 +33,8 @@ DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
 
     setupUi();
 
-    m_pSyncTimer = new QTimer(this);
-    m_pSyncTimer->setInterval(1000); // 1 second interval
-    connect(m_pSyncTimer, &QTimer::timeout, this, &DlgPrefSoundCalibrate::updateReferenceTone);
+    m_framesPerBuffer = (framesPerBuffer > 0 ? framesPerBuffer : 1024);
+    m_sampleRate = (sampleRate > 0 ? sampleRate : 44100);
 }
 
 void DlgPrefSoundCalibrate::setupUi() {
@@ -200,10 +197,6 @@ void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
 
     m_pAutoCalibrateButton->setEnabled(true);
     m_pAutoCalibrateButton->setText(tr("Re-Calibrate"));
-}
-
-void DlgPrefSoundCalibrate::updateReferenceTone() {
-    // Tone-based calibration is replaced by buffer-latency auto-calibrate.
 }
 
 void DlgPrefSoundCalibrate::onApplyClicked() {

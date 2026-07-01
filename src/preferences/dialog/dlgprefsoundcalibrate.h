@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDialog>
-#include <QTimer>
 
 #include "preferences/dialog/dlgprefsounditem.h"
 
@@ -22,7 +21,6 @@ class DlgPrefSoundCalibrate : public QDialog {
     ~DlgPrefSoundCalibrate() override = default;
 
   private slots:
-    void updateReferenceTone();
     void onOffsetChanged(double value);
     void onFineSliderChanged(int value);
     void onAutoCalibrateClicked();
@@ -33,10 +31,8 @@ class DlgPrefSoundCalibrate : public QDialog {
     void updateStatusLabel();
 
     DlgPrefSoundItem* m_pSoundItem;
-    QTimer* m_pSyncTimer;
     double m_currentOffsetMs;
     double m_fineOffsetMs;
-    bool m_playingTone;
     int m_framesPerBuffer;
     int m_sampleRate;
     double m_outputLatencyMs;
