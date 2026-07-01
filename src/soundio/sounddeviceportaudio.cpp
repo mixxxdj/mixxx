@@ -718,13 +718,34 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
             (void) m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                     &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
-            composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
-            		            m_outputParams.channelCount);
-            if (size2 > 0) {
-                composeOutputBuffer(dataPtr2,
-                        size2 / m_outputParams.channelCount,
-                        size1 / m_outputParams.channelCount,
-                        m_outputParams.channelCount);
+            if (m_pSoundManager->isCalibrating()) {
+                // During calibration, fill FIFO with reference pulse
+                AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
+                SINT frames1 = size1 / m_outputParams.channelCount;
+                for (SINT i = 0; i < frames1; ++i) {
+                    CSAMPLE ref = cal->generateReferenceFrame(0);
+                    for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
+                        dataPtr1[i * m_outputParams.channelCount + ch] = ref;
+                    }
+                }
+                if (size2 > 0) {
+                    SINT frames2 = size2 / m_outputParams.channelCount;
+                    for (SINT i = 0; i < frames2; ++i) {
+                        CSAMPLE ref = cal->generateReferenceFrame(0);
+                        for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
+                            dataPtr2[i * m_outputParams.channelCount + ch] = ref;
+                        }
+                    }
+                }
+            } else {
+                composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
+                                    m_outputParams.channelCount);
+                if (size2 > 0) {
+                    composeOutputBuffer(dataPtr2,
+                            size2 / m_outputParams.channelCount,
+                            size1 / m_outputParams.channelCount,
+                            m_outputParams.channelCount);
+                }
             }
             m_outputFifo->releaseWriteRegions(writeCount);
         }

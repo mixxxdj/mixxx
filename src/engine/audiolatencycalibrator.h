@@ -10,17 +10,26 @@
 /**
  * AudioLatencyCalibrator implements active latency calibration using a
  * play-and-record loopback approach inspired by the osu! framework's
- * BeatmapOffsetControl.
+ * BeatmapOffsetControl and LatencyCertifierScreen.
  *
- * How it works:
- * 1. A short reference click/pulse is played through the output device.
- * 2. The same pulse is recorded via a loopback or microphone input.
- * 3. Cross-correlation between played and recorded signals determines
- *    the actual hardware latency (the offset at which correlation peaks).
- * 4. The suggested latency offset is displayed to the user for manual fine-tuning.
+ * Calibration modes:
+ * 1. Per-device: play reference pulse through one output, record via input,
+ *    cross-correlate to find that device's absolute latency.
+ * 2. Multi-device: play reference pulse through ALL outputs simultaneously,
+ *    record the combined audio (e.g. via phone microphone), find multiple
+ *    correlation peaks, set the earliest peak as offset 0 and the rest
+ *    as relative delays.
  *
- * Manual mode: the user adjusts a spinbox (0-500ms) while listening to
- * a continuous sync click on both devices, tuning until clicks align.
+ * Usage:
+ *   auto* cal = new AudioLatencyCalibrator(this);
+ *   connect(cal, &AudioLatencyCalibrator::calibrationComplete,
+ *           this, [](const QVector<double>& offsetsMs) {
+ *               // offsetsMs[i] = offset for output i, first is 0
+ *           });
+ *   cal->startCalibration(sampleRate, bufferSize, numOutputs);
+ *   // Feed reference frames via generateReferenceFrame() to output(s)
+ *   // Feed recorded frames via addRecordedFrame() from input
+ *   // calibrator emits calibrationComplete when done
  */
 class AudioLatencyCalibrator : public QObject {
     Q_OBJECT
@@ -39,64 +48,60 @@ class AudioLatencyCalibrator : public QObject {
         return m_state;
     }
 
-    /// Start the calibration process. Plays a reference tone and records it back.
-    void startCalibration(int sampleRate, int bufferSize);
+    /// Start the calibration process for numOutputs devices.
+    /// Plays a reference pulse and records it back.
+    void startCalibration(int sampleRate, int bufferSize, int numOutputs = 1);
 
     /// Stop calibration and reset to idle.
     void stopCalibration();
 
-    /// Get the suggested offset in milliseconds based on last calibration.
-    double getSuggestedOffsetMs() const {
-        return m_suggestedOffsetMs;
-    }
-
-    /// Get the manual offset from the UI spinbox.
-    double getManualOffsetMs() const {
-        return m_manualOffsetMs;
-    }
-
-    /// Set the manual offset (from UI spinbox).
-    void setManualOffsetMs(double offset) {
-        m_manualOffsetMs = offset;
+    /// Get the suggested offsets in milliseconds (size = numOutputs).
+    /// offsets[0] is always 0 (the earliest device).
+    QVector<double> getSuggestedOffsetsMs() const {
+        return m_suggestedOffsetsMs;
     }
 
     /// Add a recorded sample frame from the input device.
     void addRecordedFrame(CSAMPLE value);
 
-    /// Generate the next reference frame to play. Returns 0 when not playing.
-    CSAMPLE generateReferenceFrame();
+    /// Generate the next reference frame to play on output device index.
+    /// @param outputIndex which output this frame is for (0 = clock ref)
+    CSAMPLE generateReferenceFrame(int outputIndex = 0);
 
   signals:
-    /// Emitted when calibration completes with the suggested offset in ms.
-    void calibrationComplete(double suggestedOffsetMs);
+    /// Emitted when calibration completes with per-output offsets in ms.
+    /// offsets[0] = 0 (earliest device).
+    void calibrationComplete(const QVector<double>& offsetsMs);
 
-    /// Emitted periodically during calibration with current status.
+    /// Emitted periodically with current status.
     void statusUpdate(const QString& status);
 
   private:
-    void computeOffset();
-    void generateReferencePulse();
+    void computeOffsets();
+    void generateReferenceChirp();
 
     State m_state;
-    double m_suggestedOffsetMs;
-    double m_manualOffsetMs;
+    double m_suggestedOffsetMs; // legacy single-device offset
+    QVector<double> m_suggestedOffsetsMs;
 
     int m_sampleRate;
     int m_bufferSize;
+    int m_numOutputs;
 
-    // Reference signal storage
+    // Reference signal (chirp/pulse)
     QVector<CSAMPLE> m_referenceSignal;
     int m_referencePlayhead;
 
     // Recorded signal storage
     QVector<CSAMPLE> m_recordedSignal;
-    qint64 m_recordStartTime;
 
-    // Recording/playback timing
+    // Timing
     QElapsedTimer m_timer;
     bool m_referencePlayed;
+    qint64 m_recordStartTime;
 
-    static constexpr int kReferencePulseLength = 480; // ~10ms at 48kHz
-    static constexpr int kMaxRecordingFrames = 48000; // 1 second at 48kHz
-    static constexpr int kCorrelationWindow = 4800;   // Search window for correlation (100ms)
+    static constexpr int kReferenceLength = 4800; // ~100ms at 48kHz
+    static constexpr int kMinReferenceGap = 480;  // ~10ms gap between pulses
+    static constexpr int kMaxRecordingFrames = 96000; // 2 seconds at 48kHz
+    static constexpr int kCorrelationWindow = 48000;  // Search window (1 second)
 };

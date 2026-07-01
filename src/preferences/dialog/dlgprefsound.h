@@ -13,6 +13,7 @@
 #include "soundio/soundmanagerconfig.h"
 #include "util/parented_ptr.h"
 
+class AudioLatencyCalibrator;
 class ControlObject;
 class ControlProxy;
 class DlgPrefSoundItem;
@@ -68,6 +69,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg {
   private slots:
     void removeOutputItem(DlgPrefSoundItem* pItem);
     void calibrateOutputItem(DlgPrefSoundItem* pItem);
+    void autoCalibrateAllOutputs();
     void addPath(const AudioOutput& output);
     void addPath(const AudioInput& input);
     void loadSettings();
@@ -100,6 +102,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg {
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
+
+    AudioLatencyCalibrator* m_pCalibrator = nullptr;
 
     PollingControlProxy m_pLatencyCompensation;
     PollingControlProxy m_pMainDelay;

@@ -286,6 +286,16 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="autoCalibrateAllButton">
+       <property name="text">
+        <string>Auto-Calibrate All Outputs</string>
+       </property>
+       <property name="toolTip">
+        <string>Plays a reference chirp through all outputs and records via microphone to measure relative latency offsets. Make sure all outputs are audible to the phone's microphone.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="buttonsHSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
