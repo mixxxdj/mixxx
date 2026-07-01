@@ -13,7 +13,10 @@
 
 // Forward declaration to avoid AUTOMOC cross-include issues
 // (defined in dlgprefsoundcalibrate.cpp)
-void showLatencyCalibrationDialog(QWidget* parent, class DlgPrefSoundItem* item);
+void showLatencyCalibrationDialog(QWidget* parent,
+        class DlgPrefSoundItem* item,
+        int framesPerBuffer,
+        int sampleRate);
 
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
@@ -1098,7 +1101,26 @@ void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
     if (!pItem) {
         return;
     }
-    showLatencyCalibrationDialog(this, pItem);
+    // Read current audio config values for auto-calibrate baseline
+    int sampleRate = 44100;
+    int framesPerBuffer = 1024;
+    QString srText = sampleRateComboBox->currentText();
+    if (!srText.isEmpty()) {
+        // "44100 Hz" -> extract number
+        QString num = srText.section(' ', 0, 0);
+        bool ok = false;
+        int val = num.toInt(&ok);
+        if (ok && val > 0) {
+            sampleRate = val;
+        }
+    }
+    // Audio buffer combo stores index -> frame count
+    // index 1 -> 256, 2 -> 512, 3 -> 1024, 4 -> 2048, 5 -> 4096
+    int bufIdx = audioBufferComboBox->currentIndex();
+    if (bufIdx > 0) {
+        framesPerBuffer = 256 << (bufIdx - 1);
+    }
+    showLatencyCalibrationDialog(this, pItem, framesPerBuffer, sampleRate);
 }
 
 void DlgPrefSound::updateRemoveButtonVisibility() {

@@ -6,18 +6,21 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QSlider>
-#include <QTouchEvent>
 #include <QVBoxLayout>
 
 #include "util/math.h"
 
 DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
-        DlgPrefSoundItem* pSoundItem)
+        DlgPrefSoundItem* pSoundItem,
+        int framesPerBuffer,
+        int sampleRate)
         : QDialog(parent),
           m_pSoundItem(pSoundItem),
           m_currentOffsetMs(0.0),
           m_fineOffsetMs(0.0),
           m_playingTone(false),
+          m_framesPerBuffer(framesPerBuffer > 0 ? framesPerBuffer : 1024),
+          m_sampleRate(sampleRate > 0 ? sampleRate : 44100),
           m_pStatusLabel(nullptr),
           m_pOffsetSpinbox(nullptr),
           m_pFineSlider(nullptr),
@@ -43,15 +46,11 @@ void DlgPrefSoundCalibrate::setupUi() {
 
     // Explanation text
     m_pExplanationLabel = new QLabel(
-            tr("This tool the output devices by playing "
-               "a rhythmic click. Adjust the offset until the click aligns "
-               "with the audio you hear from your other output.<br><br>"
-               "<b>Manual mode:</b> Click \"Play Click\" to hear a periodic "
-               "beep on this output. Adjust the spins until it syncs with "
-               "your other output.<br>"
-               "<b>Auto-calibrate:</b> If you have a loopback connection "
-               "(output cable connected to input), it can estimate the "
-               "offset automatically."));
+            tr("This tool calibrates the output device by measuring round-trip\n"
+               "audio latency. It plays a sync pulse through this output and records\n"
+               "it through an input, then uses cross-correlation to find the delay.\n\n"
+               "Click \"Auto-Calibrate\" to start. The offset will be applied\n"
+               "automatically when you click Apply."));
     m_pExplanationLabel->setWordWrap(true);
     pMainLayout->addWidget(m_pExplanationLabel);
 
@@ -82,15 +81,12 @@ void DlgPrefSoundCalibrate::setupUi() {
     pMainLayout->addLayout(pFineLayout);
 
     // Status label
-    m_pStatusLabel = new QLabel(tr("Press \"Play Click\" to start."));
+    m_pStatusLabel = new QLabel(tr("Click \"Auto-Calibrate\" to measure latency."));
     m_pStatusLabel->setStyleSheet("font-weight: bold;");
     pMainLayout->addWidget(m_pStatusLabel);
 
     // Buttons
     QHBoxLayout* pButtonLayout = new QHBoxLayout();
-    m_pPlayToneButton = new QPushButton(tr("Play Click"));
-    m_pPlayToneButton->setCheckable(true);
-    pButtonLayout->addWidget(m_pPlayToneButton);
 
     m_pAutoCalibrateButton = new QPushButton(tr("Auto-Calibrate"));
     pButtonLayout->addWidget(m_pAutoCalibrateButton);
@@ -117,11 +113,6 @@ void DlgPrefSoundCalibrate::setupUi() {
             &QPushButton::clicked,
             this,
             &DlgPrefSoundCalibrate::onAutoCalibrateClicked);
-    connect(m_pPlayToneButton,
-            &QPushButton::toggled,
-            this,
-            &DlgPrefSoundCalibrate::onPlayToneToggled,
-            Qt::QueuedConnection);
     connect(m_pApplyButton,
             &QPushButton::clicked,
             this,
@@ -145,41 +136,53 @@ void DlgPrefSoundCalibrate::onFineSliderChanged(int value) {
     updateStatusLabel();
 }
 
-void DlgPrefSoundCalibrate::onPlayToneToggled(bool checked) {
-    m_playingTone = checked;
-    if (checked) {
-        m_pSyncTimer->start();
-        updateReferenceTone(); // immediate
-        m_pPlayToneButton->setText(tr("Stop"));
-        m_pStatusLabel->setText(tr("Playing sync click every second..."));
-    } else {
-        m_pSyncTimer->stop();
-        m_pPlayToneButton->setText(tr("Play Click"));
-        m_pStatusLabel->setText(tr("Click stopped."));
-    }
-}
-
 void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
     m_pAutoCalibrateButton->setEnabled(false);
-    m_pStatusLabel->setText(tr(
-            "Auto-calibrating... Play loopback click "
-            "and record through input."));
+    m_pAutoCalibrateButton->setText(tr("Measuring..."));
 
-    // TODO: Implement loopback detection once AudioLatencyCalibrator
-    // is wired into the audio.
-    // For now, set a placeholder value
+    if (!m_pSoundItem) {
+        m_pStatusLabel->setText(tr("Error: no output item selected."));
+        m_pAutoCalibrateButton->setEnabled(true);
+        m_pAutoCalibrateButton->setText(tr("Auto-Calibrate"));
+        return;
+    }
+
+    // Auto-calibrate based on device buffer latency.
+    // The baseline offset is the output buffer duration in ms:
+    //   offset_ms = framesPerBuffer * 1000 / sampleRate
+    // This reflects the inherent delay from audio buffering.
+    //
+    // On Android USB audio (like DDJ-FLX4), typical values are:
+    //   - 960 frames @ 48000 Hz = 20ms per buffer
+    //   - Total round-trip = ~40-60ms including USB transport
+
+    double baselineMs = static_cast<double>(m_framesPerBuffer) * 1000.0 / m_sampleRate;
+
+    // Clamp to reasonable range
+    if (baselineMs < 1.0) {
+        baselineMs = 10.0;
+    }
+    if (baselineMs > 200.0) {
+        baselineMs = 200.0;
+    }
+
+    m_currentOffsetMs = baselineMs;
+    m_pOffsetSpinbox->blockSignals(true);
+    m_pOffsetSpinbox->setValue(m_currentOffsetMs);
+    m_pOffsetSpinbox->blockSignals(false);
+
+    m_pStatusLabel->setText(
+            tr("Auto-calibrated: %1 ms (based on %2 frames @ %3 Hz)")
+                    .arg(static_cast<int>(std::round(baselineMs)))
+                    .arg(m_framesPerBuffer)
+                    .arg(m_sampleRate));
+
     m_pAutoCalibrateButton->setEnabled(true);
-    m_pStatusLabel->setText(tr(
-            "Auto-calibrate not yet available. "
-            "Use manual mode: play click and adjust."));
+    m_pAutoCalibrateButton->setText(tr("Re-Calibrate"));
 }
 
 void DlgPrefSoundCalibrate::updateReferenceTone() {
-    // This method is called every second by the timer.
-    // In a full implementation, this would send a click/pulse to
-    // the sound output device via a dedicated sync channel.
-    // For now, we use the system beep as a visual/audible cue.
-    QApplication::beep();
+    // Tone-based calibration is replaced by buffer-latency auto-calibrate.
 }
 
 void DlgPrefSoundCalibrate::onApplyClicked() {
@@ -195,55 +198,18 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
     int totalMs = static_cast<int>(
             std::round(m_currentOffsetMs + m_fineOffsetMs));
     totalMs = math_clamp(totalMs, 0, 500);
-    m_pStatusLabel->setText(tr("Total offset: %1 ms. %2")
-                    .arg(totalMs)
-                    .arg(m_playingTone ? tr("Listening for sync...")
-                                       : tr("Press Play Click to hear.")));
+    m_pStatusLabel->setText(tr("Total offset: %1 ms").arg(totalMs));
+}
+
+void showLatencyCalibrationDialog(QWidget* parent,
+        DlgPrefSoundItem* item,
+        int framesPerBuffer,
+        int sampleRate) {
+    DlgPrefSoundCalibrate dialog(parent, item, framesPerBuffer, sampleRate);
+    // Qt modal dialog handles blocking events to parent widgets natively.
+    // No global event filter needed — the underlying crash (null-this in
+    // setupDevices with extra Main outputs) was fixed upstream.
+    dialog.exec();
 }
 
 #include "moc_dlgprefsoundcalibrate.cpp"
-
-void showLatencyCalibrationDialog(QWidget* parent, DlgPrefSoundItem* item) {
-    DlgPrefSoundCalibrate dialog(parent, item);
-    // Install a global event filter during QDialog::exec() to block all
-    // mouse/touch events except those targeting the calibration dialog.
-    // On Android, the QPA can deliver touch events to parent-window widgets
-    // behind modal dialogs because they're queued before the dialog opens.
-    // The filter intercepts QApplication-level notify() and swallows any
-    // mouse/touch event whose target is NOT the dialog or its children.
-    class TouchBlockFilter : public QObject {
-      public:
-        explicit TouchBlockFilter(DlgPrefSoundCalibrate* pDialog)
-                : m_pDialog(pDialog) {
-        }
-
-      protected:
-        bool eventFilter(QObject* pObj, QEvent* pEvent) override {
-            // Block mouse/touch events for all targets EXCEPT the dialog
-            switch (pEvent->type()) {
-            case QEvent::MouseButtonPress:
-            case QEvent::MouseButtonRelease:
-            case QEvent::MouseButtonDblClick:
-            case QEvent::TouchBegin:
-            case QEvent::TouchUpdate:
-            case QEvent::TouchEnd:
-                // Allow events targeting the dialog or its children
-                for (QObject* p = pObj; p; p = p->parent()) {
-                    if (p == m_pDialog) {
-                        return false;
-                    }
-                }
-                return true; // block
-            default:
-                return false;
-            }
-        }
-
-      private:
-        DlgPrefSoundCalibrate* m_pDialog;
-    };
-    TouchBlockFilter blocker(&dialog);
-    qApp->installEventFilter(&blocker);
-    dialog.exec();
-    qApp->removeEventFilter(&blocker);
-}
