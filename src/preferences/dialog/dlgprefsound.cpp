@@ -1206,15 +1206,16 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
             "Make sure all outputs are audible to the phone's microphone."));
     pProgress->setStandardButtons(QMessageBox::NoButton);
     pProgress->show();
-
     connect(m_pCalibrator, &AudioLatencyCalibrator::statusUpdate, this, [](const QString& status) {
-        qDebug() << "Calibration:" << status;
+        Q_UNUSED(status);
+        // status is logged by the calibrator
     });
 
     connect(m_pCalibrator,
             &AudioLatencyCalibrator::calibrationComplete,
             this,
-            [pProgress, mainOutputs](const QVector<double>& offsetsMs) {
+            [this, pProgress, mainOutputs](
+                    const QVector<double>& offsetsMs) {
                 pProgress->accept();
                 pProgress->deleteLater();
 
