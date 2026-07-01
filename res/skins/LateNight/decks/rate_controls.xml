@@ -3,6 +3,7 @@
   <SetVariable name="BtnSize">square</SetVariable>
 
   <WidgetGroup>
+    <ObjectName>RateControlsMain</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,me</SizePolicy>
     <Children>
@@ -109,20 +110,21 @@
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>RateControls</ObjectName>
+            <ObjectName>RateControls<Variable name="Group"/></ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <WidgetGroup><!-- Rate slider + range displays -->
-                <ObjectName>RateSliderBox</ObjectName>
+                <ObjectName>RateSliderBox<Variable name="Group"/></ObjectName>
                 <Layout>stacked</Layout>
                 <SizePolicy>max,me</SizePolicy>
                 <Children>
 
                   <!-- Rate slider + center indicator -->
                   <WidgetGroup>
-                    <Size>54f,121f</Size>
+                    <ObjectName>RateSliderAndCenter<Variable name="Group"/></ObjectName>
+                    <Size>51min,121f</Size>
                     <Children>
                       <Label>
                         <ObjectName>RateCenter</ObjectName>
@@ -151,10 +153,34 @@
                           <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                         </Connection>
                       </SliderComposed>
+
+                      <SliderComposed>
+                        <ObjectName>RateSliderUltra</ObjectName>
+                        <Size>16f,99f</Size>
+                        <Pos>45,12</Pos>
+                        <TooltipId>rate_ultra</TooltipId>
+                        <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_ultra.svg</Slider>
+                        <Horizontal>false</Horizontal>
+                        <BarWidth><Variable name="BarWidth"/></BarWidth>
+                        <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
+                        <BarColor><Variable name="BarColorPitch"/></BarColor>
+                        <BarRoundCaps>true</BarRoundCaps>
+                        <BarAxisPos>8.0</BarAxisPos>
+                        <BarUnipolar>false</BarUnipolar>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,rate_ultra</ConfigKey>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,rate_ultra_enabled</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </SliderComposed>
                     </Children>
                   </WidgetGroup><!-- Rate slider + center indicator -->
 
-                  <WidgetGroup><!-- Rate range indicators -->
+                  <!-- Rate range indicators -->
+                  <WidgetGroup>
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
@@ -169,6 +195,35 @@
                   </WidgetGroup><!-- Rate range indicators -->
                 </Children>
               </WidgetGroup><!-- Rate slider + range displays -->
+
+              <!-- Rate slider + center indicator -->
+              <!-- <WidgetGroup>
+                <SizePolicy>min,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <SliderComposed>
+                    <ObjectName>RateSliderUltra</ObjectName>
+                    <Size>20f,99f</Size>
+                    <TooltipId>rate_ultra</TooltipId>
+                    <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra.svg</Handle>
+                    <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_ultra.svg</Slider>
+                    <Horizontal>false</Horizontal>
+                    <BarWidth><Variable name="BarWidth"/></BarWidth>
+                    <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
+                    <BarColor><Variable name="BarColorPitch"/></BarColor>
+                    <BarRoundCaps>true</BarRoundCaps>
+                    <BarAxisPos>8.0</BarAxisPos>
+                    <BarUnipolar>false</BarUnipolar>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,rate_ultra</ConfigKey>
+                    </Connection>
+                  </SliderComposed>
+                </Children> -->
+                <!-- <Connection>
+                  <ConfigKey>[Master],rate_ultra_enabled</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection> -->
+              <!-- </WidgetGroup> --><!-- Rate slider + center indicator -->
 
               <WidgetGroup><!-- RateButtons for different rate directions -->
                 <ObjectName>RateButtons</ObjectName>
