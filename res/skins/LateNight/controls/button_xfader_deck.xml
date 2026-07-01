@@ -21,29 +21,73 @@
         <Layout>stacked</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <!-- invisible button = actual control -->
-          <PushButton>
-            <ObjectName>Blank</ObjectName>
-            <TooltipId>orientation</TooltipId>
-            <Size>33me,15f</Size>
-            <NumberStates>3</NumberStates>
-            <RightClickIsPushButton>false</RightClickIsPushButton>
-            <State>
-              <Number>0</Number>
-            </State>
-            <State>
-              <Number>1</Number>
-            </State>
-            <State>
-              <Number>2</Number>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="Group"/>,orientation</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <!-- invisible buttons = actual controls -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <!-- L -->
+              <PushButton>
+                <ObjectName>CrossfaderButton</ObjectName>
+                <TooltipId>orientation</TooltipId>
+                <Size>11f,15f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>false</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,orientation_left</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+              <!-- M -->
+              <PushButton>
+                <ObjectName>CrossfaderButton</ObjectName>
+                <TooltipId>orientation</TooltipId>
+                <Size>11f,15f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>false</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,orientation_center</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+              <!-- R -->
+              <PushButton>
+                <ObjectName>CrossfaderButton</ObjectName>
+                <TooltipId>orientation</TooltipId>
+                <Size>11f,15f</Size>
+                <NumberStates>2</NumberStates>
+                <RightClickIsPushButton>false</RightClickIsPushButton>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,orientation_right</ConfigKey>
+                  <Transform>
+                    <IsEqual>2</IsEqual>
+                  </Transform>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
 
-          <WidgetGroup><!-- button row / icons -->
+          <!-- decorated buttons / icons -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
