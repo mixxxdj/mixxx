@@ -641,6 +641,16 @@ QList<AudioInput> SoundManager::registeredInputs() const {
     return m_registeredDestinations.keys();
 }
 
+void SoundManager::startCalibration(AudioLatencyCalibrator* calibrator) {
+    m_pCalibrator = calibrator;
+    qDebug() << "SoundManager: calibration started";
+}
+
+void SoundManager::stopCalibration() {
+    m_pCalibrator = nullptr;
+    qDebug() << "SoundManager: calibration stopped";
+}
+
 void SoundManager::setConfiguredDeckCount(int count) {
     if (getConfiguredDeckCount() == count) {
         // Unchanged

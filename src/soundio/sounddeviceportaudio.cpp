@@ -16,6 +16,7 @@
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+#include "engine/audiolatencycalibrator.h"
 #include "util/defs.h"
 #include "util/denormalsarezero.h"
 #include "util/fifo.h"
@@ -1106,6 +1107,15 @@ int SoundDevicePortAudio::callbackProcessClkRef(
                 m_deviceId.debugName());
         composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, framesPerBuffer);
+
+        // During calibration, feed captured input to the calibrator
+        if (m_pSoundManager->isCalibrating() && m_inputParams.channelCount > 0) {
+            AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
+            for (SINT i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i) {
+                cal->addRecordedFrame(
+                        static_cast<const CSAMPLE*>(in)[i]);
+            }
+        }
     }
 
     m_pSoundManager->readProcess(framesPerBuffer);
@@ -1128,7 +1138,18 @@ int SoundDevicePortAudio::callbackProcessClkRef(
             m_callbackResult.store(paAbort, std::memory_order_relaxed);
         }
 
-        composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
+        if (m_pSoundManager->isCalibrating() && m_outputParams.channelCount > 0) {
+            // During calibration, fill output with the reference pulse
+            AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
+            for (SINT i = 0; i < framesPerBuffer; ++i) {
+                CSAMPLE ref = cal->generateReferenceFrame();
+                for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
+                    static_cast<CSAMPLE*>(out)[i * m_outputParams.channelCount + ch] = ref;
+                }
+            }
+        } else {
+            composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
+        }
     }
 
     m_pSoundManager->writeProcess(framesPerBuffer);

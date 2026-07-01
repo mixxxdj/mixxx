@@ -17,6 +17,7 @@
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
+class AudioLatencyCalibrator;
 class EngineMixer;
 class ControlObject;
 
@@ -97,6 +98,19 @@ class SoundManager : public QObject {
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
+    /// Calibration: start/stop active latency measurement.
+    /// When calibrating, the clock-ref output callback plays the reference
+    /// pulse from the calibrator instead of engine audio, and captured input
+    /// is fed to the calibrator for cross-correlation.
+    void startCalibration(AudioLatencyCalibrator* calibrator);
+    void stopCalibration();
+    bool isCalibrating() const {
+        return m_pCalibrator != nullptr;
+    }
+    AudioLatencyCalibrator* calibrator() const {
+        return m_pCalibrator;
+    }
+
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
         return m_networkEnumerator.getNetworkStream();
     }
@@ -163,4 +177,6 @@ class SoundManager : public QObject {
 
     PortAudioEnumerator m_paEnumerator;
     NetworkEnumerator m_networkEnumerator;
+
+    AudioLatencyCalibrator* m_pCalibrator = nullptr;
 };
