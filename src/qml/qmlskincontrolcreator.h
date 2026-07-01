@@ -59,7 +59,7 @@ class QmlSkinControlCreator : public QObject, public QQmlParserStatus {
     void keyChanged(const QString& key);
     void persistChanged(bool persist);
     void defaultValueChanged(double defaultValue);
-    void buttonModeChanged(ButtonMode buttonMode);
+    void buttonModeChanged(mixxx::qml::QmlSkinControlCreator::ButtonMode buttonMode);
 
   private:
     static mixxx::control::ButtonMode toControlButtonMode(ButtonMode buttonMode);
