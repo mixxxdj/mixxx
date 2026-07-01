@@ -124,11 +124,11 @@ class LibraryScanner : public QThread {
     volatile ScannerState m_state;
 
     QSet<QString> m_previouslyMissingTracks;
-    int m_numPreviouslyExistingTracks;
     int m_numRelocatedTracks;
 
     QList<mixxx::FileInfo> m_libraryRootDirs;
-    QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
+    std::unique_ptr<LibraryScannerDlg> m_pProgressDlg;
 
+    bool m_canceled;
     bool m_manualScan;
 };

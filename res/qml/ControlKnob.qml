@@ -18,4 +18,8 @@ Skin.Knob {
     TapHandler {
         onDoubleTapped: control.reset()
     }
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+        onTapped: control.reset()
+    }
 }

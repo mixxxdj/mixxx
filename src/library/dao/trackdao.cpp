@@ -361,7 +361,7 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
 
     const TrackId trackId = pTrack->getId();
     DEBUG_ASSERT(trackId.isValid());
-    kLogger.debug() << "TrackDAO: Saving track"
+    kLogger.debug() << "Saving track"
                     << trackId
                     << pTrack->getLocation();
     if (!updateTrack(*pTrack)) {
@@ -456,6 +456,7 @@ void TrackDAO::addTracksPrepare() {
             "rating,"
             "key,"
             "key_id,"
+            "tuning_frequency_hz,"
             "cuepoint,"
             "bpm,"
             "replaygain,"
@@ -504,6 +505,7 @@ void TrackDAO::addTracksPrepare() {
             ":rating,"
             ":key,"
             ":key_id,"
+            ":tuning_frequency_hz,"
             ":cuepoint,"
             ":bpm,"
             ":replaygain,"
@@ -609,6 +611,8 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":cuepoint",
             track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
+    pTrackLibraryQuery->bindValue(":tuning_frequency_hz",
+            track.getKeys().getGlobalTuningFrequencyHz());
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
@@ -740,7 +744,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         return TrackId();
     }
 
-    kLogger.debug() << "TrackDAO: Adding track"
+    kLogger.debug() << "Adding track"
                     << fileInfo.location();
 
     TrackId trackId;
@@ -1142,9 +1146,9 @@ void TrackDAO::afterPurgingTracks(
 #else
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
 #endif
+    // Notify BaseTrackCache it should remove tracks and track models
+    // that they should update their cache as well.
     emit tracksRemoved(tracksRemovedSet);
-    // notify trackmodels that they should update their cache as well.
-    emit forceModelUpdate();
 }
 
 namespace {
@@ -1303,15 +1307,10 @@ void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
         DEBUG_ASSERT(beatsBlob.isEmpty());
         return;
     }
-    bool bpmLocked = record.value(column + 4).toBool();
     const mixxx::BeatsPointer pBeats = mixxx::Beats::fromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        if (bpmLocked) {
-            pTrack->trySetAndLockBeats(pBeats);
-        } else {
-            pTrack->trySetBeats(pBeats);
-        }
+        pTrack->trySetBeats(pBeats);
     } else if (bpm.isValid()) {
         // Load a temporary beat grid without offset that will be replaced by the analyzer.
         const auto pBeats = mixxx::Beats::fromConstTempo(
@@ -1320,6 +1319,10 @@ void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     } else {
         pTrack->trySetBeats(nullptr);
     }
+}
+
+void setTrackBpmLock(const QSqlRecord& record, const int column, Track* pTrack) {
+    pTrack->setBpmLocked(record.value(column).toBool());
 }
 
 void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
@@ -1422,7 +1425,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"beats_version", nullptr},
             {"beats_sub_version", nullptr},
             {"beats", nullptr},
-            {"bpm_lock", nullptr},
+            {"bpm_lock", setTrackBpmLock},
 
             // Key detection columns are handled by setTrackKey. Do not change the
             // ordering of these columns or put other columns in between them!
@@ -1679,8 +1682,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
     const TrackId trackId = track.getId();
     DEBUG_ASSERT(trackId.isValid());
 
-    kLogger.debug() << "TrackDAO:"
-                    << "Updating track in database"
+    kLogger.debug() << "Updating track in database"
                     << trackId
                     << track.getLocation();
 
@@ -1710,6 +1712,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "rating=:rating,"
             "key=:key,"
             "key_id=:key_id,"
+            "tuning_frequency_hz=:tuning_frequency_hz,"
             "cuepoint=:cuepoint,"
             "bpm=:bpm,"
             "replaygain=:replaygain,"

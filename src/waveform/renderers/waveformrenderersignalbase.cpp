@@ -14,13 +14,6 @@ const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]")
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer, Options)
         : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_pEQEnabled(nullptr),
-          m_pLowFilterControlObject(nullptr),
-          m_pMidFilterControlObject(nullptr),
-          m_pHighFilterControlObject(nullptr),
-          m_pLowKillControlObject(nullptr),
-          m_pMidKillControlObject(nullptr),
-          m_pHighKillControlObject(nullptr),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
           m_allChannelVisualGain(1),
@@ -51,38 +44,36 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_rgbMidColor_b(0),
           m_rgbHighColor_r(0),
           m_rgbHighColor_g(0),
-          m_rgbHighColor_b(0) {
+          m_rgbHighColor_b(0),
+          m_rgbLowFilteredColor_r(0),
+          m_rgbLowFilteredColor_g(0),
+          m_rgbLowFilteredColor_b(0),
+          m_rgbMidFilteredColor_r(0),
+          m_rgbMidFilteredColor_g(0),
+          m_rgbMidFilteredColor_b(0),
+          m_rgbHighFilteredColor_r(0),
+          m_rgbHighFilteredColor_g(0),
+          m_rgbHighFilteredColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() = default;
 
 bool WaveformRendererSignalBase::init() {
-    if (!m_waveformRenderer->getGroup().isEmpty()) {
-        // create controls
-        m_pEQEnabled = std::make_unique<ControlProxy>(
-                m_waveformRenderer->getGroup(), "filterWaveformEnable");
-        const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
-        m_pLowFilterControlObject = std::make_unique<ControlProxy>(
-                effectGroup, QStringLiteral("parameter1"));
-        m_pMidFilterControlObject = std::make_unique<ControlProxy>(
-                effectGroup, QStringLiteral("parameter2"));
-        m_pHighFilterControlObject = std::make_unique<ControlProxy>(
-                effectGroup, QStringLiteral("parameter3"));
-        m_pLowKillControlObject = std::make_unique<ControlProxy>(
-                effectGroup, QStringLiteral("button_parameter1"));
-        m_pMidKillControlObject = std::make_unique<ControlProxy>(
-                effectGroup, QStringLiteral("button_parameter2"));
-        m_pHighKillControlObject = std::make_unique<ControlProxy>(
-                effectGroup, QStringLiteral("button_parameter3"));
-    } else {
-        m_pEQEnabled.reset();
-        m_pLowFilterControlObject.reset();
-        m_pMidFilterControlObject.reset();
-        m_pHighFilterControlObject.reset();
-        m_pLowKillControlObject.reset();
-        m_pMidKillControlObject.reset();
-        m_pHighKillControlObject.reset();
-    }
+    m_pEQEnabled = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), QStringLiteral("filterWaveformEnable"));
+    const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
+    m_pLowFilterControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("parameter1"));
+    m_pMidFilterControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("parameter2"));
+    m_pHighFilterControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("parameter3"));
+    m_pLowKillControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("button_parameter1"));
+    m_pMidKillControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("button_parameter2"));
+    m_pHighKillControlObject = std::make_unique<ControlProxy>(
+            effectGroup, QStringLiteral("button_parameter3"));
 
     return onInit();
 }
@@ -167,13 +158,12 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
 }
 
 void WaveformRendererSignalBase::getGains(float* pAllGain,
-        bool applyCompensation,
         float* pLowGain,
         float* pMidGain,
         float* pHighGain) {
     if (pAllGain) {
         *pAllGain = static_cast<CSAMPLE_GAIN>(
-                            m_waveformRenderer->getGain(applyCompensation)) *
+                            m_waveformRenderer->getGain()) *
                 m_allChannelVisualGain;
         ;
     }
@@ -182,8 +172,8 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
         // Per-band gain from the EQ knobs.
         CSAMPLE_GAIN lowVisualGain = 1.0, midVisualGain = 1.0, highVisualGain = 1.0;
 
-        // Only adjust low/mid/high gains if EQs are enabled.
-        if (m_pEQEnabled && m_pEQEnabled->get() > 0.0) {
+        // Only adjust low/mid/high gains if EQs are enabled or if there is no EQs CO setup.
+        if (!m_pEQEnabled || m_pEQEnabled->get() > 0.0) {
             if (m_pLowFilterControlObject &&
                     m_pMidFilterControlObject &&
                     m_pHighFilterControlObject) {

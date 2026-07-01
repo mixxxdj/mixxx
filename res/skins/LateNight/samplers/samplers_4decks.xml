@@ -21,9 +21,9 @@
           <!-- 4 small Samplers -->
           <WidgetGroup>
             <ObjectName>SamplerRow</ObjectName>
-		        <Layout>horizontal</Layout>
-		        <SizePolicy>min,min</SizePolicy>
-		        <Children>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
 
               <SingletonContainer>
                 <ObjectName>SamplerMini1_Singleton</ObjectName>

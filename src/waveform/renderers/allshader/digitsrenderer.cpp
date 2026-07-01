@@ -247,10 +247,13 @@ void allshader::DigitsRenderNode::update(
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());
+    markDirtyGeometry();
+    markDirtyMaterial();
 }
 
 void allshader::DigitsRenderNode::clear() {
     geometry().allocate(0);
+    markDirtyGeometry();
 }
 
 float allshader::DigitsRenderNode::addVertices(TexturedVertexUpdater& vertexUpdater,

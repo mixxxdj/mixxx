@@ -31,11 +31,12 @@ class Parser {
     static QList<QString> parseAllLocations(const QString& playlistFile);
     static QList<QString> parse(const QString& playlistFile);
 
-  protected:
-    // check for Utf8 encoding
-    static bool isUtf8(const char* string);
     // Resolve an absolute or relative file path
     static mixxx::FileInfo playlistEntryToFileInfo(
             const QString& playlistEntry,
             const QString& basePath = QString());
+
+  protected:
+    // check for Utf8 encoding
+    static bool isUtf8(const char* string);
 };

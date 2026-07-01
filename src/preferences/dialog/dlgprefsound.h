@@ -50,6 +50,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotApply() override;  // called on ok button
     void slotResetToDefaults() override;
     void bufferUnderflow(double count);
+    void slotResetUnderflowCounter();
     void outputLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
     void mainDelaySpinboxChanged(double value);

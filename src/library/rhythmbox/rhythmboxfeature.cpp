@@ -97,14 +97,17 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-RhythmboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+RhythmboxFeature::createPlaylistModelForPlaylist(const QVariant& playlist_name) {
+    VERIFY_OR_DEBUG_ASSERT(playlist_name.canConvert<QString>()) {
+        return {};
+    }
     auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.rhythmbox_playlist",
             "rhythmbox_playlists",
             "rhythmbox_playlist_tracks",
             m_trackSource);
-    pModel->setPlaylist(playlist);
+    pModel->setPlaylist(playlist_name.toString());
     return pModel;
 }
 
@@ -247,8 +250,10 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             if (attr.value("type").toString() == "static") {
                 QString playlist_name = attr.value("name").toString();
 
-                //Construct the childmodel
-                rootItem->appendChild(playlist_name);
+                // Construct the childmodel
+                // For Rhythmbox, the playlist name _is_ the unique identifier,
+                // so we're using it for both the label and data.
+                rootItem->appendChild(playlist_name, playlist_name);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
@@ -263,7 +268,9 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 int playlist_id = query_insert_to_playlists.lastInsertId().toInt();
 
                 //Process playlist entries
+                ScopedTransaction transaction(m_database);
                 importPlaylist(xml, query_insert_to_playlist_tracks, playlist_id);
+                transaction.commit();
             }
         }
     }

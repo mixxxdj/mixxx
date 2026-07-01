@@ -23,6 +23,7 @@ class ControllerManager;
 class ControllerOutputMappingTableModel;
 class ControlPickerMenu;
 class DlgControllerLearning;
+class LegacyControllerMapping;
 class MappingInfoEnumerator;
 #ifdef MIXXX_USE_QML
 class ControllerScriptEngineLegacy;

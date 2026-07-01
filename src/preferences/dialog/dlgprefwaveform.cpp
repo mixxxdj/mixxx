@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include <QLocale>
 #include <QMetaEnum>
 
 #include "control/controlpushbutton.h"
@@ -79,6 +80,11 @@ DlgPrefWaveform::DlgPrefWaveform(
             i++) {
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
+
+    m_pOverviewStereoControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup,
+                    QStringLiteral("overview_stereo_mode")));
+    m_pOverviewStereoControl->setReadOnly();
 
     m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")));
@@ -193,6 +199,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+    connect(overviewStereoCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewStereoMode);
 
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
@@ -251,16 +261,27 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 
 void DlgPrefWaveform::slotSetWaveformOptions(
         WaveformRendererSignalBase::Option option, bool enabled) {
+    auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
+    WaveformRendererSignalBase::Options supportedOptions =
+            WaveformRendererSignalBase::Option::None;
+
+#ifdef MIXXX_USE_QOPENGL
+    auto* pFactory = WaveformWidgetFactory::instance();
+    auto backend = m_pConfig->getValue(kHardwareAccelerationKey, pFactory->preferredBackend());
+    int handleIdx = pFactory->findHandleIndexFromType(type);
+    if (handleIdx >= 0 && handleIdx < pFactory->getAvailableTypes().size()) {
+        supportedOptions = pFactory->getAvailableTypes()[handleIdx].supportedOptions(backend);
+    }
+#endif
+
     WaveformRendererSignalBase::Options currentOption = m_pConfig->getValue(
             kWaveformOptionsKey,
             WaveformRendererSignalBase::Option::None);
-    m_pConfig->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
-            enabled ? currentOption |
-                            option
-                    : currentOption ^
-                            option);
-    auto type = static_cast<WaveformWidgetType::Type>(
-            waveformTypeComboBox->currentData().toInt());
+    currentOption.setFlag(option, enabled);
+    // clear unsupported options
+    currentOption &= supportedOptions;
+    m_pConfig->setValue<int>(kWaveformOptionsKey, currentOption);
+
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(
             factory->findHandleIndexFromType(type), true);
@@ -350,6 +371,11 @@ void DlgPrefWaveform::slotUpdate() {
         overview_scale_allReplayGain->setChecked(true);
     }
 
+    bool overviewStereo = m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), true);
+    overviewStereoCheckBox->setChecked(overviewStereo);
+    m_pOverviewStereoControl->forceSet(overviewStereo);
+
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
@@ -395,10 +421,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
                     WaveformWidgetFactory::defaultType()),
             true);
 
-    allVisualGain->setValue(1.0);
-    lowVisualGain->setValue(1.0);
-    midVisualGain->setValue(1.0);
-    highVisualGain->setValue(1.0);
+    allVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::AllBand));
+    lowVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::Low));
+    midVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::Mid));
+    highVisualGain->setValue(WaveformWidgetFactory::getVisualGainDefault(BandIndex::High));
 
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
@@ -409,11 +435,14 @@ void DlgPrefWaveform::slotResetToDefaults() {
     waveformOverviewComboBox->setCurrentIndex(
             waveformOverviewComboBox->findData(QVariant::fromValue(OverviewType::RGB)));
 
+    // Default to overview stereo mode
+    overviewStereoCheckBox->setChecked(true);
+
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
 
     // Use "Global" waveform gain + ReplayGain if enabled
-    overview_scale_allReplayGain->setChecked(true);
+    overview_scale_allReplayGain->setChecked(!WaveformWidgetFactory::isOverviewNormalizedDefault());
 
     // 60FPS is the default
     frameRateSlider->setValue(60);
@@ -553,27 +582,26 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
 
 #ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    WaveformRendererSignalBase::Options supportedOption =
+    WaveformRendererSignalBase::Options supportedOptions =
             WaveformRendererSignalBase::Option::None;
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     int handleIdx = factory->findHandleIndexFromType(type);
-
-    if (handleIdx != -1) {
-        supportedOption = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
+    if (handleIdx >= 0 && handleIdx < factory->getAvailableTypes().size()) {
+        supportedOptions = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
     }
 
     splitLeftRightCheckBox->setEnabled(useWaveform &&
-            supportedOption &
-                    WaveformRendererSignalBase::Option::SplitStereoSignal);
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setEnabled(useWaveform &&
-            supportedOption &
-                    WaveformRendererSignalBase::Option::HighDetail);
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::HighDetail));
     splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
-            currentOptions &
-                    WaveformRendererSignalBase::Option::SplitStereoSignal);
+            (currentOptions &
+                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
-            currentOptions & WaveformRendererSignalBase::Option::HighDetail);
+            (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
 #else
     splitLeftRightCheckBox->setVisible(false);
     highDetailCheckBox->setVisible(false);
@@ -696,6 +724,11 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
     m_pOverviewMinuteMarkersControl->forceSet(draw);
 }
 
+void DlgPrefWaveform::slotSetOverviewStereoMode(bool stereo) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), stereo);
+    m_pOverviewStereoControl->forceSet(stereo);
+}
+
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
     frameRateAverage->setText(
             QString::number((double)frameRate, 'f', 2) + " : " +
@@ -765,10 +798,7 @@ void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     size_t numBytes = analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVEFORM) +
             analysisDao.getDiskUsageInBytes(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
 
-    // Display total cached waveform size in mebibytes with 2 decimals.
-    QString sizeMebibytes = QString::number(
-            numBytes / (1024.0 * 1024.0), 'f', 2);
-
+    QString sizeText = QLocale().formattedDataSize(numBytes, 1, QLocale::DataSizeSIFormat);
     waveformDiskUsage->setText(
-            tr("Cached waveforms occupy %1 MiB on disk.").arg(sizeMebibytes));
+            tr("Cached waveforms occupy %1 on disk.").arg(sizeText));
 }

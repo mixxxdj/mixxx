@@ -26,40 +26,11 @@ Have a bug or feature request? [File a bug on Github][fileabug].
 
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
-Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
 
-First, open a terminal (on Windows, use "**x64 Native Tools Command Prompt for
-[VS 2022][visualstudio2022]**"), download the mixxx
-source code and navigate to it:
-
-    $ git clone https://github.com/mixxxdj/mixxx.git
-    $ cd mixxx
-
-Download the required dependencies and set up the build environment by running the
-corresponding command for your operating system:
-
-| OS | Command | Requirements |
-| -- | ------- | ------------ |
-| Windows | `tools\windows_buildenv.bat` | ~2.5 GB download, ~9 GB disk space |
-| macOS | `source tools/macos_buildenv.sh setup` | ~1.5 GB download, ~3 GB disk space |
-| Debian/Ubuntu | `tools/debian_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
-| Fedora | `tools/rpm_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
-| Android | `tools/android_buildenv.sh setup` (see the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Building-for-Android)) | ~3.4 GB download, 13GB disk space |
-| Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) | |
-
-To build Mixxx, run
-
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ cmake --build .
-
-There should now be a `mixxx` executable in the current directory that you can
-run. Alternatively, can generate a package using `cpack`.
-
-Detailed build instructions for each target OS can be found [on the wiki](https://github.com/mixxxdj/mixxx/wiki#compile-mixxx-from-source-code)
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions, code style
+guidelines, and how to open a pull request.
 
 ## Documentation
 
@@ -105,13 +76,11 @@ license.
 [blog]: https://mixxx.org/news/
 [manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
-[visualstudio2022]: https://docs.microsoft.com/visualstudio/install/install-visual-studio?view=vs-2022
 [easybugs]: https://github.com/mixxxdj/mixxx/issues?q=is%3Aopen+is%3Aissue+label%3Aeasy
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
-[help translate content]: https://www.transifex.com/projects/p/mixxxdj
+[help translate content]: https://explore.transifex.com/mixxx-dj-software/
 [Mixxx i18n wiki]: https://github.com/mixxxdj/mixxx/wiki/Internationalization
 [Mixxx localization forum]: https://mixxx.discourse.group/c/translation/13
-[Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: https://manual.mixxx.org/2.3/en/hardware/manuals.html
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/

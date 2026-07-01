@@ -6,14 +6,21 @@ import QtQuick.Layouts
 import QtQuick.Shapes
 import Qt5Compat.GraphicalEffects
 import "Theme"
+import "Settings" as Settings
 
 Popup {
     id: root
 
-    property int activeCategoryIndex: 0
-    property list<string> sections: ["SoundHardware", "Library", "Controller", "Interface", "MixerEffect", "AutoDJ", "Broadcast", "Recording", "Analyzer", "StatsPerformance"]
-
+    property var activeCategory: null
+    property alias activeCategoryIndex: categoryList.currentIndex
     readonly property var manager: managerItem
+    property alias sections: managerItem.data
+
+    function updateActiveCategory() {
+        root.activeCategory?.deactivated();
+        root.activeCategory = managerItem.data[categoryList.currentIndex] ?? null;
+        root.activeCategory?.activated();
+    }
 
     background: Rectangle {
         anchors.fill: parent
@@ -54,6 +61,7 @@ Popup {
 
                         Text {
                             id: searchInputPlaceholder
+
                             anchors.verticalCenter: parent.verticalCenter
                             color: Theme.white
                             text: 'Search...'
@@ -61,6 +69,7 @@ Popup {
                         }
                         TextInput {
                             id: searchInput
+
                             anchors.verticalCenter: parent.verticalCenter
                             visible: parent.active
                             width: parent.width
@@ -81,9 +90,11 @@ Popup {
                     }
                     ListView {
                         id: categoryList
+
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         clip: true
+                        currentIndex: 0
                         focus: true
                         model: sectionProperties
                         visible: !searchSetting.active
@@ -98,6 +109,7 @@ Popup {
 
                             Image {
                                 id: handleImage
+
                                 anchors.left: parent.left
                                 anchors.leftMargin: 8
                                 anchors.verticalCenter: parent.verticalCenter
@@ -129,6 +141,7 @@ Popup {
                     }
                     ListView {
                         id: settingResultList
+
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         clip: true
@@ -193,9 +206,8 @@ Popup {
                 Rectangle {
                     id: tabBar
 
-                    readonly property var categoryItem: categoriesLoader.itemAt(categoryList.currentIndex) ? categoriesLoader.itemAt(categoryList.currentIndex).item : null
-                    readonly property int selectedIndex: categoryItem && categoryItem.selectedIndex !== undefined ? categoryItem.selectedIndex : 0
-                    readonly property var tabs: categoryItem ? categoryItem.tabs : []
+                    readonly property int selectedIndex: root.activeCategory?.selectedIndex ?? 0
+                    readonly property var tabs: root.activeCategory?.tabs ?? []
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: 30
@@ -220,57 +232,75 @@ Popup {
                                 text: modelData
 
                                 onPressed: {
-                                    categoriesLoader.itemAt(categoryList.currentIndex).item.selectedIndex = index;
+                                    if (root.activeCategory?.selectedIndex || root.activeCategory?.selectedIndex === 0) {
+                                        root.activeCategory.selectedIndex = index;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
                 Mixxx.SettingParameterManager {
                     id: managerItem
+
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Layout.leftMargin: 20
 
-                    Repeater {
-                        id: categoriesLoader
-                        model: root.sections
-
-                        Loader {
-                            id: category
-
-                            required property int index
-                            required property var modelData
-
-                            anchors.fill: parent
-                            source: `Settings/${modelData}.qml`
-                            visible: categoryList.currentIndex == index
-
-                            // asynchronous: true // Unsupported
-                            onLoaded: {
-                                for (let i = sectionProperties.count; i < index; i++)
-                                    sectionProperties.append({});
-                                sectionProperties.set(index, {
-                                        "label": category.item.label
-                                });
-                            }
-
-                            Connections {
-                                function onActivated() {
-                                    categoryList.currentIndex = index;
-                                }
-
-                                target: category.item
-                            }
+                    Component.onCompleted: {
+                        let activateBuilder = index => function () {
+                                categoryList.currentIndex = index;
+                            };
+                        let visibleBuilder = index => function () {
+                                return categoryList.currentIndex == index;
+                            };
+                        for (let index = 0; index < data.length; index++) {
+                            let child = data[index];
+                            if (!child.label)
+                                continue;
+                            sectionProperties.append({
+                                label: child.label
+                            });
+                            child.visible = Qt.binding(visibleBuilder(index));
+                            child.activated.connect(activateBuilder(index));
+                            child.anchors.fill = this;
                         }
+                        // This is needed to ensure the right category is displayed.
+                        // It would seems there is a bug, where the component's layout appears out of date.
+                        // Setting the value to its current one seems to be triggering a component update which help fixing the layout
+                        root.activeCategoryIndex = root.activeCategoryIndex;
+                    }
+
+                    Settings.SoundHardware {
+                    }
+                    Settings.Library {
+                    }
+                    Settings.Controller {
+                    }
+                    Settings.Interface {
+                    }
+                    Settings.MixerEffect {
+                    }
+                    Settings.AutoDJ {
+                    }
+                    Settings.Broadcast {
+                    }
+                    Settings.Recording {
+                    }
+                    Settings.Analyzer {
+                    }
+                    Settings.StatsPerformance {
                     }
                 }
             }
         }
     }
 
+    onActiveCategoryIndexChanged: updateActiveCategory()
+    onSectionsChanged: updateActiveCategory()
+
     ListModel {
         id: sectionProperties
+
     }
 }

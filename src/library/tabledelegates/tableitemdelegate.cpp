@@ -41,7 +41,7 @@ void TableItemDelegate::paint(
     initStyleOption(&opt, index);
 
     if (opt.state & QStyle::State_Selected) {
-        setHighlightedTextColor(opt, index);
+        setTextColor(opt, index);
     }
 
     QBrush brush;

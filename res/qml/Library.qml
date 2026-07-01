@@ -17,90 +17,98 @@ Item {
 
     LibraryComponent.SourceTree {
         id: librarySources
-    }
 
+    }
     SplitView {
         id: librarySplitView
-        orientation: Qt.Horizontal
+
         anchors.fill: parent
+        orientation: Qt.Horizontal
 
         handle: Rectangle {
             id: handleDelegate
-            implicitWidth: 8
-            implicitHeight: 8
-            color: Theme.panelSplitterBackground
-            clip: true
+
             property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
             property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
 
-            ColumnLayout {
-                anchors.centerIn: parent
-                Repeater {
-                    model: 3
-                    Rectangle {
-                        width: handleSize
-                        height: handleSize
-                        radius: handleSize
-                        color: handleColor
-                    }
-                }
-            }
+            clip: true
+            color: Theme.panelSplitterBackground
+            implicitHeight: 8
+            implicitWidth: 8
 
             containmentMask: Item {
-                x: (handleDelegate.width - width) / 2
-                width: 8
                 height: librarySplitView.height
+                width: 8
+                x: (handleDelegate.width - width) / 2
+            }
+
+            ColumnLayout {
+                anchors.centerIn: parent
+
+                Repeater {
+                    model: 3
+
+                    Rectangle {
+                        color: handleColor
+                        height: handleSize
+                        radius: handleSize
+                        width: handleSize
+                    }
+                }
             }
         }
 
         SplitView {
             id: sideBarSplitView
-            SplitView.minimumWidth: 100
-            SplitView.preferredWidth: 415
-            SplitView.maximumWidth: 600
 
+            SplitView.maximumWidth: 550
+            SplitView.minimumWidth: 150
+            SplitView.preferredWidth: root.width * 0.15
             orientation: Qt.Vertical
 
             handle: Rectangle {
                 id: handleDelegate
-                implicitWidth: 8
-                implicitHeight: 8
-                color: Theme.panelSplitterBackground
-                clip: true
+
                 property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
                 property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
 
+                clip: true
+                color: Theme.panelSplitterBackground
+                implicitHeight: 8
+                implicitWidth: 8
+
+                containmentMask: Item {
+                    height: 8
+                    width: sideBarSplitView.width
+                    x: (handleDelegate.width - width) / 2
+                }
+
                 RowLayout {
                     anchors.centerIn: parent
+
                     Repeater {
                         model: 3
+
                         Rectangle {
-                            width: handleSize
+                            color: handleColor
                             height: handleSize
                             radius: handleSize
-                            color: handleColor
+                            width: handleSize
                         }
                     }
                 }
-
-                containmentMask: Item {
-                    x: (handleDelegate.width - width) / 2
-                    height: 8
-                    width: sideBarSplitView.width
-                }
             }
+
             LibraryComponent.Browser {
+                SplitView.fillHeight: true
                 SplitView.minimumHeight: 200
                 SplitView.preferredHeight: 500
-                SplitView.fillHeight: true
-
                 model: root.sidebar
             }
-
             Skin.PreviewDeck {
+                SplitView.maximumHeight: 200
                 SplitView.minimumHeight: 100
                 SplitView.preferredHeight: 100
-                SplitView.maximumHeight: 200
             }
         }
         LibraryComponent.TrackList {
@@ -108,7 +116,6 @@ Item {
 
             // FIXME: this is necessary to prevent the header label to render outside of the table when horizontally scrolling: https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-3311914346
             clip: true
-
             model: root.sidebar.tracklist
         }
     }

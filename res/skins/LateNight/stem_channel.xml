@@ -14,7 +14,7 @@
         <StemNum><Variable name="StemNum"/></StemNum>
         <Alignment>left</Alignment>
         <Elide>right</Elide>
-        <Size>50,26</Size>
+        <Size>50f,26f</Size>
         <Text></Text>
       </StemLabel>
 

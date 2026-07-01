@@ -79,7 +79,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
   private:
     QString formatRootViewHtml() const;
     std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
-            const QString& playlist) override;
+            const QVariant& data) override;
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     parented_ptr<RekordboxPlaylistModel> m_pRekordboxPlaylistModel;

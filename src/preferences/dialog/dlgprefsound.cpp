@@ -263,6 +263,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             kAppGroup, QStringLiteral("output_latency_ms"), this);
     m_pOutputLatencyMs->connectValueChanged(this, &DlgPrefSound::outputLatencyChanged);
 
+    connect(btnResetBufferUnderflowCount,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSound::slotResetUnderflowCounter);
+
     // TODO: remove this option by automatically disabling/enabling the main mix
     // when recording, broadcasting, headphone, and main outputs are enabled/disabled
     m_pMainEnabled =
@@ -334,6 +339,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     tr("Find details in the Mixxx user manual"),
                     MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES);
     deckBusHint->setText(deckBusHintStr);
+
+    // Append a ':' to separate latency/underflow labels from values.
+    // (append here to keep existing tr strings)
+    latencyLabel->setText(latencyLabel->text() + ':');
+    underflowLabel->setText(underflowLabel->text() + ':');
 }
 
 /// Slot called when the preferences dialog is opened.
@@ -963,6 +973,10 @@ void DlgPrefSound::slotResetToDefaults() {
 void DlgPrefSound::bufferUnderflow(double count) {
     bufferUnderflowCount->setText(QString::number(count));
     update();
+}
+
+void DlgPrefSound::slotResetUnderflowCounter() {
+    m_pSoundManager->resetUnderflowCount();
 }
 
 void DlgPrefSound::outputLatencyChanged(double latency) {

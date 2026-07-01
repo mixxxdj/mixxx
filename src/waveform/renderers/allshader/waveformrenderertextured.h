@@ -75,7 +75,7 @@ class allshader::WaveformRendererTextured final : public allshader::WaveformRend
     ::WaveformRendererSignalBase::Options m_options;
     bool m_shadersValid;
     WaveformWidgetType::Type m_type;
-    const QString m_pFragShader;
+    const QString m_fragShader;
     std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
 };
 

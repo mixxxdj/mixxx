@@ -13,6 +13,7 @@
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlconfigproxybase.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"
 #include "skin/skinloader.h"
@@ -20,6 +21,7 @@
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/widgethelper.h"
+#include "waveform/waveformwidgetfactory.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -60,18 +62,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_dDevicePixelRatio(1.0) {
     setupUi(this);
 
-    // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
-    m_dDevicePixelRatio = devicePixelRatioF();
-
-    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
-    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
-    // unusable GUI with visual artefacts
-    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
-    if (initialScaleFactor <= 0) {
-        initialScaleFactor = 1.0;
-    }
-    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
-    m_minScaleFactor = 1 / unscaledDevicePixelRatio;
+    updateScreenMetrics();
 
     // Locale setting
     // Iterate through the available locales and add them to the combobox
@@ -234,15 +225,36 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
-    if (!pScreen) {
-        // Obtain the primary screen. This is necessary if no window is
-        // available before the widget is displayed.
-        pScreen = qGuiApp->primaryScreen();
-    }
+    QScreen* pScreen = mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     DEBUG_ASSERT(pScreen);
     return pScreen;
+}
+
+void DlgPrefInterface::updateScreenMetrics() {
+    QScreen* pScreen = getScreen();
+    if (pScreen) {
+        // Use the resolved application screen instead of this page's DPR. In
+        // QML mode the preferences dialog can be constructed before the QML
+        // window exists, and this page might not yet be associated with the
+        // correct monitor.
+        m_dDevicePixelRatio = pScreen->devicePixelRatio();
+    } else {
+        m_dDevicePixelRatio = devicePixelRatioF();
+    }
+
+    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
+    // unusable GUI with visual artefacts
+    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScaleFactor <= 0) {
+        initialScaleFactor = 1.0;
+    }
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
+    if (unscaledDevicePixelRatio > 0) {
+        m_minScaleFactor = 1 / unscaledDevicePixelRatio;
+    } else {
+        m_minScaleFactor = 1.0;
+    }
 }
 
 void DlgPrefInterface::slotUpdateSkins() {
@@ -271,7 +283,7 @@ void DlgPrefInterface::slotUpdateSkins() {
     const QList<SkinPointer> userSkins = m_pSkinLoader->getUserSkins();
     int index = 0;
     for (const SkinPointer& pSkin : userSkins) {
-        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->name());
+        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->displayName(), pSkin->name());
         m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
@@ -288,7 +300,7 @@ void DlgPrefInterface::slotUpdateSkins() {
     const QList<SkinPointer> systemSkins = m_pSkinLoader->getSystemSkins();
     for (const SkinPointer& pSkin : systemSkins) {
         ComboBoxSkinconf->insertItem(
-                index, systemSkinIcon, pSkin->name());
+                index, systemSkinIcon, pSkin->displayName(), pSkin->name());
         m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
@@ -341,6 +353,8 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
+    updateScreenMetrics();
+
     if (m_pSkinLoader) {
         slotUpdateSkins();
 
@@ -350,7 +364,7 @@ void DlgPrefInterface::slotUpdate() {
         } else {
             m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
         }
-        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
+        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findData(m_skinNameOnUpdate));
         slotUpdateSchemes();
     }
 
@@ -378,7 +392,7 @@ void DlgPrefInterface::slotUpdate() {
 
 void DlgPrefInterface::slotResetToDefaults() {
     if (m_pSkinLoader) {
-        int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+        int index = ComboBoxSkinconf->findData(m_pSkinLoader->getDefaultSkinName());
         ComboBoxSkinconf->setCurrentIndex(index);
         slotSetSkin(index);
     }
@@ -425,6 +439,8 @@ void DlgPrefInterface::slotSetTooltips() {
         m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
         m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
+    } else if (radioButtonTooltipsOnlyKbdShortcuts->isChecked()) {
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyKbdShortcuts;
     }
 }
 
@@ -434,6 +450,13 @@ void DlgPrefInterface::notifyRebootNecessary() {
             tr("Information"),
             tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
                "settings will take effect."));
+}
+
+void DlgPrefInterface::notifyExperimentalQmlSkinRestartNecessary() {
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted with the --developer command line option "
+               "to use the experimental LateNight QML skin."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -481,7 +504,7 @@ void DlgPrefInterface::slotSetSkin(int) {
         return;
     }
 
-    QString newSkinName = ComboBoxSkinconf->currentText();
+    QString newSkinName = ComboBoxSkinconf->currentData().toString();
     if (newSkinName == m_pSkin->name()) {
         return;
     }
@@ -569,11 +592,30 @@ void DlgPrefInterface::slotApply() {
     if (m_pSkin &&
             (m_pSkin->name() != m_skinNameOnUpdate ||
                     m_colorScheme != m_colorSchemeOnUpdate)) {
-        // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
-        emit reloadUserInterface();
-        // Allow switching skins multiple times without closing the dialog
-        m_skinNameOnUpdate = m_pSkin->name();
-        m_colorSchemeOnUpdate = m_colorScheme;
+        if (m_pSkin->type() == mixxx::skin::SkinType::QML) {
+            if (m_pSkin->name() != m_skinNameOnUpdate) {
+                notifyExperimentalQmlSkinRestartNecessary();
+                m_skinNameOnUpdate = m_pSkin->name();
+                m_colorSchemeOnUpdate = m_colorScheme;
+                return;
+            } else {
+                if (mixxx::qml::QmlConfigProxyBase::s_pInstance) {
+                    mixxx::qml::QmlConfigProxyBase::s_pInstance->setConfigScheme(m_colorScheme);
+                }
+                m_colorSchemeOnUpdate = m_colorScheme;
+            }
+        } else if (!WaveformWidgetFactory::isCreated()) {
+            notifyExperimentalQmlSkinRestartNecessary();
+            m_skinNameOnUpdate = m_pSkin->name();
+            m_colorSchemeOnUpdate = m_colorScheme;
+            return;
+        } else {
+            // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
+            emit reloadUserInterface();
+            // Allow switching skins multiple times without closing the dialog
+            m_skinNameOnUpdate = m_pSkin->name();
+            m_colorSchemeOnUpdate = m_colorScheme;
+        }
     }
 }
 
@@ -591,6 +633,9 @@ void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
         break;
     case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+        radioButtonTooltipsOnlyKbdShortcuts->setChecked(true);
         break;
     case mixxx::preferences::Tooltips::On:
     default:

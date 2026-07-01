@@ -2,6 +2,10 @@
 
 #include <float.h>
 
+#if __has_include(<valgrind/valgrind.h>)
+#include <valgrind/valgrind.h>
+#endif
+
 #include <QRegularExpression>
 #include <QThread>
 #include <QtDebug>
@@ -1032,9 +1036,16 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
-        } else {
+#if __has_include(<valgrind/valgrind.h>)
+        if (RUNNING_ON_VALGRIND) {
+            qDebug() << "Skipping denormals to zero check: running under Valgrind";
+        } else
+#endif
+            VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
+                qWarning() << "Denormals to zero mode is not working. EQs and "
+                              "effects may suffer high CPU load";
+            }
+        else {
             qDebug() << "Denormals to zero mode is working";
         }
     }

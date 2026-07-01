@@ -11,6 +11,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
 #include "util/make_const_iterator.h"
@@ -170,7 +171,7 @@ void MidiController::createOutputHandlers() {
             if (m_logBase().isDebugEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
-                int numDecks = PlayerManager::numDecks();
+                int numDecks = PlayerInfo::instance().numDecks();
                 if (deckNum <= numDecks) {
                     failures.append(errorLog);
                 }
@@ -642,7 +643,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 QJSValue MidiController::makeInputHandler(unsigned char status,
         unsigned char control,
         const QJSValue& scriptCode) {
-    auto pJsEngine = getScriptEngine()->jsEngine();
+    auto pEngine = getScriptEngine();
+    if (pEngine == nullptr) {
+        return QJSValue();
+    }
+    auto pJsEngine = pEngine->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }

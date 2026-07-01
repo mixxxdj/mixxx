@@ -6,7 +6,7 @@ import "Theme"
 AbstractButton {
     id: root
 
-    required property color activeColor
+    property color activeColor: Theme.buttonActiveColor
     property bool highlight: false
     property color normalColor: Theme.buttonNormalColor
     property color pressedColor: activeColor
@@ -19,40 +19,40 @@ AbstractButton {
 
         Rectangle {
             id: backgroundImage
+
             anchors.fill: parent
-            color: Theme.darkGray2
-            radius: 0
-        }
-        InnerShadow {
-            id: bottomInnerEffect
-            anchors.fill: parent
-            color: "transparent"
-            horizontalOffset: -1
-            radius: 8
-            samples: 16
-            source: backgroundImage
-            spread: 0.3
-            verticalOffset: -1
-        }
-        InnerShadow {
-            id: topInnerEffect
-            anchors.fill: parent
-            color: "transparent"
-            horizontalOffset: 1
-            radius: 8
-            samples: 16
-            source: bottomInnerEffect
-            spread: 0.3
-            verticalOffset: 1
+            color: '#2B2B2B'
+            radius: 2
         }
         DropShadow {
-            id: dropEffect
-            anchors.fill: parent
-            color: Theme.darkGray
+            id: effect1
+
+            anchors.fill: backgroundImage
+            color: "#80000000"
             horizontalOffset: 0
-            radius: 4.0
-            source: topInnerEffect
+            radius: 1.0
+            source: backgroundImage
             verticalOffset: 0
+        }
+        InnerShadow {
+            id: effect2
+
+            anchors.fill: backgroundImage
+            color: "#353535"
+            horizontalOffset: 1
+            radius: 1
+            samples: 16
+            source: effect1
+            verticalOffset: 1
+        }
+        InnerShadow {
+            anchors.fill: backgroundImage
+            color: "#353535"
+            horizontalOffset: -1
+            radius: 1
+            samples: 16
+            source: effect2
+            verticalOffset: -1
         }
     }
     contentItem: Item {
@@ -60,6 +60,7 @@ AbstractButton {
 
         Glow {
             id: labelGlow
+
             anchors.fill: parent
             color: label.color
             radius: 1
@@ -68,6 +69,7 @@ AbstractButton {
         }
         Label {
             id: label
+
             anchors.fill: parent
             color: root.normalColor
             font.bold: true
@@ -81,6 +83,7 @@ AbstractButton {
         }
         Image {
             id: image
+
             anchors.centerIn: parent
             asynchronous: true
             fillMode: Image.PreserveAspectFit
@@ -103,7 +106,7 @@ AbstractButton {
             when: root.pressed
 
             PropertyChanges {
-                color: root.checked ? Theme.accentColor : Theme.darkGray3
+                color: root.checked ? "#3a60be" : Theme.darkGray3
                 target: backgroundImage
             }
             PropertyChanges {
@@ -120,7 +123,7 @@ AbstractButton {
             when: (root.highlight || root.checked) && !root.pressed
 
             PropertyChanges {
-                color: Theme.accentColor
+                color: "#2D4EA1"
                 target: backgroundImage
             }
             PropertyChanges {
@@ -130,14 +133,6 @@ AbstractButton {
             PropertyChanges {
                 target: labelGlow
                 visible: true
-            }
-            PropertyChanges {
-                color: Qt.darker(Theme.accentColor, 3)
-                target: bottomInnerEffect
-            }
-            PropertyChanges {
-                color: Qt.darker(Theme.accentColor, 3)
-                target: topInnerEffect
             }
         },
         State {

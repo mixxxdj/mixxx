@@ -36,25 +36,25 @@ IF /I "%PLATFORM%"=="arm64" (
     IF DEFINED BUILDENV_RELEASE (
         SET BUILDENV_BRANCH=2.6-rel
         SET VCPKG_TARGET_TRIPLET=arm64-windows-release
-        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-rel-da4c207
-        SET BUILDENV_SHA256=1225f0a71a1dd624b14f6b2148cc01305496f11ba2bcbff8638ecf2e1e995702
+        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-rel-f46c645
+        SET BUILDENV_SHA256=9492dac4bab0f14a48aa00ee1fdbc3c668893eb6b5f13c7442f7fc6ca5ee3145
     ) ELSE (
         SET BUILDENV_BRANCH=2.6
         SET VCPKG_TARGET_TRIPLET=arm64-windows
-        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-c2def9b
-        SET BUILDENV_SHA256=9918615b607045f5907e051d84f40180ec7392b84e46bed571dc6bf97438303d
+        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-aa78b5a
+        SET BUILDENV_SHA256=50fd23c4e64b530bca0389e93c9efcbe3d9695ec1274cbccc876e38b966d0726
     )
 ) ELSE IF /I "%PLATFORM%"=="x64" (
     IF DEFINED BUILDENV_RELEASE (
         SET BUILDENV_BRANCH=2.6-rel
         SET VCPKG_TARGET_TRIPLET=x64-windows-release
-        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-da4c207
-        SET BUILDENV_SHA256=62d4d7249a7e49ef96d4b96b380e23426dd714eaa9ae415e7a66a587a71e9a27
+        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-f46c645
+        SET BUILDENV_SHA256=bab7e63f463168df88f6bc0677dd0bf0d160b138696ec5d56b387083033fe2e5
     ) ELSE (
         SET BUILDENV_BRANCH=2.6
         SET VCPKG_TARGET_TRIPLET=x64-windows
-        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-c2def9b
-        SET BUILDENV_SHA256=01df9fdc8154f96184281a934e73eb4202e4f29452ecc888053c747f7a745d4f
+        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-aa78b5a
+        SET BUILDENV_SHA256=2628755773bed4e25233f9b9951c363ccebac23ca917ea91e9a93c70428b6648
     )
 ) ELSE (
     ECHO ^ERROR: Unsupported PLATFORM: %PLATFORM%
@@ -161,7 +161,8 @@ EXIT /B 0
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
     SET CMakeSettings=%MIXXX_ROOT%\CMakeSettings.json
     IF EXIST "%CMakeSettings%" (
-        FOR /f "delims=" %%a in ('wmic OS Get localdatetime ^| find "."') do set DateTime=%%a
+        REM Use PowerShell to generate timestamp (wmic removed on Win11 25H2)
+        for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do set DateTime=%%i
         SET CMakeSettingsBackup=CMakeSettings_!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
         ECHO CMakeSettings.json already exists, creating backup at "!CMakeSettingsBackup!"...
         REN "%CMakeSettings%" "!CMakeSettingsBackup!"

@@ -4,16 +4,16 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "library/library_prefs.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
 #include "util/dnd.h"
 
-constexpr int expand_time = 250;
-
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
+          m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault),
           m_lastDragMoveAccepted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
@@ -65,9 +65,20 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
     // QTreeView::dragEnterEvent(pEvent);
 }
 
+/// Drag leave event, happens when leaving and when the drag is aborted, eg. with Esc.
+/// We override this only to reset the drag hover property.
+void WLibrarySidebar::dragLeaveEvent(QDragLeaveEvent* pEvent) {
+    // qDebug() << "WLibrarySidebar::dragLeaveEvent";
+    toggleDragHoverPropertyAndUpdateStyle(false);
+
+    QTreeView::dragLeaveEvent(pEvent);
+}
+
 /// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
-    // qDebug() << "dragMoveEvent" << pEvent->mimeData()->formats();
+    // qDebug() << "WLibrarySidebar::dragMoveEvent" << pEvent->mimeData()->formats();
+    toggleDragHoverPropertyAndUpdateStyle(true);
+
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint pos = pEvent->position().toPoint();
 #else
@@ -79,10 +90,13 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
         return;
     }
 
-    // Start a timer to auto-expand sections the user hovers on
-    m_expandTimer.stop();
     m_hoverIndex = index;
-    m_expandTimer.start(expand_time, this);
+
+    if (m_hoverExpandDelay >= 0) {
+        // Timeout of < 0 disables auto-expand
+        m_expandTimer.stop();
+        m_expandTimer.start(m_hoverExpandDelay, this);
+    }
 
     // This has to be here instead of after, otherwise all drags will be
     // rejected -- rryan 3/2011
@@ -134,7 +148,10 @@ void WLibrarySidebar::timerEvent(QTimerEvent* pEvent) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
+    // qDebug() << "WLibrarySidebar::dropEvent";
     resetHoverIndexAndDragMoveResult();
+    toggleDragHoverPropertyAndUpdateStyle(false);
+
     if (!pEvent->mimeData()->hasUrls()) {
         pEvent->ignore();
         return;
@@ -169,6 +186,18 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     } else {
         pEvent->ignore();
     }
+}
+
+void WLibrarySidebar::toggleDragHoverPropertyAndUpdateStyle(bool enabled) {
+    // Set a custom QWidget property that allows to style drag-hovered items.
+    // WLibrarySidebar[dragHover="true"]::item:hover {
+    //   border: 1px solid white;
+    // }
+    // Then force-refresh the style.
+    setProperty("dragHover", enabled);
+    style()->unpolish(this);
+    style()->polish(this);
+    update();
 }
 
 void WLibrarySidebar::resetHoverIndexAndDragMoveResult() {
@@ -465,4 +494,8 @@ void WLibrarySidebar::slotSetFont(const QFont& font) {
     // Resize the feature icons to be a bit taller than the label's capital
     int iconSize = static_cast<int>(QFontMetrics(font).height() * 0.8);
     setIconSize(QSize(iconSize, iconSize));
+}
+
+void WLibrarySidebar::slotSetExpandOnHoverDelay(int delay) {
+    m_hoverExpandDelay = delay;
 }

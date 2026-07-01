@@ -17,9 +17,9 @@ class QItemSelection;
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgAnalysis(WLibrary *parent,
-               UserSettingsPointer pConfig,
-               Library* pLibrary);
+    DlgAnalysis(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            Library* pLibrary);
     ~DlgAnalysis() override = default;
 
     void onSearch(const QString& text) override;
@@ -34,13 +34,14 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
-                               const QItemSelection& deselected);
+            const QItemSelection& deselected);
     void selectAll();
     void analyze();
     void slotAnalysisActive(bool bActive);
     void onTrackAnalysisSchedulerProgress(AnalyzerProgress analyzerProgress, int finishedCount, int totalCount);
     void onTrackAnalysisSchedulerFinished();
     void slotShowRecentSongs();
+    void slotRecentDaysChanged(int days);
     void slotShowAllSongs();
     void installEventFilter(QObject* pFilter);
 
@@ -52,7 +53,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void trackSelected(TrackPointer pTrack);
 
   private:
-    //Note m_pTrackTablePlaceholder is defined in the .ui file
+    void keyPressEvent(QKeyEvent* pEvent) override;
+    // Note m_pTrackTablePlaceholder is defined in the .ui file
     UserSettingsPointer m_pConfig;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;

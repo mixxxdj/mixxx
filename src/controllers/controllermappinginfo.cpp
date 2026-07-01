@@ -8,17 +8,65 @@
 
 Q_LOGGING_CATEGORY(kLogger, "controllers.mappinginfo")
 
+namespace {
+// Sanitize a string to a version number, often extracted from the XML property,
+// which aims to contain a Mixxx version, from which a given mapping is
+// supported. In the current official mapping included in the code base, we have
+// a variety of format such as "1.0.0" (correct semver), "2.4" (partial semver),
+// "1.7.0+", "1.10.0-beta1+" or ""  (invalid semver)
+QVersionNumber sanitizeVersion(QString rawVersion) {
+    return !rawVersion.isEmpty()
+            ? QVersionNumber::fromString(rawVersion.remove(QChar('+')))
+            : QVersionNumber();
+}
+} // namespace
+
+bool operator==(const ProductInfo& a, const ProductInfo& b) {
+    return a.protocol == b.protocol &&
+            a.vendor_id == b.vendor_id &&
+            a.product_id == b.product_id &&
+            a.interface_number == b.interface_number &&
+            a.usage_page == b.usage_page &&
+            a.usage == b.usage &&
+            a.in_epaddr == b.in_epaddr &&
+            a.out_epaddr == b.out_epaddr;
+}
+
+size_t qHash(const ProductInfo& product) {
+    return qHash(product.protocol) +
+            qHash(product.vendor_id) +
+            qHash(product.product_id) +
+            qHash(product.interface_number) +
+            qHash(product.usage_page) +
+            qHash(product.usage) +
+            qHash(product.in_epaddr) +
+            qHash(product.out_epaddr);
+}
+
+QDebug operator<<(QDebug dbg, const ProductInfo& product) {
+    dbg << QStringLiteral(
+            "ProductInfo<protocol=%1, friendlyName=%2, vendor_id=%3, "
+            "product_id=%4, interface_number=%5>")
+                    .arg(product.protocol,
+                            product.friendlyName,
+                            product.vendor_id,
+                            product.product_id,
+                            product.interface_number);
+    return dbg;
+}
+
 MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
     // Parse only the <info> header section from a controller description XML file
     // using a streaming parser to avoid loading/parsing the entire (potentially
     // very large) XML file.
     // Contents parsed by xml path:
-    // info.name        Mapping name, used for drop down menus in dialogs
-    // info.author      Mapping author
-    // info.description Mapping description
-    // info.forums      Link to mixxx forum discussion for the mapping
-    // info.wiki        Link to mixxx wiki for the mapping
-    // info.devices.product List of device matches, specific to device type
+    // MixxxControllerPreset The minimum supported Mixxx version
+    // info.name             Mapping name, used for drop down menus in dialogs
+    // info.author           Mapping author
+    // info.description      Mapping description
+    // info.forums           Link to mixxx forum discussion for the mapping
+    // info.wiki             Link to mixxx wiki for the mapping
+    // info.devices.product  List of device matches, specific to device type
     m_path = fileInfo.absoluteFilePath();
     m_dirPath = fileInfo.dir().absolutePath();
 
@@ -94,6 +142,16 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
                 }
             }
 
+            if (xmlElementName == QStringLiteral("MixxxControllerPreset") &&
+                    xmlHierachyDepth == 1) {
+                QXmlStreamAttributes xmlElementAttributes = xml.attributes();
+                auto mixxxVersion =
+                        xmlElementAttributes
+                                .value(QStringLiteral("mixxxVersion"))
+                                .toString();
+                m_mixxxVersion = sanitizeVersion(mixxxVersion);
+            }
+
         } else if (token == QXmlStreamReader::EndElement) {
             const QString name = xml.name().toString();
 
@@ -145,6 +203,9 @@ ProductInfo MappingInfo::parseBulkProduct(const QXmlStreamAttributes& xmlElement
     productInfo.interface_number =
             xmlElementAttributes.value(QStringLiteral("interface_number"))
                     .toString();
+    productInfo.friendlyName = xmlElementAttributes.value("friendly_name").toString();
+
+    productInfo.visualUrl = QUrl(xmlElementAttributes.value("image").toString());
     return productInfo;
 }
 

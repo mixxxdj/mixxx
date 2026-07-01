@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QList>
+#include <optional>
 
-#include "waveformmark.h"
 #include "skin/legacy/skincontext.h"
-
+#include "waveformmark.h"
 
 // This class helps share code between the WaveformRenderMark and WOverview
 // constructors and allows to iterate over the orders marks that have to be
@@ -60,24 +60,6 @@ class WaveformMarkSet {
         }
     }
 
-    template<typename Receiver, typename Slot>
-    void connectTypeChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectTypeChanged(receiver, slot);
-            }
-        }
-    }
-
-    template<typename Receiver, typename Slot>
-    void connectStatusChanged(Receiver receiver, Slot slot) const {
-        for (const auto& pMark : std::as_const(m_marks)) {
-            if (pMark->isValid()) {
-                pMark->connectStatusChanged(receiver, slot);
-            }
-        }
-    }
-
     inline QList<WaveformMarkPointer>::const_iterator begin() const {
         return m_marksToRender.begin();
     }
@@ -103,13 +85,15 @@ class WaveformMarkSet {
     void clear() {
         m_marks.clear();
         m_marksToRender.clear();
+        m_hotCueMarks.clear();
+        m_pDefaultMark.reset();
     }
 
     void addMark(WaveformMarkPointer pMark) {
         m_marks.push_back(pMark);
     }
 
-    void setDefault(const QString& group,
+    std::optional<WaveformMark::WaveformMarkConstructionError> setDefault(const QString& group,
             const DefaultMarkerStyle& model,
             const WaveformSignalColors& signalColors = {});
 

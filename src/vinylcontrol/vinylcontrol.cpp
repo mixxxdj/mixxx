@@ -3,10 +3,12 @@
 #include "control/controlproxy.h"
 #include "moc_vinylcontrol.cpp"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "waveform/visualplayposition.h"
 
 VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
         : m_pConfig(pConfig),
           m_group(group),
+          m_visualPlayPos(VisualPlayPosition::getVisualPlayPosition(group)),
           m_passthroughEnabled(PollingControlProxy(m_group, QStringLiteral("passthrough"))),
           m_scratchPositionEnabled(PollingControlProxy(
                   m_group, QStringLiteral("scratch_position_enable"))),
@@ -22,9 +24,6 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
     double gain = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "gain"))
             .toDouble(&gainOk);
     m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
-
-    // Range: 0 to 1.0
-    playPos = new ControlProxy(group, "playposition", this);
     trackSamples = new ControlProxy(group, "track_samples", this);
     trackSampleRate = new ControlProxy(group, "track_samplerate", this);
     vinylSeek = new ControlProxy(group, "vinylcontrol_seek", this);

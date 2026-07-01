@@ -3,6 +3,7 @@
 #include "library/coverartutils.h"
 #include "library/library_decl.h"
 #include "library/queryutil.h"
+#include "library/scanner/importfilestask.h"
 #include "library/scanner/libraryscannerdlg.h"
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/scannertask.h"
@@ -103,6 +104,9 @@ LibraryScanner::LibraryScanner(
           m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
+          m_numRelocatedTracks(0),
+          m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
+          m_canceled(false),
           m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
@@ -118,35 +122,34 @@ LibraryScanner::LibraryScanner(
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
 
-    m_pProgressDlg.reset(new LibraryScannerDlg());
     connect(this,
             &LibraryScanner::progressLoading,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(this,
             &LibraryScanner::progressHashing,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(this,
             &LibraryScanner::scanStarted,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotScanStarted);
     connect(this,
             &LibraryScanner::scanFinished,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotScanFinished);
-    connect(m_pProgressDlg.data(),
+    connect(m_pProgressDlg.get(),
             &LibraryScannerDlg::scanCancelled,
             this,
             &LibraryScanner::slotCancel,
             Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::progressVerifyTracksOutside,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdate);
     connect(&m_trackDao,
             &TrackDAO::progressCoverArt,
-            m_pProgressDlg.data(),
+            m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdateCover);
 }
 
@@ -187,23 +190,28 @@ void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
 
+    m_canceled = false;
     cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
-    // If there are no directories then we have nothing to do. Cleanup and
-    // finish the scan immediately.
-    if (m_libraryRootDirs.isEmpty()) {
+    // If there are no directories then we still have to scan independently added tracks.
+    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
+
+    if (m_libraryRootDirs.isEmpty() && trackLocations.isEmpty()) {
+        // Nothing to do. noDirectoriesConfigured == true will show the "no dirs" message.
+        LibraryScanResultSummary result;
+        result.autoscan = m_manualScan;
+        result.noDirectoriesConfigured = true;
+
         changeScannerState(IDLE);
+        emit scanSummary(result);
         return;
     }
     changeScannerState(SCANNING);
-
-    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     // Store number of existing tracks so we can calculate the number
     // of missing tracks in slotFinishUnhashedScan().
     m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();
-    m_numPreviouslyExistingTracks = m_trackDao.getAllExistingTrackLocations().size();
     QHash<QString, mixxx::cache_key_t> directoryHashes = m_libraryHashDao.getDirectoryHashes();
     QRegularExpression extensionFilter(SoundSourceProxy::getSupportedFileNamesRegex());
     QRegularExpression coverExtensionFilter =
@@ -530,7 +538,7 @@ void LibraryScanner::cancelAndQuit() {
 void LibraryScanner::cancel() {
     DEBUG_ASSERT(m_state == CANCELING);
 
-
+    m_canceled = true;
     // we need to make a local copy because cancel is called
     // from any thread but m_scannerGlobal may be cleared
     // in the LibraryScanner thread in the meanwhile
@@ -553,6 +561,21 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
         m_pool.clear();
         return;
     }
+
+    // Fetch number of files to be processed and add them to the total tasks
+    // for the progress dialog to set the value of the progress bar later on.
+    // Note that there may also be an unknown number of tasks for files
+    // outside the library directories. We deal with that in DlgLibraryScanProgress.
+    ImportFilesTask* pFileTask = qobject_cast<ImportFilesTask*>(pTask);
+    if (pFileTask) {
+        // Track and cover files
+        int numFiles = pFileTask->numFilesToImport();
+        m_pProgressDlg->addQueuedTasks(numFiles);
+    } else {
+        // RecursiveScanDirectoryTask, queues exactly one directory
+        m_pProgressDlg->addQueuedTasks(1);
+    }
+
     m_scannerGlobal->getTaskWatcher().watchTask();
     connect(pTask,
             &ScannerTask::queueTask,
@@ -575,25 +598,29 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
             this,
             &LibraryScanner::slotAddNewTrack);
 
-    // Progress signals.
-    // Pass directly to the main thread
-    connect(pTask,
-            &ScannerTask::progressLoading,
-            this,
-            &LibraryScanner::progressLoading);
-    connect(pTask,
-            &ScannerTask::progressHashing,
-            this,
-            &LibraryScanner::progressHashing);
-
     m_pool.start(pTask);
 }
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, mixxx::cache_key_t hash) {
     ScopedTimer timer(QStringLiteral("LibraryScanner::slotDirectoryHashedAndScanned"));
-    //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
-    //          << newDirectory << hash;
+    // kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
+    //           << newDirectory << hash;
+    // Don't write dir hashes after the scan has been canceled!
+    // Reason: after canceling we may still receive signals from ImportFilesTask,
+    // eg. addNewTrack() and directoryHashedAndScanned(). However, canceled
+    // means we probably didn't add all tracks. In order to allow "resuming"
+    // the incomplete scan of this directory, we need to keep the old hash
+    // (see slotAddNewTrack) and prevent the directoryHashedAndScanned() signal
+    // from undoing this (what we'd do in this slot by saving a valid hash).
+
+    if (!m_scannerGlobal || m_scannerGlobal->shouldCancel()) {
+        kLogger.warning() << "--> should cancel --> clear hash for" << directoryPath;
+        // Clearing the hash is not strictly required but let's keep it as
+        // safety net in case signals get mixed up?
+        m_libraryHashDao.clearDirectoryHash(directoryPath);
+        return;
+    }
 
     // For statistics tracking -- if we hashed a directory then we scanned it
     // (it was changed or new).

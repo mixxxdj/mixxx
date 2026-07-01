@@ -1,7 +1,13 @@
 
 #include <gtest/gtest.h>
+#include <qglobal.h>
+#include <qurl.h>
 
+#include <QColor>
 #include <QDomDocument>
+#include <QJSEngine>
+#include <QJSValue>
+#include <QVariant>
 
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
@@ -515,3 +521,90 @@ TEST_F(LegacyControllerMappingSettingsTest, handleNumberWithNegativeRange) {
     ASSERT_EQ(pMapping->getSettings().at(0)->variableName(), "myInteger1");
     ASSERT_EQ(pMapping->getSettings().at(0)->value().toNumber(), 20);
 }
+
+#ifdef MIXXX_USE_QML
+TEST_F(LegacyControllerMappingSettingsTest, colorSettingsHandleQMLValue) {
+    QDomDocument doc;
+    QString dom;
+    QTextStream(&dom)
+            << QString("<option variable=\"testColor\" type=\"color\""
+                       "label=\"Test color\"><description>A test color</description>"
+                       "</option>");
+    doc.setContent(
+            QString("<?xml version=\"1.0\" "
+                    "encoding=\"utf-8\"?><MixxxControllerPreset><settings>%1</"
+                    "settings></MixxxControllerPreset>")
+                    .arg(dom));
+    LegacyControllerColorSetting setting(doc.documentElement());
+
+    {
+        // CSS Named Color value
+        QJSValue aCssNamedColor("purple");
+        setting.setValue(aCssNamedColor);
+
+        ASSERT_EQ(setting.value().toVariant().value<QColor>(),
+                QColor(0x80,
+                        0x00,
+                        0x80)); // Value from
+                                // https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/named-color#syntax
+    }
+    {
+        // CSS Hex Color value
+        QJSValue aCssHexColor("#ffe4c4");
+        setting.setValue(aCssHexColor);
+
+        ASSERT_EQ(setting.value().toVariant().value<QColor>(), QColor(0xff, 0xe4, 0xc4));
+    }
+    {
+        // QML color type case - https://doc.qt.io/qt-6/qml-color.html
+        QJSEngine engine;
+        QJSValue aCssColor(engine.toScriptValue(QVariant::fromValue(QColor(0x12, 0x23, 0x45))));
+        setting.setValue(aCssColor);
+
+        ASSERT_EQ(setting.value().toVariant().value<QColor>(), QColor(0x12, 0x23, 0x45));
+    }
+}
+
+TEST_F(LegacyControllerMappingSettingsTest, fileSettingsHandleQMLValue) {
+    QDomDocument doc;
+    QString dom;
+    QTextStream(&dom)
+            << QString("<option variable=\"testFile\" type=\"file\""
+                       "label=\"Test file\"><description>A test file</description>"
+                       "</option>");
+    doc.setContent(
+            QString("<?xml version=\"1.0\" "
+                    "encoding=\"utf-8\"?><MixxxControllerPreset><settings>%1</"
+                    "settings></MixxxControllerPreset>")
+                    .arg(dom));
+    LegacyControllerFileSetting setting(doc.documentElement());
+
+    {
+        // URL in a string
+        QJSValue aURLinAString(QStringLiteral("file:%1").arg(
+                getTestDir().filePath("id3-test-data/artist.mp3")));
+        setting.setValue(aURLinAString);
+
+        ASSERT_EQ(setting.value().toVariant().value<QUrl>(),
+                QUrl::fromLocalFile(
+                        getTestDir().filePath("id3-test-data/artist.mp3")));
+    }
+    {
+        // QML/JS URL type case - https://doc.qt.io/qt-6/qml-url.html
+        QJSEngine engine;
+        QJSValue aUrl(
+                engine.toScriptValue(QVariant::fromValue(QUrl::fromLocalFile(
+                        getTestDir().filePath("id3-test-data/empty.mp3")))));
+        setting.setValue(aUrl);
+
+#if defined(__WINDOWS__)
+        // On Windows, an absolute URL will start with the drive latter, which needs escaping
+        auto expected = QUrl(QStringLiteral("file:///%1").arg(
+#else
+        auto expected = QUrl(QStringLiteral("file:%1").arg(
+#endif
+                getTestDir().filePath("id3-test-data/empty.mp3")));
+        ASSERT_EQ(setting.value().toVariant().value<QUrl>(), expected);
+    }
+}
+#endif
