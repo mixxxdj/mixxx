@@ -292,6 +292,24 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
     m_syncBuffers = syncBuffers;
 
+#ifdef PA_USE_OBOE
+    // On Android Oboe, syncBuffers=0 uses blocking I/O (Pa_WriteStream) for
+    // non-clock-reference output devices. This blocking I/O is called from
+    // the clock reference device's audio callback thread. When Pa_WriteStream
+    // blocks, it stalls the entire audio pipeline — causing the clock ref
+    // device to underrun, producing ticking and lag.
+    // Fix: force non-ref Oboe devices to use callback + FIFO mode (syncBuffers=1).
+    if (m_deviceTypeId == PaHostApiTypeId::paOboe &&
+            !isClkRefDevice && m_syncBuffers == 0) {
+        qWarning() << "Oboe: syncBuffers=0 (experimental, no delay) uses blocking"
+                   << "I/O which stalls the audio callback. Forcing syncBuffers=1"
+                   << "(short delay) for non-clock-ref device"
+                   << m_deviceId.debugName();
+        m_syncBuffers = 1;
+        syncBuffers = 1;
+    }
+#endif
+
     // Create the callback function pointer.
     PaStreamCallback* pCallback = nullptr;
     if (isClkRefDevice) {
