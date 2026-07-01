@@ -212,10 +212,12 @@ void showLatencyCalibrationDialog(QWidget* parent, DlgPrefSoundItem* item) {
     // The filter intercepts QApplication-level notify() and swallows any
     // mouse/touch event whose target is NOT the dialog or its children.
     class TouchBlockFilter : public QObject {
-    public:
+      public:
         explicit TouchBlockFilter(DlgPrefSoundCalibrate* pDialog)
-                : m_pDialog(pDialog) {}
-    protected:
+                : m_pDialog(pDialog) {
+        }
+
+      protected:
         bool eventFilter(QObject* pObj, QEvent* pEvent) override {
             // Block mouse/touch events for all targets EXCEPT the dialog
             switch (pEvent->type()) {
@@ -236,7 +238,8 @@ void showLatencyCalibrationDialog(QWidget* parent, DlgPrefSoundItem* item) {
                 return false;
             }
         }
-    private:
+
+      private:
         DlgPrefSoundCalibrate* m_pDialog;
     };
     TouchBlockFilter blocker(&dialog);
