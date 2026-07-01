@@ -6,106 +6,91 @@
 #include <QVector>
 
 #include "engine/engine.h"
-#include "util/types.h"
 
-/**
- * AudioLatencyCalibrator implements active latency calibration using a
- * play-and-record loopback approach inspired by the osu! framework's
- * BeatmapOffsetControl and LatencyCertifierScreen.
- *
- * Calibration modes:
- * 1. Per-device: play reference pulse through one output, record via input,
- *    cross-correlate to find that device's absolute latency.
- * 2. Multi-device: play reference pulse through ALL outputs simultaneously,
- *    record the combined audio (e.g. via phone microphone), find multiple
- *    correlation peaks, set the earliest peak as offset 0 and the rest
- *    as relative delays.
- *
- * Usage:
- *   auto* cal = new AudioLatencyCalibrator(this);
- *   connect(cal, &AudioLatencyCalibrator::calibrationComplete,
- *           this, [](const QVector<double>& offsetsMs) {
- *               // offsetsMs[i] = offset for output i, first is 0
- *           });
- *   cal->startCalibration(sampleRate, bufferSize, numOutputs);
- *   // Feed reference frames via generateReferenceFrame() to output(s)
- *   // Feed recorded frames via addRecordedFrame() from input
- *   // calibrator emits calibrationComplete when done
- */
+/// Measures relative latency between multiple audio output devices.
+///
+/// Design:
+///  1. A reference signal consisting of per-output chirps is played through
+///     ALL outputs simultaneously. Each output's chirp occupies a unique
+///     frequency band and time slot so they can be distinguished in the
+///     recording.
+///  2. The microphone records the summed signal.
+///  3. Per-output cross-correlation finds each chirp's arrival time.
+///  4. The earliest output gets offset 0; others get positive offsets (ms).
+///
+/// @note All outputs MUST play the same signal — the engine mix is shared.
+///       Per-output frequency separation lets us identify peaks even when
+///       multiple outputs play simultaneously.
 class AudioLatencyCalibrator : public QObject {
     Q_OBJECT
   public:
-    enum class State {
+    explicit AudioLatencyCalibrator(QObject* parent = nullptr);
+
+    enum State {
         Idle,
         PlayingReference,
         RecordingReference,
         Computing,
     };
 
-    explicit AudioLatencyCalibrator(QObject* parent = nullptr);
-    ~AudioLatencyCalibrator() override = default;
+    /// Start calibration for the given number of outputs.
+    /// @param sampleRate sample rate in Hz
+    /// @param bufferSize frames per buffer
+    /// @param numOutputs number of active Main outputs to calibrate
+    void startCalibration(int sampleRate, int bufferSize, int numOutputs);
 
-    State getState() const {
+    /// Stop calibration and reset.
+    void stopCalibration();
+
+    /// Returns current state.
+    State state() const {
         return m_state;
     }
 
-    /// Start the calibration process for numOutputs devices.
-    /// Plays a reference pulse and records it back.
-    void startCalibration(int sampleRate, int bufferSize, int numOutputs = 1);
-
-    /// Stop calibration and reset to idle.
-    void stopCalibration();
-
-    /// Get the suggested offsets in milliseconds (size = numOutputs).
-    /// offsets[0] is always 0 (the earliest device).
-    QVector<double> getSuggestedOffsetsMs() const {
-        return m_suggestedOffsetsMs;
-    }
-
-    /// Add a recorded sample frame from the input device.
-    void addRecordedFrame(CSAMPLE value);
-
-    /// Generate the next reference frame to play on output device index.
+    /// Called from the audio callback to fill the output buffer.
+    /// Returns the next reference sample to play (same value goes to all outputs).
     /// @param outputIndex which output this frame is for (0 = clock ref)
     CSAMPLE generateReferenceFrame(int outputIndex = 0);
 
-    /// Called on timeout - stops calibration gracefully.
+    /// Called on timeout — stops calibration gracefully.
     void onTimeout();
 
   signals:
     /// Emitted when calibration completes with per-output offsets in ms.
     /// offsets[0] = 0 (earliest device).
-    void calibrationComplete(const QVector<double>& offsetsMs);
+    void calibrationComplete(QVector<double> offsetsMs);
 
-    /// Emitted periodically with current status.
-    void statusUpdate(const QString& status);
+    /// Status update for the UI.
+    void statusUpdate(const QString& message);
 
   private:
-    void computeOffsets();
+    // Recording cap: 10 seconds at 48kHz
+    static constexpr int kMaxRecordingFrames = 10 * 48000;
+    // Maximum search window for cross-correlation (5 seconds)
+    static constexpr int kCorrelationWindow = 5 * 48000;
+
     void generateReferenceChirp();
+    void computeOffsets();
 
     State m_state;
-    QVector<double> m_suggestedOffsetsMs;
 
+    // Audio configuration
     int m_sampleRate;
     int m_bufferSize;
     int m_numOutputs;
 
-    // Reference signal (chirp/pulse)
-    QVector<CSAMPLE> m_referenceSignal;
-    int m_referencePlayhead;
+    // Per-output calibration results (ms)
+    QVector<double> m_perOutputOffsets;
 
-    // Recorded signal storage
+    // Reference signal: concatenation of per-output chirps + gaps
+    QVector<CSAMPLE> m_referenceSignal;
     QVector<CSAMPLE> m_recordedSignal;
+    int m_currentOutputIndex;
+    qint64 m_referencePlayhead;
 
     // Timing
     QElapsedTimer m_timer;
     QTimer* m_pTimeoutTimer;
     bool m_referencePlayed;
     qint64 m_recordStartTime;
-
-    static constexpr int kReferenceLength = 4800;     // ~100ms at 48kHz
-    static constexpr int kMinReferenceGap = 480;      // ~10ms gap between pulses
-    static constexpr int kMaxRecordingFrames = 96000; // 2 seconds at 48kHz
-    static constexpr int kCorrelationWindow = 48000;  // Search window (1 second)
 };

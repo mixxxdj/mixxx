@@ -12,6 +12,7 @@ AudioLatencyCalibrator::AudioLatencyCalibrator(QObject* parent)
           m_sampleRate(48000),
           m_bufferSize(256),
           m_numOutputs(1),
+          m_currentOutputIndex(0),
           m_referencePlayhead(0),
           m_pTimeoutTimer(nullptr),
           m_referencePlayed(false),
@@ -23,21 +24,21 @@ void AudioLatencyCalibrator::startCalibration(
     m_sampleRate = sampleRate;
     m_bufferSize = bufferSize;
     m_numOutputs = qMax(numOutputs, 1);
+    m_currentOutputIndex = 0;
     m_referencePlayed = false;
     m_referencePlayhead = 0;
     m_recordedSignal.clear();
     m_recordedSignal.reserve(kMaxRecordingFrames);
     m_referenceSignal.clear();
-    m_suggestedOffsetsMs.clear();
+    m_perOutputOffsets.clear();
 
     generateReferenceChirp();
 
     m_state = State::PlayingReference;
     m_timer.start();
 
-    // Start a timeout timer - if calibration doesn't complete in 12 seconds,
-    // abort with a message. This handles the case where no microphone input
-    // is available (addRecordedFrame never called).
+    // Timeout: 5 seconds per output + 2 seconds safety margin
+    int timeoutMs = m_numOutputs * 5000 + 2000;
     if (m_pTimeoutTimer) {
         m_pTimeoutTimer->stop();
     } else {
@@ -45,10 +46,9 @@ void AudioLatencyCalibrator::startCalibration(
         connect(m_pTimeoutTimer, &QTimer::timeout, this, &AudioLatencyCalibrator::onTimeout);
     }
     m_pTimeoutTimer->setSingleShot(true);
-    m_pTimeoutTimer->start(12000);
+    m_pTimeoutTimer->start(timeoutMs);
 
-    emit statusUpdate(tr("Playing reference pulse through %1 output(s)...")
-                    .arg(m_numOutputs));
+    emit statusUpdate(tr("Calibrating %1 output(s)...").arg(m_numOutputs));
 }
 
 void AudioLatencyCalibrator::stopCalibration() {
@@ -59,26 +59,25 @@ void AudioLatencyCalibrator::stopCalibration() {
     m_referenceSignal.clear();
     m_recordedSignal.clear();
     m_referencePlayhead = 0;
-    m_suggestedOffsetsMs.clear();
+    m_perOutputOffsets.clear();
 }
 
 void AudioLatencyCalibrator::onTimeout() {
-    if (m_state == State::RecordingReference && m_recordedSignal.isEmpty()) {
-        emit statusUpdate(
-                tr("Calibration timed out: no microphone input received.\n"
-                   "Make sure a microphone input is configured, audio is running\n"
-                   "(click Apply), and the phone's mic can hear the outputs."));
-    } else if (m_state == State::RecordingReference && !m_recordedSignal.isEmpty()) {
-        // Partial data - try to compute with what we have
+    if (m_state == State::RecordingReference && !m_recordedSignal.isEmpty()) {
+        // Partial data — compute with what we have
         m_state = State::Computing;
         computeOffsets();
         return;
-    } else {
-        emit statusUpdate(
-                tr("Calibration timed out.\n"
-                   "The reference pulse may not have played, or no input\n"
-                   "device is configured. Ensure audio is running (Apply)."));
     }
+    QString msg;
+    if (m_recordedSignal.isEmpty()) {
+        msg = tr("Calibration timed out: no microphone input received.\n"
+                 "Make sure a microphone input is configured, audio is running\n"
+                 "(click Apply), and the phone's mic can hear the outputs.");
+    } else {
+        msg = tr("Calibration timed out: insufficient data collected.");
+    }
+    emit statusUpdate(msg);
     m_state = State::Idle;
     m_referenceSignal.clear();
     m_recordedSignal.clear();
@@ -91,11 +90,15 @@ CSAMPLE AudioLatencyCalibrator::generateReferenceFrame(int outputIndex) {
         return 0.0;
     }
 
+    // The reference signal contains chirps for each output BACK-TO-BACK:
+    // [chirp_0][silence_gap][chirp_1][silence_gap]...
+    // ALL outputs play the SAME signal, but the recording has
+    // time-separated chirps for each output's time slot.
     if (m_referencePlayhead >= m_referenceSignal.size()) {
-        // Done playing reference for all outputs, switch to recording
+        // Done playing full sequence — switch to recording
         m_state = State::RecordingReference;
         emit statusUpdate(
-                tr("Now recording (%1 frames)...")
+                tr("Recording microphone input (%1 frames)...")
                         .arg(kMaxRecordingFrames));
         return 0.0;
     }
@@ -125,28 +128,52 @@ void AudioLatencyCalibrator::addRecordedFrame(CSAMPLE value) {
 }
 
 void AudioLatencyCalibrator::generateReferenceChirp() {
-    // Generate a frequency sweep (chirp) from 500Hz to 2000Hz over 100ms.
-    // A chirp is easier to detect via cross-correlation than a simple pulse
-    // because it has more energy spread over time while maintaining a sharp
-    // autocorrelation peak.
-    m_referenceSignal.resize(kReferenceLength);
-    double freqStart = 500.0;
-    double freqEnd = 2000.0;
-    for (int i = 0; i < kReferenceLength; ++i) {
-        double t = static_cast<double>(i) / m_sampleRate;
-        double freq = freqStart +
-                (freqEnd - freqStart) *
-                        (static_cast<double>(i) / kReferenceLength);
-        // Chirp with fade-in/out to avoid clicks
-        double envelope = 1.0;
-        if (i < 96) {
-            envelope = static_cast<double>(i) / 96.0;
-        } else if (i > kReferenceLength - 96) {
-            envelope = static_cast<double>(kReferenceLength - i) / 96.0;
+    // Reference signal: a sequence of chirps separated by silence gaps.
+    // Each chirp is 400ms, each gap is 200ms.
+    // Total duration = numOutputs * (chirpLen + gapLen)
+    // This lets us identify which output corresponds to which time window.
+    //
+    // Each output's chirp sweeps a DIFFERENT frequency band so we can
+    // also distinguish them by frequency content even within the same window:
+    //   Output 0: 200–800 Hz
+    //   Output 1: 800–1400 Hz
+    //   Output 2: 1400–2000 Hz
+    //   Output 3: 2000–2600 Hz (if more)
+
+    const int chirpLen = m_sampleRate / 2;               // 500ms chirp
+    const int gapLen = m_sampleRate / 4;                 // 250ms silence
+    const int outputLen = chirpLen + gapLen;              // 750ms per output
+    const int totalLen = m_numOutputs * outputLen;        // total playback time
+
+    m_referenceSignal.resize(totalLen);
+    m_referenceSignal.fill(0.0);
+
+    for (int o = 0; o < m_numOutputs; ++o) {
+        int startOffset = o * outputLen;
+        double freqStart = 200.0 + o * 600.0;
+        double freqEnd = freqStart + 600.0;
+
+        for (int i = 0; i < chirpLen; ++i) {
+            double t = static_cast<double>(i) / m_sampleRate;
+            double freq = freqStart +
+                    (freqEnd - freqStart) *
+                            (static_cast<double>(i) / chirpLen);
+            // Fade-in/out to avoid clicks
+            double envelope = 1.0;
+            if (i < 128) {
+                envelope = static_cast<double>(i) / 128.0;
+            } else if (i > chirpLen - 128) {
+                envelope = static_cast<double>(chirpLen - i) / 128.0;
+            }
+            m_referenceSignal[startOffset + i] =
+                    static_cast<CSAMPLE>(
+                            std::sin(2.0 * M_PI * freq * t) * envelope * 0.7);
         }
-        m_referenceSignal[i] =
-                static_cast<CSAMPLE>(std::sin(2.0 * M_PI * freq * t) * envelope * 0.8);
+        // The gap (startOffset + chirpLen ... startOffset + outputLen) is already 0
     }
+
+    emit statusUpdate(tr("Playing %1s reference through all outputs...")
+                              .arg(totalLen / static_cast<double>(m_sampleRate), 0, 'f', 1));
 }
 
 void AudioLatencyCalibrator::computeOffsets() {
@@ -156,111 +183,110 @@ void AudioLatencyCalibrator::computeOffsets() {
         return;
     }
 
-    // Normalize recorded signal
-    CSAMPLE maxVal = 0.0;
-    for (const CSAMPLE& s : std::as_const(m_recordedSignal)) {
-        maxVal = qMax(maxVal, qAbs(s));
+    // Build per-output reference chirps (just the chirp sections, no gaps)
+    struct OutputChirp {
+        int chirpOffsetInSignal; // sample offset in m_referenceSignal
+        int chirpLen;
+        QVector<CSAMPLE> samples;
+    };
+
+    const int chirpLen = m_sampleRate / 2;
+    const int gapLen = m_sampleRate / 4;
+    const int outputLen = chirpLen + gapLen;
+
+    QVector<OutputChirp> outputChirps;
+    for (int o = 0; o < m_numOutputs; ++o) {
+        int startOffset = o * outputLen;
+        outputChirps.append({startOffset, chirpLen,
+                m_referenceSignal.mid(startOffset, chirpLen)});
     }
 
-    if (maxVal < 0.001) {
-        emit statusUpdate(
-                tr("Calibration failed: recorded signal too weak. "
-                   "Make sure the microphone can hear the output."));
-        m_state = State::Idle;
-        return;
-    }
-
-    // Normalize
-    QVector<CSAMPLE> normalized(m_recordedSignal.size());
-    for (int i = 0; i < m_recordedSignal.size(); ++i) {
-        normalized[i] = m_recordedSignal[i] / maxVal;
-    }
-
-    // Cross-correlation: find peaks where reference matches recorded
-    int searchEnd = qMin(kCorrelationWindow,
-            m_recordedSignal.size() - m_referenceSignal.size());
-
-    // Compute correlation for each offset
+    // Cross-correlate the recorded signal with each output's reference chirp
     struct Peak {
         int offset;
         double correlation;
+        int outputIndex;
     };
     QVector<Peak> peaks;
 
-    for (int offset = 0; offset < searchEnd; ++offset) {
-        double correlation = 0.0;
-        int compareLength = qMin(m_referenceSignal.size(),
-                m_recordedSignal.size() - offset);
+    int recordLen = m_recordedSignal.size();
 
-        for (int j = 0; j < compareLength; ++j) {
-            correlation += normalized[offset + j] * m_referenceSignal[j];
+    for (int o = 0; o < m_numOutputs; ++o) {
+        const auto& chirp = outputChirps[o].samples;
+        if (chirp.isEmpty()) {
+            continue;
         }
 
-        // Normalize by comparison length
-        correlation /= static_cast<double>(compareLength);
+        // Search range: the chirp could start anywhere from offset 0 to
+        // the end of recording minus the chirp length, plus a bit extra
+        // for the output's known position in the signal.
+        int searchStart = 0;
+        int searchEnd = qMin(recordLen - chirp.size(), kCorrelationWindow);
 
-        // Track the best peak
-        if (peaks.isEmpty() || correlation > peaks[0].correlation) {
-            peaks.clear();
-            peaks.append({offset, correlation});
-        } else if (qAbs(correlation) > 0.3) {
-            // Also track significant secondary peaks (from other output devices)
-            // A peak is valid if it's separated by at least 10ms from existing peaks
-            bool isNew = true;
-            for (const auto& p : std::as_const(peaks)) {
-                if (qAbs(offset - p.offset) < m_sampleRate / 100) { // 10ms min separation
-                    isNew = false;
-                    break;
-                }
+        double bestCorrelation = 0.0;
+        int bestOffset = 0;
+
+        for (int offset = searchStart; offset < searchEnd; ++offset) {
+            double correlation = 0.0;
+            int compareLen = qMin(chirp.size(), recordLen - offset);
+
+            for (int j = 0; j < compareLen; ++j) {
+                correlation += static_cast<double>(
+                        m_recordedSignal[offset + j]) * chirp[j];
             }
-            if (isNew && correlation > 0.5) {
-                peaks.append({offset, correlation});
+
+            // Normalize by length
+            correlation /= static_cast<double>(compareLen);
+
+            if (correlation > bestCorrelation) {
+                bestCorrelation = correlation;
+                bestOffset = offset;
             }
+        }
+
+        if (bestCorrelation > 0.2) {
+            peaks.append({bestOffset, bestCorrelation, o});
         }
     }
-
-    // Sort peaks by offset (earliest first)
-    std::sort(peaks.begin(), peaks.end(), [](const Peak& a, const Peak& b) {
-        return a.offset < b.offset;
-    });
 
     if (peaks.isEmpty()) {
         emit statusUpdate(
-                tr("Calibration failed: no correlation peaks found"));
+                tr("Calibration failed: no peaks found. "
+                   "Make sure outputs are audible to the microphone."));
         m_state = State::Idle;
+        emit calibrationComplete(QVector<double>());
         return;
     }
 
-    // Convert offsets from samples to milliseconds
-    // peaks[0] is the earliest arrival (lowest latency device) → offset 0
-    m_suggestedOffsetsMs.clear();
-    for (int i = 0; i < peaks.size(); ++i) {
-        if (i == 0) {
-            m_suggestedOffsetsMs.append(0.0);
-        } else {
-            double relativeMs = (static_cast<double>(peaks[i].offset - peaks[0].offset) /
-                                        m_sampleRate) *
-                    1000.0;
-            m_suggestedOffsetsMs.append(relativeMs);
-        }
-    }
+    // Sort peaks by offset (earliest = lowest latency)
+    std::sort(peaks.begin(), peaks.end(),
+            [](const Peak& a, const Peak& b) { return a.offset < b.offset; });
 
-    // If we found fewer peaks than outputs, pad with zeros
-    while (m_suggestedOffsetsMs.size() < m_numOutputs) {
-        m_suggestedOffsetsMs.append(0.0);
+    // The earliest peak's device offset = 0. All others are relative to it.
+    int baseOffset = peaks[0].offset;
+
+    m_perOutputOffsets.clear();
+    m_perOutputOffsets.resize(m_numOutputs, 0.0);
+
+    for (const auto& peak : peaks) {
+        double relativeMs = (static_cast<double>(peak.offset - baseOffset) /
+                                    m_sampleRate) *
+                1000.0;
+        m_perOutputOffsets[peak.outputIndex] = relativeMs;
     }
 
     m_state = State::Idle;
-    emit calibrationComplete(m_suggestedOffsetsMs);
 
-    QString result = tr("Calibration complete: found %1 device(s)")
-                             .arg(m_suggestedOffsetsMs.size());
-    for (int i = 0; i < m_suggestedOffsetsMs.size(); ++i) {
-        result += QStringLiteral("\n  Output %1: %2 ms offset")
-                          .arg(i)
-                          .arg(m_suggestedOffsetsMs[i], 0, 'f', 1);
+    QString result = tr("Calibration complete!\n");
+    for (int i = 0; i < m_numOutputs; ++i) {
+        result += tr("  Output %1: %2 ms offset\n")
+                          .arg(i + 1)
+                          .arg(m_perOutputOffsets[i], 0, 'f', 1);
     }
+    result += tr("(Offset relative to earliest output)");
     emit statusUpdate(result);
+
+    emit calibrationComplete(m_perOutputOffsets);
 }
 
 #include "moc_audiolatencycalibrator.cpp"
