@@ -44,182 +44,130 @@ ApplicationWindow {
             value = root.numSamplers;
         }
     }
-
-    Mixxx.ControlProxy {
-        id: initDefaultsProxy
-        group: "[LateNightQML]"
-        key: "initialized_defaults"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
-        onValueChanged: {
-            checkAndInitDefaults();
-        }
-    }
-
-    Mixxx.ControlProxy {
-        id: initSpinniesProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
-        key: "show_spinnies"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        key: "show_waveforms"
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: initCoverartProxy
-        group: "[Skin]"
-        key: "show_coverart"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
-    }
-
-    Mixxx.ControlProxy {
-        id: initSelectBigSpinnyProxy
-        group: "[Skin]"
-        key: "select_big_spinny_or_cover"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
-    }
-
-    Mixxx.ControlProxy {
-        id: initHotcuesProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_hotcues"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: init8HotcuesProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_8_hotcues"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: initIntroOutroCuesProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_intro_outro_cues"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: initLoopControlsProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_loop_controls"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: initBeatjumpControlsProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_beatjump_controls"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: initKeyControlsProxy
-        group: "[Skin]"
-        key: "show_key_controls"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
-    }
-
-    Mixxx.ControlProxy {
-        id: initVinylControlsProxy
-        group: "[Skin]"
-        key: "show_vinylcontrol"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
-    }
-
-    Mixxx.ControlProxy {
-        id: initRateControlsProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_rate_controls"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: initRateControlButtonsProxy
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_rate_control_buttons"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
+        defaultValue: 1.0
     }
-
-    Mixxx.ControlProxy {
-        id: init4EffectUnitsProxy
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_key_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_vinylcontrol"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_spinnies"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_coverart"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "select_big_spinny_or_cover"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_4effectunits"
-
-        onInitializedChanged: {
-            checkAndInitDefaults();
-        }
+        persist: true
     }
-
-    function checkAndInitDefaults() {
-        if (initDefaultsProxy.initialized &&
-                initSpinniesProxy.initialized &&
-                initCoverartProxy.initialized &&
-                initSelectBigSpinnyProxy.initialized &&
-                initHotcuesProxy.initialized &&
-                init8HotcuesProxy.initialized &&
-                initIntroOutroCuesProxy.initialized &&
-                initLoopControlsProxy.initialized &&
-                initBeatjumpControlsProxy.initialized &&
-                initKeyControlsProxy.initialized &&
-                initVinylControlsProxy.initialized &&
-                initRateControlsProxy.initialized &&
-                initRateControlButtonsProxy.initialized &&
-                init4EffectUnitsProxy.initialized) {
-            if (initDefaultsProxy.value < 2.0) {
-                initSpinniesProxy.value = 1.0;
-                initCoverartProxy.value = 1.0;
-                initSelectBigSpinnyProxy.value = 0.0;
-                initHotcuesProxy.value = 1.0;
-                init8HotcuesProxy.value = 1.0;
-                initIntroOutroCuesProxy.value = 1.0;
-                initLoopControlsProxy.value = 1.0;
-                initBeatjumpControlsProxy.value = 1.0;
-                initKeyControlsProxy.value = 1.0;
-                initVinylControlsProxy.value = 0.0;
-                initRateControlsProxy.value = 1.0;
-                initRateControlButtonsProxy.value = 1.0;
-                init4EffectUnitsProxy.value = 0.0;
-                initDefaultsProxy.value = 2.0;
-            }
-        }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_eq_knobs"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_eq_kill_buttons"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_xfader"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_main_head_mixer"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "equal_4deck_waveforms"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "timing_shift_buttons"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_superknobs"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_sampler_fx"
+        persist: true
     }
     Column {
         id: content

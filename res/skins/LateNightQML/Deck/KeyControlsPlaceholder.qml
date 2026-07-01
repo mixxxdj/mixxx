@@ -52,8 +52,7 @@ Item {
     }
 
     function keyDisplayText(key, notationRevision) {
-        notationRevision;
-        return Mixxx.KeyUtils.keyToString(key);
+        return Mixxx.KeyUtils.keyToString(key, notationRevision);
     }
 
     readonly property real keyDistance: visualKeyDistanceProxy.value

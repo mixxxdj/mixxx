@@ -13,18 +13,19 @@ Controls.Panel {
     required property string group
     property bool minimized: false
     property bool editMode: false
-    property bool honorSkinVisibilityControls: false
-    readonly property bool showBeatjumpControls: !honorSkinVisibilityControls || showBeatjumpControlsProxy.value > 0
+    readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
     readonly property bool showBigSpinnyOrCover: selectBigSpinnyProxy.value > 0
-    readonly property bool showHotcues: !honorSkinVisibilityControls || showHotcuesProxy.value > 0
-    readonly property bool show8Hotcues: !honorSkinVisibilityControls || show8HotcuesProxy.value > 0
-    readonly property bool showIntroOutroCues: !honorSkinVisibilityControls || showIntroOutroCuesProxy.value > 0
-    readonly property bool showKeyControls: !honorSkinVisibilityControls || showKeyControlsProxy.value > 0
-    readonly property bool showLoopControls: !honorSkinVisibilityControls || showLoopControlsProxy.value > 0
-    readonly property bool showRateControlButtons: !honorSkinVisibilityControls || showRateControlButtonsProxy.value > 0
-    readonly property bool showRateControls: !honorSkinVisibilityControls || showRateControlsProxy.value > 0
+    readonly property bool showHotcues: showHotcuesProxy.value > 0
+    readonly property bool show8Hotcues: show8HotcuesProxy.value > 0
+    readonly property bool showIntroOutroCues: showIntroOutroCuesProxy.value > 0
+    readonly property bool showKeyControls: showKeyControlsProxy.value > 0
+    readonly property bool showLoopControls: showLoopControlsProxy.value > 0
+    readonly property bool showRateControlButtons: showRateControlButtonsProxy.value > 0
+    readonly property bool showRateControls: showRateControlsProxy.value > 0
     readonly property bool showSmallSpinnyOrCover: selectBigSpinnyProxy.value <= 0 && !root.minimized
-    readonly property bool showVinylControls: honorSkinVisibilityControls && showVinylControlsProxy.value > 0
+    readonly property bool showVinylControls: showVinylControlsProxy.value > 0
+
+    signal toggleFocus
 
     color: LateNightTheme.deckPanelColor
 
@@ -258,6 +259,10 @@ Controls.Panel {
                         Layout.preferredHeight: root.minimized ? 48 : 55
                         Layout.maximumHeight: root.minimized ? 48 : 55
                         group: root.group
+
+                        TapHandler {
+                            onDoubleTapped: root.toggleFocus()
+                        }
                     }
 
                     // Row containing Small Spinny (on the left of overview) and the Waveform Overview
