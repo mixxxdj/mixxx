@@ -372,7 +372,25 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
             // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
-            const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out).data();
+            AudioSource* pSource = m_registeredSources.value(out, nullptr);
+            if (!pSource) {
+                // For additional outputs of the same type not explicitly
+                // registered (e.g., extra Main outputs added via the UI),
+                // fall back to the first source registered for this type.
+                for (auto srcIt = m_registeredSources.constBegin();
+                        srcIt != m_registeredSources.constEnd();
+                        ++srcIt) {
+                    if (srcIt.key().getType() == out.getType()) {
+                        pSource = srcIt.value();
+                        break;
+                    }
+                }
+                if (!pSource) {
+                    qDebug() << "No AudioSource registered for" << out.getString();
+                    continue;
+                }
+            }
+            const CSAMPLE* pBuffer = pSource->buffer(out).data();
             if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
@@ -591,6 +609,15 @@ void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
     }
     m_registeredSources.insert(output, src);
     emit outputRegistered(output, src);
+}
+
+void SoundManager::registerMainOutput(const AudioOutput& output) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredSources.contains(output)) {
+        return;
+    }
+    // All Main outputs share the EngineMixer buffer
+    m_registeredSources.insert(output, m_pEngineMixer);
+    emit outputRegistered(output, m_pEngineMixer);
 }
 
 void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {

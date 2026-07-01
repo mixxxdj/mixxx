@@ -85,6 +85,10 @@ class SoundManager : public QObject {
     void readProcess(SINT framesPerBuffer) const;
 
     void registerOutput(const AudioOutput& output, AudioSource* src);
+    // All Main outputs share the EngineMixer as their AudioSource.
+    // Use this instead of registerOutput(output, nullptr) when adding
+    // additional Main outputs via the UI.
+    void registerMainOutput(const AudioOutput& output);
     void registerInput(const AudioInput& input, AudioDestination* dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;

@@ -1059,9 +1059,9 @@ void DlgPrefSound::addMainOutputClicked() {
     mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount::stereo();
     AudioOutput output(AudioPathType::Main, channelBase, channels, mainCount);
 
-    // Register the output with the sound manager first
-    // This will trigger the outputRegistered signal which calls addPath
-    m_pSoundManager->registerOutput(output, nullptr);
+    // Register the output with the EngineMixer as source
+    // (all Main outputs share the EngineMixer buffer)
+    m_pSoundManager->registerMainOutput(output);
 
     updateRemoveButtonVisibility();
 }
