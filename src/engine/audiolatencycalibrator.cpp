@@ -274,7 +274,7 @@ void AudioLatencyCalibrator::computeOffsets() {
     m_perOutputOffsets.clear();
     m_perOutputOffsets.resize(m_numOutputs, 0.0);
 
-    for (const auto& peak : peaks) {
+    for (const auto& peak : std::as_const(peaks)) {
         double relativeMs = (static_cast<double>(peak.offset - baseOffset) /
                                     m_sampleRate) *
                 1000.0;
