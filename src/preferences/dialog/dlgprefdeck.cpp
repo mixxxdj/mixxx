@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
@@ -70,8 +71,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
-        pControl->set(static_cast<int>(m_cueMode));
+    for (PollingControlProxy control : std::as_const(m_cueControls)) {
+        control.set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -287,8 +288,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     m_keylockMode = static_cast<KeylockMode>(
             m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("keylockMode")),
                     static_cast<int>(KeylockMode::LockOriginalKey)));
-    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
-        pControl->set(static_cast<double>(m_keylockMode));
+    for (PollingControlProxy control : std::as_const(m_keylockModeControls)) {
+        control.set(static_cast<double>(m_keylockMode));
     }
 
     // Key unlock mode
@@ -300,8 +301,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     m_keyunlockMode = static_cast<KeyunlockMode>(
             m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("keyunlockMode")),
                     static_cast<int>(KeyunlockMode::ResetLockedKey)));
-    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
-        pControl->set(static_cast<int>(m_keyunlockMode));
+    for (PollingControlProxy control : std::as_const(m_keyunlockModeControls)) {
+        control.set(static_cast<int>(m_keyunlockMode));
     }
 
     // Cue Mode
@@ -432,14 +433,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     slotUpdate();
 }
 
-DlgPrefDeck::~DlgPrefDeck() {
-    qDeleteAll(m_rateDirectionControls);
-    qDeleteAll(m_cueControls);
-    qDeleteAll(m_rateRangeControls);
-    qDeleteAll(m_keylockModeControls);
-    qDeleteAll(m_keyunlockModeControls);
-}
-
 void DlgPrefDeck::slotUpdate() {
     checkBoxIntroStartMove->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("SetIntroStartAtMainCue")), false));
@@ -449,7 +442,7 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")), true));
 
-    double rateRange = m_rateRangeControls[0]->get();
+    double rateRange = m_rateRangeControls[0].get();
     int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
     if (index == -1) {
         ComboBoxRateRange->addItem(QString::number(rateRange * 100.).append("%"),
@@ -457,10 +450,10 @@ void DlgPrefDeck::slotUpdate() {
     }
     ComboBoxRateRange->setCurrentIndex(index);
 
-    double rateDirection = m_rateDirectionControls[0]->get();
+    double rateDirection = m_rateDirectionControls[0].get();
     checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
 
-    double cueMode = m_cueControls[0]->get();
+    double cueMode = m_cueControls[0].get();
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
@@ -475,7 +468,7 @@ void DlgPrefDeck::slotUpdate() {
     }
 
     KeylockMode keylockMode =
-            static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
+            static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0].get()));
     if (keylockMode == KeylockMode::LockCurrentKey) {
         radioButtonCurrentKey->setChecked(true);
     } else {
@@ -483,7 +476,7 @@ void DlgPrefDeck::slotUpdate() {
     }
 
     KeyunlockMode keyunlockMode =
-            static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
+            static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0].get()));
     if (keyunlockMode == KeyunlockMode::KeepLockedKey) {
         radioButtonKeepUnlockedKey->setChecked(true);
     } else {
@@ -574,8 +567,8 @@ void DlgPrefDeck::slotRateRangeComboBox(int index) {
 }
 
 void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
-    for (ControlProxy* pControl : std::as_const(m_rateRangeControls)) {
-        pControl->set(rangePercent / 100.0);
+    for (PollingControlProxy control : std::as_const(m_rateRangeControls)) {
+        control.set(rangePercent / 100.0);
     }
 }
 
@@ -588,8 +581,8 @@ void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
     if (inverted) {
         rateDirectionMultiplier = kRateDirectionInverted;
     }
-    for (ControlProxy* pControl : std::as_const(m_rateDirectionControls)) {
-        pControl->set(rateDirectionMultiplier);
+    for (PollingControlProxy control : std::as_const(m_rateDirectionControls)) {
+        control.set(rateDirectionMultiplier);
     }
 }
 
@@ -699,8 +692,8 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("TimeFormat")), timeFormat);
 
     // Set cue mode for every deck
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
-        pControl->set(static_cast<int>(m_cueMode));
+    for (PollingControlProxy control : std::as_const(m_cueControls)) {
+        control.set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CueDefault")), m_cueMode);
 
@@ -746,15 +739,15 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("keylockMode")),
             m_keylockMode);
     // Set key lock behavior for every group
-    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
-        pControl->set(static_cast<double>(m_keylockMode));
+    for (PollingControlProxy control : std::as_const(m_keylockModeControls)) {
+        control.set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("keyunlockMode")),
             m_keyunlockMode);
     // Set key un-lock behavior for every group
-    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
-        pControl->set(static_cast<double>(m_keyunlockMode));
+    for (PollingControlProxy control : std::as_const(m_keyunlockModeControls)) {
+        control.set(static_cast<double>(m_keyunlockMode));
     }
 
     RateControl::setRateRampMode(m_bRateRamping);
@@ -793,26 +786,26 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
 
     for (int i = m_iNumConfiguredDecks; i < numdecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateRangeControls.push_back(new ControlProxy(
-                group, "rateRange"));
-        m_rateDirectionControls.push_back(new ControlProxy(
-                group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
-                group, "cue_mode"));
-        m_keylockModeControls.push_back(new ControlProxy(
-                group, "keylockMode"));
-        m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
-        m_keyunlockModeControls.push_back(new ControlProxy(
-                group, "keyunlockMode"));
-        m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_rateRangeControls.push_back(PollingControlProxy(
+                group, QStringLiteral("rateRange")));
+        m_rateDirectionControls.push_back(PollingControlProxy(
+                group, QStringLiteral("rate_dir")));
+        m_cueControls.push_back(PollingControlProxy(
+                group, QStringLiteral("cue_mode")));
+        m_keylockModeControls.push_back(PollingControlProxy(
+                group, QStringLiteral("keylockMode")));
+        m_keylockModeControls.last().set(static_cast<double>(m_keylockMode));
+        m_keyunlockModeControls.push_back(PollingControlProxy(
+                group, QStringLiteral("keyunlockMode")));
+        m_keyunlockModeControls.last().set(static_cast<double>(m_keyunlockMode));
     }
 
     m_iNumConfiguredDecks = numdecks;
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
-        setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
+        setRateDirectionForAllDecks(m_rateDirectionControls[0].get() == kRateDirectionInverted);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0].get() * 100.0));
     }
 }
 
@@ -824,26 +817,26 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
 
     for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateRangeControls.push_back(new ControlProxy(
+        m_rateRangeControls.push_back(PollingControlProxy(
                 group, "rateRange"));
-        m_rateDirectionControls.push_back(new ControlProxy(
+        m_rateDirectionControls.push_back(PollingControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
+        m_cueControls.push_back(PollingControlProxy(
                 group, "cue_mode"));
-        m_keylockModeControls.push_back(new ControlProxy(
+        m_keylockModeControls.push_back(PollingControlProxy(
                 group, "keylockMode"));
-        m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
-        m_keyunlockModeControls.push_back(new ControlProxy(
+        m_keylockModeControls.last().set(static_cast<double>(m_keylockMode));
+        m_keyunlockModeControls.push_back(PollingControlProxy(
                 group, "keyunlockMode"));
-        m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_keyunlockModeControls.last().set(static_cast<double>(m_keyunlockMode));
     }
 
     m_iNumConfiguredSamplers = numsamplers;
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
-        setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
+        setRateDirectionForAllDecks(m_rateDirectionControls[0].get() == kRateDirectionInverted);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0].get() * 100.0));
     }
 }
 
