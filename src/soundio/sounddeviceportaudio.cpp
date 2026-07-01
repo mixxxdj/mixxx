@@ -1130,15 +1130,6 @@ int SoundDevicePortAudio::callbackProcessClkRef(
                 m_deviceId.debugName());
         composeInputBuffer(in, framesPerBuffer, 0, m_inputParams.channelCount);
         m_pSoundManager->pushInputBuffers(m_audioInputs, framesPerBuffer);
-
-        // During calibration, feed captured input to the calibrator
-        if (m_pSoundManager->isCalibrating() && m_inputParams.channelCount > 0) {
-            AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
-            for (SINT i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i) {
-                cal->addRecordedFrame(
-                        static_cast<const CSAMPLE*>(in)[i]);
-            }
-        }
     }
 
     m_pSoundManager->readProcess(framesPerBuffer);

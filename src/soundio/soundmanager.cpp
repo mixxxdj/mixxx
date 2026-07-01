@@ -579,6 +579,21 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
             ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();
+        if (!pInputBuffer) {
+            continue;
+        }
+
+        // During calibration, feed all captured input to the calibrator.
+        // This works regardless of which callback (clock ref, non-ref, drift)
+        // delivers the input, and handles multiple input devices.
+        if (m_pCalibrator) {
+            SINT channelCount = in.getSignal().getChannelCount().value();
+            SINT totalFrames = iFramesPerBuffer * channelCount;
+            for (SINT j = 0; j < totalFrames; ++j) {
+                m_pCalibrator->addRecordedFrame(pInputBuffer[j]);
+            }
+        }
+
         for (auto it = m_registeredDestinations.constFind(in);
                 it != m_registeredDestinations.constEnd() && it.key() == in;
                 ++it) {

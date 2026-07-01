@@ -2,6 +2,7 @@
 
 #include <QElapsedTimer>
 #include <QObject>
+#include <QTimer>
 #include <QVector>
 
 #include "engine/engine.h"
@@ -68,6 +69,9 @@ class AudioLatencyCalibrator : public QObject {
     /// @param outputIndex which output this frame is for (0 = clock ref)
     CSAMPLE generateReferenceFrame(int outputIndex = 0);
 
+    /// Called on timeout - stops calibration gracefully.
+    void onTimeout();
+
   signals:
     /// Emitted when calibration completes with per-output offsets in ms.
     /// offsets[0] = 0 (earliest device).
@@ -96,6 +100,7 @@ class AudioLatencyCalibrator : public QObject {
 
     // Timing
     QElapsedTimer m_timer;
+    QTimer* m_pTimeoutTimer;
     bool m_referencePlayed;
     qint64 m_recordStartTime;
 

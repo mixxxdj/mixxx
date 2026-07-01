@@ -13,6 +13,7 @@ AudioLatencyCalibrator::AudioLatencyCalibrator(QObject* parent)
           m_bufferSize(256),
           m_numOutputs(1),
           m_referencePlayhead(0),
+          m_pTimeoutTimer(nullptr),
           m_referencePlayed(false),
           m_recordStartTime(0) {
 }
@@ -34,16 +35,54 @@ void AudioLatencyCalibrator::startCalibration(
     m_state = State::PlayingReference;
     m_timer.start();
 
+    // Start a timeout timer - if calibration doesn't complete in 12 seconds,
+    // abort with a message. This handles the case where no microphone input
+    // is available (addRecordedFrame never called).
+    if (m_pTimeoutTimer) {
+        m_pTimeoutTimer->stop();
+    } else {
+        m_pTimeoutTimer = new QTimer(this);
+        connect(m_pTimeoutTimer, &QTimer::timeout, this, &AudioLatencyCalibrator::onTimeout);
+    }
+    m_pTimeoutTimer->setSingleShot(true);
+    m_pTimeoutTimer->start(12000);
+
     emit statusUpdate(tr("Playing reference pulse through %1 output(s)...")
                     .arg(m_numOutputs));
 }
 
 void AudioLatencyCalibrator::stopCalibration() {
     m_state = State::Idle;
+    if (m_pTimeoutTimer) {
+        m_pTimeoutTimer->stop();
+    }
     m_referenceSignal.clear();
     m_recordedSignal.clear();
     m_referencePlayhead = 0;
     m_suggestedOffsetsMs.clear();
+}
+
+void AudioLatencyCalibrator::onTimeout() {
+    if (m_state == State::RecordingReference && m_recordedSignal.isEmpty()) {
+        emit statusUpdate(
+                tr("Calibration timed out: no microphone input received.\n"
+                   "Make sure a microphone input is configured, audio is running\n"
+                   "(click Apply), and the phone's mic can hear the outputs."));
+    } else if (m_state == State::RecordingReference && !m_recordedSignal.isEmpty()) {
+        // Partial data - try to compute with what we have
+        m_state = State::Computing;
+        computeOffsets();
+        return;
+    } else {
+        emit statusUpdate(
+                tr("Calibration timed out.\n"
+                   "The reference pulse may not have played, or no input\n"
+                   "device is configured. Ensure audio is running (Apply)."));
+    }
+    m_state = State::Idle;
+    m_referenceSignal.clear();
+    m_recordedSignal.clear();
+    emit calibrationComplete(QVector<double>());
 }
 
 CSAMPLE AudioLatencyCalibrator::generateReferenceFrame(int outputIndex) {
