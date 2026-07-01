@@ -31,6 +31,8 @@ class PlaylistFeature : public BasePlaylistFeature {
 
     QVariant title() override;
 
+    PlaylistDAO& playlistDao() { return m_playlistDao; }
+
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
             QObject* pSource) override;
@@ -51,6 +53,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotDeleteAllUnlockedPlaylists();
     void slotCreateFolder();
 
+    void slotMovePlaylist();
     int getParentIdForNewItem() const;
 
   protected:
@@ -68,7 +71,4 @@ class PlaylistFeature : public BasePlaylistFeature {
     parented_ptr<QAction> m_pUnlockPlaylistsAction;
     parented_ptr<QAction> m_pDeleteAllUnlockedPlaylistsAction;
     parented_ptr<QAction> m_pMovePlaylistAction;
-
-  private slots:
-    void slotMovePlaylist();
 };

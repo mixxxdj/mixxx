@@ -8,18 +8,17 @@
 #include <QMessageBox>
 
 #include "library/library.h"
-#include "library/parser.h"
 #include "library/playlisttablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "library/treeitemmodel.h"
 #include <unordered_map>
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
 #include "util/dnd.h"
-#include "util/duration.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -504,7 +503,9 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
         progress = false;
         for (auto it = items.begin(); it != items.end(); ++it) {
             int id = it->first;
-            if (!it->second) continue; // already moved
+            if (!it->second) {
+                continue; // already moved
+            }
             int parentId = parentMap[id];
 
             if (parentId == kInvalidPlaylistId) {
@@ -531,7 +532,9 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
                     }
                 }
             }
-            if (progress) break; // restart iteration since map changed
+            if (progress) {
+                break; // restart iteration since map changed
+            }
         }
     }
 
@@ -553,20 +556,26 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     TreeItem* pRoot = m_pSidebarModel->getRootItem();
     TreeItem* pFound = nullptr;
     std::function<void(TreeItem*)> findRec = [&](TreeItem* node) {
-        if (!node || pFound) return;
+        if (!node || pFound) {
+            return;
+        }
         if (node->getData().toInt() == selectedId) {
             pFound = node;
             return;
         }
         for (auto* ch : node->children()) {
             findRec(ch);
-            if (pFound) return;
+            if (pFound) {
+                return;
+            }
         }
     };
     // Search children of root
     for (auto* child : pRoot->children()) {
         findRec(child);
-        if (pFound) break;
+        if (pFound) {
+            break;
+        }
     }
 
     if (!pFound) {
@@ -607,6 +616,32 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         return;
     }
 
+    QSet<int> expandedPlaylistIds;
+    if (m_pSidebarWidget) {
+        auto collectExpanded = [&](auto&& self, const QModelIndex& parent) -> void {
+            QAbstractItemModel* pModel = m_pSidebarWidget->model();
+            if (!pModel) {
+                return;
+            }
+            for (int row = 0; row < pModel->rowCount(parent); ++row) {
+                QModelIndex childIndex = pModel->index(row, 0, parent);
+                if (!childIndex.isValid()) {
+                    continue;
+                }
+                if (m_pSidebarWidget->isExpanded(childIndex)) {
+                    const QVariant idVariant = childIndex.data(TreeItemModel::kDataRole);
+                    bool ok = false;
+                    const int expandedPlaylistId = idVariant.toInt(&ok);
+                    if (ok && expandedPlaylistId != kInvalidPlaylistId) {
+                        expandedPlaylistIds.insert(expandedPlaylistId);
+                    }
+                }
+                self(self, childIndex);
+            }
+        };
+        collectExpanded(collectExpanded, QModelIndex());
+    }
+
     // Store current selection
     int selectedPlaylistId = kInvalidPlaylistId;
     if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
@@ -622,6 +657,12 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
     clearChildModel();
     QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+    for (int expandedPlaylistId : std::as_const(expandedPlaylistIds)) {
+        QModelIndex expandedIndex = indexFromPlaylistId(expandedPlaylistId);
+        if (expandedIndex.isValid()) {
+            m_pSidebarWidget->expand(expandedIndex);
+        }
+    }
     if (selectedPlaylistId != kInvalidPlaylistId && newIndex.isValid()) {
         // If a child index was selected and we got a new valid index select that.
         // Else (root item was selected or for some reason no index could be created)
@@ -786,7 +827,9 @@ void PlaylistFeature::slotMovePlaylist() {
         return;
     }
     int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (playlistId == kInvalidPlaylistId) return;
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
 
     // Build list of folders
     QList<QPair<int, QString>> folders = m_playlistDao.getAllFolders();
@@ -801,13 +844,19 @@ void PlaylistFeature::slotMovePlaylist() {
 
     bool ok = false;
     QString chosen = QInputDialog::getItem(m_pSidebarWidget, tr("Move Playlist"), tr("Select destination folder:"), names, 0, false, &ok);
-    if (!ok) return;
+    if (!ok) {
+        return;
+    }
 
     int idx = names.indexOf(chosen);
-    if (idx < 0) return;
+    if (idx < 0) {
+        return;
+    }
     int destId = ids.value(idx, kInvalidPlaylistId);
 
     if (!m_playlistDao.movePlaylist(playlistId, destId)) {
         QMessageBox::warning(m_pSidebarWidget, tr("Playlists"), tr("Failed to move playlist."));
+    } else {
+        slotPlaylistTableChanged(playlistId);
     }
 }

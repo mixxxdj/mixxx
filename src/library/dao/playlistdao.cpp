@@ -1,6 +1,7 @@
 #include "library/dao/playlistdao.h"
 
 #include <QRandomGenerator>
+#include <QTimer>
 #include <QtDebug>
 
 #include "library/autodj/autodjprocessor.h"
@@ -103,21 +104,47 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden, co
 }
 
 bool PlaylistDAO::movePlaylist(int playlistId, int newParentId) {
+    // --- AZ ABSZOLÚT TOLDÁS ---
+    // Ha a m_database nincs nyitva (mert üresen példányosították a DAO-t), 
+    // akkor manuálisan feltöltjük a Mixxx éppen aktív, működő kapcsolatával!
+    if (!m_database.isOpen()) {
+        m_database = QSqlDatabase::database(QStringLiteral("MIXXX"));
+        if (!m_database.isOpen() && !QSqlDatabase::connectionNames().isEmpty()) {
+            m_database = QSqlDatabase::database(QSqlDatabase::connectionNames().first());
+        }
+    }
+
+    qDebug() << "=== PLAYLIST MOVEMENT OVERRIDE ===";
+    qDebug() << "DAO m_database kapcsolat neve:" << m_database.connectionName();
+    qDebug() << "DAO m_database nyitva:" << m_database.isOpen();
+
+    // Most már szigorúan a gyári m_database-t használjuk, pontosan úgy, mint a createPlaylist!
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
+    
     query.prepare(QStringLiteral("UPDATE Playlists SET parent_id = :parent_id, date_modified = CURRENT_TIMESTAMP WHERE id = :id"));
-    if (newParentId == kInvalidPlaylistId) {
-        query.bindValue(":parent_id", QVariant(QVariant::Int));
+    
+    if (newParentId == kInvalidPlaylistId || newParentId == -1) {
+        query.bindValue(QStringLiteral(":parent_id"), QVariant(QVariant::Type::Int));
     } else {
-        query.bindValue(":parent_id", newParentId);
+        query.bindValue(QStringLiteral(":parent_id"), newParentId);
     }
-    query.bindValue(":id", playlistId);
+    query.bindValue(QStringLiteral(":id"), playlistId);
+    
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return false;
     }
+    
     transaction.commit();
-    emit added(playlistId); // trigger feature refresh
+    qDebug() << "DAO: SIKERES FRISSÍTÉS AZ ADATBÁZISBAN!";
+
+    // Defer the sidebar refresh until the current drag/drop interaction has
+    // finished so the UI model does not get rebuilt in the middle of a move.
+    QTimer::singleShot(0, this, [this, playlistId] {
+        emit added(playlistId);
+    });
+
     return true;
 }
 

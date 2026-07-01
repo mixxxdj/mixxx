@@ -8,6 +8,10 @@
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
+#include <QMimeData>
+#include "library/dao/playlistdao.h"
+#include "library/library.h"
+#include "library/trackset/playlistfeature.h"
 
 namespace {
 
@@ -32,6 +36,11 @@ SidebarModel::SidebarModel(
             &QTimer::timeout,
             this,
             &SidebarModel::slotPressedUntilClickedTimeout);
+
+    // --- IDALÉPÍTVE: Főszálas átirányítás a szálbiztos D&D-hez ---
+    connect(this, &SidebarModel::requestPlaylistMove,
+            this, &SidebarModel::slotExecutePlaylistMove,
+            Qt::QueuedConnection);
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
@@ -456,10 +465,20 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& u
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::dragMoveAccept() index=" << index << urls;
     }
+    
+    // Ha nincs URL (azaz nem külső fájlt húzunk az asztalról, hanem belső elemet), 
+    // és a Playlists-en belül vagyunk, akkor kötelezően engedjük!
+    if (urls.isEmpty() && index.isValid() && index.internalPointer() != this) {
+        TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pItem && pItem->feature() && pItem->feature()->title().toString() == QStringLiteral("Playlists")) {
+            return true;
+        }
+    }
+
+    // Minden más esetben marad a gyári Mixxx logika (pl. külső zenefájlok behúzása)
     if (!index.isValid()) {
         return false;
     }
-
     if (index.internalPointer() == this) {
         return m_sFeatures[index.row()]->dragMoveAccept(urls);
     } else {
@@ -534,7 +553,6 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 
@@ -601,3 +619,155 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
     }
     emit selectIndex(ind, scrollTo);
 }
+
+// --- DRAG AND DROP TÁMOGATÁS INDUL ---
+
+Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+
+    if (!index.isValid() || index.internalPointer() == this) {
+        defaultFlags |= Qt::ItemIsDropEnabled;
+        return defaultFlags;
+    }
+
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (pItem) {
+        LibraryFeature* pFeature = pItem->feature();
+        // Ha az elemnek van feature-je, engedjük meg a Drag-et és a Drop-ot!
+        if (pFeature) {
+            defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+        }
+    }
+
+    return defaultFlags;
+}
+
+Qt::DropActions SidebarModel::supportedDropActions() const {
+    // Belső áthelyezést (mozgatást) végzünk a fán belül
+    return Qt::MoveAction;
+}
+
+QStringList SidebarModel::mimeTypes() const {
+    QStringList types;
+    types << QStringLiteral("application/x-mixxx-playlist-id");
+    return types;
+}
+
+QMimeData* SidebarModel::mimeData(const QModelIndexList& indexes) const {
+    QMimeData* mimeData = new QMimeData();
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    for (const QModelIndex& index : indexes) {
+        if (index.isValid() && index.internalPointer() != this) {
+            TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+            if (pItem) {
+                int playlistId = pItem->getData().toInt();
+                stream << playlistId;
+            }
+        }
+    }
+
+    mimeData->setData(QStringLiteral("application/x-mixxx-playlist-id"), encodedData);
+    return mimeData;
+}
+
+bool SidebarModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
+                                int row, int column, const QModelIndex& parent) {
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+
+    if (action == Qt::IgnoreAction) {
+        return true;
+    }
+
+    if (!data->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
+        return false;
+    }
+
+    QByteArray encodedData = data->data(QStringLiteral("application/x-mixxx-playlist-id"));
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    int movedPlaylistId = kInvalidPlaylistId;
+    stream >> movedPlaylistId;
+
+    if (movedPlaylistId == kInvalidPlaylistId) {
+        return false;
+    }
+
+    int targetParentId = kInvalidPlaylistId;
+    TreeItem* pTargetItem = nullptr;
+    if (parent.isValid() && parent.internalPointer() != this) {
+        pTargetItem = static_cast<TreeItem*>(parent.internalPointer());
+    }
+
+    if (pTargetItem) {
+        const int targetItemId = pTargetItem->getData().toInt();
+        if (targetItemId != kInvalidPlaylistId) {
+            PlaylistFeature* pPlaylistFeature = nullptr;
+            for (LibraryFeature* pFeature : m_sFeatures) {
+                if (pFeature && pFeature->title().toString() == QStringLiteral("Playlists")) {
+                    pPlaylistFeature = qobject_cast<PlaylistFeature*>(pFeature);
+                    break;
+                }
+            }
+
+            if (pPlaylistFeature && pPlaylistFeature->playlistDao().isFolder(targetItemId)) {
+                targetParentId = targetItemId;
+            } else {
+                TreeItem* pAncestor = pTargetItem->parent();
+                while (pAncestor) {
+                    if (pAncestor->getData().toInt() == movedPlaylistId) {
+                        return false;
+                    }
+                    pAncestor = pAncestor->parent();
+                }
+
+                if (pTargetItem->parent() && !pTargetItem->parent()->isRoot()) {
+                    const int parentItemId = pTargetItem->parent()->getData().toInt();
+                    if (parentItemId != kInvalidPlaylistId) {
+                        targetParentId = parentItemId;
+                    }
+                }
+            }
+        }
+
+        TreeItem* pAncestor = pTargetItem;
+        while (pAncestor) {
+            if (pAncestor->getData().toInt() == movedPlaylistId) {
+                return false;
+            }
+            pAncestor = pAncestor->parent();
+        }
+    }
+
+    if (movedPlaylistId == targetParentId) {
+        return false;
+    }
+
+    emit requestPlaylistMove(movedPlaylistId, targetParentId);
+    return true;
+}
+
+void SidebarModel::slotExecutePlaylistMove(int movedPlaylistId, int targetParentId) {
+    PlaylistFeature* pPlaylistFeature = nullptr;
+    for (LibraryFeature* pFeature : m_sFeatures) {
+        if (pFeature && pFeature->title().toString() == QStringLiteral("Playlists")) {
+            pPlaylistFeature = qobject_cast<PlaylistFeature*>(pFeature);
+            break;
+        }
+    }
+
+    if (!pPlaylistFeature) {
+        return;
+    }
+
+    PlaylistDAO& liveDao = pPlaylistFeature->playlistDao();
+    if (liveDao.movePlaylist(movedPlaylistId, targetParentId)) {
+        qDebug() << "D&D move applied to playlist" << movedPlaylistId
+                 << "parent" << targetParentId;
+    } else {
+        qDebug() << "D&D move failed for playlist" << movedPlaylistId;
+    }
+}
+
+// --- DRAG AND DROP TÁMOGATÁS VÉGE ---
