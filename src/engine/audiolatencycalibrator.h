@@ -52,6 +52,11 @@ class AudioLatencyCalibrator : public QObject {
     /// @param outputIndex which output this frame is for (0 = clock ref)
     CSAMPLE generateReferenceFrame(int outputIndex = 0);
 
+    /// Feed a captured input frame to the calibrator.
+    /// Called from pushInputBuffers() for every microphone sample received.
+    /// When enough frames have been collected, computeOffsets() is triggered.
+    void addRecordedFrame(CSAMPLE value);
+
     /// Called on timeout — stops calibration gracefully.
     void onTimeout();
 
