@@ -28,8 +28,11 @@ bool ChannelGroup::clashesWith(const ChannelGroup& other) const {
     if (!m_channels.isValid() || !other.m_channels.isValid()) {
         return false; // can't clash if there are no channels in use
     }
-    return (m_channelBase > other.m_channelBase && m_channelBase < other.m_channelBase + other.m_channels) ||
-            (other.m_channelBase > m_channelBase && other.m_channelBase < m_channelBase + m_channels) || m_channelBase == other.m_channelBase;
+    return (m_channelBase > other.m_channelBase &&
+                   m_channelBase < other.m_channelBase + other.m_channels) ||
+            (other.m_channelBase > m_channelBase &&
+                    other.m_channelBase < m_channelBase + m_channels) ||
+            m_channelBase == other.m_channelBase;
 }
 
 /// Constructs an AudioPath object (must be called by a child class's

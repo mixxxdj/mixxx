@@ -291,7 +291,8 @@ class SoundDeviceId final {
 inline bool operator==(
         const SoundDeviceId& lhs,
         const SoundDeviceId& rhs) {
-    return lhs.name == rhs.name && lhs.alsaHwDevice == rhs.alsaHwDevice && lhs.portAudioIndex == rhs.portAudioIndex;
+    return lhs.name == rhs.name && lhs.alsaHwDevice == rhs.alsaHwDevice &&
+            lhs.portAudioIndex == rhs.portAudioIndex;
 }
 
 inline bool operator!=(
