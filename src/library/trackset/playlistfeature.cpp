@@ -14,6 +14,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
+#include "library/sidebarmodel.h"
 #include <unordered_map>
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
@@ -617,7 +618,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     }
 
     QSet<int> expandedPlaylistIds;
-    if (m_pSidebarWidget) {
+    if (m_pSidebarWidget && m_pSidebarWidget->model()) {
         auto collectExpanded = [&](auto&& self, const QModelIndex& parent) -> void {
             QAbstractItemModel* pModel = m_pSidebarWidget->model();
             if (!pModel) {
@@ -629,7 +630,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
                     continue;
                 }
                 if (m_pSidebarWidget->isExpanded(childIndex)) {
-                    const QVariant idVariant = childIndex.data(TreeItemModel::kDataRole);
+                    const QVariant idVariant = childIndex.data(SidebarModel::DataRole);
                     bool ok = false;
                     const int expandedPlaylistId = idVariant.toInt(&ok);
                     if (ok && expandedPlaylistId != kInvalidPlaylistId) {
@@ -657,10 +658,25 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
     clearChildModel();
     QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+    SidebarModel* pSidebarModel = nullptr;
+    if (m_pSidebarWidget && m_pSidebarWidget->model()) {
+        pSidebarModel = qobject_cast<SidebarModel*>(m_pSidebarWidget->model());
+    }
     for (int expandedPlaylistId : std::as_const(expandedPlaylistIds)) {
         QModelIndex expandedIndex = indexFromPlaylistId(expandedPlaylistId);
-        if (expandedIndex.isValid()) {
-            m_pSidebarWidget->expand(expandedIndex);
+        if (!expandedIndex.isValid()) {
+            continue;
+        }
+
+        QModelIndex translatedIndex = expandedIndex;
+        if (pSidebarModel) {
+            translatedIndex = pSidebarModel->translateChildIndex(expandedIndex);
+        }
+
+        QModelIndex parentIndex = translatedIndex;
+        while (parentIndex.isValid()) {
+            m_pSidebarWidget->expand(parentIndex);
+            parentIndex = parentIndex.parent();
         }
     }
     if (selectedPlaylistId != kInvalidPlaylistId && newIndex.isValid()) {

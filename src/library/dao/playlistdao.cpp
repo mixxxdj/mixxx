@@ -1,5 +1,6 @@
 #include "library/dao/playlistdao.h"
 
+#include <QMetaType>
 #include <QRandomGenerator>
 #include <QTimer>
 #include <QtDebug>
@@ -85,7 +86,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden, co
     
     // Handle the parentId parameter. If it is kInvalidPlaylistId, we want to insert a NULL value into the database. Otherwise, we insert the actual parentId value.
     if (parentId == kInvalidPlaylistId) {
-        query.bindValue(":parent_id", QVariant(QVariant::Int));
+        query.bindValue(":parent_id", QVariant(QMetaType(QMetaType::Int)));
     } else {
         query.bindValue(":parent_id", parentId);
     }
@@ -104,9 +105,8 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden, co
 }
 
 bool PlaylistDAO::movePlaylist(int playlistId, int newParentId) {
-    // --- AZ ABSZOLÚT TOLDÁS ---
-    // Ha a m_database nincs nyitva (mert üresen példányosították a DAO-t), 
-    // akkor manuálisan feltöltjük a Mixxx éppen aktív, működő kapcsolatával!
+    // Fallback initialization for DAO instances that were created before a
+    // database connection is available.
     if (!m_database.isOpen()) {
         m_database = QSqlDatabase::database(QStringLiteral("MIXXX"));
         if (!m_database.isOpen() && !QSqlDatabase::connectionNames().isEmpty()) {
@@ -118,14 +118,14 @@ bool PlaylistDAO::movePlaylist(int playlistId, int newParentId) {
     qDebug() << "DAO m_database kapcsolat neve:" << m_database.connectionName();
     qDebug() << "DAO m_database nyitva:" << m_database.isOpen();
 
-    // Most már szigorúan a gyári m_database-t használjuk, pontosan úgy, mint a createPlaylist!
+    // Use the regular database connection directly, just like createPlaylist.
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     
     query.prepare(QStringLiteral("UPDATE Playlists SET parent_id = :parent_id, date_modified = CURRENT_TIMESTAMP WHERE id = :id"));
     
     if (newParentId == kInvalidPlaylistId || newParentId == -1) {
-        query.bindValue(QStringLiteral(":parent_id"), QVariant(QVariant::Type::Int));
+        query.bindValue(QStringLiteral(":parent_id"), QVariant(QMetaType(QMetaType::Int)));
     } else {
         query.bindValue(QStringLiteral(":parent_id"), newParentId);
     }
@@ -137,7 +137,7 @@ bool PlaylistDAO::movePlaylist(int playlistId, int newParentId) {
     }
     
     transaction.commit();
-    qDebug() << "DAO: SIKERES FRISSÍTÉS AZ ADATBÁZISBAN!";
+    qDebug() << "DAO: database update completed";
 
     // Defer the sidebar refresh until the current drag/drop interaction has
     // finished so the UI model does not get rebuilt in the middle of a move.
@@ -260,7 +260,7 @@ int PlaylistDAO::getPlaylistIdFromName(const QString& name, const int parentId) 
     query.bindValue(":name", name);
 
     if (parentId == kInvalidPlaylistId) {
-        query.bindValue(":parent_id", QVariant(QVariant::Int));
+        query.bindValue(":parent_id", QVariant(QMetaType(QMetaType::Int)));
     } else {
         query.bindValue(":parent_id", parentId);
     }

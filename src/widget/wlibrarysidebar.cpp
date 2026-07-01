@@ -88,7 +88,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
 #endif
     const QModelIndex index = indexAt(pos);
 
-    // --- BELSŐ PLAYLIST DRAG KEZELÉSE ---
+    // --- Internal playlist drag handling ---
     if (pEvent->mimeData()->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
         SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
 
@@ -118,7 +118,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     }
     // ------------------------------------
 
-    // INNEN LEFELÉ MARAD A GYÁRI MIXXX KÓD (URL-ek kezelése, változatlanul)
+    // The rest of the code below keeps the original Mixxx URL-handling logic.
     if (m_hoverIndex == index) {
         m_lastDragMoveAccepted ? pEvent->acceptProposedAction() : pEvent->ignore();
         return;
@@ -170,9 +170,8 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
     resetHoverIndexAndDragMoveResult();
     toggleDragHoverPropertyAndUpdateStyle(false);
 
-    // --- BELSŐ PLAYLIST DROP KEZELÉSE ---
     if (pEvent->mimeData()->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
-        qDebug() << "!!! SIDEBAR DROP EVENT ELINDULT !!!";
+        qDebug() << "Sidebar drop event started";
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         QPoint pos = pEvent->position().toPoint();
@@ -183,10 +182,8 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
         SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
 
         if (pSidebarModel && destIndex.isValid()) {
-            // Nem itt helyben DAO-zunk, hanem átadjuk a SidebarModel-nek, 
-            // aminek gyárilag van adatbázis-kapcsolata a Mixxx Core-ból!
             if (pSidebarModel->dropMimeData(pEvent->mimeData(), pEvent->dropAction(), -1, -1, destIndex)) {
-                qDebug() << "!!! A MODELL SIKERESEN LEKEZELTE A DROPPOT !!!";
+                qDebug() << "Sidebar model accepted the drop";
                 pEvent->setDropAction(Qt::MoveAction);
                 pEvent->acceptProposedAction();
                 return;
@@ -195,9 +192,7 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
         pEvent->ignore();
         return;
     }
-    // ------------------------------------
-
-    // INNEN LEFELÉ MARAD A GYÁRI MIXXX KÓD (URL-ek kezelése, változatlanul)
+  
     if (!pEvent->mimeData()->hasUrls()) {
         pEvent->ignore();
         return;

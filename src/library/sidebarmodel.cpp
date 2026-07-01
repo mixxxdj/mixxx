@@ -37,7 +37,7 @@ SidebarModel::SidebarModel(
             this,
             &SidebarModel::slotPressedUntilClickedTimeout);
 
-    // --- IDALÉPÍTVE: Főszálas átirányítás a szálbiztos D&D-hez ---
+    // Queue the move operation so drag-and-drop stays thread-safe.
     connect(this, &SidebarModel::requestPlaylistMove,
             this, &SidebarModel::slotExecutePlaylistMove,
             Qt::QueuedConnection);
@@ -188,7 +188,6 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
         return QModelIndex();
     }
 
-    // If pointer is SidebarModel, then this is a top-level feature item, which has no parent.
     if (index.internalPointer() == this) {
         return QModelIndex();
     }
@@ -224,7 +223,6 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
         if (parent.internalPointer() == this) {
             return m_sFeatures[parent.row()]->sidebarModel()->rowCount();
         } else {
-            // We support tree models deeper than 1 level
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
             if (pTreeItem) {
                 return pTreeItem->childRows();
@@ -466,8 +464,8 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& u
         qDebug() << "SidebarModel::dragMoveAccept() index=" << index << urls;
     }
     
-    // Ha nincs URL (azaz nem külső fájlt húzunk az asztalról, hanem belső elemet), 
-    // és a Playlists-en belül vagyunk, akkor kötelezően engedjük!
+    // If there is no URL, we are dragging an internal item within Playlists,
+    // so we must allow the drop.
     if (urls.isEmpty() && index.isValid() && index.internalPointer() != this) {
         TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
         if (pItem && pItem->feature() && pItem->feature()->title().toString() == QStringLiteral("Playlists")) {
@@ -475,7 +473,7 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& u
         }
     }
 
-    // Minden más esetben marad a gyári Mixxx logika (pl. külső zenefájlok behúzása)
+    // Otherwise keep the default Mixxx logic for external files and similar drops.
     if (!index.isValid()) {
         return false;
     }
@@ -620,7 +618,6 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
     emit selectIndex(ind, scrollTo);
 }
 
-// --- DRAG AND DROP TÁMOGATÁS INDUL ---
 
 Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
@@ -633,7 +630,7 @@ Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
     TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
     if (pItem) {
         LibraryFeature* pFeature = pItem->feature();
-        // Ha az elemnek van feature-je, engedjük meg a Drag-et és a Drop-ot!
+        // Allow drag and drop for items that belong to a feature.
         if (pFeature) {
             defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
         }
@@ -643,7 +640,7 @@ Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
 }
 
 Qt::DropActions SidebarModel::supportedDropActions() const {
-    // Belső áthelyezést (mozgatást) végzünk a fán belül
+    // Handle internal reparenting within the tree.
     return Qt::MoveAction;
 }
 
@@ -769,5 +766,3 @@ void SidebarModel::slotExecutePlaylistMove(int movedPlaylistId, int targetParent
         qDebug() << "D&D move failed for playlist" << movedPlaylistId;
     }
 }
-
-// --- DRAG AND DROP TÁMOGATÁS VÉGE ---
