@@ -5,6 +5,7 @@
 #include <QVector>
 
 #include "engine/engine.h"
+#include "util/types.h"
 
 /**
  * AudioLatencyCalibrator implements active latency calibration using a
