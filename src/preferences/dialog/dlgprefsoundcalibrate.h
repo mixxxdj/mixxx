@@ -17,7 +17,8 @@ class DlgPrefSoundCalibrate : public QDialog {
     explicit DlgPrefSoundCalibrate(QWidget* parent,
             DlgPrefSoundItem* pSoundItem,
             int framesPerBuffer = 1024,
-            int sampleRate = 44100);
+            int sampleRate = 44100,
+            double outputLatencyMs = 0.0);
     ~DlgPrefSoundCalibrate() override = default;
 
   private slots:
@@ -38,6 +39,7 @@ class DlgPrefSoundCalibrate : public QDialog {
     bool m_playingTone;
     int m_framesPerBuffer;
     int m_sampleRate;
+    double m_outputLatencyMs;
 
     class QLabel* m_pStatusLabel;
     class QDoubleSpinBox* m_pOffsetSpinbox;
@@ -53,8 +55,10 @@ class DlgPrefSoundCalibrate : public QDialog {
 /// @param item The output item being calibrated
 /// @param framesPerBuffer Optional: configured buffer frame count for auto-calibrate baseline
 /// @param sampleRate Optional: configured sample rate for auto-calibrate baseline
+/// @param outputLatencyMs Optional: actual device output latency from PortAudio (0 if unavailable)
 /// Defined in dlgprefsoundcalibrate.cpp to avoid AUTOMOC conflicts.
 void showLatencyCalibrationDialog(QWidget* parent,
         class DlgPrefSoundItem* item,
         int framesPerBuffer = 1024,
-        int sampleRate = 44100);
+        int sampleRate = 44100,
+        double outputLatencyMs = 0.0);

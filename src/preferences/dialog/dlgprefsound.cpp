@@ -16,7 +16,8 @@
 void showLatencyCalibrationDialog(QWidget* parent,
         class DlgPrefSoundItem* item,
         int framesPerBuffer,
-        int sampleRate);
+        int sampleRate,
+        double outputLatencyMs);
 
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
@@ -1120,7 +1121,9 @@ void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
     if (bufIdx > 0) {
         framesPerBuffer = 256 << (bufIdx - 1);
     }
-    showLatencyCalibrationDialog(this, pItem, framesPerBuffer, sampleRate);
+    // Read the actual device-reported output latency (valid when audio is running)
+    double outputLatencyMs = m_pOutputLatencyMs->get();
+    showLatencyCalibrationDialog(this, pItem, framesPerBuffer, sampleRate, outputLatencyMs);
 }
 
 void DlgPrefSound::updateRemoveButtonVisibility() {

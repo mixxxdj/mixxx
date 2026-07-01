@@ -13,7 +13,8 @@
 DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
         DlgPrefSoundItem* pSoundItem,
         int framesPerBuffer,
-        int sampleRate)
+        int sampleRate,
+        double outputLatencyMs)
         : QDialog(parent),
           m_pSoundItem(pSoundItem),
           m_currentOffsetMs(0.0),
@@ -21,6 +22,7 @@ DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
           m_playingTone(false),
           m_framesPerBuffer(framesPerBuffer > 0 ? framesPerBuffer : 1024),
           m_sampleRate(sampleRate > 0 ? sampleRate : 44100),
+          m_outputLatencyMs(outputLatencyMs),
           m_pStatusLabel(nullptr),
           m_pOffsetSpinbox(nullptr),
           m_pFineSlider(nullptr),
@@ -147,16 +149,36 @@ void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
         return;
     }
 
-    // Auto-calibrate based on device buffer latency.
-    // The baseline offset is the output buffer duration in ms:
-    //   offset_ms = framesPerBuffer * 1000 / sampleRate
-    // This reflects the inherent delay from audio buffering.
+    // Auto-calibrate based on device latency.
+    // Follows the osu! BeatmapOffsetControl approach: use actual reported
+    // device latency as the primary measurement, with buffer-size fallback.
     //
-    // On Android USB audio (like DDJ-FLX4), typical values are:
-    //   - 960 frames @ 48000 Hz = 20ms per buffer
-    //   - Total round-trip = ~40-60ms including USB transport
+    // Priority:
+    //   1. m_outputLatencyMs — actual PortAudio-reported device latency (ms).
+    //      Set by sounddeviceportaudio.cpp from the clock reference device.
+    //      Only valid when audio is actively running.
+    //   2. Buffer-size estimate — framesPerBuffer * 1000 / sampleRate (ms).
+    //      Available when the dialog is opened from preferences before Apply.
+    //
+    // osu! uses median hit-error as its measurement then applies exponential
+    // dampening when unreliable (high unstable rate). Here we have a direct
+    // hardware measurement that doesn't need dampening.
 
-    double baselineMs = static_cast<double>(m_framesPerBuffer) * 1000.0 / m_sampleRate;
+    double baselineMs = m_outputLatencyMs;
+    QString method;
+
+    if (baselineMs > 0.0) {
+        // Source 1: actual PortAudio-reported device latency
+        // This is the most accurate measurement — it includes buffer,
+        // hardware, and USB transport delays on the clock ref device.
+        method = tr("device-reported latency");
+    } else {
+        // Source 2: estimate from buffer configuration
+        baselineMs = static_cast<double>(m_framesPerBuffer) * 1000.0 / m_sampleRate;
+        method = tr("buffer config (%1 frames @ %2 Hz)")
+                         .arg(m_framesPerBuffer)
+                         .arg(m_sampleRate);
+    }
 
     // Clamp to reasonable range
     if (baselineMs < 1.0) {
@@ -172,10 +194,9 @@ void DlgPrefSoundCalibrate::onAutoCalibrateClicked() {
     m_pOffsetSpinbox->blockSignals(false);
 
     m_pStatusLabel->setText(
-            tr("Auto-calibrated: %1 ms (based on %2 frames @ %3 Hz)")
+            tr("Auto-calibrated: %1 ms (based on %2)")
                     .arg(static_cast<int>(std::round(baselineMs)))
-                    .arg(m_framesPerBuffer)
-                    .arg(m_sampleRate));
+                    .arg(method));
 
     m_pAutoCalibrateButton->setEnabled(true);
     m_pAutoCalibrateButton->setText(tr("Re-Calibrate"));
@@ -204,8 +225,9 @@ void DlgPrefSoundCalibrate::updateStatusLabel() {
 void showLatencyCalibrationDialog(QWidget* parent,
         DlgPrefSoundItem* item,
         int framesPerBuffer,
-        int sampleRate) {
-    DlgPrefSoundCalibrate dialog(parent, item, framesPerBuffer, sampleRate);
+        int sampleRate,
+        double outputLatencyMs) {
+    DlgPrefSoundCalibrate dialog(parent, item, framesPerBuffer, sampleRate, outputLatencyMs);
     // Qt modal dialog handles blocking events to parent widgets natively.
     // No global event filter needed — the underlying crash (null-this in
     // setupDevices with extra Main outputs) was fixed upstream.
