@@ -19,8 +19,8 @@ namespace qml {
 class QmlLibrarySourceTree : public QQuickItem {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    Q_PROPERTY(QQmlListProperty<QmlLibrarySource> sources READ sources)
-    Q_PROPERTY(QQmlListProperty<QmlLibraryTrackListColumn> defaultColumns READ
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibrarySource> sources READ sources)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> defaultColumns READ
                     defaultColumns CONSTANT)
     Q_CLASSINFO("DefaultProperty", "sources")
     QML_NAMED_ELEMENT(LibrarySourceTree)

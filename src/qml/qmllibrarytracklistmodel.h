@@ -12,7 +12,7 @@ namespace qml {
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_OBJECT
     QML_NAMED_ELEMENT(LibraryTrackListModel)
-    Q_PROPERTY(QQmlListProperty<QmlLibraryTrackListColumn> columns READ columns FINAL)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns READ columns FINAL)
     QML_UNCREATABLE("Only accessible via Mixxx.Library")
 
   public:
