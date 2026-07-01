@@ -6,6 +6,7 @@
 #include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
+#include "engine/audiolatencycalibrator.h"
 #include "engine/enginemixer.h"
 #include "moc_soundmanager.cpp"
 #include "soundio/networkenumerator.h"
@@ -587,7 +588,7 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
         // This works regardless of which callback (clock ref, non-ref, drift)
         // delivers the input, and handles multiple input devices.
         if (m_pCalibrator) {
-            SINT channelCount = in.getSignal().getChannelCount().value();
+            SINT channelCount = in.getChannelGroup().getChannelCount().value();
             SINT totalFrames = iFramesPerBuffer * channelCount;
             for (SINT j = 0; j < totalFrames; ++j) {
                 m_pCalibrator->addRecordedFrame(pInputBuffer[j]);
