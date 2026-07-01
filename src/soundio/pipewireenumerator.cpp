@@ -159,12 +159,14 @@ void PipewireEnumerator::initialize() {
 
     pw_filter_add_listener(m_ppwFilter, &m_pwFilterListener, &filter_events, this);
 
-    for (const auto& input : m_pSoundManager->registeredInputs()) {
-        createInputPorts(input);
+    const auto registeredOutputs = m_pSoundManager->registeredOutputs();
+    for (const auto& output : registeredOutputs) {
+        createOutputPorts(output);
     }
 
-    for (const auto& output : m_pSoundManager->registeredOutputs()) {
-        createOutputPorts(output);
+    const auto registeredInputs = m_pSoundManager->registeredInputs();
+    for (const auto& input : registeredInputs) {
+        createInputPorts(input);
     }
 
     int res = pw_filter_connect(m_ppwFilter,
@@ -548,7 +550,7 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
     for (uint32_t deviceId : m_openedDevices) {
         QSharedPointer<SoundDevicePipewire> device = m_soundDevices.at(deviceId);
         QList<AudioInputBuffer> deviceInputs = device->inputs();
-        for (AudioInputBuffer input : deviceInputs) {
+        for (const AudioInputBuffer& input : deviceInputs) {
             ChannelGroup channelGroup = input.getChannelGroup();
             const int iChannelCount = channelGroup.getChannelCount();
             const int iChannelBase = channelGroup.getChannelBase();
@@ -587,7 +589,7 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
 
     for (uint32_t deviceId : m_openedDevices) {
         QSharedPointer<SoundDevicePipewire> device = m_soundDevices.at(deviceId);
-        for (AudioOutputBuffer output : device->outputs()) {
+        for (const AudioOutputBuffer& output : device->outputs()) {
             ChannelGroup chanGroup = output.getChannelGroup();
             const int iChannelCount = chanGroup.getChannelCount();
             const int iChannelBase = chanGroup.getChannelBase();
