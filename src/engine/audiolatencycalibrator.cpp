@@ -9,7 +9,6 @@
 AudioLatencyCalibrator::AudioLatencyCalibrator(QObject* parent)
         : QObject(parent),
           m_state(State::Idle),
-          m_suggestedOffsetMs(0.0),
           m_sampleRate(48000),
           m_bufferSize(256),
           m_numOutputs(1),
@@ -36,7 +35,7 @@ void AudioLatencyCalibrator::startCalibration(
     m_timer.start();
 
     emit statusUpdate(tr("Playing reference pulse through %1 output(s)...")
-                              .arg(m_numOutputs));
+                    .arg(m_numOutputs));
 }
 
 void AudioLatencyCalibrator::stopCalibration() {
@@ -96,7 +95,8 @@ void AudioLatencyCalibrator::generateReferenceChirp() {
     double freqEnd = 2000.0;
     for (int i = 0; i < kReferenceLength; ++i) {
         double t = static_cast<double>(i) / m_sampleRate;
-        double freq = freqStart + (freqEnd - freqStart) *
+        double freq = freqStart +
+                (freqEnd - freqStart) *
                         (static_cast<double>(i) / kReferenceLength);
         // Chirp with fade-in/out to avoid clicks
         double envelope = 1.0;
@@ -168,7 +168,7 @@ void AudioLatencyCalibrator::computeOffsets() {
             // Also track significant secondary peaks (from other output devices)
             // A peak is valid if it's separated by at least 10ms from existing peaks
             bool isNew = true;
-            for (const auto& p : peaks) {
+            for (const auto& p : std::as_const(peaks)) {
                 if (qAbs(offset - p.offset) < m_sampleRate / 100) { // 10ms min separation
                     isNew = false;
                     break;
@@ -181,10 +181,9 @@ void AudioLatencyCalibrator::computeOffsets() {
     }
 
     // Sort peaks by offset (earliest first)
-    std::sort(peaks.begin(), peaks.end(),
-            [](const Peak& a, const Peak& b) {
-                return a.offset < b.offset;
-            });
+    std::sort(peaks.begin(), peaks.end(), [](const Peak& a, const Peak& b) {
+        return a.offset < b.offset;
+    });
 
     if (peaks.isEmpty()) {
         emit statusUpdate(

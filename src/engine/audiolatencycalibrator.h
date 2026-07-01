@@ -81,7 +81,6 @@ class AudioLatencyCalibrator : public QObject {
     void generateReferenceChirp();
 
     State m_state;
-    double m_suggestedOffsetMs; // legacy single-device offset
     QVector<double> m_suggestedOffsetsMs;
 
     int m_sampleRate;
@@ -100,8 +99,8 @@ class AudioLatencyCalibrator : public QObject {
     bool m_referencePlayed;
     qint64 m_recordStartTime;
 
-    static constexpr int kReferenceLength = 4800; // ~100ms at 48kHz
-    static constexpr int kMinReferenceGap = 480;  // ~10ms gap between pulses
+    static constexpr int kReferenceLength = 4800;     // ~100ms at 48kHz
+    static constexpr int kMinReferenceGap = 480;      // ~10ms gap between pulses
     static constexpr int kMaxRecordingFrames = 96000; // 2 seconds at 48kHz
     static constexpr int kCorrelationWindow = 48000;  // Search window (1 second)
 };

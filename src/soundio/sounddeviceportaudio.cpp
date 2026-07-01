@@ -12,11 +12,11 @@
 #include <cstddef>
 
 #include "control/controlobject.h"
+#include "engine/audiolatencycalibrator.h"
 #include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
-#include "engine/audiolatencycalibrator.h"
 #include "util/defs.h"
 #include "util/denormalsarezero.h"
 #include "util/fifo.h"
@@ -738,8 +738,10 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     }
                 }
             } else {
-                composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
-                                    m_outputParams.channelCount);
+                composeOutputBuffer(dataPtr1,
+                        size1 / m_outputParams.channelCount,
+                        0,
+                        m_outputParams.channelCount);
                 if (size2 > 0) {
                     composeOutputBuffer(dataPtr2,
                             size2 / m_outputParams.channelCount,

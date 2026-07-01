@@ -19,8 +19,8 @@ void showLatencyCalibrationDialog(QWidget* parent,
         int sampleRate,
         double outputLatencyMs);
 
-#include "soundio/soundmanager.h"
 #include "engine/audiolatencycalibrator.h"
+#include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 
@@ -246,8 +246,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
 
-    connect(autoCalibrateAllButton, &QAbstractButton::clicked,
-            this, &DlgPrefSound::autoCalibrateAllOutputs);
+    connect(autoCalibrateAllButton,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefSound::autoCalibrateAllOutputs);
 
     connect(m_pSoundManager.get(),
             &SoundManager::outputRegistered,
@@ -1152,14 +1154,14 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
     }
 
     if (mainOutputs.size() < 2) {
-        QMessageBox::information(this, tr("Calibration"),
-                tr("Add at least 2 Main outputs first."));
+        QMessageBox::information(this, tr("Calibration"), tr("Add at least 2 Main outputs first."));
         return;
     }
 
     // Check if audio is running (devices are open)
     if (m_pOutputLatencyMs->get() <= 0) {
-        QMessageBox::information(this, tr("Calibration"),
+        QMessageBox::information(this,
+                tr("Calibration"),
                 tr("Audio must be running. Click Apply to start audio first."));
         return;
     }
@@ -1167,7 +1169,8 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
     // Check if there's an input device available
     QList<AudioInput> inputs = m_pSoundManager->registeredInputs();
     if (inputs.isEmpty()) {
-        QMessageBox::information(this, tr("Calibration"),
+        QMessageBox::information(this,
+                tr("Calibration"),
                 tr("No input (microphone) configured. "
                    "Add a microphone input on the Input tab and click Apply."));
         return;
@@ -1198,47 +1201,51 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
     // Show a dialog with progress
     QMessageBox* pProgress = new QMessageBox(this);
     pProgress->setWindowTitle(tr("Calibrating..."));
-    pProgress->setText(tr("Playing reference chirp through all outputs.\n"
-                          "Make sure all outputs are audible to the phone's microphone."));
+    pProgress->setText(tr(
+            "Playing reference chirp through all outputs.\n"
+            "Make sure all outputs are audible to the phone's microphone."));
     pProgress->setStandardButtons(QMessageBox::NoButton);
     pProgress->show();
 
-    connect(m_pCalibrator, &AudioLatencyCalibrator::statusUpdate,
-            this, [this, pProgress](const QString& status) {
+    connect(m_pCalibrator, &AudioLatencyCalibrator::statusUpdate, this, [](const QString& status) {
         qDebug() << "Calibration:" << status;
     });
 
-    connect(m_pCalibrator, &AudioLatencyCalibrator::calibrationComplete,
-            this, [this, pProgress, mainOutputs](
-                    const QVector<double>& offsetsMs) {
-        pProgress->accept();
-        pProgress->deleteLater();
+    connect(m_pCalibrator,
+            &AudioLatencyCalibrator::calibrationComplete,
+            this,
+            [pProgress, mainOutputs](const QVector<double>& offsetsMs) {
+                pProgress->accept();
+                pProgress->deleteLater();
 
-        // Apply offsets to outputs (skip the first - it stays at 0)
-        int maxOutputs = qMin(offsetsMs.size(), mainOutputs.size());
-        for (int i = 0; i < maxOutputs; ++i) {
-            int offset = static_cast<int>(std::round(offsetsMs[i]));
-            mainOutputs[i]->setLatencyOffsetMs(offset);
-            emit mainOutputs[i]->selectedDeviceChanged();
-            qDebug() << "Calibration: Output" << i
-                     << "offset =" << offset << "ms";
-        }
+                // Apply offsets to outputs (skip the first - it stays at 0)
+                int maxOutputs = qMin(offsetsMs.size(), mainOutputs.size());
+                for (int i = 0; i < maxOutputs; ++i) {
+                    int offset = static_cast<int>(std::round(offsetsMs[i]));
+                    mainOutputs[i]->setLatencyOffsetMs(offset);
+                    emit mainOutputs[i]->selectedDeviceChanged();
+                    qDebug() << "Calibration: Output" << i
+                             << "offset =" << offset << "ms";
+                }
 
-        // Build result string
-        QString result = tr("Calibration complete!\n\n");
-        for (int i = 0; i < maxOutputs; ++i) {
-            result += tr("Output %1: %2 ms offset\n")
-                              .arg(i + 1)
-                              .arg(static_cast<int>(std::round(offsetsMs[i])));
-        }
-        result += tr("\nThe earliest output is set to 0 ms.\n"
-                     "Click Apply to save these offsets.");
+                // Build result string
+                QString result = tr("Calibration complete!\n\n");
+                for (int i = 0; i < maxOutputs; ++i) {
+                    result += tr("Output %1: %2 ms offset\n")
+                                      .arg(i + 1)
+                                      .arg(static_cast<int>(
+                                              std::round(offsetsMs[i])));
+                }
+                result +=
+                        tr("\nThe earliest output is set to 0 ms.\n"
+                           "Click Apply to save these offsets.");
 
-        QMessageBox::information(this, tr("Calibration Result"), result);
+                QMessageBox::information(
+                        this, tr("Calibration Result"), result);
 
-        m_pCalibrator->deleteLater();
-        m_pCalibrator = nullptr;
-    });
+                m_pCalibrator->deleteLater();
+                m_pCalibrator = nullptr;
+            });
 
     // Connect the progress dialog's rejection to cancel calibration
     connect(pProgress, &QDialog::rejected, this, [this]() {
