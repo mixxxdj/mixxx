@@ -325,15 +325,33 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
 }
 
 void DlgPreferences::changeEvent(QEvent* pEvent) {
+    static bool s_inPaletteUpdate = false;
+    if (s_inPaletteUpdate) {
+        QDialog::changeEvent(pEvent);
+        return;
+    }
+
     if (pEvent->type() == QEvent::PaletteChange ||
             pEvent->type() == QEvent::ApplicationPaletteChange ||
             pEvent->type() == QEvent::ThemeChange) {
+        struct ResetFlag {
+            bool& flag;
+            explicit ResetFlag(bool& f)
+                    : flag(f) {
+                flag = true;
+            }
+            ~ResetFlag() {
+                flag = false;
+            }
+        } resetFlag(s_inPaletteUpdate);
+
         // Re-apply macOS system slider styles based on the current theme mode
         fixSliderStyle();
 
-        QPalette appPalette = QApplication::palette();
-        setPalette(appPalette);
-
+        const QPalette appPalette = QApplication::palette();
+        if (palette() != appPalette) {
+            setPalette(appPalette);
+        }
         // Update m_iconsPath based on the new palette's text color
         if (!Color::isDimColor(appPalette.text().color())) {
             m_iconsPath.setPath(":/images/preferences/light/");
