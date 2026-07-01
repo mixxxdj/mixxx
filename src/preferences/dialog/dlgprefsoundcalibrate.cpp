@@ -32,9 +32,6 @@ DlgPrefSoundCalibrate::DlgPrefSoundCalibrate(QWidget* parent,
     m_currentOffsetMs = pSoundItem ? static_cast<double>(pSoundItem->getLatencyOffsetMs()) : 0.0;
 
     setupUi();
-
-    m_framesPerBuffer = (framesPerBuffer > 0 ? framesPerBuffer : 1024);
-    m_sampleRate = (sampleRate > 0 ? sampleRate : 44100);
 }
 
 void DlgPrefSoundCalibrate::setupUi() {
