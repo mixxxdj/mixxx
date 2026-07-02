@@ -2652,7 +2652,7 @@ if(QT6)
       #   - res/skins/{Deere,Shade,Tango,*64 Samplers}  → ~12 MiB; we ship
       #     only LateNight (the default skin returned by SkinLoader) plus
       #     the shared *.qss helpers
-#- res / translations/* except English  → ~70 MiB of .qm files; the
+      #- res / translations/* except English  → ~70 MiB of .qm files; the
       #     user runs the app in English and would otherwise have to find
       #     Settings → Preferences to switch back. Re-add specific locales
       #     here if needed.
@@ -2700,6 +2700,10 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/shaders
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/shaders
+      # Samples: built-in DJ samples for sampler decks
+      COMMAND
+        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res/samples
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/samples
       COMMAND
         ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/res/schema.xml
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/schema.xml
@@ -2889,10 +2893,10 @@ install(
   DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/samples/"
   DESTINATION "${MIXXX_INSTALL_DATADIR}/samples"
   FILES_MATCHING
-    PATTERN "*.mp3"
-    PATTERN "*.wav"
-    PATTERN "*.aiff"
-    PATTERN "README.md"
+  PATTERN "*.mp3"
+  PATTERN "*.wav"
+  PATTERN "*.aiff"
+  PATTERN "README.md"
 )
 
 # Licenses
@@ -5981,4 +5985,3 @@ if(APPLE AND MACOS_BUNDLE)
   )
   install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
-
