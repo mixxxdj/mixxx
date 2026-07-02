@@ -30,6 +30,10 @@
 #include <android/api-level.h>
 #include <android/log.h>
 #include <android/performance_hint.h>
+
+#include <QDir>
+#include <QFile>
+#include <QJniObject>
 #endif
 
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
@@ -47,6 +51,46 @@ auto lambda_to_singleton_type_factory_ptr(F&& f) {
         return fn(pEngine, pScriptEngine);
     };
 }
+#if defined(Q_OS_ANDROID)
+// Directories under res/qml/ that are compiled into the binary as QML modules
+// and should not be copied to external storage.
+const QStringList kSkipQmlDirs = {
+        QStringLiteral("Mixxx"),
+};
+
+bool canWriteToExternalStorage() {
+    // API 30+ (Android 11+) requires MANAGE_EXTERNAL_STORAGE.
+    // Older: WRITE_EXTERNAL_STORAGE is granted at install time.
+    if (android_get_device_api_level() >= 30) {
+        return QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+    }
+    return true;
+}
+
+void copyAssetDir(const QString& src, const QString& dst) {
+    QDir().mkpath(dst);
+
+    QDir srcDir(src);
+    const QStringList files = srcDir.entryList(QDir::Files);
+    for (const QString& file : files) {
+        QFile srcFile(srcDir.absoluteFilePath(file));
+        QFile dstFile(dst + '/' + file);
+        if (srcFile.open(QIODevice::ReadOnly) && dstFile.open(QIODevice::WriteOnly)) {
+            dstFile.write(srcFile.readAll());
+        }
+    }
+
+    const QStringList dirs = srcDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString& dir : dirs) {
+        if (kSkipQmlDirs.contains(dir)) {
+            continue;
+        }
+        copyAssetDir(src + '/' + dir, dst + '/' + dir);
+    }
+}
+#endif
+
 } // namespace
 
 namespace mixxx {
@@ -68,6 +112,14 @@ QmlApplication::QmlApplication(
 #endif
           m_autoReload() {
     QQuickStyle::setStyle("Basic");
+
+#if defined(Q_OS_ANDROID)
+    if (canWriteToExternalStorage()) {
+        const QString externalQmlDir = QStringLiteral("/storage/emulated/0/Mixxx/qml");
+        copyAssetDir(QStringLiteral("assets:/qml"), externalQmlDir);
+        m_mainFilePath = externalQmlDir + QStringLiteral("/main.qml");
+    }
+#endif
 
     m_pCoreServices->initialize(app);
 
