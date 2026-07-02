@@ -1,10 +1,9 @@
 #pragma once
 
 #include <QString>
-#include <QPointer>
 
-#include "preferences/usersettings.h"
 #include "library/libraryfeature.h"
+#include "preferences/usersettings.h"
 
 class Library;
 class TreeItemModel;
@@ -15,13 +14,13 @@ class SamplesFeature final : public LibraryFeature {
     Q_OBJECT
   public:
     SamplesFeature(Library* parent,
-                   UserSettingsPointer pConfig);
+            UserSettingsPointer pConfig);
     ~SamplesFeature() override = default;
 
     QVariant title() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                           KeyboardEventFilter* keyboard) override;
+            KeyboardEventFilter* keyboard) override;
 
     TreeItemModel* sidebarModel() const override;
 

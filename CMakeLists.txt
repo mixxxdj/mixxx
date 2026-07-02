@@ -2652,7 +2652,7 @@ if(QT6)
       #   - res/skins/{Deere,Shade,Tango,*64 Samplers}  → ~12 MiB; we ship
       #     only LateNight (the default skin returned by SkinLoader) plus
       #     the shared *.qss helpers
-      #- res / translations/* except English  → ~70 MiB of .qm files; the
+#- res / translations/* except English  → ~70 MiB of .qm files; the
       #     user runs the app in English and would otherwise have to find
       #     Settings → Preferences to switch back. Re-add specific locales
       #     here if needed.
@@ -5981,3 +5981,4 @@ if(APPLE AND MACOS_BUNDLE)
   )
   install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
+

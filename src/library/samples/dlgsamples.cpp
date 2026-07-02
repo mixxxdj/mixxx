@@ -18,9 +18,9 @@ namespace {
 QString samplesPath() {
     QString appDir = QCoreApplication::applicationDirPath();
     QStringList candidates = {
-        appDir + QStringLiteral("/res/samples/"),
-        appDir + QStringLiteral("/../res/samples/"),
-        QStringLiteral("res/samples/"),
+            appDir + QStringLiteral("/res/samples/"),
+            appDir + QStringLiteral("/../res/samples/"),
+            QStringLiteral("res/samples/"),
     };
     for (const auto& path : candidates) {
         QFileInfo fi(path);

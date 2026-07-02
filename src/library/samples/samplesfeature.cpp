@@ -1,9 +1,8 @@
 #include "library/samples/samplesfeature.h"
 
-#include <QFileInfo>
-#include <QStandardPaths>
 #include <memory>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/browse/foldertreemodel.h"
 #include "library/library.h"
 #include "library/samples/dlgsamples.h"
@@ -14,27 +13,6 @@
 namespace {
 
 const QString kViewName = QStringLiteral("Samples");
-
-QString samplesPath() {
-    // Check for samples directory relative to the app binary
-    QString appDir = QCoreApplication::applicationDirPath();
-    // In development/build tree, samples are in <builddir>/res/samples/
-    // In installed package, they're at <prefix>/share/mixxx/samples/
-    QStringList candidates = {
-        appDir + QStringLiteral("/res/samples/"),
-        appDir + QStringLiteral("/../res/samples/"),
-        appDir + QStringLiteral("/../share/mixxx/samples/"),
-        QStringLiteral("res/samples/"),
-    };
-    for (const auto& path : candidates) {
-        QFileInfo fi(path);
-        if (fi.exists() && fi.isDir()) {
-            return fi.absoluteFilePath();
-        }
-    }
-    // Fallback
-    return QStringLiteral("res/samples/");
-}
 
 } // anonymous namespace
 
@@ -57,11 +35,11 @@ TreeItemModel* SamplesFeature::sidebarModel() const {
 }
 
 void SamplesFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
-                                 KeyboardEventFilter* keyboard) {
+        KeyboardEventFilter* keyboard) {
     DlgSamples* pSamplesView = new DlgSamples(pLibraryWidget,
-                                               m_pConfig,
-                                               m_pLibrary,
-                                               keyboard);
+            m_pConfig,
+            m_pLibrary,
+            keyboard);
     pSamplesView->installEventFilter(keyboard);
     pLibraryWidget->registerView(kViewName, pSamplesView);
     connect(pSamplesView,
