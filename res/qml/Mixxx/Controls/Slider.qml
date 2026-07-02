@@ -143,6 +143,7 @@ Item {
         acceptedButtons: Qt.LeftButton
         enabled: root.enabled
         target: null
+        dragThreshold: 0
 
         onActiveChanged: {
             if (active) {
@@ -165,9 +166,7 @@ Item {
             root.applyInteractiveValue(value + (diff / length) * (root.to - root.from), false);
         }
     }
-    Binding {
-        property: "value"
-        target: root
+    Binding on value {
         value: dragHandler.value
         when: dragHandler.active && root.live
     }
