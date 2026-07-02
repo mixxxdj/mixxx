@@ -17,6 +17,7 @@
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
+class AudioLatencyCalibrator;
 class EngineMixer;
 class ControlObject;
 
@@ -85,9 +86,36 @@ class SoundManager : public QObject {
     void readProcess(SINT framesPerBuffer) const;
 
     void registerOutput(const AudioOutput& output, AudioSource* src);
+    // All Main outputs share the EngineMixer as their AudioSource.
+    // Use this instead of registerOutput(output, nullptr) when adding
+    // additional Main outputs via the UI.
+    void registerMainOutput(const AudioOutput& output);
+    /// Remove a previously registered output so a new one with the same
+    /// parameters can be registered (e.g. after removing and re-adding).
+    /// Does nothing if the output is not registered.
+    void unregisterOutput(const AudioOutput& output);
     void registerInput(const AudioInput& input, AudioDestination* dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
+
+    /// Calibration: start/stop active latency measurement.
+    /// When calibrating, the clock-ref output callback plays the reference
+    /// pulse from the calibrator instead of engine audio, and captured input
+    /// is fed to the calibrator for cross-correlation.
+    void startCalibration(AudioLatencyCalibrator* calibrator);
+    void stopCalibration();
+    bool isCalibrating() const {
+        return m_pCalibrator != nullptr;
+    }
+    AudioLatencyCalibrator* calibrator() const {
+        return m_pCalibrator;
+    }
+
+    /// Calibration frame cache — one buffer's worth of chirp samples.
+    /// Written by the clock-ref callback, read by writeProcess.
+    QVector<CSAMPLE>& calibrationFrameCache() {
+        return m_calibFrameCache;
+    }
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
         return m_networkEnumerator.getNetworkStream();
@@ -155,4 +183,11 @@ class SoundManager : public QObject {
 
     PortAudioEnumerator m_paEnumerator;
     NetworkEnumerator m_networkEnumerator;
+
+    AudioLatencyCalibrator* m_pCalibrator = nullptr;
+
+    /// Cache for one buffer's worth of calibration chirp samples.
+    /// Filled by the clock-ref callback, consumed by writeProcess for non-ref
+    /// devices. Prevents double-consumption of generateReferenceFrame().
+    QVector<CSAMPLE> m_calibFrameCache;
 };

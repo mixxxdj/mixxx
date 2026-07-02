@@ -164,7 +164,7 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <double>500.000000000000000</double>
+        <double>2000.000000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
@@ -187,7 +187,7 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <double>500.000000000000000</double>
+        <double>2000.000000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
@@ -210,7 +210,7 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <double>500.000000000000000</double>
+        <double>2000.000000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
@@ -233,7 +233,7 @@
         <number>3</number>
        </property>
        <property name="maximum">
-        <double>500.000000000000000</double>
+        <double>2000.000000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
@@ -286,6 +286,16 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="autoCalibrateAllButton">
+       <property name="text">
+        <string>Auto-Calibrate All Outputs</string>
+       </property>
+       <property name="toolTip">
+        <string>Plays a reference chirp through all outputs and records via microphone to measure relative latency offsets. Make sure all outputs are audible to the phone's microphone.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="buttonsHSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -316,6 +326,46 @@
        <string>Output</string>
       </attribute>
       <layout class="QVBoxLayout" name="outputVLayout">
+       <item>
+        <layout class="QHBoxLayout" name="outputAddLayout">
+         <item>
+          <widget class="QPushButton" name="addOutputButton">
+           <property name="text">
+            <string>+</string>
+           </property>
+           <property name="toolTip">
+            <string>Add another main output</string>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="outputAddLabel">
+           <property name="text">
+            <string>Add Output</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="outputAddSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
        <item>
         <spacer name="outputVSpacer">
          <property name="orientation">

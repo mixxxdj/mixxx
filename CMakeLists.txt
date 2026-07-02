@@ -1431,6 +1431,8 @@ add_library(
   src/engine/filters/enginefiltermoogladder4.cpp
   src/engine/positionscratchcontroller.cpp
   src/engine/readaheadmanager.cpp
+  src/engine/audiolatencycalibrator.cpp
+  src/preferences/dialog/dlgprefsoundcalibrate.cpp
   src/engine/sidechain/enginenetworkstream.cpp
   src/engine/sidechain/enginerecord.cpp
   src/engine/sidechain/enginesidechain.cpp
@@ -2159,6 +2161,9 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
 endif()
 
 if(ANDROID)
+  # Android microphone capture for audio calibration (bypasses BT SCO)
+  target_sources(mixxx-lib PRIVATE src/engine/androidmiccapture.cpp)
+
   # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
   # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
@@ -2645,7 +2650,7 @@ if(QT6)
       #   - res/skins/{Deere,Shade,Tango,*64 Samplers}  → ~12 MiB; we ship
       #     only LateNight (the default skin returned by SkinLoader) plus
       #     the shared *.qss helpers
-      #   - res/translations/* except English  → ~70 MiB of .qm files; the
+      #- res / translations/* except English  → ~70 MiB of .qm files; the
       #     user runs the app in English and would otherwise have to find
       #     Settings → Preferences to switch back. Re-add specific locales
       #     here if needed.

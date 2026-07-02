@@ -12,6 +12,7 @@
 #include <cstddef>
 
 #include "control/controlobject.h"
+#include "engine/audiolatencycalibrator.h"
 #include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
@@ -291,6 +292,24 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     m_lastCallbackEntrytoDacSecs = bufferMSec / 1000.0;
 
     m_syncBuffers = syncBuffers;
+
+#ifdef PA_USE_OBOE
+    // On Android Oboe, syncBuffers=0 uses blocking I/O (Pa_WriteStream) for
+    // non-clock-reference output devices. This blocking I/O is called from
+    // the clock reference device's audio callback thread. When Pa_WriteStream
+    // blocks, it stalls the entire audio pipeline — causing the clock ref
+    // device to underrun, producing ticking and lag.
+    // Fix: force non-ref Oboe devices to use callback + FIFO mode (syncBuffers=1).
+    if (m_deviceTypeId == PaHostApiTypeId::paOboe &&
+            !isClkRefDevice && m_syncBuffers == 0) {
+        qWarning() << "Oboe: syncBuffers=0 (experimental, no delay) uses blocking"
+                   << "I/O which stalls the audio callback. Forcing syncBuffers=1"
+                   << "(short delay) for non-clock-ref device"
+                   << m_deviceId.debugName();
+        m_syncBuffers = 1;
+        syncBuffers = 1;
+    }
+#endif
 
     // Create the callback function pointer.
     PaStreamCallback* pCallback = nullptr;
@@ -699,13 +718,43 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
             (void) m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                     &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
-            composeOutputBuffer(dataPtr1, size1 / m_outputParams.channelCount, 0,
-            		            m_outputParams.channelCount);
-            if (size2 > 0) {
-                composeOutputBuffer(dataPtr2,
-                        size2 / m_outputParams.channelCount,
+            if (m_pSoundManager->isCalibrating()) {
+                // During calibration, read reference pulse from the clock-ref
+                // callback's cached frames. This avoids double-consuming
+                // generateReferenceFrame() (the clkRef callback already
+                // consumed it and filled m_calibFrameCache).
+                const auto& cache = m_pSoundManager->calibrationFrameCache();
+                SINT frames1 = size1 / m_outputParams.channelCount;
+                for (SINT i = 0; i < frames1; ++i) {
+                    CSAMPLE ref = (static_cast<SINT>(i) < cache.size())
+                            ? cache[i]
+                            : 0.0f;
+                    for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
+                        dataPtr1[i * m_outputParams.channelCount + ch] = ref;
+                    }
+                }
+                if (size2 > 0) {
+                    SINT frames2 = size2 / m_outputParams.channelCount;
+                    for (SINT i = 0; i < frames2; ++i) {
+                        CSAMPLE ref = (static_cast<SINT>(i) < cache.size())
+                                ? cache[i]
+                                : 0.0f;
+                        for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
+                            dataPtr2[i * m_outputParams.channelCount + ch] = ref;
+                        }
+                    }
+                }
+            } else {
+                composeOutputBuffer(dataPtr1,
                         size1 / m_outputParams.channelCount,
+                        0,
                         m_outputParams.channelCount);
+                if (size2 > 0) {
+                    composeOutputBuffer(dataPtr2,
+                            size2 / m_outputParams.channelCount,
+                            size1 / m_outputParams.channelCount,
+                            m_outputParams.channelCount);
+                }
             }
             m_outputFifo->releaseWriteRegions(writeCount);
         }
@@ -1110,7 +1159,20 @@ int SoundDevicePortAudio::callbackProcessClkRef(
             m_callbackResult.store(paAbort, std::memory_order_relaxed);
         }
 
-        composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
+        if (m_pSoundManager->isCalibrating() && m_outputParams.channelCount > 0) {
+            // During calibration, fill output with the reference pulse
+            AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
+            m_pSoundManager->calibrationFrameCache().resize(framesPerBuffer);
+            for (SINT i = 0; i < framesPerBuffer; ++i) {
+                CSAMPLE ref = cal->generateReferenceFrame();
+                m_pSoundManager->calibrationFrameCache()[i] = ref;
+                for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
+                    static_cast<CSAMPLE*>(out)[i * m_outputParams.channelCount + ch] = ref;
+                }
+            }
+        } else {
+            composeOutputBuffer(out, framesPerBuffer, 0, m_outputParams.channelCount);
+        }
     }
 
     m_pSoundManager->writeProcess(framesPerBuffer);

@@ -1,6 +1,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 
-#include <QMessageBox>
+#include <QPoint>
 #include <QtDebug>
 #include <algorithm>
 #include <vector>
@@ -9,8 +9,20 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
-#include "moc_dlgprefsound.cpp"
 #include "preferences/dialog/dlgprefsounditem.h"
+
+// Forward declaration to avoid AUTOMOC cross-include issues
+// (defined in dlgprefsoundcalibrate.cpp)
+void showLatencyCalibrationDialog(QWidget* parent,
+        class DlgPrefSoundItem* item,
+        int framesPerBuffer,
+        int sampleRate,
+        double outputLatencyMs);
+
+#include "engine/audiolatencycalibrator.h"
+#ifdef Q_OS_ANDROID
+#include "engine/androidmiccapture.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
@@ -237,13 +249,17 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
 
+    connect(autoCalibrateAllButton,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefSound::autoCalibrateAllOutputs);
+
     connect(m_pSoundManager.get(),
             &SoundManager::outputRegistered,
             this,
             [this](const AudioOutput& output, AudioSource* source) {
                 Q_UNUSED(source);
                 addPath(output);
-                loadSettings();
             });
 
     connect(m_pSoundManager.get(),
@@ -252,7 +268,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             [this](const AudioInput& input, AudioDestination* dest) {
                 Q_UNUSED(dest);
                 addPath(input);
-                loadSettings();
             });
 
     m_pAudioLatencyOverloadCount = make_parented<ControlProxy>(
@@ -294,6 +309,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     // Add main output button
     connect(addMainOutputButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefSound::addMainOutputClicked);
+
+    // Add output button in Output tab
+    connect(addOutputButton,
             &QPushButton::clicked,
             this,
             &DlgPrefSound::addMainOutputClicked);
@@ -407,7 +428,7 @@ void DlgPrefSound::slotApply() {
     }
     if (status != SoundDeviceStatus::Ok) {
         QString error = m_pSoundManager->getLastErrorMessage(status);
-        QMessageBox::warning(nullptr, tr("Configuration error"), error);
+        QMessageBox::warning(this, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;
@@ -459,6 +480,8 @@ void DlgPrefSound::initializePaths() {
 
     sortFilterAdd(m_pSoundManager->registeredOutputs());
     sortFilterAdd(m_pSoundManager->registeredInputs());
+
+    updateRemoveButtonVisibility();
 }
 
 void DlgPrefSound::addPath(const AudioOutput& output) {
@@ -478,6 +501,8 @@ void DlgPrefSound::addPath(const AudioOutput& output) {
     connectSoundItem(pSoundItem);
 
     setScrollSafeGuardForAllInputWidgets(pSoundItem);
+
+    updateRemoveButtonVisibility();
 }
 
 void DlgPrefSound::addPath(const AudioInput& input) {
@@ -522,21 +547,29 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
     }
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
+    connect(pItem,
+            &DlgPrefSoundItem::removeRequested,
+            this,
+            &DlgPrefSound::removeOutputItem);
+    connect(pItem,
+            &DlgPrefSoundItem::calibrateRequested,
+            this,
+            &DlgPrefSound::calibrateOutputItem);
 }
 
-void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
+void DlgPrefSound::insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout) {
     int pos;
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
-        DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
-            pLayout->itemAt(pos)->widget()));
+        DlgPrefSoundItem* pOther(qobject_cast<DlgPrefSoundItem*>(
+                pLayout->itemAt(pos)->widget()));
         if (!pOther) { // not a sound item, skip
             continue;
         }
         if (pItem->type() < pOther->type()) {
             break;
-        } else if (pItem->type() == pOther->type()
-            && AudioPath::isIndexed(pItem->type())
-            && pItem->index() < pOther->index()) {
+        } else if (pItem->type() == pOther->type() &&
+                AudioPath::isIndexed(pItem->type()) &&
+                pItem->index() < pOther->index()) {
             break;
         }
     }
@@ -754,7 +787,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                                 JackAudioBufferSizeIndex::Size4096fpp));
     } else {
         DEBUG_ASSERT(sampleRateComboBox->itemData(sampleRateIndex)
-                             .canConvert<mixxx::audio::SampleRate>());
+                        .canConvert<mixxx::audio::SampleRate>());
         double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
                                     .value<mixxx::audio::SampleRate>()
                                     .toDouble();
@@ -795,9 +828,9 @@ void DlgPrefSound::refreshDevices() {
         m_inputDevices.clear();
     } else {
         m_outputDevices =
-            m_pSoundManager->getDeviceList(m_config.getAPI(), true, false);
+                m_pSoundManager->getDeviceList(m_config.getAPI(), true, false);
         m_inputDevices =
-            m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
+                m_pSoundManager->getDeviceList(m_config.getAPI(), false, true);
     }
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);
@@ -1026,10 +1059,12 @@ void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
 
 void DlgPrefSound::addMainOutputClicked() {
     // Count existing main outputs to determine the next index
+    // Skip items pending deletion (from deleteLater) to avoid reusing indices
     int mainCount = 0;
-    for (const QObject* pObj : outputTab->children()) {
+    for (const QObject* pObj : std::as_const(outputTab->children())) {
         const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
-        if (pItem && pItem->type() == AudioPathType::Main) {
+        if (pItem && pItem->type() == AudioPathType::Main &&
+                pItem->isVisible()) {
             mainCount++;
         }
     }
@@ -1039,9 +1074,297 @@ void DlgPrefSound::addMainOutputClicked() {
     mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount::stereo();
     AudioOutput output(AudioPathType::Main, channelBase, channels, mainCount);
 
-    // Register the output with the sound manager first
-    // This will trigger the outputRegistered signal which calls addPath
-    m_pSoundManager->registerOutput(output, nullptr);
+    // Register the output with the EngineMixer as source
+    // (all Main outputs share the EngineMixer buffer)
+    m_pSoundManager->registerMainOutput(output);
+
+    updateRemoveButtonVisibility();
+}
+
+void DlgPrefSound::removeOutputItem(DlgPrefSoundItem* pItem) {
+    if (!pItem) {
+        return;
+    }
+
+    // Count main outputs - can't remove if only one remains
+    // Skip items pending deletion (from deleteLater) to avoid counting them
+    int mainCount = 0;
+    for (const QObject* pObj : std::as_const(outputTab->children())) {
+        const auto* pExisting = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (pExisting && pExisting->type() == AudioPathType::Main) {
+            mainCount++;
+        }
+    }
+    if (mainCount <= 1) {
+        return; // must have at least one main output
+    }
+
+    // Unregister the output from SoundManager so it can be re-added later
+    AudioPathType type = pItem->type();
+    unsigned int index = pItem->index();
+    unsigned char channelBase = index * 2;
+    AudioOutput output(type, channelBase, mixxx::audio::ChannelCount::stereo(), index);
+    m_pSoundManager->unregisterOutput(output);
+
+    // Remove from outputTab layout and delete
+    outputTab->layout()->removeWidget(pItem);
+    m_selectedOutputChannelIndices.remove(pItem);
+    pItem->hide();
+    pItem->disconnect();
+    pItem->deleteLater();
+
+    updateRemoveButtonVisibility();
+    settingChanged();
+}
+
+void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
+    if (!pItem) {
+        return;
+    }
+    // Read current audio config values for auto-calibrate baseline
+    int sampleRate = 44100;
+    int framesPerBuffer = 1024;
+    QString srText = sampleRateComboBox->currentText();
+    if (!srText.isEmpty()) {
+        // "44100 Hz" -> extract number
+        QString num = srText.section(' ', 0, 0);
+        bool ok = false;
+        int val = num.toInt(&ok);
+        if (ok && val > 0) {
+            sampleRate = val;
+        }
+    }
+    // Audio buffer combo stores index -> frame count
+    // index 1 -> 256, 2 -> 512, 3 -> 1024, 4 -> 2048, 5 -> 4096
+    int bufIdx = audioBufferComboBox->currentIndex();
+    if (bufIdx > 0) {
+        framesPerBuffer = 256 << (bufIdx - 1);
+    }
+    // Read the actual device-reported output latency (valid when audio is running)
+    double outputLatencyMs = m_pOutputLatencyMs->get();
+    showLatencyCalibrationDialog(this, pItem, framesPerBuffer, sampleRate, outputLatencyMs);
+}
+
+void DlgPrefSound::autoCalibrateAllOutputs() {
+    // Collect all Main output items
+    QList<DlgPrefSoundItem*> mainOutputs;
+    for (QObject* pObj : std::as_const(outputTab->children())) {
+        auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj);
+        if (pItem && pItem->type() == AudioPathType::Main && !pItem->isInput() &&
+                pItem->isVisible()) {
+            mainOutputs.append(pItem);
+        }
+    }
+
+    if (mainOutputs.size() < 2) {
+        QMessageBox::information(this, tr("Calibration"), tr("Add at least 2 Main outputs first."));
+        return;
+    }
+
+    // Check if audio is running (devices are open)
+    if (m_pOutputLatencyMs->get() <= 0) {
+        QMessageBox::information(this,
+                tr("Calibration"),
+                tr("Audio must be running. Click Apply to start audio first."));
+        return;
+    }
+
+    // Check if there's an input device available
+    QList<AudioInput> inputs = m_pSoundManager->registeredInputs();
+    if (inputs.isEmpty()) {
+        QMessageBox::information(this,
+                tr("Calibration"),
+                tr("No input (microphone) configured. "
+                   "Add a microphone input on the Input tab and click Apply."));
+        return;
+    }
+
+    // Create calibrator
+    if (m_pCalibrator) {
+        m_pCalibrator->deleteLater();
+    }
+    m_pCalibrator = new AudioLatencyCalibrator(this);
+
+    int sampleRate = 48000;
+    QString srText = sampleRateComboBox->currentText();
+    if (!srText.isEmpty()) {
+        QString num = srText.section(' ', 0, 0);
+        bool ok = false;
+        int val = num.toInt(&ok);
+        if (ok && val > 0) {
+            sampleRate = val;
+        }
+    }
+    int bufIdx = audioBufferComboBox->currentIndex();
+    int framesPerBuffer = 1024;
+    if (bufIdx > 0) {
+        framesPerBuffer = 256 << (bufIdx - 1);
+    }
+
+    // Show a dialog with progress
+    QMessageBox* pProgress = new QMessageBox(this);
+    pProgress->setWindowTitle(tr("Calibrating..."));
+    pProgress->setText(tr(
+            "Playing reference chirp through all outputs.\n"
+            "Make sure all outputs are audible to the phone's microphone."));
+    pProgress->setStandardButtons(QMessageBox::NoButton);
+    pProgress->show();
+    connect(m_pCalibrator, &AudioLatencyCalibrator::statusUpdate, this, [](const QString& status) {
+        Q_UNUSED(status);
+        // status is logged by the calibrator
+    });
+
+    // Create calibrator and connect completion handler
+    // (will be reconnected below after mic setup)
+    // Calibration complete handler with mic cleanup
+#ifdef Q_OS_ANDROID
+    struct CalCleanup {
+        AndroidMicCapture* mic = nullptr;
+        QTimer* poller = nullptr;
+    };
+    auto* cleanup = new CalCleanup;
+
+    // On Android, use direct AudioRecord mic capture to bypass PortAudio/Oboe
+    // routing issues (BT A2DP active -> phone mic might be inaccessible via PA).
+    auto* pMicCapture = new AndroidMicCapture(this);
+    if (pMicCapture->startCapture(sampleRate)) {
+        qDebug() << "Calibration: using AndroidMicCapture on Android";
+        cleanup->mic = pMicCapture;
+        // Poll the mic capture every 10ms to feed frames to the calibrator
+        cleanup->poller = new QTimer(this);
+        connect(cleanup->poller, &QTimer::timeout, this, [this, pMicCapture]() {
+            if (!m_pCalibrator)
+                return;
+            CSAMPLE buf[1024];
+            int n = pMicCapture->readFrames(buf, 1024);
+            for (int i = 0; i < n; ++i) {
+                m_pCalibrator->addRecordedFrame(buf[i]);
+            }
+        });
+        cleanup->poller->start(10);
+    } else
+#endif
+    {
+        // Desktop or Android where PortAudio input works - calibrator gets
+        // input via pushInputBuffers() -> SoundManager -> addRecordedFrame()
+        qDebug() << "Calibration: using PortAudio pushInputBuffers for mic input";
+#ifdef Q_OS_ANDROID
+        delete pMicCapture;
+#endif
+    }
+
+    connect(m_pCalibrator,
+            &AudioLatencyCalibrator::calibrationComplete,
+            this,
+#ifdef Q_OS_ANDROID
+            [this, pProgress, mainOutputs, cleanup](
+#else
+            [this, pProgress, mainOutputs](
+#endif
+                    const QVector<double>& offsetsMs) {
+    // Stop mic capture
+#ifdef Q_OS_ANDROID
+                if (cleanup->mic) {
+                    cleanup->mic->stopCapture();
+                    cleanup->mic->deleteLater();
+                }
+                if (cleanup->poller) {
+                    cleanup->poller->stop();
+                    cleanup->poller->deleteLater();
+                }
+                delete cleanup;
+#endif
+
+                pProgress->accept();
+                pProgress->deleteLater();
+
+                if (offsetsMs.isEmpty()) {
+                    QMessageBox::warning(this,
+                            tr("Calibration Failed"),
+                            tr("Could not measure offsets. Make sure:\n"
+                               "1. A microphone input is configured on the\n"
+                               "   Input tab and Apply was clicked\n"
+                               "2. The microphone can hear all outputs\n"
+                               "3. The phone's RECORD_AUDIO permission is "
+                               "granted"));
+                    m_pCalibrator->deleteLater();
+                    m_pCalibrator = nullptr;
+                    return;
+                }
+
+                // Apply offsets to outputs (skip the first - it stays at 0)
+                int maxOutputs = qMin(offsetsMs.size(), mainOutputs.size());
+                for (int i = 0; i < maxOutputs; ++i) {
+                    int offset = static_cast<int>(std::round(offsetsMs[i]));
+                    mainOutputs[i]->setLatencyOffsetMs(offset);
+                    emit mainOutputs[i]->selectedDeviceChanged();
+                    qDebug() << "Calibration: Output" << i
+                             << "offset =" << offset << "ms";
+                }
+
+                // Build result string
+                QString result = tr("Calibration complete!\n\n");
+                for (int i = 0; i < maxOutputs; ++i) {
+                    result += tr("Output %1: %2 ms offset\n")
+                                      .arg(i + 1)
+                                      .arg(static_cast<int>(
+                                              std::round(offsetsMs[i])));
+                }
+                result +=
+                        tr("\nThe earliest output is set to 0 ms.\n"
+                           "Click Apply to save these offsets.");
+
+                QMessageBox::information(
+                        this, tr("Calibration Result"), result);
+
+                m_pCalibrator->deleteLater();
+                m_pCalibrator = nullptr;
+            });
+
+    // Connect the progress dialog's rejection to cancel calibration
+#ifdef Q_OS_ANDROID
+    connect(pProgress, &QDialog::rejected, this, [this, cleanup]() {
+        if (cleanup->mic) {
+            cleanup->mic->stopCapture();
+            cleanup->mic->deleteLater();
+        }
+        if (cleanup->poller) {
+            cleanup->poller->stop();
+            cleanup->poller->deleteLater();
+        }
+        delete cleanup;
+#else
+    connect(pProgress, &QDialog::rejected, this, [this]() {
+#endif
+        m_pSoundManager->stopCalibration();
+        if (m_pCalibrator) {
+            m_pCalibrator->stopCalibration();
+        }
+    });
+
+    // Start calibration
+    m_pCalibrator->startCalibration(sampleRate, framesPerBuffer, mainOutputs.size());
+    m_pSoundManager->startCalibration(m_pCalibrator);
+}
+
+void DlgPrefSound::updateRemoveButtonVisibility() {
+    int mainCount = 0;
+    for (const QObject* pObj : std::as_const(outputTab->children())) {
+        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (pItem && pItem->type() == AudioPathType::Main && !pItem->isInput() &&
+                pItem->isVisible()) {
+            mainCount++;
+        }
+    }
+
+    // Show remove button only if there's more than one main output
+    bool showRemove = (mainCount > 1);
+    for (auto* pObj : std::as_const(outputTab->children())) {
+        auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj);
+        if (pItem && !pItem->isInput() && pItem->isVisible()) {
+            pItem->updateRemoveButtonVisibility(showRemove);
+        }
+    }
 }
 
 void DlgPrefSound::mainMonoMixdownChanged(double value) {
@@ -1125,3 +1448,5 @@ void DlgPrefSound::checkLatencyCompensation() {
 bool DlgPrefSound::okayToClose() const {
     return m_configValid;
 }
+
+#include "moc_dlgprefsound.cpp"

@@ -6,6 +6,7 @@
 #include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
+#include "engine/audiolatencycalibrator.h"
 #include "engine/enginemixer.h"
 #include "moc_soundmanager.cpp"
 #include "soundio/networkenumerator.h"
@@ -372,7 +373,25 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
             // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
-            const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out).data();
+            AudioSource* pSource = m_registeredSources.value(out, nullptr);
+            if (!pSource) {
+                // For additional outputs of the same type not explicitly
+                // registered (e.g., extra Main outputs added via the UI),
+                // fall back to the first source registered for this type.
+                for (auto srcIt = m_registeredSources.constBegin();
+                        srcIt != m_registeredSources.constEnd();
+                        ++srcIt) {
+                    if (srcIt.key().getType() == out.getType()) {
+                        pSource = srcIt.value();
+                        break;
+                    }
+                }
+                if (!pSource) {
+                    qDebug() << "No AudioSource registered for" << out.getString();
+                    continue;
+                }
+            }
+            const CSAMPLE* pBuffer = pSource->buffer(out).data();
             if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
@@ -561,6 +580,21 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
             ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();
+        if (!pInputBuffer) {
+            continue;
+        }
+
+        // During calibration, feed all captured input to the calibrator.
+        // This works regardless of which callback (clock ref, non-ref, drift)
+        // delivers the input, and handles multiple input devices.
+        if (m_pCalibrator) {
+            SINT channelCount = in.getChannelGroup().getChannelCount().value();
+            SINT totalFrames = iFramesPerBuffer * channelCount;
+            for (SINT j = 0; j < totalFrames; ++j) {
+                m_pCalibrator->addRecordedFrame(pInputBuffer[j]);
+            }
+        }
+
         for (auto it = m_registeredDestinations.constFind(in);
                 it != m_registeredDestinations.constEnd() && it.key() == in;
                 ++it) {
@@ -593,6 +627,19 @@ void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
     emit outputRegistered(output, src);
 }
 
+void SoundManager::registerMainOutput(const AudioOutput& output) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredSources.contains(output)) {
+        return;
+    }
+    // All Main outputs share the EngineMixer buffer
+    m_registeredSources.insert(output, m_pEngineMixer);
+    emit outputRegistered(output, m_pEngineMixer);
+}
+
+void SoundManager::unregisterOutput(const AudioOutput& output) {
+    m_registeredSources.remove(output);
+}
+
 void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
     // Vinyl control inputs are registered twice, once for timecode and once for
     // passthrough, each with different outputs. So unlike outputs, do not assert
@@ -608,6 +655,16 @@ QList<AudioOutput> SoundManager::registeredOutputs() const {
 
 QList<AudioInput> SoundManager::registeredInputs() const {
     return m_registeredDestinations.keys();
+}
+
+void SoundManager::startCalibration(AudioLatencyCalibrator* calibrator) {
+    m_pCalibrator = calibrator;
+    qDebug() << "SoundManager: calibration started";
+}
+
+void SoundManager::stopCalibration() {
+    m_pCalibrator = nullptr;
+    qDebug() << "SoundManager: calibration stopped";
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {

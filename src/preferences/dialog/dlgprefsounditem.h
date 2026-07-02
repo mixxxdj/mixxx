@@ -1,8 +1,8 @@
 #pragma once
 
 #include "preferences/dialog/ui_dlgprefsounditem.h"
-#include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerutil.h"
 
 class SoundManagerConfig;
 
@@ -15,14 +15,20 @@ class SoundManagerConfig;
 class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     Q_OBJECT
   public:
-    DlgPrefSoundItem(QWidget* parent, AudioPathType type,
+    DlgPrefSoundItem(QWidget* parent,
+            AudioPathType type,
             const QList<SoundDevicePointer>& devices,
-            bool isInput, unsigned int index = 0);
+            bool isInput,
+            unsigned int index = 0);
     virtual ~DlgPrefSoundItem();
 
-    AudioPathType type() const { return m_type; };
-    unsigned int index() const { return m_index; };
-    bool isInput() {
+    AudioPathType type() const {
+        return m_type;
+    };
+    unsigned int index() const {
+        return m_index;
+    };
+    bool isInput() const {
         return m_isInput;
     }
     const SoundDeviceId getDeviceId() {
@@ -33,22 +39,35 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     }
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
 
+    int getLatencyOffsetMs() const {
+        return m_latencyOffsetMs;
+    }
+    void setLatencyOffsetMs(int ms);
+    void updateRemoveButtonVisibility(bool showRemove);
+
   signals:
     void selectedDeviceChanged();
     void selectedChannelsChanged();
     void configuredDeviceNotFound();
+    void removeRequested(DlgPrefSoundItem* item);
+    void calibrateRequested(DlgPrefSoundItem* item);
 
   public slots:
     void refreshDevices(const QList<SoundDevicePointer>& devices);
     void deviceChanged(int index);
     void channelChanged();
     void loadPath(const SoundManagerConfig& config);
-    void writePath(SoundManagerConfig *config) const;
+    void writePath(SoundManagerConfig* config) const;
     void save();
     void reload();
 
+  private slots:
+    void latencyOffsetChanged(double value);
+    void removeButtonClicked();
+    void calibrateButtonClicked();
+
   private:
-    SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
+    SoundDevicePointer getDevice() const;
     void setDevice(const SoundDeviceId& device);
     void setChannel(unsigned int channelBase, unsigned int channels);
     int hasSufficientChannels(const SoundDevice& device) const;
@@ -58,8 +77,9 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     QList<SoundDevicePointer> m_devices;
     bool m_isInput;
     SoundDeviceId m_savedDevice;
-    // Because QVariant supports QPoint natively we use a QPoint to store the
-    // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
     bool m_emitSettingChanged;
+
+    int m_latencyOffsetMs = 0;
+    int m_savedLatencyOffsetMs = 0;
 };

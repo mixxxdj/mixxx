@@ -13,9 +13,11 @@
 #include "soundio/soundmanagerconfig.h"
 #include "util/parented_ptr.h"
 
+class AudioLatencyCalibrator;
 class ControlObject;
 class ControlProxy;
 class DlgPrefSoundItem;
+class DlgPrefSoundCalibrate;
 class PlayerManager;
 class SoundDevice;
 class SoundDeviceId;
@@ -25,8 +27,9 @@ class SoundManager;
 // on EngineMaster that emits every time a channel is added, and a slot here
 // that updates the dialog accordingly.
 
-class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
+class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg {
     Q_OBJECT;
+
   public:
     DlgPrefSound(QWidget* parent,
             std::shared_ptr<SoundManager> soundManager,
@@ -38,8 +41,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool okayToClose() const override;
 
   signals:
-    void loadPaths(const SoundManagerConfig &config);
-    void writePaths(SoundManagerConfig *config);
+    void loadPaths(const SoundManagerConfig& config);
+    void writePaths(SoundManagerConfig* config);
     void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
     void updatingAPI();
@@ -64,6 +67,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void addMainOutputClicked();
 
   private slots:
+    void removeOutputItem(DlgPrefSoundItem* pItem);
+    void calibrateOutputItem(DlgPrefSoundItem* pItem);
+    void autoCalibrateAllOutputs();
     void addPath(const AudioOutput& output);
     void addPath(const AudioInput& input);
     void loadSettings();
@@ -86,15 +92,18 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 #endif
 
   private:
+    void updateRemoveButtonVisibility();
     void initializePaths();
-    void connectSoundItem(DlgPrefSoundItem *item);
-    void loadSettings(const SoundManagerConfig &config);
-    void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
+    void connectSoundItem(DlgPrefSoundItem* item);
+    void loadSettings(const SoundManagerConfig& config);
+    void insertItem(DlgPrefSoundItem* pItem, QVBoxLayout* pLayout);
     void checkLatencyCompensation();
 
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
+
+    AudioLatencyCalibrator* m_pCalibrator = nullptr;
 
     PollingControlProxy m_pLatencyCompensation;
     PollingControlProxy m_pMainDelay;

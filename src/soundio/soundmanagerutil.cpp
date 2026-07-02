@@ -6,7 +6,8 @@
 /// @param channelBase the first channel in the group.
 /// @param channels the number of channels.
 ChannelGroup::ChannelGroup(unsigned char channelBase, mixxx::audio::ChannelCount channels)
-        : m_channelBase(channelBase), m_channels(channels) {
+        : m_channelBase(channelBase),
+          m_channels(channels) {
 }
 
 /// @return This ChannelGroup's base channel
@@ -23,16 +24,15 @@ mixxx::audio::ChannelCount ChannelGroup::getChannelCount() const {
 /// @param other the other ChannelGroup to check for a clash with.
 /// @return true if the other and this ChannelGroup share any channels,
 ///          false otherwise.
-bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
+bool ChannelGroup::clashesWith(const ChannelGroup& other) const {
     if (!m_channels.isValid() || !other.m_channels.isValid()) {
         return false; // can't clash if there are no channels in use
     }
-    return (m_channelBase > other.m_channelBase
-        && m_channelBase < other.m_channelBase + other.m_channels)
-        ||
-        (other.m_channelBase > m_channelBase
-        && other.m_channelBase < m_channelBase + m_channels)
-        || m_channelBase == other.m_channelBase;
+    return (m_channelBase > other.m_channelBase &&
+                   m_channelBase < other.m_channelBase + other.m_channels) ||
+            (other.m_channelBase > m_channelBase &&
+                    other.m_channelBase < m_channelBase + m_channels) ||
+            m_channelBase == other.m_channelBase;
 }
 
 /// Constructs an AudioPath object (must be called by a child class's
@@ -62,7 +62,7 @@ unsigned char AudioPath::getIndex() const {
 
 /// Checks if this AudioPath's channels clash with another's
 /// (see ChannelGroup::clashesWith).
-bool AudioPath::channelsClash(const AudioPath &other) const {
+bool AudioPath::channelsClash(const AudioPath& other) const {
     return m_channelGroup.clashesWith(other.m_channelGroup);
 }
 
@@ -114,7 +114,12 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         // handle this -- bkgood
         return QObject::tr("Invalid");
     case AudioPathType::Main:
-        //: Audio path indetifier
+        //: Audio path identifier. Index is appended for additional Main
+        //: outputs (e.g. "Main 2", "Main 3").
+        if (index > 0) {
+            return QString("%1 %2").arg(QObject::tr("Main"),
+                    QString::number(index + 1));
+        }
         return QObject::tr("Main");
     case AudioPathType::Headphones:
         //: Audio path indetifier
@@ -140,19 +145,19 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case AudioPathType::Deck:
         //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Deck"),
-                                    QString::number(index + 1));
+                QString::number(index + 1));
     case AudioPathType::VinylControl:
         //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
-                                    QString::number(index + 1));
+                QString::number(index + 1));
     case AudioPathType::Microphone:
         //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Microphone"),
-                                    QString::number(index + 1));
+                QString::number(index + 1));
     case AudioPathType::Auxiliary:
         //: Audio path indetifier
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
-                                    QString::number(index + 1));
+                QString::number(index + 1));
     case AudioPathType::RecordBroadcast:
         //: Audio path indetifier
         return QObject::tr("Record/Broadcast");
@@ -192,6 +197,7 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
 /// @note This method is static.
 bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
+    case AudioPathType::Main:
     case AudioPathType::Bus:
     case AudioPathType::Deck:
     case AudioPathType::VinylControl:
@@ -247,7 +253,7 @@ AudioOutput::AudioOutput(AudioPathType type,
 
 /// Writes this AudioOutput's data to an XML element, preallocated from an XML
 /// DOM document.
-QDomElement AudioOutput::toXML(QDomElement *element) const {
+QDomElement AudioOutput::toXML(QDomElement* element) const {
     element->setTagName("output");
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
@@ -259,7 +265,7 @@ QDomElement AudioOutput::toXML(QDomElement *element) const {
 
 /// Constructs and returns an AudioOutput given an XML element representing it.
 /// @note This method is static.
-AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
+AudioOutput AudioOutput::fromXML(const QDomElement& xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
@@ -317,12 +323,11 @@ AudioInput::AudioInput(AudioPathType type,
 }
 
 AudioInput::~AudioInput() {
-
 }
 
 /// Writes this AudioInput's data to an XML element, preallocated from an XML
 /// DOM document.
-QDomElement AudioInput::toXML(QDomElement *element) const {
+QDomElement AudioInput::toXML(QDomElement* element) const {
     element->setTagName("input");
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
@@ -333,7 +338,7 @@ QDomElement AudioInput::toXML(QDomElement *element) const {
 
 /// Constructs and returns an AudioInput given an XML element representing it.
 /// @note This method is static.
-AudioInput AudioInput::fromXML(const QDomElement &xml) {
+AudioInput AudioInput::fromXML(const QDomElement& xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
