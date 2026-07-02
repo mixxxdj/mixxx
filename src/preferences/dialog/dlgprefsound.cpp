@@ -19,8 +19,10 @@ void showLatencyCalibrationDialog(QWidget* parent,
         int sampleRate,
         double outputLatencyMs);
 
-#include "engine/androidmiccapture.h"
 #include "engine/audiolatencycalibrator.h"
+#ifdef Q_OS_ANDROID
+#include "engine/androidmiccapture.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
@@ -1215,6 +1217,7 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
     // Create calibrator and connect completion handler
     // (will be reconnected below after mic setup)
     // Calibration complete handler with mic cleanup
+#ifdef Q_OS_ANDROID
     struct CalCleanup {
         AndroidMicCapture* mic = nullptr;
         QTimer* poller = nullptr;
@@ -1222,7 +1225,7 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
     auto* cleanup = new CalCleanup;
 
     // On Android, use direct AudioRecord mic capture to bypass PortAudio/Oboe
-    // routing issues (BT A2DP active → phone mic might be inaccessible via PA).
+    // routing issues (BT A2DP active -> phone mic might be inaccessible via PA).
     auto* pMicCapture = new AndroidMicCapture(this);
     if (pMicCapture->startCapture(sampleRate)) {
         qDebug() << "Calibration: using AndroidMicCapture on Android";
@@ -1239,19 +1242,28 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
             }
         });
         cleanup->poller->start(10);
-    } else {
-        // Desktop or Android where PortAudio input works — calibrator gets
-        // input via pushInputBuffers() → SoundManager → addRecordedFrame()
+    } else
+#endif
+    {
+        // Desktop or Android where PortAudio input works - calibrator gets
+        // input via pushInputBuffers() -> SoundManager -> addRecordedFrame()
         qDebug() << "Calibration: using PortAudio pushInputBuffers for mic input";
+#ifdef Q_OS_ANDROID
         delete pMicCapture;
+#endif
     }
 
     connect(m_pCalibrator,
             &AudioLatencyCalibrator::calibrationComplete,
             this,
+#ifdef Q_OS_ANDROID
             [this, pProgress, mainOutputs, cleanup](
+#else
+            [this, pProgress, mainOutputs](
+#endif
                     const QVector<double>& offsetsMs) {
-                // Stop mic capture
+    // Stop mic capture
+#ifdef Q_OS_ANDROID
                 if (cleanup->mic) {
                     cleanup->mic->stopCapture();
                     cleanup->mic->deleteLater();
@@ -1261,6 +1273,7 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
                     cleanup->poller->deleteLater();
                 }
                 delete cleanup;
+#endif
 
                 pProgress->accept();
                 pProgress->deleteLater();
