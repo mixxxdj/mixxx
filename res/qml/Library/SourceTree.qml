@@ -1,6 +1,5 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
-import "." as LibraryComponent
 import "../Theme"
 
 Mixxx.LibrarySourceTree {
