@@ -61,8 +61,10 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotNumDecksChanged(double, bool initializing=false);
     void slotNumSamplersChanged(double, bool initializing=false);
 
+    void slotUltraSpeedCheckboxToggled(bool);
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
+    void slotUpdateUltraspeedAutoReset(bool);
 
   private:
     // Because the CueDefault list is out of order, we have to set the combo
@@ -106,6 +108,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
+    bool m_ultraspeedAutoReset;
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
     SeekOnLoadMode m_seekOnLoadMode;

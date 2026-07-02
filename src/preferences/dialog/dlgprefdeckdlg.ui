@@ -439,19 +439,30 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
-         <widget class="QCheckBox" name="checkBoxResetSpeed">
-          <property name="text">
-           <string>Speed/Tempo</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QCheckBox" name="checkBoxResetPitch">
-          <property name="text">
-           <string>Key/Pitch</string>
-          </property>
-         </widget>
+        <item row="2" column="1" colspan="2">
+         <layout class="QHBoxLayout" name="resetLayout">
+          <item>
+           <widget class="QCheckBox" name="checkBoxResetPitch">
+            <property name="text">
+             <string>Key/Pitch</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxResetSpeed">
+            <property name="text">
+             <string>Speed/Tempo</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBoxResetUltraspeed">
+            <property name="text">
+             <string>Ultra Speed</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item row="10" column="0">
          <widget class="QLabel" name="labelSpeedAdjustment">
@@ -713,6 +724,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>CheckBoxUltraSpeed</tabstop>
   <tabstop>checkBoxResetPitch</tabstop>
   <tabstop>checkBoxResetSpeed</tabstop>
+  <tabstop>checkBoxResetUltraspeed</tabstop>
   <tabstop>radioButtonSoftLeader</tabstop>
   <tabstop>radioButtonOriginalKey</tabstop>
   <tabstop>radioButtonCurrentKey</tabstop>
