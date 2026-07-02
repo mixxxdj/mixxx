@@ -16,6 +16,7 @@ namespace qml {
 QmlSkinControlCreator::QmlSkinControlCreator(QObject* parent)
         : QObject(parent),
           m_persist(false),
+          m_persistConfigured(false),
           m_defaultValue(0.0),
           m_buttonMode(ButtonMode::Toggle),
           m_isComponentComplete(false) {
@@ -23,7 +24,9 @@ QmlSkinControlCreator::QmlSkinControlCreator(QObject* parent)
 
 void QmlSkinControlCreator::componentComplete() {
     m_isComponentComplete = true;
-    createControl();
+    if (!m_pControl) {
+        createControl();
+    }
 }
 
 void QmlSkinControlCreator::setGroup(const QString& group) {
@@ -32,6 +35,7 @@ void QmlSkinControlCreator::setGroup(const QString& group) {
     }
     m_key.group = group;
     emit groupChanged(group);
+    createDefaultControlBeforeComponentComplete();
     createControl();
 }
 
@@ -45,6 +49,7 @@ void QmlSkinControlCreator::setKey(const QString& key) {
     }
     m_key.item = key;
     emit keyChanged(key);
+    createDefaultControlBeforeComponentComplete();
     createControl();
 }
 
@@ -57,7 +62,9 @@ void QmlSkinControlCreator::setPersist(bool persist) {
         return;
     }
     m_persist = persist;
+    m_persistConfigured = true;
     emit persistChanged(persist);
+    createDefaultControlBeforeComponentComplete();
     createControl();
 }
 
@@ -71,6 +78,7 @@ void QmlSkinControlCreator::setDefaultValue(double defaultValue) {
     }
     m_defaultValue = defaultValue;
     emit defaultValueChanged(defaultValue);
+    createDefaultControlBeforeComponentComplete();
     createControl();
 }
 
@@ -111,8 +119,8 @@ mixxx::control::ButtonMode QmlSkinControlCreator::toControlButtonMode(
     return mixxx::control::ButtonMode::Toggle;
 }
 
-void QmlSkinControlCreator::createControl() {
-    if (!m_isComponentComplete) {
+void QmlSkinControlCreator::createControl(bool allowBeforeComponentComplete) {
+    if (!m_isComponentComplete && !allowBeforeComponentComplete) {
         return;
     }
     m_pControl.reset();
@@ -136,6 +144,15 @@ void QmlSkinControlCreator::createControl() {
             m_persist,
             m_defaultValue);
     m_pControl->setButtonMode(toControlButtonMode(m_buttonMode));
+}
+
+void QmlSkinControlCreator::createDefaultControlBeforeComponentComplete() {
+    if (m_isComponentComplete || m_pControl || m_defaultValue == 0.0 ||
+            !m_persistConfigured || !m_key.isValid() || m_key.group != kSkinGroup ||
+            ControlObject::exists(m_key)) {
+        return;
+    }
+    createControl(true);
 }
 
 } // namespace qml

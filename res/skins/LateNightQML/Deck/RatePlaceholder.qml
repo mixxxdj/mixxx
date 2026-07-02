@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
+import "../../../qml" as Skin
 import "../LateNightTheme"
 
 Item {
@@ -45,12 +45,6 @@ Item {
         id: bpmProxy
         group: root.group
         key: "bpm"
-    }
-
-    Mixxx.ControlProxy {
-        id: rateProxy
-        group: root.group
-        key: "rate"
     }
 
     Mixxx.ControlProxy {
@@ -283,7 +277,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                 }
 
-                MixxxControls.Fader {
+                Skin.ControlFader {
                     id: rateSlider
                     x: 5
                     y: 2
@@ -293,26 +287,9 @@ Item {
                     barColor: "#888888"
                     barMargin: 7
                     barStart: 0.5
-                    from: -1
-                    to: 1
-                    value: rateProxy.value
-
-                    onMoved: function(value) {
-                        rateProxy.value = value;
-                    }
-
-                    TapHandler {
-                        onDoubleTapped: {
-                            rateSetDefaultProxy.value = 1;
-                        }
-                    }
-
-                    TapHandler {
-                        acceptedButtons: Qt.RightButton
-                        onTapped: {
-                            rateSetDefaultProxy.value = 1;
-                        }
-                    }
+                    defaultHandleVisible: false
+                    group: root.group
+                    key: "rate"
 
                     background: Image {
                         anchors.fill: parent
