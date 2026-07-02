@@ -23,8 +23,8 @@ ApplicationWindow {
 
     color: LateNightTheme.backgroundColor
     height: 1008
-    minimumHeight: 300
-    minimumWidth: 680
+    minimumHeight: 668
+    minimumWidth: 1280
     visible: true
     width: 1792
 
