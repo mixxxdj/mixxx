@@ -26,7 +26,15 @@ void LibraryTableModel::setTableModel() {
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << "library." + LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+            << "(cg.group_id || ' - ' || cmrt_canonical.artist || ' - ' || "
+               "cmrt_canonical.title) AS " +
+                    LIBRARYTABLE_CMRT_NAME
+            << "(cg.canonical_track_id = library.id) AS " +
+                    LIBRARYTABLE_CMRT_CANONICAL
+            << "CASE WHEN cg.group_id IS NOT NULL "
+               "THEN cm.offset_from_canonical ELSE NULL END AS " +
+                    LIBRARYTABLE_CMRT_OFFSET;
 
     QSqlQuery query(m_database);
     query.prepare(
@@ -35,7 +43,12 @@ void LibraryTableModel::setTableModel() {
             " FROM library "
             "INNER JOIN track_locations "
             "ON library.location=track_locations.id "
-            "WHERE (mixxx_deleted=0 AND fs_deleted=0)");
+            "LEFT JOIN cmrt_members cm ON library.id = cm.track_id "
+            "LEFT JOIN cmrt_groups cg "
+            "  ON cm.group_id = cg.group_id AND cg.track_count > 1 "
+            "LEFT JOIN library cmrt_canonical "
+            "  ON cg.canonical_track_id = cmrt_canonical.id "
+            "WHERE (library.mixxx_deleted=0 AND fs_deleted=0)");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -44,6 +57,9 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
+    tableColumns << LIBRARYTABLE_CMRT_NAME;
+    tableColumns << LIBRARYTABLE_CMRT_CANONICAL;
+    tableColumns << LIBRARYTABLE_CMRT_OFFSET;
     setTable(tableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
@@ -81,6 +97,8 @@ bool LibraryTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET) ||
             (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
