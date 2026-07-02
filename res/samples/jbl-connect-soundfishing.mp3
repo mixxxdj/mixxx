@@ -1,0 +1,563 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title> | Sound-Fishing</title>
+	<meta name="description" content="" />
+	<meta name="keywords" content="free sound effect, sound effects, sound effect, sounds, sfx, , " />
+	<base href="https://www.soundfishing.eu/">
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width; initial-scale=1.0">
+    <meta name="tdm-reservation" content="1">
+    <meta name="tdm-policy" content="https://www.soundfishing.eu/policy.json">
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="_s/css/styles.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="_s/css/responsive.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="_s/css/colorbox.css" media="none" onload="if(media!='all')media='all'" />
+	<link rel="stylesheet" type="text/css" href="_s/css/@print.css" media="none" onload="if(media!='print')media='print'" />
+	<!-- Favicon -->
+	<link rel="apple-touch-icon" sizes="180x180" href="/_s/favicon/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/_s/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/_s/favicon/favicon-16x16.png">
+	<link rel="manifest" href="/_s/favicon/site.webmanifest">
+	<link rel="mask-icon" href="/_s/favicon/safari-pinned-tab.svg" color="#227788">
+	<link rel="shortcut icon" href="/_s/favicon/favicon.ico">
+	<meta name="msapplication-TileColor" content="#227788">
+	<meta name="msapplication-config" content="/_s/favicon/browserconfig.xml">
+	<meta name="theme-color" content="#ffffff">
+
+<!-- InMobi Choice. Consent Manager Tag v3.0 (for TCF 2.2) -->
+<script type="text/javascript" async=true>
+(function() {
+  var host = "www.themoneytizer.com";
+  var element = document.createElement('script');
+  var firstScript = document.getElementsByTagName('script')[0];
+  var url = 'https://cmp.inmobi.com'
+    .concat('/choice/', '6Fv0cGNfc_bw8', '/', host, '/choice.js?tag_version=V3');
+  var uspTries = 0;
+  var uspTriesLimit = 3;
+  element.async = true;
+  element.type = 'text/javascript';
+  element.src = url;
+
+  firstScript.parentNode.insertBefore(element, firstScript);
+
+  function makeStub() {
+    var TCF_LOCATOR_NAME = '__tcfapiLocator';
+    var queue = [];
+    var win = window;
+    var cmpFrame;
+
+    function addFrame() {
+      var doc = win.document;
+      var otherCMP = !!(win.frames[TCF_LOCATOR_NAME]);
+
+      if (!otherCMP) {
+        if (doc.body) {
+          var iframe = doc.createElement('iframe');
+
+          iframe.style.cssText = 'display:none';
+          iframe.name = TCF_LOCATOR_NAME;
+          doc.body.appendChild(iframe);
+        } else {
+          setTimeout(addFrame, 5);
+        }
+      }
+      return !otherCMP;
+    }
+
+    function tcfAPIHandler() {
+      var gdprApplies;
+      var args = arguments;
+
+      if (!args.length) {
+        return queue;
+      } else if (args[0] === 'setGdprApplies') {
+        if (
+          args.length > 3 &&
+          args[2] === 2 &&
+          typeof args[3] === 'boolean'
+        ) {
+          gdprApplies = args[3];
+          if (typeof args[2] === 'function') {
+            args[2]('set', true);
+          }
+        }
+      } else if (args[0] === 'ping') {
+        var retr = {
+          gdprApplies: gdprApplies,
+          cmpLoaded: false,
+          cmpStatus: 'stub'
+        };
+
+        if (typeof args[2] === 'function') {
+          args[2](retr);
+        }
+      } else {
+        if(args[0] === 'init' && typeof args[3] === 'object') {
+          args[3] = Object.assign(args[3], { tag_version: 'V3' });
+        }
+        queue.push(args);
+      }
+    }
+
+    function postMessageEventHandler(event) {
+      var msgIsString = typeof event.data === 'string';
+      var json = {};
+
+      try {
+        if (msgIsString) {
+          json = JSON.parse(event.data);
+        } else {
+          json = event.data;
+        }
+      } catch (ignore) {}
+
+      var payload = json.__tcfapiCall;
+
+      if (payload) {
+        window.__tcfapi(
+          payload.command,
+          payload.version,
+          function(retValue, success) {
+            var returnMsg = {
+              __tcfapiReturn: {
+                returnValue: retValue,
+                success: success,
+                callId: payload.callId
+              }
+            };
+            if (msgIsString) {
+              returnMsg = JSON.stringify(returnMsg);
+            }
+            if (event && event.source && event.source.postMessage) {
+              event.source.postMessage(returnMsg, '*');
+            }
+          },
+          payload.parameter
+        );
+      }
+    }
+
+    while (win) {
+      try {
+        if (win.frames[TCF_LOCATOR_NAME]) {
+          cmpFrame = win;
+          break;
+        }
+      } catch (ignore) {}
+
+      if (win === window.top) {
+        break;
+      }
+      win = win.parent;
+    }
+    if (!cmpFrame) {
+      addFrame();
+      win.__tcfapi = tcfAPIHandler;
+      win.addEventListener('message', postMessageEventHandler, false);
+    }
+  };
+
+  makeStub();
+
+  var uspStubFunction = function() {
+    var arg = arguments;
+    if (typeof window.__uspapi !== uspStubFunction) {
+      setTimeout(function() {
+        if (typeof window.__uspapi !== 'undefined') {
+          window.__uspapi.apply(window.__uspapi, arg);
+        }
+      }, 500);
+    }
+  };
+
+  var checkIfUspIsReady = function() {
+    uspTries++;
+    if (window.__uspapi === uspStubFunction && uspTries < uspTriesLimit) {
+      console.warn('USP is not accessible');
+    } else {
+      clearInterval(uspInterval);
+    }
+  };
+
+  if (typeof window.__uspapi === 'undefined') {
+    window.__uspapi = uspStubFunction;
+    var uspInterval = setInterval(checkIfUspIsReady, 6000);
+  }
+})();
+</script>
+<!-- End InMobi Choice. Consent Manager Tag v3.0 (for TCF 2.2) -->
+
+</head>
+
+<body>
+
+<!--							TOP
+................................................... -->
+<div class="top">
+	<div id="connect_form">
+		<form method="post" class="std">
+			<p id="close_connect_form"><a href="#" onclick="return closeConnectForm()">×</a></p>
+			<p>
+				<label for="login_pseudo">Username</label>
+				<input type="text" name="login_pseudo" id="login_pseudo" />
+			</p>
+			<p>
+				<label for="login_pass">Password</label>
+				<input type="password" name="login_pass" id="login_pass" />
+			</p>
+			<p>
+				<input type="checkbox" name="remember"> 
+				Stay logged in?
+			</p>
+			<p>
+				<input type="submit" name="submit_connect_form" value="Log in" class="bouton" />
+			</p>
+			<p><a href="account/pass">I forgot my password</a></p>
+		</form>
+	</div>
+
+	<div id="top_nav">
+		<ul>
+			<li><a href="account/sign-in">sign in</a></li>
+			<li><a href="#" onclick="return openConnectForm()">log in</a></li>
+			<li><a href="cart.php" class="basketlink">cart</a></li>
+		</ul>
+	</div>
+	<div class="logo"><a href="./" title="Sound Fishing | Online sound effects and stock music library"><img src="_s/images/sound-fishing-logo.png" alt="Sound Fishing | Stock music and sound effects for instant download"></a></div>
+</div>
+
+<!--							MOTTO
+................................................... -->
+<div class="motto">
+<div class="wrapper">
+	<div class="g2-3"><h2>European and worldwide sound effect library.</h2></div>
+</div>
+</div>
+
+<!--							CONTENT
+................................................... -->
+<div class="content">
+	<div class="wrapper main_grid">
+
+<!--							SIDE
+................................................... -->
+<div class="side"><div class="side_inner">
+
+<!--	recherche libre		-->
+
+	<form class="finder" name="recherche" action="search.php" enctype="application/x-www-form-urlencoded" method="post">
+		<fieldset class="search">
+			<input type="text" name="searchword" class="text" value="">
+			<input type="submit" value="search" name="simplesearch" class="submit">
+		</fieldset>
+	</form>
+	
+	<p class="recherche-avancee">&raquo; <a href="advanced-search.html">Advanced search</a></p>
+
+	<form class="finder">
+
+<!--	catégories de bruitages		-->
+
+		<fieldset class="finder_bruit">
+		<h3><a href="sfx-categories.html" title="See all sound effect categories">Sound effect categories</a> &raquo;</h3>
+		<select name="menu1" onChange="jumpMenu('parent',this,0)">
+			<option value="">Select a category</option>
+			<option value="">-----------------------------------</option>
+			<optgroup label="animals">
+				<option value="sound-effect/ambience-with-bird">ambience with bird</option>
+				<option value="sound-effect/bird-of-prey">bird of prey – raptor</option>
+				<option value="sound-effect/bird-1">bird – A to L</option>
+				<option value="sound-effect/bird-2">bird – M to Z</option>
+				<option value="sound-effect/domestic-pets">domestic pets</option>
+				<option value="sound-effect/fantasy-animal">fantasy animal</option>
+				<option value="sound-effect/farm-animal">farm animal</option>
+				<option value="sound-effect/horse">horse</option>
+				<option value="sound-effect/marine-animal-insect">marine animal and insect</option>
+				<option value="sound-effect/wild-animal">wild animal</option>
+			</optgroup>
+			<optgroup label="elements">
+				<option value="sound-effect/air">air</option>
+				<option value="sound-effect/fire">fire</option>
+				<option value="sound-effect/water">water</option>
+			</optgroup>
+			<optgroup label="environment">
+				<option value="sound-effect/ambisonic-ambiance">ambiance ambisonics</option>
+				<option value="sound-effect/surround-ambiance">ambiance surround</option>
+				<option value="sound-effect/asia">Asia</option>
+				<option value="sound-effect/asia-india-nepal">Asia – India and Nepal</option>
+				<option value="sound-effect/australia">Australia</option>
+				<option value="sound-effect/big-city">big city</option>
+				<option value="sound-effect/city">city</option>
+				<option value="sound-effect/city-paris">city - Paris</option>
+				<option value="sound-effect/city-prague">city – Prague</option>
+				<option value="sound-effect/country">country</option>
+				<option value="sound-effect/europe-france">Europe - France</option>
+				<option value="sound-effect/europe-germany">Europe - Germany</option>
+				<option value="sound-effect/europe-iceland">Europe - Iceland</option>
+				<option value="sound-effect/europe-italy">Europe - Italy</option>
+				<option value="sound-effect/scandinavia">Europe - Scandinavia</option>
+				<option value="sound-effect/europe-spain">Europe - Spain</option>
+				<option value="sound-effect/exotic-nature">exotic nature</option>
+				<option value="sound-effect/indoor-ambience">indoor ambience</option>
+				<option value="sound-effect/outdoor-ambience">outdoor ambience</option>
+				<option value="sound-effect/sea">sea</option>
+				<option value="sound-effect/rain">weather - rain</option>
+				<option value="sound-effect/thunder">weather - thunder</option>
+				<option value="sound-effect/cold-desaster">weather – cold and disaster</option>
+				<option value="sound-effect/wind">weather – wind</option>
+				<option value="sound-effect/world-atmosphere">world atmosphere</option>
+			</optgroup>
+			<optgroup label="historical">
+				<option value="sound-effect/antiquity-medieval">Antiquity and Middle-Ages</option>
+				<option value="sound-effect/Medieval-fantasy">medieval and fantasy</option>
+			</optgroup>
+			<optgroup label="home">
+				<option value="sound-effect/door-window">door and window</option>
+				<option value="sound-effect/drink">drink</option>
+				<option value="sound-effect/home-bathroom-toilets">home - bathroom and toilets</option>
+				<option value="sound-effect/home-bedroom-living">home - bedroom and living</option>
+				<option value="sound-effect/home-kitchen">home - kitchen</option>
+				<option value="sound-effect/home-neighbourhood">home - neighbourhood</option>
+				<option value="sound-effect/home-various">home - various</option>
+				<option value="sound-effect/home-appliances">home appliances</option>
+			</optgroup>
+			<optgroup label="horror">
+				<option value="sound-effect/halloween">Halloween</option>
+				<option value="sound-effect/halloween-monsters">Halloween – the monsters</option>
+				<option value="sound-effect/horror">horror</option>
+			</optgroup>
+			<optgroup label="human">
+				<option value="sound-effect/bodyfall">body fall</option>
+				<option value="sound-effect/crowd">crowd</option>
+				<option value="sound-effect/footsteps">footsteps</option>
+				<option value="sound-effect/human-body-sound">human body sound</option>
+				<option value="sound-effect/illness">illness</option>
+				<option value="sound-effect/kid">kid</option>
+				<option value="sound-effect/laugh">laugh</option>
+				<option value="sound-effect/scream">scream</option>
+				<option value="sound-effect/sexy">sexy</option>
+				<option value="sound-effect/voice-speech">voice and speech</option>
+			</optgroup>
+			<optgroup label="leisure">
+				<option value="sound-effect/cafe-game">cafe game</option>
+				<option value="sound-effect/celebration">celebration</option>
+				<option value="sound-effect/christmas">Christmas</option>
+				<option value="sound-effect/christmas-magic">Christmas - magic</option>
+				<option value="sound-effect/game">game</option>
+				<option value="sound-effect/music-percussions">music - percussions</option>
+				<option value="sound-effect/musical">musical</option>
+				<option value="sound-effect/combat-sports">sport - combat</option>
+				<option value="sound-effect/individual-sport">sport - individual</option>
+				<option value="sound-effect/motorized-sports">sport - motorized</option>
+				<option value="sound-effect/team-sport">sport - team</option>
+				<option value="sound-effect/Stupid-sounds">stupid sounds</option>
+			</optgroup>
+			<optgroup label="machine">
+				<option value="sound-effect/construction-tool">construction and tool</option>
+				<option value="sound-effect/gardening">gardening</option>
+				<option value="sound-effect/hi-fi-video">hi-fi and video</option>
+				<option value="sound-effect/hi-tech-machine ">hi-tech machine </option>
+				<option value="sound-effect/machine">machine</option>
+				<option value="sound-effect/machinery">machinery</option>
+				<option value="sound-effect/office">office - ambiance and tools</option>
+				<option value="sound-effect/office-writing-paper">office - writing and paper</option>
+				<option value="sound-effect/ring-bell">ring and bell</option>
+				<option value="sound-effect/telephone">telephone</option>
+				<option value="sound-effect/workshop-construction-tool">workshop and construction tool</option>
+			</optgroup>
+			<optgroup label="materials">
+				<option value="sound-effect/clothing">clothing - foley</option>
+				<option value="sound-effect/crash-break">crash and break</option>
+				<option value="sound-effect/creak">creak</option>
+				<option value="sound-effect/impact">impact</option>
+				<option value="sound-effect/object-fall">object fall</option>
+			</optgroup>
+			<optgroup label="miscellaneous">
+				<option value="sound-effect/medical">medical</option>
+				<option value="sound-effect/money">money</option>
+				<option value="sound-effect/sacred">sacred</option>
+			</optgroup>
+			<optgroup label="sound design">
+				<option value="sound-effect/cartoon-1">cartoon 1</option>
+				<option value="sound-effect/cartoon-2">cartoon 2</option>
+				<option value="sound-effect/cinematic-slow-motion-flashback">cinematic - slow motion & flashback</option>
+				<option value="sound-effect/cinematic-thriller">cinematic - thriller</option>
+				<option value="sound-effect/cinematic-trailer">cinematic - trailer</option>
+				<option value="sound-effect/interface-button-click">Interface – button & click</option>
+				<option value="sound-effect/interface-tones-beeps">Interface – tones & beeps</option>
+				<option value="sound-effect/prepared-piano">prepared piano</option>
+				<option value="sound-effect/production-element-1">production elements 1</option>
+				<option value="sound-effect/production-element-dark">production elements dark</option>
+				<option value="sound-effect/science-fiction">science-fiction</option>
+				<option value="sound-effect/sci-fi-transportation">science-fiction transportation</option>
+				<option value="sound-effect/whoosh">whoosh</option>
+			</optgroup>
+			<optgroup label="transportation">
+				<option value="sound-effect/aircraft">aircraft</option>
+				<option value="sound-effect/vintage-car">antique car</option>
+				<option value="sound-effect/boat">boat</option>
+				<option value="sound-effect/car">car</option>
+				<option value="sound-effect/car-specific">car specific</option>
+				<option value="sound-effect/sport-car">car sport</option>
+				<option value="sound-effect/carriage">carriage and team</option>
+				<option value="sound-effect/freight-train">freight train</option>
+				<option value="sound-effect/horn-siren">horn and siren</option>
+				<option value="sound-effect/military-airplane">military airplane</option>
+				<option value="sound-effect/motorcycle-moped">motorcycle and moped</option>
+				<option value="sound-effect/passenger-train">passenger train</option>
+				<option value="sound-effect/steam-train">steam train</option>
+				<option value="sound-effect/train-station">train station</option>
+				<option value="sound-effect/transport-various">transport various</option>
+			</optgroup>
+			<optgroup label="war">
+				<option value="sound-effect/explosion-bomb">explosion and bomb</option>
+				<option value="sound-effect/fight">fight</option>
+				<option value="sound-effect/weapon">weapon</option>
+			</optgroup>
+		</select>
+		</fieldset>
+
+<!--	catégories de musiques		-->
+
+		<fieldset class="finder_music">
+		<h3><a href="music-categories.html" title="See all the stock music categories">Stock music categories</a> &raquo;</h3>
+		<select name="menu1" onChange="jumpMenu('parent',this,0)">
+			<option value="">Select a category</option>
+			<option value="">-----------------------------------</option>
+			<option value="musique-nouveautes.html">New tracks</option>
+			<option value="">-----------------------------------</option>
+			<optgroup label="music by style">
+				<option value="stock-music/ambient-dark-ambient">ambient / dark ambient</option>
+				<option value="stock-music/drums-only-music">drums-only music</option>
+				<option value="stock-music/electro-dance-rap">electro / dance / rap</option>
+				<option value="stock-music/orchestral-electro-orchestral">orchestral / electro-orchestral</option>
+				<option value="stock-music/rock-blues-pop">rock / blues / pop</option>
+				<option value="stock-music/solo-instruments">solo instruments</option>
+				<option value="stock-music/world-music-reggae-dub">world music / reggae / dub</option>
+			</optgroup>
+			<optgroup label="music by mood">
+				<option value="stock-music/action-adventure">action / adventure</option>
+				<option value="stock-music/celebration-kid">celebration / kid</option>
+				<option value="stock-music/corporate-business">corporate / business</option>
+				<option value="stock-music/dark-melancholic">dark and melancholic</option>
+				<option value="stock-music/positive-happiness">positive and happiness</option>
+				<option value="stock-music/suspense-horror">suspense / horror</option>
+			</optgroup>
+			<optgroup label="music by timing">
+				<option value="stock-music/credits-music">credits music</option>
+				<option value="stock-music/music-for-web">music for web</option>
+				<option value="stock-music/short-music">short music</option>
+				<option value="stock-music/soundscape-background">soundscape / background</option>
+				<option value="stock-music/stock-music-1">stock music</option>
+			</optgroup>
+		</select>
+		</fieldset>
+	</form>
+
+<ul class="nav_pages">
+	<li><a href="free-sfx.html">Online sound effects</a></li>
+	<li><a href="stock-music.html">Stock music</a></li>
+	<li><a href="sound-packs.html">Sound packs</a></li>
+	<li><a href="premium.html">Sound Fishing Premium</a></li>
+	<li><a href="about-us.html">About us</a></li>
+	<li><a href="contact.html">Contact us</a></li>
+</ul>
+
+<div id="98352-2" style="text-align: center;"><script src="//ads.themoneytizer.com/s/gen.js?type=2"></script><script src="//ads.themoneytizer.com/s/requestform.js?siteId=98352&formatId=2"></script></div>
+
+<div class="pub_SF"><a href="https://www.soundfishing.eu/cd-packs/australia-nature" title="Australia SFX"><img src="medias/Australia-AD.gif" alt="Australia Sound Effects Pack"></a></div>
+</div></div>
+
+<!--							MAIN
+................................................... -->
+<div class="main">
+
+<div id="98352-1"><script src="//ads.themoneytizer.com/s/gen.js?type=1"></script><script src="//ads.themoneytizer.com/s/requestform.js?siteId=98352&formatId=1"></script></div>
+
+	<h1>"jbl-connect" collection</h1>
+	<p>Sorry, no collection matched with this name!</p>
+
+
+<h2>Latest updated collections:</h2>
+<p>
+&raquo; <strong>1 sound added in the <a href="sound/clocks">collection "clocks"</strong></a> : <small>abbey service bell 01.</small><br />
+&raquo; <strong>2 sounds added in the <a href="sound/car-moves">collection "car moves"</strong></a> : <small>car pass slow on snow 04 + car pass by medium 01.</small><br />
+&raquo; <strong>8 sounds added in the <a href="sound/airport-ambience">collection "airport ambiance"</strong></a> : <small>airport Paris CDG check-in hall ambience 01 + airport Paris CDG boarding hall ambience 01 + airport Paris CDG boarding hall ambience 02 + airport Paris CDG check-in hall ambience 02 + airport Paris CDG check-in hall ambience 03 + airport Paris CDG boarding hall ambience 03 + public announcement  boarding hall ambience 01 + airport Paris CDG boarding hall ambience 04.</small><br />
+&raquo; <strong>2 sounds added in the <a href="sound/road-highway">collection "road and highway"</strong></a> : <small>highway ambiance 02 + highway ambiance 03.</small><br />
+&raquo; <strong>15 sounds added in the <a href="sound/water-course">collection "water course"</strong></a> : <small>stream medium 01 NS + stream medium 02 NS + stream small close 02 NS + mountain rapids Alps 02 + stream small 05 NS + stream small 06 AB + stream small distant 01 NS + stream small close 01 AB + mountain rapids Alps 01 + mountain rapids Alps animals 01 + stream medium 10 NS + stream medium 09 AB + stream large rocks 02 AB + stream large distant 01 NS + stream large 05 AB.</small><br />
+&raquo; <strong>2 sounds added in the <a href="sound/actual-military-airplane">collection "military airplane actual"</strong></a> : <small>military base ambience 01 + military base ambience 02.</small><br />
+</p>
+
+
+
+<div id="98352-28"><script src="//ads.themoneytizer.com/s/gen.js?type=28"></script><script src="//ads.themoneytizer.com/s/requestform.js?siteId=98352&formatId=28"></script></div>
+
+</div>
+	</div>
+</div>
+<!-- /content -->
+
+<!--							FOOTER
+=================================================== -->
+<footer>
+
+<div class="wrapper">
+	<ul class="g1-4">
+		<li><h3>Sounds to download</h3></li>
+		<li><a href="premium.html">Sound Fishing Premium</a></li>
+		<li><a href="free-sfx.html">Sound effects</a></li>
+		<li><a href="stock-music.html">Stock music</a></li>
+		<li><a href="sound-packs.html">Sound packs</a></li>
+	</ul>
+	<ul class="g1-4">
+		<li><h3>Sound Fishing</h3></li>
+		<li><a href="faq.html">Questions / Answers</a></li>
+		<li><a href="licences.html" title="Licence d'utilisation">Licences for sounds</a></li>
+		<li><a href="terms-use.html" title="CGV">Terms of use and sale</a></li>
+		<li><a href="legal.html" title="Mentions légales">Legal notice</a></li>
+		<li><a href="privacy-policy.html" title="Politique de confidentialité">Privacy policy</a></li>
+	</ul>
+	<ul class="g1-4">
+		<li><h3>About</h3></li>
+		<li><a href="#" title="About us">About us</a></li>
+		<li><a href="contact.html">Contact</a></li>
+		<li><a href="https://www.sound4museum.com/" title="Sound 4 Museum" rel="external" target="_blank">Sound 4 Museum</a></li>
+		<li><a href="http://www.mourioche.com/" title="Mourioche" rel="external" target="_blank">Mourioche</a></li>
+	</ul>
+	<ul class="g1-4">
+		<li><h3>More</h3></li>
+		<li><a href="https://twitter.com/sound_fishing" title="Sound Fishing on Twitter" rel="external" target="_blank">Sound Fishing on Twitter</a></li>
+		<li><a href="http://www.facebook.com/soundfishing" title="Sound Fishing on Facebook" rel="external" target="_blank">Sound Fishing on Facebook</a></li>
+		<li><a target="_blank" rel="external" href="http://www.lagouache.com">Webdesign : lagouache</a></li>
+	</ul>
+
+
+</div>
+</footer>
+
+<a href="#" id="backtotop">TOP</a>
+
+<div id="player">
+<div class="wrapper">
+	<button id="playme">Play / Pause</button>
+	<p class="player_desc"></p>
+	<div class="close">
+	<a href="#" class="player_close" title="Close player"></a>
+	</div>
+	<div id="waveform"><progress id="progress" class="progress progress-striped" value="0" max="100"></progress></div>
+</div>
+</div>
+
+<!-- javascript -->
+<script src="_s/js/jquery-1.8.2.min.js"></script>
+<script src="_s/js/notify.min.js"></script>
+<script src="_s/js/sf.js"></script>
+<script src="_s/js/jquery.colorbox-min.js"></script>
+<script src="_s/js/wavesurfer.min.js"></script>
+
+
+
+</body>
+</html>

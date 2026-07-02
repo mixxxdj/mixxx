@@ -2,17 +2,19 @@
 
 Professional DJ sample collection for Mixxx sampler pads.
 
-## 🎵 75+ Samples
+## 🎵 180+ Samples
 
 | | Category | Samples |
 | --- | --- | --- |
-| | **Drums** | kick, snare, hi-hat, clap-ensemble, rimshot, crash-cymbal, bongo-hit, drum-roll, hardstyle-kick, drum-machine-beat |
-| | **FX** | riser-classic, bass-drop, sub-drop, fx-impact-cinematic, fx-whoosh, record-scratch, dub-siren, laser, explosion-sound |
-| | **Vocals** | lets-go, yeah, oh-yeah, woo-hoo, drop-it, dj-intro, bruh-sound, oof-sound, vine-boom, ba-dum-tss |
-| | **Percussion** | snare-drum, hi-hat, clap-ensemble, rimshot, bongo-hit, amen-break |
-| | **Transitions** | dj-airhorn, record-scratch, riser-classic, bass-drop, fx-whoosh, siren-police, siren, train-horn, car-horn, horn-honk |
+| | **Drums** | kick, snare, hi-hat, clap, rimshot, crash, bongo, kick-hard, snare-tight, hi-hat-open, clap-fat, rimshot-accent, drum-roll, hardstyle-kick, drum-machine-beat, cowbell, tambourine, shaker, bongo-hit, triangle, wood-block, snap |
+| | **FX** | riser-classic, riser-electronic, bass-drop, sub-drop, impact-cinematic, transition-sweep, transition-impact, transition-whoosh, transition-swoosh, fx-whoosh, record-scratch, dub-siren, laser, explosion, alarm, siren-police |
+| | **Vocals** | lets-go, yeah, oh-yeah, woo-hoo, drop-it, dj-drop-it, dj-intro, everybody, turn-it-up, make-some-noise, put-your-hands-up, party-rock, work-it, yeah-boy, bruh-sound, oof-sound, vine-boom, ba-dum-tss |
+| | **Percussion** | snare, hi-hat, clap, rimshot, bongo, amen-break, shaker, tambourine, wood-block, triangle |
+| | **Transitions** | dj-airhorn, record-scratch, riser-classic, riser-electronic, bass-drop, fx-whoosh, transition-sweep, transition-impact, transition-whoosh, transition-swoosh, siren, train-horn, car-horn, horn-honk, airhorn |
+| | **Guns** | gunshot, machine-gun, shotgun, shotgun-blast, pistol-shot, pistol, 9mm, ak47, rifle, uzi |
+| | **JBL** | jbl-connect-soundfishing |
 | | **Greek (GR)** | fahhhhhhhhhhhhhh, faaah, applepay, m-e-o-w, greek, greece, re, malaka, opa, ti, oxi, ela, bravo, file, ne |
-| | **Misc** | applause, crowd-cheer, chime, heartbeat, thunder, rain-thunder, fire-alarm, phone-ring, glass-shatter, gunshot, machine-gun, metal-pipe, sad-trombone, suspense, synth-pad, trump-fanfare, airhorn, womp-womp, wrong-answer, cartoon-boing, door-knock, fart-reverb, scream |
+| | **Misc** | applause, crowd-cheer, chime, heartbeat, thunder, rain-thunder, fire-alarm, phone-ring, glass-shatter, metal-pipe, sad-trombone, suspense, synth-pad, trumpet-fanfare, womp-womp, wrong-answer, cartoon-boing, door-knock, fart-reverb, scream, notification, ping, tada, connect |
 
 ## Usage
 
