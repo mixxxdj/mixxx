@@ -64,9 +64,9 @@ QString resolveSamplesPath(UserSettingsPointer pConfig) {
             QStringLiteral("*.aiff"),
             QStringLiteral("*.m4a"),
             QStringLiteral("*.ogg")};
-    QFileInfoList files = source.entryInfoList(filters, QDir::Files);
+    const QFileInfoList files = source.entryInfoList(filters, QDir::Files);
 
-    for (const auto& fi : files) {
+    for (const auto& fi : std::as_const(files)) {
         QString destPath = destDir + fi.fileName();
         if (!QFile::exists(destPath)) {
             if (!QFile::copy(fi.absoluteFilePath(), destPath)) {
