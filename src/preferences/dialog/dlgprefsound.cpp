@@ -1322,6 +1322,7 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
             });
 
     // Connect the progress dialog's rejection to cancel calibration
+#ifdef Q_OS_ANDROID
     connect(pProgress, &QDialog::rejected, this, [this, cleanup]() {
         if (cleanup->mic) {
             cleanup->mic->stopCapture();
@@ -1332,6 +1333,9 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
             cleanup->poller->deleteLater();
         }
         delete cleanup;
+#else
+    connect(pProgress, &QDialog::rejected, this, [this]() {
+#endif
         m_pSoundManager->stopCalibration();
         if (m_pCalibrator) {
             m_pCalibrator->stopCalibration();
