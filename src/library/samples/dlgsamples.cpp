@@ -1,8 +1,6 @@
 #include "library/samples/dlgsamples.h"
 
 #include <QBoxLayout>
-#include <QCoreApplication>
-#include <QDir>
 #include <QFileInfo>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -12,26 +10,6 @@
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
-
-namespace {
-
-QString samplesPath() {
-    QString appDir = QCoreApplication::applicationDirPath();
-    QStringList candidates = {
-            appDir + QStringLiteral("/res/samples/"),
-            appDir + QStringLiteral("/../res/samples/"),
-            QStringLiteral("res/samples/"),
-    };
-    for (const auto& path : candidates) {
-        QFileInfo fi(path);
-        if (fi.exists() && fi.isDir()) {
-            return fi.absoluteFilePath();
-        }
-    }
-    return QStringLiteral("res/samples/");
-}
-
-} // anonymous namespace
 
 DlgSamples::DlgSamples(
         WLibrary* parent,
@@ -100,7 +78,13 @@ void DlgSamples::setFocus() {
 
 void DlgSamples::refreshBrowseModel() {
     saveCurrentViewState();
-    QString path = samplesPath();
+    // Use the app resource path to find samples (works on all platforms including Android)
+    QString path = m_pConfig->getResourcePath() + QStringLiteral("samples/");
+    QFileInfo fi(path);
+    if (!fi.exists() || !fi.isDir()) {
+        // Fallback for development builds
+        path = QStringLiteral("res/samples/");
+    }
     m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(path)));
 }
 
