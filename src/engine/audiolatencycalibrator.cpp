@@ -1,5 +1,6 @@
 #include "engine/audiolatencycalibrator.h"
 
+#include <QDebug>
 #include <QtMath>
 #include <algorithm>
 #include <cmath>
@@ -25,6 +26,8 @@ AudioLatencyCalibrator::AudioLatencyCalibrator(QObject* parent)
 
 void AudioLatencyCalibrator::startCalibration(
         int sampleRate, int bufferSize, int numOutputs) {
+    qDebug() << "Calibrator: startCalibration sampleRate=" << sampleRate
+             << "bufferSize=" << bufferSize << "numOutputs=" << numOutputs;
     m_sampleRate = sampleRate;
     m_bufferSize = bufferSize;
     m_numOutputs = qMax(numOutputs, 1);
@@ -67,10 +70,12 @@ void AudioLatencyCalibrator::stopCalibration() {
 }
 
 void AudioLatencyCalibrator::onTimeout() {
+    qDebug() << "Calibrator: onTimeout state=" << m_state
+             << "recorded=" << m_recordedSignal.size();
     if (m_state == State::RecordingReference && !m_recordedSignal.isEmpty()) {
         // Partial data — compute with what we have
         m_state = State::Computing;
-        computeOffsets();
+        QTimer::singleShot(0, this, &AudioLatencyCalibrator::computeOffsets);
         return;
     }
     QString msg;
@@ -101,6 +106,8 @@ CSAMPLE AudioLatencyCalibrator::generateReferenceFrame(int outputIndex) {
     // time-separated chirps for each output's time slot.
     if (m_referencePlayhead >= m_referenceSignal.size()) {
         // Done playing full sequence — switch to recording
+        qDebug() << "Calibrator: reference finished at playhead"
+                 << m_referencePlayhead << "of" << m_referenceSignal.size();
         m_state = State::RecordingReference;
         emit statusUpdate(
                 tr("Recording microphone input (%1 frames)...")
@@ -124,11 +131,23 @@ void AudioLatencyCalibrator::addRecordedFrame(CSAMPLE value) {
         return;
     }
 
+    if (m_recordedSignal.isEmpty()) {
+        qDebug() << "Calibrator: first recorded frame received";
+    }
+
     m_recordedSignal.append(value);
+
+    // Log recording progress every 100k frames
+    if (m_recordedSignal.size() % 100000 == 0) {
+        qDebug() << "Calibrator: recorded" << m_recordedSignal.size()
+                 << "frames, max recording =" << kMaxRecordingFrames;
+    }
 
     if (m_recordedSignal.size() >= kMaxRecordingFrames) {
         m_state = State::Computing;
-        computeOffsets();
+        // Run computeOffsets on the main thread via event loop — never block
+        // the audio callback with the expensive cross-correlation.
+        QTimer::singleShot(0, this, &AudioLatencyCalibrator::computeOffsets);
     }
 }
 
@@ -182,9 +201,41 @@ void AudioLatencyCalibrator::generateReferenceChirp() {
 }
 
 void AudioLatencyCalibrator::computeOffsets() {
+    qDebug() << "Calibrator: computeOffsets recorded="
+             << m_recordedSignal.size() << "reference="
+             << m_referenceSignal.size() << "numOutputs=" << m_numOutputs;
+
     if (m_recordedSignal.isEmpty() || m_referenceSignal.isEmpty()) {
+        qWarning() << "Calibrator: no signal recorded — recorded empty?"
+                   << m_recordedSignal.isEmpty() << "ref empty?"
+                   << m_referenceSignal.isEmpty();
         emit statusUpdate(tr("Calibration failed: no signal recorded"));
         m_state = State::Idle;
+        return;
+    }
+
+    // Check signal energy: if the recorded signal is silence, the mic
+    // stream is not capturing any audio.
+    double peakEnergy = 0.0;
+    double sumEnergy = 0.0;
+    for (int i = 0; i < m_recordedSignal.size(); ++i) {
+        double s = static_cast<double>(m_recordedSignal[i]);
+        double e = s * s;
+        peakEnergy = qMax(peakEnergy, e);
+        sumEnergy += e;
+    }
+    double avgEnergy = sumEnergy / m_recordedSignal.size();
+    qDebug() << "Calibrator: recorded signal peak=" << peakEnergy
+             << "avg=" << avgEnergy << "sum=" << sumEnergy;
+    if (peakEnergy < 1e-6) {
+        qWarning() << "Calibrator: recorded signal is effectively silence"
+                   << "(peak energy" << peakEnergy
+                   << "). Check mic input routing.";
+        emit statusUpdate(
+                tr("Calibration failed: microphone recorded silence. "
+                   "Make sure audio is running and the mic can hear the outputs."));
+        m_state = State::Idle;
+        emit calibrationComplete(QVector<double>());
         return;
     }
 
@@ -249,12 +300,19 @@ void AudioLatencyCalibrator::computeOffsets() {
             }
         }
 
-        if (bestCorrelation > 0.2) {
+        if (bestCorrelation > 0.1) {
             peaks.append({bestOffset, bestCorrelation, o});
+            qDebug() << "Calibrator: output" << o << "peak at offset"
+                     << bestOffset << "correlation=" << bestCorrelation;
+        } else {
+            qDebug() << "Calibrator: output" << o << "NO peak (best="
+                     << bestCorrelation << ")";
         }
     }
 
     if (peaks.isEmpty()) {
+        qWarning() << "Calibrator: no peaks found for any of"
+                   << m_numOutputs << "outputs";
         emit statusUpdate(
                 tr("Calibration failed: no peaks found. "
                    "Make sure outputs are audible to the microphone."));

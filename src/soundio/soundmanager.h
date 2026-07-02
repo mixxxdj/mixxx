@@ -111,6 +111,12 @@ class SoundManager : public QObject {
         return m_pCalibrator;
     }
 
+    /// Calibration frame cache — one buffer's worth of chirp samples.
+    /// Written by the clock-ref callback, read by writeProcess.
+    QVector<CSAMPLE>& calibrationFrameCache() {
+        return m_calibFrameCache;
+    }
+
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
         return m_networkEnumerator.getNetworkStream();
     }
@@ -179,4 +185,9 @@ class SoundManager : public QObject {
     NetworkEnumerator m_networkEnumerator;
 
     AudioLatencyCalibrator* m_pCalibrator = nullptr;
+
+    /// Cache for one buffer's worth of calibration chirp samples.
+    /// Filled by the clock-ref callback, consumed by writeProcess for non-ref
+    /// devices. Prevents double-consumption of generateReferenceFrame().
+    QVector<CSAMPLE> m_calibFrameCache;
 };

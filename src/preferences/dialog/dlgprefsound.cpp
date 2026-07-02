@@ -20,6 +20,7 @@ void showLatencyCalibrationDialog(QWidget* parent,
         double outputLatencyMs);
 
 #include "engine/audiolatencycalibrator.h"
+#include "engine/androidmiccapture.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
@@ -1211,11 +1212,57 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
         // status is logged by the calibrator
     });
 
+    // Create calibrator and connect completion handler
+    // (will be reconnected below after mic setup)
+    // Calibration complete handler with mic cleanup
+    struct CalCleanup {
+        AndroidMicCapture* mic = nullptr;
+        QTimer* poller = nullptr;
+    };
+    auto* cleanup = new CalCleanup;
+
+    // On Android, use direct AudioRecord mic capture to bypass PortAudio/Oboe
+    // routing issues (BT A2DP active → phone mic might be inaccessible via PA).
+    auto* pMicCapture = new AndroidMicCapture(this);
+    if (pMicCapture->startCapture(sampleRate)) {
+        qDebug() << "Calibration: using AndroidMicCapture on Android";
+        cleanup->mic = pMicCapture;
+        // Poll the mic capture every 10ms to feed frames to the calibrator
+        cleanup->poller = new QTimer(this);
+        connect(cleanup->poller, &QTimer::timeout, this,
+                [this, pMicCapture]() {
+                    if (!m_pCalibrator)
+                        return;
+                    CSAMPLE buf[1024];
+                    int n = pMicCapture->readFrames(buf, 1024);
+                    for (int i = 0; i < n; ++i) {
+                        m_pCalibrator->addRecordedFrame(buf[i]);
+                    }
+                });
+        cleanup->poller->start(10);
+    } else {
+        // Desktop or Android where PortAudio input works — calibrator gets
+        // input via pushInputBuffers() → SoundManager → addRecordedFrame()
+        qDebug() << "Calibration: using PortAudio pushInputBuffers for mic input";
+        delete pMicCapture;
+    }
+
     connect(m_pCalibrator,
             &AudioLatencyCalibrator::calibrationComplete,
             this,
-            [this, pProgress, mainOutputs](
+            [this, pProgress, mainOutputs, cleanup](
                     const QVector<double>& offsetsMs) {
+                // Stop mic capture
+                if (cleanup->mic) {
+                    cleanup->mic->stopCapture();
+                    cleanup->mic->deleteLater();
+                }
+                if (cleanup->poller) {
+                    cleanup->poller->stop();
+                    cleanup->poller->deleteLater();
+                }
+                delete cleanup;
+
                 pProgress->accept();
                 pProgress->deleteLater();
 
@@ -1263,7 +1310,16 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
             });
 
     // Connect the progress dialog's rejection to cancel calibration
-    connect(pProgress, &QDialog::rejected, this, [this]() {
+    connect(pProgress, &QDialog::rejected, this, [this, cleanup]() {
+        if (cleanup->mic) {
+            cleanup->mic->stopCapture();
+            cleanup->mic->deleteLater();
+        }
+        if (cleanup->poller) {
+            cleanup->poller->stop();
+            cleanup->poller->deleteLater();
+        }
+        delete cleanup;
         m_pSoundManager->stopCalibration();
         if (m_pCalibrator) {
             m_pCalibrator->stopCalibration();

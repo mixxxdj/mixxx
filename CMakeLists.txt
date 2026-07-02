@@ -1432,6 +1432,7 @@ add_library(
   src/engine/positionscratchcontroller.cpp
   src/engine/readaheadmanager.cpp
   src/engine/audiolatencycalibrator.cpp
+  src/engine/androidmiccapture.cpp
   src/preferences/dialog/dlgprefsoundcalibrate.cpp
   src/engine/sidechain/enginenetworkstream.cpp
   src/engine/sidechain/enginerecord.cpp

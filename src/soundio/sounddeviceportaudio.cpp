@@ -719,11 +719,16 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     &size1, &dataPtr2, &size2);
             // Fetch fresh samples and write to the the output buffer
             if (m_pSoundManager->isCalibrating()) {
-                // During calibration, fill FIFO with reference pulse
-                AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
+                // During calibration, read reference pulse from the clock-ref
+                // callback's cached frames. This avoids double-consuming
+                // generateReferenceFrame() (the clkRef callback already
+                // consumed it and filled m_calibFrameCache).
+                const auto& cache = m_pSoundManager->calibrationFrameCache();
                 SINT frames1 = size1 / m_outputParams.channelCount;
                 for (SINT i = 0; i < frames1; ++i) {
-                    CSAMPLE ref = cal->generateReferenceFrame(0);
+                    CSAMPLE ref = (static_cast<SINT>(i) < cache.size())
+                            ? cache[i]
+                            : 0.0f;
                     for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
                         dataPtr1[i * m_outputParams.channelCount + ch] = ref;
                     }
@@ -731,7 +736,9 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                 if (size2 > 0) {
                     SINT frames2 = size2 / m_outputParams.channelCount;
                     for (SINT i = 0; i < frames2; ++i) {
-                        CSAMPLE ref = cal->generateReferenceFrame(0);
+                        CSAMPLE ref = (static_cast<SINT>(i) < cache.size())
+                                ? cache[i]
+                                : 0.0f;
                         for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
                             dataPtr2[i * m_outputParams.channelCount + ch] = ref;
                         }
@@ -1155,8 +1162,10 @@ int SoundDevicePortAudio::callbackProcessClkRef(
         if (m_pSoundManager->isCalibrating() && m_outputParams.channelCount > 0) {
             // During calibration, fill output with the reference pulse
             AudioLatencyCalibrator* cal = m_pSoundManager->calibrator();
+            m_pSoundManager->calibrationFrameCache().resize(framesPerBuffer);
             for (SINT i = 0; i < framesPerBuffer; ++i) {
                 CSAMPLE ref = cal->generateReferenceFrame();
+                m_pSoundManager->calibrationFrameCache()[i] = ref;
                 for (int ch = 0; ch < m_outputParams.channelCount; ++ch) {
                     static_cast<CSAMPLE*>(out)[i * m_outputParams.channelCount + ch] = ref;
                 }
