@@ -1,7 +1,10 @@
 #include "library/samples/dlgsamples.h"
 
 #include <QBoxLayout>
+#include <QDir>
+#include <QFile>
 #include <QFileInfo>
+#include <QStandardPaths>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
@@ -10,6 +13,74 @@
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
+
+namespace {
+
+// Resolve the samples directory to a writable location.
+// On platforms where samples are bundled as read-only resources (Android assets:/),
+// this copies them to a writable location so the audio engine can load them.
+QString resolveSamplesPath(UserSettingsPointer pConfig) {
+    const QString kSamplesSubdir = QStringLiteral("samples/");
+
+    // Candidates for source: resource path first, then fallback
+    QStringList sourceCandidates = {
+            pConfig->getResourcePath() + kSamplesSubdir,
+            QStringLiteral("res/samples/"),
+    };
+
+    QString sourceDir;
+    for (const auto& candidate : sourceCandidates) {
+        QFileInfo fi(candidate);
+        if (fi.exists() && fi.isDir()) {
+            sourceDir = fi.absoluteFilePath();
+            break;
+        }
+    }
+
+    if (sourceDir.isEmpty()) {
+        return QString();
+    }
+
+    // Determine writable destination
+    QString destDir = QStandardPaths::writableLocation(
+                              QStandardPaths::AppLocalDataLocation) +
+            QStringLiteral("/") + kSamplesSubdir;
+    QDir dest(destDir);
+    if (!dest.exists()) {
+        dest.mkpath(QStringLiteral("."));
+    }
+
+    // Check if already extracted
+    QFileInfo destMarker(destDir + QStringLiteral(".extracted"));
+    if (destMarker.exists()) {
+        return destDir;
+    }
+
+    // Copy sample files from source to writable destination
+    QDir source(sourceDir);
+    QStringList filters = {QStringLiteral("*.mp3"),
+            QStringLiteral("*.wav"),
+            QStringLiteral("*.aiff"),
+            QStringLiteral("*.m4a"),
+            QStringLiteral("*.ogg")};
+    QFileInfoList files = source.entryInfoList(filters, QDir::Files);
+
+    for (const auto& fi : files) {
+        QString destPath = destDir + fi.fileName();
+        if (!QFile::exists(destPath)) {
+            QFile::copy(fi.absoluteFilePath(), destPath);
+        }
+    }
+
+    // Create marker to avoid re-extracting
+    QFile markerFile(destDir + QStringLiteral(".extracted"));
+    markerFile.open(QIODevice::WriteOnly);
+    markerFile.close();
+
+    return destDir;
+}
+
+} // anonymous namespace
 
 DlgSamples::DlgSamples(
         WLibrary* parent,
@@ -78,14 +149,10 @@ void DlgSamples::setFocus() {
 
 void DlgSamples::refreshBrowseModel() {
     saveCurrentViewState();
-    // Use the app resource path to find samples (works on all platforms including Android)
-    QString path = m_pConfig->getResourcePath() + QStringLiteral("samples/");
-    QFileInfo fi(path);
-    if (!fi.exists() || !fi.isDir()) {
-        // Fallback for development builds
-        path = QStringLiteral("res/samples/");
+    QString path = resolveSamplesPath(m_pConfig);
+    if (!path.isEmpty()) {
+        m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(path)));
     }
-    m_browseModel.setPath(mixxx::FileAccess(mixxx::FileInfo(path)));
 }
 
 void DlgSamples::onSearch(const QString& text) {
