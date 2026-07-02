@@ -1522,6 +1522,8 @@ add_library(
   src/library/recording/dlgrecording.cpp
   src/library/recording/dlgrecording.ui
   src/library/recording/recordingfeature.cpp
+  src/library/samples/dlgsamples.cpp
+  src/library/samples/samplesfeature.cpp
   src/library/rekordbox/rekordboxfeature.cpp
   src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
@@ -2880,6 +2882,17 @@ endif()
 install(
   DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/keyboard"
   DESTINATION "${MIXXX_INSTALL_DATADIR}"
+)
+
+# Built-in samples for sampler decks
+install(
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/samples/"
+  DESTINATION "${MIXXX_INSTALL_DATADIR}/samples"
+  FILES_MATCHING
+    PATTERN "*.mp3"
+    PATTERN "*.wav"
+    PATTERN "*.aiff"
+    PATTERN "README.md"
 )
 
 # Licenses

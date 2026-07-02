@@ -2,7 +2,7 @@
 
 Professional DJ sample collection for Mixxx sampler pads.
 
-## 🎵 60 Samples
+## 🎵 75+ Samples
 
 | | Category | Samples |
 | --- | --- | --- |
@@ -11,6 +11,7 @@ Professional DJ sample collection for Mixxx sampler pads.
 | | **Vocals** | lets-go, yeah, oh-yeah, woo-hoo, drop-it, dj-intro, bruh-sound, oof-sound, vine-boom, ba-dum-tss |
 | | **Percussion** | snare-drum, hi-hat, clap-ensemble, rimshot, bongo-hit, amen-break |
 | | **Transitions** | dj-airhorn, record-scratch, riser-classic, bass-drop, fx-whoosh, siren-police, siren, train-horn, car-horn, horn-honk |
+| | **Greek (GR)** | fahhhhhhhhhhhhhh, faaah, applepay, m-e-o-w, greek, greece, re, malaka, opa, ti, oxi, ela, bravo, file, ne |
 | | **Misc** | applause, crowd-cheer, chime, heartbeat, thunder, rain-thunder, fire-alarm, phone-ring, glass-shatter, gunshot, machine-gun, metal-pipe, sad-trombone, suspense, synth-pad, trump-fanfare, airhorn, womp-womp, wrong-answer, cartoon-boing, door-knock, fart-reverb, scream |
 
 ## Usage
