@@ -1432,7 +1432,6 @@ add_library(
   src/engine/positionscratchcontroller.cpp
   src/engine/readaheadmanager.cpp
   src/engine/audiolatencycalibrator.cpp
-  src/engine/androidmiccapture.cpp
   src/preferences/dialog/dlgprefsoundcalibrate.cpp
   src/engine/sidechain/enginenetworkstream.cpp
   src/engine/sidechain/enginerecord.cpp
@@ -2162,6 +2161,9 @@ if(UNIX AND NOT APPLE AND NOT ANDROID)
 endif()
 
 if(ANDROID)
+  # Android microphone capture for audio calibration (bypasses BT SCO)
+  target_sources(mixxx-lib PRIVATE src/engine/androidmiccapture.cpp)
+
   # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
   # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)

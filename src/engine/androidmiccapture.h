@@ -1,9 +1,9 @@
 #pragma once
 
+#include <QAtomicInt>
 #include <QObject>
 #include <QThread>
 #include <QVector>
-#include <QAtomicInt>
 
 #include "util/types.h"
 
@@ -32,7 +32,9 @@ class AndroidMicCapture : public QThread {
     void stopCapture();
 
     /// Returns the number of frames captured so far.
-    int framesCaptured() const { return m_framesCaptured.loadAcquire(); }
+    int framesCaptured() const {
+        return m_framesCaptured.loadAcquire();
+    }
 
     /// Read captured frames into buffer. Returns number of frames read.
     int readFrames(CSAMPLE* buffer, int maxFrames);

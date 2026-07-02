@@ -19,8 +19,8 @@ void showLatencyCalibrationDialog(QWidget* parent,
         int sampleRate,
         double outputLatencyMs);
 
-#include "engine/audiolatencycalibrator.h"
 #include "engine/androidmiccapture.h"
+#include "engine/audiolatencycalibrator.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
@@ -1229,16 +1229,15 @@ void DlgPrefSound::autoCalibrateAllOutputs() {
         cleanup->mic = pMicCapture;
         // Poll the mic capture every 10ms to feed frames to the calibrator
         cleanup->poller = new QTimer(this);
-        connect(cleanup->poller, &QTimer::timeout, this,
-                [this, pMicCapture]() {
-                    if (!m_pCalibrator)
-                        return;
-                    CSAMPLE buf[1024];
-                    int n = pMicCapture->readFrames(buf, 1024);
-                    for (int i = 0; i < n; ++i) {
-                        m_pCalibrator->addRecordedFrame(buf[i]);
-                    }
-                });
+        connect(cleanup->poller, &QTimer::timeout, this, [this, pMicCapture]() {
+            if (!m_pCalibrator)
+                return;
+            CSAMPLE buf[1024];
+            int n = pMicCapture->readFrames(buf, 1024);
+            for (int i = 0; i < n; ++i) {
+                m_pCalibrator->addRecordedFrame(buf[i]);
+            }
+        });
         cleanup->poller->start(10);
     } else {
         // Desktop or Android where PortAudio input works — calibrator gets

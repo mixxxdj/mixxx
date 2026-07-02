@@ -1,10 +1,9 @@
 #include "engine/androidmiccapture.h"
 
 #include <QDebug>
-#include <QJniEnvironment>
 
 #ifdef Q_OS_ANDROID
-#include <QNativeInterface/QAndroidApplication>
+#include <QJniEnvironment>
 #endif
 
 AndroidMicCapture::AndroidMicCapture(QObject* parent)
@@ -119,8 +118,6 @@ void AndroidMicCapture::run() {
     }
 
     QJniEnvironment().deleteLocalRef(jBuffer);
-#else
-    Q_UNUSED(jBuffer); // suppress unused warning in non-Android build
 #endif
 }
 
@@ -164,16 +161,17 @@ void AndroidMicCapture::openAudioRecord(int sampleRate) {
     m_audioRecord = QJniObject(
             "android/media/AudioRecord",
             "(IIIII)V",
-            6,          // VOICE_RECOGNITION
+            6, // VOICE_RECOGNITION
             sampleRate,
-            0x10,       // CHANNEL_IN_MONO
-            2,          // ENCODING_PCM_16BIT
+            0x10, // CHANNEL_IN_MONO
+            2,    // ENCODING_PCM_16BIT
             bufSize);
 
     if (!m_audioRecord.isValid()) {
         qWarning() << "AndroidMicCapture: AudioRecord constructor failed";
-        emit captureFailed(tr("Failed to open microphone. "
-                              "Is RECORD_AUDIO permission granted?"));
+        emit captureFailed(tr(
+                "Failed to open microphone. "
+                "Is RECORD_AUDIO permission granted?"));
         return;
     }
 
@@ -202,3 +200,6 @@ void AndroidMicCapture::closeAudioRecord() {
     // no-op on non-Android
 #endif
 }
+
+// include moc for Q_OBJECT
+#include "moc_androidmiccapture.cpp"
