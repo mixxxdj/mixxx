@@ -143,6 +143,16 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_COVERART){&LIBRARYTABLE_COVERART,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Cover Art"),
                 kDefaultColumnWidth / 2},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT){&LIBRARYTABLE_CMRT_NAME,
+                QT_TRANSLATE_NOOP("BaseTrackTableModel", "CMRT"),
+                kDefaultColumnWidth * 3},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL){
+                &LIBRARYTABLE_CMRT_CANONICAL,
+                nullptr,
+                0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET){&LIBRARYTABLE_CMRT_OFFSET,
+                nullptr,
+                0},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE){&LIBRARYTABLE_COVERART_SOURCE,
                 nullptr,
                 0},
@@ -241,6 +251,7 @@ void ColumnCache::setColumns(QStringList columns) {
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TRACKNUMBER, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_FILETYPE, kSortNoCase);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMMENT, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_CMRT, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
