@@ -262,7 +262,7 @@ NS4FX.init = function(id, debug) {
         input: function(_channel, control, value, _status, group) {
             let heldStemInfo = null;
             let isEffectVolume = false;
-        let isEffectSelector = false;
+            let isEffectSelector = false;
             for (let i = 1; i <= 4; i++) {
                 const deck = NS4FX.decks[i];
                 for (let j = 1; j <= 4; j++) {
