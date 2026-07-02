@@ -107,6 +107,15 @@ const QString CMRT_GROUPS_TABLE_CREATED_AT = QStringLiteral("created_at");
 const QString CMRT_GROUPS_TABLE_LAST_UPDATED = QStringLiteral("last_updated");
 // MusicBrainz CMRT fields deferred to later PR
 
+// Virtual columns exposed by library_view (and any other BaseTrackCache-backed
+// view that wants the CMRT column) — these come from a self-join of library
+// against cmrt_groups/cmrt_members, not from a single physical table. Same
+// idea as LIBRARYTABLE_COVERART (coverart_digest AS coverart) already used
+// in library_view; see LibraryTableModel::setTableModel().
+const QString LIBRARYTABLE_CMRT_NAME = QStringLiteral("cmrt_track_name");
+const QString LIBRARYTABLE_CMRT_CANONICAL = QStringLiteral("cmrt_is_canonical");
+const QString LIBRARYTABLE_CMRT_OFFSET = QStringLiteral("cmrt_offset");
+
 namespace mixxx {
 namespace trackschema {
 // TableForColumn returns the name of the table that contains the named column.
