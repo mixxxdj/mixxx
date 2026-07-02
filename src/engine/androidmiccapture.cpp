@@ -83,7 +83,7 @@ void AndroidMicCapture::run() {
 #ifdef Q_OS_ANDROID
     // Buffer for reading from AudioRecord (short ints, PCM 16-bit)
     const int readSize = 4096;
-    jshortArray jBuffer = QJniEnvironment().newShortArray(readSize);
+    jshortArray jBuffer = QJniEnvironment()->NewShortArray(readSize);
     if (!jBuffer) {
         qWarning() << "AndroidMicCapture: failed to allocate JNI buffer";
         return;
@@ -96,7 +96,7 @@ void AndroidMicCapture::run() {
 
         if (framesRead > 0) {
             // Get the short array from JNI
-            jshort* nativeBuffer = QJniEnvironment().getShortArrayElements(
+            jshort* nativeBuffer = QJniEnvironment()->GetShortArrayElements(
                     jBuffer, nullptr);
             if (nativeBuffer) {
                 for (int i = 0; i < framesRead; ++i) {
@@ -105,9 +105,9 @@ void AndroidMicCapture::run() {
                     m_circularBuffer[idx] =
                             static_cast<CSAMPLE>(nativeBuffer[i]) / 32768.0f;
                 }
-                QJniEnvironment().releaseShortArrayElements(
+                QJniEnvironment()->ReleaseShortArrayElements(
                         jBuffer, nativeBuffer, JNI_ABORT);
-                m_framesCaptured.fetchAddRelease(framesRead);
+                m_framesCaptured.fetchAndAddRelease(framesRead);
             }
         } else if (framesRead < 0) {
             qWarning() << "AndroidMicCapture: AudioRecord read error:"
@@ -117,7 +117,7 @@ void AndroidMicCapture::run() {
         }
     }
 
-    QJniEnvironment().deleteLocalRef(jBuffer);
+    QJniEnvironment()->DeleteLocalRef(jBuffer);
 #endif
 }
 
