@@ -1,6 +1,7 @@
 #include "library/samples/dlgsamples.h"
 
 #include <QBoxLayout>
+#include <QDebug>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -68,7 +69,9 @@ QString resolveSamplesPath(UserSettingsPointer pConfig) {
     for (const auto& fi : files) {
         QString destPath = destDir + fi.fileName();
         if (!QFile::exists(destPath)) {
-            QFile::copy(fi.absoluteFilePath(), destPath);
+            if (!QFile::copy(fi.absoluteFilePath(), destPath)) {
+                qWarning() << "Failed to copy sample:" << fi.absoluteFilePath();
+            }
         }
     }
 
