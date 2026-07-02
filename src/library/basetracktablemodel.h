@@ -229,6 +229,12 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_PREVIEW: bool
     /// COLUMN_LIBRARYTABLE_COLOR: mixxx::RgbColor::code_t
     /// COLUMN_LIBRARYTABLE_COVERART: virtual column for CoverArtDelegate
+    /// COLUMN_LIBRARYTABLE_CMRT: QString (virtual column; "Artist - Title" of
+    ///     "GroupId - Artist - Title" of the canonical/CMRT track for this
+    ///     row's group; NULL if the track isn't grouped or its group has
+    ///     only one member)
+    /// COLUMN_LIBRARYTABLE_CMRT_CANONICAL: bool (virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_OFFSET: double (seconds; virtual column, internal only)
     /// COLUMN_LIBRARYTABLE_COVERART_SOURCE: int (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_TYPE: int (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_LOCATION: QString (pass-through)

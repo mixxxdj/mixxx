@@ -12,6 +12,7 @@
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/checkboxdelegate.h"
+#include "library/tabledelegates/cmrtdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
 #include "library/tabledelegates/defaultdelegate.h"
@@ -326,6 +327,7 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
@@ -392,6 +394,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return pCoverArtDelegate;
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         return new KeyDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT)) {
+        return new CmrtDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
         auto* pOverviewDelegate = new OverviewDelegate(pTableView);
         connect(pOverviewDelegate,
@@ -617,6 +621,36 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT: {
+            if (role == kDataExportRole) {
+                // CSV/library export wants the same "GroupId - Artist -
+                // Title" text shown in the cell (or nothing, if ungrouped),
+                return rawValue;
+            }
+            if (rawValue.isNull()) {
+                // Cell shows "--" -- explain why, since it's not obvious
+                // whether "--" means "not analyzed yet" or "no duplicates
+                // exist" without this.
+                return tr(
+                        "This track isn't linked to a CMRT group yet. "
+                        "Either fingerprint analysis or AcoustID lookup "
+                        "hasn't run on it, or it's currently the only "
+                        "copy of its mastering Mixxx has found in your "
+                        "collection");
+            }
+            const bool isCanonical = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL)
+                                             .toBool();
+            if (isCanonical) {
+                return tr("This is the CMRT (canonical track) for its group.");
+            }
+            const double offsetSeconds = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET)
+                                                 .toDouble();
+            return tr("%1s from CMRT")
+                    .arg(QString::number(offsetSeconds, 'f', 2)
+                                    .prepend(offsetSeconds >= 0 ? "+" : ""));
+        }
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -977,6 +1011,17 @@ QVariant BaseTrackTableModel::roleValue(
             }
 
             return colorRect;
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT: {
+            if (rawValue.isNull()) {
+                // No CMRT group, or the group has only one member --
+                // CmrtDelegate treats a null QVariant here as "no swatch".
+                return QVariant();
+            }
+            QVariantMap decoration;
+            decoration["isCanonical"] = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+            return decoration;
         }
         default:
             return QVariant();
