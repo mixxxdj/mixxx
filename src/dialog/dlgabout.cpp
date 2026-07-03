@@ -183,6 +183,7 @@ DlgAbout::DlgAbout()
             << "David L Morris"
             << "Joshua Noeske"
             << "konstruktiv"
+            << "Ry Currier"
             << "Felix Dietz"
             << "presentformyfriends"
             << "JCCoynel"
