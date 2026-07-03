@@ -176,7 +176,8 @@ DlgAbout::DlgAbout()
             << "David L Morris"
             << "Joshua Noeske"
             << "konstruktiv"
-            << "Ry Currier";
+            << "Ry Currier"
+            << "Sanjana S.";
 
     QStringList specialThanks;
     specialThanks
