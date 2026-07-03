@@ -180,6 +180,7 @@ DlgAbout::DlgAbout()
             << "Lorenzo Manacorda"
             << "Chris Tallon"
             << "ecker00"
+            << "David L Morris"
             << "Felix Dietz"
             << "presentformyfriends"
             << "JCCoynel"
