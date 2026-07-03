@@ -179,6 +179,7 @@ DlgAbout::DlgAbout()
             << "Simon Tegelid"
             << "Lorenzo Manacorda"
             << "Chris Tallon"
+            << "ecker00"
             << "Felix Dietz"
             << "presentformyfriends"
             << "JCCoynel"
