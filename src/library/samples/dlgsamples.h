@@ -45,6 +45,7 @@ class DlgSamples : public QWidget, public virtual LibraryView {
             mixxx::StemChannelSelection stemMask,
 #endif
             bool);
+    void restoreSearch(const QString& search);
 
   private slots:
     void slotSampleActivated(QListWidgetItem* pItem);
