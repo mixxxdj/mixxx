@@ -184,6 +184,7 @@ DlgAbout::DlgAbout()
             << "Joshua Noeske"
             << "konstruktiv"
             << "Ry Currier"
+            << "Sanjana S."
             << "Felix Dietz"
             << "presentformyfriends"
             << "JCCoynel"
