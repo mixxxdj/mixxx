@@ -153,8 +153,7 @@ void DlgSamples::slotSampleActivated(QListWidgetItem* pItem) {
     }
 
     // Create a Track object for the sample file and load it to Sampler1
-    TrackPointer pTrack = m_pLibrary->trackCollectionManager()->getOrAddTrack(
-            TrackRef::fromFilePath(filePath));
+    TrackPointer pTrack = Track::newTemporary(filePath);
     if (!pTrack) {
         qWarning() << "Failed to create Track for sample:" << filePath;
         return;
