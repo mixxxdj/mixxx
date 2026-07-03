@@ -115,6 +115,11 @@ const QString CMRT_GROUPS_TABLE_LAST_UPDATED = QStringLiteral("last_updated");
 const QString LIBRARYTABLE_CMRT_NAME = QStringLiteral("cmrt_track_name");
 const QString LIBRARYTABLE_CMRT_CANONICAL = QStringLiteral("cmrt_is_canonical");
 const QString LIBRARYTABLE_CMRT_OFFSET = QStringLiteral("cmrt_offset");
+const QString LIBRARYTABLE_CMRT_CANONICAL_ARTIST = QStringLiteral("cmrt_canonical_artist");
+const QString LIBRARYTABLE_CMRT_CANONICAL_TITLE = QStringLiteral("cmrt_canonical_title");
+const QString LIBRARYTABLE_CMRT_GROUP_ID = QStringLiteral("cmrt_group_num");
+const QString LIBRARYTABLE_CMRT_MATCH_SCORE = QStringLiteral("cmrt_match_score");
+const QString LIBRARYTABLE_CMRT_QUALITY_SCORE = QStringLiteral("cmrt_quality_score");
 
 namespace mixxx {
 namespace trackschema {

@@ -76,6 +76,20 @@ extern const ConfigKey kCmrtMatchThresholdConfigKey;
 
 extern const double kCmrtMatchThresholdDefault;
 
+extern const ConfigKey kCmrtColumnShowArtistConfigKey;
+
+extern const ConfigKey kCmrtColumnShowTitleConfigKey;
+
+extern const ConfigKey kCmrtColumnShowGroupIdConfigKey;
+
+extern const ConfigKey kCmrtColumnShowOffsetConfigKey;
+
+extern const ConfigKey kCmrtColumnShowMatchScoreConfigKey;
+
+extern const ConfigKey kCmrtColumnGroupIdPositionConfigKey;
+
+extern const ConfigKey kCmrtColumnDelimiterConfigKey;
+
 } // namespace prefs
 
 } // namespace library

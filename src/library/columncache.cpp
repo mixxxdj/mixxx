@@ -153,6 +153,25 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET){&LIBRARYTABLE_CMRT_OFFSET,
                 nullptr,
                 0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL_ARTIST){
+                &LIBRARYTABLE_CMRT_CANONICAL_ARTIST,
+                nullptr,
+                0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL_TITLE){
+                &LIBRARYTABLE_CMRT_CANONICAL_TITLE,
+                nullptr,
+                0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_GROUP_ID){&LIBRARYTABLE_CMRT_GROUP_ID,
+                nullptr,
+                0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_MATCH_SCORE){
+                &LIBRARYTABLE_CMRT_MATCH_SCORE,
+                nullptr,
+                0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_QUALITY_SCORE){
+                &LIBRARYTABLE_CMRT_QUALITY_SCORE,
+                nullptr,
+                0},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE){&LIBRARYTABLE_COVERART_SOURCE,
                 nullptr,
                 0},
