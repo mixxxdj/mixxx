@@ -166,7 +166,8 @@ DlgAbout::DlgAbout()
             << "endcredits33"
             << "cucucat"
             << "Laura Mora"
-            << "Aleph Mota";
+            << "Aleph Mota"
+            << "Carl Hedgren";
 
     QStringList specialThanks;
     specialThanks
