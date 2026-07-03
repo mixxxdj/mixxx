@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>576</width>
-    <height>400</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -138,6 +138,88 @@
    </item>
 
    <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxCmrtColumn">
+     <property name="title">
+      <string>CMRT Library Column</string>
+     </property>
+     <property name="toolTip">
+      <string>At least one field must remain shown.</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutCmrtColumn">
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowArtist">
+        <property name="text">
+         <string>Show artist</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowTitle">
+        <property name="text">
+         <string>Show title</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowGroupId">
+        <property name="text">
+         <string>Show group ID</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowOffset">
+        <property name="text">
+         <string>Show offset (non-canonical tracks)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowMatchScore">
+        <property name="text">
+         <string>Show match % (non-canonical tracks)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnGroupIdAppend">
+        <property name="text">
+         <string>Append group ID after name (uncheck to prepend)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutCmrtDelimiter">
+        <item>
+         <widget class="QLabel" name="labelCmrtColumnDelimiter">
+          <property name="text">
+           <string>Delimiter:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditCmrtColumnDelimiter"/>
+        </item>
+        <item>
+         <spacer name="horizontalSpacerCmrtDelimiter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item row="4" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBoxClearFingerprints">
      <property name="title">
       <string>Library-wide Fingerprint Cleanup</string>
@@ -167,7 +249,7 @@
     </widget>
    </item>
 
-   <item row="4" column="0">
+   <item row="5" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

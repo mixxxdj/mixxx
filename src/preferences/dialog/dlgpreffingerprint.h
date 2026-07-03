@@ -25,6 +25,8 @@ class DlgPrefFingerprint : public DlgPreferencePage, public Ui::DlgPrefFingerpri
     void slotFingerprintEnabledToggled(bool enabled);
     void slotClearAllFingerprints();
 
+    void slotCmrtColumnFieldToggled();
+
   private:
     // Applies the enabled/disabled state to the AcoustID group and, within it,
     // the auto-submit checkbox (which additionally requires a non-empty key).
