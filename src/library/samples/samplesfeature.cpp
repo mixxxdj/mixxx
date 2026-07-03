@@ -43,10 +43,6 @@ void SamplesFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
     pSamplesView->installEventFilter(keyboard);
     pLibraryWidget->registerView(kViewName, pSamplesView);
     connect(pSamplesView,
-            &DlgSamples::loadTrack,
-            this,
-            &SamplesFeature::loadTrack);
-    connect(pSamplesView,
             &DlgSamples::loadTrackToPlayer,
             this,
             &SamplesFeature::loadTrackToPlayer);
@@ -62,10 +58,6 @@ void SamplesFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &DlgSamples::restoreSearch,
             this,
             &SamplesFeature::restoreSearch);
-    connect(pSamplesView,
-            &DlgSamples::restoreModelState,
-            this,
-            &SamplesFeature::restoreModelState);
 }
 
 void SamplesFeature::activate() {

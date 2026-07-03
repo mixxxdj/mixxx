@@ -1,10 +1,9 @@
 #pragma once
 
+#include <QListWidget>
 #include <QWidget>
 
-#include "library/browse/browsetablemodel.h"
 #include "library/libraryview.h"
-#include "library/proxytrackmodel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #ifdef __STEM__
@@ -12,10 +11,8 @@
 #endif
 
 class WLibrary;
-class WTrackTableView;
 class Library;
 class KeyboardEventFilter;
-class RecordingManager;
 
 class DlgSamples : public QWidget, public virtual LibraryView {
     Q_OBJECT
@@ -32,7 +29,7 @@ class DlgSamples : public QWidget, public virtual LibraryView {
     bool hasFocus() const override;
     void setFocus() override;
     inline const QString currentSearch() {
-        return m_proxyModel.currentSearch();
+        return m_currentSearch;
     }
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
@@ -42,23 +39,21 @@ class DlgSamples : public QWidget, public virtual LibraryView {
     void slotRestoreSearch();
 
   signals:
-    void loadTrack(TrackPointer tio);
+    void loadTrackToPlayer(TrackPointer tio,
+            const QString& group,
 #ifdef __STEM__
-    void loadTrackToPlayer(TrackPointer tio,
-            const QString& group,
             mixxx::StemChannelSelection stemMask,
-            bool);
-#else
-    void loadTrackToPlayer(TrackPointer tio,
-            const QString& group,
-            bool);
 #endif
-    void restoreSearch(const QString& search);
-    void restoreModelState();
+            bool);
+
+  private slots:
+    void slotSampleActivated(QListWidgetItem* pItem);
 
   private:
     UserSettingsPointer m_pConfig;
-    WTrackTableView* m_pTrackTableView;
-    BrowseTableModel m_browseModel;
-    ProxyTrackModel m_proxyModel;
+    Library* m_pLibrary;
+    QListWidget* m_pSampleList;
+    QString m_currentSearch;
+    QString m_samplesPath;
+    QStringList m_sampleFiles;
 };
