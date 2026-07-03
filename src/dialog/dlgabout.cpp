@@ -167,6 +167,7 @@ DlgAbout::DlgAbout()
             << "endcredits33"
             << "cucucat"
             << "Laura Mora"
+            << "Aleph Mota"
             << "Tom&aacute;&scaron; Ba&#382;ant"
             << "Serveny"
             << "Robert Hendrickx"
