@@ -9,6 +9,7 @@ inline bool inMainThread() noexcept {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
     return QThread::isMainThread();
 #else
-    return QCoreApplication::instance()->thread() == QThread::currentThread();
+    return QCoreApplication::instance()->thread()->objectName() ==
+            QThread::currentThread()->objectName();
 #endif
 }
