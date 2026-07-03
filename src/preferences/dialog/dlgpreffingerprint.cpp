@@ -2,6 +2,7 @@
 
 #include <QUrl>
 
+#include "library/basetracktablemodel.h"
 #include "library/library_prefs.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -65,9 +66,53 @@ DlgPrefFingerprint::DlgPrefFingerprint(
             this,
             &DlgPrefFingerprint::slotClearAllFingerprints);
 
+    // clicked(bool), not toggled(bool) -- toggled() also fires for the
+    // programmatic setChecked() calls below in slotUpdate()/slotResetToDefaults(),
+    // and we only want to validate on an actual user click.
+    for (QCheckBox* pCheckBox : {checkBoxCmrtColumnShowArtist,
+                 checkBoxCmrtColumnShowTitle,
+                 checkBoxCmrtColumnShowGroupId,
+                 checkBoxCmrtColumnShowOffset,
+                 checkBoxCmrtColumnShowMatchScore}) {
+        connect(pCheckBox,
+                &QCheckBox::clicked,
+                this,
+                &DlgPrefFingerprint::slotCmrtColumnFieldToggled);
+    }
+
     slotUpdate();
     // No connections needed — the checkbox has no side effects on other
     // widgets. slotApply() reads its state directly.
+}
+
+void DlgPrefFingerprint::slotCmrtColumnFieldToggled() {
+    const QList<QCheckBox*> fieldCheckBoxes = {
+            checkBoxCmrtColumnShowArtist,
+            checkBoxCmrtColumnShowTitle,
+            checkBoxCmrtColumnShowGroupId,
+            checkBoxCmrtColumnShowOffset,
+            checkBoxCmrtColumnShowMatchScore};
+
+    // Constraint 1: at least one field must stay checked. If the user's
+    // click just unchecked the last one, undo it -- QSignalBlocker
+    // prevents this programmatic setChecked() from re-entering this slot.
+    const bool anyChecked = std::any_of(fieldCheckBoxes.begin(),
+            fieldCheckBoxes.end(),
+            [](QCheckBox* pCheckBox) { return pCheckBox->isChecked(); });
+    if (!anyChecked) {
+        // sender() is whichever checkbox the user just clicked -- it's
+        // the one that needs to be reverted back to checked.
+        auto* pClicked = qobject_cast<QCheckBox*>(sender());
+        if (pClicked) {
+            const QSignalBlocker blocker(pClicked);
+            pClicked->setChecked(true);
+        }
+    }
+
+    // Constraint 2: Append/Prepend only matters when a name is shown.
+    const bool nameShown = checkBoxCmrtColumnShowArtist->isChecked() ||
+            checkBoxCmrtColumnShowTitle->isChecked();
+    checkBoxCmrtColumnGroupIdAppend->setEnabled(nameShown);
 }
 
 void DlgPrefFingerprint::slotUpdate() {
@@ -87,6 +132,44 @@ void DlgPrefFingerprint::slotUpdate() {
             kCmrtMatchThresholdConfigKey, kCmrtMatchThresholdDefault);
     // Stored as a 0.0-1.0 fraction; the spin box shows it as a percentage.
     spinBoxCmrtMatchThreshold->setValue(matchThreshold * 100.0);
+
+    const bool showArtist = m_pConfig->getValue(
+            kCmrtColumnShowArtistConfigKey, BaseTrackTableModel::kCmrtColumnShowArtistDefault);
+    checkBoxCmrtColumnShowArtist->setChecked(showArtist);
+    BaseTrackTableModel::setCmrtColumnShowArtist(showArtist);
+
+    const bool showTitle = m_pConfig->getValue(
+            kCmrtColumnShowTitleConfigKey, BaseTrackTableModel::kCmrtColumnShowTitleDefault);
+    checkBoxCmrtColumnShowTitle->setChecked(showTitle);
+    BaseTrackTableModel::setCmrtColumnShowTitle(showTitle);
+
+    const bool showGroupId = m_pConfig->getValue(
+            kCmrtColumnShowGroupIdConfigKey, BaseTrackTableModel::kCmrtColumnShowGroupIdDefault);
+    checkBoxCmrtColumnShowGroupId->setChecked(showGroupId);
+    BaseTrackTableModel::setCmrtColumnShowGroupId(showGroupId);
+
+    const bool showOffset = m_pConfig->getValue(
+            kCmrtColumnShowOffsetConfigKey, BaseTrackTableModel::kCmrtColumnShowOffsetDefault);
+    checkBoxCmrtColumnShowOffset->setChecked(showOffset);
+    BaseTrackTableModel::setCmrtColumnShowOffset(showOffset);
+
+    const bool showMatchScore = m_pConfig->getValue(
+            kCmrtColumnShowMatchScoreConfigKey,
+            BaseTrackTableModel::kCmrtColumnShowMatchScoreDefault);
+    checkBoxCmrtColumnShowMatchScore->setChecked(showMatchScore);
+    BaseTrackTableModel::setCmrtColumnShowMatchScore(showMatchScore);
+
+    const bool groupIdAppend = m_pConfig->getValue(
+            kCmrtColumnGroupIdPositionConfigKey,
+            BaseTrackTableModel::kCmrtColumnGroupIdAppendDefault);
+    checkBoxCmrtColumnGroupIdAppend->setChecked(groupIdAppend);
+    checkBoxCmrtColumnGroupIdAppend->setEnabled(showArtist || showTitle);
+    BaseTrackTableModel::setCmrtColumnGroupIdAppend(groupIdAppend);
+
+    const QString delimiter = m_pConfig->getValue(
+            kCmrtColumnDelimiterConfigKey, BaseTrackTableModel::kCmrtColumnDelimiterDefault);
+    lineEditCmrtColumnDelimiter->setText(delimiter);
+    BaseTrackTableModel::setCmrtColumnDelimiter(delimiter);
 
     setAcoustIdGroupEnabled(fingerprintEnabled);
 }
@@ -110,6 +193,34 @@ void DlgPrefFingerprint::slotApply() {
     m_pConfig->set(
             kCmrtMatchThresholdConfigKey,
             ConfigValue{spinBoxCmrtMatchThreshold->value() / 100.0});
+
+    const bool showArtist = checkBoxCmrtColumnShowArtist->isChecked();
+    m_pConfig->set(kCmrtColumnShowArtistConfigKey, ConfigValue{showArtist});
+    BaseTrackTableModel::setCmrtColumnShowArtist(showArtist);
+
+    const bool showTitle = checkBoxCmrtColumnShowTitle->isChecked();
+    m_pConfig->set(kCmrtColumnShowTitleConfigKey, ConfigValue{showTitle});
+    BaseTrackTableModel::setCmrtColumnShowTitle(showTitle);
+
+    const bool showGroupId = checkBoxCmrtColumnShowGroupId->isChecked();
+    m_pConfig->set(kCmrtColumnShowGroupIdConfigKey, ConfigValue{showGroupId});
+    BaseTrackTableModel::setCmrtColumnShowGroupId(showGroupId);
+
+    const bool showOffset = checkBoxCmrtColumnShowOffset->isChecked();
+    m_pConfig->set(kCmrtColumnShowOffsetConfigKey, ConfigValue{showOffset});
+    BaseTrackTableModel::setCmrtColumnShowOffset(showOffset);
+
+    const bool showMatchScore = checkBoxCmrtColumnShowMatchScore->isChecked();
+    m_pConfig->set(kCmrtColumnShowMatchScoreConfigKey, ConfigValue{showMatchScore});
+    BaseTrackTableModel::setCmrtColumnShowMatchScore(showMatchScore);
+
+    const bool groupIdAppend = checkBoxCmrtColumnGroupIdAppend->isChecked();
+    m_pConfig->set(kCmrtColumnGroupIdPositionConfigKey, ConfigValue{groupIdAppend});
+    BaseTrackTableModel::setCmrtColumnGroupIdAppend(groupIdAppend);
+
+    const QString delimiter = lineEditCmrtColumnDelimiter->text();
+    m_pConfig->set(kCmrtColumnDelimiterConfigKey, ConfigValue{delimiter});
+    BaseTrackTableModel::setCmrtColumnDelimiter(delimiter);
 }
 
 void DlgPrefFingerprint::slotResetToDefaults() {
@@ -117,6 +228,25 @@ void DlgPrefFingerprint::slotResetToDefaults() {
     lineEditAcoustIdApiKey->clear();
     checkBoxAcoustIdAutoSubmit->setChecked(false);
     spinBoxCmrtMatchThreshold->setValue(kCmrtMatchThresholdDefault * 100.0);
+
+    checkBoxCmrtColumnShowArtist->setChecked(BaseTrackTableModel::kCmrtColumnShowArtistDefault);
+    checkBoxCmrtColumnShowTitle->setChecked(BaseTrackTableModel::kCmrtColumnShowTitleDefault);
+    checkBoxCmrtColumnShowGroupId->setChecked(BaseTrackTableModel::kCmrtColumnShowGroupIdDefault);
+    checkBoxCmrtColumnShowOffset->setChecked(BaseTrackTableModel::kCmrtColumnShowOffsetDefault);
+    checkBoxCmrtColumnShowMatchScore->setChecked(
+            BaseTrackTableModel::kCmrtColumnShowMatchScoreDefault);
+
+    checkBoxCmrtColumnGroupIdAppend->setChecked(
+            BaseTrackTableModel::kCmrtColumnGroupIdAppendDefault);
+
+    lineEditCmrtColumnDelimiter->setText(BaseTrackTableModel::kCmrtColumnDelimiterDefault);
+
+    // Re-run constraint checks once so the UI reflects the correct state
+    // Defaults are Artist=on, Title=on, so Append/Prepend ends up enabled after a reset.
+    checkBoxCmrtColumnGroupIdAppend->setEnabled(
+            checkBoxCmrtColumnShowArtist->isChecked() ||
+            checkBoxCmrtColumnShowTitle->isChecked());
+
     // Reflect the cleared state immediately in the UI.
     setAcoustIdGroupEnabled(false);
 }
