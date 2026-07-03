@@ -133,7 +133,7 @@ void DlgSamples::refreshBrowseModel() {
             QStringLiteral("*.ogg")};
     m_sampleFiles = dir.entryList(filters, QDir::Files, QDir::Name);
 
-    for (const auto& filename : m_sampleFiles) {
+    foreach (const QString& filename, m_sampleFiles) {
         QListWidgetItem* pItem = new QListWidgetItem(filename);
         pItem->setToolTip(dir.absoluteFilePath(filename));
         m_pSampleList->addItem(pItem);
