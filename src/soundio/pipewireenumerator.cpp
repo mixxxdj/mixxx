@@ -523,27 +523,31 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
 
             std::pair<uint32_t*, uint32_t*> ports = m_inputs.value(input);
 
-            const float* bufferFL = static_cast<const float*>(
-                    pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
-            if (bufferFL) {
-                for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                    pInputBuffer[iChannelBase + i * iChannelCount] = bufferFL[i];
+            if (iChannelCount == 1) {
+                void* portData = iChannelBase % 2 ? ports.second : ports.first;
+                const float* buffer = static_cast<const float*>(
+                        pw_filter_get_dsp_buffer(portData, framesPerBuffer));
+                if (buffer) {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        pInputBuffer[i * 2] = buffer[i];
+                        pInputBuffer[i * 2 + 1] = buffer[i];
+                    }
                 }
             } else {
-                for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                    pInputBuffer[iChannelBase + i * iChannelCount] = 0;
+                const float* bufferFL = static_cast<const float*>(
+                        pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
+                if (bufferFL) {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        pInputBuffer[iChannelBase + i * 2] = bufferFL[i];
+                    }
                 }
-            }
 
-            const float* bufferFR = static_cast<const float*>(
-                    pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
-            if (bufferFR) {
-                for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                    pInputBuffer[iChannelBase + 1 + i * iChannelCount] = bufferFR[i];
-                }
-            } else {
-                for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                    pInputBuffer[iChannelBase + 1 + i * iChannelCount] = 0;
+                const float* bufferFR = static_cast<const float*>(
+                        pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
+                if (bufferFR) {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        pInputBuffer[iChannelBase + 1 + i * 2] = bufferFR[i];
+                    }
                 }
             }
         }
@@ -562,19 +566,30 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
 
             std::pair<uint32_t*, uint32_t*> ports = m_outputs.value(output);
 
-            float* bufferFL = static_cast<float*>(
-                    pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
-            if (bufferFL) {
-                for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                    bufferFL[i] = pOutputBuffer[iChannelBase + i * iChannelCount];
+            if (iChannelCount == 1) {
+                void* portData = iChannelBase % 2 ? ports.second : ports.first;
+                float* buffer = static_cast<float*>(
+                        pw_filter_get_dsp_buffer(portData, framesPerBuffer));
+                if (buffer) {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        buffer[i] = pOutputBuffer[iChannelBase + i * 2];
+                    }
                 }
-            }
+            } else {
+                float* bufferFL = static_cast<float*>(
+                        pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
+                if (bufferFL) {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        bufferFL[i] = pOutputBuffer[iChannelBase + i * 2];
+                    }
+                }
 
-            float* bufferFR = static_cast<float*>(
-                    pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
-            if (bufferFR) {
-                for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                    bufferFR[i] = pOutputBuffer[iChannelBase + 1 + i * iChannelCount];
+                float* bufferFR = static_cast<float*>(
+                        pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
+                if (bufferFR) {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        bufferFR[i] = pOutputBuffer[iChannelBase + 1 + i * 2];
+                    }
                 }
             }
         }
