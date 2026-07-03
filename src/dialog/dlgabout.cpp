@@ -168,6 +168,7 @@ DlgAbout::DlgAbout()
             << "cucucat"
             << "Laura Mora"
             << "Aleph Mota"
+            << "Carl Hedgren"
             << "Tom&aacute;&scaron; Ba&#382;ant"
             << "Serveny"
             << "Robert Hendrickx"
