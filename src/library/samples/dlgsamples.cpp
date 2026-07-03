@@ -77,7 +77,9 @@ QString resolveSamplesPath(UserSettingsPointer pConfig) {
 
     // Create marker to avoid re-extracting
     QFile markerFile(destDir + QStringLiteral(".extracted"));
-    markerFile.open(QIODevice::WriteOnly);
+    if (!markerFile.open(QIODevice::WriteOnly)) {
+        qWarning() << "Failed to create .extracted marker file:" << destDir + QStringLiteral(".extracted");
+    }
     markerFile.close();
 
     return destDir;
