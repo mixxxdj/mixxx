@@ -184,7 +184,7 @@ jobs:
       artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-winarm }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -283,7 +283,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
@@ -603,7 +603,7 @@ jobs:
           rm -rf /host/usr/share/dotnet
 
       - name: "Check out repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -660,7 +660,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
