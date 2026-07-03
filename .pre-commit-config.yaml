@@ -46,7 +46,7 @@ repos:
         exclude: ^(res/translations/.*\.ts|.*UTF-8-BOM\.txt)$
       - id: mixed-line-ending
       - id: trailing-whitespace
-        exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|tsv|vert)$
+        exclude: \.(c|cc|cxx|cpp|ts|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|js|m|mm|proto|tsv|vert|mp3)$
       - id: no-commit-to-branch
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
@@ -64,7 +64,7 @@ repos:
             "\\W(?:m_p*(?=[A-Z])|m_(?=\\w)|pp*(?=[A-Z])|k(?=[A-Z])|s_(?=\\w))",
             --write-changes,
           ]
-        exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|res/linux/org\.mixxx\.Mixxx\.desktop|res/controllers/.*|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg))$
+        exclude: ^(packaging/wix/LICENSE.rtf.in|src/dialog/dlgabout\.cpp|res/linux/org\.mixxx\.Mixxx\.desktop|res/controllers/.*|.*\.(?:pot?|(?<!\.d\.)ts|wxl|svg|mp3))$
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v10.4.1
     hooks:
