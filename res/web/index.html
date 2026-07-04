@@ -2,32 +2,38 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="main.css">
-    <script type="text/javascript" src="mixxx.js"></script> 
+    <script type="text/javascript" src="mixxx.js"></script>
     <title>mixxx</title>
   </head>
   <body onload="checkauth()">
     <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
     <main>
-    <div id="mastergain">
+      <div class="card" id="mastergain">
         <label for="mastergainrange">Master Gain</label>
         <input type="range" id="mastergainrange" min="0" max="5" step="0.01" value="1"
                oninput="setmastergain(this.value);">
-    </div>
-    <div id="autodjtoggle">
-        <label for="autodjenabled">Auto DJ</label>
-        <input type="checkbox" id="autodjenabled" onchange="setautodjenabled(this.checked);">
-    </div>
-    <div id="autoplaylist">
-    </div>
-      <br>
-      <div id="tools">
-            <button onclick="moveautotracklist('up');">Up</button>
-            <button onclick="moveautotracklist('down');">Down</button>
-            <button onclick="window.location.href='library.html';">Add</button>
-            <button onclick="delautodj();">Remove</button>
       </div>
-    <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();getmastergain();getautodjenabled();});</script>
+
+      <div class="card row" id="autodjtoggle">
+        <label for="autodjenabled">Auto DJ</label>
+        <label class="switch">
+          <input type="checkbox" id="autodjenabled" onchange="setautodjenabled(this.checked);">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="card" id="autoplaylist">
+      </div>
+
+      <div class="toolbar" id="tools">
+        <button onclick="moveautotracklist('up');">▲ Up</button>
+        <button onclick="moveautotracklist('down');">▼ Down</button>
+        <button class="accent" onclick="window.location.href='library.html';">+ Add</button>
+        <button class="danger" onclick="delautodj();">Remove</button>
+      </div>
+      <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();getmastergain();getautodjenabled();});</script>
     </main>
     <footer></footer>
   </body>

@@ -2,27 +2,31 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="main.css">
     <script src="mixxx.js"></script>
     <title>Library</title>
   </head>
   <body onload="checkauth()">
-        <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
-        <span>Library</span>
-        <span>Search:</span>
-        <form action="#" >
-            <input id="searchform" type="text"/>
-            <button type="button" onclick="search(document.getElementById('searchform').value)">search</button>
-        </form>
-        <br>
-        <div id="result">
+    <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
+    <main>
+      <div class="card">
+        <h2>Library</h2>
+        <div class="search-row">
+          <input id="searchform" type="text" placeholder="Search title, artist, album">
+          <button type="button" class="accent" onclick="search(document.getElementById('searchform').value)">Search</button>
         </div>
-        <br>
-        <div id="tools">
-            <button onclick="addtoautodj('begin');">Add to Begin AutoDJ</button>
-            <button onclick="addtoautodj('end');">Add to End AutoDJ</button>
-        </div>
-        <br>
-        <button onclick="window.location.href='index.html';">Back</button>
+      </div>
+
+      <div class="card" id="result">
+      </div>
+
+      <div class="toolbar" id="tools">
+        <button class="accent" onclick="addtoautodj('begin');">Add to Begin</button>
+        <button class="accent" onclick="addtoautodj('end');">Add to End</button>
+      </div>
+
+      <button class="ghost full-width" onclick="window.location.href='index.html';">← Back</button>
+    </main>
   </body>
 </html>

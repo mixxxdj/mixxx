@@ -2,20 +2,24 @@
 <html lang="">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="main.css">
-    <script type="text/javascript" src="mixxx.js"></script> 
-    <title></title>
+    <script type="text/javascript" src="mixxx.js"></script>
+    <title>mixxx</title>
   </head>
   <body>
-        <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
-        <span>Login</span>
-        <br>
-        <span>Password:</span>
-        <br>
+    <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
+    <main class="centered">
+      <div class="card login-card">
+        <h2>Login</h2>
         <form action="#">
-            <input id="pwinput" type="password"/>
-            <br>
-            <button type="button" onclick="login(document.getElementById('pwinput').value)">login</button>
+          <label for="pwinput">Password</label>
+          <input id="pwinput" type="password" placeholder="Enter password">
+          <br><br>
+          <button type="button" class="accent full-width"
+                  onclick="login(document.getElementById('pwinput').value)">Login</button>
         </form>
+      </div>
+    </main>
   </body>
 </html>

@@ -79,7 +79,7 @@ function search(searchtext){
                         for(var ii = 0; ii < track.length; ii++){
                             var trow=document.createElement("tr");
                             if(changecolor)
-                                trow.setAttribute("style","background:#898989;");
+                                trow.classList.add("odd");
                             trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" value="+track[ii].id+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
                             ttable.appendChild(trow);
                             if(changecolor)
@@ -262,7 +262,7 @@ function loadautodjtracklist(){
                 for(var ii = 0; ii < track.length; ii++){
                     var trow=document.createElement("tr");
                     if(changecolor)
-                        trow.setAttribute("style","background:#898989;");
+                        trow.classList.add("odd");
                     trow.insertAdjacentHTML("afterbegin","<td><input type=\"radio\" class=\"seltracks\" name=\"seltrack\" apos="+
                                                             track[ii].position+" value="+track[ii].id+"></td><td>"+track[ii].artist+"</td><td>"+track[ii].title+"</td>");
                     ttable.appendChild(trow);
