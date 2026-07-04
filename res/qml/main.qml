@@ -8,6 +8,7 @@ import QtQuick.Shapes
 import QtQuick.Window 2.12
 import Qt5Compat.GraphicalEffects
 import "Theme"
+import "."
 
 ApplicationWindow {
     id: root
@@ -684,16 +685,26 @@ ApplicationWindow {
         y: Math.round((parent.height - height) / 2)
 
         Overlay.modal: Rectangle {
-            id: overlayModal
+                    id: overlayModal
 
-            readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration
-            property real radius: 12
+                    readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration
+                    property real radius: 12
 
+                    anchors.fill: parent
+                    color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
+                }
+            }
+        }
+
+        VinylPauseOverlay {
+            id: vinylPauseOverlay
             anchors.fill: parent
-            color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
+            visible: false   // We'll set this based on playback state
+        }
 
-            Repeater {
-                model: hasHardwareAcceleration ? 1 : 0
+        MouseDetector {
+            id: mouseDetector
+        }
 
                 GaussianBlur {
                     anchors.fill: overlayModal
