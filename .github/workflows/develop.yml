@@ -21,7 +21,7 @@ permissions:
 jobs:
   stop-build:
     name: Check if build should be stopped
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
     steps:
@@ -85,7 +85,7 @@ jobs:
       - checks
       - git
       - build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Ready to go
         run: "exit 0"

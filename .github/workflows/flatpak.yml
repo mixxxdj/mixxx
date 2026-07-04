@@ -20,7 +20,7 @@ on:
 jobs:
   publish-flatpak:
     name: Publish Flatpak
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Set up SSH Agent"
         shell: bash
@@ -37,7 +37,7 @@ jobs:
 
       - name: Check out repository
         if: ${{ inputs.update_repo }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Prepare"
         id: prepare
