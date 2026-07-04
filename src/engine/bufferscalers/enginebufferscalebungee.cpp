@@ -165,18 +165,60 @@ void EngineBufferScaleBungee::deinterleaveInput(
     }
 }
 
-void EngineBufferScaleBungee::discardBufferedInputBefore(SINT framePosition) {
+SINT EngineBufferScaleBungee::consumeReadAheadGap(
+        double signedEffectiveRate,
+        SINT framesToConsume) {
+    if (framesToConsume <= 0) {
+        return 0;
+    }
+    if (!m_pReadAheadManager || !getOutputSignal().isValid()) {
+        return framesToConsume;
+    }
+
+    SINT consumedFrames = 0;
+    int readFailedCount = 0;
+    while (consumedFrames < framesToConsume) {
+        const SINT framesRequested = std::min<SINT>(
+                framesToConsume - consumedFrames,
+                kMaxGrainFrames);
+        const SINT samplesRequested = getOutputSignal().frames2samples(framesRequested);
+        const SINT availableSamples = m_pReadAheadManager->getNextSamples(
+                signedEffectiveRate,
+                m_interleavedReadBuffer.data(),
+                samplesRequested,
+                getOutputSignal().getChannelCount());
+        const SINT availableFrames = getOutputSignal().samples2frames(availableSamples);
+        if (availableFrames <= 0) {
+            if (++readFailedCount > 1) {
+                break;
+            }
+            continue;
+        }
+        readFailedCount = 0;
+        consumedFrames += std::min(availableFrames, framesRequested);
+    }
+
+    return consumedFrames;
+}
+
+void EngineBufferScaleBungee::discardBufferedInputBefore(
+        SINT framePosition,
+        double signedEffectiveRate) {
     if (framePosition <= m_bufferedInputBeginFrame) {
         return;
     }
 
     const SINT bufferedFrames = m_bufferedInputEndFrame - m_bufferedInputBeginFrame;
     if (bufferedFrames <= 0) {
-        m_bufferedInputBeginFrame = framePosition;
-        m_bufferedInputEndFrame = framePosition;
+        const SINT consumedGapFrames = consumeReadAheadGap(
+                signedEffectiveRate,
+                framePosition - m_bufferedInputEndFrame);
+        m_bufferedInputBeginFrame = m_bufferedInputEndFrame + consumedGapFrames;
+        m_bufferedInputEndFrame = m_bufferedInputBeginFrame;
         return;
     }
 
+    const SINT oldBufferedInputEndFrame = m_bufferedInputEndFrame;
     const SINT discardFrames = std::min(framePosition - m_bufferedInputBeginFrame,
             bufferedFrames);
     const SINT remainingFrames = bufferedFrames - discardFrames;
@@ -188,15 +230,15 @@ void EngineBufferScaleBungee::discardBufferedInputBefore(SINT framePosition) {
 
     m_bufferedInputBeginFrame += discardFrames;
     if (remainingFrames <= 0) {
-        // Advance all the way to framePosition, not just to the old
-        // m_bufferedInputEndFrame.  Without this, a large gap between the
-        // buffer tail and framePosition (e.g. at very high playback speeds)
-        // leaves m_bufferedInputBeginFrame too low, making dataOffset
-        // incorrectly large in processGrain and causing Bungee's Eigen map
-        // to reach past the end of m_contiguousChannelBuffer — heap
-        // corruption that is detected later by malloc in an unrelated thread.
-        m_bufferedInputBeginFrame = framePosition;
-        m_bufferedInputEndFrame = framePosition;
+        const SINT consumedGapFrames = consumeReadAheadGap(
+                signedEffectiveRate,
+                framePosition - oldBufferedInputEndFrame);
+        // Advance beyond the old m_bufferedInputEndFrame only after consuming
+        // the skipped source gap from ReadAheadManager. This keeps future
+        // appendInputFrames() calls from labeling old sequential samples with
+        // this future absolute frame.
+        m_bufferedInputBeginFrame = oldBufferedInputEndFrame + consumedGapFrames;
+        m_bufferedInputEndFrame = m_bufferedInputBeginFrame;
     }
 }
 
@@ -237,7 +279,7 @@ SINT EngineBufferScaleBungee::ensureInputForCurrentChunk(double signedEffectiveR
     }
 
     if (m_bufferedInputBeginFrame < m_currentInputChunk.begin) {
-        discardBufferedInputBefore(m_currentInputChunk.begin);
+        discardBufferedInputBefore(m_currentInputChunk.begin, signedEffectiveRate);
     }
 
     while (m_bufferedInputEndFrame < m_currentInputChunk.end) {

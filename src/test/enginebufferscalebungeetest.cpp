@@ -462,13 +462,14 @@ class BufferWindowReadAheadManagerMock : public ReadAheadManager {
             mixxx::audio::ChannelCount /*channelCount*/) override {
         Q_UNUSED(dRate);
         ++m_iReadCallCount;
-        for (SINT i = 0; i < requested_samples; ++i) {
+        const SINT samplesToRead = nextSampleCount(requested_samples);
+        for (SINT i = 0; i < samplesToRead; ++i) {
             buffer[i] = m_buffer.empty()
                     ? 0.0f
                     : m_buffer[m_iReadPosition++ % m_buffer.size()];
         }
-        m_iSamplesRead += requested_samples;
-        return requested_samples;
+        m_iSamplesRead += samplesToRead;
+        return samplesToRead;
     }
 
     void setReadBuffer(std::vector<CSAMPLE> buffer) {
@@ -480,9 +481,28 @@ class BufferWindowReadAheadManagerMock : public ReadAheadManager {
         return m_iReadCallCount;
     }
 
+    SINT samplesRead() const {
+        return m_iSamplesRead;
+    }
+
+    void setReadSampleCounts(std::vector<SINT> readSampleCounts) {
+        m_readSampleCounts = std::move(readSampleCounts);
+        m_iReadSampleCountIndex = 0;
+    }
+
   private:
+    SINT nextSampleCount(SINT requestedSamples) {
+        if (m_iReadSampleCountIndex >= m_readSampleCounts.size()) {
+            return requestedSamples;
+        }
+        return std::min(requestedSamples,
+                std::max<SINT>(0, m_readSampleCounts[m_iReadSampleCountIndex++]));
+    }
+
     std::vector<CSAMPLE> m_buffer;
+    std::vector<SINT> m_readSampleCounts;
     SINT m_iReadPosition = 0;
+    size_t m_iReadSampleCountIndex = 0;
     SINT m_iSamplesRead = 0;
     int m_iReadCallCount = 0;
 };
@@ -641,6 +661,58 @@ TEST_F(EngineBufferScaleBungeeBufferWindowTest,
     EXPECT_GE(bufferBegin(), kFramePosition)
             << "buffer-window invariant: begin >= framePosition after "
                "discardBufferedInputBefore(framePosition).";
+}
+
+TEST_F(EngineBufferScaleBungeeBufferWindowTest,
+        DiscardWithGapBeyondEndConsumesSkippedReadAheadFrames) {
+    seedBufferWindow(/*begin=*/100, /*end=*/200);
+
+    constexpr SINT kFramePosition = 10000;
+    m_pScaler->discardBufferedInputBefore(kFramePosition);
+
+    EXPECT_EQ((kFramePosition - 200) * 2, m_pReadAhead->samplesRead())
+            << "Full discard must drain only the skipped gap after the old "
+               "buffer tail from ReadAheadManager before the local window is "
+               "advanced to the future frame.";
+    EXPECT_GT(m_pReadAhead->readCallCount(), 0);
+    EXPECT_EQ(kFramePosition, bufferBegin());
+    EXPECT_EQ(kFramePosition, bufferEnd());
+}
+
+TEST_F(EngineBufferScaleBungeeBufferWindowTest,
+        DiscardWithGapBeyondEndRetriesAfterTransientZeroRead) {
+    seedBufferWindow(/*begin=*/100, /*end=*/200);
+
+    constexpr SINT kFramePosition = 1000;
+    constexpr SINT kGapFrames = kFramePosition - 200;
+    constexpr SINT kGapSamples = kGapFrames * 2;
+    m_pReadAhead->setReadSampleCounts({0, kGapSamples});
+
+    m_pScaler->discardBufferedInputBefore(kFramePosition);
+
+    EXPECT_EQ(kGapSamples, m_pReadAhead->samplesRead())
+            << "A single zero-frame read at a trigger must be retried before "
+               "the discarded gap is considered incomplete.";
+    EXPECT_EQ(2, m_pReadAhead->readCallCount());
+    EXPECT_EQ(kFramePosition, bufferBegin());
+    EXPECT_EQ(kFramePosition, bufferEnd());
+}
+
+TEST_F(EngineBufferScaleBungeeBufferWindowTest,
+        DiscardWithGapBeyondEndConsumesPartialReadsBeforeCompleting) {
+    seedBufferWindow(/*begin=*/100, /*end=*/200);
+
+    constexpr SINT kFramePosition = 1000;
+    constexpr SINT kGapFrames = kFramePosition - 200;
+    constexpr SINT kGapSamples = kGapFrames * 2;
+    m_pReadAhead->setReadSampleCounts({200, 600, 800});
+
+    m_pScaler->discardBufferedInputBefore(kFramePosition);
+
+    EXPECT_EQ(kGapSamples, m_pReadAhead->samplesRead());
+    EXPECT_EQ(3, m_pReadAhead->readCallCount());
+    EXPECT_EQ(kFramePosition, bufferBegin());
+    EXPECT_EQ(kFramePosition, bufferEnd());
 }
 
 // sanity baseline: framePosition still inside buffer must NOT
