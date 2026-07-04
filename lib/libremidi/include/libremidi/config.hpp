@@ -46,7 +46,7 @@
 
 // Dynamic exports
 #if defined(LIBREMIDI_EXPORTS) || defined(LIBREMIDI_MODULE_BUILD)
-  #if defined(_MSC_VER)
+  #if defined(_WIN32)
     #define LIBREMIDI_EXPORT __declspec(dllexport)
   #elif defined(__GNUC__) || defined(__clang__)
     #define LIBREMIDI_EXPORT __attribute__((visibility("default")))

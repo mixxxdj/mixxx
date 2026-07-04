@@ -78,7 +78,15 @@ target_sources(libremidi PRIVATE
     include/libremidi/backends/linux/alsa.hpp
     include/libremidi/backends/linux/dylib_loader.hpp
     include/libremidi/backends/linux/helpers.hpp
-    include/libremidi/backends/linux/pipewire.hpp
+    include/libremidi/backends/linux/pipewire/context.hpp
+    include/libremidi/backends/linux/pipewire/drm_modifiers.hpp
+    include/libremidi/backends/linux/pipewire/filter.hpp
+    include/libremidi/backends/linux/pipewire/format.hpp
+    include/libremidi/backends/linux/pipewire/instance.hpp
+    include/libremidi/backends/linux/pipewire/loader.hpp
+    include/libremidi/backends/linux/pipewire/stream.hpp
+    include/libremidi/backends/linux/pipewire/subscription.hpp
+    include/libremidi/backends/linux/pipewire/types.hpp
     include/libremidi/backends/linux/udev.hpp
 
     include/libremidi/backends/net/config.hpp
@@ -88,12 +96,10 @@ target_sources(libremidi PRIVATE
     include/libremidi/backends/net/observer.hpp
 
     include/libremidi/backends/pipewire/config.hpp
-    include/libremidi/backends/pipewire/context.hpp
     include/libremidi/backends/pipewire/helpers.hpp
     include/libremidi/backends/pipewire/midi_in.hpp
     include/libremidi/backends/pipewire/midi_out.hpp
     include/libremidi/backends/pipewire/observer.hpp
-    include/libremidi/backends/pipewire/shared_handler.hpp
     include/libremidi/backends/pipewire.hpp
     include/libremidi/backends/pipewire_ump.hpp
 
@@ -163,6 +169,9 @@ if(NOT LIBREMIDI_HEADER_ONLY AND NOT LIBREMIDI_MODULE_BUILD)
     include/libremidi/backends/emscripten/midi_in.cpp
     include/libremidi/backends/emscripten/midi_out.cpp
     include/libremidi/backends/emscripten/observer.cpp
+
+    include/libremidi/backends/linux/pipewire/instance.cpp
+    include/libremidi/backends/linux/pipewire/context.cpp
 
     include/libremidi/libremidi-c.cpp
   )

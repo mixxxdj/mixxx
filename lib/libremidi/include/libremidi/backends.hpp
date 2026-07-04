@@ -77,6 +77,9 @@
   #include <libremidi/backends/network_ump.hpp>
 #endif
 
+#include <libremidi/backends/rawio.hpp>
+#include <libremidi/backends/rawio_ump.hpp>
+
 #if defined(LIBREMIDI_ANDROID)
   #include <libremidi/backends/android/android.hpp>
 #endif
@@ -144,6 +147,7 @@ LIBREMIDI_STATIC constexpr auto available_backends = make_tl(
     android::backend{}
 #endif
     ,
+    rawio::backend{},
     dummy_backend{});
 
 // There should always be at least one back-end.
@@ -194,6 +198,7 @@ LIBREMIDI_STATIC constexpr auto available_backends = make_tl(
     pipewire_ump::backend{}
 #endif
     ,
+    rawio_ump::backend{},
     dummy_backend{});
 
 // There should always be at least one back-end.

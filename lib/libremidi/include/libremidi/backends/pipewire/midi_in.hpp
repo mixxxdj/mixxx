@@ -4,6 +4,11 @@
 #include <libremidi/detail/midi_in.hpp>
 #include <libremidi/detail/midi_stream_decoder.hpp>
 
+#include <spa/control/control.h>
+#include <spa/pod/iter.h>
+#include <spa/pod/parser.h>
+#include <spa/pod/pod.h>
+
 NAMESPACE_LIBREMIDI
 {
 class midi_in_pipewire final
@@ -86,9 +91,9 @@ public:
         .has_samples = true,
     };
 
-    assert(this->filter);
-    assert(this->filter->port);
-    const auto b = pw.filter_dequeue_buffer(this->filter->port);
+    assert(this->flt);
+    assert(this->port.valid());
+    const auto b = pw.filter_dequeue_buffer(this->port.opaque);
     if (!b)
       return;
 
@@ -122,7 +127,7 @@ public:
           {data, data + size}, m_processing.timestamp<timestamp_info>(to_ns, c->offset));
     }
 
-    pw.filter_queue_buffer(this->filter->port, b);
+    pw.filter_queue_buffer(this->port.opaque, b);
   }
 
   midi1::input_state_machine m_processing{this->configuration};

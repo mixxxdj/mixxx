@@ -100,30 +100,86 @@ public:
     if (!ep || !gp)
       return std::errc::address_not_available;
 
-    m_group_filter = port.port - 1;
+    // port.port is the Group Terminal Block Number(), which is not necessarily equal to
+    // the UMP group index the block spans. For example a USB MIDI 1.0 device may expose
+    // its input GTB as Number()==2 while its messages arrive on group 0. Using
+    // `port.port - 1` as the group filter therefore silently drops all input from such
+    // devices. Filter on the resolved block's actual first group instead.
+    m_group_filter = gp.FirstGroup().Index();
 
-    // TODO use a MidiGroupEndpointListener for the filtering
-    m_endpoint = m_session.CreateEndpointConnection(ep.EndpointDeviceId());
+    try
+    {
+      // TODO use a MidiGroupEndpointListener for the filtering
+      m_endpoint = m_session.CreateEndpointConnection(ep.EndpointDeviceId());
+      if (!m_endpoint)
+        return std::errc::device_or_resource_busy;
 
-#if !LIBREMIDI_WINMIDI_HAS_COM_EXTENSIONS
-    m_revoke_token = m_endpoint.MessageReceived(
-        [this](
-            const winrt::Microsoft::Windows::Devices::Midi2::IMidiMessageReceivedEventSource&,
-            const winrt::Microsoft::Windows::Devices::Midi2::MidiMessageReceivedEventArgs& args) {
-      process_message(args);
-    });
-#else
-    m_endpoint.as(libremidi::IID_IMidiEndpointConnectionRaw, m_raw_endpoint.put_void());
+  #if !LIBREMIDI_WINMIDI_HAS_COM_EXTENSIONS
+      m_revoke_token = m_endpoint.MessageReceived(
+          [this](
+              const winrt::Microsoft::Windows::Devices::Midi2::IMidiMessageReceivedEventSource&,
+              const winrt::Microsoft::Windows::Devices::Midi2::MidiMessageReceivedEventArgs& args) {
+        process_message(args);
+      });
+  #else
+      m_endpoint.as(libremidi::IID_IMidiEndpointConnectionRaw, m_raw_endpoint.put_void());
 
-    m_raw_endpoint->SetMessagesReceivedCallback(
-        &raw_callback
-    );
-#endif
+      m_raw_endpoint->SetMessagesReceivedCallback(
+          &raw_callback
+      );
+  #endif
 
-    m_endpoint.Open();
+      m_endpoint.Open();
 
-    return stdx::error{};
+      return stdx::error{};
+    }
+    catch (...)
+    {
+      return std::errc::io_error;
+    }
   }
+
+#if LIBREMIDI_WINMIDI_HAS_VIRTUAL_DEVICE
+  stdx::error open_virtual_port(std::string_view port_name) override
+  {
+    // Create endpoint information for the virtual device
+    using namespace winrt::Microsoft::Windows::Devices::Midi2;
+    using namespace winrt::Microsoft::Windows::Devices::Midi2::Endpoints::Virtual;
+
+    auto conf = setup_virtualdevice_config(configuration.client_name, port_name, port_name, MidiFunctionBlockDirection::BlockInput);
+
+    m_virtual = MidiVirtualDeviceManager::CreateVirtualDevice(conf);
+    if (m_virtual == nullptr)
+      return std::errc::device_or_resource_busy;
+
+    try
+    {
+      // Create a connection to the device-side endpoint
+      m_endpoint = m_session.CreateEndpointConnection(m_virtual.DeviceEndpointDeviceId());
+      if (!m_endpoint)
+        return std::errc::device_or_resource_busy;
+
+      // Add the virtual device as a message processing plugin to receive messages
+      m_endpoint.AddMessageProcessingPlugin(m_virtual);
+
+      // Register message received event handler
+      m_revoke_token = m_endpoint.MessageReceived(
+          [this](
+              const winrt::Microsoft::Windows::Devices::Midi2::IMidiMessageReceivedEventSource&,
+              const winrt::Microsoft::Windows::Devices::Midi2::MidiMessageReceivedEventArgs& args) {
+        process_message(args);
+      });
+
+      m_endpoint.Open();
+
+      return stdx::error{};
+    }
+    catch (...)
+    {
+      return std::errc::io_error;
+    }
+  }
+#endif
 
   void process_message(
       const winrt::Microsoft::Windows::Devices::Midi2::MidiMessageReceivedEventArgs& msg)
@@ -189,15 +245,26 @@ public:
     if(!m_endpoint)
       return std::errc::not_connected;
 
-#if !LIBREMIDI_WINMIDI_HAS_COM_EXTENSIONS
-    m_endpoint.MessageReceived(m_revoke_token);
-#else
+#if LIBREMIDI_WINMIDI_HAS_COM_EXTENSIONS
     if(m_raw_endpoint) {
       m_raw_endpoint->RemoveMessagesReceivedCallback();
       m_raw_endpoint = nullptr;
     }
+    // When no raw API: everything goes through revoke_token.
+    // Otherwise: only virtual ports.
+    else if(m_virtual)
 #endif
+      m_endpoint.MessageReceived(m_revoke_token);
+
     m_session.DisconnectEndpointConnection(m_endpoint.ConnectionId());
+
+#if LIBREMIDI_WINMIDI_HAS_VIRTUAL_DEVICE
+    if (m_virtual)
+    {
+      m_virtual.Cleanup();
+      m_virtual = nullptr;
+    }
+  #endif
     return stdx::error{};
   }
 
@@ -209,6 +276,9 @@ private:
   winrt::Microsoft::Windows::Devices::Midi2::MidiEndpointConnection m_endpoint{nullptr};
 #if LIBREMIDI_WINMIDI_HAS_COM_EXTENSIONS
   winrt::impl::com_ref<IMidiEndpointConnectionRaw> m_raw_endpoint{};
+#endif
+#if LIBREMIDI_WINMIDI_HAS_VIRTUAL_DEVICE
+  winrt::Microsoft::Windows::Devices::Midi2::Endpoints::Virtual::MidiVirtualDevice m_virtual{nullptr};
 #endif
   midi2::input_state_machine m_processing{this->configuration};
   int m_group_filter = -1;

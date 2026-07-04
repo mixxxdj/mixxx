@@ -1,7 +1,11 @@
 #pragma once
 // clang-format off
-#define NOMINMAX 1
-#define WIN32_LEAN_AND_MEAN 1
+#if !defined(NOMINMAX)
+  #define NOMINMAX 1
+#endif
+#if !defined(WIN32_LEAN_AND_MEAN)
+  #define WIN32_LEAN_AND_MEAN 1
+#endif
 #include <libremidi/detail/midi_api.hpp>
 #include <libremidi/detail/memory.hpp>
 
@@ -14,6 +18,10 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Devices.Enumeration.h>
 #include <winrt/Microsoft.Windows.Devices.Midi2.h>
+#if __has_include(<winrt/Microsoft.Windows.Devices.Midi2.Endpoints.Virtual.h>)
+#define LIBREMIDI_WINMIDI_HAS_VIRTUAL_DEVICE 1
+#include <winrt/Microsoft.Windows.Devices.Midi2.Endpoints.Virtual.h>
+#endif
 #include <libremidi/cmidi2.hpp>
 
 #if __has_include(<WindowsMidiServicesAppSdkComExtensions.h>)
@@ -215,4 +223,48 @@ struct winmidi_shared_data
   }
 };
 
+
+inline winrt::Microsoft::Windows::Devices::Midi2::Endpoints::Virtual::MidiVirtualDeviceCreationConfig setup_virtualdevice_config(
+    std::string_view manufacturer_name,
+    std::string_view product_id,
+    std::string_view port_name,
+    MidiFunctionBlockDirection direction)
+{
+  using namespace winrt::Microsoft::Windows::Devices::Midi2;
+  using namespace winrt::Microsoft::Windows::Devices::Midi2::Endpoints::Virtual;
+
+  MidiDeclaredEndpointInfo endpointInfo;
+  endpointInfo.HasStaticFunctionBlocks = true;
+  endpointInfo.Name = to_hstring(port_name);
+  endpointInfo.ProductInstanceId = to_hstring(product_id);
+  endpointInfo.SupportsMidi10Protocol = true;
+  endpointInfo.SupportsMidi20Protocol = true;
+  endpointInfo.SupportsReceivingJitterReductionTimestamps = false;
+  endpointInfo.SupportsSendingJitterReductionTimestamps = false;
+  endpointInfo.SpecificationVersionMajor = 1;
+  endpointInfo.SpecificationVersionMinor = 1;
+
+  // Create the virtual device configuration
+  if(manufacturer_name.empty())
+    manufacturer_name = "libremidi";
+
+  MidiVirtualDeviceCreationConfig creationConfig(
+      to_hstring(port_name), // name
+      to_hstring(std::string("Virtual input port: ") + std::string(port_name)), // description
+      to_hstring(manufacturer_name), // manufacturer
+      endpointInfo);
+
+  // Add a default function block for the virtual device
+  MidiFunctionBlock block0;
+  block0.Number(0);
+  block0.IsActive(true);
+  block0.Name(to_hstring(port_name));
+  block0.FirstGroup(MidiGroup(static_cast<uint8_t>(0)));
+  block0.GroupCount(16);  // All 16 groups
+  block0.Direction(direction);
+  creationConfig.FunctionBlocks().Append(block0);
+
+  return creationConfig;
+
+}
 }

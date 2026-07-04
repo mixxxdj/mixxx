@@ -4,6 +4,11 @@
 #include <libremidi/detail/midi_in.hpp>
 #include <libremidi/detail/midi_stream_decoder.hpp>
 
+#include <spa/control/control.h>
+#include <spa/pod/iter.h>
+#include <spa/pod/parser.h>
+#include <spa/pod/pod.h>
+
 NAMESPACE_LIBREMIDI::pipewire_ump
 {
 class midi_in_pipewire final
@@ -44,7 +49,10 @@ public:
     client_open_ = std::errc::not_connected;
   }
 
-  libremidi::API get_current_api() const noexcept override { return libremidi::API::PIPEWIRE_UMP; }
+  libremidi::API get_current_api() const noexcept override
+  {
+    return libremidi::API::PIPEWIRE_UMP;
+  }
 
   stdx::error open_port(const input_port& in_port, std::string_view name) override
   {
@@ -75,7 +83,10 @@ public:
     return do_close_port();
   }
 
-  stdx::error set_port_name(std::string_view port_name) override { return rename_port(port_name); }
+  stdx::error set_port_name(std::string_view port_name) override
+  {
+    return rename_port(port_name);
+  }
 
   timestamp absolute_timestamp() const noexcept override { return system_ns(); }
 
@@ -87,9 +98,9 @@ public:
         .has_samples = true,
     };
 
-    assert(this->filter);
-    assert(this->filter->port);
-    const auto b = pw.filter_dequeue_buffer(this->filter->port);
+    assert(this->flt);
+    assert(this->port.valid());
+    const auto b = pw.filter_dequeue_buffer(this->port.opaque);
     if (!b)
       return;
 
@@ -124,7 +135,7 @@ public:
           m_processing.timestamp<timestamp_info>(to_ns, c->offset));
     }
 
-    pw.filter_queue_buffer(this->filter->port, b);
+    pw.filter_queue_buffer(this->port.opaque, b);
   }
 
   midi2::input_state_machine m_processing{this->configuration};

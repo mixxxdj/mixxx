@@ -1,6 +1,6 @@
 #pragma once
 #include <libremidi/backends/dummy.hpp>
-#include <libremidi/backends/linux/pipewire.hpp>
+#include <libremidi/backends/linux/pipewire/loader.hpp>
 #include <libremidi/backends/pipewire_ump/config.hpp>
 #include <libremidi/backends/pipewire_ump/midi_in.hpp>
 #include <libremidi/backends/pipewire_ump/midi_out.hpp>
@@ -24,9 +24,11 @@ struct backend
 
   static inline bool available() noexcept
   {
-    static const libpipewire& pw = libpipewire::instance();
-    if (!pw.available)
+    auto& pw = libremidi::pipewire::load();
+    if (!pw.filter_available || !pw.thread_available || !pw.core_available
+        || !pw.get_library_version)
       return false;
+    // UMP requires libpipewire >= 0.3.4x.
     const std::string_view version = pw.get_library_version();
     if (version.size() >= 3)
     {

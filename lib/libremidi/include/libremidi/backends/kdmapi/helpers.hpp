@@ -1,7 +1,11 @@
 #pragma once
 // clang-format off
-#define NOMINMAX 1
-#define WIN32_LEAN_AND_MEAN 1
+#if !defined(NOMINMAX)
+  #define NOMINMAX 1
+#endif
+#if !defined(WIN32_LEAN_AND_MEAN)
+  #define WIN32_LEAN_AND_MEAN 1
+#endif
 
 #include <windows.h>
 #include <mmsystem.h>

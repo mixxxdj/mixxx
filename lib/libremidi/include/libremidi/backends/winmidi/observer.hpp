@@ -95,8 +95,9 @@ public:
     return unknown;
   }
 
+  // gp can be either MidiGroupTerminalBlock or MidiFunctionBlock
   template <bool Input>
-  auto to_port_info(const MidiEndpointDeviceInformation& p, const MidiGroupTerminalBlock& gp)
+  auto to_port_info(const MidiEndpointDeviceInformation& p, const auto& gp)
       const noexcept -> std::conditional_t<Input, input_port, output_port>
   {
     const auto& tinfo = p.GetTransportSuppliedInfo();
@@ -127,6 +128,12 @@ public:
         continue;
       }
 
+      for (const auto& gp : ep.GetDeclaredFunctionBlocks())
+      {
+        if (gp.Direction() != MidiFunctionBlockDirection::BlockOutput)
+          ret.emplace_back(to_port_info<true>(ep, gp));
+      }
+
       for (const auto& gp : ep.GetGroupTerminalBlocks())
       {
         if (gp.Direction() != MidiGroupTerminalBlockDirection::BlockOutput)
@@ -146,6 +153,12 @@ public:
       if (ep.Name().starts_with(L"Diagnostics"))
       {
         continue;
+      }
+
+      for (const auto& gp : ep.GetDeclaredFunctionBlocks())
+      {
+        if (gp.Direction() != MidiFunctionBlockDirection::BlockInput)
+          ret.emplace_back(to_port_info<false>(ep, gp));
       }
 
       for (const auto& gp : ep.GetGroupTerminalBlocks())
@@ -183,65 +196,63 @@ public:
     remove_device(result.EndpointDeviceId());
   }
 
+  void add_block(const MidiEndpointDeviceInformation& ep, const auto& gp)
+  {
+    const auto add_input = [&] {
+      if (configuration.input_added)
+      {
+        auto ip = to_port_info<true>(ep, gp);
+        {
+          std::lock_guard _{m_devices_mtx};
+          m_known_input_devices[ep.EndpointDeviceId()].push_back(ip);
+        }
+
+        if(!m_in_constructor || configuration.notify_in_constructor)
+          configuration.input_added(std::move(ip));
+      }
+    };
+    auto add_output = [&] {
+      if (configuration.output_added)
+      {
+        auto op = to_port_info<false>(ep, gp);
+        {
+          std::lock_guard _{m_devices_mtx};
+          m_known_output_devices[ep.EndpointDeviceId()].push_back(op);
+        }
+
+        if(!m_in_constructor || configuration.notify_in_constructor)
+          configuration.output_added(std::move(op));
+      }
+    };
+
+    using direction_type = decltype(gp.Direction());
+    switch (gp.Direction())
+    {
+      case direction_type::Bidirectional:
+        add_input();
+        add_output();
+        break;
+      case direction_type::BlockInput:
+        add_input();
+        break;
+      case direction_type::BlockOutput:
+          add_output();
+        break;
+      default:
+        // Undefined direction, does it make sense to handle it somewhere?
+        break;
+    }
+  }
+
   void add_device(const MidiEndpointDeviceInformation& ep)
   {
+    for (const auto& fb : ep.GetDeclaredFunctionBlocks())
+    {
+      add_block(ep, fb);
+    }
     for (const auto& gp : ep.GetGroupTerminalBlocks())
     {
-      MidiGroupTerminalBlockDirection direction = gp.Direction();
-      switch (direction)
-      {
-        case MidiGroupTerminalBlockDirection::Bidirectional: {
-          if (configuration.input_added)
-          {
-            auto ip = to_port_info<true>(ep, gp);
-            {
-              std::lock_guard _{m_devices_mtx};
-              m_known_input_devices[ep.EndpointDeviceId()].push_back(ip);
-            }
-
-            if(!m_in_constructor || configuration.notify_in_constructor)
-              configuration.input_added(std::move(ip));
-          }
-          if (configuration.output_added)
-          {
-            auto op = to_port_info<false>(ep, gp);
-            {
-              std::lock_guard _{m_devices_mtx};
-              m_known_output_devices[ep.EndpointDeviceId()].push_back(op);
-            }
-
-            if(!m_in_constructor || configuration.notify_in_constructor)
-              configuration.output_added(std::move(op));
-          }
-          break;
-        }
-        case MidiGroupTerminalBlockDirection::BlockInput:
-          if (configuration.input_added)
-          {
-            auto ip = to_port_info<true>(ep, gp);
-            {
-              std::lock_guard _{m_devices_mtx};
-              m_known_input_devices[ep.EndpointDeviceId()].push_back(ip);
-            }
-
-            if(!m_in_constructor || configuration.notify_in_constructor)
-              configuration.input_added(std::move(ip));
-          }
-          break;
-        case MidiGroupTerminalBlockDirection::BlockOutput:
-          if (configuration.output_added)
-          {
-            auto op = to_port_info<false>(ep, gp);
-            {
-              std::lock_guard _{m_devices_mtx};
-              m_known_output_devices[ep.EndpointDeviceId()].push_back(op);
-            }
-
-            if(!m_in_constructor || configuration.notify_in_constructor)
-              configuration.output_added(std::move(op));
-          }
-          break;
-      }
+      add_block(ep, gp);
     }
   }
 

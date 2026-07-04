@@ -75,15 +75,11 @@ public:
       midiOutClose(this->outHandle);
 
     this->outHandle = nullptr;
-    connected_ = false;
     return stdx::error{};
   }
 
   stdx::error send_message(const unsigned char* message, size_t size) override
   {
-    if (!connected_)
-      return std::errc::not_connected;
-
     if (size == 0)
     {
       libremidi_handle_warning(configuration, "message argument is empty!");

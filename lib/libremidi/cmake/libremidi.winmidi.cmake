@@ -5,7 +5,7 @@ endif()
 if(LIBREMIDI_DOWNLOAD_CPPWINRT)
   if(NOT EXISTS "${CMAKE_BINARY_DIR}/winmidi-headers.zip")
     file(DOWNLOAD
-      https://github.com/microsoft/MIDI/releases/download/rc-1/Microsoft.Windows.Devices.Midi2.1.0.14-rc.1.209.nupkg
+      https://github.com/microsoft/MIDI/releases/download/rc-2/Microsoft.Windows.Devices.Midi2.1.0.15-rc.2.15.nupkg
       "${CMAKE_BINARY_DIR}/winmidi-headers.zip"
     )
   endif()

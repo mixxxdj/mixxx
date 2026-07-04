@@ -61,26 +61,18 @@ public:
       return std::errc::io_error;
     }
 
-    connected_ = true;
     return stdx::error{};
   }
 
   stdx::error close_port() override
   {
-    if (connected_)
-    {
-      auto& mgr = kdmapi_stream_manager::instance();
-      mgr.release();
-      connected_ = false;
-    }
+    auto& mgr = kdmapi_stream_manager::instance();
+    mgr.release();
     return stdx::error{};
   }
 
   stdx::error send_message(const unsigned char* message, size_t size) override
   {
-    if (!connected_)
-      return std::errc::not_connected;
-
     if (size == 0)
     {
       libremidi_handle_warning(configuration, "message argument is empty!");

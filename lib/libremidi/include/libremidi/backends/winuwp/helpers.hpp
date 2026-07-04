@@ -1,6 +1,10 @@
 #pragma once
-#define NOMINMAX 1
-#define WIN32_LEAN_AND_MEAN 1
+#if !defined(NOMINMAX)
+  #define NOMINMAX 1
+#endif
+#if !defined(WIN32_LEAN_AND_MEAN)
+  #define WIN32_LEAN_AND_MEAN 1
+#endif
 #include <libremidi/detail/midi_api.hpp>
 
 #include <mutex>

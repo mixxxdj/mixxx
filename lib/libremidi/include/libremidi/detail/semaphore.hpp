@@ -12,7 +12,7 @@ struct semaphore_pair_lock
 
     // FIXME if jack is not running we can skip this
     this->sem_needpost.release();
-    this->sem_cleanup.try_acquire_for(1s);
+    (void)this->sem_cleanup.try_acquire_for(1s);
   }
 
   void check_client_released()

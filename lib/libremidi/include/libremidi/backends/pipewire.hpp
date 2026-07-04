@@ -1,6 +1,6 @@
 #pragma once
 #include <libremidi/backends/dummy.hpp>
-#include <libremidi/backends/linux/pipewire.hpp>
+#include <libremidi/backends/linux/pipewire/loader.hpp>
 #include <libremidi/backends/pipewire/config.hpp>
 #include <libremidi/backends/pipewire/helpers.hpp>
 #include <libremidi/backends/pipewire/midi_in.hpp>
@@ -25,8 +25,8 @@ struct backend
 
   static inline bool available() noexcept
   {
-    static const libpipewire& pw = libpipewire::instance();
-    return pw.available;
+    auto& pw = libremidi::pipewire::load();
+    return pw.filter_available && pw.thread_available && pw.core_available;
   }
 };
 }

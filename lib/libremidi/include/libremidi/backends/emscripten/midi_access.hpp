@@ -32,7 +32,7 @@ public:
 
   bool available() const noexcept
   {
-    return EM_ASM_INT(return typeof globalThis.__libreMidi_access !== undefined;);
+    return EM_ASM_INT(return typeof globalThis.__libreMidi_access !== 'undefined';);
   }
 
   int input_count() const noexcept
@@ -175,7 +175,7 @@ public:
 
     for (auto& obs : m_observers)
     {
-      obs->update(m_current_inputs, m_current_outputs);
+      obs->update(m_current_inputs, m_current_outputs, true);
     }
   }
 

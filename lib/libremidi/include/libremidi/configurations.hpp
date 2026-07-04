@@ -16,6 +16,7 @@
 #include <libremidi/backends/net/config.hpp>
 #include <libremidi/backends/pipewire/config.hpp>
 #include <libremidi/backends/pipewire_ump/config.hpp>
+#include <libremidi/backends/rawio/config.hpp>
 #include <libremidi/backends/winmidi/config.hpp>
 #include <libremidi/backends/winmm/config.hpp>
 #include <libremidi/backends/winuwp/config.hpp>
@@ -38,7 +39,8 @@ using input_api_configuration = libremidi_variant_alias::variant<
     coremidi_ump::input_configuration, emscripten_input_configuration, jack_input_configuration,
     kbd_input_configuration, kdmapi::input_configuration,
     libremidi::net::dgram_input_configuration, libremidi::net_ump::dgram_input_configuration,
-    pipewire_input_configuration, winmidi::input_configuration, winmm_input_configuration,
+    pipewire_input_configuration, rawio_input_configuration, rawio_ump_input_configuration,
+    winmidi::input_configuration, winmm_input_configuration,
     winuwp_input_configuration, jack_ump::input_configuration, pipewire_ump::input_configuration,
     android::input_configuration, libremidi::API>;
 
@@ -49,6 +51,7 @@ using output_api_configuration = libremidi_variant_alias::variant<
     coremidi_ump::output_configuration, emscripten_output_configuration, jack_output_configuration,
     kdmapi::output_configuration, libremidi::net::dgram_output_configuration,
     libremidi::net_ump::dgram_output_configuration, pipewire_output_configuration,
+    rawio_output_configuration, rawio_ump_output_configuration,
     winmidi::output_configuration, winmm_output_configuration, winuwp_output_configuration,
     jack_ump::output_configuration, pipewire_ump::output_configuration,
     android::output_configuration, libremidi::API>;
@@ -60,7 +63,9 @@ using observer_api_configuration = libremidi_variant_alias::variant<
     coremidi_ump::observer_configuration, emscripten_observer_configuration,
     jack_observer_configuration, kdmapi::observer_configuration,
     libremidi::net::dgram_observer_configuration, libremidi::net_ump::dgram_observer_configuration,
-    pipewire_observer_configuration, winmidi::observer_configuration, winmm_observer_configuration,
+    pipewire_observer_configuration, rawio_observer_configuration,
+    rawio_ump_observer_configuration, winmidi::observer_configuration,
+    winmm_observer_configuration,
     winuwp_observer_configuration, jack_ump::observer_configuration,
     pipewire_ump::observer_configuration, android::observer_configuration, libremidi::API>;
 

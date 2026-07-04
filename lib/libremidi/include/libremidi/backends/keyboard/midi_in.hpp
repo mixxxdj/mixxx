@@ -22,6 +22,7 @@ public:
   explicit midi_in_kbd(input_configuration&& conf, kbd_input_configuration&& apiconf)
       : configuration{std::move(conf), std::move(apiconf)}
   {
+    this->client_open_ = stdx::error{};
   }
 
   ~midi_in_kbd() override { }

@@ -177,12 +177,6 @@ NAMESPACE_LIBREMIDI::winmm
 class observer_threaded final : public observer_winmm
 {
 public:
-  struct
-      : observer_configuration
-      , winmm_observer_configuration
-  {
-  } configuration;
-
   explicit observer_threaded(observer_configuration&& conf, winmm_observer_configuration&& apiconf)
       : observer_winmm{std::move(conf), std::move(apiconf)}
   {
@@ -207,12 +201,6 @@ NAMESPACE_LIBREMIDI::winmm
 class observer_threaded final : public observer_winmm
 {
 public:
-  struct
-      : observer_configuration
-      , winmm_observer_configuration
-  {
-  } configuration;
-
   explicit observer_threaded(observer_configuration&& conf, winmm_observer_configuration&& apiconf)
       : observer_winmm{std::move(conf), std::move(apiconf)}
       , sema{0}
@@ -247,12 +235,6 @@ NAMESPACE_LIBREMIDI::winmm
 class observer_manual final : public observer_winmm
 {
 public:
-  struct
-      : observer_configuration
-      , winmm_observer_configuration
-  {
-  } configuration;
-
   explicit observer_manual(observer_configuration&& conf, winmm_observer_configuration&& apiconf)
       : observer_winmm{std::move(conf), std::move(apiconf)}
   {

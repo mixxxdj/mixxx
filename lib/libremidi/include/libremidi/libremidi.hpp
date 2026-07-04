@@ -244,14 +244,18 @@ public:
 
 // Interop with ni-midi2
 #if LIBREMIDI_NI_MIDI2_COMPAT
-  stdx::error send_ump(const midi::universal_packet& pkt) const { send_ump(pkt.data, pkt.size()); }
+  stdx::error send_ump(const midi::universal_packet& pkt) const { return send_ump(pkt.data, pkt.size()); }
   stdx::error send_ump(const midi::sysex7& msg, int group = 0)
   {
-    midi::send_sysex7(msg, group, [&](const midi::sysex7_packet& x) { send_ump(x.data); });
+    stdx::error ret{};
+    midi::send_sysex7(msg, group, [&](const midi::sysex7_packet& x) { ret = send_ump(x.data); });
+    return ret;
   }
   stdx::error send_ump(const midi::sysex8& msg, int stream, int group = 0)
   {
-    midi::send_sysex8(msg, stream, group, [&](const midi::sysex8_packet& x) { send_ump(x.data); });
+    stdx::error ret{};
+    midi::send_sysex8(msg, stream, group, [&](const midi::sysex8_packet& x) { ret = send_ump(x.data); });
+    return ret;
   }
 #endif
 
@@ -269,6 +273,8 @@ private:
   #include <libremidi/midi_in.cpp>
   #include <libremidi/midi_out.cpp>
   #include <libremidi/observer.cpp>
+  // pipewire {instance,context}.cpp are pulled by their .hpp under
+  // HEADER_ONLY so any TU touching them gets the definitions.
 
   #if defined(__EMSCRIPTEN__)
     #include <libremidi/backends/emscripten/midi_access.cpp>

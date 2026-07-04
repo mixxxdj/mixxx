@@ -1,44 +1,36 @@
 #pragma once
 #include <libremidi/config.hpp>
 
-#include <cinttypes>
 #include <cstdint>
-#include <functional>
 #include <string>
 
 extern "C" {
+struct pw_thread_loop;
 struct pw_main_loop;
-struct pw_filter;
-struct spa_io_position;
+struct pw_core;
 }
 
 NAMESPACE_LIBREMIDI
 {
-using pipewire_callback_function = std::function<void(spa_io_position*)>;
-struct pipewire_callback
-{
-  int64_t token;
-  pipewire_callback_function callback;
-};
-
+// To embed in a host that owns the pipewire setup, supply `core` plus
+// one of `thread_loop` / `main_loop` — libremidi adopts them without
+// taking ownership. All-null falls back to the shared singleton.
 struct pipewire_input_configuration
 {
   std::string client_name = "libremidi client";
 
-  pw_main_loop* context{};
-  pw_filter* filter{};
-  std::function<void(pipewire_callback)> set_process_func{};
-  std::function<void(int64_t)> clear_process_func{};
+  pw_thread_loop* thread_loop{};
+  pw_main_loop* main_loop{};
+  pw_core* core{};
 };
 
 struct pipewire_output_configuration
 {
   std::string client_name = "libremidi client";
 
-  pw_main_loop* context{};
-  pw_filter* filter{};
-  std::function<void(pipewire_callback)> set_process_func{};
-  std::function<void(int64_t)> clear_process_func{};
+  pw_thread_loop* thread_loop{};
+  pw_main_loop* main_loop{};
+  pw_core* core{};
 
   int64_t output_buffer_size{65536};
 };
@@ -47,7 +39,8 @@ struct pipewire_observer_configuration
 {
   std::string client_name = "libremidi client";
 
-  pw_main_loop* context{};
+  pw_thread_loop* thread_loop{};
+  pw_main_loop* main_loop{};
+  pw_core* core{};
 };
-
 }

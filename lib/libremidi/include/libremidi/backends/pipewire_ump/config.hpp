@@ -4,24 +4,23 @@
 
 NAMESPACE_LIBREMIDI::pipewire_ump
 {
+// Same borrow-mode contract as pipewire_input_configuration.
 struct input_configuration
 {
   std::string client_name = "libremidi client";
 
-  pw_main_loop* context{};
-  pw_filter* filter{};
-  std::function<void(libremidi::pipewire_callback)> set_process_func{};
-  std::function<void(int64_t)> clear_process_func{};
+  pw_thread_loop* thread_loop{};
+  pw_main_loop* main_loop{};
+  pw_core* core{};
 };
 
 struct output_configuration
 {
   std::string client_name = "libremidi client";
 
-  pw_main_loop* context{};
-  pw_filter* filter{};
-  std::function<void(libremidi::pipewire_callback)> set_process_func{};
-  std::function<void(int64_t)> clear_process_func{};
+  pw_thread_loop* thread_loop{};
+  pw_main_loop* main_loop{};
+  pw_core* core{};
 
   int64_t output_buffer_size{65536};
 };
@@ -30,7 +29,8 @@ struct observer_configuration
 {
   std::string client_name = "libremidi client";
 
-  pw_main_loop* context{};
+  pw_thread_loop* thread_loop{};
+  pw_main_loop* main_loop{};
+  pw_core* core{};
 };
-
 }

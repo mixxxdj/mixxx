@@ -4,9 +4,19 @@
 #include <string>
 
 #if !defined(BOOST_ASIO_IO_CONTEXT_HPP)
+#if __has_include(<boost/asio/detail/config.hpp>)
+  #include <boost/asio/detail/config.hpp>
+#endif
+
 namespace boost::asio
 {
-struct io_context;
+#if defined(BOOST_ASIO_INLINE_NAMESPACE_BEGIN)
+BOOST_ASIO_INLINE_NAMESPACE_BEGIN
+class io_context;
+BOOST_ASIO_INLINE_NAMESPACE_END
+#else
+class io_context;
+#endif
 }
 #endif
 

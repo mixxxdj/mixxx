@@ -359,6 +359,8 @@ LIBREMIDI_STATIC uint8_t cmidi2_ump_get_num_bytes(uint32_t data)
     case CMIDI2_MESSAGE_TYPE_SYSEX7:
       return 8;
     case CMIDI2_MESSAGE_TYPE_SYSEX8_MDS:
+    case CMIDI2_MESSAGE_TYPE_FLEX_DATA:
+    case CMIDI2_MESSAGE_TYPE_UMP_STREAM:
       return 16;
   }
   return 0xFF; /* wrong */

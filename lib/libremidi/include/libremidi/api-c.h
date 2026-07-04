@@ -26,6 +26,7 @@ enum libremidi_api
   NETWORK,        /*!< MIDI over IP */
   ANDROID_AMIDI,  /*!< Android AMidi API */
   KDMAPI,         /*!< OmniMIDI KDMAPI (Windows) */
+  RAW_IO,         /*!< User-provided raw byte I/O (serial, SPI, USB, etc.) */
 
   // MIDI 2.0 APIs
   ALSA_RAW_UMP = 0x1000, /*!< Raw ALSA API for MIDI 2.0 */
@@ -36,6 +37,7 @@ enum libremidi_api
   NETWORK_UMP,           /*!< MIDI2 over IP */
   JACK_UMP,              /*!< MIDI2 over JACK, type "32 bit raw UMP". Requires PipeWire v1.4+. */
   PIPEWIRE_UMP,          /*!< MIDI2 over PipeWire. Requires v1.4+. */
+  RAW_IO_UMP,            /*!< User-provided raw UMP I/O (serial, SPI, USB, etc.) */
 
   DUMMY = 0xFFFF /*!< A compilable but non-functional API. */
 };

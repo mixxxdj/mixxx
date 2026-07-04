@@ -3,6 +3,10 @@
 #include <libremidi/backends/pipewire/helpers.hpp>
 #include <libremidi/detail/midi_out.hpp>
 
+#include <spa/control/control.h>
+#include <spa/pod/builder.h>
+#include <spa/pod/pod.h>
+
 #include <readerwriterqueue.h>
 
 NAMESPACE_LIBREMIDI
@@ -19,7 +23,8 @@ public:
   {
   } configuration;
 
-  midi_out_pipewire(output_configuration&& conf, pipewire_output_configuration&& apiconf)
+  midi_out_pipewire(
+      output_configuration&& conf, pipewire_output_configuration&& apiconf)
       : configuration{std::move(conf), std::move(apiconf)}
   {
     if (auto ret = create_context(*this); ret != stdx::error{})
@@ -52,7 +57,7 @@ public:
         err != stdx::error{})
       return err;
 
-    this->filter->set_port_buffer(configuration.output_buffer_size);
+    this->set_port_buffer(configuration.output_buffer_size);
 
     if (auto err = link_ports(*this, out_port); err != stdx::error{})
       return err;
@@ -67,7 +72,7 @@ public:
         err != stdx::error{})
       return err;
 
-    this->filter->set_port_buffer(configuration.output_buffer_size);
+    this->set_port_buffer(configuration.output_buffer_size);
 
     start_thread();
     return stdx::error{};
@@ -84,7 +89,7 @@ public:
   int process(spa_io_position* pos)
   {
     m_process_clock.store(pos->clock.nsec, std::memory_order_relaxed);
-    const auto b = pw.filter_dequeue_buffer(this->filter->port);
+    const auto b = pw.filter_dequeue_buffer(this->port.opaque);
     if (!b)
       return 1;
 
@@ -140,11 +145,11 @@ public:
       d->chunk->size = n_fill_frames;
       b->size = n_fill_frames;
 
-      pw.filter_queue_buffer(this->filter->port, b);
+      pw.filter_queue_buffer(this->port.opaque, b);
       return 0;
     }
 
-    pw.filter_flush(this->filter->filter, true);
+    pw.filter_flush(this->flt->handle(), true);
 
     return 0;
   }

@@ -137,6 +137,7 @@ module;
 #include <chrono>
 #include <cinttypes>
 #include <compare>
+#include <condition_variable>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -246,3 +247,8 @@ module :private;
 #include <libremidi/reader.cpp>
 #include <libremidi/writer.cpp>
 // #include <libremidi/libremidi-c.cpp>
+
+#if defined(LIBREMIDI_PIPEWIRE)
+#include <libremidi/backends/linux/pipewire/instance.cpp>
+#include <libremidi/backends/linux/pipewire/context.cpp>
+#endif
