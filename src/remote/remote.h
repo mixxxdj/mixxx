@@ -22,8 +22,18 @@ namespace mixxx {
                      std::shared_ptr<PlayerManager> &ainf,
                      QObject* pParent = nullptr);
        virtual ~RemoteControl();
+
+       // Tears down the running webserver (if any) and, if
+       // [RemoteControl],actv is currently true, starts a new one with the
+       // current settings. Call after the RemoteControl preferences are saved.
+       void reload();
    private:
+        UserSettingsPointer                   m_pConfig;
+        std::shared_ptr<TrackCollectionManager> m_trackscollmngr;
+        std::shared_ptr<Library>              m_library;
+        std::shared_ptr<DbConnectionPool>     m_database;
+        std::shared_ptr<PlayerManager>        m_ainf;
         std::shared_ptr<RemoteController>     m_RemoteController;
         QObject*                                              m_Parent;
    };
-}; 
+};

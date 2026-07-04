@@ -384,15 +384,33 @@ mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,
                                                                     std::shared_ptr<Library> &library,
                                                                     std::shared_ptr<DbConnectionPool> &database,
                                                                     std::shared_ptr<PlayerManager> &ainf,
-                                    QObject* pParent) {
+                                    QObject* pParent)
+        : m_pConfig(pConfig),
+          m_trackscollmngr(trackscollmngr),
+          m_library(library),
+          m_database(database),
+          m_ainf(ainf),
+          m_Parent(pParent) {
     kLogger.debug() << "Starting RemoteControl";
-    if(QVariant(pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
+    if(QVariant(m_pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
-        m_RemoteController = std::make_shared<RemoteController>(pConfig,trackscollmngr,library,ainf,database,pParent);
+        m_RemoteController = std::make_shared<RemoteController>(
+                m_pConfig,m_trackscollmngr,m_library,m_ainf,m_database,m_Parent);
     }
 }
 
 mixxx::RemoteControl::~RemoteControl(){
         kLogger.debug() << "Shutdown RemoteControl";
+}
+
+void mixxx::RemoteControl::reload(){
+    kLogger.debug() << "Reloading RemoteControl";
+    // Destroying the old RemoteController tears down its QHttpServer/QTcpServer.
+    m_RemoteController.reset();
+    if(QVariant(m_pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
+        kLogger.debug() << "Restarting RemoteControl Webserver";
+        m_RemoteController = std::make_shared<RemoteController>(
+                m_pConfig,m_trackscollmngr,m_library,m_ainf,m_database,m_Parent);
+    }
 }
 

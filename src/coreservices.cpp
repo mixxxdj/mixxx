@@ -902,7 +902,12 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary());
+            getLibrary()
+#ifdef HTTP_REMOTE
+            ,
+            getRemoteControl()
+#endif // HTTP_REMOTE
+    );
     return pDlgPreferences;
 }
 

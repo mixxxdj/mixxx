@@ -24,6 +24,7 @@ class VinylControlManager;
 
 namespace mixxx {
 class ScreensaverManager;
+class RemoteControl;
 namespace skin {
 class SkinLoader;
 } // namespace skin
@@ -52,7 +53,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
-            std::shared_ptr<Library> pLibrary);
+            std::shared_ptr<Library> pLibrary,
+            std::shared_ptr<mixxx::RemoteControl> pRemoteControl = nullptr);
     virtual ~DlgPreferences();
 
     void addPageWidget(PreferencesPage page,

@@ -61,7 +61,8 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary)
+        std::shared_ptr<Library> pLibrary,
+        std::shared_ptr<mixxx::RemoteControl> pRemoteControl)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -225,7 +226,7 @@ DlgPreferences::DlgPreferences(
 
 #ifdef HTTP_REMOTE
     addPageWidget(PreferencesPage(
-                          new DlgPrefRemoteControl(this, m_pConfig),
+                          new DlgPrefRemoteControl(this, m_pConfig, pRemoteControl),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Remote Control"),
             "ic_preferences_broadcast.svg");

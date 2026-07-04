@@ -101,6 +101,12 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
+#ifdef HTTP_REMOTE
+    std::shared_ptr<mixxx::RemoteControl> getRemoteControl() const {
+        return m_RemoteControl;
+    }
+#endif
+
     std::shared_ptr<QDialog> makeDlgPreferences() const;
 
   signals:
