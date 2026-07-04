@@ -11,6 +11,7 @@
 
 #include "remote.h"
 
+#include "control/controlobject.h"
 #include "util/db/dbconnectionpooled.h"
 
 #include "library/library.h"
@@ -228,6 +229,21 @@ namespace mixxx {
                             QJsonObject trackobj;
                             trackobj["tracklist"]=tracklist;
                             resproot.push_back(trackobj);
+                    }
+
+                    if(!cur["getmastergain"].isNull()){
+                        QJsonObject gainobj;
+                        gainobj.insert("mastergain",
+                                ControlObject::get(ConfigKey("[Master]", "gain")));
+                        resproot.push_back(gainobj);
+                    }
+
+                    if(!cur["setmastergain"].isNull()){
+                        QJsonObject jgain=cur["setmastergain"].toObject();
+                        if(!jgain["gain"].isNull()){
+                            ControlObject::set(ConfigKey("[Master]", "gain"),
+                                    jgain["gain"].toDouble());
+                        }
                     }
                 }
 

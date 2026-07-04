@@ -171,6 +171,40 @@ function moveautotracklist(direction){
     }
 }
 
+function getmastergain(){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"getmastergain": "true"},
+        ]
+    ));
+    xmlhttp.onload = (event) => {
+        var resjs=JSON.parse(xmlhttp.responseText);
+        for (var i = 0; i < resjs.length; i++) {
+            if(resjs[i].mastergain !== undefined){
+                document.getElementById("mastergainrange").value = resjs[i].mastergain;
+            }
+        }
+    };
+}
+
+function setmastergain(value){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"setmastergain": { "gain": parseFloat(value) }},
+        ]
+    ));
+}
+
 function loadautodjtracklist(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);
