@@ -18,6 +18,15 @@
   <body onload="checkauth()">
     <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
     <main>
+      <div class="card" id="deckcontrol">
+        <label for="deckselect">Deck</label>
+        <select id="deckselect" onchange="onDeckChange();"></select>
+        <div class="toolbar deck-toolbar">
+          <button id="deckplaybtn" class="accent" onclick="toggleDeckPlay();">▶ Play</button>
+          <button onclick="deckcue();">Cue</button>
+        </div>
+      </div>
+
       <div class="card" id="mastergain">
         <label for="mastergainrange">Master Gain</label>
         <input type="range" id="mastergainrange" min="0" max="5" step="0.01" value="1"
@@ -41,7 +50,7 @@
         <button class="accent" onclick="window.location.href='library.html';">+ Add</button>
         <button class="danger" onclick="delautodj();">Remove</button>
       </div>
-      <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();getmastergain();getautodjenabled();});</script>
+      <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();getmastergain();getautodjenabled();getnumdecks();});</script>
     </main>
     <footer></footer>
   </body>

@@ -239,6 +239,100 @@ function setautodjenabled(enabled){
     ));
 }
 
+function getnumdecks(){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"getnumdecks": "true"},
+        ]
+    ));
+    xmlhttp.onload = (event) => {
+        var resjs=JSON.parse(xmlhttp.responseText);
+        for (var i = 0; i < resjs.length; i++) {
+            if(resjs[i].numdecks !== undefined){
+                var select = document.getElementById("deckselect");
+                select.innerHTML = "";
+                for(var d=1; d<=resjs[i].numdecks; d++){
+                    var opt = document.createElement("option");
+                    opt.value = d;
+                    opt.textContent = "Deck " + d;
+                    select.appendChild(opt);
+                }
+                onDeckChange();
+            }
+        }
+    };
+}
+
+function onDeckChange(){
+    getdeckstate(document.getElementById("deckselect").value);
+}
+
+function getdeckstate(deck){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"getdeckstate": { "deck": parseInt(deck) }},
+        ]
+    ));
+    xmlhttp.onload = (event) => {
+        var resjs=JSON.parse(xmlhttp.responseText);
+        for (var i = 0; i < resjs.length; i++) {
+            if(resjs[i].playing !== undefined){
+                updateDeckPlayButton(resjs[i].playing);
+            }
+        }
+    };
+}
+
+function updateDeckPlayButton(playing){
+    var btn = document.getElementById("deckplaybtn");
+    btn.dataset.playing = playing ? "true" : "false";
+    btn.textContent = playing ? "⏸ Pause" : "▶ Play";
+}
+
+function toggleDeckPlay(){
+    var deck = document.getElementById("deckselect").value;
+    var newState = document.getElementById("deckplaybtn").dataset.playing !== "true";
+    setdeckplay(deck, newState);
+    updateDeckPlayButton(newState);
+}
+
+function setdeckplay(deck, playing){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"setdeckplay": { "deck": parseInt(deck), "playing": playing }},
+        ]
+    ));
+}
+
+function deckcue(){
+    var deck = document.getElementById("deckselect").value;
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"deckcue": { "deck": parseInt(deck) }},
+        ]
+    ));
+}
+
 function loadautodjtracklist(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);

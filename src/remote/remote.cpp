@@ -260,6 +260,46 @@ namespace mixxx {
                                     jadj["enabled"].toBool() ? 1.0 : 0.0);
                         }
                     }
+
+                    if(!cur["getnumdecks"].isNull()){
+                        QJsonObject numobj;
+                        numobj.insert("numdecks",
+                                ControlObject::get(ConfigKey("[App]", "num_decks")));
+                        resproot.push_back(numobj);
+                    }
+
+                    if(!cur["getdeckstate"].isNull()){
+                        QJsonObject jdeck=cur["getdeckstate"].toObject();
+                        int deck=jdeck["deck"].toInt();
+                        if(deck>0){
+                            QString group=PlayerManager::groupForDeck(deck-1);
+                            QJsonObject deckobj;
+                            deckobj.insert("deck",deck);
+                            deckobj.insert("playing",
+                                    ControlObject::get(ConfigKey(group, "play")) > 0.0);
+                            resproot.push_back(deckobj);
+                        }
+                    }
+
+                    if(!cur["setdeckplay"].isNull()){
+                        QJsonObject jdeck=cur["setdeckplay"].toObject();
+                        int deck=jdeck["deck"].toInt();
+                        if(deck>0 && !jdeck["playing"].isNull()){
+                            QString group=PlayerManager::groupForDeck(deck-1);
+                            ControlObject::set(ConfigKey(group, "play"),
+                                    jdeck["playing"].toBool() ? 1.0 : 0.0);
+                        }
+                    }
+
+                    if(!cur["deckcue"].isNull()){
+                        QJsonObject jdeck=cur["deckcue"].toObject();
+                        int deck=jdeck["deck"].toInt();
+                        if(deck>0){
+                            QString group=PlayerManager::groupForDeck(deck-1);
+                            ControlObject::set(ConfigKey(group, "cue_default"), 1.0);
+                            ControlObject::set(ConfigKey(group, "cue_default"), 0.0);
+                        }
+                    }
                 }
 
                 jsonResponse.setArray(resproot);

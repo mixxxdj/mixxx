@@ -193,6 +193,30 @@ input[type=password]:focus {
     min-width: 0;
 }
 
+select {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: var(--surface-2)
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9aa6' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+        no-repeat right 12px center / 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 40px 12px 14px;
+    min-height: 44px;
+    color: var(--text);
+    font-size: 0.95em;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.deck-toolbar {
+    margin-top: 12px;
+}
+
 /* range slider */
 input[type=range] {
     -webkit-appearance: none;
