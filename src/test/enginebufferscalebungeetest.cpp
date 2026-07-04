@@ -1,11 +1,14 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <cmath>
 #include <vector>
 
 #include "engine/bufferscalers/enginebufferscalebungee.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
+#include "util/fpclassify.h"
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/types.h"
@@ -524,6 +527,90 @@ class EngineBufferScaleBungeeBufferWindowTest : public MixxxTest {
     BufferWindowReadAheadManagerMock* m_pReadAhead = nullptr;
     EngineBufferScaleBungee* m_pScaler = nullptr;
 };
+
+TEST(EngineBufferScaleBungeePlaypositionAccountingTest,
+        LeftoverOutputUsesOriginalChunkPositionDeltaAfterTempoChange) {
+    constexpr double kInitialTempo = 1.0;
+    constexpr double kChangedTempo = 3.0;
+    constexpr SINT kFeedFrames = 1 << 15;
+    constexpr SINT kChannelCount = 2;
+    constexpr SINT kWarmUpOutputFrames = 4096;
+    constexpr SINT kFirstOutputFrames = 1;
+    constexpr SINT kSecondOutputFrames = 1;
+    constexpr SINT kWarmUpOutputSamples = kWarmUpOutputFrames * kChannelCount;
+    constexpr SINT kFirstOutputSamples = kFirstOutputFrames * kChannelCount;
+    constexpr SINT kSecondOutputSamples = kSecondOutputFrames * kChannelCount;
+
+    std::vector<CSAMPLE> readData(kFeedFrames * kChannelCount);
+    for (size_t i = 0; i < readData.size(); ++i) {
+        readData[i] = static_cast<CSAMPLE>((i % 251) / 251.0f * 2.0f - 1.0f);
+    }
+
+    auto configureScaler = [](EngineBufferScaleBungee* pScaler, double tempo) {
+        pScaler->setSignal(mixxx::audio::SampleRate(44100),
+                mixxx::audio::ChannelCount::stereo());
+        double tempoVar = tempo;
+        double pitchVar = 1.0;
+        pScaler->setScaleParameters(1.0, &tempoVar, &pitchVar);
+    };
+    BufferWindowReadAheadManagerMock unchangedReadAhead;
+    unchangedReadAhead.setReadBuffer(readData);
+    EngineBufferScaleBungee unchangedScaler(&unchangedReadAhead);
+    configureScaler(&unchangedScaler, kInitialTempo);
+
+    BufferWindowReadAheadManagerMock changedReadAhead;
+    changedReadAhead.setReadBuffer(std::move(readData));
+    EngineBufferScaleBungee changedScaler(&changedReadAhead);
+    configureScaler(&changedScaler, kInitialTempo);
+
+    std::vector<CSAMPLE> unchangedWarmUp(kWarmUpOutputSamples);
+    std::vector<CSAMPLE> changedWarmUp(kWarmUpOutputSamples);
+    std::vector<CSAMPLE> unchangedFirstBuffer(kFirstOutputSamples);
+    std::vector<CSAMPLE> unchangedSecondBuffer(kSecondOutputSamples);
+    std::vector<CSAMPLE> changedFirstBuffer(kFirstOutputSamples);
+    std::vector<CSAMPLE> changedSecondBuffer(kSecondOutputSamples);
+
+    unchangedScaler.scaleBuffer(unchangedWarmUp.data(), kWarmUpOutputSamples);
+    changedScaler.scaleBuffer(changedWarmUp.data(), kWarmUpOutputSamples);
+
+    double unchangedFirst = 0.0;
+    double changedFirst = 0.0;
+    for (int attempt = 0; attempt < 16; ++attempt) {
+        unchangedFirst =
+                unchangedScaler.scaleBuffer(unchangedFirstBuffer.data(), kFirstOutputSamples);
+        changedFirst =
+                changedScaler.scaleBuffer(changedFirstBuffer.data(), kFirstOutputSamples);
+        if (util_isfinite(unchangedFirst) && util_isfinite(changedFirst) &&
+                unchangedFirst > 0.0 && changedFirst > 0.0) {
+            break;
+        }
+    }
+    ASSERT_TRUE(util_isfinite(unchangedFirst));
+    ASSERT_TRUE(util_isfinite(changedFirst));
+    ASSERT_GT(unchangedFirst, 0.0);
+    ASSERT_GT(changedFirst, 0.0);
+    ASSERT_NEAR(unchangedFirst, changedFirst, 1e-9);
+
+    configureScaler(&changedScaler, kChangedTempo);
+
+    const double unchangedSecond =
+            unchangedScaler.scaleBuffer(unchangedSecondBuffer.data(), kSecondOutputSamples);
+    const double changedSecond =
+            changedScaler.scaleBuffer(changedSecondBuffer.data(), kSecondOutputSamples);
+
+    ASSERT_TRUE(util_isfinite(unchangedSecond));
+    ASSERT_TRUE(util_isfinite(changedSecond));
+    ASSERT_GT(unchangedSecond, 0.0);
+    ASSERT_GT(changedSecond, 0.0);
+    EXPECT_NEAR(unchangedSecond, changedSecond, 1e-9)
+            << "Changing tempo must not alter the playposition advance while "
+               "scaleBuffer drains leftover output from an already-synthesized "
+               "Bungee chunk.";
+    EXPECT_GT(std::fabs(changedSecond - kChangedTempo * kSecondOutputFrames), 1e-6)
+            << "This test must fail if scaleBuffer reports the current "
+               "effectiveRate for leftover old-tempo output.";
+
+}
 
 // Direct invariant test for the high-speed grain-outrun failure mode.
 //

@@ -22,14 +22,15 @@ class EngineBufferScaleBungeeBufferWindowTest;
 //   m_dTempoRatio  — absolute (unsigned) tempo ratio; 1.0 = original speed.
 //                    Values <MIN_SEEK_SPEED are clamped to 0.0 (stopped).
 //   m_bBackwards   — true when the caller requested a negative tempo ratio.
-//   m_effectiveRate — m_dBaseRate * m_dTempoRatio (always ≥ 0).  This is the
-//                    source-frame advance per output frame used both for
-//                    Bungee's input-frame timestamps and for scaleBuffer()'s
-//                    returned playback-position advance.
-//   m_request.speed — signed speed passed to Bungee each grain; equals
-//                    ±m_effectiveRate.  Bungee's request positions are input
-//                    frame timestamps, so sample-rate conversion must be part
-//                    of this speed rather than only the Mixxx cursor update.
+//   m_effectiveRate — latched source-frame advance per output frame for
+//                    already-synthesised output and the current grain. New
+//                    m_dBaseRate * m_dTempoRatio requests are adopted only at
+//                    grain boundaries so queued output keeps the tempo that
+//                    produced it.
+//   m_request.speed — signed speed passed to Bungee each grain. Bungee's
+//                    request positions are input frame timestamps, so
+//                    sample-rate conversion must be part of this speed rather
+//                    than only the Mixxx cursor update.
 //
 // ## Input window / InputChunk contract
 //
@@ -127,7 +128,6 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     // Uses SampleUtil::interleaveBuffer for the stereo fast path.
     void copyOutputFrames(CSAMPLE* pDest, SINT offsetInChunk, SINT nFrames) const;
     bool hasValidOutputChunk() const;
-    double outputChunkInputFrameDelta(SINT offsetInChunk, SINT nFrames) const;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
