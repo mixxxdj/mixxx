@@ -20,12 +20,11 @@
     <main class="centered">
       <div class="card login-card">
         <h2>Login</h2>
-        <form action="#">
+        <form action="#" onsubmit="login(document.getElementById('pwinput').value); return false;">
           <label for="pwinput">Password</label>
           <input id="pwinput" type="password" placeholder="Enter password">
           <br><br>
-          <button type="button" class="accent full-width"
-                  onclick="login(document.getElementById('pwinput').value)">Login</button>
+          <button type="submit" class="accent full-width">Login</button>
         </form>
       </div>
     </main>
