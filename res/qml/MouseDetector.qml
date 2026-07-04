@@ -29,20 +29,9 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.AllButtons
-        // Accept touch events by setting mouse.acceptedButtons? Actually, MouseArea handles touch as mouse events with source set accordingly.
-        onPressed:  root.handler.mouse(event)
-        onReleased: root.handler.mouse(event)
-        onHovered:  root.handler.mouse(event)
-        onWheel:    root.handler.mouse(event)
-        // For touch events that are not captured as mouse events? We rely on the above.
-    }
-
-    // We need to expose the handler to the MouseArea
-    property variant handler: {
-        return {
-            mouse: function(event) {
-                root.handleInput(event)
-            }
-        }
+        onPressed:  root.handleInput(event)
+        onReleased: root.handleInput(event)
+        onHovered:  root.handleInput(event)
+        onWheel:    root.handleInput(event)
     }
 }

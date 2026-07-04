@@ -695,25 +695,15 @@ ApplicationWindow {
                 }
             }
         }
+    }
 
-        VinylPauseOverlay {
-            id: vinylPauseOverlay
-            anchors.fill: parent
-            visible: false   // We'll set this based on playback state
-        }
+    VinylPauseOverlay {
+        id: vinylPauseOverlay
+        anchors.fill: parent
+    }
 
-        MouseDetector {
-            id: mouseDetector
-        }
-
-                GaussianBlur {
-                    anchors.fill: overlayModal
-                    deviation: 4
-                    radius: Math.max(0, overlayModal.radius)
-                    samples: 16
-                    source: content
-                }
-            }
-        }
+    MouseDetector {
+        id: mouseDetector
+        anchors.fill: parent
     }
 }

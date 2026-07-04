@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import Mixxx 1.0 as Mixxx
 
 Item {
     id: root
@@ -6,12 +7,26 @@ Item {
     anchors.fill: parent
     property bool paused: false
 
+    // Watch deck 1 play state
+    Mixxx.ControlProxy {
+        id: deck1Play
+        group: "[Channel1]"
+        key: "play"
+
+        onValueChanged: {
+            root.paused = (value === 0);
+        }
+    }
+
     // Animation for showing/hiding the vinyl
     Behavior on opacity {
         NumberAnimation { duration: 300 }
     }
 
     opacity: paused ? 1.0 : 0.0
+
+    // Only spin when visible — saves CPU/battery on mobile
+    visible: opacity > 0
 
     Canvas {
         id: vinylCanvas
