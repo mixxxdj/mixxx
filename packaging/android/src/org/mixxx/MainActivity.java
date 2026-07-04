@@ -2,7 +2,6 @@ package org.mixxx;
 
 import android.os.Bundle;
 import android.view.WindowManager;
-
 import org.mixxx.AndroidScreenManager;
 import org.qtproject.qt.android.QtActivityBase;
 
