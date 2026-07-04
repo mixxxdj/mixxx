@@ -223,7 +223,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="578"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="613"/>
         <source>Export Playlist</source>
         <translation>导出播放列表</translation>
     </message>
@@ -277,13 +277,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="387"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="391"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="402"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="550"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="585"/>
         <source>Playlist Creation Failed</source>
         <translation>播放列表创建失败</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="403"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="586"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>创建播放列表时发生未知错误： </translation>
     </message>
@@ -298,14 +298,14 @@
         <translation>您真的要删除播放列表&lt;b&gt;%1&lt;/b&gt;吗？</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="582"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="617"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>M3U 播放列表（*.m3u）</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="580"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="615"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U 播放列表（*.m3u）;;M3U8 播放列表（*.m3u8）;;PLS 播放列表（*.pls）;;CSV 文本（*.csv）;;可读文本（*.txt）</translation>
+        <translation>M3U 播放列表(*.m3u);;M3U8 播放列表(*.m3u8);;PLS 播放列表(*.pls);;文本 CSV (*.csv);;可读文本(*.txt)</translation>
     </message>
 </context>
 <context>
@@ -324,7 +324,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="631"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="635"/>
         <source>Couldn&apos;t load track.</source>
         <translation>无法加载音轨。</translation>
     </message>
@@ -2339,7 +2339,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
         <source>Deck %1 Stem %2</source>
-        <translation>Deck %1 Stem %2</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
@@ -3982,12 +3982,12 @@ trace    - Above + Profiling messages</source>
         <translation>早期贡献者</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="472"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="489"/>
         <source>Official Website</source>
         <translation>官方网站</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="482"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="499"/>
         <source>Donate</source>
         <translation>捐献</translation>
     </message>
@@ -6618,17 +6618,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>项目不是目录或目录缺失</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="407"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="408"/>
         <source>Choose a music directory</source>
         <translation>选择一个音乐目录</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="423"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="425"/>
         <source>Confirm Directory Removal</source>
         <translation>确认移除目录</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="425"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="427"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx 将不会监视该目录中的新音轨。您希望如何处理该目录（及其子目录）中的音轨？
 &lt;ul&gt;
@@ -6639,62 +6639,62 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 隐藏音轨可以保留其元数据，以便您以后再次添加它们。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="436"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="438"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>元数据即音轨的信息（艺术家、标题、播放次数等）、节拍模式、热切点和循环设置。这些选项仅影响 Mixxx 媒体库。不会更改或删除相关的媒体文件。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="444"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="446"/>
         <source>Hide Tracks</source>
         <translation>隐藏音轨</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="446"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="448"/>
         <source>Delete Track Metadata</source>
         <translation>删除音轨元数据</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="448"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="450"/>
         <source>Leave Tracks Unchanged</source>
         <translation>不做改动</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="490"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="493"/>
         <source>Relink music directory to new location</source>
         <translation>将音乐目录链接至新位置</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="629"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="634"/>
         <source>Black</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="631"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="636"/>
         <source>ExtraBold</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="633"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="638"/>
         <source>Bold</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="636"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="641"/>
         <source>SemiBold</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="638"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="643"/>
         <source>Medium</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="642"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="647"/>
         <source>Light</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="664"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="669"/>
         <source>Select Library Font</source>
         <translation>选择音乐库字体</translation>
     </message>
@@ -7349,33 +7349,33 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefRecord</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="209"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="210"/>
         <source>Choose recordings directory</source>
         <translation>选择录音目录</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="372"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="379"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="374"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="381"/>
         <source>Recordings directory invalid</source>
         <translation>录制文件目录无效</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="373"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="375"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation>录制目录必须设置为现有目录。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="380"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="382"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation>Recordings directory （录制文件目录） 必须设置为目录。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="385"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="387"/>
         <source>Recordings directory not writable</source>
         <translation>录制文件目录不可写</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="386"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="388"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation>您没有对 %1 的写入权限。选择您具有写入权限的录制文件目录。</translation>
     </message>
@@ -7657,77 +7657,77 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="384"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="389"/>
         <source>Information</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="385"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="390"/>
         <source>Mixxx must be restarted before the multi-threaded RubberBand setting change will take effect.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="730"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="735"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation>自动（&lt;= 1024 帧/周期）</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="733"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="738"/>
         <source>2048 frames/period</source>
         <translation>2048 帧/周期</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="736"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="741"/>
         <source>4096 frames/period</source>
         <translation>4096 帧/周期</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="821"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="826"/>
         <source>Are you sure?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="824"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="829"/>
         <source>Distribute stereo channels into mono channels for parallel processing will result in a loss of mono compatibility and a diffuse stereo image. It is not recommended during broadcasting or recording.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="829"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="834"/>
         <source>Are you sure you wish to proceed?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="830"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="835"/>
         <source>No</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="832"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="837"/>
         <source>Yes, I know what I am doing</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1045"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1050"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>与您听到的相比，麦克风输入在录音和广播信号中显得不合时宜。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1048"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1053"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>测量往返延迟，并在上方输入麦克风延迟补偿以对齐麦克风计时。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1041"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1046"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>細節請參考Mixxx 使用者操作手冊</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1060"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1065"/>
         <source>Configured latency has changed.</source>
         <translation>配置的延迟已更改。</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1061"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1066"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>重新测量往返延迟，并将其输入到麦克风延迟补偿上方，以调整麦克风定时。</translation>
     </message>
@@ -7747,12 +7747,12 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>主输出和展位输出</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="756"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="761"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="394"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="399"/>
         <source>Configuration error</source>
         <translation>配置错误</translation>
     </message>
@@ -9468,12 +9468,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectManifestTableModel</name>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="49"/>
         <source>Type</source>
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="48"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="51"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
@@ -10054,251 +10054,251 @@ Do you really want to overwrite it?</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="668"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="683"/>
         <source>Sound Device Busy</source>
         <translation>声音设备正忙</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="677"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="692"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>请关闭其他应用程序，或重新连接设备后&lt;b&gt;重试&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="681"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="708"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="732"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="696"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="723"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="747"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;重新配置&lt;/b&gt; Mixxx 声音设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="684"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="711"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="699"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="726"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>从 Mixxx Wiki 中获取&lt;b&gt;帮助&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="687"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="714"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="735"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="702"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="729"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="750"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;退出&lt;/b&gt; Mixxx。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="628"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="643"/>
         <source>Retry</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="228"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="243"/>
         <source>skin</source>
         <translation>皮肤</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="581"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="596"/>
         <source>Allow Mixxx to hide the menu bar?</source>
         <translation>允许 Mixxx 隐藏菜单栏？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="583"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="598"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
         <translation>隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="584"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="599"/>
         <source>Always show</source>
         <translation>始终显示</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="587"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="602"/>
         <source>The Mixxx menu bar is hidden and can be toggled with a single press of the &lt;b&gt;Alt&lt;/b&gt; key.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; to agree.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; to disable that, for example if you don&apos;t use Mixxx with a keyboard.&lt;br&gt;&lt;br&gt;You can change this setting any time in Preferences -&gt; Interface.&lt;br&gt;</source>
         <extracomment>Keep formatting tags &lt;b&gt; (bold text) and &lt;br&gt; (linebreak). %1 is the placeholder for the 'Always show' button label</extracomment>
         <translation>Mixxx 菜单栏是隐藏的，只需按一下&lt;b&gt;Alt 键&lt;/b&gt;钥匙。&lt;br&gt;&lt;br&gt;点击&lt;b&gt;%1&lt;/b&gt;同意。&lt;br&gt;&lt;br&gt;点击&lt;b&gt;%2&lt;/b&gt;以禁用它，例如，如果您不将 Mixxx 与键盘一起使用。&lt;br&gt;&lt;br&gt;您可以随时在 Preferences -&gt; Interface 中更改此设置。&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="602"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="617"/>
         <source>Ask me again</source>
         <translation>再问我一次</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="630"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="743"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="645"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="758"/>
         <source>Reconfigure</source>
         <translation>重新配置</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="632"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="647"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="634"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="745"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="649"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="760"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="671"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="697"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="686"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="712"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx 无法打开所有要打开的音频设备</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="695"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="710"/>
         <source>Sound Device Error</source>
         <translation>音频设备错误</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="705"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="720"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>修正错误后 &lt;b&gt; 重试 &lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="723"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="738"/>
         <source>No Output Devices</source>
         <translation>没有输出设备</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="725"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="740"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx 的配置中没有任何输出设备，将会禁用音频处理操作。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="729"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="744"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>确定在没有任何输出的情况下&lt;b&gt;继续&lt;/b&gt;。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="741"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="756"/>
         <source>Continue</source>
         <translation>继续</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1013"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1028"/>
         <source>Load track to Deck %1</source>
         <translation>加载音轨到碟机 %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1014"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1029"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>碟机 %1 当前正在播放。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1016"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1031"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>您确定要加载新音轨吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1114"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1129"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于唱盘控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1141"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1156"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>尚未选择用于唱盘控制的输入设备。
 请在声音硬件的首选项中选择一个输入设备。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1168"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1183"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation>没有为此麦克风选择输入设备。是否要选择输入设备？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1195"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1210"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation>没有为此辅助设备选择输入设备。是否要选择输入设备？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1231"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1246"/>
         <source>Scan took %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1236"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1251"/>
         <source>No changes detected.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1238"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1260"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1253"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1275"/>
         <source>%1 tracks in total</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1242"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1257"/>
         <source>%1 new tracks found</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1246"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1261"/>
         <source>%1 moved tracks detected</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1250"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1265"/>
         <source>%1 tracks are missing (%2 total)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1256"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1271"/>
         <source>%1 tracks have been rediscovered</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1265"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1280"/>
         <source>Library scan finished</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1329"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1344"/>
         <source>Error in skin file</source>
         <translation>皮肤文件错误</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1330"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1345"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>无法加载所选皮肤。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1504"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1519"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL 直接渲染</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1505"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1520"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>您的计算机上未启用直接渲染。&lt;br&gt;&lt;br&gt;这意味着波形显示将非常&lt;br&gt;&lt;b&gt;速度慢，并且可能会严重占用您的 CPU&lt;/b&gt;.要么更新您的&lt;br&gt;配置以启用直接渲染或禁用&lt;br&gt;波形将通过选择 Mixxx 首选项显示在&lt;br&gt;“空”作为“界面”部分的波形显示。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1540"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1548"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1557"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1555"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1563"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1572"/>
         <source>Confirm Exit</source>
         <translation>确认退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1541"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1556"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>有唱机正在播放。确定退出 Mixxx 吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1549"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1564"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>有采样器正在播放。确定退出 Mixxx 吗？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1558"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1573"/>
         <source>The preferences window is still open.</source>
         <translation>首选项窗口尚未关闭。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1559"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1574"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>取消所作更改并退出 Mixxx 吗？</translation>
     </message>
@@ -10399,7 +10399,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="274"/>
         <source>Serato DJ Track Metadata Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Serato DJ 轨道元数据 Hotcue 颜色</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="299"/>
@@ -10735,12 +10735,12 @@ Do you want to scan your library for cover files now?</source>
         <translation>编码器</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="122"/>
+        <location filename="../../src/util/sandbox.cpp" line="124"/>
         <source>Mixxx Needs Access to: %1</source>
         <translation>Mixxx 需要权限以访问：%1</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="125"/>
+        <location filename="../../src/util/sandbox.cpp" line="127"/>
         <source>Your permission is required to access the following location:
 
 %1
@@ -10753,17 +10753,17 @@ After clicking OK, you will see a file picker. Please select &apos;%2&apos; to p
 点击后 OK，您将看到一个文件选择器。请选择“%2”以继续，或者如果您不想授予 Mixxx 访问权限并中止此操作，请单击“取消”。</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="163"/>
+        <location filename="../../src/util/sandbox.cpp" line="169"/>
         <source>You selected the wrong file. To grant Mixxx access, please select the file &apos;%1&apos;. If you do not want to continue, press Cancel.</source>
         <translation>您选择了错误的文件。为了使 Mixxx 能正确访问，请选择文件“%1”。若您不希望继续，请选择“取消”。</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="465"/>
+        <location filename="../../src/util/sandbox.cpp" line="470"/>
         <source>Upgrading old Mixxx settings</source>
         <translation>升级旧的 Mixxx 设置</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="468"/>
+        <location filename="../../src/util/sandbox.cpp" line="473"/>
         <source>Due to macOS sandboxing, Mixxx needs your permission to access your music library and settings from Mixxx versions before 2.3.0. After clicking OK, you will see a file selection dialog. 
 
 To allow Mixxx to use your old library and settings, click the Open button in the file selection dialog. Mixxx will then move your old settings into the sandbox. This only needs to be done once.
@@ -10774,6 +10774,11 @@ If you do not want to grant Mixxx access, click Cancel on the file picker. Mixxx
 要允许 Mixxx 使用您的旧库和设置，请单击文件选择对话框中的 Open 按钮。然后 Mixxx 会将您的旧设置移动到沙盒中。这只需要执行一次。
 
 如果您不想授予 Mixxx 访问权限，请单击文件选取器上的 Cancel。Mixxx 将创建一个新的音乐库并使用默认设置。</translation>
+    </message>
+    <message>
+        <location filename="../../src/util/sandbox.cpp" line="583"/>
+        <source>Mixxx needs access to the settings folder</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/bitcrushereffect.cpp" line="26"/>
@@ -11426,46 +11431,6 @@ Higher values result in less attenuation of high frequencies.</source>
         <translation>%1:%2</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="34"/>
-        <source>Ctrl+t</source>
-        <translation>Ctrl+T</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="35"/>
-        <source>Ctrl+y</source>
-        <translation>Ctrl+Y</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="36"/>
-        <source>Ctrl+u</source>
-        <translation>Ctrl+U</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="37"/>
-        <source>Ctrl+i</source>
-        <translation>Ctrl+I</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="45"/>
-        <source>Ctrl+o</source>
-        <translation>Ctrl+O</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="46"/>
-        <source>Ctrl+Shift+O</source>
-        <translation>Ctrl+Shift+O</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="53"/>
-        <source>Ctrl+,</source>
-        <translation>Ctrl+,</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="55"/>
-        <source>Ctrl+P</source>
-        <translation>Ctrl+P</translation>
-    </message>
-    <message>
         <location filename="../../src/effects/backends/builtin/bessel8lvmixeqeffect.cpp" line="17"/>
         <source>Bessel8 LV-Mix Isolator</source>
         <translation>Bessel8 LV-混音隔离</translation>
@@ -11909,13 +11874,13 @@ Fully right: end of the effect period</source>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="60"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="474"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="489"/>
         <source> encoder failure</source>
         <translation>编码器故障</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="62"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="476"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="491"/>
         <source>Failed to apply the selected settings.</source>
         <translation>无法应用所选设置。</translation>
     </message>
@@ -12258,47 +12223,47 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/track/steminfoimporter.cpp" line="192"/>
+        <location filename="../../src/track/steminfoimporter.cpp" line="199"/>
         <source>Stem #%1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1349"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1361"/>
         <source>Empty</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1351"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1363"/>
         <source>Simple</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1353"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1365"/>
         <source>Filtered</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1355"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1367"/>
         <source>HSV</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1357"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1369"/>
         <source>VSyncTest</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1359"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1371"/>
         <source>RGB</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1361"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1373"/>
         <source>Stacked</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1363"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1375"/>
         <source>Unknown</source>
         <translation type="unfinished"/>
     </message>
@@ -12559,193 +12524,193 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>ShoutConnection</name>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="81"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="86"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="88"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="93"/>
         <source>Mixxx encountered a problem</source>
         <translation>Mixxx遇到一个问题</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="82"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="89"/>
         <source>Could not allocate shout_t</source>
         <translation>无法为 shout_t 分配内存</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="87"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="94"/>
         <source>Could not allocate shout_metadata_t</source>
         <translation>无法为 shout_metadata_t 分配内存</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="92"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="99"/>
         <source>Error setting non-blocking mode:</source>
         <translation>设置非阻塞模式时出错：</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="101"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="108"/>
         <source>Error setting tls mode:</source>
         <translation>设置 TLS 模式时出错：</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="289"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
         <source>Error setting hostname!</source>
         <translation>设置主机名时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="303"/>
         <source>Error setting port!</source>
         <translation>设置端口时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="302"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="309"/>
         <source>Error setting password!</source>
         <translation>设置密码时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="308"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
         <source>Error setting mount!</source>
         <translation>设置挂载点时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="314"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="321"/>
         <source>Error setting username!</source>
         <translation>设置i用户名时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="319"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="326"/>
         <source>Error setting stream name!</source>
         <translation>设置流的名称时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="324"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="333"/>
         <source>Error setting stream description!</source>
         <translation>设置流的描述时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="329"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="338"/>
         <source>Error setting stream genre!</source>
         <translation>设置流的流派时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="334"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
         <source>Error setting stream url!</source>
         <translation>设置流的 URL 时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="340"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="349"/>
         <source>Error setting stream IRC!</source>
         <translation>设置流 IRC 时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="347"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
         <source>Error setting stream AIM!</source>
         <translation>设置流 AIM 时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="354"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="363"/>
         <source>Error setting stream ICQ!</source>
         <translation>设置流 ICQ 时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="360"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="369"/>
         <source>Error setting stream public!</source>
         <translation>设置公共流错误</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="380"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
         <source>Unknown stream encoding format!</source>
         <translation>未知的流编码格式！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="381"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="390"/>
         <source>Use a libshout version with %1 enabled</source>
         <translation>使用启用了 %1 的 libshout 版本</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="387"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="402"/>
         <source>Error setting stream encoding format!</source>
         <translation>设置流编码格式时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="402"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="417"/>
         <source>Broadcasting at 96 kHz with Ogg Vorbis is not currently supported. Please try a different sample rate or switch to a different encoding.</source>
         <translation>目前不支持使用 Ogg Vorbis 以 96 kHz 进行广播。请尝试不同的采样率或切换到不同的编码。</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="405"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="420"/>
         <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
         <translation>有关更多信息，请参阅 https://github.com/mixxxdj/mixxx/issues/5701。</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="414"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="429"/>
         <source>Unsupported sample rate</source>
         <translation>不支持的采样率</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="423"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="438"/>
         <source>Error setting bitrate</source>
         <translation>设置比特率时出错</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="438"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="453"/>
         <source>Error: unknown server protocol!</source>
         <translation>错误：服务器协议未知！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="443"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="458"/>
         <source>Error: Shoutcast only supports MP3 and AAC encoders</source>
         <translation>错误：Shoutcast 仅支持 MP3 和 AAC 编码器</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="449"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="464"/>
         <source>Error setting protocol!</source>
         <translation>设置协议时出错！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="681"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="696"/>
         <source>Network cache overflow</source>
         <translation>网络缓存溢出</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="901"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="927"/>
         <source>Connection error</source>
         <translation>连接错误</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="902"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="928"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>其中一个 Live Broadcasting 连接引发了以下错误：&lt;br&gt;&lt;b&gt;连接“%1”出错：&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="916"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="942"/>
         <source>Connection message</source>
         <translation>连接消息</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="917"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="943"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;来自实时广播连接“%1”的消息：&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="967"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="993"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>到流服务器的连接中断，且在 %1 次重试之后仍然无法重新连接</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="996"/>
         <source>Lost connection to streaming server.</source>
         <translation>到流服务器的连接断开</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="975"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1001"/>
         <source>Please check your connection to the Internet.</source>
         <translation>请检查您的互联网连接</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1010"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1036"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>无法连接到流服务器</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1012"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1038"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>请检查您的互联网连接，并确保用户名和密码正确。</translation>
     </message>
@@ -15490,7 +15455,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>TrackExportWizard</name>
     <message>
-        <location filename="../../src/library/export/trackexportwizard.cpp" line="27"/>
+        <location filename="../../src/library/export/trackexportwizard.cpp" line="28"/>
         <source>Export Track Files To</source>
         <translation>导出音轨文件至</translation>
     </message>
@@ -15522,23 +15487,28 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>TraktorFeature</name>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="110"/>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="677"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="111"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="728"/>
         <source>Traktor</source>
         <translation>Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="180"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="204"/>
+        <source>Select your Traktor collection</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="230"/>
         <source>(loading) Traktor</source>
         <translation>（加载）Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="671"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="722"/>
         <source>Error Loading Traktor Library</source>
         <translation>加载Traktor音乐库时发生错误</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="672"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="723"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation>在加载您的Traktor音乐库时发生了错误。部分歌曲或播放列表可能没有加载成功。</translation>
     </message>
@@ -15750,7 +15720,7 @@ This can not be undone!</source>
 <context>
     <name>WEffectSelector</name>
     <message>
-        <location filename="../../src/widget/weffectselector.cpp" line="62"/>
+        <location filename="../../src/widget/weffectselector.cpp" line="72"/>
         <source>No effect loaded.</source>
         <translation>未加载效果器。</translation>
     </message>
@@ -15766,463 +15736,361 @@ This can not be undone!</source>
 <context>
     <name>WMainMenuBar</name>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="88"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="119"/>
         <source>&amp;File</source>
         <translation>文件(&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="93"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="124"/>
         <source>Load Track to Deck &amp;%1</source>
         <translation>载入音轨到碟机 &amp;%1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="94"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="125"/>
         <source>Loads a track in deck %1</source>
         <translation>载入音轨至碟机 %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="95"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="126"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="123"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="154"/>
         <source>&amp;Exit</source>
         <translation>退出(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="124"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="155"/>
         <source>Quits Mixxx</source>
         <translation>退出 Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="128"/>
-        <source>Ctrl+q</source>
-        <translation>Ctrl+Q</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="139"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="170"/>
         <source>&amp;Library</source>
         <translation>音乐库(&amp;L)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="144"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="175"/>
         <source>&amp;Rescan Library</source>
         <translation>重新扫描音乐库(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="145"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="176"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation>当音轨发生变化时，重新扫描媒体库文件夹。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
-        <source>Ctrl+Shift+L</source>
-        <translation>Ctrl+Shift+L 组合键</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="203"/>
         <source>Create &amp;New Playlist</source>
         <translation>新建播放列表(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="173"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="204"/>
         <source>Create a new playlist</source>
         <translation>新建播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="178"/>
-        <source>Ctrl+n</source>
-        <translation>Ctrl+N</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="216"/>
         <source>Create New &amp;Crate</source>
         <translation>新建分类列表(&amp;N)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="186"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="217"/>
         <source>Create a new crate</source>
         <translation>创建新分类列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
-        <source>Ctrl+Shift+N</source>
-        <translation>Ctrl+Shift+N</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="208"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="237"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="239"/>
         <source>&amp;View</source>
         <translation>查看(&amp;V)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="245"/>
         <source>Auto-hide menu bar</source>
         <translation>自动隐藏菜单栏</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="215"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="246"/>
         <source>Auto-hide the main menu bar when it&apos;s not used.</source>
         <translation>不使用主菜单栏时自动隐藏主菜单栏。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="239"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="270"/>
         <source>May not be supported on all skins.</source>
         <translation>并非所有皮肤均支持。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="240"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="271"/>
         <source>Show Skin Settings Menu</source>
         <translation>皮肤设置菜单</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="241"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="272"/>
         <source>Show the Skin Settings Menu of the currently selected Skin</source>
         <translation>显示当前选定皮肤的皮肤设置菜单</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="248"/>
-        <source>Ctrl+1</source>
-        <comment>Menubar|View|Show Skin Settings</comment>
-        <translation>Ctrl+1</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="256"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="287"/>
         <source>Show Microphone Section</source>
         <translation>显示麦克风界面</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="257"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="288"/>
         <source>Show the microphone section of the Mixxx interface.</source>
         <translation>在 Mixxx 内显示麦克风界面。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="264"/>
-        <source>Ctrl+2</source>
-        <comment>Menubar|View|Show Microphone Section</comment>
-        <translation>Ctrl+2</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="272"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="303"/>
         <source>Show Vinyl Control Section</source>
         <translation>显示唱盘控制界面</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="273"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="304"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
         <translation>在 Mixxx 内显示唱盘控制界面。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="280"/>
-        <source>Ctrl+3</source>
-        <comment>Menubar|View|Show Vinyl Control Section</comment>
-        <translation>Ctrl+3</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="288"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="319"/>
         <source>Show Preview Deck</source>
         <translation>显示预览用碟机</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="289"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="320"/>
         <source>Show the preview deck in the Mixxx interface.</source>
         <translation>在 Mixxx 内显示显示预览用碟机。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="296"/>
-        <source>Ctrl+4</source>
-        <comment>Menubar|View|Show Preview Deck</comment>
-        <translation>Ctrl+4</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="304"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="335"/>
         <source>Show Cover Art</source>
         <translation>显示封面</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="305"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="336"/>
         <source>Show cover art in the Mixxx interface.</source>
         <translation>在 Mixxx 内显示封面。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="312"/>
-        <source>Ctrl+6</source>
-        <comment>Menubar|View|Show Cover Art</comment>
-        <translation>Ctrl+6</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="335"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="366"/>
         <source>Maximize Library</source>
         <translation>最大化音乐库 </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="336"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="367"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>最大化音乐库以占用所有可用的屏幕空间。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="343"/>
-        <source>Space</source>
-        <comment>Menubar|View|Maximize Library</comment>
-        <translation>空格键</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="352"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="383"/>
         <source>&amp;Full Screen</source>
         <translation>全屏(&amp;F)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="353"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="384"/>
         <source>Display Mixxx using the full screen</source>
         <translation>全屏模式显示 Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="389"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="420"/>
         <source>&amp;Options</source>
         <translation>选项(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="395"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="426"/>
         <source>&amp;Vinyl Control</source>
         <translation>唱盘控制(&amp;V)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="396"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="427"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation>对外部转盘使用时间编码的唱盘控制，以便控制 Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="400"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="431"/>
         <source>Enable Vinyl Control &amp;%1</source>
         <translation>启用Vinyl控制 &amp;%1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="431"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="462"/>
         <source>&amp;Record Mix</source>
         <translation>录制混音(&amp;M)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="432"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="463"/>
         <source>Record your mix to a file</source>
         <translation>将混音输出到文件</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="437"/>
-        <source>Ctrl+R</source>
-        <translation>Ctrl+R</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="450"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="481"/>
         <source>Enable Live &amp;Broadcasting</source>
         <translation>启用在线广播(&amp;B)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="451"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="482"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation>将混音通过流输出到 shoutcast 或 icecast 服务器</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="457"/>
-        <source>Ctrl+L</source>
-        <translation>Ctrl+L</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="473"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="504"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
         <translation>启用键快捷键(&amp;K)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="474"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="505"/>
         <source>Toggles keyboard shortcuts on or off</source>
         <translation>键盘快捷键开关</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="481"/>
-        <source>Ctrl+`</source>
-        <translation>Ctrl+`</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="493"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="524"/>
         <source>&amp;Preferences</source>
         <translation>首选项(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="494"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="525"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation>改变 Mixxx 设定（回放、MIDI、控制器等）</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="511"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="542"/>
         <source>&amp;Developer</source>
         <translation>开发者(&amp;D)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="516"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="547"/>
         <source>&amp;Reload Skin</source>
         <translation>重载皮肤(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="517"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="548"/>
         <source>Reload the skin</source>
         <translation>重新载入皮肤</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="522"/>
-        <source>Ctrl+Shift+R</source>
-        <translation>Ctrl+Shift+R</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="529"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="560"/>
         <source>Developer &amp;Tools</source>
         <translation>开发者工具(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="530"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="561"/>
         <source>Opens the developer tools dialog</source>
         <translation>打开开发者工具对话框</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="535"/>
-        <source>Ctrl+Shift+T</source>
-        <translation>Ctrl+Shift+T</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="548"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="579"/>
         <source>Stats: &amp;Experiment Bucket</source>
         <translation>统计：实验桶(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="549"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="580"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
         <translation>启用实验模式。统计数据将会收集到实验跟踪桶中。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="555"/>
-        <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Shift+E</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="568"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="599"/>
         <source>Stats: &amp;Base Bucket</source>
         <translation>统计：基础桶(&amp;B)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="569"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="600"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation>启用基础模式。统计数据将会收集到基础跟踪桶中。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="575"/>
-        <source>Ctrl+Shift+B</source>
-        <translation>Ctrl+Shift+B</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="589"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="620"/>
         <source>Deb&amp;ugger Enabled</source>
         <translation>调试器已启用(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="590"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="621"/>
         <source>Enables the debugger during skin parsing</source>
         <translation>在解析皮肤时启用调试器</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="597"/>
-        <source>Ctrl+Shift+D</source>
-        <translation>Ctrl+Shift+D</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="615"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="646"/>
         <source>&amp;Help</source>
         <translation>帮助(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="320"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="351"/>
         <source>Show Keywheel</source>
         <extracomment>menu title</extracomment>
         <translation>显示 Keywheel</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="160"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
         <source>E&amp;xport Library to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
         <translation>导出到 Engine DJ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="161"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="192"/>
         <source>Export the library to the Engine DJ format</source>
         <translation>将库导出为 Engine DJ 格式</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="322"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="353"/>
         <source>Show keywheel</source>
         <extracomment>tooltip text</extracomment>
         <translation>显示 Keywheel</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="328"/>
-        <source>F12</source>
-        <comment>Menubar|View|Show Keywheel</comment>
-        <translation>F12</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="629"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="660"/>
         <source>&amp;Community Support</source>
         <translation>社区帮助(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="630"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="661"/>
         <source>Get help with Mixxx</source>
         <translation>获取 Mixxx 帮助</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="645"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="676"/>
         <source>&amp;User Manual</source>
         <translation>用户手册(&amp;U)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="646"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="677"/>
         <source>Read the Mixxx user manual.</source>
         <translation>阅读Mixxx用户手册。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="662"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="693"/>
         <source>&amp;Keyboard Shortcuts</source>
         <translation>键盘快捷键(&amp;K)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="663"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="694"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
         <translation>使用键盘快捷键提高你的效率。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="677"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="708"/>
         <source>&amp;Settings directory</source>
         <translation>&amp;设置目录</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="678"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="709"/>
         <source>Open the Mixxx user settings directory.</source>
         <translation>打开 Mixxx 用户设置目录。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="689"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="720"/>
         <source>&amp;Translate This Application</source>
         <translation>翻译这个程序(&amp;T)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="690"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="721"/>
         <source>Help translate this application into your language.</source>
         <translation>帮助翻译此程序。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="701"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="732"/>
         <source>&amp;About</source>
         <translation>关于(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="702"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="733"/>
         <source>About the application</source>
         <translation>关于此应用程序</translation>
     </message>
@@ -16230,25 +16098,25 @@ This can not be undone!</source>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="228"/>
+        <location filename="../../src/widget/woverview.cpp" line="229"/>
         <source>Passthrough</source>
         <translation>直通</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="912"/>
+        <location filename="../../src/widget/woverview.cpp" line="925"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>音轨已就绪，正在分析 ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="915"/>
-        <location filename="../../src/widget/woverview.cpp" line="925"/>
+        <location filename="../../src/widget/woverview.cpp" line="928"/>
+        <location filename="../../src/widget/woverview.cpp" line="938"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>正在加载曲目...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="919"/>
+        <location filename="../../src/widget/woverview.cpp" line="932"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>完成处理 ...</translation>
@@ -16513,7 +16381,7 @@ This can not be undone!</source>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="294"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2563"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2561"/>
         <source>Delete Track Files</source>
         <translation>删除音轨数据</translation>
     </message>
@@ -16749,256 +16617,256 @@ This can not be undone!</source>
         <translation>碟盘 %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1406"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1404"/>
         <source>Open Many Files in File Browser</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1407"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1405"/>
         <source>You are about to open %n files in the file browser. This may slow down or hang your system. Are you sure you want to continue?</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1492"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1490"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation><numerusform>从文件标签导入 %n 个轨道的元数据</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1524"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1522"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation><numerusform>标记要导出到文件标签的 %n 个轨道的数据</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1575"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1599"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1573"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1597"/>
         <source>Create New Playlist</source>
         <translation>新建播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1600"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1598"/>
         <source>Enter name for new playlist:</source>
         <translation>输入播放列表的新名称：</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1602"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1600"/>
         <source>New Playlist</source>
         <translation>新建播放列表</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1610"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1614"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1623"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1608"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1612"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1621"/>
         <source>Playlist Creation Failed</source>
         <translation>播放列表创建失败</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1611"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1609"/>
         <source>A playlist by that name already exists.</source>
         <translation>使用该名称的播放列表已存在。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1615"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1613"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>播放列表名称不能为空。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1624"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1622"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>创建播放列表时发生未知错误： </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1701"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1699"/>
         <source>Add to New Crate</source>
         <translation>添加至分类列表</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1844"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1842"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>缩放 %n 个磁道的 BPM</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1873"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1871"/>
         <source>Undo BPM/beats change of %n track(s)</source>
         <translation><numerusform>撤消 BPM/节拍 %n 个轨道的更改</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1917"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1915"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>锁定 %n 个磁道的 BPM</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1918"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1916"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>解锁 %n 个磁道的 BPM</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1951"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1949"/>
         <source>Setting rating of %n track(s)</source>
         <translation><numerusform>清除 %n 条轨道的评级</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1982"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1980"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>设置 %n 个轨道的颜色</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2041"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2039"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>重置 %n 个轨道的播放计数</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2063"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2061"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>重置 %n 个轨道的节拍</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2090"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2088"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>清除 %n 条磁道的评级</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2113"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2111"/>
         <source>Clearing comment of %n track(s)</source>
         <translation><numerusform>正在清除 %n 个轨道的注释</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2218"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2216"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>从 %n 个轨道中删除主提示点</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2228"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2226"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>从 %n 个轨道中删除结尾提示</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2238"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2236"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>从 %n 个轨道中删除前奏提示</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2248"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2246"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>从 %n 个轨道中删除 Loop 提示点</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2258"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2256"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>从 %n 个轨道中删除热提示</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2270"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2268"/>
         <source>Sorting hotcues of %n track(s) by position (remove offsets)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2277"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2275"/>
         <source>Sorting hotcues of %n track(s) by position</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2301"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2299"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>重置 %n 个轨道的键</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2323"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2321"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>重置 %n 个轨道的重放增益</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2358"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2356"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>重置 %n 个轨道的波形</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2414"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2412"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>重置 %n 个轨道的所有性能数据</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2512"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2510"/>
         <source>Move these files to the trash bin?</source>
         <translation>将这些文件移动到垃圾箱？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2508"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2506"/>
         <source>Permanently delete these files from disk?</source>
         <translation>从磁盘中永久删除这些文件？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2510"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2519"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2508"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2517"/>
         <source>This can not be undone!</source>
         <translation>此操作无法撤消！</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2542"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2548"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2546"/>
         <source>Delete Files</source>
         <translation>删除文件</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2550"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2548"/>
         <source>Okay</source>
         <translation>好</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2565"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2563"/>
         <source>Move Track File(s) to Trash?</source>
         <translation>要把轨道文件移到垃圾桶吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2623"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2621"/>
         <source>Track Files Deleted</source>
         <translation>文件已删除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2625"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2623"/>
         <source>Track Files Moved To Trash</source>
         <translation>已移动到垃圾桶的文件</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2632"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2630"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
         <translation>%1 轨道文件被移至废纸篓并从 Mixxx 数据库中清除。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2629"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2627"/>
         <source>%1 track files were deleted from disk and purged from the Mixxx database.</source>
         <translation>%1 轨道文件已从磁盘中删除，并从 Mixxx 数据库中清除。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2641"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2639"/>
         <source>Track File Deleted</source>
         <translation>文件已删除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2642"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2640"/>
         <source>Track file was deleted from disk and purged from the Mixxx database.</source>
         <translation>跟踪文件已从磁盘中删除，并从 Mixxx 数据库中清除。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2684"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2682"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
         <translation>无法从磁盘中删除以下 %1 文件</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2692"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2690"/>
         <source>This track file could not be deleted from disk</source>
         <translation>无法从磁盘中删除此跟踪文件</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2716"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2714"/>
         <source>Remaining Track File(s)</source>
         <translation>剩余轨道文件</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2707"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2705"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
@@ -17024,82 +16892,82 @@ This can not be undone!</source>
         <translation>撤消上次 BPM/节拍更改</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2521"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2519"/>
         <source>Move this track file to the trash bin?</source>
         <translation>把这个轨道文件移到垃圾桶吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2517"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2515"/>
         <source>Permanently delete this track file from disk?</source>
         <translation>永久删除这个轨道文件吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2526"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2524"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
         <translation>加载这些轨道的所有卡盘都将停止，轨道将被弹出。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2530"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2528"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
         <translation>加载此轨道的所有卡盘都将停止，轨道将被弹出。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2597"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2595"/>
         <source>Removing %n track file(s) from disk...</source>
         <translation>正在从磁盘中删除 %n 个磁道文件...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2637"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2635"/>
         <source>Note: if you are in the Computer or Recording view you need to click the current view again to see changes.</source>
         <translation>注意：如果您位于 Computer 或 Recording 视图中，则需要再次单击当前视图才能看到更改。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2644"/>
         <source>Track File Moved To Trash</source>
         <translation>文件已移至垃圾桶</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2647"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2645"/>
         <source>Track file was moved to trash and purged from the Mixxx database.</source>
         <translation>跟踪文件已移至回收站并从 Mixxx 数据库中清除。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2652"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2650"/>
         <source>Don&apos;t show again during this session</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2686"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2684"/>
         <source>The following %1 file(s) could not be moved to trash</source>
         <translation>以下 %1 文件无法移至回收站</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2694"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2692"/>
         <source>This track file could not be moved to trash</source>
         <translation>无法将此跟踪文件移至回收站</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2841"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2839"/>
         <source>Replace current Auto DJ queue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2843"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2841"/>
         <source>Do you want to replace the entire Auto DJ queue with the selected tracks?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2846"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2844"/>
         <source>Don&apos;t ask again during this session</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2887"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2885"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>设置 %n 个轨道的封面艺术</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2911"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2909"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>重新加载 %n 个轨道的封面艺术</numerusform></translation>
     </message>
@@ -17153,37 +17021,37 @@ This can not be undone!</source>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1394"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1395"/>
         <source>Confirm track hide</source>
         <translation>确认轨道隐藏</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1395"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1396"/>
         <source>Are you sure you want to hide the selected tracks?</source>
         <translation>您确定要隐藏选定的轨道吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1401"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1402"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
         <translation>您确定要从 AutoDJ 队列中删除选定的曲目吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1405"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
         <translation>您确定要隐藏选定的轨道吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1409"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1410"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
         <translation>您确定要从此播放列表中删除选定的曲目吗？</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1418"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1419"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>在此会话期间不要再次询问</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1397"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1398"/>
         <source>Confirm track removal</source>
         <translation>确认轨道移除</translation>
     </message>
@@ -17202,62 +17070,108 @@ This can not be undone!</source>
     </message>
 </context>
 <context>
+    <name>WaveformWidgetFactory</name>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="205"/>
+        <source>None</source>
+        <extracomment>This refers to a missing openGL version</extracomment>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="489"/>
+        <location filename="../../src/coreservices.cpp" line="454"/>
+        <source>Cannot access settings folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="455"/>
+        <source>Mixxx cannot access the settings folder:
+
+%1
+
+You can either:
+
+• Remove the --settings-path argument to use the default location
+• Re-run Mixxx and select a valid folder when prompted
+
+Click OK to exit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="514"/>
         <source>fonts</source>
         <translation>字体</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="493"/>
+        <location filename="../../src/coreservices.cpp" line="518"/>
         <source>database</source>
         <translation>数据库</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="508"/>
+        <location filename="../../src/coreservices.cpp" line="533"/>
         <source>effects</source>
         <translation>效果</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="521"/>
+        <location filename="../../src/coreservices.cpp" line="546"/>
         <source>audio interface</source>
         <translation>音频接口</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="541"/>
+        <location filename="../../src/coreservices.cpp" line="566"/>
         <source>decks</source>
         <translation>甲板</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="587"/>
+        <location filename="../../src/coreservices.cpp" line="612"/>
         <source>library</source>
         <translation>媒体库</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="641"/>
+        <location filename="../../src/coreservices.cpp" line="666"/>
         <source>Choose music library directory</source>
         <translation>选择音乐库目录</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="651"/>
+        <location filename="../../src/coreservices.cpp" line="677"/>
         <source>controllers</source>
         <translation>控制器</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="826"/>
+        <location filename="../../src/coreservices.cpp" line="856"/>
+        <source>The settings directory does not exist:
+%1
+
+Please verify the --settings-path argument.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="861"/>
+        <source>The settings directory is not writable:
+%1
+
+This may be caused by macOS sandbox restrictions if you are using a custom --settings-path outside the app container.
+
+Try running Mixxx without --settings-path, or grant Mixxx access to the folder when prompted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="870"/>
+        <source>Unable to establish a database connection.
+Mixxx requires Qt with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="878"/>
         <source>Cannot open database</source>
         <translation>无法打开数据库</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="827"/>
-        <source>Unable to establish a database connection.
-Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
-
-Click OK to exit.</source>
-        <translation>无法建立到数据库的链接。
-Mixxx 需要 QT 支持 SQLite。请阅读 Qt SQL 驱动文档以了解相关构建方法。
-
-点击 OK 退出。</translation>
+        <location filename="../../src/coreservices.cpp" line="879"/>
+        <source>Click OK to exit.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -17314,27 +17228,27 @@ Mixxx 需要 QT 支持 SQLite。请阅读 Qt SQL 驱动文档以了解相关构�
         <translation>导出到 Engine DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="225"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="226"/>
         <source>Export Library To</source>
         <translation>导出到</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="242"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="245"/>
         <source>No Export Directory Chosen</source>
         <translation>未选择导出目录</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="243"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="246"/>
         <source>No export directory was chosen. Please choose a directory in order to export the music library.</source>
         <translation>未选择导出目录。请选择一个目录以导出音乐库。</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="318"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="321"/>
         <source>A database already exists in the chosen directory. Exported tracks will be added into this database.</source>
         <translation>所选目录中已存在数据库。导出的轨道将被添加到此数据库中。</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="328"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="331"/>
         <source>A database already exists in the chosen directory, but there was a problem loading it. Export is not guaranteed to succeed in this situation.</source>
         <translation>所选目录中已存在数据库，但加载该数据库时出现问题。在这种情况下，不能保证导出成功。</translation>
     </message>

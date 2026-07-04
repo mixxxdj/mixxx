@@ -184,25 +184,25 @@ hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	A
 hu,pt,pt_PT,et,fi,nl,pl,pt_BR,ro,zh*	Bb
 hu,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	B
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	C
-hu,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Db
+hu,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ta	Db
 hu,pt,pt_PT,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	D
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh*	Eb
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	E
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	F
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	F#
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ta	F#
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	G
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Ab
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	Am
 hu,et,fi,nl,pl,pt_BR,ro,zh*,pt	Bbm
 hu,et,fi,nl,pl,pt_BR,ro,zh*,pt	Bm
 hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK	Cm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt	C#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Dm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt	Ebm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt,ta	C#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ta	Dm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta	Ebm
 hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*,pt	Em
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	Fm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt	F#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt	Gm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ta	Fm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta	F#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta	Gm
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	G#m
 *	10Hz
 *	10ms
@@ -230,7 +230,7 @@ nl	Help
 nl	Later
 nl	Auxiliary
 nl,vi	Quantize
-nl	Biquad Equalizer
+nl,ta	Biquad Equalizer
 nl,ro,sv	Live Mix
 nl,sv	Center 2
 nl	Waveform
@@ -331,8 +331,8 @@ fr	%1 minutes
 fr,it	Bypass Fr.
 fr	Gain 1
 fr	Gain 2
-fr,it,ru,es*	Queen Mary University London
-fr,nl	Distortion
+fr,it,ru,es*,ko	Queen Mary University London
+fr,nl,sv	Distortion
 fr,de	Ratio (:1)
 fr,de	Ratio
 fr	Variance
@@ -363,7 +363,7 @@ es*,fr,it,nl,pt*,sq_AL	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
-fr,it,nl,zh*	 pt
+fr,it,nl,zh*,ko	 pt
 it	Password
 nl,sv,vi	Equalizers
 nl,it	Controllers
@@ -395,7 +395,7 @@ de,fr,it,nl,pl	Echo
 de,it,nl,sv	Feedback
 de,nl,sl,sv	Filter
 de	Regeneration
-de,it,nl,pl,pt,pt_PT,ru,zh*	BW
+de,it,nl,pl,pt,pt_PT,ru,zh*,ko,ta	BW
 de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
 nl	Track #
 de	Name
@@ -423,7 +423,7 @@ de,it,ja,nl,pt*,ro	Deck 1
 de,it,ja,nl,pt*,ro	Deck 2
 de,it,ja,nl	Deck 3
 de,it,ja,nl	Deck 4
-de,fr,it,nl,sl,sv	 fps
+de,fr,it,nl,sl,sv,ko	 fps
 de,nl	Decks
 de,nl	Track
 de,nl	Tracks
@@ -442,9 +442,9 @@ it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
 es*	No
-nl,sq_AL,es*,pl,sv	VID:
+nl,sq_AL,es*,pl,sv,cs,ko	VID:
 nl	Product ID
-nl,sq_AL,es*,pl,sv	PID:
+nl,sq_AL,es*,pl,sv,cs,ko,ta	PID:
 nl	Lossy
 nl	Lossless
 nl	Top
@@ -457,4 +457,5 @@ de	Attack (ms)
 de	Attack
 it	Okay
 vi	Samplerate
-fr,sl	Stem
+fr,sl,cs	Stem
+ta	Biquad Full Kill Equalizer
