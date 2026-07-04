@@ -2585,6 +2585,14 @@ if(NOT ANDROID)
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
   )
 
+  # RemoteControl web interface
+  if(HTTP_REMOTE)
+    install(
+      DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/web"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    )
+  endif()
+
   # Translation files
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/translations"
