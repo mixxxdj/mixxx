@@ -1,7 +1,8 @@
-import org.mixxx.AndroidScreenManager;
-import org.qtproject.qt.android.QtActivityBase;
 import android.os.Bundle;
 import android.view.WindowManager;
+
+import org.mixxx.AndroidScreenManager;
+import org.qtproject.qt.android.QtActivityBase;
 
 public class MainActivity extends QtActivityBase {
     // ... existing code ...
@@ -14,3 +15,4 @@ public class MainActivity extends QtActivityBase {
         // Apply fullscreen handling for notch devices
         AndroidScreenManager.applyFullScreen(this);
     }
+}
