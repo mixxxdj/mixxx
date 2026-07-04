@@ -4,10 +4,9 @@
 #include <memory>
 #include <vector>
 
-#include "rendergraph/node.h"
-
 namespace rendergraph {
 class Engine;
+class BaseNode;
 } // namespace rendergraph
 
 class rendergraph::Engine {

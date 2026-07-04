@@ -8,6 +8,7 @@
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/playermanager.h"
 #include "moc_wspinnybase.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
@@ -29,12 +30,12 @@ WSpinnyBase::WSpinnyBase(
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pPlayPos(nullptr),
-          m_pVisualPlayPos(nullptr),
-          m_pTrackSamples(nullptr),
-          m_pTrackSampleRate(nullptr),
-          m_pScratchToggle(nullptr),
-          m_pScratchPos(nullptr),
+          m_pVisualPlayPos(VisualPlayPosition::getVisualPlayPosition(m_group)),
+          m_pPlayPos(PollingControlProxy(m_group, QStringLiteral("playposition"))),
+          m_pTrackSamples(PollingControlProxy(m_group, QStringLiteral("track_samples"))),
+          m_pTrackSampleRate(PollingControlProxy(m_group, QStringLiteral("track_samplerate"))),
+          m_pScratchToggle(PollingControlProxy(m_group, QStringLiteral("scratch_position_enable"))),
+          m_pScratchPos(PollingControlProxy(m_group, QStringLiteral("scratch_position"))),
           m_pVinylControlSpeedType(nullptr),
           m_pVinylControlEnabled(nullptr),
           m_pSignalEnabled(nullptr),
@@ -61,8 +62,8 @@ WSpinnyBase::WSpinnyBase(
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgCoverArt(new DlgCoverArtFullSize(this, pPlayer, m_pCoverMenu)) {
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)),
+          m_pDlgCoverArt(make_parented<DlgCoverArtFullSize>(this, pPlayer, m_pCoverMenu)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #else
@@ -167,7 +168,7 @@ void WSpinnyBase::setup(const QDomNode& node,
 
     // Dynamic skin option, set in WSpinnyBase's <ShowCoverControl> node.
     if (showCoverConfigKey.isValid()) {
-        m_pShowCoverProxy = new ControlProxy(
+        m_pShowCoverProxy = make_parented<ControlProxy>(
                 showCoverConfigKey, this);
         m_pShowCoverProxy->connectValueChanged(
                 this,
@@ -189,50 +190,37 @@ void WSpinnyBase::setup(const QDomNode& node,
     m_bDrawVinylSignalQuality = false;
 #endif
 
-    m_pPlayPos = new ControlProxy(
-            m_group, "playposition", this, ControlFlag::NoAssertIfMissing);
-    m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
-    m_pTrackSamples = new ControlProxy(
-            m_group, "track_samples", this, ControlFlag::NoAssertIfMissing);
-    m_pTrackSampleRate = new ControlProxy(
-            m_group, "track_samplerate", this, ControlFlag::NoAssertIfMissing);
-
-    m_pScratchToggle = new ControlProxy(
-            m_group, "scratch_position_enable", this, ControlFlag::NoAssertIfMissing);
-    m_pScratchPos = new ControlProxy(
-            m_group, "scratch_position", this, ControlFlag::NoAssertIfMissing);
-
-    m_pSlipEnabled = new ControlProxy(
+    m_pSlipEnabled = make_parented<ControlProxy>(
             m_group, "slip_enabled", this, ControlFlag::NoAssertIfMissing);
     m_pSlipEnabled->connectValueChanged(this, &WSpinnyBase::updateSlipEnabled);
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlSpeedType = new ControlProxy(
-            m_group, "vinylcontrol_speed_type", this, ControlFlag::NoAssertIfMissing);
-    // Initialize the rotational speed.
-    updateVinylControlSpeed(m_pVinylControlSpeedType->get());
+    if (PlayerManager::isDeckGroup(m_group)) {
+        m_pVinylControlSpeedType = make_parented<ControlProxy>(
+                m_group, "vinylcontrol_speed_type", this, ControlFlag::NoAssertIfMissing);
+        // Initialize the rotational speed.
+        updateVinylControlSpeed(m_pVinylControlSpeedType->get());
+        // Match the vinyl control's set RPM so that the spinny widget rotates at
+        // the same speed as your physical decks, if you're using vinyl control.
+        m_pVinylControlSpeedType->connectValueChanged(this,
+                &WSpinnyBase::updateVinylControlSpeed);
 
-    m_pVinylControlEnabled = new ControlProxy(
-            m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
-    updateVinylControlEnabled(m_pVinylControlEnabled->get());
-    m_pVinylControlEnabled->connectValueChanged(this,
-            &WSpinnyBase::updateVinylControlEnabled);
+        m_pVinylControlEnabled = make_parented<ControlProxy>(
+                m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
+        updateVinylControlEnabled(m_pVinylControlEnabled->get());
+        m_pVinylControlEnabled->connectValueChanged(this,
+                &WSpinnyBase::updateVinylControlEnabled);
 
-    m_pSignalEnabled = new ControlProxy(
-            m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
-    updateVinylControlSignalEnabled(m_pSignalEnabled->get());
-    m_pSignalEnabled->connectValueChanged(this,
-            &WSpinnyBase::updateVinylControlSignalEnabled);
-
-    // Match the vinyl control's set RPM so that the spinny widget rotates at
-    // the same speed as your physical decks, if you're using vinyl control.
-    m_pVinylControlSpeedType->connectValueChanged(this,
-            &WSpinnyBase::updateVinylControlSpeed);
-
-#else
-    // if no vinyl control, just call it 33
-    this->updateVinylControlSpeed(33.0);
+        m_pSignalEnabled = make_parented<ControlProxy>(
+                m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
+        updateVinylControlSignalEnabled(m_pSignalEnabled->get());
+        m_pSignalEnabled->connectValueChanged(this,
+                &WSpinnyBase::updateVinylControlSignalEnabled);
+        return;
+    }
 #endif
+    // if no vinyl control, just call it 33
+    updateVinylControlSpeed(33.0);
 }
 
 void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
@@ -387,8 +375,8 @@ void WSpinnyBase::resizeEvent(QResizeEvent* event) {
    in our polar coordinate system.
    Returns an angle clamped between -180 and 180 degrees. */
 double WSpinnyBase::calculateAngle(double playpos) {
-    double trackFrames = m_pTrackSamples->get() / 2;
-    double trackSampleRate = m_pTrackSampleRate->get();
+    double trackFrames = m_pTrackSamples.get() / 2;
+    double trackSampleRate = m_pTrackSampleRate.get();
     if (util_isnan(playpos) || util_isnan(trackFrames) || util_isnan(trackSampleRate) ||
             trackFrames <= 0 || trackSampleRate <= 0) {
         return 0.0;
@@ -437,8 +425,8 @@ int WSpinnyBase::calculateFullRotations(double playpos) {
         return 0;
     }
     // Convert playpos to seconds.
-    double t = playpos * (m_pTrackSamples->get() / 2 / // Stereo audio!
-                                 m_pTrackSampleRate->get());
+    double t = playpos * (m_pTrackSamples.get() / 2 / // Stereo audio!
+                                 m_pTrackSampleRate.get());
 
     // 33 RPM is approx. 0.5 rotations per second.
     // qDebug() << t;
@@ -456,8 +444,8 @@ double WSpinnyBase::calculatePositionFromAngle(double angle) {
     // 33 RPM is approx. 0.5 rotations per second.
     double t = angle / (360.0 * m_dRotationsPerSecond); // time in seconds
 
-    double trackFrames = m_pTrackSamples->get() / 2;
-    double trackSampleRate = m_pTrackSampleRate->get();
+    double trackFrames = m_pTrackSamples.get() / 2;
+    double trackSampleRate = m_pTrackSampleRate.get();
     if (util_isnan(trackFrames) || util_isnan(trackSampleRate) ||
             trackFrames <= 0 || trackSampleRate <= 0) {
         return 0.0;
@@ -539,12 +527,11 @@ void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
     // qDebug() << "c t:" << theta << "pt:" << m_dPrevTheta <<
     //             "icr" << m_iFullRotations;
 
-    if (((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) &&
-            !m_bVinylActive) {
+    if ((e->buttons() & Qt::LeftButton) || (e->buttons() & Qt::RightButton)) {
         // Convert deltaTheta into a percentage of song length.
         double absPos = calculatePositionFromAngle(theta);
-        double absPosInSamples = absPos * m_pTrackSamples->get();
-        m_pScratchPos->set(absPosInSamples - m_dInitialPos);
+        double absPosInSamples = absPos * m_pTrackSamples.get();
+        m_pScratchPos.set(absPosInSamples - m_dInitialPos);
     } else if (e->buttons() & Qt::MiddleButton) {
     } else if (e->buttons() & Qt::NoButton) {
         setCursor(QCursor(Qt::OpenHandCursor));
@@ -578,29 +565,22 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
         m_iStartMouseX = x;
         m_iStartMouseY = y;
 
-        // don't do anything if vinyl control is active
-        if (m_bVinylActive) {
-            return;
-        }
+        QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
 
-        if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
-            QApplication::setOverrideCursor(QCursor(Qt::ClosedHandCursor));
+        // Coordinates from center of widget
+        double c_x = x - width() / 2;
+        double c_y = y - height() / 2;
+        double theta = (180.0 / M_PI) * atan2(c_x, -c_y);
+        m_dPrevTheta = theta;
+        m_iFullRotations = calculateFullRotations(m_pPlayPos.get());
+        theta += m_iFullRotations * 360.0;
+        m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples.get();
 
-            // Coordinates from center of widget
-            double c_x = x - width() / 2;
-            double c_y = y - height() / 2;
-            double theta = (180.0 / M_PI) * atan2(c_x, -c_y);
-            m_dPrevTheta = theta;
-            m_iFullRotations = calculateFullRotations(m_pPlayPos->get());
-            theta += m_iFullRotations * 360.0;
-            m_dInitialPos = calculatePositionFromAngle(theta) * m_pTrackSamples->get();
+        m_pScratchPos.set(0);
+        m_pScratchToggle.set(1.0);
 
-            m_pScratchPos->set(0);
-            m_pScratchToggle->set(1.0);
-
-            // Trigger a mouse move to immediately line up the vinyl with the cursor
-            mouseMoveEvent(e);
-        }
+        // Trigger a mouse move to immediately line up the vinyl with the cursor
+        mouseMoveEvent(e);
     } else {
         if (!m_loadedCover.isNull()) {
             m_pDlgCoverArt->init(m_pLoadedTrack);
@@ -617,7 +597,7 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
 void WSpinnyBase::mouseReleaseEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton || e->button() == Qt::RightButton) {
         QApplication::restoreOverrideCursor();
-        m_pScratchToggle->set(0.0);
+        m_pScratchToggle.set(0.0);
         m_iFullRotations = 0;
     }
 }

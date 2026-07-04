@@ -24,11 +24,6 @@ TrackCollection::TrackCollection(
                      m_analysisDao, m_libraryHashDao, pConfig) {
     // Forward signals from TrackDAO
     connect(&m_trackDao,
-            &TrackDAO::trackClean,
-            this,
-            &TrackCollection::trackClean,
-            /*signal-to-signal*/ Qt::DirectConnection);
-    connect(&m_trackDao,
             &TrackDAO::trackDirty,
             this,
             &TrackCollection::trackDirty,
@@ -46,7 +41,7 @@ TrackCollection::TrackCollection(
     connect(&m_trackDao,
             &TrackDAO::tracksRemoved,
             this,
-            &TrackCollection::tracksRemoved,
+            &TrackCollection::tracksRemoved, // unused
             /*signal-to-signal*/ Qt::DirectConnection);
     connect(&m_trackDao,
             &TrackDAO::forceModelUpdate,
@@ -242,6 +237,17 @@ QList<TrackId> TrackCollection::resolveTrackIds(
         unhideTracks(trackIds);
     }
     return trackIds;
+}
+
+QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<mixxx::FileInfo>& trackFiles,
+        QObject* pSource) {
+    TrackDAO::ResolveTrackIdFlags flags =
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden;
+    if (!pSource) {
+        flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
+    }
+    return resolveTrackIds(trackFiles, flags);
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(

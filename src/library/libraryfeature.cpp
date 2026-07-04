@@ -32,6 +32,17 @@ LibraryFeature::LibraryFeature(
     }
 }
 
+void LibraryFeature::selectAndActivate(const QModelIndex& index) {
+    if (index.isValid()) {
+        emit featureSelect(this, index);
+        activateChild(index);
+    } else {
+        // calling featureSelect with invalid index will select the root item
+        emit featureSelect(this, QModelIndex());
+        activate();
+    }
+}
+
 QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
     QString lastPlaylistDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),

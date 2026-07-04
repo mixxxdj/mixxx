@@ -2,7 +2,13 @@
 
 #include <QOpenGLTexture>
 #include <QPainterPath>
+#include <QRegularExpression>
+#include <QStringLiteral>
+#include <QSvgRenderer>
 #include <QtDebug>
+#include <algorithm>
+#include <memory>
+#include <vector>
 
 #include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -93,8 +99,9 @@ bool isShowUntilNextPositionControl(const QString& positionControl) {
 
 } // anonymous namespace
 
-WaveformMark::WaveformMark(const QString& group,
-        QString positionControl,
+WaveformMark::WaveformMark(
+        const QString& group,
+        const QString& aPositionControl,
         const QString& visibilityControl,
         const QString& textColor,
         const QString& markAlign,
@@ -104,37 +111,51 @@ WaveformMark::WaveformMark(const QString& group,
         QColor color,
         int priority,
         int hotCue,
-        const WaveformSignalColors& signalColors)
+        const WaveformSignalColors& signalColors,
+        const QString& endPixmapPath,
+        const QString& endIconPath,
+        float disabledOpacity,
+        float enabledOpacity)
         : m_textColor(textColor),
           m_pixmapPath(pixmapPath),
+          m_endPixmapPath(endPixmapPath),
           m_iconPath(iconPath),
+          m_endIconPath(endIconPath),
+          m_enabledOpacity(enabledOpacity),
+          m_disabledOpacity(disabledOpacity),
           m_linePosition{},
           m_breadth{},
           m_level{},
+          m_typeCO{},
+          m_statusCO{},
           m_iPriority(priority),
           m_iHotCue(hotCue),
           m_showUntilNext{} {
+    QString positionControl = aPositionControl;
     QString endPositionControl;
     QString typeControl;
+    QString statusControl;
     if (hotCue != Cue::kNoHotCue) {
         QString hotcueNumber = QString::number(hotCue + 1);
         positionControl = QStringLiteral("hotcue_%1_position").arg(hotcueNumber);
         endPositionControl = QStringLiteral("hotcue_%1_endposition").arg(hotcueNumber);
+        statusControl = QStringLiteral("hotcue_%1_status").arg(hotcueNumber);
         typeControl = QStringLiteral("hotcue_%1_type").arg(hotcueNumber);
         m_showUntilNext = true;
     } else {
         m_showUntilNext = isShowUntilNextPositionControl(positionControl);
     }
 
-    if (!positionControl.isEmpty()) {
+    if (!positionControl.isEmpty() && !group.isEmpty()) {
         m_pPositionCO = std::make_unique<ControlProxy>(group, positionControl);
     }
-    if (!endPositionControl.isEmpty()) {
+    if (!endPositionControl.isEmpty() && !group.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
-        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+        m_statusCO = std::make_unique<ControlProxy>(group, statusControl);
+        m_typeCO = std::make_unique<ControlProxy>(group, typeControl);
     }
 
-    if (!visibilityControl.isEmpty()) {
+    if (!visibilityControl.isEmpty() && !group.isEmpty()) {
         ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
         m_pVisibleCO = std::make_unique<ControlProxy>(key);
     }
@@ -179,10 +200,12 @@ WaveformMark::WaveformMark(const QString& group,
     QString positionControl;
     QString endPositionControl;
     QString typeControl;
+    QString statusControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
         typeControl = "hotcue_" + QString::number(hotCue + 1) + "_type";
+        statusControl = "hotcue_" + QString::number(hotCue + 1) + "_status";
         m_showUntilNext = true;
     } else {
         positionControl = context.selectString(node, "Control");
@@ -194,7 +217,8 @@ WaveformMark::WaveformMark(const QString& group,
     }
     if (!endPositionControl.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
-        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
+        m_typeCO = std::make_unique<ControlProxy>(group, typeControl);
+        m_statusCO = std::make_unique<ControlProxy>(group, statusControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");
@@ -234,10 +258,64 @@ WaveformMark::WaveformMark(const QString& group,
         m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
 
+    m_endPixmapPath = context.selectString(node, "EndPixmap");
+    if (!m_endPixmapPath.isEmpty()) {
+        m_endPixmapPath = context.makeSkinPath(m_endPixmapPath);
+    }
+
     m_iconPath = context.selectString(node, "Icon");
     if (!m_iconPath.isEmpty()) {
         m_iconPath = context.makeSkinPath(m_iconPath);
     }
+
+    m_endIconPath = context.selectString(node, "EndIcon");
+    if (!m_endIconPath.isEmpty()) {
+        m_endIconPath = context.makeSkinPath(m_endIconPath);
+    }
+
+    m_enabledOpacity = context.selectDouble(node, "EnabledOpacity", 1);
+    m_disabledOpacity = context.selectDouble(node, "DisabledOpacity", 0.5);
+}
+
+std::variant<WaveformMarkPointer, WaveformMark::WaveformMarkConstructionError> WaveformMark::create(
+        const QString& group,
+        const QString& positionControl,
+        const QString& visibilityControl,
+        const QString& textColor,
+        const QString& markAlign,
+        const QString& text,
+        const QString& pixmapPath,
+        const QString& iconPath,
+        QColor color,
+        int priority,
+        int hotCue,
+        const WaveformSignalColors& signalColors,
+        const QString& endPixmapPath,
+        const QString& endIconPath,
+        float disabledOpacity,
+        float enabledOpacity) {
+    // Used WaveformMark's ctor variant is private so we must explicitly call
+    // new before wrapping it in a smart pointer
+    WaveformMarkPointer pMark(new WaveformMark(group,
+            positionControl,
+            visibilityControl,
+            textColor,
+            markAlign,
+            text,
+            pixmapPath,
+            iconPath,
+            color,
+            priority,
+            hotCue,
+            signalColors,
+            endPixmapPath,
+            endIconPath,
+            disabledOpacity,
+            enabledOpacity));
+    if (auto err = pMark->validate(); err.has_value()) {
+        return err.value();
+    }
+    return pMark;
 }
 
 WaveformMark::~WaveformMark() = default;
@@ -406,9 +484,11 @@ class MarkerGeometry {
     QSizeF m_imageSize;
 };
 
-QImage WaveformMark::generateImage(float devicePixelRatio) {
-    DEBUG_ASSERT(needsImageUpdate());
-
+QImage WaveformMark::performImageGeneration(float devicePixelRatio,
+        const QString& pixmapPath,
+        const QString& text,
+        WaveformMarkLabel* labelMark,
+        const QString& iconPath) {
     if (m_breadth == 0.0f) {
         return {};
     }
@@ -416,40 +496,68 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
 
-    if (!m_pixmapPath.isEmpty()) {
-        QString path = m_pixmapPath;
+    if (!pixmapPath.isEmpty()) {
+        QString path = pixmapPath;
         // Use devicePixelRatio to properly scale the image
         QImage image = *WImageStore::getImage(path, devicePixelRatio);
-        //  If loading the image didn't fail, then we're done. Otherwise fall
-        //  through and render a label.
+        // If loading the image didn't fail, then we're done. Otherwise fall
+        // through and render a label.
         if (!image.isNull()) {
             image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            //  Set the pixel/device ratio AFTER loading the image in order to get
-            //  a truly scaled source image.
-            //  See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
-            //  Also, without this some Qt-internal issue results in an offset
-            //  image when calculating the center line of pixmaps in draw().
+            // Set the pixel/device ratio AFTER loading the image in order to get
+            // a truly scaled source image.
+            // See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
+            // Also, without this some Qt-internal issue results in an offset
+            // image when calculating the center line of pixmaps in draw().
             image.setDevicePixelRatio(devicePixelRatio);
+            // Calculate the offset
+            const float imgw = image.width();
+            const Qt::Alignment alignH = m_align & Qt::AlignHorizontal_Mask;
+            switch (alignH) {
+            case Qt::AlignHCenter:
+                m_offset = -(imgw - 1.f) / 2.f;
+                break;
+            case Qt::AlignLeft:
+                m_offset = -imgw + 2.f;
+                break;
+            case Qt::AlignRight:
+            default:
+                m_offset = -1.f;
+                break;
+            }
             return image;
         }
     }
-
-    QString label = m_text;
-
-    // Determine mark text.
-    if (getHotCue() >= 0) {
-        if (!label.isEmpty()) {
-            label.prepend(": ");
-        }
-        label.prepend(QString::number(getHotCue() + 1));
-    }
-
-    const bool useIcon = m_iconPath != "";
+    const bool useIcon = iconPath != "";
 
     // Determine drawing geometries
-    const MarkerGeometry markerGeometry{label, useIcon, m_align, m_breadth, m_level};
+    const MarkerGeometry markerGeometry{text, useIcon, m_align, m_breadth, m_level};
 
-    m_label.setAreaRect(markerGeometry.labelRect());
+    float linePos;
+    if (labelMark) {
+        labelMark->setAreaRect(markerGeometry.labelRect());
+
+        const Qt::Alignment alignH = m_align & Qt::AlignHorizontal_Mask;
+        const float imgw = static_cast<float>(markerGeometry.imageSize().width());
+        switch (alignH) {
+        case Qt::AlignHCenter:
+            m_linePosition = imgw / 2.f;
+            m_offset = -(imgw - 1.f) / 2.f;
+            break;
+        case Qt::AlignLeft:
+            m_linePosition = imgw - 1.5f;
+            m_offset = -imgw + 2.f;
+            break;
+        case Qt::AlignRight:
+        default:
+            m_linePosition = 1.5f;
+            m_offset = -1.f;
+            break;
+        }
+        linePos = m_linePosition;
+    } else {
+        linePos = static_cast<float>(markerGeometry.imageSize().width()) / 2.f;
+    }
 
     const QSize size{markerGeometry.getImageSize(devicePixelRatio)};
 
@@ -474,26 +582,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
     painter.setWorldMatrixEnabled(false);
 
-    const Qt::Alignment alignH = m_align & Qt::AlignHorizontal_Mask;
-    const float imgw = static_cast<float>(markerGeometry.imageSize().width());
-    switch (alignH) {
-    case Qt::AlignHCenter:
-        m_linePosition = imgw / 2.f;
-        m_offset = -(imgw - 1.f) / 2.f;
-        break;
-    case Qt::AlignLeft:
-        m_linePosition = imgw - 1.5f;
-        m_offset = -imgw + 2.f;
-        break;
-    case Qt::AlignRight:
-    default:
-        m_linePosition = 1.5f;
-        m_offset = -1.f;
-        break;
-    }
-
     // Note: linePos has to be at integer + 0.5 to draw correctly
-    const float linePos = m_linePosition;
     [[maybe_unused]] const float epsilon = 1e-6f;
     DEBUG_ASSERT(std::abs(linePos - std::floor(linePos) - 0.5) < epsilon);
 
@@ -511,7 +600,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
             linePos + 1.f,
             markerGeometry.imageSize().height()));
 
-    if (useIcon || label.length() != 0) {
+    if (useIcon || text.length() != 0) {
         painter.setPen(borderColor());
 
         // Draw the label rounded rect with border
@@ -520,7 +609,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
         painter.fillPath(path, fillColor());
         painter.drawPath(path);
 
-        // Center m_contentRect.width() and m_contentRect.height() inside m_labelRect
+        // Center m_contentRect.width() and m_contentRect.height() inside labelRectMarl
         // and apply the offset x,y so the text ends up in the centered width,height.
         QPointF pos(markerGeometry.labelRect().x() +
                         (markerGeometry.labelRect().width() -
@@ -534,7 +623,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
                         markerGeometry.contentRect().y());
 
         if (useIcon) {
-            QSvgRenderer svgRenderer(m_iconPath);
+            QSvgRenderer svgRenderer(iconPath);
             svgRenderer.render(&painter, QRectF(pos, markerGeometry.contentRect().size()));
         } else {
             // Draw the text
@@ -542,11 +631,83 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
             painter.setPen(labelColor());
             painter.setFont(markerGeometry.font());
 
-            painter.drawText(pos, label);
+            painter.drawText(pos, text);
         }
     }
 
     painter.end();
 
     return image;
+}
+
+std::optional<WaveformMark::WaveformMarkConstructionError> WaveformMark::validate() const {
+    auto checkPath = [](const auto& path) {
+        return !std::get<QString>(path).isEmpty() && !QFileInfo(std::get<QString>(path)).exists();
+    };
+
+    auto addPaths = [](auto* pPathList,
+                            const QString& pathTemplate,
+                            WaveformMark::WaveformMarkConstructionError
+                                    pathErrorType) {
+        static QRegularExpression re("%\\d+");
+        auto argCount = pathTemplate.count(re);
+        switch (argCount) {
+        case 0:
+            pPathList->emplace_back(pathTemplate, pathErrorType);
+            break;
+        case 1:
+            pPathList->emplace_back(pathTemplate.arg(QStringLiteral("forward")), pathErrorType);
+            pPathList->emplace_back(pathTemplate.arg(QStringLiteral("backward")), pathErrorType);
+            break;
+        default:
+            return false;
+        }
+        return true;
+    };
+
+    std::vector<std::pair<QString, WaveformMarkConstructionError>> pathList = {
+            {m_pixmapPath, WaveformMarkConstructionError::PixmapNotFound},
+            {m_endPixmapPath, WaveformMarkConstructionError::EndPixmapNotFound},
+            {m_iconPath, WaveformMarkConstructionError::IconNotFound},
+    };
+    if (!addPaths(&pathList, m_endIconPath, WaveformMarkConstructionError::EndIconNotFound)) {
+        return WaveformMarkConstructionError::EndIconInvalidArgumentCount;
+    }
+
+    auto first_missing_path = std::find_if(pathList.cbegin(), pathList.cend(), checkPath);
+    if (first_missing_path != pathList.cend()) {
+        return std::get<WaveformMarkConstructionError>(*first_missing_path);
+    }
+    return {};
+}
+
+QImage WaveformMark::generateImage(float devicePixelRatio) {
+    DEBUG_ASSERT(needsImageUpdate());
+
+    QString label = m_text;
+
+    // Determine mark text.
+    if (getHotCue() >= 0) {
+        if (!label.isEmpty()) {
+            label.prepend(": ");
+        }
+        label.prepend(QString::number(getHotCue() + 1));
+    }
+
+    return performImageGeneration(devicePixelRatio, m_pixmapPath, label, &m_label, m_iconPath);
+}
+
+QImage WaveformMark::generateEndImage(float devicePixelRatio) {
+    assert(needsEndImageUpdate());
+
+    QString direction = QStringLiteral("forward");
+
+    if (isJump() && getSampleEndPosition() > getSamplePosition()) {
+        direction = QStringLiteral("backward");
+    }
+    return performImageGeneration(devicePixelRatio,
+            m_endPixmapPath,
+            "",
+            nullptr,
+            m_endIconPath.contains("%1") ? m_endIconPath.arg(direction) : m_endIconPath);
 }

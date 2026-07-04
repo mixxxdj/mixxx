@@ -10,8 +10,7 @@
 QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
-    // Turn quantize OFF by default. See Bug #898213
-    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
+    m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true, 1.0);
     m_pCOQuantizeEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_pCONextBeat = new ControlObject(ConfigKey(group, "beat_next"));
     m_pCONextBeat->setKbdRepeatable(true);

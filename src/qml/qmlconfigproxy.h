@@ -3,33 +3,423 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QVariantList>
+#include <type_traits>
 
+#include "engine/controls/cuecontrol.h"
+#include "engine/controls/ratecontrol.h"
+#include "engine/defs_keylock.h"
+#include "engine/sync/enginesync.h"
+#include "mixer/basetrackplayer.h"
+#include "preferences/constants.h"
+#include "preferences/interface.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlconfigproxybase.h"
+#include "qml/qmlwaveformdisplay.h"
+
+#define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                              \
+  public:                                                               \
+    TYPE NAME() const;                                                  \
+    void set_##NAME(                                                    \
+            std::conditional_t<(sizeof(TYPE) <= 16), TYPE, const TYPE&> \
+                    value);
 
 namespace mixxx {
 namespace qml {
 
-class QmlConfigProxy : public QObject {
+// The following typedefs are used to prevent clazy warnings
+typedef QmlWaveformDisplay::Type QmlWaveformDisplayType;
+typedef QmlWaveformDisplay::Options QmlWaveformDisplayOptions;
+
+class QmlConfigProxy : public QmlConfigProxyBase {
     Q_OBJECT
     QML_NAMED_ELEMENT(Config)
     QML_SINGLETON
+
+    // Preference settings
+    Q_PROPERTY(mixxx::preferences::MultiSamplingMode multiSamplingLevel READ
+                    multiSamplingLevel WRITE set_multiSamplingLevel NOTIFY
+                            multiSamplingLevelChanged);
+    Q_PROPERTY(bool useAcceleration READ useAcceleration WRITE
+                    set_useAcceleration NOTIFY useAccelerationChanged);
+
+    // Waveform group
+    Q_PROPERTY(bool waveformZoomSynchronization READ waveformZoomSynchronization
+                    WRITE set_waveformZoomSynchronization NOTIFY
+                            waveformZoomSynchronizationChanged);
+    Q_PROPERTY(bool waveformOverviewNormalized READ waveformOverviewNormalized
+                    WRITE set_waveformOverviewNormalized NOTIFY
+                            waveformOverviewNormalizedChanged);
+    // 1..10
+    Q_PROPERTY(double waveformDefaultZoom READ waveformDefaultZoom WRITE
+                    set_waveformDefaultZoom NOTIFY waveformDefaultZoomChanged);
+    // [0..1]
+    Q_PROPERTY(double waveformPlayMarkerPosition READ waveformPlayMarkerPosition
+                    WRITE set_waveformPlayMarkerPosition NOTIFY
+                            waveformPlayMarkerPositionChanged);
+    Q_PROPERTY(bool waveformUntilMarkShowBeats READ waveformUntilMarkShowBeats
+                    WRITE set_waveformUntilMarkShowBeats NOTIFY
+                            waveformUntilMarkShowBeatsChanged);
+    Q_PROPERTY(bool waveformUntilMarkShowTime READ waveformUntilMarkShowTime
+                    WRITE set_waveformUntilMarkShowTime NOTIFY
+                            waveformUntilMarkShowTimeChanged);
+    // {1,2,3}, Qt::AlignTop, Qt::AlignVCenter, Qt::AlignBottom
+    Q_PROPERTY(double waveformUntilMarkAlign READ waveformUntilMarkAlign WRITE
+                    set_waveformUntilMarkAlign NOTIFY
+                            waveformUntilMarkAlignChanged);
+    Q_PROPERTY(int waveformUntilMarkTextPointSize READ
+                    waveformUntilMarkTextPointSize WRITE
+                            set_waveformUntilMarkTextPointSize NOTIFY
+                                    waveformUntilMarkTextPointSizeChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainAll READ waveformVisualGainAll WRITE
+                    set_waveformVisualGainAll NOTIFY
+                            waveformVisualGainAllChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainLow READ waveformVisualGainLow WRITE
+                    set_waveformVisualGainLow NOTIFY
+                            waveformVisualGainLowChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainMedium READ waveformVisualGainMedium
+                    WRITE set_waveformVisualGainMedium NOTIFY
+                            waveformVisualGainMediumChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainHigh READ waveformVisualGainHigh WRITE
+                    set_waveformVisualGainHigh NOTIFY
+                            waveformVisualGainHighChanged);
+    // Seconds
+    Q_PROPERTY(
+            int waveformEndOfTrackWarningTime READ waveformEndOfTrackWarningTime
+                    WRITE set_waveformEndOfTrackWarningTime NOTIFY
+                            waveformEndOfTrackWarningTimeChanged);
+    Q_PROPERTY(QmlWaveformDisplayType waveformType READ waveformType WRITE
+                    set_waveformType NOTIFY waveformTypeChanged);
+    Q_PROPERTY(QmlWaveformDisplayOptions waveformOptions READ waveformOptions
+                    WRITE set_waveformOptions NOTIFY waveformOptionsChanged);
+    // Percent, 0..100
+    Q_PROPERTY(double waveformBeatGridAlpha READ waveformBeatGridAlpha WRITE
+                    set_waveformBeatGridAlpha NOTIFY
+                            waveformBeatGridAlphaChanged);
+
+    // Library group
+    Q_PROPERTY(mixxx::preferences::Tooltips libraryTooltips READ libraryTooltips
+                    WRITE set_libraryTooltips NOTIFY libraryTooltipsChanged);
+    Q_PROPERTY(mixxx::preferences::ScreenSaver libraryInhibitScreensaver READ
+                    libraryInhibitScreensaver WRITE
+                            set_libraryInhibitScreensaver NOTIFY
+                                    libraryInhibitScreensaverChanged);
+    Q_PROPERTY(bool libraryHideMenuBar READ libraryHideMenuBar WRITE
+                    set_libraryHideMenuBar NOTIFY libraryHideMenuBarChanged);
+    Q_PROPERTY(bool libraryEnableSearchCompletions READ
+                    libraryEnableSearchCompletions WRITE
+                            set_libraryEnableSearchCompletions NOTIFY
+                                    libraryEnableSearchCompletionsChanged);
+    Q_PROPERTY(bool libraryEnableSearchHistoryShortcuts READ
+                    libraryEnableSearchHistoryShortcuts WRITE
+                            set_libraryEnableSearchHistoryShortcuts NOTIFY
+                                    libraryEnableSearchHistoryShortcutsChanged);
+    // Decimal count, 0..10
+    Q_PROPERTY(int libraryBpmColumnPrecision READ libraryBpmColumnPrecision
+                    WRITE set_libraryBpmColumnPrecision NOTIFY
+                            libraryBpmColumnPrecisionChanged);
+    // Pixels
+    Q_PROPERTY(double libraryRowHeight READ libraryRowHeight WRITE
+                    set_libraryRowHeight NOTIFY libraryRowHeightChanged);
+    // Controls group
+    // [0..activePaletteColorCount-1]
+    Q_PROPERTY(int controlHotcueDefaultColorIndex READ
+                    controlHotcueDefaultColorIndex WRITE
+                            set_controlHotcueDefaultColorIndex NOTIFY
+                                    controlHotcueDefaultColorIndexChanged);
+    // [0..activePaletteColorCount-1]
+    Q_PROPERTY(double controlLoopDefaultColorIndex READ
+                    controlLoopDefaultColorIndex WRITE
+                            set_controlLoopDefaultColorIndex NOTIFY
+                                    controlLoopDefaultColorIndexChanged);
+    Q_PROPERTY(CueMode controlCueDefault READ controlCueDefault WRITE
+                    set_controlCueDefault NOTIFY controlCueDefaultChanged);
+    Q_PROPERTY(bool controlSetIntroStartAtMainCue READ
+                    controlSetIntroStartAtMainCue WRITE
+                            set_controlSetIntroStartAtMainCue NOTIFY
+                                    controlSetIntroStartAtMainCueChanged);
+    Q_PROPERTY(bool controlCloneDeckOnLoadDoubleTap READ
+                    controlCloneDeckOnLoadDoubleTap WRITE
+                            set_controlCloneDeckOnLoadDoubleTap NOTIFY
+                                    controlCloneDeckOnLoadDoubleTapChanged);
+    Q_PROPERTY(LoadWhenDeckPlaying controlLoadWhenDeckPlaying READ
+                    controlLoadWhenDeckPlaying WRITE
+                            set_controlLoadWhenDeckPlaying NOTIFY
+                                    controlLoadWhenDeckPlayingChanged);
+    Q_PROPERTY(TrackTime::DisplayFormat controlTimeFormat READ controlTimeFormat
+                    WRITE set_controlTimeFormat NOTIFY
+                            controlTimeFormatChanged);
+    Q_PROPERTY(TrackTime::DisplayMode controlPositionDisplay READ
+                    controlPositionDisplay WRITE set_controlPositionDisplay
+                            NOTIFY controlPositionDisplayChanged);
+    Q_PROPERTY(SeekOnLoadMode controlCueRecall READ controlCueRecall WRITE
+                    set_controlCueRecall NOTIFY controlCueRecallChanged);
+    Q_PROPERTY(BaseTrackPlayer::TrackLoadReset controlSpeedAutoReset READ
+                    controlSpeedAutoReset WRITE set_controlSpeedAutoReset NOTIFY
+                            controlSpeedAutoResetChanged);
+    Q_PROPERTY(KeylockMode controlKeylockMode READ controlKeylockMode WRITE
+                    set_controlKeylockMode NOTIFY controlKeylockModeChanged);
+    Q_PROPERTY(KeyunlockMode controlKeyunlockMode READ controlKeyunlockMode
+                    WRITE set_controlKeyunlockMode NOTIFY
+                            controlKeyunlockModeChanged);
+    // [100...2500]
+    Q_PROPERTY(double controlRateRampSensitivity READ controlRateRampSensitivity
+                    WRITE set_controlRateRampSensitivity NOTIFY
+                            controlRateRampSensitivityChanged);
+    // [0.01..10]
+    Q_PROPERTY(double controlRateTempCoarse READ controlRateTempCoarse WRITE
+                    set_controlRateTempCoarse NOTIFY
+                            controlRateTempCoarseChanged);
+    // [0.01..10]
+    Q_PROPERTY(double controlRateTempFine READ controlRateTempFine WRITE
+                    set_controlRateTempFine NOTIFY controlRateTempFineChanged);
+    // [0.01..10]
+    Q_PROPERTY(double controlRatePermCoarse READ controlRatePermCoarse WRITE
+                    set_controlRatePermCoarse NOTIFY
+                            controlRatePermCoarseChanged);
+    // [0.01..10]
+    Q_PROPERTY(double controlRatePermFine READ controlRatePermFine WRITE
+                    set_controlRatePermFine NOTIFY controlRatePermFineChanged);
+    // [4, 6, 8, 10, 16, 24, 50, 90, *]
+    Q_PROPERTY(int controlRateRange READ controlRateRange WRITE
+                    set_controlRateRange NOTIFY controlRateRangeChanged);
+    // If true, down increases
+    Q_PROPERTY(bool controlRateDir READ controlRateDir WRITE set_controlRateDir
+                    NOTIFY controlRateDirChanged);
+    Q_PROPERTY(RateControl::RampMode controlPitchBendBehaviour READ
+                    controlPitchBendBehaviour WRITE
+                            set_controlPitchBendBehaviour NOTIFY
+                                    controlPitchBendBehaviourChanged);
+    // Config group
+    Q_PROPERTY(QString configHotcueColorPalette READ configHotcueColorPalette
+                    WRITE set_configHotcueColorPalette NOTIFY
+                            configHotcueColorPaletteChanged);
+    Q_PROPERTY(QString configTrackColorPalette READ configTrackColorPalette
+                    WRITE set_configTrackColorPalette NOTIFY
+                            configTrackColorPaletteChanged);
+    Q_PROPERTY(QString configKeyColorPalette READ configKeyColorPalette WRITE
+                    set_configKeyColorPalette NOTIFY
+                            configKeyColorPaletteChanged);
+    Q_PROPERTY(bool configKeyColorsEnabled READ configKeyColorsEnabled WRITE
+                    set_configKeyColorsEnabled NOTIFY
+                            configKeyColorsEnabledChanged);
+    Q_PROPERTY(bool configStartInFullscreenKey READ configStartInFullscreenKey
+                    WRITE set_configStartInFullscreenKey NOTIFY
+                            configStartInFullscreenKeyChanged);
+    Q_PROPERTY(QString configScheme READ configScheme WRITE set_configScheme
+                    NOTIFY configSchemeChanged);
+    Q_PROPERTY(QString configSkin READ configSkin WRITE set_configSkin
+                    NOTIFY configSkinChanged);
+    // BPM group
+    Q_PROPERTY(EngineSync::SyncLockAlgorithm bpmSyncLockAlgorithm READ
+                    bpmSyncLockAlgorithm WRITE set_bpmSyncLockAlgorithm NOTIFY
+                            bpmSyncLockAlgorithmChanged);
+
+    // Colors
+    Q_PROPERTY(QVariantList hotcueColorPalette READ hotcueColorPalette NOTIFY
+                    hotcueColorPaletteChanged);
+    Q_PROPERTY(QVariantList trackColorPalette READ trackColorPalette NOTIFY
+                    trackColorPaletteChanged);
+    Q_PROPERTY(QVariantList keyColorPalette READ keyColorPalette NOTIFY
+                    keyColorPaletteChanged); // We use method here instead of
+                                             // properties as there is no way to
+                                             // achieve property binding
   public:
     explicit QmlConfigProxy(
             UserSettingsPointer pConfig,
-            QObject* parent = nullptr);
+            QObject* pParent = nullptr);
+    ~QmlConfigProxy() override;
 
-    // We use method here instead of properties as there is no way to achieve property binding
+    void setConfigScheme(const QString& scheme) override {
+        set_configScheme(scheme);
+    }
+
     // with UserSettings, since there is no synchronisation upon mutations.
-    Q_INVOKABLE QVariantList getHotcueColorPalette();
-    Q_INVOKABLE QVariantList getTrackColorPalette();
-    Q_INVOKABLE int getMultiSamplingLevel();
+    QVariantList hotcueColorPalette() const;
+    Q_INVOKABLE QVariantList getHotcueColorPalette(const QString& paletteName) const;
+    Q_INVOKABLE void setHotcueColorPalette(const QString& paletteName);
+    QVariantList trackColorPalette() const;
+    Q_INVOKABLE QVariantList getTrackColorPalette(const QString& paletteName) const;
+    Q_INVOKABLE void setTrackColorPalette(const QString& paletteName);
+    QVariantList keyColorPalette() const;
+    Q_INVOKABLE QVariantList getKeyColorPalette(const QString& paletteName) const;
+    Q_INVOKABLE void setKeyColorPalette(const QString& paletteName);
+    Q_INVOKABLE QVariantList colorPalette(const QString& paletteName) const;
+
+    Q_INVOKABLE QStringList paletteNames() const;
+  signals:
+    void hotcueColorPaletteChanged();
+    void trackColorPaletteChanged();
+    void keyColorPaletteChanged();
+
+  public:
+    // Preference settings
+    PROPERTY_DECL_ACCESSOR(mixxx::preferences::MultiSamplingMode, multiSamplingLevel);
+    PROPERTY_DECL_ACCESSOR(bool, useAcceleration);
+
+    // Waveform settings
+    PROPERTY_DECL_ACCESSOR(bool, waveformZoomSynchronization);
+    PROPERTY_DECL_ACCESSOR(bool, waveformOverviewNormalized);
+    // 1..10
+    PROPERTY_DECL_ACCESSOR(double, waveformDefaultZoom);
+    // [0..1]
+    PROPERTY_DECL_ACCESSOR(double, waveformPlayMarkerPosition);
+    PROPERTY_DECL_ACCESSOR(bool, waveformUntilMarkShowBeats);
+    PROPERTY_DECL_ACCESSOR(bool, waveformUntilMarkShowTime);
+    // {1,2,3}, Qt::AlignTop, Qt::AlignVCenter, Qt::AlignBottom
+    PROPERTY_DECL_ACCESSOR(double, waveformUntilMarkAlign);
+    PROPERTY_DECL_ACCESSOR(int, waveformUntilMarkTextPointSize);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainAll);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainLow);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainMedium);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainHigh);
+    // Seconds
+    PROPERTY_DECL_ACCESSOR(int, waveformEndOfTrackWarningTime);
+    PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayType, waveformType);
+    PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayOptions, waveformOptions);
+    // Percent, 0..100
+    PROPERTY_DECL_ACCESSOR(double, waveformBeatGridAlpha);
+
+    // Library group
+    PROPERTY_DECL_ACCESSOR(mixxx::preferences::Tooltips, libraryTooltips);
+    PROPERTY_DECL_ACCESSOR(mixxx::preferences::ScreenSaver, libraryInhibitScreensaver);
+    PROPERTY_DECL_ACCESSOR(bool, libraryHideMenuBar);
+    PROPERTY_DECL_ACCESSOR(bool, libraryEnableSearchCompletions);
+    PROPERTY_DECL_ACCESSOR(bool, libraryEnableSearchHistoryShortcuts);
+    // Decimal count, 0..10
+    PROPERTY_DECL_ACCESSOR(int, libraryBpmColumnPrecision);
+    // Pixels
+    PROPERTY_DECL_ACCESSOR(double, libraryRowHeight);
+
+    // Controls group
+    // [0..activePaletteColorCount-1]
+    PROPERTY_DECL_ACCESSOR(int, controlHotcueDefaultColorIndex);
+    // [0..activePaletteColorCount-1]
+    PROPERTY_DECL_ACCESSOR(double, controlLoopDefaultColorIndex);
+    PROPERTY_DECL_ACCESSOR(CueMode, controlCueDefault);
+    PROPERTY_DECL_ACCESSOR(bool, controlSetIntroStartAtMainCue);
+    PROPERTY_DECL_ACCESSOR(bool, controlCloneDeckOnLoadDoubleTap);
+    PROPERTY_DECL_ACCESSOR(LoadWhenDeckPlaying, controlLoadWhenDeckPlaying);
+    PROPERTY_DECL_ACCESSOR(TrackTime::DisplayFormat, controlTimeFormat);
+    PROPERTY_DECL_ACCESSOR(TrackTime::DisplayMode, controlPositionDisplay);
+    PROPERTY_DECL_ACCESSOR(SeekOnLoadMode, controlCueRecall);
+    PROPERTY_DECL_ACCESSOR(BaseTrackPlayer::TrackLoadReset, controlSpeedAutoReset);
+    PROPERTY_DECL_ACCESSOR(KeylockMode, controlKeylockMode);
+    PROPERTY_DECL_ACCESSOR(KeyunlockMode, controlKeyunlockMode);
+    // [100...2500]
+    PROPERTY_DECL_ACCESSOR(double, controlRateRampSensitivity);
+    // [0.01..10]
+    PROPERTY_DECL_ACCESSOR(double, controlRateTempCoarse);
+    // [0.01..10]
+    PROPERTY_DECL_ACCESSOR(double, controlRateTempFine);
+    // [0.01..10]
+    PROPERTY_DECL_ACCESSOR(double, controlRatePermCoarse);
+    // [0.01..10]
+    PROPERTY_DECL_ACCESSOR(double, controlRatePermFine);
+    // [4, 6, 8, 10, 16, 24, 50, 90, *]
+    PROPERTY_DECL_ACCESSOR(int, controlRateRange);
+    // If true, down increases
+    PROPERTY_DECL_ACCESSOR(bool, controlRateDir);
+    PROPERTY_DECL_ACCESSOR(RateControl::RampMode, controlPitchBendBehaviour);
+
+    // Config group
+    PROPERTY_DECL_ACCESSOR(QString, configHotcueColorPalette);
+    PROPERTY_DECL_ACCESSOR(QString, configTrackColorPalette);
+    PROPERTY_DECL_ACCESSOR(QString, configKeyColorPalette);
+    PROPERTY_DECL_ACCESSOR(bool, configKeyColorsEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, configStartInFullscreenKey);
+    PROPERTY_DECL_ACCESSOR(QString, configScheme);
+    PROPERTY_DECL_ACCESSOR(QString, configSkin);
+
+    // BPM group
+    PROPERTY_DECL_ACCESSOR(EngineSync::SyncLockAlgorithm, bpmSyncLockAlgorithm);
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {
         s_pUserSettings = std::move(pConfig);
     }
 
+    static UserSettingsPointer get() {
+        return s_pUserSettings;
+    }
+
+  signals:
+    void multiSamplingLevelChanged();
+    void useAccelerationChanged();
+    void waveformZoomSynchronizationChanged();
+    void waveformOverviewNormalizedChanged();
+    void waveformDefaultZoomChanged();
+    void waveformPlayMarkerPositionChanged();
+    void waveformUntilMarkShowBeatsChanged();
+    void waveformUntilMarkShowTimeChanged();
+    void waveformUntilMarkAlignChanged();
+    void waveformUntilMarkTextPointSizeChanged();
+    void waveformVisualGainAllChanged();
+    void waveformVisualGainLowChanged();
+    void waveformVisualGainMediumChanged();
+    void waveformVisualGainHighChanged();
+    void waveformEndOfTrackWarningTimeChanged();
+    void waveformTypeChanged();
+    void waveformOptionsChanged();
+    void waveformBeatGridAlphaChanged();
+    void libraryTooltipsChanged();
+    void libraryInhibitScreensaverChanged();
+    void libraryHideMenuBarChanged();
+    void libraryEnableSearchCompletionsChanged();
+    void libraryEnableSearchHistoryShortcutsChanged();
+    void libraryBpmColumnPrecisionChanged();
+    void libraryRowHeightChanged();
+    void controlHotcueDefaultColorIndexChanged();
+    void controlLoopDefaultColorIndexChanged();
+    void controlCueDefaultChanged();
+    void controlSetIntroStartAtMainCueChanged();
+    void controlCloneDeckOnLoadDoubleTapChanged();
+    void controlLoadWhenDeckPlayingChanged();
+    void controlTimeFormatChanged();
+    void controlPositionDisplayChanged();
+    void controlCueRecallChanged();
+    void controlSpeedAutoResetChanged();
+    void controlKeylockModeChanged();
+    void controlKeyunlockModeChanged();
+    void controlRateRampSensitivityChanged();
+    void controlRateTempCoarseChanged();
+    void controlRateTempFineChanged();
+    void controlRatePermCoarseChanged();
+    void controlRatePermFineChanged();
+    void controlRateRangeChanged();
+    void controlRateDirChanged();
+    void controlPitchBendBehaviourChanged();
+    void configHotcueColorPaletteChanged();
+    void configTrackColorPaletteChanged();
+    void configKeyColorPaletteChanged();
+    void configKeyColorsEnabledChanged();
+    void configStartInFullscreenKeyChanged();
+    void configSkinChanged();
+    void bpmSyncLockAlgorithmChanged();
+
   private:
+    template<typename Type, typename Signal>
+    void setConfigValueAndNotify(
+            const QString& group,
+            const QString& key,
+            std::conditional_t<(sizeof(Type) <= 16), Type, const Type&> value,
+            const Type& defaultValue,
+            Signal signal) {
+        if (value == defaultValue) {
+            m_pConfig->remove(ConfigKey(group, key));
+        } else {
+            m_pConfig->setValue(ConfigKey(group, key), value);
+        }
+        emit(this->*signal)();
+    }
+
     static inline UserSettingsPointer s_pUserSettings = nullptr;
 
     const UserSettingsPointer m_pConfig;

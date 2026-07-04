@@ -10,6 +10,7 @@
 
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
+#include "widget/wtracktableviewheader.h"
 
 class QFocusEvent;
 
@@ -110,15 +111,45 @@ bool WLibraryTableView::restoreTrackModelState(
     verticalScrollBar()->setValue(state->verticalScrollPosition);
     horizontalScrollBar()->setValue(state->horizontalScrollPosition);
 
-    auto* pSelection = selectionModel();
-    pSelection->clearSelection();
+    // Build a selection range rather than selecting each track individually,
+    // which can lag the GUI by spamming selectionChanged() handlers.
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    pSelectionModel->clearSelection();
+    QItemSelection newSelection;
     QModelIndexList selectedRows = state->selectedRows;
+    QModelIndex topLeft;
+    QModelIndex bottomRight;
     if (!selectedRows.isEmpty()) {
-        for (auto index : std::as_const(selectedRows)) {
-            pSelection->select(index,
-                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        // In saveTrackModelState() we fill state->selectedRows with the sorted
+        // rows, hence no need to sort here.
+        for (const QModelIndex& index : std::as_const(selectedRows)) {
+            if (!topLeft.isValid()) {
+                // start new range. only done once for first row
+                topLeft = index;
+                bottomRight = index;
+                continue;
+            }
+
+            if (index.row() == bottomRight.row() + 1) {
+                // continuous range
+                bottomRight = index;
+                continue;
+            } else {
+                // prev index was end of range, add current range to selection
+                // and start a new one
+                newSelection.select(topLeft, bottomRight);
+                topLeft = index;
+                bottomRight = index;
+            }
+        }
+
+        // If we reached end, submit the last selection
+        if (bottomRight == selectedRows.last()) {
+            newSelection.select(topLeft, bottomRight);
         }
     }
+    pSelectionModel->select(newSelection,
+            QItemSelectionModel::Select | QItemSelectionModel::Rows);
 
     QModelIndex currIndex = state->currentIndex;
     restoreCurrentIndex(currIndex);
@@ -185,6 +216,21 @@ void WLibraryTableView::setTrackTableFont(const QFont& font) {
             "height: %1px;"
             "width: %1px;}")
                           .arg(metrics.height() * 0.7));
+
+    // Apply the font to the header as well.
+    // Note: remember to also apply the font to new headers created in
+    // WTrackTableView::loadTrackModel()
+    // Note: since WTrackTableViewHeader::setFont() does not override
+    // QHeaderView::setFont() we need to cast to WTrackTableViewHeader
+    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->setFont(font);
+    } else {
+        // _Might_ happen in case we did not yet WTrackTableView::loadTrackModel()
+        // hence might not have a WTrackTableViewHeader yet but still default QHeaderView.
+        // Header height will not be adjusted correctly now, only after loading the model.
+        horizontalHeader()->setFont(font);
+    }
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {

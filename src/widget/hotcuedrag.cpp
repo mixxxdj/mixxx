@@ -10,15 +10,11 @@ namespace mixxx {
 
 namespace hotcuedrag {
 
-/// Check if the event is a valid hotcue drag or drop event.
-/// Event must be a QDragEnterEvent or a QDropEvent.
-/// In case of QDropEvent, the HotcueDragInfo is extracted and the pointer
-/// data is used by the caller (WHotcueButton) to swap hotuces.
 template<typename T>
 bool isValidHotcueDragOrDropEvent(T* pEvent,
         const QString& group,
         QObject* pTarget = nullptr,
-        int ignoreHotcueIndex = Cue::kNoHotCue,
+        const QList<int>& ignoreIndices = QList<int>{Cue::kNoHotCue},
         HotcueDragInfo* pDragData = nullptr) {
     constexpr bool isDrag = std::same_as<QDragEnterEvent, T>;
     // Allow source == target in the drag case so we get the drag cursor
@@ -38,7 +34,10 @@ bool isValidHotcueDragOrDropEvent(T* pEvent,
     }
     const HotcueDragInfo dragData = HotcueDragInfo::fromByteArray(mimeDataBytes);
     if (dragData.isValid() &&
-            (isDrag || dragData.hotcue != ignoreHotcueIndex) &&
+            // * WPlayButton dragEnter|drop accepts all hotcues and main cue
+            // * WHotcueBbutton dragEnter accepts all hotcues incl. itself, rejects main cue
+            // * WHotcueBbutton drop accepts all hotcues, rejects itself and main cue
+            !ignoreIndices.contains(dragData.hotcue) &&
             dragData.trackId == pTrack->getId()) {
         if (pDragData != nullptr) {
             *pDragData = dragData;
@@ -50,16 +49,16 @@ bool isValidHotcueDragOrDropEvent(T* pEvent,
 
 bool isValidHotcueDragEvent(QDragEnterEvent* pEvent,
         const QString& group,
-        int ignoreHotcueIndex) {
-    return isValidHotcueDragOrDropEvent(pEvent, group, nullptr, ignoreHotcueIndex);
+        const QList<int>& ignoreIndices) {
+    return isValidHotcueDragOrDropEvent(pEvent, group, nullptr, ignoreIndices);
 }
 
 bool isValidHotcueDropEvent(QDropEvent* pEvent,
         const QString& group,
         QObject* pTarget,
-        int ignoreHotcueIndex,
+        const QList<int>& ignoreIndices,
         HotcueDragInfo* pDragData) {
-    return isValidHotcueDragOrDropEvent(pEvent, group, pTarget, ignoreHotcueIndex, pDragData);
+    return isValidHotcueDragOrDropEvent(pEvent, group, pTarget, ignoreIndices, pDragData);
 }
 
 } // namespace hotcuedrag

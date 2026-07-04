@@ -32,6 +32,7 @@
 #ifndef _DSP_DELAY_H_
 #define _DSP_DELAY_H_
 
+#include <cstdlib> // for free and calloc
 #include <cstring> // for memset
 
 #include "util.h"
@@ -54,6 +55,7 @@ class Delay
 			{
 				size = next_power_of_2 (n);
 				assert (size <= (1 << 20));
+				free (data);
 				data = (sample_t *) calloc (sizeof (sample_t), size);
 				--size; /* used as mask for confining access */
 				write = n;

@@ -218,6 +218,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         }
         menu.addSeparator();
         menu.addAction(m_pExportPlaylistAction);
+        menu.addAction(m_pExportTrackFilesAction);
     }
 
     menu.exec(globalPos);
@@ -383,6 +384,7 @@ void SetlogFeature::slotGetNewPlaylist() {
                  << set_log_name;
     } else {
         m_recentTracks.clear();
+        m_playlistDao.setCurrentHistoryPlaylistId(m_currentPlaylistId);
     }
 
     // reload child model again because the 'added' signal fired by PlaylistDAO
@@ -447,6 +449,7 @@ void SetlogFeature::slotJoinWithPrevious() {
 
         // Change current setlog
         m_currentPlaylistId = previousPlaylistId;
+        m_playlistDao.setCurrentHistoryPlaylistId(m_currentPlaylistId);
     }
     qDebug() << "slotJoinWithPrevious() current:"
              << clickedPlaylistId
@@ -712,13 +715,8 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
             newIndex = m_pSidebarModel->index(selectedYearIndexRow - 1, 0);
         }
     }
-    if (newIndex.isValid()) {
-        emit featureSelect(this, newIndex);
-        activateChild(newIndex);
-    } else if (rootWasSelected) {
-        // calling featureSelect with invalid index will select the root item
-        emit featureSelect(this, newIndex);
-        activate(); // to reload the new current playlist
+    if (newIndex.isValid() || rootWasSelected) {
+        selectAndActivate(newIndex);
     }
 }
 

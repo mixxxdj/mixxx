@@ -13,7 +13,8 @@ class allshader::WaveformRendererFiltered final
           public rendergraph::GeometryNode {
   public:
     explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget,
-            bool rgbStacked);
+            bool rgbStacked,
+            ::WaveformRendererSignalBase::Options options);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;

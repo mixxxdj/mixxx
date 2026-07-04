@@ -255,7 +255,7 @@ bool EngineEffectsManager::removeEffectChain(EngineEffectChain* pChain,
     return chains.removeAll(pChain) > 0;
 }
 
-bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
+bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {

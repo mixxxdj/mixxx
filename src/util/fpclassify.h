@@ -10,20 +10,27 @@
  * avoided because they don't work as expected!!!
  */
 
-int util_fpclassify(float x);
-int util_fpclassify(double x);
-
-bool util_isfinite(float x);
 bool util_isfinite(double x);
+// Delete all other overloads to avoid accidental usage of them.
+template<typename T>
+bool util_isfinite(T x) = delete;
 
-bool util_isnormal(float x);
 bool util_isnormal(double x);
+// Delete all other overloads to avoid accidental usage of them.
+template<typename T>
+bool util_isnormal(T x) = delete;
 
 int util_isnan(float x);
 int util_isnan(double x);
+// Delete all other overloads to avoid accidental usage of them.
+template<typename T>
+bool util_isnan(T x) = delete;
 
 int util_isinf(float x);
 int util_isinf(double x);
+// Delete all other overloads to avoid accidental usage of them.
+template<typename T>
+bool util_isinf(T x) = delete;
 
 // The following functions are only used in testing code.
 // Don't use them in other -ffast-math code to avoid undefined behavior in
@@ -32,3 +39,6 @@ int util_isinf(double x);
 // values use the appropiated function above.
 float util_float_infinity();
 double util_double_infinity();
+
+float util_float_nan();
+double util_double_nan();

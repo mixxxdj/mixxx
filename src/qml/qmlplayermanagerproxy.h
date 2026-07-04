@@ -24,6 +24,14 @@ class QmlPlayerManagerProxy : public QObject {
             const QUrl& locationUrl, bool play = false);
     Q_INVOKABLE void loadLocationToPlayer(
             const QString& location, const QString& group, bool play = false);
+    Q_INVOKABLE void loadTrackToPlayer(TrackPointer track,
+            const QString& group,
+#ifdef __STEM__
+            mixxx::StemChannelSelection stemSelection,
+#endif
+            bool play);
+    Q_INVOKABLE void showNoDeckPassthroughInputConfiguredWarning();
+    Q_INVOKABLE void showNoVinylControlInputConfiguredWarning();
 
     static QmlPlayerManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager) {

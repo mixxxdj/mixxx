@@ -2,10 +2,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////////
 //
-// Traktor Kontrol S3 HID controller script v2.00
-// Last modification: January 2023
+// Traktor Kontrol S3 HID controller script
 // Authors: Owen Williams, Robbert van der Helm
-// https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3
+// https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 //
 ///////////////////////////////////////////////////////////////////////////////////
 //
@@ -42,14 +41,14 @@ var TraktorS3 = {};
 // Disable this option to use the second, Mixxx-specific mode. See the readme at
 // https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 // for more information on how to use these modes.
-TraktorS3.QuickEffectMode = true;
+TraktorS3.QuickEffectMode = engine.getSetting("fxMode") === "QUICK_EFFECT";
 // When enabled, set all channels to the first FX chain on startup. Otherwise
 // the quick FX chain assignments from the last Mixxx run are preserved.
-TraktorS3.QuickEffectModeDefaultToFilter = true;
+TraktorS3.QuickEffectModeDefaultToFilter = engine.getSetting("fxResetOnStart");
 // When enabled, the FX Enable buttons will use the colors set in
 // `TraktorS3.ChannelColors` when the filter effect is selected. Disabling this
 // will use the Filter button's orange color instead.
-TraktorS3.QuickEffectModeChannelColors = false;
+TraktorS3.QuickEffectModeChannelColors = engine.getSetting("fxUseChannelColors");
 
 // The pitch slider can operate either in absolute or relative mode.
 // In absolute mode:
@@ -64,37 +63,39 @@ TraktorS3.QuickEffectModeChannelColors = false;
 // * Hold shift to move the pitch slider without adjusting the rate
 // * Hold keylock and move the pitch slider to adjust musical pitch
 // * keylock will still toggle on, but on release, not press.
-TraktorS3.PitchSliderRelativeMode = false;
+TraktorS3.PitchSliderRelativeMode = engine.getSetting("pitchMode") === "PITCH_RELATIVE";
 
 // The Samplers can operate two ways.
 // With SamplerModePressAndHold = false, tapping a Sampler button will start the
 // sample playing.  Pressing the button again will stop playback.
 // With SamplerModePressAndHold = true, a Sample will play while you hold the
 // button down.  Letting go will stop playback.
-TraktorS3.SamplerModePressAndHold = false;
+TraktorS3.SamplerModePressAndHold = engine.getSetting("samplerModePressAndHold");
 
 // When this option is true, start up with the jog button lit, which means touching the job wheel
 // enables scratch mode.
-TraktorS3.JogDefaultOn = true;
+TraktorS3.JogDefaultOn = engine.getSetting("jogDefaultOn");
 
 // If true, the sampler buttons on Deck 1 are samplers 1-8 and the sampler buttons on Deck 2 are
 // 9-16.  If false, both decks are samplers 1-8.
-TraktorS3.SixteenSamplers = false;
+TraktorS3.SixteenSamplers = engine.getSetting("sixteenSamplers");
 
 // You can choose the colors you want for each channel. The list of colors is:
 // RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
 // PURPLE, FUCHSIA, MAGENTA, AZALEA, SALMON, WHITE
 // Some colors may look odd because of how they are encoded inside the controller.
 TraktorS3.ChannelColors = {
-    "[Channel1]": "CARROT",
-    "[Channel2]": "CARROT",
-    "[Channel3]": "BLUE",
-    "[Channel4]": "BLUE"
+    "[Channel1]": engine.getSetting("chan1Color"),
+    "[Channel2]": engine.getSetting("chan2Color"),
+    "[Channel3]": engine.getSetting("chan3Color"),
+    "[Channel4]": engine.getSetting("chan4Color")
 };
 
+TraktorS3.HotcueUnsetColor = engine.getSetting("unsetHotcueColor");
+
 // Each color has four brightnesses, so these values can be between 0 and 3.
-TraktorS3.LEDDimValue = 0x00;
-TraktorS3.LEDBrightValue = 0x02;
+TraktorS3.LEDDimValue = parseInt(engine.getSetting("ledDimValue"), 10) || 0x01;
+TraktorS3.LEDBrightValue = parseInt(engine.getSetting("ledBrightValue"), 10) || 0x03;
 
 // By default the jog wheel's behavior when rotating it matches 33 1/3 rpm
 // vinyl. Changing this value to 2.0 causes a single rotation of the platter to
@@ -1117,10 +1118,17 @@ TraktorS3.Deck = class {
     }
 
     loadTrackHandler(field) {
-        if (this.shiftPressed) {
-            engine.setValue(this.activeChannel, "eject", field.value);
+        // If the library is selected, load the track based on which encoder was
+        // pressed. Otherwise just do whatever the default action is for the
+        // focused menu or widget.
+        if (engine.getValue("[Library]", "focused_widget") === 3) {
+            if (this.shiftPressed) {
+                engine.setValue(this.activeChannel, "eject", field.value);
+            } else {
+                engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            }
         } else {
-            engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
+            engine.setValue("[Library]", "GoToItem", field.value);
         }
     }
 
@@ -1520,14 +1528,14 @@ TraktorS3.Deck = class {
     }
 
     lightHotcue(number) {
-        const loaded = engine.getValue(this.activeChannel, "hotcue_" + number + "_status");
-        const active = engine.getValue(this.activeChannel, "hotcue_" + number + "_activate");
-        let ledValue = this.controller.hid.LEDColors.WHITE;
-        if (loaded) {
+        const hotCueStatus = engine.getValue(this.activeChannel, `hotcue_${  number  }_status`);
+        let ledValue = this.controller.hid.LEDColors[TraktorS3.HotcueUnsetColor];
+        // If hotcue is set, change the color.
+        if (hotCueStatus) {
             ledValue = this.colorForHotcue(number);
-            ledValue += TraktorS3.LEDDimValue;
         }
-        if (active) {
+        // If hotcue is active, make it brighter.
+        if (hotCueStatus === 2) {
             ledValue += TraktorS3.LEDBrightValue;
         } else {
             ledValue += TraktorS3.LEDDimValue;

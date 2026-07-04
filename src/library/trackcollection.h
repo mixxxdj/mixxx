@@ -90,7 +90,6 @@ class TrackCollection : public QObject,
     void scanTrackAdded(TrackPointer pTrack);
 
     // Forwarded signals from TrackDAO
-    void trackClean(TrackId trackId);
     void trackDirty(TrackId trackId);
     void tracksAdded(const QSet<TrackId>& trackIds);
     void tracksChanged(const QSet<TrackId>& trackIds);
@@ -130,6 +129,9 @@ class TrackCollection : public QObject,
             const QList<mixxx::FileInfo>& trackFiles,
             TrackDAO::ResolveTrackIdFlags flags);
     QList<TrackId> resolveTrackIds(
+            const QList<mixxx::FileInfo>& trackFiles,
+            QObject* pSource);
+    QList<TrackId> resolveTrackIds(
             const QList<QUrl>& urls,
             TrackDAO::ResolveTrackIdFlags flags);
     QList<TrackId> resolveTrackIdsFromUrls(
@@ -148,6 +150,7 @@ class TrackCollection : public QObject,
             bool* pAlreadyInLibrary = nullptr);
     FRIEND_TEST(DirectoryDAOTest, relocateDirectory);
     FRIEND_TEST(TrackDAOTest, detectMovedTracks);
+    FRIEND_TEST(TrackDAOTest, bpmLockPreservedForTrackWithoutBeats);
     TrackId addTrack(
             const TrackPointer& pTrack,
             bool unremove);

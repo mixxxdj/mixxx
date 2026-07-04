@@ -50,6 +50,14 @@ inline QScreen* getScreen(
 #endif
 }
 
+/// Obtains the screen for the active application window or the given widget.
+///
+/// This supports both QWidget and QML top-level windows. A visible widget's
+/// screen is used before scanning all top-level windows. Falls back to the
+/// primary screen if no application or widget screen is available yet.
+QScreen* getScreenForWidgetOrApplication(
+        const QWidget& widget);
+
 /// QSize for stretching a list widget attempting to show entire column
 void growListWidget(QListWidget& listWidget, const QWidget& parent);
 

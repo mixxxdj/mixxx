@@ -1,7 +1,5 @@
 #include "soundio/soundmanager.h"
 
-#include <portaudio.h>
-
 #include <QLibrary>
 #include <QThread>
 #include <QtGlobal>
@@ -9,8 +7,9 @@
 
 #include "control/controlobject.h"
 #include "engine/enginemixer.h"
-#include "engine/sidechain/enginenetworkstream.h"
 #include "moc_soundmanager.cpp"
+#include "soundio/networkenumerator.h"
+#include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
@@ -20,14 +19,7 @@
 #include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/sample.h"
-#include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-
-#ifdef Q_OS_IOS
-#include "soundio/soundmanagerios.h"
-#endif
-
-typedef PaError (*SetJackClientName)(const char *name);
 
 namespace {
 
@@ -50,13 +42,14 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
         EngineMixer* pEngineMixer)
         : m_pEngineMixer(pEngineMixer),
           m_pConfig(pConfig),
-          m_paInitialized(false),
           m_config(this),
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
           m_audioLatencyOverloadCount(kAppGroup, QStringLiteral("audio_latency_overload_count")),
-          m_audioLatencyOverload(kAppGroup, QStringLiteral("audio_latency_overload")) {
+          m_audioLatencyOverload(kAppGroup, QStringLiteral("audio_latency_overload")),
+          m_paEnumerator(pConfig, this),
+          m_networkEnumerator(pConfig, this) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -65,14 +58,6 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
-
-    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back(mixxx::audio::SampleRate(44100));
-    m_samplerates.push_back(mixxx::audio::SampleRate(48000));
-    m_samplerates.push_back(mixxx::audio::SampleRate(96000));
-
-    m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
-            new EngineNetworkStream(2, 0));
 
     queryDevices();
 
@@ -91,10 +76,6 @@ SoundManager::~SoundManager() {
     const bool sleepAfterClosing = false;
     clearDeviceList(sleepAfterClosing);
 
-    if (m_paInitialized) {
-        Pa_Terminate();
-        m_paInitialized = false;
-    }
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 
@@ -114,13 +95,16 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
     // input/output.
     QList<SoundDevicePointer> filteredDeviceList;
 
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice : m_paEnumerator.queryDevices()) {
         // Skip devices that don't match the API, don't have input channels when
         // we want input devices, or don't have output channels when we want
         // output devices. If searching for both input and output devices,
         // make sure to include any devices that have >0 channels.
         const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
         const bool hasInputs = pDevice->getNumInputChannels().isValid();
+        qDebug() << "SoundManager::getDeviceList" << pDevice->getHostAPI()
+                 << filterAPI << pDevice->getNumOutputChannels()
+                 << pDevice->getNumInputChannels();
         if (pDevice->getHostAPI() != filterAPI ||
                 (bOutputDevices && !bInputDevices && !hasOutputs) ||
                 (bInputDevices && !bOutputDevices && !hasInputs) ||
@@ -129,43 +113,62 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         }
         filteredDeviceList.push_back(pDevice);
     }
+
     return filteredDeviceList;
 }
 
 QList<QString> SoundManager::getHostAPIList() const {
     QList<QString> apiList;
 
-    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
-        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
-        if (api && QString(api->name) != "skeleton implementation") {
-            apiList.push_back(api->name);
-        }
+    for (const auto& api : m_paEnumerator.getAPIs()) {
+        apiList.push_back(api.c_str());
     }
 
     return apiList;
 }
 
-void SoundManager::closeDevices(bool sleepAfterClosing) {
-    //qDebug() << "SoundManager::closeDevices()";
+void SoundManager::closeDevices(
+        [[maybe_unused]] bool sleepAfterClosing, [[maybe_unused]] bool async) {
+    // sleepAfterClosing and async maybe unused depending on platform support
+    // qDebug() << "SoundManager::closeDevices()";
 
+#ifdef __LINUX__
     bool closed = false;
+#endif
     for (const auto& pDevice : std::as_const(m_devices)) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
             pDevice->close();
+#ifdef __LINUX__
             closed = true;
+#endif
         }
     }
 
-    if (closed && sleepAfterClosing) {
 #ifdef __LINUX__
+    if (closed && sleepAfterClosing) {
         // Sleep for 5 sec to allow asynchronously sound APIs like "pulse" to free
         // its resources as well
+        if (async) {
+            // Async mode - the caller will wait for `devicesClosed` before
+            // trying to reconfigure or reopen audio devices
+            QTimer::singleShot(
+                    std::chrono::seconds(kSleepSecondsAfterClosingDevice),
+                    this,
+                    &SoundManager::completeDevicesClosing);
+            return;
+        }
+        // Sync mode, legacy - we sleep the current thread for 5 seconds
         QThread::sleep(kSleepSecondsAfterClosingDevice);
+    } else if (!closed)
 #endif
+    {
+        completeDevicesClosing();
     }
+}
 
+void SoundManager::completeDevicesClosing() {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
@@ -199,6 +202,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
+    emit devicesClosed();
 }
 
 void SoundManager::clearDeviceList(bool sleepAfterClosing) {
@@ -211,23 +215,22 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     m_devices.clear();
     m_pErrorDevice.clear();
 
-    if (m_paInitialized) {
-        Pa_Terminate();
-        m_paInitialized = false;
-    }
+    m_paEnumerator.terminate();
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
-        QList<mixxx::audio::SampleRate> samplerates;
-        if (m_jackSampleRate.isValid()) {
-            samplerates.append(m_jackSampleRate);
-        }
-        return samplerates;
+        return m_paEnumerator.getJackSampleRates();
+    } else if (!api.isEmpty()) {
+        return m_paEnumerator.getSampleRates();
     }
-    return m_samplerates;
+    return QList<mixxx::audio::SampleRate>{
+            mixxx::audio::SampleRate(44100),
+            mixxx::audio::SampleRate(48000),
+            mixxx::audio::SampleRate(96000),
+    };
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
@@ -235,9 +238,17 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
 }
 
 void SoundManager::queryDevices() {
-    //qDebug() << "SoundManager::queryDevices()";
-    queryDevicesPortaudio();
-    queryDevicesMixxx();
+    qDebug() << "SoundManager::queryDevices()";
+
+    m_paEnumerator.initialize();
+
+    for (auto& device : m_paEnumerator.queryDevices()) {
+        m_devices.push_back(SoundDevicePointer(device));
+    }
+
+    for (auto& device : m_networkEnumerator.queryDevices()) {
+        m_devices.push_back(SoundDevicePointer(device));
+    }
 
     // now tell the prefs that we updated the device list -- bkgood
     emit devicesUpdated();
@@ -247,78 +258,6 @@ void SoundManager::clearAndQueryDevices() {
     const bool sleepAfterClosing = true;
     clearDeviceList(sleepAfterClosing);
     queryDevices();
-}
-
-void SoundManager::queryDevicesPortaudio() {
-    PaError err = paNoError;
-    if (!m_paInitialized) {
-#ifdef Q_OS_LINUX
-        setJACKName();
-#endif
-#ifdef Q_OS_IOS
-        mixxx::initializeAVAudioSession();
-#endif
-        err = Pa_Initialize();
-        m_paInitialized = true;
-    }
-    if (err != paNoError) {
-        qDebug() << "Error:" << Pa_GetErrorText(err);
-        m_paInitialized = false;
-        return;
-    }
-
-    int iNumDevices = Pa_GetDeviceCount();
-    if (iNumDevices < 0) {
-        qDebug() << "ERROR: Pa_CountDevices returned" << iNumDevices;
-        return;
-    }
-
-    // PaDeviceInfo structs have a PaHostApiIndex member, but PortAudio
-    // unfortunately provides no good way to associate this with a persistent,
-    // unique identifier for the API. So, build a QHash to do that and pass
-    // it to the SoundDevicePortAudio constructor.
-    QHash<PaHostApiIndex, PaHostApiTypeId> paApiIndexToTypeId;
-    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
-        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
-        if (api && QString(api->name) != "skeleton implementation") {
-            paApiIndexToTypeId.insert(i, api->type);
-        }
-    }
-
-    const PaDeviceInfo* deviceInfo;
-    for (int i = 0; i < iNumDevices; i++) {
-        deviceInfo = Pa_GetDeviceInfo(i);
-        if (!deviceInfo) {
-            continue;
-        }
-        /* deviceInfo fields for quick reference:
-            int     structVersion
-            const char *    name
-            PaHostApiIndex  hostApi
-            int     maxInputChannels
-            int     maxOutputChannels
-            PaTime  defaultLowInputLatency
-            PaTime  defaultLowOutputLatency
-            PaTime  defaultHighInputLatency
-            PaTime  defaultHighOutputLatency
-            double  defaultSampleRate
-         */
-        const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
-        auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, deviceTypeId, i));
-        m_devices.push_back(currentDevice);
-        if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
-                    MIXXX_PORTAUDIO_JACK_STRING)) {
-            m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
-                    deviceInfo->defaultSampleRate);
-        }
-    }
-}
-
-void SoundManager::queryDevicesMixxx() {
-    auto currentDevice = SoundDevicePointer(new SoundDeviceNetwork(
-            m_pConfig, this, m_pNetworkStream));
-    m_devices.append(currentDevice);
 }
 
 SoundDeviceStatus SoundManager::setupDevices() {
@@ -553,12 +492,12 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-void SoundManager::closeActiveConfig() {
+void SoundManager::closeActiveConfig(bool async) {
     // Close open devices. After this call we will not get any more
     // onDeviceOutputCallback() or pushBuffer() calls because all the
     // SoundDevices are closed. closeDevices() blocks and can take a while.
     const bool sleepAfterClosing = true;
-    closeDevices(sleepAfterClosing);
+    closeDevices(sleepAfterClosing, async);
 }
 
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
@@ -649,31 +588,6 @@ QList<AudioOutput> SoundManager::registeredOutputs() const {
 
 QList<AudioInput> SoundManager::registeredInputs() const {
     return m_registeredDestinations.keys();
-}
-
-void SoundManager::setJACKName() const {
-#ifdef Q_OS_LINUX
-    typedef PaError (*SetJackClientName)(const char *name);
-    QLibrary portaudio("libportaudio.so.2");
-    if (portaudio.load()) {
-        SetJackClientName func(
-            reinterpret_cast<SetJackClientName>(
-                portaudio.resolve("PaJack_SetClientName")));
-        if (func) {
-            // PortAudio does not make a copy of the string we provide it so we
-            // need to make sure it will last forever so we intentionally leak
-            // this string.
-            char* jackNameCopy = strdup(VersionStore::applicationName().toLocal8Bit().constData());
-            if (!func(jackNameCopy)) {
-                qDebug() << "JACK client name set";
-            }
-        } else {
-            qWarning() << "failed to resolve JACK name method";
-        }
-    } else {
-        qWarning() << "failed to load portaudio for JACK rename";
-    }
-#endif
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {

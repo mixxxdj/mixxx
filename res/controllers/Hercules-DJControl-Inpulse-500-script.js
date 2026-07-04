@@ -1152,7 +1152,7 @@ DJCi500.crossfader = function(channel, control, value, status, group) {
             }
             engine.setValue(group, "crossfader", result);
         } else {
-            engine.setValue(group, "crossfader", (value/64)-1);
+            engine.setParameter(group, "crossfader", script.absoluteLin(value, 0, 1, 0, 127));
         }
     }
 };

@@ -23,12 +23,6 @@
 #include "widget/wlibrarysidebar.h"
 
 namespace {
-
-const QString kViewName = QStringLiteral("Auto DJ");
-
-} // namespace
-
-namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
     int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
@@ -55,6 +49,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
+          m_viewName(Library::kAutoDJViewName),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig) {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(this,
@@ -152,7 +147,7 @@ void AutoDJFeature::bindLibraryWidget(
             m_pLibrary,
             m_pAutoDJProcessor,
             keyboard);
-    libraryWidget->registerView(kViewName, m_pAutoDJView);
+    libraryWidget->registerView(m_viewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
             this,
@@ -196,7 +191,7 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit switchToView(kViewName);
+    emit switchToView(m_viewName);
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }
@@ -240,8 +235,11 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls,
-            !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -250,9 +248,8 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
-bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+bool AutoDJFeature::dragMoveAccept(const QList<QUrl>& urls) {
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 void AutoDJFeature::slotEnableAutoDJ() {

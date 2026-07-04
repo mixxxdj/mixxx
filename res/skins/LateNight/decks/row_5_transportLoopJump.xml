@@ -17,16 +17,18 @@
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- Reverse | Cue -->
+              <WidgetGroup><!-- Cue | Reverse -->
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <PushButton>
+                  <CueButton>
                     <TooltipId>cue_default_cue_gotoandstop</TooltipId>
                     <ObjectName>CueDeck</ObjectName>
                     <Size>42f,26f</Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <Group><Variable name="Group"/></Group>
+                    <DndRectMargin><Variable name="DndRectMarginHotcueBtn"/></DndRectMargin>
                     <State>
                       <Number>0</Number>
                       <Text><Variable name="state_0_text"/></Text>
@@ -53,7 +55,7 @@
                       <ConfigKey><Variable name="Group"/>,cue_indicator</ConfigKey>
                       <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
-                  </PushButton>
+                  </CueButton>
 
                   <Template src="skins:LateNight/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">reverse</SetVariable>

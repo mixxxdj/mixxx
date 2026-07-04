@@ -16,11 +16,13 @@ void main()
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
+#version 120
 uniform sampler2D texture;
 varying highp vec2 vTexcoord;
+uniform float alpha;
 void main()
 {
-    gl_FragColor = texture2D(texture, vTexcoord);
+    gl_FragColor = texture2D(texture, vTexcoord) * vec4(1.0, 1.0, 1.0, alpha > .0 ? alpha : 1.0);
 }
 )--");
 

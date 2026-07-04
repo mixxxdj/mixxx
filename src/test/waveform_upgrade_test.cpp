@@ -23,7 +23,7 @@ TEST_F(UpgradeTest, useCorrectWaveformType) {
         int oldTypeId;
         WaveformWidgetType::Type expectedType;
         WaveformWidgetBackend expectedBackend;
-        allshader::WaveformRendererSignalBase::Options expectedOptions;
+        WaveformRendererSignalBase::Options expectedOptions;
     };
 
     QList<test_case> testCases = {
@@ -31,132 +31,132 @@ TEST_F(UpgradeTest, useCorrectWaveformType) {
                     0,
                     WaveformWidgetType::Empty,
                     WaveformWidgetBackend::None,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"SoftwareWaveform",
                     2, //  Filtered
                     WaveformWidgetType::Filtered,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"QtSimpleWaveform",
                     3, //  Simple Qt
                     WaveformWidgetType::Simple,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"QtWaveform",
                     4, //  Filtered Qt
                     WaveformWidgetType::Filtered,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLSimpleWaveform",
                     5, //  Simple GL
                     WaveformWidgetType::Simple,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLFilteredWaveform",
                     6, //  Filtered GL
                     WaveformWidgetType::Filtered,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLSLFilteredWaveform",
                     7, //  Filtered GLSL
                     WaveformWidgetType::Filtered,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::HighDetail},
+                    WaveformRendererSignalBase::Option::HighDetail},
             test_case{"HSVWaveform",
                     8, //  HSV
                     WaveformWidgetType::HSV,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLVSyncTest",
                     9, //  VSync GL
                     WaveformWidgetType::VSyncTest,
                     WaveformWidgetBackend::None,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"RGBWaveform",
                     10, // RGB
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLRGBWaveform",
                     11, // RGB GL
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLSLRGBWaveform",
                     12, // RGB GLSL
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::HighDetail},
+                    WaveformRendererSignalBase::Option::HighDetail},
             test_case{"QtVSyncTest",
                     13, // VSync Qt
                     WaveformWidgetType::VSyncTest,
                     WaveformWidgetBackend::None,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"QtHSVWaveform",
                     14, // HSV Qt
                     WaveformWidgetType::HSV,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"QtRGBWaveform",
                     15, // RGB Qt
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"GLSLRGBStackedWaveform",
                     16, // RGB Stacked
                     WaveformWidgetType::Stacked,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::HighDetail},
+                    WaveformRendererSignalBase::Option::HighDetail},
             test_case{"AllShaderRGBWaveform",
                     17, // RGB (all-shaders)
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"AllShaderLRRGBWaveform",
                     18, // L/R RGB (all-shaders)
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal},
+                    WaveformRendererSignalBase::Option::SplitStereoSignal},
             test_case{"AllShaderFilteredWaveform",
                     19, // Filtered (all-shaders)
                     WaveformWidgetType::Filtered,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"AllShaderSimpleWaveform",
                     20, // Simple (all-shaders)
                     WaveformWidgetType::Simple,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"AllShaderHSVWaveform",
                     21, // HSV (all-shaders)
                     WaveformWidgetType::HSV,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"AllShaderTexturedFiltered",
                     22, // Filtered (textured) (all-shaders)
                     WaveformWidgetType::Filtered,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::HighDetail},
+                    WaveformRendererSignalBase::Option::HighDetail},
             test_case{"AllShaderTexturedRGB",
                     23, // RGB (textured) (all-shaders)
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::HighDetail},
+                    WaveformRendererSignalBase::Option::HighDetail},
             test_case{"AllShaderTexturedStacked",
                     24, // Stacked (textured) (all-shaders)
                     WaveformWidgetType::Stacked,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::HighDetail},
+                    WaveformRendererSignalBase::Option::HighDetail},
             test_case{"AllShaderRGBStackedWaveform",
                     26, // Stacked (all-shaders)
                     WaveformWidgetType::Stacked,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None},
+                    WaveformRendererSignalBase::Option::None},
             test_case{"Count_WaveformwidgetType",
                     27, //    Also used as invalid value
                     WaveformWidgetType::RGB,
                     WaveformWidgetBackend::AllShader,
-                    allshader::WaveformRendererSignalBase::Option::None}};
+                    WaveformRendererSignalBase::Option::None}};
 
     for (const auto& testCase : testCases) {
         int waveformType = testCase.oldTypeId;

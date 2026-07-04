@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+  <info>
+    <name>Arturia KeyLab Mk 1</name>
+    <author>Sam Whited</author>
+    <description>MIDI mapping for the original Arturia KeyLab Mk 1</description>
+    <forums>https://mixxx.discourse.group/t/arturia-keylab-mk1/31080</forums>
+    <manual>arturia_keylab_mk1</manual>
+    <devices>
+      <product protocol="midi" vendor_id="0x1c75" product_id="0x02cd" />
+    </devices>
+  </info>
+  <settings>
+    <group label="Pots">
+      <option variable="soft_takeover" type="boolean" default="true"
+              label="Soft Takover">
+        <description>
+          Enables soft takeover on all encoders and faders.
+        </description>
+      </option>
+    </group>
+    <group label="System">
+      <option variable="output_delay" type="integer" min="0" default="100" label="Output Delay (ms)">
+        <description>
+          The delay in milliseconds before setting output LEDs or the screen.
+          This is needed because the keyboard sets its own LEDs for some buttons
+          and occasionally decides to show something on the screen in response
+          to a button press that may overwrite whatever we were trying to write.
+          If you notice the screen or buttons briefly flashing to the expected
+          value, then changing, increase this number.
+        </description>
+      </option>
+    </group>
+    <group label="Drum Pads">
+      <option variable="pads_disabled" type="boolean" default="false" label="Disable Pads">
+        <description>
+          Disables using the drum pads to load and play back samples.
+          Enable this if you want to use the drum pads with an external synth.
+        </description>
+      </option>
+      <option variable="defaultPadLayout" type="enum" label="Default Pad Layout">
+        <value label="Intro/Outro + 12 hotcues" default="true">default</value>
+        <value label="Hotcues">hotcue</value>
+        <value label="Sampler">sampler</value>
+        <description>
+          Define the default layout used for the pads.
+        </description>
+      </option>
+    </group>
+  </settings>
+  <controller id="ArturiaKeyLabMk1">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js"/>
+      <file filename="Arturia-KeyLab-Mk1-scripts.js" functionprefix="KeyLabMk1"/>
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Master]</group>
+        <key>KeyLabMk1.incomingData</key>
+        <description>Parser for incoming MMC messages.</description>
+        <status>0xF0</status>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>KeyLabMk1.controller.mainGain.input</key>
+        <description>Volume encoder on bank 1 controls main gain.</description>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>KeyLabMk1.controller.headGain.input</key>
+        <description>Volume encoder on bank 2 controls headphone gain.</description>
+        <status>0xB0</status>
+        <midino>0x00</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Transport buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.stopButton.input</key>
+        <description>Stop active deck and seek to start.</description>
+        <status>0xB0</status>
+        <midino>0x01</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.playButton.input</key>
+        <description>Play/pause active deck.</description>
+        <status>0xB0</status>
+        <midino>0x02</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.forwardButton.input</key>
+        <description>Jump forward on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x04</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.backButton.input</key>
+        <description>Jump back on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x05</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Recording]</group>
+        <key>KeyLabMk1.controller.recordButton.input</key>
+        <description>Start/stop recording.</description>
+        <status>0xB0</status>
+        <midino>0x06</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.loopButton.input</key>
+        <status>0xB0</status>
+        <midino>0x37</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Snapshot / edit parameter buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.radioGroup[0].input</key>
+        <description>Select the default pad mode (intro/outro + hotcues).</description>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.radioGroup[1].input</key>
+        <description>Set drum pads to be hotcues.</description>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.radioGroup[2].input</key>
+        <description>Set drum pads to be samplers.</description>
+        <status>0xB0</status>
+        <midino>0x18</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Parameters -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.pregainPot.input</key>
+        <description>Sets the pregain on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x4A</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>KeyLabMk1.controller.activeDeck.highFilterGainPot.input</key>
+        <description>Sets the high filter gain on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x47</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>KeyLabMk1.controller.activeDeck.midFilterGainPot.input</key>
+        <description>Sets the mid filter gain on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x4C</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>KeyLabMk1.controller.activeDeck.lowFilterGainPot.input</key>
+        <description>Sets the low filter gain on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x4D</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>KeyLabMk1.controller.activeDeck.quickEffectPot.input</key>
+        <description>Adjusts the quick effect super knob on the active deck.</description>
+        <status>0xB0</status>
+        <midino>0x5D</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Other encoders -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.paramEncoder.input</key>
+        <description>Select a parameter to adjust with the value encoder.</description>
+        <status>0xB0</status>
+        <midino>0x70</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.paramButton.input</key>
+        <description>Enter a submenu on the parameter menu.</description>
+        <status>0xB0</status>
+        <midino>0x71</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.valueEncoder.input</key>
+        <description>Perform operation selected in the menu.</description>
+        <status>0xB0</status>
+        <midino>0x72</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.activeDeck.valueButton.input</key>
+        <description>Perform operation selected in the menu.</description>
+        <status>0xB0</status>
+        <midino>0x73</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Deck selection for transport buttons -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.deck1Button.input</key>
+        <description>Select Deck 1.</description>
+        <status>0xB0</status>
+        <midino>0x76</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>KeyLabMk1.controller.deck2Button.input</key>
+        <description>Select Deck 2.</description>
+        <status>0xB0</status>
+        <midino>0x77</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Volume Faders -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.faders[1].input</key>
+        <description>F2 controls the first deck.</description>
+        <status>0xB0</status>
+        <midino>0x4B</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>KeyLabMk1.controller.faders[2].input</key>
+        <description>F3 controls the second deck.</description>
+        <status>0xB0</status>
+        <midino>0x4F</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>KeyLabMk1.controller.faders[0].input</key>
+        <description>F1 controls the third deck.</description>
+        <status>0xB0</status>
+        <midino>0x49</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>KeyLabMk1.controller.faders[3].input</key>
+        <description>F4 controls the fourth deck.</description>
+        <status>0xB0</status>
+        <midino>0x48</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Beat Sync Faders -->
+      <control>
+        <group>[Channel1]</group>
+        <key>KeyLabMk1.controller.faders[5].input</key>
+        <description>F2 controls the first deck.</description>
+        <status>0xB0</status>
+        <midino>0x51</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>KeyLabMk1.controller.faders[6].input</key>
+        <description>F3 controls the second deck.</description>
+        <status>0xB0</status>
+        <midino>0x52</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>KeyLabMk1.controller.faders[4].input</key>
+        <description>F1 controls the third deck.</description>
+        <status>0xB0</status>
+        <midino>0x50</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>KeyLabMk1.controller.faders[7].input</key>
+        <description>F4 controls the fourth deck.</description>
+        <status>0xB0</status>
+        <midino>0x53</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Crossfader -->
+      <control>
+        <group>[Master]</group>
+        <key>KeyLabMk1.controller.faders[8].input</key>
+        <description>F9 controls the crossfade.</description>
+        <status>0xB0</status>
+        <midino>0x55</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Pads row 1 -->
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x30</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x31</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x32</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x33</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Pads row 2 -->
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x2c</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x2d</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x2e</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x2f</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Pads row 3 -->
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x28</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x29</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x2a</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x2b</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+
+      <!-- Pads row 4 -->
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x24</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x25</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x26</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+      <control>
+        <key>KeyLabMk1.controller.activeDeck.padGrid.input</key>
+        <description>Configurable samplers or hotcues.</description>
+        <status>0x99</status>
+        <midino>0x27</midino>
+        <options>
+          <Script-Binding/>
+        </options>
+      </control>
+    </controls>
+    <outputs/>
+  </controller>
+</MixxxControllerPreset>

@@ -13,6 +13,11 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
+          <Template src="skins:Deere/stem_control.xml">
+            <SetVariable name="cover">true</SetVariable>
+            <SetVariable name="Size">55f,55f</SetVariable>
+            <SetVariable name="ChanNum">3</SetVariable>
+          </Template>
           <Template src="skins:Deere/deck_spinny.xml">
             <SetVariable name="cover">true</SetVariable>
             <SetVariable name="Size">55f,55f</SetVariable>
@@ -34,6 +39,11 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skins:Deere/stem_control.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">55f,55f</SetVariable>
+                <SetVariable name="ChanNum">1</SetVariable>
+              </Template>
               <Template src="skins:Deere/deck_spinny.xml">
                 <SetVariable name="cover">true</SetVariable>
                 <SetVariable name="Size">55f,55f</SetVariable>
@@ -48,6 +58,11 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skins:Deere/stem_control.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">55f,55f</SetVariable>
+                <SetVariable name="ChanNum">1</SetVariable>
+              </Template>
               <Template src="skins:Deere/deck_spinny.xml">
                 <SetVariable name="cover">true</SetVariable>
                 <SetVariable name="Size">75f,75f</SetVariable>
@@ -72,6 +87,11 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skins:Deere/stem_control.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">55f,55f</SetVariable>
+                <SetVariable name="ChanNum">2</SetVariable>
+              </Template>
               <Template src="skins:Deere/deck_spinny.xml">
                 <SetVariable name="cover">true</SetVariable>
                 <SetVariable name="Size">55f,55f</SetVariable>
@@ -86,6 +106,11 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
+              <Template src="skins:Deere/stem_control.xml">
+                <SetVariable name="cover">true</SetVariable>
+                <SetVariable name="Size">55f,55f</SetVariable>
+                <SetVariable name="ChanNum">2</SetVariable>
+              </Template>
               <Template src="skins:Deere/deck_spinny.xml">
                 <SetVariable name="cover">true</SetVariable>
                 <SetVariable name="Size">75f,75f</SetVariable>
@@ -107,6 +132,11 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
+          <Template src="skins:Deere/stem_control.xml">
+            <SetVariable name="cover">true</SetVariable>
+            <SetVariable name="Size">55f,55f</SetVariable>
+            <SetVariable name="ChanNum">4</SetVariable>
+          </Template>
           <Template src="skins:Deere/deck_spinny.xml">
             <SetVariable name="cover">true</SetVariable>
             <SetVariable name="Size">55f,55f</SetVariable>

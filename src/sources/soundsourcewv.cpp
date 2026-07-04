@@ -70,12 +70,14 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     // http://www.wavpack.com/lib_use.txt
     QString wavPackFileName = getLocalFileName();
     m_pWVFile = new QFile(wavPackFileName);
-    m_pWVFile->open(QFile::ReadOnly);
+    [[maybe_unused]] auto result = m_pWVFile->open(QFile::ReadOnly);
+    DEBUG_ASSERT(result);
     QString correctionFileName(wavPackFileName + "c");
     if (QFile::exists(correctionFileName)) {
         // If there is a correction file, open it as well
         m_pWVCFile = new QFile(correctionFileName);
-        m_pWVCFile->open(QFile::ReadOnly);
+        [[maybe_unused]] auto result = m_pWVCFile->open(QFile::ReadOnly);
+        DEBUG_ASSERT(result);
     }
     m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile, msg, openFlags, 0);
     if (!m_wpc) {

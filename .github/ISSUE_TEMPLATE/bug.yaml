@@ -1,7 +1,7 @@
 name: 🐛 Bug Report
 description: |
   Describe your problem here.
-labels: [bug]
+type: "bug"
 body:
   - type: markdown
     attributes:

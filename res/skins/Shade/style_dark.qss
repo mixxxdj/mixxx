@@ -40,12 +40,15 @@ WEffectSelector::indicator:unchecked,
   WBeatSpinBox,
   #spinBoxTransition::up-button,
   #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button,
   #fadeModeCombobox,
   #fadeModeCombobox::down-arrow {
     color: #000;
     background-color: #5C5B5D;
   }
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     background-color: #444546;
   }
 #MainMenu::item:selected,
@@ -144,17 +147,30 @@ WEffectSelector::indicator:unchecked:selected,
 }
 
 #EffectSelectorGroup[highlight="1"]{
-	border: 1px solid #3c8bb2;
+  border: 1px solid #3c8bb2;
 }
 #EffectSelectorGroup[highlight="0"]{
-	border: 0px solid #3c8bb2;
+  border: 0px solid #3c8bb2;
 }
 
 #CueDeleteButton {
   background-color: #8a8a8a;
 }
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+#CueDeleteButton:hover {
+  background-color: #6c2e2e;
+}
+
+#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
+  background-color: #dc4141 !important;
+}
+#CueStandardButton:pressed, #CueStandardButton:checked,
+  #CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+  #CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
   background-color: #b79d00;
+}
+#CueSavedJumpButton[direction="impossible"] {
+  background-color: #787878 !important;
+  outline: none;
 }
 #CueLabelEdit {
   background-color: #3F3041;
@@ -186,7 +202,12 @@ WTrackTableView::item:selected,
 WLibrarySidebar::branch:selected,
 #LibraryBPMButton::item:selected,
 #LibraryPlayedCheckbox::item:selected {
-  color: #000;
+  /* disabled since it interferes with selection-color
+     which we use in DefaultDelegate and TableItemDelegate to
+     blend the highlight color with the played/missing color.
+  color: #000; */
+  /* This is not required for painting the background,
+     but it is for applying the focus outline. */
   selection-color: #000;
   background-color: #666;
 }
@@ -212,6 +233,8 @@ WTrackTableView {
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
   qproperty-trackPlayedColor: #555;
+  /* Color for the track drop indicator line, ie. target position in playlist */
+  qproperty-dropIndicatorColor: #69a50f; /* green like fader highlight */
 }
 
   /* Table cell in edit mode */

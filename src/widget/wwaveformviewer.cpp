@@ -77,7 +77,7 @@ void WWaveformViewer::showEvent(QShowEvent* event) {
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
-    if (!m_waveformWidget) {
+    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::Empty) {
         return;
     }
 
@@ -128,7 +128,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    if (!m_waveformWidget) {
+    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::Empty) {
         return;
     }
 

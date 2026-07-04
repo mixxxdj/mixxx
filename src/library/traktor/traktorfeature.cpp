@@ -1,5 +1,6 @@
 #include "library/traktor/traktorfeature.h"
 
+#include <QFileDialog>
 #include <QMap>
 #include <QMessageBox>
 #include <QRegularExpression>
@@ -9,8 +10,8 @@
 #include <QXmlStreamReader>
 #include <QtDebug>
 
+#include "library/dao/settingsdao.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
 #include "library/missing_hidden/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -137,10 +138,13 @@ TraktorFeature::~TraktorFeature() {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-TraktorFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+TraktorFeature::createPlaylistModelForPlaylist(const QVariant& data) {
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QString>()) {
+        return {};
+    }
     auto pModel = std::make_unique<TraktorPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    pModel->setPlaylist(playlist);
+    pModel->setPlaylist(data.toString());
     return pModel;
 }
 
@@ -149,6 +153,11 @@ QVariant TraktorFeature::title() {
 }
 
 bool TraktorFeature::isSupported() {
+#if defined(Q_OS_MACOS)
+    if (Sandbox::enabled()) {
+        return true;
+    }
+#endif
     return (QFile::exists(getTraktorMusicDatabase()));
 }
 
@@ -164,14 +173,58 @@ void TraktorFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
+
+        SettingsDAO settings(m_pTrackCollection->database());
+        QString dbFile(settings.getValue("mixxx.traktorfeature.dbpath"));
+
+        bool hasValidDbFile = false;
+
+        if (!dbFile.isEmpty()) {
+            mixxx::FileInfo dbFileInfo(dbFile);
+#if defined(Q_OS_MACOS)
+            if (Sandbox::enabled() && Sandbox::canAccess(&dbFileInfo) &&
+                    dbFileInfo.checkFileExists()) {
+                hasValidDbFile = true;
+            }
+#endif
+            if (!hasValidDbFile && dbFileInfo.checkFileExists()) {
+                hasValidDbFile = true;
+            }
+        }
+
+        if (!hasValidDbFile) {
+            dbFile = getTraktorMusicDatabase();
+            mixxx::FileInfo dbFileInfo(dbFile);
+
+#if defined(Q_OS_MACOS)
+            if (Sandbox::enabled()) {
+                if (!dbFileInfo.checkFileExists() || !Sandbox::canAccess(&dbFileInfo)) {
+                    if (!Sandbox::askForAccess(&dbFileInfo)) {
+                        QString newDbFile = QFileDialog::getOpenFileName(nullptr,
+                                tr("Select your Traktor collection"),
+                                QFileInfo(dbFile).absolutePath(),
+                                "Traktor Collection (*.nml)");
+                        if (newDbFile.isEmpty()) {
+                            m_isActivated = false;
+                            return;
+                        }
+                        dbFile = newDbFile;
+                        mixxx::FileInfo newFileInfo(dbFile);
+                        Sandbox::createSecurityToken(&newFileInfo);
+                    }
+                }
+            }
+#endif
+            settings.setValue("mixxx.traktorfeature.dbpath", dbFile);
+        }
+
         // Let a worker thread do the XML parsing
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         m_future = QtConcurrent::run(&TraktorFeature::importLibrary,
                 this,
-                getTraktorMusicDatabase());
+                dbFile);
 #else
-        m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary,
-                                     getTraktorMusicDatabase());
+        m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, dbFile);
 #endif
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
@@ -407,78 +460,94 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
 }
 
 // Purpose: Parsing all the folder and playlists of Traktor
-// This is a complex operation since Traktor uses the concept of folders and playlist.
-// A folder can contain folders and playlists. A playlist contains entries but no folders.
-// In other words, Traktor uses a tree structure to organize music.
-// Inner nodes represent folders while leaves are playlists.
+// This is a complex operation since Traktor uses the concept of folders and
+// playlist. A folder can contain folders and playlists. A playlist contains
+// entries but no folders. In other words, Traktor uses a tree structure to
+// organize music. Inner nodes represent folders while leaves are playlists.
 TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     qDebug() << "Process RootFolder";
-    //Each playlist is unique and can be identified by a path in the tree structure.
+    // Each playlist is unique and can be identified by a path in the
+    // tree structure.
     QString current_path = "";
-    QMap<QString,QString> map;
+    QSet<QString> playlists;
 
-    QString delimiter = "-->";
+    const QString delimiter = QStringLiteral("-->");
 
     std::unique_ptr<TreeItem> rootItem = TreeItem::newRoot(this);
     TreeItem* parent = rootItem.get();
 
     QSqlQuery query_insert_to_playlists(m_database);
-    query_insert_to_playlists.prepare("INSERT INTO traktor_playlists (name) "
-                  "VALUES (:name)");
+    query_insert_to_playlists.prepare(
+            "INSERT INTO traktor_playlists (name) "
+            "VALUES (:name)");
 
     QSqlQuery query_insert_to_playlist_tracks(m_database);
     query_insert_to_playlist_tracks.prepare(
-        "INSERT INTO traktor_playlist_tracks (playlist_id, track_id, position) "
-        "VALUES (:playlist_id, :track_id, :position)");
+            "INSERT INTO traktor_playlist_tracks (playlist_id, "
+            "track_id, position) VALUES (:playlist_id, :track_id, :position)");
 
     while (!xml.atEnd() && !m_cancelImport) {
-        //read next XML element
+        // Read next XML element
         xml.readNext();
 
         if (xml.isStartElement()) {
-            if (xml.name() == QLatin1String("NODE")) {
+            if (xml.name() == QStringLiteral("NODE")) {
                 QXmlStreamAttributes attr = xml.attributes();
-                QString name = attr.value("NAME").toString();
-                QString type = attr.value("TYPE").toString();
-               //TODO: What happens if the folder node is a leaf (empty folder)
-               // Idea: Hide empty folders :-)
-               if (type == "FOLDER") {
-                    current_path += delimiter;
-                    current_path += name;
-                    //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
-                    map.insert(current_path, "FOLDER");
-                    parent = parent->appendChild(name, current_path);
-               } else if (type == "PLAYLIST") {
-                    current_path += delimiter;
-                    current_path += name;
-                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
-                    map.insert(current_path, "PLAYLIST");
+                const QStringView name = attr.value(QStringLiteral("NAME"));
+                const QStringView type = attr.value(QStringLiteral("TYPE"));
 
-                    parent->appendChild(name, current_path);
-                    // process all the entries within the playlist 'name' having path 'current_path'
+                current_path += delimiter;
+                current_path += name;
+                parent = parent->appendChild(name.toString(),
+                        current_path);
+
+                if (type == QStringLiteral("PLAYLIST")) {
+                    // qDebug() << "Playlist: " + current_path << " has parent "
+                    // << parent->getData().toString();
+
+                    playlists += current_path;
+
+                    // Process all the entries within the playlist 'name'
+                    // having path 'current_path'
                     parsePlaylistEntries(xml,
                             current_path,
-                            std::move(query_insert_to_playlists),
-                            std::move(query_insert_to_playlist_tracks));
+                            &query_insert_to_playlists,
+                            &query_insert_to_playlist_tracks);
+
+                    query_insert_to_playlists.finish();
+                    query_insert_to_playlist_tracks.finish();
                 }
             }
         }
 
         if (xml.isEndElement()) {
-            if (xml.name() == QLatin1String("NODE")) {
-                if (map.value(current_path) == "FOLDER") {
-                    parent = parent->parent();
+            if (xml.name() == QStringLiteral("NODE")) {
+                bool last_non_playlist_was_empty = false;
+                if (!parent->hasChildren() and
+                        !playlists.contains(current_path)) {
+                    last_non_playlist_was_empty = true;
                 }
 
-                //Whenever we find a closing NODE, remove the last component of the path
-                int lastSlash = current_path.lastIndexOf (delimiter);
-                int path_length = current_path.size();
+                parent = parent->parent();
+
+                if (last_non_playlist_was_empty) {
+                    // If the last node was not a playlist (FOLDER, SMARTLIST,
+                    // etc... and was empty we remove it from the item tree so
+                    // that it doesn't show for the user.
+                    parent->removeChildren(parent->children().count() - 1,
+                            1);
+                }
+
+                // Whenever we find a closing NODE, remove the last component
+                // of the path
+                const int lastSlash = current_path.lastIndexOf(delimiter);
+                const int path_length = current_path.size();
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
-            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
-            if (xml.name() == QLatin1String("PLAYLISTS")) {
+            // We leave the infinite loop, if we have the closing "PLAYLIST" tag
+            if (xml.name() == QStringLiteral("PLAYLISTS")) {
                 break;
             }
         }
@@ -489,14 +558,14 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 void TraktorFeature::parsePlaylistEntries(
         QXmlStreamReader& xml,
         const QString& playlist_path,
-        QSqlQuery query_insert_into_playlist,
-        QSqlQuery query_insert_into_playlisttracks) {
+        QSqlQuery* pQueryInsertIntoPlaylist,
+        QSqlQuery* pQueryInsertIntoPlaylistTracks) {
     // In the database, the name of a playlist is specified by the unique path,
     // e.g., /someFolderA/someFolderB/playlistA"
-    query_insert_into_playlist.bindValue(":name", playlist_path);
+    pQueryInsertIntoPlaylist->bindValue(":name", playlist_path);
 
-    if (!query_insert_into_playlist.exec()) {
-        LOG_FAILED_QUERY(query_insert_into_playlist)
+    if (!pQueryInsertIntoPlaylist->exec()) {
+        LOG_FAILED_QUERY(*pQueryInsertIntoPlaylist)
                 << "Failed to insert playlist in TraktorTableModel:"
                 << playlist_path;
         return;
@@ -550,13 +619,13 @@ void TraktorFeature::parsePlaylistEntries(
                         track_id = finder_query.value(finder_query.record().indexOf("id")).toInt();
                     }
 
-                    query_insert_into_playlisttracks.bindValue(":playlist_id", playlist_id);
-                    query_insert_into_playlisttracks.bindValue(":track_id", track_id);
-                    query_insert_into_playlisttracks.bindValue(":position", playlist_position++);
-                    if (!query_insert_into_playlisttracks.exec()) {
-                        LOG_FAILED_QUERY(query_insert_into_playlisttracks)
+                    pQueryInsertIntoPlaylistTracks->bindValue(":playlist_id", playlist_id);
+                    pQueryInsertIntoPlaylistTracks->bindValue(":track_id", track_id);
+                    pQueryInsertIntoPlaylistTracks->bindValue(":position", playlist_position++);
+                    if (!pQueryInsertIntoPlaylistTracks->exec()) {
+                        LOG_FAILED_QUERY(*pQueryInsertIntoPlaylistTracks)
                                 << "trackid" << track_id << " with path " << key
-                                << "playlistname; " << playlist_path <<" with ID " << playlist_id;
+                                << "playlistname; " << playlist_path << " with ID " << playlist_id;
                     }
                 }
             }
@@ -592,15 +661,16 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     //Let's try to detect the latest Traktor version and its collection.nml
     QString myDocuments = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#if defined(Q_OS_MACOS)
+    if (Sandbox::enabled()) {
+        QString user = qgetenv("USER");
+        if (!user.isEmpty()) {
+            myDocuments = QLatin1String("/Users/") + user + QLatin1String("/Documents");
+        }
+    }
+#endif
     QDir ni_directory(myDocuments +"/Native Instruments/");
     ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
-
-    // We may not have access to this directory since it is in the user's
-    // Documents folder. Ask for access if we don't have it.
-    if (ni_directory.exists()) {
-        auto fileInfo = mixxx::FileInfo(ni_directory);
-        Sandbox::askForAccess(&fileInfo);
-    }
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();

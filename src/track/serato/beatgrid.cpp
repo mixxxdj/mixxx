@@ -100,7 +100,9 @@ SeratoBeatGridNonTerminalMarker::parseID3(const QByteArray& data) {
     SeratoBeatGridNonTerminalMarkerPointer pMarker =
             std::make_shared<SeratoBeatGridNonTerminalMarker>(
                     positionSecs, beatsTillNextMarker);
-    kLogger.trace() << "SeratoBeatGridNonTerminalMarker" << *pMarker;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoBeatGridNonTerminalMarker" << *pMarker;
+    }
     return pMarker;
 }
 
@@ -161,7 +163,9 @@ SeratoBeatGridTerminalMarkerPointer SeratoBeatGridTerminalMarker::parseID3(
 
     SeratoBeatGridTerminalMarkerPointer pMarker =
             std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm);
-    kLogger.trace() << "SeratoBeatGridTerminalMarker" << *pMarker;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoBeatGridTerminalMarker" << *pMarker;
+    }
     return pMarker;
 }
 

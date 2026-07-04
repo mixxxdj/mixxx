@@ -55,6 +55,11 @@ class EngineMixer : public QObject, public AudioSource {
                    m_pChannelHandleFactory->getOrCreateHandle(group), group);
     }
 
+    ChannelHandleAndGroup getChannelGroup(const QString& group) {
+        return ChannelHandleAndGroup(
+                m_pChannelHandleFactory->handleForGroup(group), group);
+    }
+
     // Register the sound I/O that does not correspond to any EngineChannel object
     void registerNonEngineChannelSoundIO(gsl::not_null<SoundManager*> pSoundManager);
 

@@ -19,6 +19,7 @@ enum class Tooltips {
     Off = 0,
     On = 1,
     OnlyInLibrary = 2,
+    OnlyKbdShortcuts = 3,
 };
 Q_ENUM_NS(Tooltips);
 
@@ -38,6 +39,12 @@ enum class MultiSamplingMode {
     Sixteen = 16
 };
 Q_ENUM_NS(MultiSamplingMode);
+
+enum class SoundHardwareTab {
+    Output,
+    Input
+};
+Q_ENUM_NS(SoundHardwareTab);
 
 } // namespace constants
 } // namespace preferences

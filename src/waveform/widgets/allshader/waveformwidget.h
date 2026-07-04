@@ -1,17 +1,20 @@
 #pragma once
 
-#include "rendergraph/engine.h"
-#include "rendergraph/opacitynode.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "waveform/widgets/waveformwidgetvars.h"
 #include "widget/wglwidget.h"
 
+namespace rendergraph {
+class Engine;
+class OpacityNode;
+} // namespace rendergraph
+
 namespace allshader {
 class WaveformWidget;
 class WaveformRenderMark;
 class WaveformRenderMarkRange;
-}
+} // namespace allshader
 
 class allshader::WaveformWidget final : public ::WGLWidget,
                                         public ::WaveformWidgetAbstract {
@@ -20,7 +23,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     explicit WaveformWidget(QWidget* parent,
             WaveformWidgetType::Type type,
             const QString& group,
-            WaveformRendererSignalBase::Options options);
+            ::WaveformRendererSignalBase::Options options);
     ~WaveformWidget() override;
 
     WaveformWidgetType::Type getType() const override {
@@ -40,7 +43,30 @@ class allshader::WaveformWidget final : public ::WGLWidget,
         return this;
     }
     static WaveformWidgetVars vars();
-    static WaveformRendererSignalBase::Options supportedOptions(WaveformWidgetType::Type type);
+    static ::WaveformRendererSignalBase::Options supportedOptions(
+            WaveformWidgetType::Type type, bool useGles) {
+        ::WaveformRendererSignalBase::Options options = ::WaveformRendererSignalBase::Option::None;
+        switch (type) {
+        case WaveformWidgetType::Type::RGB:
+            options = ::WaveformRendererSignalBase::Option::AllOptionsCombined;
+            break;
+        case WaveformWidgetType::Type::Filtered:
+            options = ::WaveformRendererSignalBase::Option::HighDetail;
+            break;
+        case WaveformWidgetType::Type::Stacked:
+            options = ::WaveformRendererSignalBase::Option::HighDetail;
+            break;
+        default:
+            break;
+        }
+        if (useGles) {
+            // High detail (textured) waveforms are not supported on OpenGL ES.
+            // See https://github.com/mixxxdj/mixxx/issues/13385
+            options &= ~WaveformRendererSignalBase::Options(
+                    WaveformRendererSignalBase::Option::HighDetail);
+        }
+        return options;
+    }
 
   private:
     void castToQWidget() override;
@@ -61,7 +87,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
 
     std::unique_ptr<allshader::WaveformRendererSignalBase> addWaveformSignalRenderer(
             WaveformWidgetType::Type type,
-            WaveformRendererSignalBase::Options options,
+            ::WaveformRendererSignalBase::Options options,
             ::WaveformRendererAbstract::PositionSource positionSource);
 
     WaveformWidgetType::Type m_type;
@@ -69,6 +95,8 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     rendergraph::OpacityNode* m_pOpacityNode;
     WaveformRenderMark* m_pWaveformRenderMark;
     WaveformRenderMarkRange* m_pWaveformRenderMarkRange;
+    WaveformRenderMark* m_pWaveformRenderMarkSlip;
+
     WaveformRendererSignalBase* m_pWaveformRendererSignal;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformWidget);

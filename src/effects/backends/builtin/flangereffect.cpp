@@ -123,7 +123,9 @@ void FlangerEffect::processChannel(
         if (m_pTripletParameter->toBool()) {
             lfoPeriodParameter /= 3.0;
         }
-        lfoPeriodFrames = lfoPeriodParameter * groupFeatures.beat_length->frames;
+        lfoPeriodFrames = lfoPeriodParameter *
+                groupFeatures.beat_length->seconds *
+                engineParameters.sampleRate();
     } else {
         // lfoPeriodParameter is a number of seconds
         lfoPeriodFrames = std::max(lfoPeriodParameter, kMinLfoBeats) *

@@ -1,6 +1,5 @@
 #include "engine/sidechain/shoutconnection.h"
 
-#include <QRegularExpression>
 #include <QTextCodec>
 #include <QUrl>
 
@@ -27,6 +26,13 @@
 #include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 
+// SHOUT_ATTR_F_DEPRECATED was first introduced in libshout-idjc 2.4.6.
+// Since libshout-idjc provides no version macro, we probe for that symbol to
+// detect the 2.4.6+ API.
+#ifdef SHOUT_ATTR_F_DEPRECATED
+#define MIXXX_USE_SHOUT_API_246
+#endif
+
 namespace {
 
 constexpr int kConnectRetries = 30;
@@ -34,9 +40,6 @@ constexpr int kMaxNetworkCache = 491520; // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
 constexpr int kMaxShoutFailures = 3;
-
-const QRegularExpression kArtistOrTitleRegex(QStringLiteral("\\$artist|\\$title"));
-const QRegularExpression kArtistRegex(QStringLiteral("\\$artist"));
 
 const mixxx::Logger kLogger("ShoutConnection");
 
@@ -315,22 +318,24 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_name(m_pShout, baStreamName.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout, SHOUT_META_NAME, baStreamName.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream name!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_description(m_pShout, baStreamDesc.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout,
+                SHOUT_META_DESCRIPTION,
+                baStreamDesc.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream description!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_genre(m_pShout, baStreamGenre.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout, SHOUT_META_GENRE, baStreamGenre.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream genre!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout, SHOUT_META_URL, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
         return;
     }
@@ -383,7 +388,13 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
+#ifdef MIXXX_USE_SHOUT_API_246
+    if (shout_set_content_format(
+                m_pShout, format, 0 /* SHOUT_USAGE_UNKNOWN */, nullptr) !=
+            SHOUTERR_SUCCESS) {
+#else
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
+#endif
         errorDialog(tr("Error setting stream encoding format!"), shout_get_error(m_pShout));
         return;
     }
@@ -702,14 +713,14 @@ int ShoutConnection::filelen() {
 
 bool ShoutConnection::writeSingle(const unsigned char* data, std::size_t len) {
     setFunctionCode(8);
-    int ret = shout_send_raw(m_pShout, data, len);
+    ssize_t ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
         kLogger.warning() << "writeSingle() SHOUTERR_BUSY, trying again";
         usleep(10000); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted after the next regular shout_send_raw()
-        (void)shout_send_raw(m_pShout, nullptr, 0);
+        ret = shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);
         kLogger.warning()
@@ -816,9 +827,7 @@ void ShoutConnection::updateMetaData() {
     // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_format_is_aac || m_ogg_dynamic_update)) {
         if (m_pMetaData != nullptr) {
-
             QString artist = m_pMetaData->getArtist();
-            QString title = m_pMetaData->getTitle();
 
             // shoutcast uses only "song" as field for "artist - title".
             // icecast2 supports separate fields for "artist" and "title",
@@ -831,43 +840,30 @@ void ShoutConnection::updateMetaData() {
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-            	setFunctionCode(9);
-            	insertMetaData("artist", encodeString(artist).constData());
-            	insertMetaData("title", encodeString(title).constData());
-            } else {
-                // we are going to take the metadata format and replace all
-                // the references to $title and $artist by doing a single
-                // pass over the string
-                int replaceIndex = 0;
-
-                // Make a copy so we don't overwrite the references only
-                // once per streaming session.
-                QString metadataFinal = m_metadataFormat;
-                do {
-                    // find the next occurrence
-                    replaceIndex = metadataFinal.indexOf(
-                            kArtistOrTitleRegex,
-                            replaceIndex);
-
-                    if (replaceIndex != -1) {
-                        if (metadataFinal.indexOf(
-                                    kArtistRegex, replaceIndex) == replaceIndex) {
-                            metadataFinal.replace(replaceIndex, 7, artist);
-                            // skip to the end of the replacement
-                            replaceIndex += artist.length();
-                        } else {
-                            metadataFinal.replace(replaceIndex, 6, title);
-                            replaceIndex += title.length();
-                        }
-                    }
-                } while (replaceIndex != -1);
-
-                QByteArray baSong = encodeString(metadataFinal);
-                setFunctionCode(10);
-                insertMetaData("song",  baSong.constData());
+                setFunctionCode(9);
+                insertMetaData("artist", encodeString(artist).constData());
             }
+
+            // Make a copy so we don't overwrite the references only
+            // once per streaming session.
+            QString metadataFinal = m_metadataFormat;
+
+            metadataFinal.replace("$artist", artist);
+            metadataFinal.replace("$title", m_pMetaData->getTitle());
+            metadataFinal.replace("$year", m_pMetaData->getYear());
+            metadataFinal.replace("$album", m_pMetaData->getAlbum());
+            metadataFinal.replace("$genre", m_pMetaData->getGenre());
+            metadataFinal.replace("$bpm", QString::number(m_pMetaData->getBpm()));
+
+            QByteArray baSong = encodeString(metadataFinal);
+            setFunctionCode(10);
+            insertMetaData("song", baSong.constData());
             setFunctionCode(11);
+#ifdef MIXXX_USE_SHOUT_API_246
+            int ret = shout_set_metadata_utf8(m_pShout, m_pShoutMetaData);
+#else
             int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
+#endif
             if (ret != SHOUTERR_SUCCESS) {
                 kLogger.warning() << "shout_set_metadata fails with error code" << ret;
             }
@@ -888,7 +884,14 @@ void ShoutConnection::updateMetaData() {
             }
 
             setFunctionCode(13);
-            shout_set_metadata(m_pShout, m_pShoutMetaData);
+#ifdef MIXXX_USE_SHOUT_API_246
+            int metaRet = shout_set_metadata_utf8(m_pShout, m_pShoutMetaData);
+#else
+            int metaRet = shout_set_metadata(m_pShout, m_pShoutMetaData);
+#endif
+            if (metaRet != SHOUTERR_SUCCESS) {
+                kLogger.warning() << "shout_set_metadata fails with error code" << metaRet;
+            }
             m_firstCall = true;
         }
     }

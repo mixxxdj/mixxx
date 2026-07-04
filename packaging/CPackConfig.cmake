@@ -11,7 +11,10 @@ if(NOT GIT_DESCRIBE)
 else()
   set(PACKAGE_VERSION "${GIT_DESCRIBE}")
 endif()
-set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
+set(
+  CPACK_PACKAGE_FILE_NAME
+  "mixxx-${PACKAGE_VERSION}-${CPACK_SYSTEM_PROCESSOR}"
+)
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
 
 # The upstream version must not contain hyphen
@@ -23,7 +26,14 @@ if(PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+[A-Za-z0-9.+~-]*$")
   if(PACKAGE_VERSION MATCHES "(alpha|beta)")
     string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
   else()
-    string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+    string(REPLACE "-g" "+g" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+    string(
+      REPLACE
+      "-"
+      "+r"
+      CPACK_DEBIAN_PACKAGE_VERSION
+      "${CPACK_DEBIAN_PACKAGE_VERSION}"
+    )
   endif()
 else()
   string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_MIXXX_VERSION}")

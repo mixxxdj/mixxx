@@ -1162,6 +1162,7 @@ TEST_F(HotcueControlTest, SavedLoopToggleDoesNotSeek) {
 }
 
 TEST_F(HotcueControlTest, SavedLoopActivate) {
+    m_pQuantizeEnabled->set(0);
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
@@ -1342,6 +1343,7 @@ TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestore) {
 }
 
 TEST_F(HotcueControlTest, SavedLoopBeatLoopSizeRestoreDoesNotJump) {
+    m_pQuantizeEnabled->set(0);
     // Setup fake track with 120 bpm and calculate loop size
     TrackPointer pTrack = loadTestTrackWithBpm(120.0);
 
@@ -1476,6 +1478,7 @@ TEST_F(HotcueControlTest, SavedLoopUnloadTrackWhileActive) {
 }
 
 TEST_F(HotcueControlTest, SavedLoopUseLoopInOutWhileActive) {
+    m_pQuantizeEnabled->set(0);
     std::unique_ptr<ControlProxy> pLoopIn = std::make_unique<ControlProxy>(m_sGroup1, "loop_in");
     std::unique_ptr<ControlProxy> pLoopOut = std::make_unique<ControlProxy>(m_sGroup1, "loop_out");
 

@@ -1548,10 +1548,10 @@ MixtrackPlatinumFX.Browse = function() {
                     engine.stopTimer(this.speedTimer);
                     this.speedTimer = 0;
                 }
-                this.speedTimer = engine.beginTimer(100, function() {
+                this.speedTimer = engine.beginTimer(100, (function() {
                     this.speed=0;
                     this.speedTimer = 0;
-                }, true);
+                }).bind(this), true);
                 this.speed++;
                 direction = (value > 0x40) ? value - 0x80 : value;
                 if (MixtrackPlatinumFX.shifted) {

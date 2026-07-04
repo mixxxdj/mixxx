@@ -145,8 +145,6 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
         }
     }
 
-    m_iPlaylistId = playlistId;
-
     if (!m_keepHiddenTracks) {
         // From Mixxx 2.1 we drop tracks that have been explicitly deleted
         // in the library (mixxx_deleted = 0) from playlists.
@@ -154,6 +152,12 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
         // a source user of confusion in the past.
         m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().removeHiddenTracks(m_iPlaylistId);
     }
+
+    // Note: don't set m_iPlaylistId = playlistId before removing hidden tracks,
+    // else (if tracks are removed) PlaylistDAO::tracksRemoved would trigger
+    // playlistsChanged() which would call select() -- which is simply not required
+    // because we'll trigger that ourselves later on.
+    m_iPlaylistId = playlistId;
 
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
     QSqlQuery query(m_database);
@@ -315,7 +319,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     int numOfTracks = rowCount();
     if (shuffle.count() > 1) {
         // if there is more then one track selected, shuffle selection only
-        foreach (QModelIndex shuffleIndex, shuffle) {
+        for (const QModelIndex& shuffleIndex : std::as_const(shuffle)) {
             int oldPosition = shuffleIndex.sibling(shuffleIndex.row(), positionColumn).data().toInt();
             if (oldPosition != excludePos) {
                 positions.append(oldPosition);
@@ -337,6 +341,23 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
         allIds.insert(position, trackId);
     }
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
+}
+
+void PlaylistTableModel::orderTracksByCurrPos() {
+    QList<std::pair<TrackId, int>> idPosList;
+    int numOfTracks = rowCount();
+    idPosList.reserve(numOfTracks);
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    const int idColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID);
+    // Set up list of all IDs
+    for (int i = 0; i < numOfTracks; i++) {
+        TrackId trackId(index(i, idColumn).data());
+        int oldPosition = index(i, positionColumn).data().toInt();
+        idPosList.append(std::make_pair(trackId, oldPosition));
+    }
+    m_pTrackCollectionManager->internalCollection()
+            ->getPlaylistDAO()
+            .orderTracksByCurrPos(m_iPlaylistId, idPosList);
 }
 
 const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {

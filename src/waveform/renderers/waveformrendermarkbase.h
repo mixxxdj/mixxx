@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <optional>
 
 #include "skin/legacy/skincontext.h"
 #include "util/class.h"
@@ -17,8 +18,6 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-    bool init() override;
-
     // Called when a new track is loaded.
     void onSetTrack() override;
 
@@ -28,8 +27,10 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
         m_marks.clear();
     }
 
-    void setDefaultMark(const QString& group, const WaveformMarkSet::DefaultMarkerStyle& model) {
-        m_marks.setDefault(group, model);
+    std::optional<WaveformMark::WaveformMarkConstructionError> setDefaultMark(
+            const QString& group,
+            const WaveformMarkSet::DefaultMarkerStyle& model) {
+        return m_marks.setDefault(group, model);
     }
 
     void addMark(WaveformMarkPointer pMark) {
@@ -60,6 +61,7 @@ class WaveformRenderMarkBase : public QObject, public WaveformRendererAbstract {
 
   private:
     virtual void updateMarkImage(WaveformMarkPointer pMark) = 0;
+    virtual void updateEndMarkImage(WaveformMarkPointer pMark) = 0;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMarkBase);
 };

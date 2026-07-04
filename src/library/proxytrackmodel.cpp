@@ -1,5 +1,6 @@
 #include "library/proxytrackmodel.h"
 
+#include "library/browse/browsetablemodel.h"
 #include "library/searchqueryparser.h"
 #include "moc_proxytrackmodel.cpp"
 #include "util/assert.h"
@@ -20,6 +21,17 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 
 ProxyTrackModel::~ProxyTrackModel() {
 }
+
+void ProxyTrackModel::maybeStopModelPopulation() {
+    // If the source model is a BrowseTableModel we tell it to stop its
+    // BrowseThread. In case that is still running and population the model
+    // chunk by chunk, its update signals would still affect the selection in the
+    // shared WTrackTableView even if another model is loaded.
+    BrowseTableModel* pBrowseModel = static_cast<BrowseTableModel*>(sourceModel());
+    if (pBrowseModel) {
+        pBrowseModel->stopBrowseThread();
+    }
+};
 
 TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) const {
     return m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
@@ -66,8 +78,7 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackLocation(indexSource) : QString();
 }
 
-void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
-    Q_UNUSED(extraFilter);
+void ProxyTrackModel::search(const QString& searchText) {
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
         setFilterFixedString(searchText);

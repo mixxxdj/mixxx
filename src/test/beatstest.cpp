@@ -1,10 +1,13 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <cmath>
+#include <limits>
 #include <memory>
 
 #include "audio/types.h"
 #include "track/beats.h"
+#include "track/beatutils.h"
 #include "track/bpm.h"
 
 using namespace mixxx;
@@ -535,6 +538,101 @@ TEST(BeatsTest, ConstTempoFindPrevNextBeatWhenNotOnBeat) {
     kConstTempoBeats.findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_NEAR(previousBeat.value(), foundPrevBeat.value(), kMaxBeatError);
     EXPECT_NEAR(nextBeat.value(), foundNextBeat.value(), kMaxBeatError);
+}
+
+TEST(BeatsTest, roundBpm) {
+    // Integer Bpm
+    mixxx::Bpm roundBpm = BeatUtils::roundBpmWithinRange(
+            mixxx::Bpm(121.5), mixxx::Bpm(121.9), mixxx::Bpm(122.4));
+    EXPECT_NEAR(roundBpm.value(), 122.0, kMaxBeatError);
+
+    // Half Bpm
+    roundBpm = BeatUtils::roundBpmWithinRange(mixxx::Bpm(80.1), mixxx::Bpm(80.4), mixxx::Bpm(80.7));
+    EXPECT_NEAR(roundBpm.value(), 80.5, kMaxBeatError);
+
+    // High Half Bpm -> 1/3
+    roundBpm = BeatUtils::roundBpmWithinRange(
+            mixxx::Bpm(121.1), mixxx::Bpm(121.4), mixxx::Bpm(122.7));
+    EXPECT_NEAR(roundBpm.value(), 121.3333333333, kMaxBeatError);
+
+    // High Half Bpm -> 1/12
+    roundBpm = BeatUtils::roundBpmWithinRange(
+            mixxx::Bpm(121.4), mixxx::Bpm(121.46), mixxx::Bpm(122.6));
+    EXPECT_NEAR(roundBpm.value(), 121.5, kMaxBeatError);
+
+    // 2/3 Bpm
+    roundBpm = BeatUtils::roundBpmWithinRange(
+            mixxx::Bpm(186.276), mixxx::Bpm(186.621), mixxx::Bpm(186.967));
+    EXPECT_NEAR(roundBpm.value(), 186.666666666, kMaxBeatError);
+
+    // 1/12 Bpm
+    roundBpm = BeatUtils::roundBpmWithinRange(
+            mixxx::Bpm(186.01), mixxx::Bpm(186.1), mixxx::Bpm(186.18));
+    EXPECT_NEAR(roundBpm.value(), 186.0833333333333, kMaxBeatError);
+}
+
+TEST(BeatsTest, IteratorFromCeilOvershoot) {
+    const auto sampleRate = audio::SampleRate(44100);
+    const auto markerPos = audio::FramePos(0);
+    const auto bpm = Bpm(60.1);
+    constexpr int kBeatOffset = 49;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = beatPos;
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
+}
+
+TEST(BeatsTest, IteratorFromCeilUndershoot) {
+    const auto sampleRate = audio::SampleRate(48000);
+    const auto markerPos = audio::FramePos(1000);
+    const auto bpm = Bpm(127.0);
+    constexpr int kBeatOffset = 11;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = audio::FramePos(
+            std::nextafter(beatPos.value(),
+                    std::numeric_limits<double>::max()));
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
+}
+
+TEST(BeatsTest, IteratorFromFloorOvershoot) {
+    const auto sampleRate = audio::SampleRate(44100);
+    const auto markerPos = audio::FramePos(0);
+    const auto bpm = Bpm(60.1);
+    constexpr int kBeatOffset = -7;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = beatPos;
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
+}
+
+TEST(BeatsTest, IteratorFromFloorUndershoot) {
+    const auto sampleRate = audio::SampleRate(44100);
+    const auto markerPos = audio::FramePos(18107);
+    const auto bpm = Bpm(60.0);
+    constexpr int kBeatOffset = -1;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = audio::FramePos(
+            std::nextafter(beatPos.value(),
+                    std::numeric_limits<double>::max()));
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
 }
 
 } // namespace

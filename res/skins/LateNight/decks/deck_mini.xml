@@ -22,12 +22,14 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,f</SizePolicy>
                 <Children>
-                  <PushButton>
+                  <CueButton>
                     <TooltipId>cue_default_cue_gotoandstop</TooltipId>
                     <ObjectName>CueDeck</ObjectName>
                     <Size>42f,26f</Size>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <Group><Variable name="Group"/></Group>
+                    <DndRectMargin><Variable name="DndRectMarginHotcueBtn"/></DndRectMargin>
                     <State>
                       <Number>0</Number>
                       <Text><Variable name="state_0_text"/></Text>
@@ -54,13 +56,13 @@
                       <ConfigKey><Variable name="Group"/>,cue_indicator</ConfigKey>
                       <ConnectValueFromWidget>false</ConnectValueFromWidget>
                     </Connection>
-                  </PushButton>
+                  </CueButton>
 
                   <WidgetGroup><!-- Play + PlayBlink + default grey background -->
                     <Layout>stacked</Layout>
                     <Size>42f,26f</Size>
                     <Children>
-                      <Template src="skins:LateNight/controls/button_2state_right_display.xml">
+                      <Template src="skins:LateNight/controls/button_play_2state_right_display.xml">
                         <SetVariable name="TooltipId">play_cue_default</SetVariable>
                         <SetVariable name="ObjectName">PlayDeckMini</SetVariable>
                         <SetVariable name="Size">42f,26f</SetVariable>

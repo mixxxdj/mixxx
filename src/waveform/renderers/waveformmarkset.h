@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QList>
+#include <optional>
 
-#include "waveformmark.h"
 #include "skin/legacy/skincontext.h"
-
+#include "waveformmark.h"
 
 // This class helps share code between the WaveformRenderMark and WOverview
 // constructors and allows to iterate over the orders marks that have to be
@@ -18,8 +18,12 @@ class WaveformMarkSet {
         QString markAlign;
         QString text;
         QString pixmapPath;
+        QString endPixmapPath;
         QString iconPath;
+        QString endIconPath;
         QColor color;
+        float enabledOpacity;
+        float disabledOpacity;
     };
 
     WaveformMarkSet();
@@ -69,7 +73,7 @@ class WaveformMarkSet {
         return m_marksToRender.cend();
     }
 
-    // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
+    // hotCue must be valid (>= 0 and < kMaxNumberOfHotcues)
     WaveformMarkPointer getHotCueMark(int hotCue) const;
     WaveformMarkPointer getDefaultMark() const;
     WaveformMarkPointer findHoveredMark(QPoint point, Qt::Orientation orientation) const;
@@ -81,13 +85,15 @@ class WaveformMarkSet {
     void clear() {
         m_marks.clear();
         m_marksToRender.clear();
+        m_hotCueMarks.clear();
+        m_pDefaultMark.reset();
     }
 
     void addMark(WaveformMarkPointer pMark) {
         m_marks.push_back(pMark);
     }
 
-    void setDefault(const QString& group,
+    std::optional<WaveformMark::WaveformMarkConstructionError> setDefault(const QString& group,
             const DefaultMarkerStyle& model,
             const WaveformSignalColors& signalColors = {});
 

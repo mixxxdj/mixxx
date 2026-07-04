@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+set -ef
+
+# Build GoogleTest from source and install it
+#
+# See https://github.com/google/googletest/blob/d83fee138a9ae6cb7c03688a2d08d4043a39815d/googletest/README.md#build-with-cmake
+
+# https://unix.stackexchange.com/a/706411
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+
+usage()
+{
+	echo "Usage: $0 <cpp-standard>"
+	echo
+	echo '  <cpp-standard>  C++ standard to target (supported: 98, 11, any number between 14 and 26 inclusive)'
+}
+
+die()
+{
+	printf '%s\n' "$1" >&2
+	printf '\n%s\n' "$(usage)" >&2
+	exit 1
+}
+
+cpp_standard=$1
+if [ -z "$cpp_standard" ]; then
+	die 'Error: <cpp-standard> must not be empty'
+fi
+
+case $cpp_standard in
+	98)
+		# GoogleTest v1.8.1 seems to be the last version supporting C++98,
+		# see https://github.com/google/googletest/releases/tag/release-1.8.1
+		gtest_version_tag=release-1.8.1
+		;;
+	11)
+		# GoogleTest v1.12.1 seems to be the last version supporting C++11,
+		# see https://github.com/google/googletest/releases/tag/release-1.12.1
+		gtest_version_tag=release-1.12.1
+		;;
+	*)
+		if [ "$cpp_standard" -ge 14 ] && [ "$cpp_standard" -le 26 ]; then
+			# GoogleTest v1.16.0 (the latest version at the time of writing) requires at
+			# least C++14, see https://github.com/google/googletest/releases/tag/v1.16.0
+			gtest_version_tag=v1.16.0
+		else
+			die "Error: unsupported value $1 of <cpp-standard>"
+		fi
+		;;
+esac
+
+echo "Installing GoogleTest $gtest_version_tag"
+
+temp_dir=$(mktemp -d)
+cleanup()
+{
+	rm -rf -- "$temp_dir"
+}
+# NOTE: in Bash, `trap ... EXIT` would be enough (and recommended), but unfortunately we
+# cannot change the shebang to `#!/usr/bin/env bash` because FreeBSD does not have Bash
+# installed.
+trap 'cleanup' INT TERM HUP EXIT
+
+# Download
+git clone --depth 1 -b "$gtest_version_tag" -- https://github.com/google/googletest.git "$temp_dir"
+cd -- "$temp_dir"
+if [ "$gtest_version_tag" = release-1.8.1 ]; then
+	# We must apply a patch to fix `-Werror=maybe-uninitialized` (see
+	# https://github.com/google/googletest/issues/3219), otherwise it won't compile
+	git apply -- "$script_dir"/gtest-v1.8.1-fix-Werror-maybe-uninitialized.patch
+fi
+mkdir build
+cd build
+# Configure - build only GoogleTest, not GoogleMock
+cmake .. -DBUILD_GMOCK=OFF
+# Build
+make
+# Install
+if command -v sudo >/dev/null 2>&1; then
+	sudo make install
+else
+	make install
+fi

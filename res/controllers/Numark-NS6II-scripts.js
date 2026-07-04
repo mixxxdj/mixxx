@@ -693,7 +693,7 @@ NS6II.PadMode = function(channelOffset) {
     this.pads = Array(8).fill(undefined);
     const doNothing = () => {};
     this.assignParameterPressHandlerLeft(doNothing);
-    this.assignParameterPressHandlerLeft(doNothing);
+    this.assignParameterPressHandlerRight(doNothing);
 };
 
 NS6II.PadMode.prototype = new components.ComponentContainer();

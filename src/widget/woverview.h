@@ -8,6 +8,7 @@
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
+#include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -31,13 +32,6 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
-
-    enum class Type {
-        Filtered,
-        HSV,
-        RGB,
-    };
-    Q_ENUM(Type);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -74,8 +68,9 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotCueMenuPopupAboutToHide();
 
     void slotTypeControlChanged(double v);
+    void slotStereoControlChanged(double v);
     void slotMinuteMarkersChanged(bool v);
-    void slotNormalizeOrVisualGainChanged();
+    void slotScalingChanged();
 
   private:
     // Append the waveform overview pixmap according to available data
@@ -147,12 +142,14 @@ class WOverview : public WWidget, public TrackDropTarget {
         }
     }
 
-    // Hold the last visual sample processed to generate the pixmap
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
-    Type m_type;
+    mixxx::OverviewType m_type;
+    bool m_stereo;
+
+    // Hold the last visual sample processed to generate the pixmap
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;
@@ -201,8 +198,13 @@ class WOverview : public WWidget, public TrackDropTarget {
     PollingControlProxy m_playpositionControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
+    parented_ptr<ControlProxy> m_pStereoControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
+    // Controls to trigger update of amplitude scaling
     parented_ptr<ControlProxy> m_pReplayGain;
+    parented_ptr<ControlProxy> m_pReplayGainEnabled;
+    parented_ptr<ControlProxy> m_pReplayGainBoost;
+    parented_ptr<ControlProxy> m_pReplayGainDefaultBoost;
 
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;

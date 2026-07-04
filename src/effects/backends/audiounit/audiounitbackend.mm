@@ -21,7 +21,7 @@
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
   public:
-    AudioUnitBackend() : m_componentsById([[NSMutableDictionary alloc] init]) {
+    AudioUnitBackend() : m_componentsById([NSMutableDictionary dictionary]) {
         loadAudioUnits();
     }
 
@@ -69,37 +69,49 @@ class AudioUnitBackend : public EffectsBackend {
     void loadAudioUnits() {
         qDebug() << "Loading audio units...";
 
-        loadAudioUnitsOfType(kAudioUnitType_Effect);
-        loadAudioUnitsOfType(kAudioUnitType_MusicEffect);
-    }
-
-    void loadAudioUnitsOfType(OSType componentType) {
         // See
         // https://developer.apple.com/documentation/audiotoolbox/audio_unit_v3_plug-ins/incorporating_audio_effects_and_instruments?language=objc
 
-        // Create a query for audio components
-        AudioComponentDescription description = {
-                .componentType = componentType,
-                .componentSubType = 0,
-                .componentManufacturer = 0,
-                .componentFlags = 0,
-                .componentFlagsMask = 0,
-        };
-
-        // Find the audio units
+        // Discover all AU components of both types first, then load all
+        // manifests in a single parallel batch. This avoids the performance
+        // penalty of two sequential discovery passes each with their own
+        // blocking wait.
         auto manager =
                 [AVAudioUnitComponentManager sharedAudioUnitComponentManager];
-        auto components = [manager componentsMatchingDescription:description];
+
+        NSMutableArray<AVAudioUnitComponent*>* allComponents =
+                [NSMutableArray array];
+
+        for (OSType componentType :
+                {kAudioUnitType_Effect, kAudioUnitType_MusicEffect}) {
+            AudioComponentDescription description = {
+                    .componentType = componentType,
+                    .componentSubType = 0,
+                    .componentManufacturer = 0,
+                    .componentFlags = 0,
+                    .componentFlagsMask = 0,
+            };
+            auto components =
+                    [manager componentsMatchingDescription:description];
+            [allComponents addObjectsFromArray:components];
+        }
 
         // Load component manifests (parameters etc.) concurrently since this
         // requires instantiating the corresponding Audio Units. We use Grand
         // Central Dispatch (GCD) for this instead of Qt's threading facilities
         // since GCD is a bit more lightweight and generally preferred for
         // Apple API-related stuff.
-
         dispatch_group_t group = dispatch_group_create();
 
-        for (AVAudioUnitComponent* component in components) {
+        // Limit concurrent manifest loads to avoid exhausting the GCD thread
+        // pool. Each manifest load blocks its thread in waitForAudioUnit for
+        // up to 2 seconds, so without a limit, having 64+ AUs would hit
+        // the macOS dispatch thread soft limit and crash the process.
+        const long MAX_CONCURRENT_LOADS = 8;
+        dispatch_semaphore_t semaphore =
+                dispatch_semaphore_create(MAX_CONCURRENT_LOADS);
+
+        for (AVAudioUnitComponent* component in allComponents) {
             qDebug() << "Found audio unit" << [component name];
 
             QString effectId = QString::fromNSString(
@@ -116,6 +128,8 @@ class AudioUnitBackend : public EffectsBackend {
                     DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
             dispatch_group_async(group, queue, ^{
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
                 // Load manifest (potentially slow blocking operation)
                 auto manifest = EffectManifestPointer(
                         new AudioUnitManifest(effectId, component));
@@ -123,6 +137,9 @@ class AudioUnitBackend : public EffectsBackend {
                 // Register manifest
                 auto locker = lockMutex(&m_mutex);
                 m_manifestsById[effectId] = manifest;
+                locker.unlock();
+
+                dispatch_semaphore_signal(semaphore);
             });
         }
 

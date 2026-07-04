@@ -1,6 +1,7 @@
 #ifndef SEARCHQUERY_H
 #define SEARCHQUERY_H
 
+#include <QDateTime>
 #include <QList>
 #include <QSqlDatabase>
 #include <QString>
@@ -193,7 +194,11 @@ class BpmFilterNode : public QueryNode {
     static constexpr double kRelativeRangeDefault = 0.06;
     static void setBpmRelativeRange(double range);
 
-    BpmFilterNode(QString& argument, bool fuzzy, bool negate = false);
+    BpmFilterNode(
+            QString& argument,
+            bool fuzzy,
+            bool negate = false,
+            const QSqlDatabase& database = QSqlDatabase());
 
     enum class MatchMode {
         Invalid,
@@ -205,6 +210,8 @@ class BpmFilterNode : public QueryNode {
         HalveDouble,       // bpm:120
         HalveDoubleStrict, // bpm:120.0
         Operator,          // bpm:<=120
+        Locked,            // bpm:locked
+        Constant,          // bpm:const|constant
     };
 
     // Allows WSearchRelatedTracksMenu to construct the QAction title
@@ -216,6 +223,8 @@ class BpmFilterNode : public QueryNode {
 
   private:
     bool match(const TrackPointer& pTrack) const override;
+
+    QSqlDatabase m_database;
 
     MatchMode m_matchMode;
 
@@ -271,6 +280,24 @@ class YearFilterNode : public NumericFilterNode {
   public:
     YearFilterNode(const QStringList& sqlColumns, const QString& argument);
     QString toSql() const override;
+};
+
+class DateAddedFilterNode : public QueryNode {
+  public:
+    DateAddedFilterNode(const QString& argument);
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+  private:
+    QDateTime parseDate(const QString& dateStr) const;
+    QString dateStringIsoNoZ(const QDateTime& date) const;
+
+    bool m_operatorQuery;
+    bool m_equalsQuery;
+    QString m_operator;
+    QDateTime m_opDate;
+    QDateTime m_dateStart;
+    QDateTime m_dateEnd;
 };
 
 #endif /* SEARCHQUERY_H */

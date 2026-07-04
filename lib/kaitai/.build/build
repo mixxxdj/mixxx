@@ -1,0 +1,9 @@
+#!/bin/sh -ef
+
+cd "$(dirname "$0")"/..
+
+mkdir -p build
+cd build
+export VERBOSE=1
+cmake .. ${@:+"$@"}
+cmake --build .

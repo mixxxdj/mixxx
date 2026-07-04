@@ -39,13 +39,18 @@ void BaseGeometryNode::render() {
         return;
     }
 
+    QOpenGLShaderProgram& shader = material.shader();
+    VERIFY_OR_DEBUG_ASSERT(shader.bind()) {
+        // if the shader can't be bound, don't try to render with it.
+        // this should only happen if the shader compilation failed,
+        // which shouldn't happen
+        return;
+    }
+
     glEnable(GL_BLEND);
     // Note: Qt scenegraph uses premultiplied alpha color in the shader,
     // so we need to do the same.
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    QOpenGLShaderProgram& shader = material.shader();
-    shader.bind();
 
     if (material.clearUniformsCacheDirty() || !material.isLastModifierOfShader()) {
         material.modifyShader();
@@ -89,7 +94,7 @@ void BaseGeometryNode::render() {
     }
 
     // TODO multiple textures
-    auto pTexture = material.texture(1);
+    auto* pTexture = material.texture(1);
     if (pTexture) {
         pTexture->backendTexture()->bind();
     }
@@ -109,7 +114,9 @@ void BaseGeometryNode::render() {
 }
 
 void BaseGeometryNode::resize(int, int) {
-    assert(engine() != nullptr);
+    VERIFY_OR_DEBUG_ASSERT(engine() != nullptr) {
+        return;
+    }
     GeometryNode* pThis = static_cast<GeometryNode*>(this);
     pThis->material().setUniform(0, engine()->matrix());
 }
