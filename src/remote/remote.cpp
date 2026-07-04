@@ -262,6 +262,8 @@ namespace mixxx {
                 ) {
                 qCritical()  << "Cannot listen at Port" << settings->get(ConfigKey("[RemoteControl]","port")).value.toInt();
                 delete tcpserver;
+                tcpserver = nullptr;
+                return;
             }
 
             httpServer.bind(tcpserver);
