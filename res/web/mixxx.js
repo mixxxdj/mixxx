@@ -205,6 +205,40 @@ function setmastergain(value){
     ));
 }
 
+function getcrossfader(){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"getcrossfader": "true"},
+        ]
+    ));
+    xmlhttp.onload = (event) => {
+        var resjs=JSON.parse(xmlhttp.responseText);
+        for (var i = 0; i < resjs.length; i++) {
+            if(resjs[i].crossfader !== undefined){
+                document.getElementById("crossfaderrange").value = resjs[i].crossfader;
+            }
+        }
+    };
+}
+
+function setcrossfader(value){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"setcrossfader": { "value": parseFloat(value) }},
+        ]
+    ));
+}
+
 function getautodjenabled(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);

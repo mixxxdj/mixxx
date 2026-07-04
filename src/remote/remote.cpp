@@ -246,6 +246,21 @@ namespace mixxx {
                         }
                     }
 
+                    if(!cur["getcrossfader"].isNull()){
+                        QJsonObject xfobj;
+                        xfobj.insert("crossfader",
+                                ControlObject::get(ConfigKey("[Master]", "crossfader")));
+                        resproot.push_back(xfobj);
+                    }
+
+                    if(!cur["setcrossfader"].isNull()){
+                        QJsonObject jxf=cur["setcrossfader"].toObject();
+                        if(!jxf["value"].isNull()){
+                            ControlObject::set(ConfigKey("[Master]", "crossfader"),
+                                    jxf["value"].toDouble());
+                        }
+                    }
+
                     if(!cur["getautodjenabled"].isNull()){
                         QJsonObject adjobj;
                         adjobj.insert("autodjenabled",
