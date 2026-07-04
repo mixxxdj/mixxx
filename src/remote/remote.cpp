@@ -245,6 +245,21 @@ namespace mixxx {
                                     jgain["gain"].toDouble());
                         }
                     }
+
+                    if(!cur["getautodjenabled"].isNull()){
+                        QJsonObject adjobj;
+                        adjobj.insert("autodjenabled",
+                                ControlObject::get(ConfigKey("[AutoDJ]", "enabled")) > 0.0);
+                        resproot.push_back(adjobj);
+                    }
+
+                    if(!cur["setautodjenabled"].isNull()){
+                        QJsonObject jadj=cur["setautodjenabled"].toObject();
+                        if(!jadj["enabled"].isNull()){
+                            ControlObject::set(ConfigKey("[AutoDJ]", "enabled"),
+                                    jadj["enabled"].toBool() ? 1.0 : 0.0);
+                        }
+                    }
                 }
 
                 jsonResponse.setArray(resproot);

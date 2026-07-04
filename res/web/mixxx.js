@@ -205,6 +205,40 @@ function setmastergain(value){
     ));
 }
 
+function getautodjenabled(){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"getautodjenabled": "true"},
+        ]
+    ));
+    xmlhttp.onload = (event) => {
+        var resjs=JSON.parse(xmlhttp.responseText);
+        for (var i = 0; i < resjs.length; i++) {
+            if(resjs[i].autodjenabled !== undefined){
+                document.getElementById("autodjenabled").checked = resjs[i].autodjenabled;
+            }
+        }
+    };
+}
+
+function setautodjenabled(enabled){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"setautodjenabled": { "enabled": enabled }},
+        ]
+    ));
+}
+
 function loadautodjtracklist(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);
