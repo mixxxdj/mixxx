@@ -6,6 +6,8 @@
 #include <QThread>
 #include <QtDebug>
 
+#include "track/trackref.h"
+
 #ifdef __SQLITE3__
 #include <sqlite3.h>
 #endif // __SQLITE3__
@@ -1779,35 +1781,85 @@ bool TrackDAO::updateTrack(const Track& track) const {
 }
 
 // Relocate the file linked to the track
-bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLocation) const {
+bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLocation) {
     DEBUG_ASSERT(trackId.isValid());
 
     kLogger.debug() << "Relocating track" << trackId
                     << "to" << newLocation;
 
     SqlTransaction transaction(m_database);
-    FwdSqlQuery query(m_database,
-            "UPDATE track_locations SET "
-            "location = :location,"
-            "directory = :directory,"
-            "filename = :filename,"
-            "filesize = :filesize,"
-            "fs_deleted = 0,"
-            "needs_verification = 0 "
-            "WHERE id=(SELECT location FROM library WHERE id =:trackId)");
-    query.bindValue(":location", newLocation.location());
-    query.bindValue(":directory", newLocation.locationPath());
-    query.bindValue(":filename", newLocation.fileName());
-    query.bindValue(":filesize", QVariant::fromValue(newLocation.sizeInBytes()));
-    query.bindValue(":trackId", trackId.toVariant());
 
-    if (query.hasError() || !query.execPrepared()) {
+    DbId newTrackLocationId;
+    TrackId newTrackId;
+    FwdSqlQuery queryNewTrackLocation(m_database,
+            "SELECT track_locations.id, library.id "
+            "FROM track_locations "
+            "LEFT JOIN library ON library.location = track_locations.id "
+            "WHERE track_locations.location = :location "
+            "AND library.id != :trackId");
+    queryNewTrackLocation.bindValue(":location", newLocation.location());
+    queryNewTrackLocation.bindValue(":trackId", trackId.toVariant());
+    if (!queryNewTrackLocation.execPrepared()) {
         return false;
     }
+    if (queryNewTrackLocation.next()) {
+        newTrackLocationId = DbId(queryNewTrackLocation.fieldValue(0));
+        newTrackId = TrackId(queryNewTrackLocation.fieldValue(1));
+    }
+    if (newTrackLocationId.isValid()) {
+        DbId trackLocationId;
+        FwdSqlQuery queryTrackLocationId(m_database,
+                "SELECT location FROM library WHERE id = :trackId");
+        queryTrackLocationId.bindValue(":trackId", trackId.toVariant());
+        if (!queryTrackLocationId.execPrepared()) {
+            return false;
+        }
+        if (queryTrackLocationId.next()) {
+            trackLocationId = DbId(queryTrackLocationId.fieldValue(0));
+        }
 
-    if (query.numRowsAffected() == 0) {
-        kLogger.warning() << "relocateTrack had no effect: trackId " << trackId << "invalid.";
-        return false;
+        FwdSqlQuery queryDeleteDuplicate(m_database,
+                "DELETE FROM library WHERE id = :newTrackId");
+        queryDeleteDuplicate.bindValue(":newTrackId", newTrackId.toVariant());
+        if (!queryDeleteDuplicate.execPrepared()) {
+            return false;
+        }
+
+        FwdSqlQuery queryUpdateLocationInLibrary(m_database,
+                "UPDATE library SET location = :loc WHERE id = :trackId");
+        queryUpdateLocationInLibrary.bindValue(":loc", newTrackLocationId.toVariant());
+        queryUpdateLocationInLibrary.bindValue(":trackId", trackId.toVariant());
+        if (!queryUpdateLocationInLibrary.execPrepared()) {
+            return false;
+        }
+
+        FwdSqlQuery queryDeleteOrphanedLocation(m_database,
+                "DELETE FROM track_locations WHERE id = :id");
+        queryDeleteOrphanedLocation.bindValue(":id", trackLocationId.toVariant());
+        queryDeleteOrphanedLocation.execPrepared();
+    } else {
+        FwdSqlQuery query(m_database,
+                "UPDATE track_locations SET "
+                "location = :location,"
+                "directory = :directory,"
+                "filename = :filename,"
+                "filesize = :filesize,"
+                "fs_deleted = 0,"
+                "needs_verification = 0 "
+                "WHERE id=(SELECT location FROM library WHERE id =:trackId)");
+        query.bindValue(":location", newLocation.location());
+        query.bindValue(":directory", newLocation.locationPath());
+        query.bindValue(":filename", newLocation.fileName());
+        query.bindValue(":filesize", QVariant::fromValue(newLocation.sizeInBytes()));
+        query.bindValue(":trackId", trackId.toVariant());
+
+        if (!query.execPrepared()) {
+            return false;
+        }
+        if (query.numRowsAffected() == 0) {
+            kLogger.warning() << "relocateTrack had no effect: trackId " << trackId << "invalid.";
+            return false;
+        }
     }
     transaction.commit();
 
