@@ -11,20 +11,30 @@ import android.view.WindowManager;
  * Helper class to adjust the app window for devices with display cutouts (notches).
  * It ensures the UI fills the full screen while respecting safe insets.
  *
- * FLAG_FULLSCREEN is deprecated on API 35+ (Android 15) and produces a compile-time
- * warning. We avoid it entirely on API 30+ by using setDecorFitsSystemWindows(false)
- * + WindowInsetsController. On API 28-29 we use the legacy SYSTEM_UI_FLAG_FULLSCREEN
- * approach. FLAG_FULLSCREEN is only kept as a fallback for pre-9 devices that will
- * never be compiled against SDK 35.
+ * On API 35+ (Android 15), ALL the legacy fullscreen APIs are deprecated
+ * (FLAG_FULLSCREEN, setSystemUiVisibility, SYSTEM_UI_FLAG_*, and even
+ * setDecorFitsSystemWindows). Only WindowInsetsController remains non-deprecated.
+ * We split into separate API-level paths and suppress deprecation warnings
+ * on the backwards-compatible branches — they never execute on API 35+.
  */
+@SuppressWarnings("deprecation")
 public class AndroidScreenManager {
     public static void applyFullScreen(Activity activity) {
         if (activity == null)
             return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            // Android 11+ (API 30+): proper insets-based fullscreen.
-            // Draw behind system bars so content extends into notch area.
+        if (Build.VERSION.SDK_INT >= 35) {
+            // Android 15+ (API 35+): use non-deprecated insets controller only.
+            // setDecorFitsSystemWindows is also deprecated on this level.
+            WindowInsetsController controller = activity.getWindow().getInsetsController();
+            if (controller != null) {
+                controller.hide(WindowInsets.Type.systemBars());
+                controller.setSystemBarsBehavior(
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11-14 (API 30-34): insets controller + setDecorFitsSystemWindows
+            // (not deprecated at these levels).
             activity.getWindow().setDecorFitsSystemWindows(false);
             WindowInsetsController controller = activity.getWindow().getInsetsController();
             if (controller != null) {
@@ -33,7 +43,7 @@ public class AndroidScreenManager {
                     WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // Android 9-10 (API 28-29): use legacy system UI flags.
+            // Android 9-10 (API 28-29): use system UI flags (not deprecated here).
             activity.getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -41,8 +51,7 @@ public class AndroidScreenManager {
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         } else {
-            // Android < 9: deprecated on API 35+ but this branch is never
-            // reached on devices that new — kept for backward compatibility.
+            // Android < 9: FLAG_FULLSCREEN (not deprecated at these levels).
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
 
