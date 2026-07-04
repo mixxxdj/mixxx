@@ -793,6 +793,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_isInitialized = true;
 
+#ifdef HTTP_REMOTE
     //initalize Remote Controll Plugin
     m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
         m_pSettingsManager->settings(),
@@ -802,6 +803,7 @@ void CoreServices::initialize(QApplication* pApp) {
         m_pPlayerManager,
        this
     );
+#endif
     ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
 
 #ifdef MIXXX_USE_QML

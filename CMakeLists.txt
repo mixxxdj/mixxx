@@ -402,6 +402,8 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(HTTP_REMOTE "Build HttpRemote support" false)
+
 cmake_dependent_option(
   QML
   "Build with QML"
@@ -1557,8 +1559,6 @@ add_library(
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
-  src/preferences/dialog/dlgprefremotecontrol.cpp
-  src/preferences/dialog/dlgprefremotecontrol.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
   src/preferences/dialog/dlgprefsound.cpp
@@ -1573,8 +1573,7 @@ add_library(
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
-  src/recording/recordingmanager.cpp
-  src/remote/remote.cpp
+  src/recording/recordingmanager.cpp 
   src/skin/legacy/colorschemeparser.cpp
   src/skin/legacy/imgcolor.cpp
   src/skin/legacy/imginvert.cpp
@@ -2365,7 +2364,20 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  find_package(Qt6 COMPONENTS Core HttpServer) # For Qt Core cmake functions
+  if(HTTP_REMOTE equal true)
+    find_package(Qt6 COMPONENTS Core HttpServer) # For Qt Core cmake functions
+    
+    add_compile_definitions(-DHTTP_REMOTE=true)
+
+    target_sources(mixxx-lib PRIVATE
+      src/preferences/dialog/dlgprefremotecontrol.cpp
+      src/preferences/dialog/dlgprefremotecontrol.ui
+      src/remote/remote.cpp
+    )
+
+  else()
+    find_package(Qt6 COMPONENTS Core)
+  endif()
   # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
