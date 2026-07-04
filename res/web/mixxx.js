@@ -239,6 +239,18 @@ function setautodjenabled(enabled){
     ));
 }
 
+var deckSeeking = false;
+var deckDuration = 0;
+
+function formatTime(seconds){
+    if(!isFinite(seconds) || seconds < 0){
+        seconds = 0;
+    }
+    var mins = Math.floor(seconds / 60);
+    var secs = Math.floor(seconds % 60);
+    return mins + ":" + (secs < 10 ? "0" : "") + secs;
+}
+
 function getnumdecks(){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);
@@ -263,6 +275,14 @@ function getnumdecks(){
                     select.appendChild(opt);
                 }
                 onDeckChange();
+                if(!window.deckPollStarted){
+                    window.deckPollStarted = true;
+                    setInterval(() => {
+                        if(!deckSeeking){
+                            getdeckstate(document.getElementById("deckselect").value);
+                        }
+                    }, 1000);
+                }
             }
         }
     };
@@ -289,8 +309,35 @@ function getdeckstate(deck){
             if(resjs[i].playing !== undefined){
                 updateDeckPlayButton(resjs[i].playing);
             }
+            if(resjs[i].duration !== undefined){
+                deckDuration = resjs[i].duration;
+                document.getElementById("deckduration").textContent = formatTime(deckDuration);
+            }
+            if(resjs[i].position !== undefined && !deckSeeking){
+                document.getElementById("deckposition").value = Math.round(resjs[i].position * 1000);
+                document.getElementById("deckelapsed").textContent = formatTime(resjs[i].elapsed);
+            }
         }
     };
+}
+
+function onDeckSeekInput(sliderValue){
+    document.getElementById("deckelapsed").textContent =
+            formatTime((sliderValue / 1000) * deckDuration);
+}
+
+function onDeckSeekCommit(sliderValue){
+    var deck = document.getElementById("deckselect").value;
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"setdeckposition": { "deck": parseInt(deck), "position": sliderValue / 1000 }},
+        ]
+    ));
 }
 
 function updateDeckPlayButton(playing){

@@ -273,10 +273,20 @@ namespace mixxx {
                         int deck=jdeck["deck"].toInt();
                         if(deck>0){
                             QString group=PlayerManager::groupForDeck(deck-1);
+                            double trackSamples=ControlObject::get(ConfigKey(group, "track_samples"));
+                            double trackSampleRate=ControlObject::get(ConfigKey(group, "track_samplerate"));
+                            // track_samples is interleaved (stereo) sample count
+                            double duration=(trackSampleRate>0.0)
+                                    ? trackSamples/(trackSampleRate*2.0)
+                                    : 0.0;
+                            double position=ControlObject::get(ConfigKey(group, "playposition"));
                             QJsonObject deckobj;
                             deckobj.insert("deck",deck);
                             deckobj.insert("playing",
                                     ControlObject::get(ConfigKey(group, "play")) > 0.0);
+                            deckobj.insert("position",position);
+                            deckobj.insert("duration",duration);
+                            deckobj.insert("elapsed",position*duration);
                             resproot.push_back(deckobj);
                         }
                     }
@@ -288,6 +298,16 @@ namespace mixxx {
                             QString group=PlayerManager::groupForDeck(deck-1);
                             ControlObject::set(ConfigKey(group, "play"),
                                     jdeck["playing"].toBool() ? 1.0 : 0.0);
+                        }
+                    }
+
+                    if(!cur["setdeckposition"].isNull()){
+                        QJsonObject jdeck=cur["setdeckposition"].toObject();
+                        int deck=jdeck["deck"].toInt();
+                        if(deck>0 && !jdeck["position"].isNull()){
+                            QString group=PlayerManager::groupForDeck(deck-1);
+                            ControlObject::set(ConfigKey(group, "playposition"),
+                                    jdeck["position"].toDouble());
                         }
                     }
 

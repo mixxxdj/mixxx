@@ -217,6 +217,17 @@ select:focus {
     margin-top: 12px;
 }
 
+.deck-position {
+    margin-top: 12px;
+}
+
+.deck-time {
+    margin-top: 2px;
+    font-size: 0.75em;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+}
+
 /* range slider */
 input[type=range] {
     -webkit-appearance: none;

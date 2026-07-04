@@ -21,6 +21,17 @@
       <div class="card" id="deckcontrol">
         <label for="deckselect">Deck</label>
         <select id="deckselect" onchange="onDeckChange();"></select>
+        <div class="deck-position">
+          <input type="range" id="deckposition" min="0" max="1000" step="1" value="0"
+                 oninput="onDeckSeekInput(this.value);"
+                 onchange="onDeckSeekCommit(this.value);"
+                 onmousedown="deckSeeking=true;" onmouseup="deckSeeking=false;"
+                 ontouchstart="deckSeeking=true;" ontouchend="deckSeeking=false;">
+          <div class="row deck-time">
+            <span id="deckelapsed">0:00</span>
+            <span id="deckduration">0:00</span>
+          </div>
+        </div>
         <div class="toolbar deck-toolbar">
           <button id="deckplaybtn" class="accent" onclick="setDeckPlaying(true);">▶ Play</button>
           <button id="deckpausebtn" onclick="setDeckPlaying(false);">⏸ Pause</button>
