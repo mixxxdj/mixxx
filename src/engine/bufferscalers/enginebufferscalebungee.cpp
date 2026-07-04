@@ -333,6 +333,26 @@ bool EngineBufferScaleBungee::hasValidOutputChunk() const {
             m_outputChunk.data != nullptr;
 }
 
+double EngineBufferScaleBungee::copyFlushOutputFrames(
+        CSAMPLE*& pOutput,
+        SINT& remainingFrames) const {
+    if (!hasValidOutputChunk()) {
+        return 0.0;
+    }
+
+    const SINT framesToCopy = std::min(
+            static_cast<SINT>(m_outputChunk.frameCount),
+            remainingFrames);
+    if (framesToCopy <= 0) {
+        return 0.0;
+    }
+    copyOutputFrames(pOutput, 0, framesToCopy);
+
+    remainingFrames -= framesToCopy;
+    pOutput += getOutputSignal().frames2samples(framesToCopy);
+    return m_effectiveRate * static_cast<double>(framesToCopy);
+}
+
 SINT EngineBufferScaleBungee::processGrain(CSAMPLE* pOutputBuffer, SINT maxFrames) {
     m_lastReadFramesProcessed = 0.0;
 
@@ -474,23 +494,8 @@ double EngineBufferScaleBungee::scaleBuffer(CSAMPLE* pOutputBuffer,
                 m_pStretcher->specifyGrain(flushRequest);
                 m_pStretcher->synthesiseGrain(m_outputChunk);
 
-                if (m_outputChunk.frameCount > 0 && m_outputChunk.data != nullptr) {
-                    const SINT framesToCopy = std::min(
-                            static_cast<SINT>(m_outputChunk.frameCount),
-                            remainingFrames);
-                    const int channelCount = static_cast<int>(
-                            getOutputSignal().getChannelCount());
-                    for (SINT frame = 0; frame < framesToCopy; ++frame) {
-                        for (int ch = 0; ch < channelCount; ++ch) {
-                            pOutput[frame * channelCount + ch] =
-                                    m_outputChunk.data[frame +
-                                            ch * m_outputChunk.channelStride];
-                        }
-                    }
-
-                    remainingFrames -= framesToCopy;
-                    pOutput += getOutputSignal().frames2samples(framesToCopy);
-                }
+                readFramesProcessed +=
+                        copyFlushOutputFrames(pOutput, remainingFrames);
             }
 
             if (remainingFrames > 0) {

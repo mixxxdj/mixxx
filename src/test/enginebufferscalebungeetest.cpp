@@ -421,6 +421,50 @@ TEST_F(EngineBufferScaleBungeeTest, RapidParameterChanges) {
 
 } // namespace
 
+TEST(EngineBufferScaleBungeeFlushAccountingTest,
+        CopyFlushOutputFramesReportsEffectiveRateAdvance) {
+    constexpr double kTempoRatio = 2.5;
+    constexpr SINT kChannelCount = 2;
+    constexpr SINT kChunkFrames = 5;
+    constexpr SINT kRequestedFrames = 3;
+    constexpr SINT kOutputSamples = kRequestedFrames * kChannelCount;
+
+    EngineBufferScaleBungee scaler(nullptr);
+    scaler.setSignal(mixxx::audio::SampleRate(44100),
+            mixxx::audio::ChannelCount::stereo());
+    double tempoRatio = kTempoRatio;
+    double pitchRatio = 1.0;
+    scaler.setScaleParameters(1.0, &tempoRatio, &pitchRatio);
+
+    CSAMPLE planarOutput[kChunkFrames * kChannelCount] = {};
+    for (SINT frame = 0; frame < kChunkFrames; ++frame) {
+        planarOutput[frame] = static_cast<CSAMPLE>(10 + frame);
+        planarOutput[kChunkFrames + frame] = static_cast<CSAMPLE>(20 + frame);
+    }
+
+    scaler.m_outputChunk.data = planarOutput;
+    scaler.m_outputChunk.frameCount = kChunkFrames;
+    scaler.m_outputChunk.channelStride = kChunkFrames;
+
+    CSAMPLE output[kOutputSamples] = {};
+    CSAMPLE* pOutput = output;
+    SINT remainingFrames = kRequestedFrames;
+
+    const double framesRead =
+            scaler.copyFlushOutputFrames(pOutput, remainingFrames);
+
+    EXPECT_DOUBLE_EQ(kTempoRatio * kRequestedFrames, framesRead);
+    EXPECT_EQ(0, remainingFrames);
+    EXPECT_EQ(output + kOutputSamples, pOutput);
+
+    for (SINT frame = 0; frame < kRequestedFrames; ++frame) {
+        EXPECT_FLOAT_EQ(static_cast<CSAMPLE>(10 + frame),
+                output[frame * kChannelCount]);
+        EXPECT_FLOAT_EQ(static_cast<CSAMPLE>(20 + frame),
+                output[frame * kChannelCount + 1]);
+    }
+}
+
 // =============================================================================
 // Buffer-window invariant regression tests.
 //
