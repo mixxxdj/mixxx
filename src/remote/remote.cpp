@@ -300,6 +300,16 @@ namespace mixxx {
                             ControlObject::set(ConfigKey(group, "cue_default"), 0.0);
                         }
                     }
+
+                    if(!cur["deckstop"].isNull()){
+                        QJsonObject jdeck=cur["deckstop"].toObject();
+                        int deck=jdeck["deck"].toInt();
+                        if(deck>0){
+                            QString group=PlayerManager::groupForDeck(deck-1);
+                            ControlObject::set(ConfigKey(group, "start_stop"), 1.0);
+                            ControlObject::set(ConfigKey(group, "start_stop"), 0.0);
+                        }
+                    }
                 }
 
                 jsonResponse.setArray(resproot);

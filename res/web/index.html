@@ -22,7 +22,9 @@
         <label for="deckselect">Deck</label>
         <select id="deckselect" onchange="onDeckChange();"></select>
         <div class="toolbar deck-toolbar">
-          <button id="deckplaybtn" class="accent" onclick="toggleDeckPlay();">▶ Play</button>
+          <button id="deckplaybtn" class="accent" onclick="setDeckPlaying(true);">▶ Play</button>
+          <button id="deckpausebtn" onclick="setDeckPlaying(false);">⏸ Pause</button>
+          <button onclick="deckstop();">⏹ Stop</button>
           <button onclick="deckcue();">Cue</button>
         </div>
       </div>

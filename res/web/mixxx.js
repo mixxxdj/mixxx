@@ -294,16 +294,31 @@ function getdeckstate(deck){
 }
 
 function updateDeckPlayButton(playing){
-    var btn = document.getElementById("deckplaybtn");
-    btn.dataset.playing = playing ? "true" : "false";
-    btn.textContent = playing ? "⏸ Pause" : "▶ Play";
+    var playbtn = document.getElementById("deckplaybtn");
+    var pausebtn = document.getElementById("deckpausebtn");
+    playbtn.classList.toggle("accent", playing);
+    pausebtn.classList.toggle("accent", !playing);
 }
 
-function toggleDeckPlay(){
+function setDeckPlaying(playing){
     var deck = document.getElementById("deckselect").value;
-    var newState = document.getElementById("deckplaybtn").dataset.playing !== "true";
-    setdeckplay(deck, newState);
-    updateDeckPlayButton(newState);
+    setdeckplay(deck, playing);
+    updateDeckPlayButton(playing);
+}
+
+function deckstop(){
+    var deck = document.getElementById("deckselect").value;
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"deckstop": { "deck": parseInt(deck) }},
+        ]
+    ));
+    updateDeckPlayButton(false);
 }
 
 function setdeckplay(deck, playing){
