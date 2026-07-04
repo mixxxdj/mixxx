@@ -287,7 +287,7 @@ Item {
                     barColor: "#888888"
                     barMargin: 7
                     barStart: 0.5
-                    defaultHandleVisible: false
+                    showDefaultHandle: false
                     group: root.group
                     key: "rate"
 
