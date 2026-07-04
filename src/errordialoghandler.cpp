@@ -10,6 +10,7 @@
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
 #include "util/compatibility/qmutex.h"
+#include "util/thread_check.h"
 #include "util/versionstore.h"
 #include "util/widgethelper.h"
 
@@ -166,8 +167,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         return;
     }
 
-    // Check we are in the main thread.
-    if (QThread::currentThread()->objectName() != "Main") {
+    if (!inMainThread()) {
         qWarning() << "WARNING: errorDialog not called in the main thread. Not showing error dialog.";
         return;
     }
