@@ -2364,7 +2364,7 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  if(HTTP_REMOTE equal true)
+  if(HTTP_REMOTE)
     find_package(Qt6 COMPONENTS Core HttpServer) # For Qt Core cmake functions
     
     add_compile_definitions(-DHTTP_REMOTE=true)
