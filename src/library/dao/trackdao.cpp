@@ -1781,9 +1781,12 @@ bool TrackDAO::updateTrack(const Track& track) const {
 }
 
 // Relocate the file linked to the track
-bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLocation) {
+std::optional<RelocatedTrack> TrackDAO::relocateTrack(
+        const TrackId trackId, const mixxx::FileInfo& newLocation) {
     DEBUG_ASSERT(trackId.isValid());
 
+    const auto updatedTrackRef = TrackRef::fromFileInfo(newLocation, trackId);
+    TrackRef deletedTrackRef = TrackRef();
     kLogger.debug() << "Relocating track" << trackId
                     << "to" << newLocation;
 
@@ -1796,23 +1799,24 @@ bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLo
             "FROM track_locations "
             "LEFT JOIN library ON library.location = track_locations.id "
             "WHERE track_locations.location = :location "
-            "AND library.id != :trackId");
+            "AND library.id != :trackId OR library.id IS NULL");
     queryNewTrackLocation.bindValue(":location", newLocation.location());
     queryNewTrackLocation.bindValue(":trackId", trackId.toVariant());
     if (!queryNewTrackLocation.execPrepared()) {
-        return false;
+        return std::nullopt;
     }
     if (queryNewTrackLocation.next()) {
         newTrackLocationId = DbId(queryNewTrackLocation.fieldValue(0));
         newTrackId = TrackId(queryNewTrackLocation.fieldValue(1));
     }
     if (newTrackLocationId.isValid()) {
+        deletedTrackRef = TrackRef::fromFileInfo(newLocation, newTrackId);
         DbId trackLocationId;
         FwdSqlQuery queryTrackLocationId(m_database,
                 "SELECT location FROM library WHERE id = :trackId");
         queryTrackLocationId.bindValue(":trackId", trackId.toVariant());
         if (!queryTrackLocationId.execPrepared()) {
-            return false;
+            return std::nullopt;
         }
         if (queryTrackLocationId.next()) {
             trackLocationId = DbId(queryTrackLocationId.fieldValue(0));
@@ -1822,7 +1826,7 @@ bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLo
                 "DELETE FROM library WHERE id = :newTrackId");
         queryDeleteDuplicate.bindValue(":newTrackId", newTrackId.toVariant());
         if (!queryDeleteDuplicate.execPrepared()) {
-            return false;
+            return std::nullopt;
         }
 
         FwdSqlQuery queryUpdateLocationInLibrary(m_database,
@@ -1830,7 +1834,7 @@ bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLo
         queryUpdateLocationInLibrary.bindValue(":loc", newTrackLocationId.toVariant());
         queryUpdateLocationInLibrary.bindValue(":trackId", trackId.toVariant());
         if (!queryUpdateLocationInLibrary.execPrepared()) {
-            return false;
+            return std::nullopt;
         }
 
         FwdSqlQuery queryDeleteOrphanedLocation(m_database,
@@ -1854,16 +1858,16 @@ bool TrackDAO::relocateTrack(const TrackId trackId, const mixxx::FileInfo& newLo
         query.bindValue(":trackId", trackId.toVariant());
 
         if (!query.execPrepared()) {
-            return false;
+            return std::nullopt;
         }
         if (query.numRowsAffected() == 0) {
             kLogger.warning() << "relocateTrack had no effect: trackId " << trackId << "invalid.";
-            return false;
+            return std::nullopt;
         }
     }
     transaction.commit();
 
-    return true;
+    return RelocatedTrack(updatedTrackRef, deletedTrackRef);
 }
 
 // Make sure that `directory` in in track_locations table is indeed a

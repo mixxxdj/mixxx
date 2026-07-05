@@ -485,7 +485,17 @@ bool TrackCollectionManager::relocateTrack(const TrackId trackId,
         const mixxx::FileInfo& newLocation) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->relocateTrack(trackId, newLocation);
+    const std::optional<RelocatedTrack> oRelocatedTrack =
+            m_pInternalCollection->relocateTrack(trackId, newLocation);
+    if (!oRelocatedTrack) {
+        return false;
+    }
+
+    m_pInternalCollection->getTrackDAO().slotDatabaseTracksRelocated({*oRelocatedTrack});
+    if (!m_externalCollections.isEmpty()) {
+        afterTracksRelocated({*oRelocatedTrack});
+    }
+    return true;
 }
 
 TrackPointer TrackCollectionManager::getOrAddTrack(

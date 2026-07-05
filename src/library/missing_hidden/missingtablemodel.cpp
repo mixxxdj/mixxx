@@ -67,19 +67,26 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 }
 
 void MissingTableModel::relocateTrack(const QModelIndex& index) {
-    TrackPointer pTrack = getTrack(index);
-    if (!pTrack) {
-        return;
-    }
+    QString location;
+    QString title;
+    TrackId trackId;
+    {
+        TrackPointer pTrack = getTrack(index);
+        if (!pTrack) {
+            return;
+        }
 
-    QString location = QFileInfo(pTrack->getLocation()).absolutePath();
+        location = QFileInfo(pTrack->getLocation()).absolutePath();
+        title = pTrack->getTitle();
+        trackId = pTrack->getId();
+    }
     if (location.isEmpty() || !QDir(location).exists()) {
         location = QDir::homePath();
     }
 
     const QString newLocation = QFileDialog::getOpenFileName(
             nullptr,
-            tr("Locate missing file: %1").arg(pTrack->getTitle()),
+            tr("Locate missing file: %1").arg(title),
             location,
             QString("Audio Files (%1)")
                     .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(" ")));
@@ -89,7 +96,6 @@ void MissingTableModel::relocateTrack(const QModelIndex& index) {
     }
 
     const mixxx::FileInfo fileInfo(newLocation);
-    const TrackId trackId = pTrack->getId();
     if (!trackId.isValid()) {
         return;
     }

@@ -425,7 +425,7 @@ bool TrackCollection::purgeAllTracks(
     return purgeTracks(trackIds);
 }
 
-bool TrackCollection::relocateTrack(const TrackId trackId,
+std::optional<RelocatedTrack> TrackCollection::relocateTrack(const TrackId trackId,
         const mixxx::FileInfo& newLocation) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
