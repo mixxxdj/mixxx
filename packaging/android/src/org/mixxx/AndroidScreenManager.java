@@ -16,6 +16,10 @@ import android.view.WindowManager;
  * setDecorFitsSystemWindows). Only WindowInsetsController remains non-deprecated.
  * We split into separate API-level paths and suppress deprecation warnings
  * on the backwards-compatible branches — they never execute on API 35+.
+ *
+ * CRITICAL: After modifying getAttributes() we MUST call setAttributes() to
+ * apply the change — modifying the returned object in-place does NOT persist
+ * on all devices (Samsung One UI in particular).
  */
 @SuppressWarnings("deprecation")
 public class AndroidScreenManager {
@@ -23,6 +27,7 @@ public class AndroidScreenManager {
         if (activity == null)
             return;
 
+        // ─── Fullscreen: hide system bars ───────────────────────────────
         if (Build.VERSION.SDK_INT >= 35) {
             // Android 15+ (API 35+): use non-deprecated insets controller only.
             // setDecorFitsSystemWindows is also deprecated on this level.
@@ -55,10 +60,15 @@ public class AndroidScreenManager {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
 
-        // Allow layout behind display cutouts (notch) — API 28+.
+        // ─── Notch: allow layout behind display cutouts (API 28+) ───────
+        // IMPORTANT: getAttributes() returns a LIVE reference in older Android,
+        // but on API 34+/Samsung devices the change does NOT apply until
+        // setAttributes() is called explicitly.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            activity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+            WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            activity.getWindow().setAttributes(lp);
         }
     }
 }
