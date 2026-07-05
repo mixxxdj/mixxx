@@ -83,10 +83,10 @@ Item {
             id: tempo
 
             readonly property real bpm: bpmControl.value
-            readonly property int precision: 2
+            readonly property int precision: Math.pow(10, Mixxx.Config.libraryBpmColumnPrecision)
 
             color: '#BDBDBD'
-            text: `${Math.round(bpm)}.${((bpm % 1) * Math.pow(10, precision)).toFixed().padEnd(precision, "0")}`
+            text: `${parseInt(bpm * precision)/precision}`
 
             Mixxx.ControlProxy {
                 id: bpmControl
