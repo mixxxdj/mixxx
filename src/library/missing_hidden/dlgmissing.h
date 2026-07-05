@@ -36,7 +36,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void trackSelected(TrackPointer pTrack);
 
   private:
-    void activateButtons(int nbSelected);
+    void activateButtons(int numRowsSelected);
     WTrackTableView* m_pTrackTableView;
     MissingTableModel* m_pMissingTableModel;
 

@@ -1,6 +1,7 @@
 #include "library/missing_hidden/missingtablemodel.h"
 
 #include <qfiledialog.h>
+#include <qstandardpaths.h>
 
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
@@ -81,7 +82,7 @@ void MissingTableModel::relocateTrack(const QModelIndex& index) {
         trackId = pTrack->getId();
     }
     if (location.isEmpty() || !QDir(location).exists()) {
-        location = QDir::homePath();
+        location = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     }
 
     const QString newLocation = QFileDialog::getOpenFileName(
