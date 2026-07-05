@@ -180,6 +180,15 @@ QUrl QmlLibraryTrackListModel::getUrl(int row) const {
     return pTrackModel->getTrackUrl(sourceModel()->index(row, 0));
 }
 
+void QmlLibraryTrackListModel::search(const QString& searchText) {
+    auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
+
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        return;
+    }
+    pTrackModel->search(searchText);
+}
+
 QmlTrackProxy* QmlLibraryTrackListModel::getOrCreateTrackProxy(int row) const {
     auto it = m_trackProxyCache.find(row);
     if (it != m_trackProxyCache.end()) {

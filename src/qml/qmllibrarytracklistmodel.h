@@ -67,6 +67,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
 
     QVariant data(const QModelIndex& index, int role) const override;
     int columnCount(const QModelIndex& index = QModelIndex()) const override;
+    Q_INVOKABLE void search(const QString& searchText);
     Q_INVOKABLE QUrl getUrl(int row) const;
     Q_INVOKABLE mixxx::qml::QmlTrackProxy* getTrackByRow(int row) const;
     Q_INVOKABLE TrackModel::Capabilities getCapabilities() const;
