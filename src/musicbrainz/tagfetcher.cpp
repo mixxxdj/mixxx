@@ -6,6 +6,7 @@
 #include "moc_tagfetcher.cpp"
 #include "musicbrainz/chromaprinter.h"
 #include "track/track.h"
+#include "util/qthread_name.h"
 #include "util/thread_affinity.h"
 
 namespace {
@@ -38,6 +39,7 @@ void TagFetcher::startFetch(
 
     emit fetchProgress(tr("Fingerprinting track"));
     const auto fingerprintTask = QtConcurrent::run([pTrack] {
+        SET_THREAD_NAME("TagFetcher");
         return ChromaPrinter().getFingerprint(pTrack);
     });
     m_fingerprintWatcher.setFuture(fingerprintTask);

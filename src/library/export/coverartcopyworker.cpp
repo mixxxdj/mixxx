@@ -6,6 +6,7 @@
 #include "moc_coverartcopyworker.cpp"
 #include "util/fileaccess.h"
 #include "util/imagefiledata.h"
+#include "util/qthread_name.h"
 #include "util/safelywritablefile.h"
 
 CoverArtCopyWorker::~CoverArtCopyWorker() {
@@ -13,6 +14,7 @@ CoverArtCopyWorker::~CoverArtCopyWorker() {
 }
 
 void CoverArtCopyWorker::run() {
+    SET_THREAD_NAME("CoverArtCopyWorker");
     m_coverInfo.source = CoverInfo::USER_SELECTED;
 
     if (m_selectedCoverArtFilePath.isEmpty()) {

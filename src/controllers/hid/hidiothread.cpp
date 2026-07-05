@@ -1,6 +1,7 @@
 #include "controllers/hid/hidiothread.h"
 
 #include "util/assert.h"
+#include "util/qthread_name.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -70,6 +71,7 @@ HidIoThread::~HidIoThread() {
 }
 
 void HidIoThread::run() {
+    SET_THREAD_NAME("HidIoThread");
     const QSemaphoreReleaser releaser(m_runLoopSemaphore);
     m_runLoopSemaphore.acquire();
     while (!testAndSetThreadState(HidIoThreadState::StopRequested, HidIoThreadState::Stopped)) {

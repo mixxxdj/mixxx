@@ -3,6 +3,7 @@
 #include "engine/engine.h"
 #include "util/assert.h"
 #include "util/compatibility/qmutex.h"
+#include "util/qthread_name.h"
 
 RubberBandTask::RubberBandTask(
         size_t sampleRate, size_t channels, Options options)
@@ -35,6 +36,7 @@ void RubberBandTask::run() {
     VERIFY_OR_DEBUG_ASSERT(m_completedSema.available() == 0 && m_input && m_samples) {
         return;
     };
+    SET_THREAD_NAME("RubberBandTask");
     process(m_input,
             m_samples,
             m_isFinal);

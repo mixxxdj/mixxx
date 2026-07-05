@@ -7,6 +7,7 @@
 #include "library/scanner/importfilestask.h"
 #include "library/scanner/libraryscanner.h"
 #include "moc_recursivescandirectorytask.cpp"
+#include "util/qthread_name.h"
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
@@ -20,6 +21,7 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
 }
 
 void RecursiveScanDirectoryTask::run() {
+    SET_THREAD_NAME("RecursiveScanDirectoryTask");
     ScopedTimer timer(QStringLiteral("RecursiveScanDirectoryTask::run"));
     if (m_scannerGlobal->shouldCancel()) {
         setSuccess(false);

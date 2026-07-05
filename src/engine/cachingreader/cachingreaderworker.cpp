@@ -11,6 +11,7 @@
 #include "util/event.h"
 #include "util/fifo.h"
 #include "util/logger.h"
+#include "util/qthread_name.h"
 #include "util/span.h"
 
 namespace {
@@ -114,11 +115,7 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 }
 
 void CachingReaderWorker::run() {
-    // the id of this thread, for debugging purposes
-    static auto lastId = QAtomicInt(0);
-    const auto id = lastId.fetchAndAddRelaxed(1) + 1;
-    QThread::currentThread()->setObjectName(
-            QStringLiteral("CachingReaderWorker ") + QString::number(id));
+    SET_THREAD_NAME_P("CachingReaderWorker", this);
 
     Event::start(m_tag);
     while (!m_stop.loadAcquire()) {

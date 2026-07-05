@@ -26,6 +26,7 @@
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "moc_itunesfeature.cpp"
+#include "util/qthread_name.h"
 #include "util/sandbox.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -341,6 +342,7 @@ TreeItem* ITunesFeature::importLibrary() {
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
+    SET_THREAD_NAME("ITunesFeature");
 
     qDebug() << "ITunesFeature::importLibrary() ";
 

@@ -19,6 +19,7 @@
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
+#include "util/qthread_name.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
@@ -459,6 +460,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     }
 #endif
 
+    SET_THREAD_NAME("SeratoFeature");
     qDebug() << "Parsing Serato database"
              << databaseName
              << "at" << databaseFilePath;

@@ -4,6 +4,7 @@
 #include "moc_engineworkerscheduler.cpp"
 #include "util/compatibility/qmutex.h"
 #include "util/event.h"
+#include "util/qthread_name.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : QThread(pParent),
@@ -43,6 +44,7 @@ void EngineWorkerScheduler::runWorkers() {
 
 void EngineWorkerScheduler::run() {
     static const QString tag("EngineWorkerScheduler");
+    SET_THREAD_NAME(tag);
     bool quit = false;
     while (!quit) {
         Event::start(tag);

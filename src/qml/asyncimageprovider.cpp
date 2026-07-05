@@ -3,6 +3,7 @@
 #include "library/coverartcache.h"
 #include "moc_asyncimageprovider.cpp"
 #include "track/track.h"
+#include "util/qthread_name.h"
 
 namespace {
 const QString kCoverArtPrefix = QStringLiteral("coverart/");
@@ -32,6 +33,7 @@ void AsyncImageResponse::run() {
         emit finished();
         return;
     }
+    SET_THREAD_NAME_P("ImageProvider", this);
     const QString trackLocation = AsyncImageProvider::coverArtUrlIdToTrackLocation(m_id);
     const auto trackRef = TrackRef::fromFilePath(trackLocation);
 

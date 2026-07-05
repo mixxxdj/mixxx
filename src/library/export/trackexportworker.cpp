@@ -6,6 +6,7 @@
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"
 #include "util/logger.h"
+#include "util/qthread_name.h"
 
 namespace {
 
@@ -74,6 +75,7 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
 }  // namespace
 
 void TrackExportWorker::run() {
+    SET_THREAD_NAME_P("TrackExportWorker", this);
     int i = 0;
     QMap<QString, mixxx::FileInfo> copy_list = createCopylist(m_tracks);
     for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {

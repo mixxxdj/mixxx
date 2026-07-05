@@ -19,6 +19,7 @@
 #include "library/treeitem.h"
 #include "moc_traktorfeature.cpp"
 #include "track/keyutils.h"
+#include "util/qthread_name.h"
 #include "util/sandbox.h"
 #include "util/semanticversion.h"
 
@@ -259,6 +260,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     thisThread->setPriority(QThread::LowPriority);
     //Invisible root item of Traktor's child model
     TreeItem* root = nullptr;
+    SET_THREAD_NAME("TraktorFeature");
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
     clearTable("traktor_playlist_tracks");
