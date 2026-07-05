@@ -88,7 +88,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                      << "pl" << "played"
                      << "r" << "rating"
                      << "br" << "bitrate"
-                     << "id";
+                     << "id" << "key_id";
     m_specialFilters << "y" << "year"
                      << "k" << "key"
                      << "b" << "bpm"

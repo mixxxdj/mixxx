@@ -30,6 +30,37 @@ Item {
 
     // Used to show click interaction on the Window. Mainly relevant on automated testing
     property bool enableDiagnosticClick: false
+    // Pull-to-top IME shift: while the soft keyboard is up, lift the
+    // content column so the focused editor sits `imeKeyboardMargin` below
+    // the window top (desktop: no IME, stays 0). Mapping relative to this
+    // root keeps it independent of the shift and its animation.
+    readonly property real imeKeyboardMargin: 0
+    readonly property Item imeFocusItem: Window.activeFocusItem
+    // Future: let a focused item opt into another policy, e.g.
+    // imeShiftPolicy: "none" | "top" | "aboveKeyboard".
+    readonly property real imeShift: {
+        if (!Qt.inputMethod.visible || !root.imeFocusItem) {
+            return 0
+        }
+        // The discarded geometric arithmetic registers
+        // geometry changes as binding dependencies;
+        root.imeFocusItem?.imeLayoutSideEffect;
+        return Math.max(0, root.imeFocusItem.mapToItem(root, 0, 0).y
+                - root.imeKeyboardMargin)
+    }
+    y: -root.imeShift
+
+    Behavior on y {
+        NumberAnimation {
+            duration: 150
+        }
+    }
+
+    // color: Theme.backgroundColor
+    // height: isMobile ? Screen.height : designHeight
+    // visible: true
+    // width: isMobile ? Screen.width : designWidth
+    // visibility: Mixxx.Config.configStartInFullscreenKey || isMobile ? Window.FullScreen : Window.Windowed
 
 
     Mixxx.ControlProxy {

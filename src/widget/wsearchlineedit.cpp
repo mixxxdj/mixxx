@@ -11,6 +11,7 @@
 #include <QStringLiteral>
 #include <QToolButton>
 
+#include "library/searchqueries.h"
 #include "moc_wsearchlineedit.cpp"
 #include "preferences/configobject.h"
 #include "skin/legacy/skincontext.h"
@@ -30,7 +31,6 @@ const QColor kDefaultBackgroundColor = QColor(0, 0, 0);
 const QString kDisabledText = QStringLiteral("- - -");
 
 const QString kLibraryConfigGroup = QStringLiteral("[Library]");
-const QString kSavedQueriesConfigGroup = QStringLiteral("[SearchQueries]");
 
 // Border width, max. 2 px when focused (in official skins)
 constexpr int kBorderWidth = 2;
@@ -58,9 +58,6 @@ constexpr int WSearchLineEdit::kMaxDebouncingTimeoutMillis;
 
 //static
 constexpr int WSearchLineEdit::kSaveTimeoutMillis;
-
-//static
-constexpr int WSearchLineEdit::kMaxSearchEntries;
 
 //static
 int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
@@ -246,19 +243,10 @@ void WSearchLineEdit::loadQueriesFromConfig() {
     if (!m_pConfig) {
         return;
     }
-    const QList<ConfigKey> queryKeys =
-            m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
-    QSet<QString> queryStrings;
-    for (const auto& queryKey : queryKeys) {
-        QString queryString = m_pConfig->getValueString(queryKey).trimmed();
-        if (queryString.isEmpty() || queryStrings.contains(queryString)) {
-            // Don't add duplicate and remove it from the config immediately
-            m_pConfig->remove(queryKey);
-        } else {
-            // Restore query
-            addItem(queryString);
-            queryStrings.insert(queryString);
-        }
+    const QStringList queries = mixxx::SearchQueries::loadQueries(m_pConfig);
+    for (const QString& queryString : queries) {
+        // Restore query
+        addItem(queryString);
     }
 }
 
@@ -266,18 +254,12 @@ void WSearchLineEdit::saveQueriesInConfig() {
     if (!m_pConfig) {
         return;
     }
-    // Delete saved queries in case the list was cleared
-    const QList<ConfigKey> queryKeys =
-            m_pConfig->getKeysWithGroup(kSavedQueriesConfigGroup);
-    for (const auto& queryKey : queryKeys) {
-        m_pConfig->remove(queryKey);
-    }
-    // Store queries
+    QStringList queries;
+    queries.reserve(count());
     for (int index = 0; index < count(); index++) {
-        m_pConfig->setValue(
-                ConfigKey(kSavedQueriesConfigGroup, QString::number(index)),
-                itemText(index).trimmed());
+        queries.append(itemText(index).trimmed());
     }
+    mixxx::SearchQueries::saveQueries(m_pConfig, queries);
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
@@ -570,8 +552,8 @@ void WSearchLineEdit::slotSaveSearch() {
     }
     setCurrentIndex(0);
 
-    while (count() > kMaxSearchEntries) {
-        removeItem(kMaxSearchEntries);
+    while (count() > mixxx::SearchQueries::kMaxQueries) {
+        removeItem(mixxx::SearchQueries::kMaxQueries);
     }
 
     if (currentText() != origText) {

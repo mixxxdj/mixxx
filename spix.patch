@@ -63,10 +63,20 @@ index 9ff7819..fc4e3b8 100644
      void mouseDropUrls(ItemPath path, const std::vector<std::string>& urls);
      void genericCommand(std::string command, std::string payload);
 diff --git a/libs/Core/src/AnyRpcServer.cpp b/libs/Core/src/AnyRpcServer.cpp
-index 6916697..311364b 100644
+index 6916697..cc118d1 100644
 --- a/libs/Core/src/AnyRpcServer.cpp
 +++ b/libs/Core/src/AnyRpcServer.cpp
-@@ -57,9 +57,36 @@ AnyRpcServer::AnyRpcServer(int anyrpcPort)
+@@ -7,7 +7,9 @@
+ #include <Spix/AnyRpcServer.h>
+ #include <Spix/Data/Variant.h>
+ #include <Utils/AnyRpcFunction.h>
++#include <QtDebug>
+ #include <atomic>
++#include <cstdlib>
+ 
+ namespace spix {
+ 
+@@ -57,9 +59,36 @@ AnyRpcServer::AnyRpcServer(int anyrpcPort)
              mouseClick(std::move(path), proportion);
          });
  
@@ -79,7 +89,8 @@ index 6916697..311364b 100644
 +        });
 +
 +    utils::AddFunctionToAnyRpc<void(std::string startPath, double, double, std::string, double, double)>(methodManager, "mouseBeginDrag",
-+        "Begin a drag with the mouse | mouseBeginDrag(string path)",
+         "Begin a drag with the mouse | mouseBeginDrag(string path)",
+-        [this](std::string path) { mouseBeginDrag(std::move(path)); });
 +        [this](std::string startPath, double startProportionX, double startProportionY, std::string endPath, double endProportionX, double endProportionY) { 
 +            auto startProportion = Point(startProportionX, startProportionY);
 +            auto endProportion = Point(endProportionX, endProportionY);
@@ -91,8 +102,7 @@ index 6916697..311364b 100644
 +            ); });
 +
 +    utils::AddFunctionToAnyRpc<void(std::string startPath, double, double, double, double, uint)>(methodManager, "mouseDrag",
-         "Begin a drag with the mouse | mouseBeginDrag(string path)",
--        [this](std::string path) { mouseBeginDrag(std::move(path)); });
++        "Begin a drag with the mouse | mouseBeginDrag(string path)",
 +        [this](std::string startPath, double startProportionX, double startProportionY, double deltaOffsetX, double deltaOffsetY, uint time) { 
 +            auto startProportion = Point(startProportionX, startProportionY);
 +            auto endPosition = Point(deltaOffsetX, deltaOffsetY);
@@ -105,6 +115,19 @@ index 6916697..311364b 100644
  
      utils::AddFunctionToAnyRpc<void(std::string)>(methodManager, "mouseEndDrag",
          "End a drag with the mouse | mouseEndDrag(string path)",
+@@ -134,7 +163,11 @@ AnyRpcServer::AnyRpcServer(int anyrpcPort)
+         "Executes a generic/custom command | command(string command, string payload)",
+         [this](std::string command, std::string payload) { genericCommand(command, payload); });
+ 
+-    m_pimpl->server->BindAndListen(anyrpcPort);
++    if (!m_pimpl->server->BindAndListen(anyrpcPort)) {
++        qCritical() << "spix: AnyRpcServer could not bind port" << anyrpcPort
++                    << "- is another instance already listening?";
++        std::_Exit(EXIT_FAILURE);
++    }
+ }
+ 
+ AnyRpcServer::~AnyRpcServer()
 diff --git a/libs/Core/src/Commands/ClickOnItem.cpp b/libs/Core/src/Commands/ClickOnItem.cpp
 index 26810ea..b8f26b7 100644
 --- a/libs/Core/src/Commands/ClickOnItem.cpp

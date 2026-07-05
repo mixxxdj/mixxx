@@ -85,73 +85,154 @@ def _database_has_tables(db_path):
 
 
 def _download_file(entry, dest):
-    url = entry["url"]
+    ffmpeg = os.getenv("MIXXX_FFMPEG_BIN") or "ffmpeg"
+    metadata_args = [
+        "-metadata", f"title={entry['title']}",
+        "-metadata", f"artist={entry['artist']}",
+    ]
     req = urllib.request.Request(entry["url"], headers={"User-Agent": "MixxxTestProfile/1.0"})
     with tempfile.NamedTemporaryFile(delete_on_close=False) as f, tempfile.NamedTemporaryFile(delete_on_close=False) as c:
-        with urllib.request.urlopen(req, timeout=30) as response:
-            f.write(response.read())
-            f.close()
-        if "artwork" in entry and entry["artwork"]:
-            req = urllib.request.Request(entry["artwork"], headers={"User-Agent": "MixxxTestProfile/1.0"})
+        try:
             with urllib.request.urlopen(req, timeout=30) as response:
-                c.write(response.read())
-                c.close()
+                f.write(response.read())
+                f.close()
+            artwork = os.path.join(os.path.dirname(__file__), "../../../res/images/icons/512x512/apps/mixxx.png")
+            artwork = os.path.normpath(artwork)
+            if entry.get("artwork"):
+                # A remote artwork hiccup must not take the track out of the
+                # pool for the whole run: fall back to the bundled cover.
+                try:
+                    req = urllib.request.Request(entry["artwork"], headers={"User-Agent": "MixxxTestProfile/1.0"})
+                    with urllib.request.urlopen(req, timeout=30) as response:
+                        c.write(response.read())
+                        c.close()
+                    artwork = c.name
+                except (OSError, urllib.error.URLError) as e:
+                    sys.stdout.write(
+                        f"  artwork fetch failed for {entry['artwork']}, "
+                        f"falling back to bundled cover ({e})\n"
+                    )
+                    sys.stdout.flush()
+            # Preferred: attach the artwork as a cover video stream.
             p = subprocess.run([
-                os.getenv("MIXXX_FFMPEG_BIN") or "ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "info",
+                ffmpeg, "-nostdin", "-hide_banner", "-loglevel", "error",
                 "-i", f.name,
-                "-i", c.name,
+                "-i", artwork,
                 "-map", "0:a", "-map", "1",
                 "-c:a", "copy",
                 "-c:v", "mjpeg",
-                "-metadata", f"title={repr(entry['title'])}",
-                "-metadata", f"artist={repr(entry['artist'])}",
-                "-metadata:s:v", "title=\"Album cover\"",
-                "-metadata:s:v", "comment=\"Cover (front)\"",
+                *metadata_args,
+                "-metadata:s:v", "title=Album cover",
+                "-metadata:s:v", "comment=Cover (front)",
                 dest
             ], text=True, capture_output=True)
             if p.returncode:
-                print(p.returncode)
-                print(p.stdout)
-                print(p.stderr)
                 sys.stdout.write(
                     f"  ffmpeg failed to mux artwork for {entry['url']}, "
-                    f"falling back to raw MP3\n"
+                    f"falling back to metadata-only copy\n"
                 )
                 sys.stdout.flush()
-                os.replace(f.name, dest)
-        else:
-            os.replace(f.name, dest)
+                p = None
+            if p is None or os.path.getsize(dest) == 0:
+                # Fallback: raw copy with the manifest metadata, no artwork.
+                p = subprocess.run([
+                    ffmpeg, "-nostdin", "-hide_banner", "-loglevel", "error",
+                    "-i", f.name,
+                    "-map", "0:a",
+                    "-c:a", "copy",
+                    *metadata_args,
+                    dest
+                ], text=True, capture_output=True)
+                if p.returncode:
+                    sys.stdout.write(
+                        f"  ffmpeg failed to copy audio for {entry['url']}\n"
+                        f"  stderr:\n{p.stderr}\n"
+                    )
+                    sys.stdout.flush()
+                    raise RuntimeError("Unable to set the metadata for test track")
+            if not os.path.exists(dest) or os.path.getsize(dest) == 0:
+                raise RuntimeError(f"ffmpeg produced no output at {dest}")
+        finally:
+            if os.path.exists(f.name):
+                os.unlink(f.name)
+            if os.path.exists(c.name):
+                os.unlink(c.name)
 
 
-def ensure_tracks_downloaded(target_dir=None, nb_tracks=20):
-    """Download all tracks from the manifest into target_dir (or default tracks_dir)."""
+def track_filename(entry):
+    """Name of the downloaded file for a manifest entry."""
+    return os.path.basename(urllib.parse.urlparse(entry["url"]).path)
+
+
+def available_tracks(target_dir):
+    """Catalog of the tracks actually present in target_dir.
+
+    Builds a copy of each manifest entry whose downloaded file exists
+    (non-empty) in target_dir, adding its absolute path as ``location``.
+    """
+    # Entries that share a downloaded filename with another entry cannot be
+    # attributed to a single file unambiguously and are excluded.
+    counts = collections.Counter(
+        track_filename(entry) for entry in load_track_manifest()
+    )
+    ambiguous = {name for name, count in counts.items() if count > 1}
+    catalog = []
+    for entry in load_track_manifest():
+        filename = track_filename(entry)
+        if filename in ambiguous:
+            continue
+        filepath = os.path.join(target_dir, filename)
+        if not os.path.isfile(filepath) or os.path.getsize(filepath) == 0:
+            continue
+        entry = dict(entry)
+        entry["location"] = filepath
+        catalog.append(entry)
+    return catalog
+
+
+def ensure_track_catalog(target_dir, nb_tracks, seed=None):
+    """Download missing tracks from the manifest into target_dir.
+
+    Downloads only as many tracks as needed to reach nb_tracks files, then
+    returns the resulting catalog (see available_tracks): the manifest
+    metadata of every track file present in target_dir, with ``location``.
+
+    ``seed`` pins which manifest entries are sampled for download, so two
+    machines (or a wiped cache) fetch the same set for the same run seed;
+    without it the selection is random. Already-present files are kept
+    regardless of the seed.
+    """
     os.makedirs(target_dir, exist_ok=True)
     existing_track_count = len(glob.glob(f'{target_dir}/*.mp3'))
-    if existing_track_count >= nb_tracks:
-        return
-    manifest = random.sample(load_track_manifest(), nb_tracks - existing_track_count)
-    downloaded = []
-    for entry in manifest:
-        url = entry.get("url")
-        if not url:
-            continue
-        a = urllib.parse.urlparse(url)
-        filename = os.path.basename(a.path)
-        dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest) and os.path.getsize(dest) > 0:
-            downloaded.append(dest)
-            continue
-        sys.stdout.write(f"Downloading {filename}...\n")
-        sys.stdout.flush()
-        try:
-            _download_file(entry, dest)
-            if not os.path.exists(dest) or os.path.getsize(dest) == 0:
-                raise RuntimeError(f"Download failed, no output at {dest}")
-            downloaded.append(dest)
-        except Exception as e:
-            sys.stdout.write(f"  FAILED: {e}\n")
+    if existing_track_count < nb_tracks:
+        rng = random.Random(seed) if seed is not None else random
+        manifest = []
+        catalog = load_track_manifest()
+        candidates = [v for v in catalog if all(map(lambda e: e['url'] != v['url'], manifest))]
+        while len(manifest) < nb_tracks:
+            if not candidates:
+                raise ValueError("unable to find a new track. Has the pool starved?")
+            entry = rng.choice(candidates)
+            candidates.remove(entry)
+
+            url = entry.get("url")
+            if not url:
+                continue
+            filename = track_filename(entry)
+            dest = os.path.join(target_dir, filename)
+            if os.path.exists(dest) and os.path.getsize(dest) > 0:
+                manifest.append(entry)
+                continue
+            sys.stdout.write(f"Downloading {filename}...\n")
             sys.stdout.flush()
-    return downloaded
+            try:
+                _download_file(entry, dest)
+                if not os.path.exists(dest) or os.path.getsize(dest) == 0:
+                    raise RuntimeError(f"Download failed, no output at {dest}")
+            except Exception as e:
+                sys.stdout.write(f"  FAILED: {e}\n")
+                sys.stdout.flush()
+    return available_tracks(target_dir)
 
 
 def create_empty_profile(settings_dir=None):
@@ -269,7 +350,12 @@ class MixxxProcess:
         # 0xC0000005, an access violation); the hex form makes them readable.
         return f"{code} (0x{code & 0xFFFFFFFF:08X})"
 
-    def start(self, timeout=20):
+    # Fresh profiles apply schema migrations and load the full skin at first
+    # start, which can exceed the historical 20 s on loaded systems or on
+    # machines with a cold audio stack. Configurable for slower runners.
+    def start(self, timeout=None):
+        if timeout is None:
+            timeout = int(os.environ.get("MIXXX_TEST_RPC_TIMEOUT", "20"))
         env = os.environ.copy()
         if self.display:
             env["DISPLAY"] = self.display

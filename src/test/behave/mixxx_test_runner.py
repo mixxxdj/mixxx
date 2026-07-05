@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 import re
+import random
 import tempfile
 import time
 
@@ -605,6 +606,14 @@ def main():
         help="Max retry attempts for autoretry per scenario (default: 1)",
     )
     parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Seed for this run's random track picks (default: a fresh "
+             "random seed, printed at startup). Rerun with the same --seed "
+             "to reproduce the same picks (also see MIXXX_TEST_SEED).",
+    )
+    parser.add_argument(
         "--record",
         action="store_true",
         default=bool(os.environ.get("MIXXX_TEST_RECORD")),
@@ -644,6 +653,17 @@ def main():
 
     args = parser.parse_args()
 
+    # Deterministic randomness: one run seed drives the track downloads and
+    # every scenario derives its own picks from it (see environment.py), so a
+    # failed run can be pinned and replayed with --seed.
+    env_seed = os.environ.get("MIXXX_TEST_SEED")
+    run_seed = args.seed if args.seed is not None else (
+        int(env_seed) if env_seed else random.randrange(2 ** 32))
+    random.seed(run_seed)
+    print(
+        f"Run seed: {run_seed}",
+        flush=True,
+    )
 
     # Set up global tracks cache (shared across all feature tests)
     tracks_cache = os.environ.get("MIXXX_TEST_TRACKS_DIR")
@@ -651,8 +671,11 @@ def main():
         tracks_cache = os.path.join(tempfile.gettempdir(), "mixxx-test-tracks")
     os.makedirs(tracks_cache, exist_ok=True)
 
-    # Download tracks if not already cached
-    profile.ensure_tracks_downloaded(tracks_cache, nb_tracks=LIBRARY_TRACK_COUNT)
+    # Download tracks (if not already cached) and build the catalog:
+    # manifest metadata for every track file available to the tests.
+    # The run seed pins which manifest entries are downloaded on a cold cache.
+    tracks_catalog = profile.ensure_track_catalog(
+        tracks_cache, nb_tracks=LIBRARY_TRACK_COUNT, seed=run_seed)
 
     artifacts = args.artifacts_dir
     if not artifacts:
@@ -777,11 +800,16 @@ def main():
         runner.config.show_timings = True
         runner.config.userdata = dict(
             tracks_dir=tracks_cache,
+            tracks_catalog=tracks_catalog,
+            run_seed=run_seed,
             binary=args.binary,
             fail_early=args.fail_early,
             retry_max_attempts=args.retry,
             summary_path=os.path.join(
                 artifacts, f"behave-output-{args.label or 'default'}.txt"
+            ),
+            picks_log_path=os.path.join(
+                artifacts, f"track-picks-{args.label or 'default'}.txt"
             ),
             mixxx_output_dir=artifacts,
         )
@@ -801,7 +829,7 @@ def main():
         if recorder_proc:
             recorder_name_pretty = os.path.basename(recorder_name)
             _stop_recorder(recorder_proc, recorder_name_pretty)
-            _mux_chapters(video_path, runner.context.results, recording_start, _find_ffmpeg(args.ffmpeg_path))
+            _mux_chapters(video_path, getattr(runner.context, "results", []), recording_start, _find_ffmpeg(args.ffmpeg_path))
         if "runner" in locals() and hasattr(runner.context, "results"):
             with open(result_path, "w") as f:
                 json.dump(runner.context.results, f, indent=2)

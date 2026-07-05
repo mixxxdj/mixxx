@@ -1,5 +1,6 @@
 import functools
 import os
+import random
 import re
 import shutil
 import time
@@ -47,8 +48,10 @@ def _reset_session(context):
 def patch_scenario_with_autoretry(context, scenario, max_attempts=3):
     """Monkey-patches :func:`~behave.model.Scenario.run()` to auto-retry a
     scenario that fails. Based on behave.contrib.scenario_autoretry but also:
-    - Collects retry results and appends a single entry to context.results
+    - Never retries @xfail scenarios (single attempt)
     - Sets had_failure only when all retries are exhausted
+
+    Result entries are written by after_scenario(), one per attempt.
     """
     def scenario_run_with_retries(scenario_run, *args, **kwargs):
         attempts = []
@@ -107,6 +110,17 @@ def before_feature(context, feature):
 
 
 def before_scenario(context, scenario):
+    # Derive a per-scenario RNG from the run seed and the scenario identity.
+    # Replaying a run with the same --seed (or a single failing scenario)
+    # then reproduces the exact same track picks, independent of what ran
+    # before this scenario. Every attempt of an autoretry re-derives the
+    # same seed, so retries see the same track as the failing attempt.
+    run_seed = context.config.userdata.get("run_seed")
+    context.scenario_seed = random.Random(
+        f"{run_seed}|{scenario.feature.name}|{scenario.name}"
+    ).randrange(2 ** 32)
+    context.rng = random.Random(context.scenario_seed)
+
     session = context._session
     if session.get("mixxx") is not None:
         context.mixxx = session["mixxx"]
@@ -183,7 +197,20 @@ def after_scenario(context, scenario):
         "start_time": scenario.start_at,
         "end_time": time.time(),
         "error": " / ".join(errors),
+        # Pinning info: replaying with this run seed and scenario name
+        # reproduces the picks recorded in "tracks".
+        "run_seed": context.config.userdata.get("run_seed"),
+        "scenario_seed": getattr(context, "scenario_seed", None),
+        "tracks": {
+            name: str(track)
+            for name, track in getattr(context, "remembered_tracks", {}).items()
+        },
     })
+
+    # Drop this scenario's picks so a later one reading stale remembered
+    # tracks fails loudly instead of recording unrelated entries into its
+    # results JSON.
+    context.remembered_tracks = {}
 
 
 def after_all(context):

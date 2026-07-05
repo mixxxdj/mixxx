@@ -223,21 +223,20 @@ def section_mark(counts):
     return ":white_check_mark:"
 
 
-def summarize_counts(scenarios_by_name, seen=None):
+def summarize_counts(scenarios_by_name):
     """Tally the final outcome per scenario (last attempt by start time).
 
-    `seen` is an optional set used to avoid counting the same scenario name
-    twice when names collide across features (e.g. at the platform level).
+    `scenarios_by_name` must hold the scenarios of a single feature;
+    scenario names are only unique within a feature, so the same name may
+    legitimately occur in several features (e.g. when summing the feature
+    counts of a whole platform).
     """
     counts = {cat: 0 for cat in OutcomeCategory}
-    if seen is None:
-        seen = set()
     for name, attempts in scenarios_by_name.items():
         sorted_a = sorted(attempts, key=lambda a: a.get("start_time") or 0)
         last_a = sorted_a[-1]
-        if not last_a or last_a.get("name") in seen:
+        if not last_a:
             continue
-        seen.add(last_a.get("name"))
         try:
             cat = OutcomeCategory(last_a.get("outcome", ""))
         except ValueError:
@@ -289,9 +288,10 @@ def fetch_job_ids(repo, run_id):
 def job_links(job, repo, run_id, server_url):
     """Return the (job page, job summary) URLs for a job."""
     run_url = f"{server_url}/{repo}/actions/runs/{run_id}"
-    if job.attempt > 1:
-        run_url += f"/attempts/{job.attempt}"
-    return f"{run_url}/job/{job.id}", f"{run_url}#summary-{job.id}"
+    return (
+        f"{run_url}/job/{job.id}",
+        f"{run_url}/attempts/{job.attempt}#summary-{job.id}",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -369,18 +369,10 @@ def build_comment_body(all_results, job_ids, repo, run_id, server_url):
             r.get("feature", "unknown"), {}
         ).setdefault(r.get("name", "unknown"), []).append(r)
 
-    # Totals across all results
-    unique_scenarios = {r.get("name", "").split("[")[0] for r in all_results}
+    # Totals across all results (scenario names are only unique per feature)
+    unique_scenarios = {(r.get("feature"), r.get("name")) for r in all_results}
     unique_slugs = {r.get("slug") for r in all_results if r.get("slug")}
 
-    # Final outcome per scenario (last attempt globally)
-    last_by_scenario = {}
-    for r in all_results:
-        key = r.get("name", "")
-        if key not in last_by_scenario or (r.get("start_time") or 0) > (
-            last_by_scenario[key].get("start_time") or 0
-        ):
-            last_by_scenario[key] = r
     body_lines = [
         TITLE_MARKER,
         "# E2E Test",
@@ -402,12 +394,11 @@ def build_comment_body(all_results, job_ids, repo, run_id, server_url):
         if job is not None:
             job_url, summary_url = job_links(job, repo, run_id, server_url)
 
-        # Per-platform stats (last attempt per scenario, deduped across
-        # features) plus total wall time across the platform's scenarios
-        plat_seen = set()
+        # Per-platform stats (sum of the feature stats, last attempt per
+        # scenario) plus total wall time across the platform's scenarios
         plat_counts = {cat: 0 for cat in OutcomeCategory}
         for scenarios_by_name in by_feature.values():
-            counts, _ = summarize_counts(scenarios_by_name, plat_seen)
+            counts, _ = summarize_counts(scenarios_by_name)
             for cat, n in counts.items():
                 plat_counts[cat] += n
         plat_took = section_took(

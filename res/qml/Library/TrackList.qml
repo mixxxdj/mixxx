@@ -51,6 +51,29 @@ Rectangle {
 
     color: Theme.darkGray
 
+    // Displayed title of the track model row, for the E2E test harness
+    function trackTitleForRow(row) {
+        const track = view.model ? view.model.getTrackByRow(row) : null;
+        return track ? track.title : "";
+    }
+
+    // Title, artist, BPM, key text and location of the track model row as a
+    // JSON object string, for the E2E test harness
+    function trackDataForRow(row) {
+        const track = view.model ? view.model.getTrackByRow(row) : null;
+        if (!track) {
+            return "{}";
+        }
+        return JSON.stringify({
+            title: track.title,
+            artist: track.artist,
+            bpm: Math.round(track.bpm),
+            key: track.keyText,
+            location: track.trackLocationUrl.toString().replace(/^file:\/\//, ""),
+        });
+    }
+
+
     LibraryComponent.Control {
         id: libraryControl
 

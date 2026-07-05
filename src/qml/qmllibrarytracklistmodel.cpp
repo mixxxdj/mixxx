@@ -1,7 +1,5 @@
 #include "qml/qmllibrarytracklistmodel.h"
 
-#include <qnamespace.h>
-
 #include <QObject>
 #include <QQmlEngine>
 #include <QSortFilterProxyModel>
@@ -192,6 +190,24 @@ QUrl QmlLibraryTrackListModel::getUrl(int row) const {
     return pTrackModel->getTrackUrl(sourceModel()->index(row, 0));
 }
 
+QString QmlLibraryTrackListModel::search() const {
+    auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
+
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        return {};
+    }
+    return pTrackModel->currentSearch();
+}
+
+void QmlLibraryTrackListModel::setSearch(const QString& searchText) {
+    auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
+
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        return;
+    }
+    pTrackModel->search(searchText);
+}
+
 QmlTrackProxy* QmlLibraryTrackListModel::getOrCreateTrackProxy(int row) const {
     auto it = m_trackProxyCache.find(row);
     if (it != m_trackProxyCache.end()) {
@@ -209,7 +225,11 @@ QmlTrackProxy* QmlLibraryTrackListModel::getOrCreateTrackProxy(int row) const {
     auto* pProxy = new QmlTrackProxy(
             pTrackModel->getTrack(sourceModel()->index(row, 0)),
             const_cast<QmlLibraryTrackListModel*>(this));
-    QQmlEngine::setObjectOwnership(pProxy, QQmlEngine::CppOwnership);
+    // JavaScript ownership: the proxy is garbage-collected once no JS
+    // reference keeps it alive. Parenting it to the model would keep every
+    // created proxy (and with it a strong reference to its track) alive
+    // forever, blocking the eviction and deferred save of analyzed tracks.
+    QQmlEngine::setObjectOwnership(pProxy, QQmlEngine::JavaScriptOwnership);
     m_trackProxyCache.insert(row, QPointer<QmlTrackProxy>(pProxy));
     return pProxy;
 }

@@ -1468,6 +1468,7 @@ add_library(
   src/library/scanner/libraryscannerdlg.cpp
   src/library/scanner/recursivescandirectorytask.cpp
   src/library/scanner/scannertask.cpp
+  src/library/searchqueries.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
@@ -3058,6 +3059,7 @@ if(BUILD_TESTING)
     src/test/samplebuffertest.cpp
     src/test/savitzkygolaytest.cpp
     src/test/schemamanager_test.cpp
+    src/test/searchqueries_test.cpp
     src/test/searchqueryparsertest.cpp
     src/test/seratobeatgridtest.cpp
     src/test/seratomarkerstest.cpp
@@ -3130,6 +3132,7 @@ if(BUILD_TESTING)
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
         src/test/qmlkeyutilstest.cpp
+        src/test/qmlrecentsearchtest.cpp
         src/test/themeqml_test.cpp
     )
   endif()
@@ -4251,6 +4254,8 @@ if(QML)
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
       src/qml/qmlcoreservices.cpp
+      src/qml/qmlrecentsearchmodel.cpp
+      src/qml/qmlsearchsuggestionmodel.cpp
       src/qml/qmlsidebarmodelproxy.cpp
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp

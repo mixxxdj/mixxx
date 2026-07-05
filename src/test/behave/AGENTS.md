@@ -73,7 +73,7 @@ src/test/behave/.venv/bin/python \
 
 ### Custom retry count
 
-By default, each scenario is retried up to 3 times on failure. Override with
+By default, each scenario is run once with no retry on failure. Override with
 `--retry N`:
 
 ```bash
@@ -83,6 +83,38 @@ src/test/behave/.venv/bin/python \
   --headless \
   --retry 5 \
   src/test/behave/features/library.feature
+```
+
+### Reproducible random track picks (`--seed`)
+
+Randomness stays — tests must exercise arbitrary metadata — but every pick is
+pinnable. The runner prints at startup:
+
+    Run seed: 1234567
+
+and `environment.py` derives a per-scenario RNG from
+`run seed | feature name | scenario name`. Replaying with the same `--seed`
+therefore reproduces the exact track pick of a scenario, independent of what
+ran before it; autoretry attempts reuse the same pick as well.
+`MIXXX_TEST_SEED=<n>` is the env-var alternative.
+
+Every step that picks a remembered track logs the pick (pass or fail) on the
+step output:
+
+    Track picked as 'this': "Title" - "Artist" | /path/file.mp3
+
+Each entry in `artifacts/results-*.json` additionally records `run_seed`,
+`scenario_seed` and the `tracks` map (name → `"title - artist"`), so a failed
+run can be pinned and replayed with:
+
+```bash
+src/test/behave/.venv/bin/python \
+  src/test/behave/mixxx_test_runner.py \
+  --binary build/mixxx-test \
+  --headless \
+  --seed <run_seed> \
+  src/test/behave/features/library.feature \
+  -n "<failing scenario name>"
 ```
 
 ### All features via CTest
@@ -97,7 +129,7 @@ MIXXX_TEST_HEADLESS=1 MIXXX_TEST_DISPLAY_BACKEND=xwayland ctest -R mixxx-behave-
 # Falling back to Xvfb (only when cage / wf-recorder are unavailable)
 MIXXX_TEST_HEADLESS=1 MIXXX_TEST_DISPLAY_BACKEND=xvfb ctest -R mixxx-behave- --output-on-failure
 
-# Custom retry count (default: 3)
+# Custom retry count (default: 1 — no retry)
 MIXXX_BEHAVE_RETRY=5 ctest -R mixxx-behave- --output-on-failure
 ```
 
@@ -411,7 +443,8 @@ Everything lands in `src\test\behave\artifacts\`:
   mangled into replacement characters when read as UTF-8. This does not affect
   Mixxx's own C++ output. Override `-Environment` if you need to.
 - **Narrow to one scenario** with `-Name`; the eight-scenario default retries
-  each scenario up to three times, which multiplies wall-clock time by up to 4x
+  each scenario up to three times (the Windows wrapper's own `--retry` default,
+  different from the runner's), which multiplies wall-clock time by up to 4x
   when things fail.
 - **Timestamps are in the log**: each `Scenario:` block is followed by
   `start_time`/`end_time` in `results-<label>.json`. A scenario that never
@@ -476,10 +509,13 @@ step definitions, add `objectName`s in QML, rebuild `mixxx-test`. Specifically:
    `steps/mixxx_steps.py`.
 4. **Autoretry**: `before_feature` patches every scenario's `run()` method with
    a custom wrapper. If a scenario fails, it is retried up to `--retry N` times
-   (default 3). Each attempt triggers `before_scenario`/`after_scenario` hooks
-   normally. Only the final outcome is recorded in `context.results` (with a
-   `retries` field summarizing previous attempts). `had_failure` / `fail_early`
-   is only set when all retries are exhausted.
+   (default 1 — no retry), except for `@xfail` scenarios which are never retried. Each
+   attempt triggers `before_scenario`/`after_scenario` hooks normally, and
+   `after_scenario` appends one entry per attempt to `context.results` — a
+   retried scenario therefore appears several times. Consumers score the
+   *last* entry per `(feature, name)`; that is what
+   `tools/generate_gh_e2e_comment.py` does when it builds the CI comment.
+   `had_failure` / `fail_early` is only set when all retries are exhausted.
 
 ## mixxx-test --serve Mode
 
@@ -504,6 +540,7 @@ The `--serve` mode registers a custom handler via
 | `setControlValue` | `"[Group],key,value"` | Sets a ControlObject value                                             | None                                                      |
 | `loadTrack`       | `"deck,filepath"`     | Loads a track file onto the specified deck                             | None                                                      |
 | `library`         | JSON (see below)      | Adds/removes library directories, optionally triggers a scan           | None                                                      |
+| `getLibraryState` | (empty)               | Returns a JSON snapshot of the library state (see below)               | `rpc.getStringProperty("mainWindow", "lastLibraryState")` |
 | `reloadQml`       | (empty)               | Tears down and rebuilds the QML engine                                 | None                                                      |
 
 ### `library` command
@@ -522,6 +559,15 @@ JSON payload:
   skips if the directory is already watched (`AlreadyWatching`).
 - `removeDirectory`: calls `TrackCollectionManager::removeDirectory()`.
 - `scan`: when `true`, calls `startLibraryScan()` after the operation.
+
+### `getLibraryState` command
+
+No payload needed. Returns a JSON document in `mainWindow.lastLibraryState`
+with `sources` (each watch path with `trackCount`/`totalSecond`),
+`visibleTrackCount`, `hiddenTrackCount`, `scanInProgress` and the monotonic
+`scanGeneration` counter. `_get_library_state` reads it in one command/read
+pair, and `_wait_for_library_scan` polls the counter/flag pair so tests can
+wait for library scans without blocking the app's main thread.
 
 ### `reloadQml` command
 
@@ -595,7 +641,8 @@ result = rpc.getStringProperty("mainWindow", "myResult")
   (last 200 lines) used for startup diagnostics. Nothing is printed live.
 - On early exit or RPC-port timeout, a bounded tail (last 40 lines) plus
   the output-file path is printed to the transcript instead of the full log.
-- Waits up to 20s for port 9000 to be reachable
+- Waits up to 20s for port 9000 to be reachable (override with
+  `MIXXX_TEST_RPC_TIMEOUT=<seconds>`)
 - `stop()`: terminate with 15s grace, then kill; appends the exit banner and
   prints a `mixxx-test stopped: pid=... exit=...` line, which is how
   kill/restart cycles become visible in the behave transcript.
@@ -729,6 +776,16 @@ LOOP_BUTTONS = {
 
 ## Step DSL (`steps/mixxx_steps.py`)
 
+### Wait timeouts are performance thresholds, not buffers
+
+`_wait_for_visible` / `_wait_for_hidden` (15 s) and `_wait_for_library_scan`
+(20 s) are deliberately tight: if a button does not appear within 15 s or a
+library of 50 tracks takes longer than 20 s to scan, that is an application
+regression the suite must report, not harness slowness to paper over. Do not
+re-widen them; when they start failing, suspect the app, not the test. The
+only escape hatch is `MIXXX_TEST_RPC_TIMEOUT`, which covers process startup
+(skin load, schema migration, cold audio stacks) and not UI responsiveness.
+
 ### Constants
 
 - `QT_LEFT_BUTTON = 1`, `QT_RIGHT_BUTTON = 2`, `QT_CONTROL_MODIFIER = 2`
@@ -765,7 +822,7 @@ LOOP_BUTTONS = {
 | `a [fresh] new library-ready profile` | `_ensure_profile(context, "library-ready", force=..)` — populated with the tracks dir (`addDirectory` runs at open/ready) |
 | `Mixxx is open and ready to operate` | Starts Mixxx, waits for mainWindow, waits for splash to hide, caches `_column_idx` and `_default_props` |
 | `the 4 decks view is enabled` | Sets `show4DecksButton.checked = true` |
-| `a track is loaded on deck {deck:d}` | Picks random track from `MIXXX_TEST_TRACKS_DIR`, calls `loadTrack` C++ command |
+| `a track is loaded on deck {deck:d}` | Picks a track via the scenario RNG (reproducible with `--seed`) from `MIXXX_TEST_TRACKS_DIR`, logs the pick, remembers it as `"deck {deck}"` with catalog metadata when known, calls `loadTrack` C++ command |
 | `no track is loaded on deck {deck:d}` | Ejects track via `eject` ControlObject if `track_loaded` is set |
 | `the {prop} on deck {deck:d} is set to {value:f}` | `_set_control_value` to set a ControlObject (Given-only, not for When steps) |
 | `the sync_on deck {deck:d} is {state}` | `_set_control_value` for `sync_enabled` (Given-only) |
@@ -773,6 +830,8 @@ LOOP_BUTTONS = {
 | `the window's height is {height:d}px` | Sets `mainWindow.height` (impersonal Given form of `I resize the window's height to {height:d}px`) |
 | `the window size is default` | Sets `mainWindow.width=1792`, `mainWindow.height=1008`. Declares the default size a scenario relies on when reusing a session (no QML reload between scenarios) |
 | `the library columns are in their default state` | `invokeMethod(trackList, "resetColumns")` — restores default column order, visibility and sort (see `Library/TrackList.qml`) |
+| `a track available in the library with a unique title` | Remembers a random track whose title is unique in the tracks catalog (persisted from the manifest by the runner) as "this track" (`context.remembered_tracks["this"]`, `RememberedTrack` dataclass); the pick is logged (pass or fail) and recorded in the results JSON |
+| `a track available in the library` | Remembers a random catalog track as "this track" — no uniqueness constraint; uniqueness-demanding assertions may fail if the picked title repeats |
 | `I wait for {second:d} second` | `time.sleep(second)` (also available as @when and @then) |
 
 ### When Steps
@@ -838,12 +897,13 @@ LOOP_BUTTONS = {
 
 - `before_all`: initiates `context._session` dict for cross-scenario state
 - `before_feature`: patches every scenario with the custom autoretry wrapper
-  (max attempts from `--retry`, default 3)
+  (max attempts from `--retry`, default 1)
 - `before_scenario`: restores `context.mixxx`, `context.mixxx_rpc`,
   `context.profile_dir`, `context.active_profile_type` from session; skips
   if `fail_early` is set and a previous scenario failed all retries
-- `after_scenario`: computes outcome, records timing, stores pending result on
-  `scenario._pending_result` for the autoretry wrapper to finalize
+- `after_scenario`: computes the outcome (including `@xfail`/`@xpass`
+  mapping), records timing and appends a result entry for *this attempt* to
+  `context.results`
 - `after_all`: writes `chapters.json` to artifacts directory, sends
   `rpc.quit()`, stops Mixxx process, cleans up temp profile dirs
 
@@ -851,14 +911,17 @@ LOOP_BUTTONS = {
 
 Based on `behave.contrib.scenario_autoretry.patch_scenario_with_autoretry`.
 Wraps `scenario.run()` so that failed scenarios are retried up to N times.
-For each attempt: `before_scenario` → steps → `after_scenario` runs normally.
+For each attempt: `before_scenario` → steps → `after_scenario` runs normally,
+and `after_scenario` appends that attempt's entry to `context.results` (the
+wrapper never writes to `context.results` itself). `@xfail` scenarios stop
+after the first attempt and are not retried.
+
 After the last attempt the wrapper:
 
-1. Reads `scenario._pending_result` (set by `after_scenario`) to build the
-   final result entry, adding a `retries` field when there were multiple
-   attempts.
-2. Appends the single result to `context.results`.
-3. Sets `had_failure = True` **only** when all retries are exhausted and the
+1. Resets the session (`_reset_session`) so a later scenario never inherits
+   partial state — except for expected failures / flaky outcomes, which
+   return before that.
+2. Sets `had_failure = True` **only** when all retries are exhausted and the
    scenario still failed (excluding `@xfail`/`@xpass`).
 
 ## How to Add a New Step
@@ -929,7 +992,13 @@ After the last attempt the wrapper:
     root cause in QML/spix — do not teach the steps to click twice. The
     pre-existing exceptions stay as documented: keyboard-navigating a combo
     whose delegate was never rendered, and the compacted spin
-    next/prev fallback that drives one already-known click sequence.
+    next/prev fallback that drives one already-known click sequence. Also
+    excepted are the library-search helpers `_activate_library_search` /
+    `_deactivate_library_search`: the bar opens/closes on TapHandler, which
+    swallows some spix synthetic taps outright, and each retry is verified
+    against the pane's `activated` state (conversion to single-click +
+    bounded wait was tried and made scenarios fail on the panes' own
+    collapse animation).
 
 ### Rules for `Then` steps
 
@@ -981,9 +1050,9 @@ value = context.mixxx_rpc.getStringProperty("mainWindow", "lastControlValue")
   traceable. The runner labels chapters `EXPECTED FAILURE` or `UNEXPECTED PASS`
   and prints the issue link on failure.
 
-- **Autoretry applies to all scenarios**, including `@xpass` and `@xfail`.
-  For `@xfail` scenarios that always fail, the retry attempts are harmless
-  (just add time). `had_failure` is never set for `@xfail`/`@xpass` scenarios
+- **Autoretry applies to `@xpass` scenarios, but not to `@xfail` ones**: the
+  wrapper returns right after the first attempt when an `xfail` tag is
+  present. `had_failure` is never set for `@xfail`/`@xpass` scenarios
   regardless of retry outcome.
 
 ## Known Limitations / Blockers

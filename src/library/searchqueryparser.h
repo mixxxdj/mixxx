@@ -17,6 +17,12 @@ class SearchQueryParser {
 
     void setSearchColumns(QStringList searchColumns);
 
+    /// Field (or alias) names mapped to their SQL columns. Exposed for the
+    /// test keeping the chip alias list in sync with the parser grammar.
+    const QHash<QString, QStringList>& fieldToSqlColumns() const {
+        return m_fieldToSqlColumns;
+    }
+
     std::unique_ptr<QueryNode> parseQuery(
             const QString& query,
             const QString& extraFilter) const;

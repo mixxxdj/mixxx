@@ -4,8 +4,8 @@ import Qt.labs.qmlmodels
 import QtQml
 import QtQuick
 import QtQml.Models
-import QtQuick.Layouts
 import QtQuick.Controls 2.15
+import QtQuick.Effects
 import QtQuick.Shapes 1.6
 import "Theme"
 import "Library" as LibraryComponent
@@ -13,7 +13,39 @@ import "Library" as LibraryComponent
 Item {
     id: root
 
+
     property var activeSidebar: libraryLeftSources.sidebar()
+
+    onActiveSidebarChanged: {
+        if (!root.activeSidebar?.tracklist) return;
+
+        searchPane.clearAllCriteria()
+        searchPane.textField.text = root.activeSidebar.tracklist.search
+        searchPane.tryConvertToFieldToken()
+    }
+
+    Connections {
+        target: root.activeSidebar
+
+        function onTracklistChanged() {
+            searchPane.clearAllCriteria()
+            searchPane.textField.text = root.activeSidebar.tracklist.search
+            searchPane.tryConvertToFieldToken()
+        }
+    }
+
+    // One side of the split track list: tapping it makes it the active
+    // sidebar, the inactive side dims.
+    component ActiveTrackList: LibraryComponent.TrackList {
+        focus: true
+        opacity: root.activeSidebar == sidebar ? 1 : 0.6
+
+        TapHandler {
+            onTapped: {
+                root.activeSidebar = parent.sidebar
+            }
+        }
+    }
 
     LibraryComponent.SourceTree {
         id: libraryLeftSources
@@ -27,36 +59,13 @@ Item {
         anchors.fill: parent
         orientation: Qt.Horizontal
 
-        handle: Rectangle {
-            id: handleDelegate
-
-            property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
-            property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
-
-            clip: true
-            color: Theme.panelSplitterBackground
-            implicitHeight: 8
-            implicitWidth: 8
+        handle: Skin.SplitViewHandle {
+            id: librarySplitHandle
 
             containmentMask: Item {
                 height: librarySplitView.height
                 width: 8
-                x: (handleDelegate.width - width) / 2
-            }
-
-            ColumnLayout {
-                anchors.centerIn: parent
-
-                Repeater {
-                    model: 3
-
-                    Rectangle {
-                        color: handleColor
-                        height: handleSize
-                        radius: handleSize
-                        width: handleSize
-                    }
-                }
+                x: (librarySplitHandle.width - width) / 2
             }
         }
 
@@ -68,36 +77,15 @@ Item {
             SplitView.preferredWidth: root.width * 0.15
             orientation: Qt.Vertical
 
-            handle: Rectangle {
-                id: handleDelegate
+            handle: Skin.SplitViewHandle {
+                id: sideBarSplitHandle
 
-                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
-                property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
-
-                clip: true
-                color: Theme.panelSplitterBackground
-                implicitHeight: 8
-                implicitWidth: 8
+                dotColumns: 3
 
                 containmentMask: Item {
                     height: 8
                     width: sideBarSplitView.width
-                    x: (handleDelegate.width - width) / 2
-                }
-
-                RowLayout {
-                    anchors.centerIn: parent
-
-                    Repeater {
-                        model: 3
-
-                        Rectangle {
-                            color: handleColor
-                            height: handleSize
-                            radius: handleSize
-                            width: handleSize
-                        }
-                    }
+                    x: (sideBarSplitHandle.width - width) / 2
                 }
             }
 
@@ -116,6 +104,8 @@ Item {
         }
         Item {
             id: browsingView
+            objectName: "browsingView"
+
             SplitView.fillHeight: true
             SplitView.minimumHeight: 200
             SplitView.preferredWidth: root.width * 0.75
@@ -130,55 +120,26 @@ Item {
 
                 orientation: root.width < 800 ? Qt.Vertical: Qt.Horizontal
 
-                handle: Rectangle {
-                    id: handleDelegate
+                handle: Skin.SplitViewHandle {
+                    id: trackListSplitHandle
 
-                    property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
-                    property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
-
-                    clip: true
-                    color: Theme.panelSplitterBackground
-                    implicitHeight: 8
-                    implicitWidth: 8
+                    dotColumns: root.width < 800 ? 3 : 1
 
                     containmentMask: Item {
                         height: root.width < 800 ? 8 : librarySplitView.height
                         width: root.width < 800 ? sideBarSplitView.width : 8
-                        x: (handleDelegate.width - width) / 2
-                    }
-
-                    GridLayout {
-                        anchors.centerIn: parent
-                        columns: root.width < 800 ? 3 : 1
-
-                        Repeater {
-                            model: 3
-
-                            Rectangle {
-                                color: handleColor
-                                height: handleSize
-                                radius: handleSize
-                                width: handleSize
-                            }
-                        }
+                        x: (trackListSplitHandle.width - width) / 2
                     }
                 }
-                LibraryComponent.TrackList {
-                    opacity: root.activeSidebar == model.sidebar() ? 1 : 0.6
+                ActiveTrackList {
                     SplitView.preferredHeight: trackListSplitView.height * 0.5
                     SplitView.preferredWidth: trackListSplitView.width * 0.5
 
-                    focus: true
                     model: libraryLeftSources
-
-                    TapHandler {
-                        onTapped: {
-                            root.activeSidebar = parent.model.sidebar()
-                        }
-                    }
                 }
 
                 Loader {
+                    objectName: "rightTrackListLoader"
                     visible: splitViewButton.checked
                     SplitView.preferredHeight: trackListSplitView.height * 0.5
                     SplitView.preferredWidth: trackListSplitView.width * 0.5
@@ -187,23 +148,16 @@ Item {
                     asynchronous: true
 
                     sourceComponent: Component {
-                        LibraryComponent.TrackList {
-                            opacity: root.activeSidebar == model.sidebar() ? 1 : 0.6
-
-                            focus: true
+                        ActiveTrackList {
+                            objectName: "rightTrackList"
                             model: libraryRightSources
-
-                            TapHandler {
-                                onTapped: {
-                                    root.activeSidebar = parent.model.sidebar()
-                                }
-                            }
                         }
                     }
                 }
             }
             Column {
                 id: tracklistMenu
+                objectName: "tracklistMenu"
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
@@ -213,6 +167,7 @@ Item {
 
                 Skin.Button {
                     id: splitViewButton
+                    objectName: "splitViewButton"
 
                     activeColor: Theme.white
                     checkable: true
@@ -270,6 +225,22 @@ Item {
                     }
                 }
             }
+
+            MultiEffect {
+                anchors.fill: searchPane
+                source: searchPane
+                shadowEnabled: true
+                shadowColor: '#66000000'
+                shadowBlur: 0.25
+                shadowVerticalOffset: 2
+            }
+
+            LibraryComponent.SearchPane {
+                id: searchPane
+                objectName: "searchPane"
+
+                activeSidebar: root.activeSidebar
+                focusOutTarget: browsingView
             }
         }
     }

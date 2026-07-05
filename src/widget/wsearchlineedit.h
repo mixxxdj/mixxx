@@ -22,7 +22,6 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     static constexpr int kDefaultDebouncingTimeoutMillis = 300;
     static constexpr int kMaxDebouncingTimeoutMillis = 9999;
     static constexpr int kSaveTimeoutMillis = 5000;
-    static constexpr int kMaxSearchEntries = 50;
     static constexpr bool kCompletionsEnabledDefault = true;
     static constexpr bool kHistoryShortcutsEnabledDefault = true;
 
