@@ -153,7 +153,7 @@ QmlApplication::QmlApplication(
     m_guiTickTimer.start(std::chrono::milliseconds(16));
 
     m_loadSucceeded = loadQml(m_mainFilePath);
-    if (!m_loadSucceeded) {
+    if (!m_loadSucceeded && !CmdlineArgs::Instance().getDeveloper()) {
         return;
     }
 
@@ -163,7 +163,7 @@ QmlApplication::QmlApplication(
             &QmlAutoReload::triggered,
             this,
             [this]() {
-                if (!loadQml(m_mainFilePath)) {
+                if (!loadQml(m_mainFilePath) && !CmdlineArgs::Instance().getDeveloper()) {
                     qWarning() << "Auto-reload failed to load QML. Exiting.";
                     QCoreApplication::exit(-1);
                 }
@@ -229,8 +229,10 @@ bool QmlApplication::loadQml(const QString& path) {
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
         qWarning() << "Failed to load QML file" << path;
-        m_pAppEngine.reset();
-        return false;
+        if (!CmdlineArgs::Instance().getDeveloper()) {
+            m_pAppEngine.reset();
+            return false;
+        }
     }
 
 #if defined(Q_OS_ANDROID)
