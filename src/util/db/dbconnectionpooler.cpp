@@ -12,8 +12,9 @@ const Logger kLogger("DbConnectionPooler");
 } // anonymous namespace
 
 DbConnectionPooler::DbConnectionPooler(
-        DbConnectionPoolPtr pDbConnectionPool) {
-    if (pDbConnectionPool && pDbConnectionPool->createThreadLocalConnection()) {
+        DbConnectionPoolPtr pDbConnectionPool)
+        : m_name(pDbConnectionPool ? pDbConnectionPool->createThreadLocalConnection() : "") {
+    if (pDbConnectionPool) {
         // m_pDbConnectionPool indicates if the thread-local connection has actually
         // been created during construction. Otherwise this instance does not store
         // any reference to the connection pool and is non-functional.

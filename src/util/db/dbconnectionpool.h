@@ -33,7 +33,7 @@ class DbConnectionPool final {
     // Prefer to use DbConnectionPooler instead of the
     // following functions. Only if there is no appropriate
     // scoping possible then use these functions directly.
-    bool createThreadLocalConnection();
+    QString createThreadLocalConnection();
     void destroyThreadLocalConnection();
 
   private:
