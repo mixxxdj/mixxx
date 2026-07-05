@@ -416,6 +416,12 @@ function getdeckstate(deck){
                 document.getElementById("deckposition").value = Math.round(resjs[i].position * 1000);
                 document.getElementById("deckelapsed").textContent = formatTime(resjs[i].elapsed);
             }
+            if(resjs[i].title !== undefined){
+                document.getElementById("decktitle").textContent = resjs[i].title || "–";
+            }
+            if(resjs[i].artist !== undefined){
+                document.getElementById("deckartist").textContent = resjs[i].artist || "";
+            }
         }
     };
 }

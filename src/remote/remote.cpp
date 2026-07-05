@@ -21,6 +21,7 @@
 #include "library/searchqueryparser.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/autodjfeature.h"
+#include "mixer/basetrackplayer.h"
 #include "track/track.h"
 #include "track/trackiterator.h"
 #include "library/playlisttablemodel.h"
@@ -282,6 +283,8 @@ namespace mixxx {
                                     ? trackSamples/(trackSampleRate*2.0)
                                     : 0.0;
                             double position=ControlObject::get(ConfigKey(group, "playposition"));
+                            BaseTrackPlayer* pPlayer=ainf->getPlayer(group);
+                            TrackPointer pTrack=pPlayer ? pPlayer->getLoadedTrack() : nullptr;
                             QJsonObject deckobj;
                             deckobj.insert("deck",deck);
                             deckobj.insert("playing",
@@ -289,6 +292,8 @@ namespace mixxx {
                             deckobj.insert("position",position);
                             deckobj.insert("duration",duration);
                             deckobj.insert("elapsed",position*duration);
+                            deckobj.insert("artist",pTrack ? pTrack->getArtist() : QString());
+                            deckobj.insert("title",pTrack ? pTrack->getTitle() : QString());
                             resproot.push_back(deckobj);
                         }
                     }

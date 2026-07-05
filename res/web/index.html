@@ -21,6 +21,10 @@
       <div class="card" id="deckcontrol">
         <label for="deckselect">Deck</label>
         <select id="deckselect" onchange="onDeckChange();"></select>
+        <div class="deck-trackinfo">
+          <div id="decktitle">–</div>
+          <div id="deckartist"></div>
+        </div>
         <div class="deck-position">
           <input type="range" id="deckposition" min="0" max="1000" step="1" value="0"
                  oninput="onDeckSeekInput(this.value);"

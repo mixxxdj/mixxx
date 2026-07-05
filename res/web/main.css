@@ -217,6 +217,27 @@ select:focus {
     margin-top: 12px;
 }
 
+.deck-trackinfo {
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.deck-trackinfo #decktitle {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.deck-trackinfo #deckartist {
+    margin-top: 2px;
+    color: var(--text-dim);
+    font-size: 0.85em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .deck-position {
     margin-top: 12px;
 }
