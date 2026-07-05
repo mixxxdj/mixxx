@@ -16,6 +16,7 @@ Rectangle {
     }
     required property var model
 
+    property var currentSelectedIndex: null
     color: Theme.backgroundColor
 
     Component.onCompleted: {
@@ -45,6 +46,14 @@ Rectangle {
                     clip: true
                     model: root.model
                     selectionModel: featureSelection
+
+                    Connections {
+                        target: featureSelection
+                        function onSelectionChanged(selected, deselected) {
+                            if (!selected.length) return;
+                            root.currentSelectedIndex = selected[0]
+                        }
+                    }
 
                     delegate: FocusScope {
                         required property int column
