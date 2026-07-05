@@ -483,17 +483,61 @@ LaunchkeyJog.handleLoadTrack = function (
   }
 };
 
-// ====================================================
-// MOD STRIP SCRATCH ENGINE (ZERO LATENCY)
-// ====================================================
+// ========================
+// MOD STRIP SCRATCH ENGINE
+// ========================
 
 LaunchkeyJog.MODSTRIP_CONST = {
+    /**
+     * EMA: filters ADC noise (~2-3 LSB) without adding noticeable lag.
+     * EMA Formula: y[n] = α·x[n] + (1-α)·y[n-1]
+     * High α (0.5) = responsive but noisy, low α (0.2) = smooth but slow.
+     * 0.35 is the ideal compromise for a 14-bit capacitive strip.
+     */
   EMA_ALPHA: 0.35,
+
+    /**
+     * Converts the filtered delta (14-bit units) into scratch ticks for Mixxx.
+     * The strip has ~100mm of travel over 16384 steps → 1mm ≈ 164 steps.
+     * 0.08 tick/step × 164 steps/mm ≈ 13 ticks/mm → similar to a 100mm jogwheel.
+     */
   SCRATCH_SENSITIVITY: 0.08,
+
+    /**
+     * Deadzone: we ignore delta ≤ 1 14-bit unit.
+     * Capacitive noise from a stationary finger generates oscillations of ±1-2 LSB.
+     * Without a deadzone, the track/disc "vibrates" imperceptibly but audibly.
+     */
   DEADZONE: 1,
+
+    /**
+     * Watchdog interval (ms). A low-frequency timer checks
+     * if new MIDI packets have arrived since the last check.
+     * 50ms is a good compromise: fast enough to detect release,
+     * slow enough for us to tolerate 1 lost packet without false release.
+     */
   WATCHDOG_INTERVAL_MS: 50,
+
+    /**
+     * Minimum EMA velocity (14-bit units/frame) to trigger inertia.
+     * A fast swipe generates delta of ~30-80 units/frame on the strip.
+     * Threshold at 5.0 covers only intentional swipes, where we ignore slow releases.
+     */
   INERTIA_THRESHOLD: 5.0,
+
+    /**
+     * Exponential decay of inertia per frame (every 16ms).
+     * v[n+1] = v[n] × FRICTION
+     * With 0.92: halving in ln(0.5)/ln(0.92) ≈ 8.3 frames ≈ 133ms.
+     * This gives a "light vinyl" feel — enough to continue
+     * the momentum but not so long as to feel like a sled on ice.
+     */
   INERTIA_FRICTION: 0.95,
+
+    /**
+     * Inertia stop threshold (scratch ticks).
+     * Below 1.5 ticks the sound is no longer audible, so we stop the loop.
+     */
   INERTIA_MIN_VELOCITY: 1.5,
 };
 
