@@ -178,6 +178,47 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
     return trackId;
 }
 
+CoverInfo TrackDAO::getCoverInfoByTrackLocation(const QString& trackLocation) const {
+    CoverInfo coverInfo;
+    coverInfo.trackLocation = trackLocation;
+    if (trackLocation.isEmpty()) {
+        return coverInfo;
+    }
+    const TrackId trackId = getTrackIdByLocation(trackLocation);
+    if (!trackId.isValid()) {
+        return coverInfo;
+    }
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT coverart_source, coverart_type, coverart_location, "
+            "coverart_color, coverart_digest, coverart_hash "
+            "FROM library WHERE id = :id"));
+    query.bindValue(":id", trackId.toString());
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        DEBUG_ASSERT(!"Failed query");
+        return coverInfo;
+    }
+    if (!query.next()) {
+        return coverInfo;
+    }
+    coverInfo.source = static_cast<CoverInfo::Source>(
+            query.value(query.record().indexOf(LIBRARYTABLE_COVERART_SOURCE))
+                    .toInt());
+    coverInfo.type = static_cast<CoverInfo::Type>(
+            query.value(query.record().indexOf(LIBRARYTABLE_COVERART_TYPE))
+                    .toInt());
+    coverInfo.coverLocation =
+            query.value(query.record().indexOf(LIBRARYTABLE_COVERART_LOCATION))
+                    .toString();
+    coverInfo.color = mixxx::RgbColor::fromQVariant(
+            query.value(query.record().indexOf(LIBRARYTABLE_COVERART_COLOR)));
+    coverInfo.setImageDigest(
+            query.value(query.record().indexOf(LIBRARYTABLE_COVERART_DIGEST)).toByteArray(),
+            query.value(query.record().indexOf(LIBRARYTABLE_COVERART_HASH)).toUInt());
+    return coverInfo;
+}
+
 QList<TrackId> TrackDAO::resolveTrackIds(
         const QList<QUrl>& urls,
         ResolveTrackIdFlags flags) {
