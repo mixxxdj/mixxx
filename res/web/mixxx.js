@@ -142,15 +142,7 @@ function populateLoadDeckSelect(){
     };
 }
 
-function loaddeck(play){
-    var sels=document.getElementsByClassName("seltracks");
-    var trackid;
-    for(var i=0; i< sels.length; ++i){
-        if(sels[i].checked){
-            trackid=sels[i].value;
-        }
-    }
-    var deck=document.getElementById("loaddeckselect").value;
+function sendLoadDeck(trackid, deck, play){
     var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
     xmlhttp.open("POST", "/rcontrol",true);
     xmlhttp.setRequestHeader("Content-Type", "application/json");
@@ -161,6 +153,30 @@ function loaddeck(play){
             {"loaddeck": { "trackid": trackid, "deck": parseInt(deck), "play": play }},
         ]
     ));
+}
+
+function loaddeck(play){
+    var sels=document.getElementsByClassName("seltracks");
+    var trackid;
+    for(var i=0; i< sels.length; ++i){
+        if(sels[i].checked){
+            trackid=sels[i].value;
+        }
+    }
+    var deck=document.getElementById("loaddeckselect").value;
+    sendLoadDeck(trackid, deck, play);
+}
+
+function loadautodjtrack(play){
+    var sels=document.getElementsByClassName("seltracks");
+    var trackid;
+    for(var i=0; i< sels.length; ++i){
+        if(sels[i].checked){
+            trackid=sels[i].value;
+        }
+    }
+    var deck=document.getElementById("deckselect").value;
+    sendLoadDeck(trackid, deck, play);
 }
 
 function delautodj(){

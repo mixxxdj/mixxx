@@ -67,6 +67,8 @@
         <button onclick="moveautotracklist('up');">▲ Up</button>
         <button onclick="moveautotracklist('down');">▼ Down</button>
         <button class="accent" onclick="window.location.href='library.html';">+ Add</button>
+        <button class="accent" onclick="loadautodjtrack(false);">Load on Deck</button>
+        <button class="accent" onclick="loadautodjtrack(true);">▶ Play on Deck</button>
         <button class="danger" onclick="delautodj();">Remove</button>
       </div>
       <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();getmastergain();getcrossfader();getautodjenabled();getnumdecks();});</script>
