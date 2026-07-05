@@ -11,6 +11,13 @@ import "Settings" as Settings
 Popup {
     id: root
 
+    onOpened: {
+        Mixxx.Core.addOpenedPopup(this)
+    }
+    onClosed: {
+        Mixxx.Core.removeOpenedPopup(this)
+    }
+
     property var activeCategory: null
     property alias activeCategoryIndex: categoryList.currentIndex
     readonly property var manager: managerItem
@@ -194,10 +201,39 @@ Popup {
                     }
                 }
             }
-            ColumnLayout {
-                Layout.fillHeight: true
+        }
+        ColumnLayout {
+            id: content
+
+            states: [
+                State {
+                    when: root.width <= root.smallScreenWidth
+
+                    AnchorChanges {
+                        anchors.left: parent.left
+                        target: content
+                    }
+                }
+            ]
+
+            anchors {
+                bottom: parent.bottom
+                left: categories.right
+                right: parent.right
+                top: parent.top
+            }
+            RowLayout {
+                Layout.alignment: Qt.AlignVCenter
                 Layout.fillWidth: true
 
+                Skin.Button {
+                    id: showCategories
+
+                    activeColor: Theme.white
+                    checkable: true
+                    text: "M"
+                    visible: root.width <= root.smallScreenWidth
+                }
                 Text {
                     Layout.alignment: Qt.AlignHCenter
                     Layout.preferredHeight: 36
@@ -206,8 +242,10 @@ Popup {
                     font.weight: Font.DemiBold
                     text: "Settings"
                 }
-                Rectangle {
-                    id: tabBar
+                Skin.Button {
+                    activeColor: Theme.white
+                    text: "X"
+                    visible: root.width <= root.smallScreenWidth
 
                     readonly property int selectedIndex: root.activeCategory?.selectedIndex ?? 0
                     readonly property var tabs: root.activeCategory?.tabs ?? []
