@@ -191,11 +191,11 @@ class QmlWaveformMarkRange : public QObject {
     void opacityChanged(double opacity);
     void disabledOpacityChanged(double disabledOpacity);
     void durationTextColorChanged(QColor durationTextColor);
-    void startControlChanged(QString startControl);
-    void endControlChanged(QString endControl);
-    void enabledControlChanged(QString enabledControl);
-    void visibilityControlChanged(QString visibilityControl);
-    void durationTextLocationChanged(QString durationTextLocation);
+    void startControlChanged(const QString& startControl);
+    void endControlChanged(const QString& endControl);
+    void enabledControlChanged(const QString& enabledControl);
+    void visibilityControlChanged(const QString& visibilityControl);
+    void durationTextLocationChanged(const QString& durationTextLocation);
 
   private:
     double m_opacity{0.5};
@@ -248,14 +248,14 @@ class QmlWaveformMark : public QObject {
     }
 
   signals:
-    void controlChanged(QString control);
-    void visibilityControlChanged(QString visibilityControl);
-    void colorChanged(QString color);
-    void textColorChanged(QString textColor);
-    void alignChanged(QString align);
-    void textChanged(QString text);
-    void pixmapChanged(QString pixmap);
-    void iconChanged(QString icon);
+    void controlChanged(const QString& control);
+    void visibilityControlChanged(const QString& visibilityControl);
+    void colorChanged(const QString& color);
+    void textColorChanged(const QString& textColor);
+    void alignChanged(const QString& align);
+    void textChanged(const QString& text);
+    void pixmapChanged(const QString& pixmap);
+    void iconChanged(const QString& icon);
 
   private:
     QString m_control;
@@ -316,19 +316,19 @@ class QmlWaveformUntilMark : public QObject {
 class QmlWaveformRendererMarkRange
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<QmlWaveformMarkRange> ranges READ ranges)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformMarkRange> ranges READ ranges)
     Q_CLASSINFO("DefaultProperty", "ranges")
     QML_NAMED_ELEMENT(WaveformRendererMarkRange)
 
   public:
-    QQmlListProperty<QmlWaveformMarkRange> ranges() {
+    QQmlListProperty<mixxx::qml::QmlWaveformMarkRange> ranges() {
         return {this, &m_ranges};
     }
 
     Renderer create(WaveformWidgetRenderer* waveformWidget) const override;
 
   private:
-    QList<QmlWaveformMarkRange*> m_ranges;
+    QList<mixxx::qml::QmlWaveformMarkRange*> m_ranges;
 };
 
 class QmlWaveformRendererStem
@@ -369,7 +369,7 @@ class QmlWaveformRendererStem
 class QmlWaveformRendererMark
         : public QmlWaveformRendererFactory {
     Q_OBJECT
-    Q_PROPERTY(QQmlListProperty<QmlWaveformMark> marks READ marks)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformMark> marks READ marks)
     Q_PROPERTY(QColor playMarkerColor MEMBER m_playMarkerColor NOTIFY playMarkerColorChanged)
     Q_PROPERTY(QColor playMarkerBackground MEMBER m_playMarkerBackground NOTIFY
                     playMarkerBackgroundChanged)
@@ -397,18 +397,14 @@ class QmlWaveformRendererMark
   signals:
     void playMarkerColorChanged(const QColor&);
     void playMarkerBackgroundChanged(const QColor&);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void defaultMarkChanged(QmlWaveformMark*);
-#else
-    void defaultMarkChanged(mixxx::qml::QmlWaveformMark*);
-#endif
+    void defaultMarkChanged();
 
   private:
     QColor m_playMarkerColor;
     QColor m_playMarkerBackground;
-    QList<QmlWaveformMark*> m_marks;
-    QmlWaveformMark* m_defaultMark;
-    std::unique_ptr<QmlWaveformUntilMark> m_untilMark;
+    QList<mixxx::qml::QmlWaveformMark*> m_marks;
+    mixxx::qml::QmlWaveformMark* m_defaultMark;
+    std::unique_ptr<mixxx::qml::QmlWaveformUntilMark> m_untilMark;
 };
 
 } // namespace qml

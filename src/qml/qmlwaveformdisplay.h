@@ -38,7 +38,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     Q_PROPERTY(QmlPlayerProxy* player READ getPlayer WRITE setPlayer
                     NOTIFY playerChanged REQUIRED)
     Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged REQUIRED)
-    Q_PROPERTY(QQmlListProperty<QmlWaveformRendererFactory> renderers READ renderers)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers READ renderers)
     Q_PROPERTY(double zoom READ getZoom WRITE setZoom NOTIFY zoomChanged)
     Q_PROPERTY(QColor backgroundColor READ getBackgroundColor WRITE
                     setBackgroundColor NOTIFY backgroundColorChanged)
@@ -74,7 +74,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     void componentComplete() override;
 
-    QQmlListProperty<QmlWaveformRendererFactory> renderers();
+    QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers();
 
   protected:
     QSGNode* updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNodeData*) override;
