@@ -384,10 +384,10 @@ Item {
                     }
 
                     anchors {
-                        left: parent.left
                         right: mixer.left
                         top: parent.top
                     }
+                    width: (parent.width - mixer.width) / 2
                 }
                 Mixer {
                     id: mixer
