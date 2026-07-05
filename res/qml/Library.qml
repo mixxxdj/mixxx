@@ -202,6 +202,74 @@ Item {
                     }
                 }
             }
+            Column {
+                id: tracklistMenu
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                width: 36
+                spacing: 11
+                padding: 4
+
+                Skin.Button {
+                    id: splitViewButton
+
+                    activeColor: Theme.white
+                    checkable: true
+                    icon.height: 16
+                    icon.source: "images/splitview.svg"
+                    icon.width: 16
+                    implicitWidth: implicitHeight
+
+                    onCheckedChanged: {
+                        if (checked) {
+                            let rightSidebar = libraryRightSources.sidebar()
+                            rightSidebar.activate(rightSidebar.index(sidebarTree.currentSelectedIndex?.top ?? 0, 0));
+                            root.activeSidebar = rightSidebar
+                        } else {
+                            root.activeSidebar = libraryLeftSources.sidebar()
+                        }
+                    }
+                }
+
+                Item {
+                    height: historyButton.implicitWidth
+                    width: historyButton.implicitHeight
+                    Skin.Button {
+                        id: historyButton
+
+                        activeColor: Theme.white
+                        checkable: true
+                        text: "HISTORY"
+
+                        transform: Rotation {
+                            origin.x: historyButton.height / 2
+                            origin.y: historyButton.height / 2
+                            angle: 90
+                        }
+
+                    }
+                }
+
+                Item {
+                    height: prepButton.implicitWidth
+                    width: prepButton.implicitHeight
+                    Skin.Button {
+                        id: prepButton
+
+                        activeColor: Theme.white
+                        checkable: true
+                        text: "PREPARATION"
+                        implicitWidth: 82
+
+                        transform: Rotation {
+                            origin.x: prepButton.height / 2
+                            origin.y: prepButton.height / 2
+                            angle: 90
+                        }
+                    }
+                }
+            }
             }
         }
     }
