@@ -114,6 +114,55 @@ function addtoautodj(position){
 }
 
 
+function populateLoadDeckSelect(){
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"getnumdecks": "true"},
+        ]
+    ));
+    xmlhttp.onload = (event) => {
+        var resjs=JSON.parse(xmlhttp.responseText);
+        for (var i = 0; i < resjs.length; i++) {
+            if(resjs[i].numdecks !== undefined){
+                var select = document.getElementById("loaddeckselect");
+                select.innerHTML = "";
+                for(var d=1; d<=resjs[i].numdecks; d++){
+                    var opt = document.createElement("option");
+                    opt.value = d;
+                    opt.textContent = "Deck " + d;
+                    select.appendChild(opt);
+                }
+            }
+        }
+    };
+}
+
+function loaddeck(play){
+    var sels=document.getElementsByClassName("seltracks");
+    var trackid;
+    for(var i=0; i< sels.length; ++i){
+        if(sels[i].checked){
+            trackid=sels[i].value;
+        }
+    }
+    var deck=document.getElementById("loaddeckselect").value;
+    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+    xmlhttp.open("POST", "/rcontrol",true);
+    xmlhttp.setRequestHeader("Content-Type", "application/json");
+    xmlhttp.responseType = 'text';
+    xmlhttp.send(JSON.stringify(
+        [
+            {"sessionid": readCookie("sessionid")},
+            {"loaddeck": { "trackid": trackid, "deck": parseInt(deck), "play": play }},
+        ]
+    ));
+}
+
 function delautodj(){
     var sels=document.getElementsByClassName("seltracks");
     var position,trackid;

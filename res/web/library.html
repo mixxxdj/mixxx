@@ -34,7 +34,15 @@
         <button class="accent" onclick="addtoautodj('end');">Add to End</button>
       </div>
 
+      <div class="card row" id="loaddeck">
+        <label for="loaddeckselect">Deck</label>
+        <select id="loaddeckselect"></select>
+        <button class="accent" onclick="loaddeck(false);">Load</button>
+        <button class="accent" onclick="loaddeck(true);">Load &amp; Play</button>
+      </div>
+
       <button class="ghost full-width" onclick="window.location.href='index.html';">← Back</button>
     </main>
+    <script>document.addEventListener("DOMContentLoaded", (event) => {populateLoadDeckSelect();});</script>
   </body>
 </html>

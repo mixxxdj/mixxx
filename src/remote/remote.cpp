@@ -345,6 +345,23 @@ namespace mixxx {
                             ControlObject::set(ConfigKey(group, "start_stop"), 0.0);
                         }
                     }
+
+                    if(!cur["loaddeck"].isNull()){
+                        QJsonObject jdeck=cur["loaddeck"].toObject();
+                        int deck=jdeck["deck"].toInt();
+                        TrackId tid(jdeck["trackid"].toVariant());
+                        if(deck>0 && tid.isValid()){
+                            TrackPointer pTrack=collectionManager->getTrackById(tid);
+                            if(pTrack){
+                                QString group=PlayerManager::groupForDeck(deck-1);
+                                ainf->slotLoadTrackToPlayer(pTrack, group,
+#ifdef __STEM__
+                                        mixxx::StemChannelSelection(),
+#endif
+                                        jdeck["play"].toBool());
+                            }
+                        }
+                    }
                 }
 
                 jsonResponse.setArray(resproot);
