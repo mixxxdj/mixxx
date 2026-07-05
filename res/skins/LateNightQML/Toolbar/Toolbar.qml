@@ -20,6 +20,12 @@ Rectangle {
     property alias showMixer: showMixerButton.checked
     property alias showSamplers: showSamplersButton.checked
     property alias showWaveforms: showWaveformsButton.checked
+    readonly property string activeAppMenuSection: hoveredAppMenuSection.length > 0 ? hoveredAppMenuSection : selectedAppMenuSection
+    readonly property string activeAppMenuSubmenu: hoveredAppMenuSubmenu.length > 0 ? hoveredAppMenuSubmenu : pinnedAppMenuSubmenu
+    property string hoveredAppMenuSection: ""
+    property string hoveredAppMenuSubmenu: ""
+    property string pinnedAppMenuSubmenu: ""
+    property string selectedAppMenuSection: "Options"
     property var recentlyClosedPopup: null
     property var recentlyClosedPopupButton: null
     property double recentlyClosedPopupTimestamp: 0
@@ -67,6 +73,7 @@ Rectangle {
         toolbarDefaultsControl.value = 1.0;
     }
     function closeSettingsPopups() {
+        appMenuPopup.close();
         deckSettingsPopup.close();
         effectSettingsPopup.close();
         librarySettingsPopup.close();
@@ -74,6 +81,10 @@ Rectangle {
         mixerSettingsPopup.close();
         samplerSettingsPopup.close();
         waveformSettingsPopup.close();
+    }
+    function clearAppMenuSubmenu() {
+        hoveredAppMenuSubmenu = "";
+        pinnedAppMenuSubmenu = "";
     }
     function positionPopupForButton(popup, button) {
         const mapped = button.mapToItem(root, 0, 0);
@@ -503,6 +514,54 @@ Rectangle {
         key: "status"
     }
     Mixxx.ControlProxy {
+        id: loadSelectedTrackDeck1Control
+
+        group: "[Channel1]"
+        key: "LoadSelectedTrack"
+    }
+    Mixxx.ControlProxy {
+        id: loadSelectedTrackDeck2Control
+
+        group: "[Channel2]"
+        key: "LoadSelectedTrack"
+    }
+    Mixxx.ControlProxy {
+        id: loadSelectedTrackDeck3Control
+
+        group: "[Channel3]"
+        key: "LoadSelectedTrack"
+    }
+    Mixxx.ControlProxy {
+        id: loadSelectedTrackDeck4Control
+
+        group: "[Channel4]"
+        key: "LoadSelectedTrack"
+    }
+    Mixxx.ControlProxy {
+        id: vinylDeck1Control
+
+        group: "[Channel1]"
+        key: "vinylcontrol_enabled"
+    }
+    Mixxx.ControlProxy {
+        id: vinylDeck2Control
+
+        group: "[Channel2]"
+        key: "vinylcontrol_enabled"
+    }
+    Mixxx.ControlProxy {
+        id: vinylDeck3Control
+
+        group: "[Channel3]"
+        key: "vinylcontrol_enabled"
+    }
+    Mixxx.ControlProxy {
+        id: vinylDeck4Control
+
+        group: "[Channel4]"
+        key: "vinylcontrol_enabled"
+    }
+    Mixxx.ControlProxy {
         id: autoDjControl
 
         group: "[AutoDJ]"
@@ -550,6 +609,15 @@ Rectangle {
         anchors.rightMargin: 2
         spacing: 4
 
+        LateNightToolbarMenuButton {
+            id: appMenuButton
+
+            popup: appMenuPopup
+
+            onClicked: {
+                root.openPopupForButton(appMenuPopup, this);
+            }
+        }
         RowLayout {
             Layout.alignment: Qt.AlignVCenter
             spacing: -2
@@ -813,6 +881,397 @@ Rectangle {
             Layout.preferredWidth: 74
             fillMode: Image.PreserveAspectFit
             source: LateNightTheme.lateNightAsset("style", "mixxx_logo_small.svg")
+        }
+    }
+    ToolbarSettingsPopup {
+        id: appMenuPopup
+
+        minimumWidth: 260
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 0
+
+            ColumnLayout {
+                Layout.alignment: Qt.AlignTop
+                Layout.preferredWidth: 58
+                spacing: 0
+
+                ToolbarAppMenuTab {
+                    selected: root.activeAppMenuSection === "File"
+                    text: "File"
+
+                    onTriggered: {
+                        root.selectedAppMenuSection = "File";
+                    }
+                }
+                ToolbarAppMenuTab {
+                    selected: root.activeAppMenuSection === "Library"
+                    text: "Library"
+
+                    onTriggered: {
+                        root.selectedAppMenuSection = "Library";
+                    }
+                }
+                ToolbarAppMenuTab {
+                    selected: root.activeAppMenuSection === "View"
+                    text: "View"
+
+                    onTriggered: {
+                        root.selectedAppMenuSection = "View";
+                    }
+                }
+                ToolbarAppMenuTab {
+                    selected: root.activeAppMenuSection === "Options"
+                    text: "Options"
+
+                    onTriggered: {
+                        root.selectedAppMenuSection = "Options";
+                    }
+                }
+                ToolbarAppMenuTab {
+                    selected: root.activeAppMenuSection === "Help"
+                    text: "Help"
+
+                    onTriggered: {
+                        root.selectedAppMenuSection = "Help";
+                    }
+                }
+            }
+            Rectangle {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 1
+                color: LateNightTheme.toolbarPopupBorderColor
+            }
+            ColumnLayout {
+                Layout.alignment: Qt.AlignTop
+                Layout.minimumWidth: 180
+                spacing: 0
+
+                ToolbarAppMenuAction {
+                    shortcut: "Ctrl+O"
+                    text: "Load Track to Deck 1"
+                    visible: root.activeAppMenuSection === "File"
+
+                    onTriggered: {
+                        loadSelectedTrackDeck1Control.trigger();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    shortcut: "Ctrl+Shift+O"
+                    text: "Load Track to Deck 2"
+                    visible: root.activeAppMenuSection === "File"
+
+                    onTriggered: {
+                        loadSelectedTrackDeck2Control.trigger();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    enabled: show4DecksButton.checked
+                    text: "Load Track to Deck 3"
+                    visible: root.activeAppMenuSection === "File"
+
+                    onTriggered: {
+                        loadSelectedTrackDeck3Control.trigger();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    enabled: show4DecksButton.checked
+                    text: "Load Track to Deck 4"
+                    visible: root.activeAppMenuSection === "File"
+
+                    onTriggered: {
+                        loadSelectedTrackDeck4Control.trigger();
+                    }
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "File"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+Q"
+                    text: "Exit"
+                    visible: root.activeAppMenuSection === "File"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+Shift+L"
+                    text: "Rescan Library"
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+F"
+                    text: "Search in Current View..."
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+Shift+F"
+                    text: "Search in Tracks Library..."
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+N"
+                    text: "Create New Playlist"
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+Shift+N"
+                    text: "Create New Crate"
+                    visible: root.activeAppMenuSection === "Library"
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: Mixxx.Config.libraryHideMenuBar
+                    text: "Auto-hide menu bar"
+                    visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        Mixxx.Config.libraryHideMenuBar = !Mixxx.Config.libraryHideMenuBar;
+                    }
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "View"
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: showMicAuxControl.value > 0
+                    shortcut: "Ctrl+2"
+                    text: "Show Microphone Section"
+                    visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        showMicAuxControl.value = showMicAuxControl.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: showVinylControlsControl.value > 0
+                    shortcut: "Ctrl+3"
+                    text: "Show Vinyl Control Section"
+                    visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        showVinylControlsControl.value = showVinylControlsControl.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: showPreviewDecksControl.value > 0
+                    enabled: false
+                    shortcut: "Ctrl+4"
+                    text: "Show Preview Deck"
+                    visible: root.activeAppMenuSection === "View"
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: showLibraryCoverArtControl.value > 0
+                    shortcut: "Ctrl+6"
+                    text: "Show Cover Art"
+                    visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        showLibraryCoverArtControl.value = showLibraryCoverArtControl.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: maximizeLibraryButton.checked
+                    shortcut: "Space"
+                    text: "Maximize Library"
+                    visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        showMaximizedLibraryControl.value = maximizeLibraryButton.checked ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "View"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "Ctrl+9"
+                    text: "Show Auto DJ"
+                    visible: root.activeAppMenuSection === "View"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    shortcut: "F11"
+                    text: "Full Screen"
+                    visible: root.activeAppMenuSection === "View"
+                }
+                ToolbarAppMenuAction {
+                    hasSubmenu: true
+                    selected: root.activeAppMenuSubmenu === "Vinyl Control"
+                    text: "Vinyl Control"
+                    visible: root.activeAppMenuSection === "Options"
+
+                    onHovered: {
+                        root.hoveredAppMenuSubmenu = "Vinyl Control";
+                    }
+                    onTriggered: {
+                        root.hoveredAppMenuSubmenu = "";
+                        root.pinnedAppMenuSubmenu = root.pinnedAppMenuSubmenu === "Vinyl Control" ? "" : "Vinyl Control";
+                    }
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "Options"
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: recordingStatusControl.value > 0
+                    shortcut: "Ctrl+R"
+                    text: "Record Mix"
+                    visible: root.activeAppMenuSection === "Options"
+
+                    onHovered: {
+                        root.hoveredAppMenuSubmenu = "";
+                    }
+                    onTriggered: {
+                        recordingToggleControl.trigger();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: broadcastEnabledControl.value > 0
+                    shortcut: "Ctrl+L"
+                    text: "Enable Live Broadcasting"
+                    visible: root.activeAppMenuSection === "Options"
+
+                    onHovered: {
+                        root.hoveredAppMenuSubmenu = "";
+                    }
+                    onTriggered: {
+                        broadcastEnabledControl.value = broadcastEnabledControl.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "Options"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    checkable: true
+                    checked: true
+                    shortcut: "Ctrl+`"
+                    text: "Enable Keyboard Shortcuts"
+                    visible: root.activeAppMenuSection === "Options"
+
+                    onHovered: {
+                        root.hoveredAppMenuSubmenu = "";
+                    }
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "Options"
+                }
+                ToolbarAppMenuAction {
+                    shortcut: "Ctrl+P"
+                    text: "Preferences"
+                    visible: root.activeAppMenuSection === "Options"
+
+                    onHovered: {
+                        root.hoveredAppMenuSubmenu = "";
+                    }
+                    onTriggered: {
+                        Mixxx.PreferencesDialog.show();
+                        appMenuPopup.close();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    text: "Community Support"
+                    visible: root.activeAppMenuSection === "Help"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    text: "User Manual"
+                    visible: root.activeAppMenuSection === "Help"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    text: "Keyboard Shortcuts"
+                    visible: root.activeAppMenuSection === "Help"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    text: "Settings directory"
+                    visible: root.activeAppMenuSection === "Help"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    text: "Translate This Application"
+                    visible: root.activeAppMenuSection === "Help"
+                }
+                ToolbarAppMenuSeparator {
+                    visible: root.activeAppMenuSection === "Help"
+                }
+                ToolbarAppMenuAction {
+                    enabled: false
+                    text: "About"
+                    visible: root.activeAppMenuSection === "Help"
+                }
+            }
+            Rectangle {
+                Layout.fillHeight: true
+                Layout.preferredWidth: 1
+                color: LateNightTheme.toolbarPopupBorderColor
+                visible: root.activeAppMenuSection === "Options" && root.activeAppMenuSubmenu === "Vinyl Control"
+            }
+            ColumnLayout {
+                Layout.alignment: Qt.AlignTop
+                Layout.minimumWidth: 180
+                spacing: 0
+                visible: root.activeAppMenuSection === "Options" && root.activeAppMenuSubmenu === "Vinyl Control"
+
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: vinylDeck1Control.value > 0
+                    shortcut: "Ctrl+T"
+                    text: "Enable Vinyl Control 1"
+
+                    onTriggered: {
+                        vinylDeck1Control.value = vinylDeck1Control.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: vinylDeck2Control.value > 0
+                    shortcut: "Ctrl+Y"
+                    text: "Enable Vinyl Control 2"
+
+                    onTriggered: {
+                        vinylDeck2Control.value = vinylDeck2Control.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: vinylDeck3Control.value > 0
+                    shortcut: "Ctrl+U"
+                    text: "Enable Vinyl Control 3"
+
+                    onTriggered: {
+                        vinylDeck3Control.value = vinylDeck3Control.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: vinylDeck4Control.value > 0
+                    shortcut: "Ctrl+I"
+                    text: "Enable Vinyl Control 4"
+
+                    onTriggered: {
+                        vinylDeck4Control.value = vinylDeck4Control.value > 0 ? 0.0 : 1.0;
+                    }
+                }
+            }
         }
     }
     ToolbarSettingsPopup {
@@ -1457,6 +1916,32 @@ Rectangle {
         text: "--:-- --"
         verticalAlignment: Text.AlignVCenter
     }
+    component LateNightToolbarMenuButton: MouseArea {
+        id: menuButton
+
+        required property var popup
+        property bool wasPopupOpenOnPress: false
+
+        Layout.alignment: Qt.AlignVCenter
+        Layout.preferredHeight: 20
+        Layout.preferredWidth: 26
+        cursorShape: Qt.ArrowCursor
+
+        onPressed: {
+            wasPopupOpenOnPress = popup.visible && popup.anchorButton === menuButton;
+        }
+
+        LateNightToolbarButtonBackground {
+            active: menuButton.popup.visible
+        }
+        Image {
+            anchors.centerIn: parent
+            fillMode: Image.PreserveAspectFit
+            height: 13
+            source: LateNightTheme.assetToolbarMenuIcon
+            width: 13
+        }
+    }
     component LateNightToolbarButton: MouseArea {
         id: toolbarButton
 
@@ -1637,6 +2122,149 @@ Rectangle {
                 text: recordingIndicator.status === 2.0 || recordingIndicator.status === 3.0 ? recordingIndicator.durationText : "REC"
                 verticalAlignment: Text.AlignVCenter
             }
+        }
+    }
+    component ToolbarAppMenuTab: Item {
+        id: appMenuTab
+
+        property bool selected: false
+        property string text: ""
+
+        signal triggered
+
+        Layout.fillWidth: true
+        implicitHeight: 17
+        implicitWidth: appMenuTabText.implicitWidth + 8
+
+        Rectangle {
+            anchors.fill: parent
+            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected ? LateNightTheme.toolbarMenuHoverColor : "transparent"
+        }
+        MouseArea {
+            id: appMenuTabMouseArea
+
+            anchors.fill: parent
+            cursorShape: Qt.ArrowCursor
+            hoverEnabled: true
+
+            onEntered: {
+                root.hoveredAppMenuSection = appMenuTab.text;
+                root.clearAppMenuSubmenu();
+            }
+            onClicked: {
+                root.hoveredAppMenuSection = "";
+                root.clearAppMenuSubmenu();
+                appMenuTab.triggered();
+            }
+        }
+        Text {
+            id: appMenuTabText
+
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            anchors.verticalCenter: parent.verticalCenter
+            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            elide: Text.ElideRight
+            font.family: "Open Sans"
+            font.pixelSize: 12
+            text: appMenuTab.text
+            width: parent.width - anchors.leftMargin
+        }
+    }
+    component ToolbarAppMenuSeparator: Rectangle {
+        Layout.fillWidth: true
+        Layout.leftMargin: 4
+        Layout.rightMargin: 4
+        Layout.preferredHeight: 1
+        color: LateNightTheme.toolbarPopupBorderColor
+    }
+    component ToolbarAppMenuAction: Item {
+        id: appMenuAction
+
+        property bool checkable: false
+        property bool checked: false
+        property bool hasSubmenu: false
+        property bool selected: false
+        property string shortcut: ""
+        property string text: ""
+
+        signal hovered
+        signal triggered
+
+        Layout.fillWidth: true
+        implicitHeight: 17
+        implicitWidth: appMenuActionText.implicitWidth + appMenuShortcutText.implicitWidth + 42
+        opacity: enabled ? 1.0 : 0.45
+
+        Rectangle {
+            anchors.fill: parent
+            color: root.menuHoverColor(appMenuActionMouseArea.containsMouse || appMenuAction.selected, appMenuAction.enabled)
+        }
+        MouseArea {
+            id: appMenuActionMouseArea
+
+            anchors.fill: parent
+            cursorShape: Qt.ArrowCursor
+            hoverEnabled: true
+
+            onEntered: {
+                if (appMenuAction.enabled) {
+                    appMenuAction.hovered();
+                }
+            }
+            onClicked: {
+                if (appMenuAction.enabled) {
+                    appMenuAction.triggered();
+                }
+            }
+        }
+        Image {
+            anchors.left: parent.left
+            anchors.leftMargin: 3
+            anchors.verticalCenter: parent.verticalCenter
+            fillMode: Image.PreserveAspectFit
+            height: 14
+            source: appMenuAction.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            visible: appMenuAction.checkable
+            width: 14
+        }
+        Text {
+            id: appMenuActionText
+
+            anchors.left: parent.left
+            anchors.leftMargin: appMenuAction.checkable ? 22 : 6
+            anchors.right: appMenuShortcutText.left
+            anchors.rightMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            elide: Text.ElideRight
+            font.family: "Open Sans"
+            font.pixelSize: 11
+            text: appMenuAction.text
+        }
+        Text {
+            id: appMenuShortcutText
+
+            anchors.right: appMenuArrowText.left
+            anchors.rightMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            font.family: "Open Sans"
+            font.pixelSize: 10
+            text: appMenuAction.shortcut
+            visible: text.length > 0
+        }
+        Text {
+            id: appMenuArrowText
+
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            font.family: "Open Sans"
+            font.pixelSize: 11
+            text: appMenuAction.hasSubmenu ? ">" : ""
+            width: 8
         }
     }
     component ToolbarMenuChoice: Item {
