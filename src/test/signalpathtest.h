@@ -66,7 +66,8 @@ class TestEngineMixer : public EngineMixer {
 
 class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
-    BaseSignalPathTest() {
+    BaseSignalPathTest()
+            : m_playerInfoGuard{nullptr, nullptr} {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = std::make_unique<ControlObject>(ConfigKey(
@@ -129,11 +130,12 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         ControlObject::set(ConfigKey(m_sMainGroup, "enabled"), 1.0);
 
         PlayerInfo::create();
+        m_playerInfoGuard = std::unique_ptr<PlayerInfo, void (*)(PlayerInfo*)>(
+                &PlayerInfo::instance(),
+                [](PlayerInfo*) { PlayerInfo::destroy(); });
     }
 
-    ~BaseSignalPathTest() override {
-        PlayerInfo::destroy();
-    }
+    ~BaseSignalPathTest() override = default;
 
     void addDeck(EngineDeck* pDeck) {
         ControlObject::set(ConfigKey(pDeck->getGroup(), "main_mix"), 1.0);
@@ -230,6 +232,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pEngineMixer->process(kProcessBufferSize);
     }
 
+    std::unique_ptr<PlayerInfo, void (*)(PlayerInfo*)> m_playerInfoGuard;
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     std::unique_ptr<ControlObject> m_pNumDecks;
