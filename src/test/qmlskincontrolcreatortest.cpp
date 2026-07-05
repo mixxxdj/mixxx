@@ -41,6 +41,47 @@ TEST_F(QmlSkinControlCreatorTest, CreatesSkinControl) {
     EXPECT_FALSE(ControlObject::exists(key));
 }
 
+TEST_F(QmlSkinControlCreatorTest, AppliesDefaultBeforeComponentComplete) {
+    const ConfigKey key(QStringLiteral("[Skin]"),
+            QStringLiteral("qml_skin_control_creator_precomplete_default_test"));
+
+    auto creator = std::make_unique<QmlSkinControlCreator>();
+    creator->setGroup(key.group);
+    creator->setKey(key.item);
+    creator->setPersist(true);
+    creator->setDefaultValue(1.0);
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(key));
+
+    creator->componentComplete();
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(key));
+}
+
+TEST_F(QmlSkinControlCreatorTest, AppliesDefaultBeforeComponentCompleteInAnyOrder) {
+    const ConfigKey key(QStringLiteral("[Skin]"),
+            QStringLiteral("qml_skin_control_creator_precomplete_order_test"));
+
+    auto creator = std::make_unique<QmlSkinControlCreator>();
+    creator->setDefaultValue(1.0);
+    creator->setGroup(key.group);
+    creator->setKey(key.item);
+
+    EXPECT_FALSE(ControlObject::exists(key));
+
+    creator->setPersist(true);
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(key));
+
+    creator->componentComplete();
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(key));
+}
+
 TEST_F(QmlSkinControlCreatorTest, RejectsExistingSkinControl) {
     const ConfigKey key(QStringLiteral("[Skin]"),
             QStringLiteral("qml_skin_control_creator_duplicate_test"));

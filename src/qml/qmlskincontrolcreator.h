@@ -63,10 +63,12 @@ class QmlSkinControlCreator : public QObject, public QQmlParserStatus {
 
   private:
     static mixxx::control::ButtonMode toControlButtonMode(ButtonMode buttonMode);
-    void createControl();
+    void createControl(bool allowBeforeComponentComplete = false);
+    void createDefaultControlBeforeComponentComplete();
 
     ConfigKey m_key;
     bool m_persist;
+    bool m_persistConfigured;
     double m_defaultValue;
     ButtonMode m_buttonMode;
     bool m_isComponentComplete;
