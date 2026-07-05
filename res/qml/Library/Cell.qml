@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Mixxx 1.0 as Mixxx
+import "." as LibraryComponent
 import "../Theme"
 
 Rectangle {
@@ -85,6 +87,33 @@ Rectangle {
                     top: parent.top
                 }
             }
+        }
+    }
+
+    Drag.dragType: Qt.platform.os === "android" ? Drag.None : Drag.Automatic
+    Drag.mimeData: {
+        "text/uri-list": file_url.toString(),
+        "text/plain": file_url.toString()
+    }
+    Drag.supportedActions: Qt.CopyAction
+
+    DragHandler {
+        id: dragHandler
+        // enabled: false
+        enabled: Qt.platform.os !== "android" && !Mixxx.Core.hasPopup
+        onActiveChanged: {
+            root.Drag.imageSource = cover_art
+            root.Drag.active = true
+            console.log(`dragHandler: ${root.Drag.active}`)
+        //     if (active) {
+        //         dragImageSource.grabToImage(function(result) {
+        //             console.log(`dragHandler: ${result}`)
+        //             parent.Drag.imageSource = result.url
+        //             parent.Drag.active = true
+        //         }, Qt.size(dragImageSource.width, dragImageSource.height))
+        //     } else {
+        //         parent.Drag.active = false
+            // }
         }
     }
     Rectangle {
