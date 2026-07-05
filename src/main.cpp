@@ -76,7 +76,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     }
     if (loadQml) {
         mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices, mainQmlFilePath);
-        if (!qmlApplication.isReady()) {
+        if (!qmlApplication.isReady() && !CmdlineArgs::Instance().getDeveloper()) {
             exitCode = kFatalErrorOnStartupExitCode;
         } else {
             exitCode = pApp->exec();

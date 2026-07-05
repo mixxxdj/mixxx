@@ -13,6 +13,7 @@
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmldlgpreferencesproxy.h"
+#include "qml/qmlcoreservices.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -114,6 +115,13 @@ QmlApplication::QmlApplication(
     }
 #endif
 
+    QJSEngine::setObjectOwnership(QmlCoreServices::createInstance(this), QJSEngine::CppOwnership);
+
+    m_loadSucceeded = loadQml(m_mainFilePath);
+    if (!m_loadSucceeded && !CmdlineArgs::Instance().getDeveloper()) {
+        return;
+    }
+
     m_pCoreServices->initialize(app);
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
@@ -204,10 +212,11 @@ QmlApplication::QmlApplication(
     });
     m_guiTickTimer.start(std::chrono::milliseconds(16));
 
-    m_loadSucceeded = loadQml(m_mainFilePath);
-    if (!m_loadSucceeded && !CmdlineArgs::Instance().getDeveloper()) {
-        return;
-    }
+    // No memory leak here, the QQmlEngine takes ownership of the provider
+    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+            m_pCoreServices->getTrackCollectionManager());
+    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+    QmlCoreServices::instance()->setReady();
 
     m_pCoreServices->getControllerManager()->setUpDevices();
 
@@ -219,6 +228,10 @@ QmlApplication::QmlApplication(
                     qWarning() << "Auto-reload failed to load QML. Exiting.";
                     QCoreApplication::exit(-1);
                 }
+                // No memory leak here, the QQmlEngine takes ownership of the provider
+                QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+                        m_pCoreServices->getTrackCollectionManager());
+                m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
             });
 
 #if defined(Q_OS_ANDROID)
@@ -272,11 +285,6 @@ bool QmlApplication::loadQml(const QString& path) {
     m_autoReload.clear();
     m_pAppEngine->addUrlInterceptor(&m_autoReload);
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
-
-    // No memory leak here, the QQmlEngine takes ownership of the provider
-    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
-            m_pCoreServices->getTrackCollectionManager());
-    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
 
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
