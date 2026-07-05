@@ -235,51 +235,55 @@ Item {
 
                 // Rate range labels: top = negative direction, center = default, bottom = positive direction
                 Text {
-                    width: 8
+                    width: 7
                     height: 16
-                    x: 1
+                    x: 3
                     y: root.rateRangeTopLabelY(height)
                     text: "-"
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     color: root.rateTextColor
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
-                    width: 8
+                    width: 18
                     height: 16
-                    x: parent.width - width - 1
-                    y: root.rateRangeTopLabelY(height)
+                    x: 35
+                    y: root.rateRangeTopLabelY(height) + 1
                     text: (rateRangeProxy.value * 100).toFixed(0)
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: 10
                     color: root.rateTextColor
-                    horizontalAlignment: Text.AlignRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
-                    width: 8
+                    width: 7
                     height: 16
-                    x: 1
+                    x: 3
                     y: root.rateRangeBottomLabelY(height)
                     text: "+"
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     color: root.rateTextColor
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
-                    width: 8
+                    width: 18
                     height: 16
-                    x: parent.width - width - 1
+                    x: 35
                     y: root.rateRangeBottomLabelY(height)
                     text: (rateRangeProxy.value * 100).toFixed(0)
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: 10
                     color: root.rateTextColor
-                    horizontalAlignment: Text.AlignRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Skin.ControlFader {
