@@ -10,47 +10,46 @@ Item {
         SnapOnRelease
     }
 
-    property bool bar: false
+    readonly property real availableHeight: Math.max(0, height - topPadding - bottomPadding)
+    readonly property real availableWidth: Math.max(0, width - leftPadding - rightPadding)
     property alias background: backgroundItem.data
-    property real barMargin: 0
+    property bool bar: false
     property alias barColor: barPath.strokeColor
-    property alias barWidth: barPath.strokeWidth
+    property real barMargin: 0
     property real barStart: 0
+    property alias barWidth: barPath.strokeWidth
     property real bottomPadding: 0
+    readonly property real displayValue: dragHandler.active ? dragHandler.value : value
     property real from: 0
     property alias handle: handleItem.data
+    readonly property bool horizontal: orientation === Qt.Horizontal
     property real leftPadding: 0
     property bool live: true
     property int orientation: Qt.Vertical
+    readonly property real position: valueToPosition(displayValue)
+    readonly property bool pressed: dragHandler.active
     property real rightPadding: 0
     property int snapMode: Slider.NoSnap
     property real stepSize: 0
     property real to: 1
     property real topPadding: 0
     property real value: from
-    property bool wheelEnabled: true
-    property real wheelStepSize: (root.to - root.from) / 100
-
-    readonly property real availableHeight: Math.max(0, height - topPadding - bottomPadding)
-    readonly property real availableWidth: Math.max(0, width - leftPadding - rightPadding)
-    readonly property bool horizontal: orientation === Qt.Horizontal
-    readonly property real position: valueToPosition(displayValue)
-    readonly property bool pressed: dragHandler.active
     readonly property bool vertical: orientation === Qt.Vertical
     readonly property real visualPosition: vertical ? 1 - position : position
-
-    readonly property real displayValue: dragHandler.active ? dragHandler.value : value
+    property bool wheelEnabled: true
+    property real wheelStepSize: (root.to - root.from) / 127
 
     signal moved(real value)
 
-    activeFocusOnTab: true
-    implicitHeight: Math.max(backgroundItem.implicitHeight, handleItem.implicitHeight)
-    implicitWidth: Math.max(backgroundItem.implicitWidth, handleItem.implicitWidth)
-
+    function applyInteractiveValue(targetValue, isFinal) {
+        dragHandler.value = clamp(snapValue(targetValue, isFinal));
+        if (root.live || isFinal) {
+            root.moved(dragHandler.value);
+        }
+    }
     function clamp(targetValue) {
         return Math.max(Math.min(root.from, root.to), Math.min(Math.max(root.from, root.to), targetValue));
     }
-
     function snapValue(targetValue, isFinal) {
         if (root.stepSize <= 0 || root.snapMode === Slider.NoSnap || (!isFinal && root.snapMode !== Slider.SnapAlways)) {
             return targetValue;
@@ -59,17 +58,14 @@ Item {
         const stepSize = Math.abs(root.stepSize);
         return root.from + Math.round((targetValue - root.from) / stepSize) * stepSize;
     }
-
     function stepValue(direction) {
         const rangeDirection = root.to >= root.from ? 1 : -1;
         return root.clamp(root.value + direction * rangeDirection * Math.abs(root.stepSize || root.wheelStepSize));
     }
-
     function valueAt(targetPosition) {
         targetPosition = Math.max(0, Math.min(1, targetPosition));
         return snapValue(root.from + targetPosition * (root.to - root.from), false);
     }
-
     function valueToPosition(targetValue) {
         if (root.from === root.to) {
             return 0;
@@ -77,14 +73,11 @@ Item {
         return Math.max(0, Math.min(1, (targetValue - root.from) / (root.to - root.from)));
     }
 
-    function applyInteractiveValue(targetValue, isFinal) {
-        dragHandler.value = clamp(snapValue(targetValue, isFinal));
-        if (root.live || isFinal) {
-            root.moved(dragHandler.value);
-        }
-    }
+    activeFocusOnTab: true
+    implicitHeight: Math.max(backgroundItem.implicitHeight, handleItem.implicitHeight)
+    implicitWidth: Math.max(backgroundItem.implicitWidth, handleItem.implicitWidth)
 
-    Keys.onPressed: event => {
+    Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Left || event.key === Qt.Key_Down) {
             root.moved(stepValue(-1));
             event.accepted = true;
@@ -106,14 +99,12 @@ Item {
         anchors.fill: parent
         z: 0
     }
-
     Item {
         id: handleItem
 
         anchors.fill: parent
         z: 2
     }
-
     Shape {
         id: barShape
 
@@ -126,11 +117,11 @@ Item {
         ShapePath {
             id: barPath
 
-            strokeColor: "transparent"
-            strokeWidth: 2
             fillColor: "transparent"
             startX: barShape.width * (root.horizontal ? (1 - root.barStart) : 0.5)
             startY: barShape.height * (root.vertical ? (1 - root.barStart) : 0.5)
+            strokeColor: "transparent"
+            strokeWidth: 2
 
             PathLine {
                 x: root.horizontal ? (barShape.width * root.position) : barPath.startX
@@ -138,7 +129,6 @@ Item {
             }
         }
     }
-
     DragHandler {
         id: dragHandler
 
@@ -177,14 +167,13 @@ Item {
         value: dragHandler.value
         when: dragHandler.active && root.live
     }
-
     MouseArea {
         acceptedButtons: Qt.NoButton
         anchors.fill: parent
         enabled: root.enabled && root.wheelEnabled
 
         onWheel: {
-            root.moved(root.stepValue(wheel.angleDelta.y < 0 ? 1 : -1));
+            root.moved(root.stepValue(wheel.angleDelta.y > 0 ? 1 : -1));
         }
     }
 }
