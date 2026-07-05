@@ -26,6 +26,10 @@ ApplicationWindow {
         }
     }
 
+    Component.onCompleted: {
+        Mixxx.Core.clearOpenedPopup()
+    }
+
     Loader {
         id: content
 
