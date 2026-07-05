@@ -139,10 +139,11 @@ namespace mixxx {
                     if(!cur["addautodj"].isNull()){
                         QJsonObject jautodj=cur["addautodj"].toObject();
                         if(!jautodj["trackid"].isNull() && !jautodj["position"].isNull() ){
-                            QSqlDatabase dbase=DbConnectionPooled(db);
                             TrackId tid(jautodj["trackid"].toVariant());
-                            PlaylistDAO playlist;
-                            playlist.initialize(dbase);
+                            // Use the live PlaylistDAO (not a throwaway instance) so its
+                            // tracksAdded signal reaches AutoDJProcessor's table model and
+                            // the queue actually refreshes/plays.
+                            PlaylistDAO &playlist=collectionManager->internalCollection()->getPlaylistDAO();
 
                             int did=playlist.getPlaylistIdFromName("Auto DJ");
                             if(jautodj["position"].toString()=="begin"){
@@ -154,19 +155,13 @@ namespace mixxx {
                                     playlist.addTracksToAutoDJQueue(QList({tid}),PlaylistDAO::AutoDJSendLoc::BOTTOM);
                                 }
                             }
-
-                            emit playlist.tracksAdded(QSet<int>({did}));
                         }
                     }
 
                     if(!cur["delautodj"].isNull()){
                         QJsonObject jautodj=cur["delautodj"].toObject();
                         if(!jautodj["trackid"].isNull() && !jautodj["position"].isNull() ){
-                            QSqlDatabase dbase=DbConnectionPooled(db);
-
-                            PlaylistDAO playlist;
-
-                            playlist.initialize(dbase);
+                            PlaylistDAO &playlist=collectionManager->internalCollection()->getPlaylistDAO();
 
                             int adjid=playlist.getPlaylistIdFromName("Auto DJ");
 
@@ -175,18 +170,13 @@ namespace mixxx {
                             TrackId tid(jautodj["trackid"].toVariant());
 
                             playlist.removeTrackFromPlaylist(adjid,pos);
-
-                            emit playlist.tracksRemoved(QSet<int>({adjid}));
-
                         }
                     }
 
                     if(!cur["moveautotracklist"].isNull()){
                         QJsonObject jautodj=cur["moveautotracklist"].toObject();
                         if(!jautodj["position"].isNull() && !jautodj["newposition"].isNull() ){
-                            QSqlDatabase dbase=DbConnectionPooled(db);
-                            PlaylistDAO playlist;
-                            playlist.initialize(dbase);
+                            PlaylistDAO &playlist=collectionManager->internalCollection()->getPlaylistDAO();
 
                             int adjid=playlist.getPlaylistIdFromName("Auto DJ");
 
@@ -194,16 +184,13 @@ namespace mixxx {
                                                            jautodj["position"].toString().toInt(),
                                                            jautodj["newposition"].toString().toInt()
                                                           );
-
-                            emit playlist.tracksMoved(QSet<int>({adjid}));
                         }
                     }
 
                     if(!cur["getautotracklist"].isNull()){
                             QSqlDatabase dbase=DbConnectionPooled(db);
 
-                            PlaylistDAO playlist;
-                            playlist.initialize(dbase);
+                            PlaylistDAO &playlist=collectionManager->internalCollection()->getPlaylistDAO();
 
                             int adjid=playlist.getPlaylistIdFromName("Auto DJ");
 
