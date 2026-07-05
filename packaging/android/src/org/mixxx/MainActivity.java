@@ -193,6 +193,16 @@ public class MainActivity extends QtActivityBase {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+
+        // ─── Fullscreen: re-apply after window is ready ────────────────
+        // On Samsung One UI, WindowInsetsController may not be available
+        // during onCreate() — the window isn't fully attached yet.
+        // Re-applying here ensures system bars are hidden and the notch
+        // cutout mode is set once the window is composited.
+        if (hasFocus) {
+            AndroidScreenManager.applyFullScreen(this);
+        }
+
         View decorView = getWindow().getDecorView();
         if (hasFocus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             decorView.requestPointerCapture();

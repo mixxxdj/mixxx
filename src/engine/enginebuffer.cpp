@@ -1166,7 +1166,8 @@ void EngineBuffer::processTrackLocked(
     // determines how much to decrement so the total fade is ~800ms.
     if (m_vinylPauseState == VINYL_PAUSE_DECEL) {
         if (baseSampleRate > 0) {
-            double bufferSecs = static_cast<double>(outputBufferSize) / baseSampleRate;
+            // Buffer duration in seconds = samples / sampleRate
+            double bufferSecs = static_cast<double>(outputBufferSize) / m_pSampleRate->get();
             m_vinylPauseFactor -= bufferSecs / kVinylPauseDuration;
         } else {
             // No track loaded — stop immediately
