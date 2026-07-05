@@ -1,58 +1,31 @@
-import "." as Skin
-import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
-import QtQuick.Controls
-import QtQuick.Layouts
-import QtQuick.Window
-import QtQuick.Shapes
-import QtQuick.Window 2.12
-import Qt5Compat.GraphicalEffects
-import "Theme"
-import "."
+import "." as Skin import Mixxx 1.0 as Mixxx import QtQuick 2.12 import QtQuick.Controls import QtQuick.Layouts import QtQuick.Window import QtQuick.Shapes import QtQuick.Window 2.12 import Qt5Compat.GraphicalEffects import "Theme" import "."
 
-ApplicationWindow {
-    id: root
+        ApplicationWindow{id:root
 
-    // True on Android (and any other "small touch screen" platform). On Android
-    // we always want the window full-screen at the device's native resolution,
-    // not the desktop default of 1792x1008.
-    readonly property bool isMobile: Qt.platform.os === "android" || Qt.platform.os === "ios"
-    // The desktop new-ui was designed assuming a 1792-wide canvas. On a typical
-    // tablet (~1280-1920 wide) we still want the same desktop layout, just at
-    // the device's actual pixel size, so we drop minimum constraints to let it
-    // adapt to phones in landscape too.
-    readonly property int designWidth: 1792
-    readonly property int designHeight: 1008
+                          // True on Android (and any other "small touch screen" platform). On Android
+                          // we always want the window full-screen at the device's native resolution,
+                          // not the desktop default of 1792x1008.
+                          readonly property bool isMobile:Qt.platform.os == = "android" || Qt.platform.os == = "ios"
+                          // The desktop new-ui was designed assuming a 1792-wide canvas. On a typical
+                          // tablet (~1280-1920 wide) we still want the same desktop layout, just at
+                          // the device's actual pixel size, so we drop minimum constraints to let it
+                          // adapt to phones in landscape too.
+                          readonly property int designWidth: 1792 readonly property int designHeight: 1008
 
-    property alias editDeck: editDeckButton.checked
-    property var focusedDeck: null
-    property alias maximizeLibrary: maximizeLibraryButton.checked
-    readonly property int numDecks: 4
-    readonly property int numPreviewDecks: 1
-    readonly property int numSamplers: 16
-    readonly property int waveformOverviewTypeRgb: 2
-    readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
-    property alias showEffects: showEffectsButton.checked
-    property alias showSamplers: showSamplersButton.checked
+                          property alias editDeck:editDeckButton.checked property var focusedDeck:null property alias maximizeLibrary:maximizeLibraryButton.checked readonly property int numDecks: 4 readonly property int numPreviewDecks: 1 readonly property int numSamplers: 16 readonly property int waveformOverviewTypeRgb: 2 readonly property bool show4decks:show4DecksButton.checked && show4DecksButton.visible property alias showEffects:showEffectsButton.checked property alias showSamplers:showSamplersButton.checked
 
-    color: Theme.backgroundColor
-    // On mobile, fill the screen; on desktop, keep the original default size.
-    width: isMobile ? Screen.width : designWidth
-    height: isMobile ? Screen.height : designHeight
-    // On mobile, raise the visibility so the OS picks full-screen automatically;
-    // on desktop, keep the standard windowed default.
-    visibility: isMobile ? Window.FullScreen : Window.Windowed
-    // Loosen minimums so the layout can also fit phones in landscape.
-    minimumHeight: isMobile ? 0 : 300
-    minimumWidth: isMobile ? 0 : 680
-    visible: true
+                          color:Theme.backgroundColor
+                          // On mobile, fill the screen; on desktop, keep the original default size.
+                          width:isMobile ? Screen.width:designWidth height:isMobile ? Screen.height:designHeight
+                          // On mobile, raise the visibility so the OS picks full-screen automatically;
+                          // on desktop, keep the standard windowed default.
+                          visibility:isMobile ? Window.FullScreen:Window.Windowed
+                          // Loosen minimums so the layout can also fit phones in landscape.
+                          minimumHeight:isMobile ? 0 : 300 minimumWidth:isMobile ? 0 : 680 visible: true
 
-    Mixxx.ControlProxy {
-        group: "[App]"
-        key: "num_decks"
+                          Mixxx.ControlProxy{group: "[App]" key: "num_decks"
 
-        onInitializedChanged: {
-            value = root.numDecks;
+                                  onInitializedChanged: {value = root.numDecks;
         }
     }
     Mixxx.ControlProxy {
@@ -685,25 +658,29 @@ ApplicationWindow {
         y: Math.round((parent.height - height) / 2)
 
         Overlay.modal: Rectangle {
-                    id: overlayModal
+            id:
+                overlayModal
 
-                    readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration
-                    property real radius: 12
+                        readonly property bool hasHardwareAcceleration
+                        : Mixxx.Config
+                                  .useAcceleration property real radius : 12
 
-                    anchors.fill: parent
-                    color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
+                          anchors.fill : parent color
+                        : Qt.alpha('#00000010',
+                                  hasHardwareAcceleration ? 1.0 : 0.6)
                 }
             }
         }
     }
 
-    VinylPauseOverlay {
-        id: vinylPauseOverlay
-        anchors.fill: parent
+    VinylPauseOverlay{
+        id : vinylPauseOverlay
+                anchors.fill : parent
     }
 
     MouseDetector {
-        id: mouseDetector
-        anchors.fill: parent
+    id:
+        mouseDetector
+                anchors.fill : parent
     }
 }
