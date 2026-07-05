@@ -55,7 +55,7 @@ ComboBox {
         padding: 4
         text: root.textAt(this.index)
         verticalPadding: 8
-        width: root.width
+        width: popupItem.width
 
         background: Rectangle {
             border.color: itemDlgt.highlighted ? Theme.deckLineColor : "transparent"
@@ -73,6 +73,13 @@ ComboBox {
     }
     popup: Popup {
         id: popupItem
+
+        onOpened: {
+            Mixxx.Core.addOpenedPopup(this)
+        }
+        onClosed: {
+            Mixxx.Core.removeOpenedPopup(this)
+        }
 
         height: root.contentItem.height * (Math.min(root.popupMaxItem, Math.max(root.count, 1)) + 1)
         padding: 0

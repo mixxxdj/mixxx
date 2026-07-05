@@ -5,10 +5,18 @@ import QtQuick.Layouts
 import QtQuick.Controls 2.15
 import QtQuick.Shapes 1.12
 import QtQuick.Effects
+import Mixxx 1.0 as Mixxx
 import "Theme"
 
 Popup {
     id: root
+
+    onOpened: {
+        Mixxx.Core.addOpenedPopup(this)
+    }
+    onClosed: {
+        Mixxx.Core.removeOpenedPopup(this)
+    }
 
     enum Facing {
         Left,
