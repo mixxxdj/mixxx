@@ -20,6 +20,9 @@ Rectangle {
     property alias showMixer: showMixerButton.checked
     property alias showSamplers: showSamplersButton.checked
     property alias showWaveforms: showWaveformsButton.checked
+    property var recentlyClosedPopup: null
+    property var recentlyClosedPopupButton: null
+    property double recentlyClosedPopupTimestamp: 0
 
     function formatTime(date) {
         const hours = date.getHours();
@@ -78,6 +81,16 @@ Rectangle {
         popup.y = root.height + 2;
     }
     function openPopupForButton(popup, button) {
+        const popupWasJustClosedByThisButton = recentlyClosedPopup === popup &&
+                recentlyClosedPopupButton === button &&
+                Date.now() - recentlyClosedPopupTimestamp < 250;
+        if (popupWasJustClosedByThisButton) {
+            recentlyClosedPopup = null;
+            recentlyClosedPopupButton = null;
+            recentlyClosedPopupTimestamp = 0;
+            button.wasPopupOpenOnPress = false;
+            return;
+        }
         if (button.wasPopupOpenOnPress || (popup.visible && popup.anchorButton === button)) {
             popup.close();
             button.wasPopupOpenOnPress = false;
@@ -144,6 +157,9 @@ Rectangle {
             return LateNightTheme.toolbarRecordOnColor;
         }
         return LateNightTheme.toolbarButtonInactiveBackgroundColor;
+    }
+    function menuHoverColor(hovered, enabled) {
+        return hovered && enabled ? (LateNightTheme.isPaleMoon ? "#2c454f" : "#5e4507") : "transparent";
     }
 
     color: "#151517"
@@ -887,7 +903,7 @@ Rectangle {
                         id: hideMixerMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
+                        cursorShape: Qt.ArrowCursor
                         onClicked: {
                             root.setShowMixer(false);
                         }
@@ -1075,8 +1091,17 @@ Rectangle {
                 implicitHeight: 22
                 implicitWidth: effectUnitsHeaderContent.implicitWidth
 
-                MouseArea {
+                Rectangle {
                     anchors.fill: parent
+                    color: root.menuHoverColor(effectUnitsHeaderMouseArea.containsMouse, effectUnitsHeader.enabled)
+                    radius: 1
+                }
+
+                MouseArea {
+                    id: effectUnitsHeaderMouseArea
+                    anchors.fill: parent
+                    cursorShape: Qt.ArrowCursor
+                    hoverEnabled: true
 
                     onClicked: {
                         showEffectRackControl.value = effectUnitsHeader.checked ? 0.0 : 1.0;
@@ -1097,7 +1122,7 @@ Rectangle {
                     }
 
                     Text {
-                        color: LateNightTheme.primaryDeckTextColor
+                        color: effectUnitsHeaderMouseArea.containsMouse ? "#ffffff" : LateNightTheme.primaryDeckTextColor
                         elide: Text.ElideRight
                         font.family: "Open Sans"
                         font.pixelSize: 17
@@ -1157,8 +1182,17 @@ Rectangle {
                 implicitHeight: 22
                 implicitWidth: samplersHeaderContent.implicitWidth
 
-                MouseArea {
+                Rectangle {
                     anchors.fill: parent
+                    color: root.menuHoverColor(samplersHeaderMouseArea.containsMouse, samplersHeader.enabled)
+                    radius: 1
+                }
+
+                MouseArea {
+                    id: samplersHeaderMouseArea
+                    anchors.fill: parent
+                    cursorShape: Qt.ArrowCursor
+                    hoverEnabled: true
 
                     onClicked: {
                         showSamplersControl.value = samplersHeader.checked ? 0.0 : 1.0;
@@ -1179,7 +1213,7 @@ Rectangle {
                     }
 
                     Text {
-                        color: LateNightTheme.primaryDeckTextColor
+                        color: samplersHeaderMouseArea.containsMouse ? "#ffffff" : LateNightTheme.primaryDeckTextColor
                         elide: Text.ElideRight
                         font.family: "Open Sans"
                         font.pixelSize: 17
@@ -1271,7 +1305,7 @@ Rectangle {
                         id: loadBankMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
+                        cursorShape: Qt.ArrowCursor
                         onClicked: {
                             loadSamplerBankControl.value = 1.0;
                         }
@@ -1309,7 +1343,7 @@ Rectangle {
                         id: saveBankMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
+                        cursorShape: Qt.ArrowCursor
                         onClicked: {
                             saveSamplerBankControl.value = 1.0;
                         }
@@ -1606,6 +1640,8 @@ Rectangle {
         }
     }
     component ToolbarMenuChoice: Item {
+        id: menuChoice
+
         property bool checked: false
         property string text: ""
 
@@ -1616,8 +1652,17 @@ Rectangle {
         implicitWidth: menuChoiceText.implicitWidth + 22
         opacity: enabled ? 1.0 : 0.45
 
-        MouseArea {
+        Rectangle {
             anchors.fill: parent
+            color: root.menuHoverColor(menuChoiceMouseArea.containsMouse, menuChoice.enabled)
+            radius: 1
+        }
+
+        MouseArea {
+            id: menuChoiceMouseArea
+            anchors.fill: parent
+            cursorShape: Qt.ArrowCursor
+            hoverEnabled: true
 
             onClicked: {
                 if (parent.enabled) {
@@ -1639,7 +1684,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 22
             anchors.verticalCenter: parent.verticalCenter
-            color: "#d2d2d2"
+            color: menuChoiceMouseArea.containsMouse ? "#ffffff" : "#d2d2d2"
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
@@ -1661,7 +1706,7 @@ Rectangle {
 
         Rectangle {
             anchors.fill: parent
-            color: inlineMouseArea.containsMouse ? (LateNightTheme.isPaleMoon ? "#2c454f" : "#5e4507") : "transparent"
+            color: root.menuHoverColor(inlineMouseArea.containsMouse, inlineChoice.enabled)
             radius: 1
         }
 
@@ -1669,7 +1714,7 @@ Rectangle {
             id: inlineMouseArea
             anchors.fill: parent
             hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
+            cursorShape: Qt.ArrowCursor
 
             onClicked: {
                 if (inlineChoice.enabled) {
@@ -1727,8 +1772,17 @@ Rectangle {
             implicitHeight: 22
             implicitWidth: headerText.implicitWidth + 22
 
-            MouseArea {
+            Rectangle {
                 anchors.fill: parent
+                color: root.menuHoverColor(headerToggleMouseArea.containsMouse, headerToggle.enabled)
+                radius: 1
+            }
+
+            MouseArea {
+                id: headerToggleMouseArea
+                anchors.fill: parent
+                cursorShape: Qt.ArrowCursor
+                hoverEnabled: true
 
                 onClicked: {
                     if (sectionToggle.enabled) {
@@ -1750,7 +1804,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: 22
                 anchors.verticalCenter: parent.verticalCenter
-                color: LateNightTheme.primaryDeckTextColor
+                color: headerToggleMouseArea.containsMouse ? "#ffffff" : LateNightTheme.primaryDeckTextColor
                 elide: Text.ElideRight
                 font.family: "Open Sans"
                 font.pixelSize: 17
@@ -1772,8 +1826,17 @@ Rectangle {
         implicitWidth: menuText.implicitWidth + indent + 22
         opacity: enabled ? 1.0 : 0.45
 
-        MouseArea {
+        Rectangle {
             anchors.fill: parent
+            color: root.menuHoverColor(menuToggleMouseArea.containsMouse, menuToggle.enabled)
+            radius: 1
+        }
+
+        MouseArea {
+            id: menuToggleMouseArea
+            anchors.fill: parent
+            cursorShape: Qt.ArrowCursor
+            hoverEnabled: true
 
             onClicked: {
                 if (menuToggle.enabled && menuToggle.control && menuToggle.control.initialized) {
@@ -1796,7 +1859,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: parent.indent + 22
             anchors.verticalCenter: parent.verticalCenter
-            color: "#d2d2d2"
+            color: menuToggleMouseArea.containsMouse ? "#ffffff" : "#d2d2d2"
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
@@ -1816,6 +1879,11 @@ Rectangle {
         width: Math.min(root.width, Math.max(minimumWidth, contentColumn.implicitWidth + leftPadding + rightPadding))
 
         onClosed: {
+            if (anchorButton) {
+                root.recentlyClosedPopup = toolbarSettingsPopup;
+                root.recentlyClosedPopupButton = anchorButton;
+                root.recentlyClosedPopupTimestamp = Date.now();
+            }
             anchorButton = null;
         }
         onWidthChanged: {
