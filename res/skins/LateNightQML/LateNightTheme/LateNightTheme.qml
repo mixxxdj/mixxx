@@ -52,6 +52,11 @@ QtObject {
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
     readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
     readonly property int syncButtonHorizontalPadding: isClassic ? 3 : 0
+    readonly property color bpmTapEditorBackgroundColor: "#0f0f0f"
+    readonly property color bpmTapEditorSelectBackgroundColor: "#151517"
+    readonly property color bpmTapEditorSelectBorderColor: isPaleMoon ? "#7d350d" : "#5E4507"
+    readonly property color bpmTapEditorEditBorderColor: isPaleMoon ? "#257b82" : "#d08e00"
+    readonly property color bpmTapEditorButtonColor: "#171719"
     readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
     readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
     readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
@@ -80,6 +85,12 @@ QtObject {
     readonly property url assetDeckUndoButton: lateNightAsset("buttons", "btn__undo.svg")
     readonly property url assetDeckBpmLockedButton: lateNightAsset("buttons", "btn__bpm_locked.svg")
     readonly property url assetDeckBpmUnlockedButton: lateNightAsset("buttons", "btn__bpm_unlocked.svg")
+    readonly property url assetDeckBpmSelectTapButton: lateNightAsset("buttons", "btn__bpm_select_tap.svg")
+    readonly property url assetDeckBpmSelectEditButton: lateNightAsset("buttons", "btn__bpm_select_edit.svg")
+    readonly property url assetDeckBpmSpinboxPlusButton: lateNightAsset("buttons", "btn__bpm_spinbox_plus.svg")
+    readonly property url assetDeckBpmSpinboxMinusButton: lateNightAsset("buttons", "btn__bpm_spinbox_minus.svg")
+    readonly property url assetDeckBpmSpinboxPlusPressedButton: lateNightAsset("buttons", isClassic ? "btn__bpm_spinbox_plus_pressed.svg" : "btn__bpm_spinbox_plus.svg")
+    readonly property url assetDeckBpmSpinboxMinusPressedButton: lateNightAsset("buttons", isClassic ? "btn__bpm_spinbox_minus_pressed.svg" : "btn__bpm_spinbox_minus.svg")
     readonly property url assetDeckBeatsHotcuesEarlierButton: lateNightAsset("buttons", "btn__beats_hotcues_earlier.svg")
     readonly property url assetDeckBeatsHotcuesLaterButton: lateNightAsset("buttons", "btn__beats_hotcues_later.svg")
     readonly property url assetDeckCueButton: lateNightAsset("buttons", "btn__cue_deck.svg")

@@ -49,6 +49,12 @@ Item {
     }
 
     Mixxx.ControlProxy {
+        id: visualBpmProxy
+        group: root.group
+        key: "visual_bpm"
+    }
+
+    Mixxx.ControlProxy {
         id: rateRatioProxy
         group: root.group
         key: "rate_ratio"
@@ -117,29 +123,52 @@ Item {
         anchors.leftMargin: 2
         spacing: 3
 
-        // BPM display
-        Text {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 24
-            text: bpmProxy.value.toFixed(2)
-            font.family: "Open Sans"
-            font.pixelSize: 20
-            font.bold: true
-            color: root.bpmTextColor
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
+        Item {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: 62
+            Layout.preferredHeight: 42
 
-        // Rate percentage display
-        Text {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 17
-            text: ((rateRatioProxy.value - 1) * 100).toFixed(2)
-            font.family: "Open Sans"
-            font.pixelSize: 13
-            color: root.rateTextColor
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            Rectangle {
+                anchors.fill: parent
+                color: LateNightTheme.bpmTapEditorSelectBackgroundColor
+                radius: 1
+                visible: bpmTapEditor.mode === "listen" && bpmTapEditor.listenHovered
+            }
+
+            Column {
+                anchors.fill: parent
+
+                // BPM display
+                Text {
+                    width: parent.width
+                    height: 24
+                    text: visualBpmProxy.value.toFixed(2)
+                    font.family: "Open Sans"
+                    font.pixelSize: 20
+                    font.bold: true
+                    color: root.bpmTextColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                // Rate percentage display
+                Text {
+                    width: parent.width
+                    height: 18
+                    text: ((rateRatioProxy.value - 1) * 100).toFixed(2)
+                    font.family: "Open Sans"
+                    font.pixelSize: 13
+                    color: root.rateTextColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            LateNightBpmTapEditor {
+                id: bpmTapEditor
+                anchors.fill: parent
+                group: root.group
+            }
         }
 
         // Sync + Leader buttons
