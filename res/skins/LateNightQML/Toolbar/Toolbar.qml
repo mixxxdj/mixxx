@@ -159,15 +159,15 @@ Rectangle {
         return LateNightTheme.toolbarButtonInactiveBackgroundColor;
     }
     function menuHoverColor(hovered, enabled) {
-        return hovered && enabled ? (LateNightTheme.isPaleMoon ? "#2c454f" : "#5e4507") : "transparent";
+        return hovered && enabled ? LateNightTheme.toolbarMenuHoverColor : "transparent";
     }
 
-    color: "#151517"
+    color: LateNightTheme.toolbarRootBackgroundColor
     height: 26
 
     Rectangle {
         anchors.bottom: parent.bottom
-        color: "#020202"
+        color: LateNightTheme.toolbarBottomBorderColor
         height: 1
         width: parent.width
     }
@@ -812,7 +812,7 @@ Rectangle {
             Layout.preferredHeight: 24
             Layout.preferredWidth: 74
             fillMode: Image.PreserveAspectFit
-            source: LateNightTheme.legacyAsset("style", "mixxx_logo_small.svg")
+            source: LateNightTheme.lateNightAsset("style", "mixxx_logo_small.svg")
         }
     }
     ToolbarSettingsPopup {
@@ -884,7 +884,7 @@ Rectangle {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: hideMixerMouseArea.containsMouse ? (LateNightTheme.isPaleMoon ? "#2c454f" : "#5e4507") : "transparent"
+                        color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverColor : "transparent"
                         radius: 1
                     }
 
@@ -893,7 +893,7 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: 4
                         anchors.verticalCenter: parent.verticalCenter
-                        color: hideMixerMouseArea.containsMouse ? "#ffffff" : LateNightTheme.textColor
+                        color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.textColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "hide mixer to select"
@@ -1118,11 +1118,11 @@ Rectangle {
                         Layout.preferredHeight: 18
                         Layout.preferredWidth: 18
                         fillMode: Image.PreserveAspectFit
-                        source: effectUnitsHeader.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.legacyAsset("buttons", "btn__menu_checkbox.svg")
+                        source: effectUnitsHeader.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                     }
 
                     Text {
-                        color: effectUnitsHeaderMouseArea.containsMouse ? "#ffffff" : LateNightTheme.primaryDeckTextColor
+                        color: effectUnitsHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.primaryDeckTextColor
                         elide: Text.ElideRight
                         font.family: "Open Sans"
                         font.pixelSize: 17
@@ -1209,11 +1209,11 @@ Rectangle {
                         Layout.preferredHeight: 18
                         Layout.preferredWidth: 18
                         fillMode: Image.PreserveAspectFit
-                        source: samplersHeader.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.legacyAsset("buttons", "btn__menu_checkbox.svg")
+                        source: samplersHeader.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                     }
 
                     Text {
-                        color: samplersHeaderMouseArea.containsMouse ? "#ffffff" : LateNightTheme.primaryDeckTextColor
+                        color: samplersHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.primaryDeckTextColor
                         elide: Text.ElideRight
                         font.family: "Open Sans"
                         font.pixelSize: 17
@@ -1288,14 +1288,14 @@ Rectangle {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: loadBankMouseArea.containsMouse ? (LateNightTheme.isPaleMoon ? "#2c454f" : "#5e4507") : "transparent"
+                        color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverColor : "transparent"
                         radius: 1
                     }
 
                     Text {
                         id: loadBankText
                         anchors.centerIn: parent
-                        color: loadBankMouseArea.containsMouse ? "#ffffff" : LateNightTheme.textColor
+                        color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.textColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "Load"
@@ -1326,14 +1326,14 @@ Rectangle {
 
                     Rectangle {
                         anchors.fill: parent
-                        color: saveBankMouseArea.containsMouse ? (LateNightTheme.isPaleMoon ? "#2c454f" : "#5e4507") : "transparent"
+                        color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverColor : "transparent"
                         radius: 1
                     }
 
                     Text {
                         id: saveBankText
                         anchors.centerIn: parent
-                        color: saveBankMouseArea.containsMouse ? "#ffffff" : LateNightTheme.textColor
+                        color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.textColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "Save"
@@ -1401,16 +1401,16 @@ Rectangle {
         Layout.preferredHeight: 22
         Layout.preferredWidth: active ? 30 : 0
         fillMode: Image.PreserveAspectFit
-        source: LateNightTheme.legacyAsset("style", "autodj_status.svg")
+        source: LateNightTheme.lateNightAsset("style", "autodj_status.svg")
         visible: active
     }
     component BatteryIndicator: Shared.BatteryIcon {
         Layout.alignment: Qt.AlignVCenter
         Layout.preferredHeight: 24
         Layout.preferredWidth: 24
-        chargedSource: LateNightTheme.legacyAsset("style/batt", "ic_battery_charged.svg")
-        chargingSources: [LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_0.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_1.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_2.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_3.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_4.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_5.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_6.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_charging_7.svg")]
-        dischargingSources: [LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_0.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_1.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_2.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_3.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_4.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_5.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_6.svg"), LateNightTheme.legacyAsset("style/batt", "ic_battery_discharging_7.svg")]
+        chargedSource: LateNightTheme.lateNightAsset("style/batt", "ic_battery_charged.svg")
+        chargingSources: [LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_0.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_1.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_2.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_3.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_4.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_5.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_6.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_charging_7.svg")]
+        dischargingSources: [LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_0.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_1.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_2.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_3.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_4.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_5.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_6.svg"), LateNightTheme.lateNightAsset("style/batt", "ic_battery_discharging_7.svg")]
         fillMode: Image.PreserveAspectFit
     }
     component BroadcastIndicator: MouseArea {
@@ -1430,7 +1430,7 @@ Rectangle {
         Image {
             anchors.fill: parent
             fillMode: Image.Stretch
-            source: broadcastIndicator.status > 0 ? LateNightTheme.legacyAsset("buttons", "btn__broadcast_on.svg") : LateNightTheme.legacyAsset("buttons", "btn__broadcast_off.svg")
+            source: broadcastIndicator.status > 0 ? LateNightTheme.lateNightAsset("buttons", "btn__broadcast_on.svg") : LateNightTheme.lateNightAsset("buttons", "btn__broadcast_off.svg")
         }
         Text {
             anchors.fill: parent
@@ -1511,7 +1511,7 @@ Rectangle {
             border.right: 2
             border.top: 2
             horizontalTileMode: BorderImage.Stretch
-            source: parent.active ? LateNightTheme.legacyAsset("buttons", "btn_embedded_library_active.svg") : LateNightTheme.legacyAsset("buttons", "btn_embedded_library.svg")
+            source: parent.active ? LateNightTheme.lateNightAsset("buttons", "btn_embedded_library_active.svg") : LateNightTheme.lateNightAsset("buttons", "btn_embedded_library.svg")
             verticalTileMode: BorderImage.Stretch
         }
     }
@@ -1557,9 +1557,9 @@ Rectangle {
             spacing: 1
 
             Rectangle {
-                border.color: latencyIndicator.overload ? "#ffff00" : "#040404"
+                border.color: latencyIndicator.overload ? LateNightTheme.toolbarLatencyOverloadColor : LateNightTheme.toolbarLatencyBorderColor
                 border.width: 1
-                color: "#040404"
+                color: LateNightTheme.toolbarLatencyBorderColor
                 height: 7
                 opacity: latencyIndicator.overload ? latencyIndicator.overloadOpacity : 1.0
                 width: 61
@@ -1568,7 +1568,7 @@ Rectangle {
                     anchors.centerIn: parent
                     fillMode: Image.Stretch
                     height: 5
-                    source: LateNightTheme.legacyAsset("style", "latency_bg.png")
+                    source: LateNightTheme.lateNightAsset("style", "latency_bg.png")
                     width: 59
                 }
                 Item {
@@ -1582,13 +1582,13 @@ Rectangle {
                     Image {
                         fillMode: Image.Stretch
                         height: 5
-                        source: LateNightTheme.legacyAsset("style", "latency_over.png")
+                        source: LateNightTheme.lateNightAsset("style", "latency_over.png")
                         width: 59
                     }
                 }
             }
             Text {
-                color: "#444444"
+                color: LateNightTheme.toolbarLatencyLabelColor
                 font.family: "Open Sans"
                 font.pixelSize: 8
                 height: 10
@@ -1625,7 +1625,7 @@ Rectangle {
                 Layout.preferredWidth: 15
                 fillMode: Image.PreserveAspectFit
                 opacity: recordingIndicator.status === 1.0 ? recordingIndicator.pulseOpacity : 1.0
-                source: recordingIndicator.active ? LateNightTheme.legacyAsset("buttons", "btn__rec_dot_active.svg") : LateNightTheme.legacyAsset("buttons", "btn__rec_dot.svg")
+                source: recordingIndicator.active ? LateNightTheme.lateNightAsset("buttons", "btn__rec_dot_active.svg") : LateNightTheme.lateNightAsset("buttons", "btn__rec_dot.svg")
             }
             Text {
                 Layout.fillWidth: true
@@ -1675,7 +1675,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             fillMode: Image.PreserveAspectFit
             height: 18
-            source: parent.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.legacyAsset("buttons", "btn__menu_checkbox.svg")
+            source: parent.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
             width: 18
         }
         Text {
@@ -1684,7 +1684,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 22
             anchors.verticalCenter: parent.verticalCenter
-            color: menuChoiceMouseArea.containsMouse ? "#ffffff" : "#d2d2d2"
+            color: menuChoiceMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
@@ -1726,7 +1726,7 @@ Rectangle {
             id: inlineChoiceText
 
             anchors.centerIn: parent
-            color: inlineMouseArea.containsMouse ? "#ffffff" : (inlineChoice.checked ? LateNightTheme.primaryDeckTextColor : "#777777")
+            color: inlineMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : (inlineChoice.checked ? LateNightTheme.primaryDeckTextColor : LateNightTheme.toolbarMenuDisabledTextColor)
             font.family: "Open Sans"
             font.pixelSize: 17
             font.underline: inlineChoice.checked && !inlineMouseArea.containsMouse
@@ -1795,7 +1795,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 fillMode: Image.PreserveAspectFit
                 height: 18
-                source: headerToggle.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.legacyAsset("buttons", "btn__menu_checkbox.svg")
+                source: headerToggle.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                 width: 18
             }
             Text {
@@ -1804,7 +1804,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: 22
                 anchors.verticalCenter: parent.verticalCenter
-                color: headerToggleMouseArea.containsMouse ? "#ffffff" : LateNightTheme.primaryDeckTextColor
+                color: headerToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.primaryDeckTextColor
                 elide: Text.ElideRight
                 font.family: "Open Sans"
                 font.pixelSize: 17
@@ -1850,7 +1850,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             fillMode: Image.PreserveAspectFit
             height: 18
-            source: parent.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.legacyAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.legacyAsset("buttons", "btn__menu_checkbox.svg")
+            source: parent.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
             width: 18
         }
         Text {
@@ -1859,7 +1859,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: parent.indent + 22
             anchors.verticalCenter: parent.verticalCenter
-            color: menuToggleMouseArea.containsMouse ? "#ffffff" : "#d2d2d2"
+            color: menuToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
@@ -1893,9 +1893,9 @@ Rectangle {
         }
 
         background: Rectangle {
-            border.color: "#585858"
+            border.color: LateNightTheme.toolbarPopupBorderColor
             border.width: 1
-            color: "#0f0f0f"
+            color: LateNightTheme.toolbarPopupBackgroundColor
             radius: 2
         }
         contentItem: ColumnLayout {
