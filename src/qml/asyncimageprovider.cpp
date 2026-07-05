@@ -1,8 +1,9 @@
 #include "qml/asyncimageprovider.h"
 
-#include "library/coverartcache.h"
+#include <QThread>
+#include <QtDebug>
+
 #include "moc_asyncimageprovider.cpp"
-#include "track/track.h"
 
 namespace {
 const QString kCoverArtPrefix = QStringLiteral("coverart/");
@@ -19,63 +20,77 @@ AsyncImageResponse::AsyncImageResponse(
         : m_id(std::move(id)),
           m_requestedSize(requestedSize),
           m_pTrackCollectionManager(std::move(pTrackCollectionManager)) {
-    setAutoDelete(false);
 }
 
 QQuickTextureFactory* AsyncImageResponse::textureFactory() const {
     return QQuickTextureFactory::textureFactoryForImage(m_image);
 }
 
-void AsyncImageResponse::run() {
+void AsyncImageResponse::initialize() {
     if (!m_id.startsWith(kCoverArtPrefix)) {
         qWarning() << "ImageProvider: Unsupported ID" << m_id;
         emit finished();
         return;
     }
-    const QString trackLocation = AsyncImageProvider::coverArtUrlIdToTrackLocation(m_id);
-    const auto trackRef = TrackRef::fromFilePath(trackLocation);
+    const QString trackLocation =
+            AsyncImageProvider::coverArtUrlIdToTrackLocation(m_id);
 
-    // TODO: Only load CoverInfo from TrackCollectionManager
-    // instead of the entire, stateful track object.
-    TrackPointer pTrack;
-    if (QThread::currentThread() != m_pTrackCollectionManager->thread()) {
-        QMetaObject::invokeMethod(
-                m_pTrackCollectionManager.get(),
-                [this, trackRef] {
-                    return m_pTrackCollectionManager->getTrackByRef(trackRef);
-                },
-                // This invocation will block the current thread!
-                Qt::BlockingQueuedConnection,
-                &pTrack);
-    } else {
-        pTrack = m_pTrackCollectionManager->getTrackByRef(trackRef);
-    }
-    if (!pTrack) {
-        qWarning() << "ImageProvider: Failed to load track" << trackRef;
+    // Lightweight: query CoverInfo directly from the database without
+    // loading the full, stateful Track object.
+    m_coverInfo = m_pTrackCollectionManager->getCoverInfoForTrackLocation(
+            trackLocation);
+    if (!m_coverInfo.hasImage()) {
         emit finished();
         return;
     }
-    const auto coverInfo = CoverInfo(pTrack->getCoverInfo(), trackLocation);
-    // Release the track reference asap, i.e. before loading the image
-    pTrack.reset();
 
-    const CoverInfo::LoadedImage loadedImage = coverInfo.loadImage();
-    switch (loadedImage.result) {
-    case CoverInfo::LoadedImage::Result::NoImage:
-        break;
-    case CoverInfo::LoadedImage::Result::Ok:
-        DEBUG_ASSERT(!loadedImage.image.isNull());
-        if (m_requestedSize.isValid()) {
-            m_image = loadedImage.image.scaled(m_requestedSize);
-        } else {
-            m_image = loadedImage.image;
-        }
-        break;
-    default:
-        qWarning() << "ImageProvider: Failed to load cover art" << trackRef;
-        break;
+    const int width = m_requestedSize.isValid() ? m_requestedSize.width() : 0;
+
+    // Synchronous cache lookup. CoverArtCache uses QPixmapCache which
+    // is only safe to access from the main thread, hence initialize()
+    // is expected to run on the main thread.
+    QPixmap pixmap = CoverArtCache::getCachedCover(m_coverInfo, width);
+    if (!pixmap.isNull()) {
+        m_image = pixmap.toImage();
+        emit finished();
+        return;
     }
 
+    // Cache miss: request an asynchronous load from CoverArtCache.
+    // The coverFound signal is emitted on the main thread when the
+    // load completes. Since this response has been moved to the main
+    // thread (see AsyncImageProvider::requestImageResponse), the
+    // slot is invoked directly.
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &AsyncImageResponse::slotCoverFound);
+        CoverArtCache::requestUncachedCover(this, m_coverInfo, width);
+    } else {
+        qWarning() << "ImageProvider: CoverArtCache is not available";
+        emit finished();
+    }
+}
+
+void AsyncImageResponse::slotCoverFound(
+        const QObject* pRequester,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap) {
+    if (pRequester != this) {
+        return;
+    }
+    if (coverInfo.cacheKey() != m_coverInfo.cacheKey()) {
+        return;
+    }
+    disconnect(CoverArtCache::instance(),
+            &CoverArtCache::coverFound,
+            this,
+            &AsyncImageResponse::slotCoverFound);
+    if (!pixmap.isNull()) {
+        m_image = pixmap.toImage();
+    }
     emit finished();
 }
 
@@ -87,10 +102,29 @@ AsyncImageProvider::AsyncImageProvider(
 
 QQuickImageResponse* AsyncImageProvider::requestImageResponse(
         const QString& id, const QSize& requestedSize) {
-    AsyncImageResponse* response = new AsyncImageResponse(
+    auto* pResponse = new AsyncImageResponse(
             id, requestedSize, m_pTrackCollectionManager);
-    pool.start(response);
-    return response;
+    // The response must live on the same thread as the
+    // TrackCollectionManager (the main thread) because:
+    //  - CoverArtCache::getCachedCover() accesses QPixmapCache which
+    //    is not thread-safe.
+    //  - CoverArtCache::coverFound is emitted on the main thread and
+    //    the slot should be invoked there.
+    // move the response before connecting any signals.
+    pResponse->moveToThread(m_pTrackCollectionManager->thread());
+    if (QThread::currentThread() != m_pTrackCollectionManager->thread()) {
+        // requestImageResponse may be called from a non-main thread;
+        // initialize() must run on the main thread.
+        QMetaObject::invokeMethod(
+                m_pTrackCollectionManager.get(),
+                [pResponse] {
+                    pResponse->initialize();
+                },
+                Qt::BlockingQueuedConnection);
+    } else {
+        pResponse->initialize();
+    }
+    return pResponse;
 }
 
 // static
