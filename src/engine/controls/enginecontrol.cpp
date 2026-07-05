@@ -94,12 +94,6 @@ void EngineControl::seekExact(mixxx::audio::FramePos position) {
     }
 }
 
-void EngineControl::seek(double fractionalPosition) {
-    if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeek(fractionalPosition);
-    }
-}
-
 EngineBuffer* EngineControl::pickSyncTarget() {
     EngineMixer* pEngineMixer = getEngineMixer();
     if (!pEngineMixer) {

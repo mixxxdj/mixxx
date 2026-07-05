@@ -21,12 +21,14 @@ case "$1" in
         case "${VERSION_CODENAME}" in
             jammy|bullseye|victoria|vera|vanessa|virginia) # <= Ubuntu 22.04.5 LTS
                 PACKAGES_EXTRA=(
-                    libqt6shadertools6-dev
+                    libqt6shadertools6-dev \
+                    libqt6core5compat6-dev
                 )
                 ;;
             *)
                 PACKAGES_EXTRA=(
-                    qt6-shadertools-dev
+                    qt6-shadertools-dev \
+                    qt6-5compat-dev
                 )
         esac
 
@@ -114,7 +116,6 @@ case "$1" in
             libopusfile-dev \
             libportmidi-dev \
             libprotobuf-dev \
-            libqt6core5compat6-dev \
             libqt6opengl6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
