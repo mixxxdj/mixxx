@@ -416,6 +416,23 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
+    // ─── Vinyl pause (Rekordbox-style deceleration) ──────────────────────
+    // When play transitions 1→0, instead of stopping instantly, the deck
+    // decelerates the playback rate from current speed → 0 over ~800ms.
+    // The engine stays in "playing" mode (play = 1.0) while decelerating;
+    // the speed multiplier m_vinylPauseFactor decreases each buffer.
+    // State machine: VINYL_PAUSE_OFF → VINYL_PAUSE_DECEL → VINYL_PAUSE_STOP
+    enum VinylPauseState {
+        VINYL_PAUSE_OFF = 0,
+        VINYL_PAUSE_DECEL = 1,
+        VINYL_PAUSE_STOP = 2, // decel done, waiting for setAndConfirm
+    };
+    int m_vinylPauseState = VINYL_PAUSE_OFF;
+    // Speed multiplier: 1.0 = normal, → 0.0 = fully stopped
+    double m_vinylPauseFactor = 0.0;
+    // Total duration of the deceleration (seconds)
+    static constexpr double kVinylPauseDuration = 0.8;
+
     ControlPushButton* m_playButton;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;

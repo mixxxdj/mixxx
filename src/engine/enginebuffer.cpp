@@ -808,6 +808,35 @@ void EngineBuffer::verifyPlay() {
 
 void EngineBuffer::slotControlPlayRequest(double v) {
     bool oldPlay = m_playButton->toBool();
+
+#ifdef __ANDROID__
+    // ─── VINYL PAUSE: intercept play 1→0 to decelerate instead of stop ───
+    if (oldPlay && v <= 0.0 && m_vinylPauseState == VINYL_PAUSE_OFF) {
+        m_vinylPauseState = VINYL_PAUSE_DECEL;
+        m_vinylPauseFactor = 1.0;
+        // Keep play=1.0 so the engine continues processing with decelerating speed
+        // (reject the value change by not calling setAndConfirm)
+        return;
+    }
+
+    // ─── VINYL PAUSE completion: deceleration finished, now actually stop ──
+    if (m_vinylPauseState == VINYL_PAUSE_STOP) {
+        m_vinylPauseState = VINYL_PAUSE_OFF;
+        bool verifiedPlay = updateIndicatorsAndModifyPlay(false, true);
+        m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
+        return;
+    }
+
+    // ─── Cancel vinyl pause if user presses play during deceleration ──
+    if (m_vinylPauseState == VINYL_PAUSE_DECEL && v > 0.0) {
+        m_vinylPauseState = VINYL_PAUSE_OFF;
+        m_vinylPauseFactor = 0.0;
+        // Keep playing at normal speed
+        m_playButton->setAndConfirm(1.0);
+        return;
+    }
+#endif // __ANDROID__
+
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
@@ -944,6 +973,16 @@ void EngineBuffer::processTrackLocked(
             outputBufferSize,
             &is_scratching,
             &is_reverse);
+
+#ifdef __ANDROID__
+    // ─── Vinyl pause: multiply speed by deceleration factor ──────────
+    // When the factor is 0.5 the audio plays at half speed (pitch drops).
+    // When it reaches 0, rate == 0 and the normal pause branch kicks in.
+    // The linear scaler supports ramping through zero (used for scratching).
+    if (m_vinylPauseState == VINYL_PAUSE_DECEL) {
+        speed *= m_vinylPauseFactor;
+    }
+#endif // __ANDROID__
 
     bool useIndependentPitchAndTempoScaling = false;
 
@@ -1120,6 +1159,28 @@ void EngineBuffer::processTrackLocked(
     }
 
     m_rate_old = rate;
+
+#ifdef __ANDROID__
+    // ─── Vinyl pause deceleration step ──────────────────────────────
+    // Decrease factor for the next buffer. The buffer duration in seconds
+    // determines how much to decrement so the total fade is ~800ms.
+    if (m_vinylPauseState == VINYL_PAUSE_DECEL) {
+        if (baseSampleRate > 0) {
+            // Buffer duration in seconds = samples / sampleRate
+            double bufferSecs = static_cast<double>(outputBufferSize) / m_pSampleRate->get();
+            m_vinylPauseFactor -= bufferSecs / kVinylPauseDuration;
+        } else {
+            // No track loaded — stop immediately
+            m_vinylPauseFactor = 0.0;
+        }
+        if (m_vinylPauseFactor <= 0.0) {
+            m_vinylPauseFactor = 0.0;
+            // Signal slotControlPlayRequest to do the final stop
+            m_vinylPauseState = VINYL_PAUSE_STOP;
+            m_playButton->setAndConfirm(0.0);
+        }
+    }
+#endif // __ANDROID__
 
     // If the buffer is not paused, then scale the audio.
     if (!bCurBufferPaused) {

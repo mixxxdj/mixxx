@@ -13,9 +13,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import org.qtproject.qt.android.QtActivityBase;
 
 public class MainActivity extends QtActivityBase {
@@ -38,17 +35,10 @@ public class MainActivity extends QtActivityBase {
             getWindow().setPreferMinimalPostProcessing(true);
         }
 
-        // Disable drawing over cutout - isn't working
-        WindowManager.LayoutParams lp = this.getWindow().getAttributes();
-        lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
-        this.getWindow().setAttributes(lp);
-
-        // Disable system and navigation bar to prevent accidental back or app switch
-        WindowInsetsControllerCompat windowInsetsController =
-            WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setSystemBarsBehavior(
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars());
+        // ─── Fullscreen and notch handling (API-level-aware) ────────────
+        // Replaces inline cutout/inset code with a dedicated helper that handles
+        // all Android API levels correctly (API 35+, 30-34, 28-29, <28).
+        AndroidScreenManager.applyFullScreen(this);
 
         // ─── Input performance: elevate the UI thread priority ───────────
         // The main thread handles input events and UI rendering; a higher
@@ -85,10 +75,6 @@ public class MainActivity extends QtActivityBase {
             if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
                 != PackageManager.PERMISSION_GRANTED) {
                 needed.add(Manifest.permission.BLUETOOTH_CONNECT);
-            }
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
-                != PackageManager.PERMISSION_GRANTED) {
-                needed.add(Manifest.permission.BLUETOOTH_SCAN);
             }
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -207,6 +193,16 @@ public class MainActivity extends QtActivityBase {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+
+        // ─── Fullscreen: re-apply after window is ready ────────────────
+        // On Samsung One UI, WindowInsetsController may not be available
+        // during onCreate() — the window isn't fully attached yet.
+        // Re-applying here ensures system bars are hidden and the notch
+        // cutout mode is set once the window is composited.
+        if (hasFocus) {
+            AndroidScreenManager.applyFullScreen(this);
+        }
+
         View decorView = getWindow().getDecorView();
         if (hasFocus && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             decorView.requestPointerCapture();
