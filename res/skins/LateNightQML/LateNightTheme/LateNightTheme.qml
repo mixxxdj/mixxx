@@ -63,6 +63,7 @@ QtObject {
     readonly property int toolbarButtonHeight: 26
     readonly property int toolbarButtonWidth: 52
     readonly property url assetToolbarDropdownIcon: lateNightAsset("buttons", "btn__fx_selector_down.svg")
+    readonly property url assetToolbarMenuIcon: lateNightAsset("buttons", "btn__menu.svg")
     readonly property color toolbarMeterBackgroundColor: darkGray
     readonly property color toolbarLatencyBorderColor: "#040404"
     readonly property color toolbarLatencyOverloadColor: "#ffff00"
