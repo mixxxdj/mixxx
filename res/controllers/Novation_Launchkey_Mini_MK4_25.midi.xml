@@ -19,14 +19,14 @@
             <!-- Mod Strip MSB (CC 1) -->
             <control>
                 <group>[Master]</group>
-                <key>LaunchkeyJog.handleModStrip_MSB</key>
+                <key>LaunchkeyJog.handleModStripMsb</key>
                 <status>0xB0</status> <midino>0x01</midino>
                 <options><Script-Binding /></options>
             </control>
             <!-- Mod Strip LSB (CC 33) -->
             <control>
                 <group>[Master]</group>
-                <key>LaunchkeyJog.handleModStrip_LSB</key>
+                <key>LaunchkeyJog.handleModStripLsb</key>
                 <status>0xB0</status> <midino>0x21</midino>
                 <options><Script-Binding /></options>
             </control>
@@ -238,14 +238,14 @@
             <!-- Deck 1 Beatmatch (MSB) -->
             <control>
                 <group>[Channel1]</group>
-                <key>LaunchkeyJog.handleBeatmatchD1_MSB</key>
+                <key>LaunchkeyJog.handleBeatmatchD1Msb</key>
                 <status>0xB4</status> <midino>21</midino>
                 <options><Script-Binding /></options>
             </control>
             <!-- Deck 1 Beatmatch (LSB) -->
             <control>
                 <group>[Channel1]</group>
-                <key>LaunchkeyJog.handleBeatmatchD1_LSB</key>
+                <key>LaunchkeyJog.handleBeatmatchD1Lsb</key>
                 <status>0xB4</status> <midino>53</midino>
                 <options><Script-Binding /></options>
             </control>
@@ -267,14 +267,14 @@
             <!-- Deck 2 Beatmatch (MSB) -->
             <control>
                 <group>[Channel2]</group>
-                <key>LaunchkeyJog.handleBeatmatchD2_MSB</key>
+                <key>LaunchkeyJog.handleBeatmatchD2Msb</key>
                 <status>0xB4</status> <midino>28</midino>
                 <options><Script-Binding /></options>
             </control>
             <!-- Deck 2 Beatmatch (LSB) -->
             <control>
                 <group>[Channel2]</group>
-                <key>LaunchkeyJog.handleBeatmatchD2_LSB</key>
+                <key>LaunchkeyJog.handleBeatmatchD2Lsb</key>
                 <status>0xB4</status> <midino>60</midino>
                 <options><Script-Binding /></options>
             </control>
@@ -285,14 +285,14 @@
             <!-- Library Navigation (MSB) -->
             <control>
                 <group>[Library]</group>
-                <key>LaunchkeyJog.handleLibrary_MSB</key>
+                <key>LaunchkeyJog.handleLibraryMsb</key>
                 <status>0xB4</status> <midino>23</midino>
                 <options><Script-Binding /></options>
             </control>
             <!-- Library Navigation (LSB) -->
             <control>
                 <group>[Library]</group>
-                <key>LaunchkeyJog.handleLibrary_LSB</key>
+                <key>LaunchkeyJog.handleLibraryLsb</key>
                 <status>0xB4</status> <midino>55</midino>
                 <options><Script-Binding /></options>
             </control>

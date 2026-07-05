@@ -6,7 +6,8 @@
  * library navigation, and multi-functional performance pads.
  */
 
-const LaunchkeyJog = {};
+// eslint-disable-next-line no-var
+var LaunchkeyJog = {};
 
 // Active deck and scratch position memory
 LaunchkeyJog.activeDeck = 1;
@@ -15,25 +16,25 @@ LaunchkeyJog.lastTimeDeck1 = null;
 
 // Temporary storage for assembling 14-bit Mod Strip values
 LaunchkeyJog.modStrip14Bit = {
-  msb: 0,
-  lsb: 0,
+    msb: 0,
+    lsb: 0,
 };
 
 // Physics parameters for slide gestures
 LaunchkeyJog.inertia = {
-  timerId: null,
-  velocity: 0,
-  friction: 0.95, // Decay rate for track momentum when finger is released
-  minVelocity: 0.05, // Threshold below which inertia processing stops
-  lastMidiTime: 0,
-  largeSlideThreshold: 0.8, // Sensitivity threshold for triggering slide inertia
-  isLargeSlide: false,
+    timerId: null,
+    velocity: 0,
+    friction: 0.95, // Decay rate for track momentum when finger is released
+    minVelocity: 0.05, // Threshold below which inertia processing stops
+    lastMidiTime: 0,
+    largeSlideThreshold: 0.8, // Sensitivity threshold for triggering slide inertia
+    isLargeSlide: false,
 };
 
 // Toggle states for Shift and Loops for each Deck (1 and 2)
 LaunchkeyJog.deckState = {
-  1: { shiftActive: false, inLoop: false },
-  2: { shiftActive: false, inLoop: false },
+    1: {shiftActive: false, inLoop: false},
+    2: {shiftActive: false, inLoop: false},
 };
 
 // Input state tracking variables
@@ -58,13 +59,15 @@ LaunchkeyJog.macroDirection = 0;
 LaunchkeyJog.handleShift = function(channel, control, value, _status, _group) {
     const deck = control === 0x44 ? 1 : 2;
     const state = LaunchkeyJog.deckState[deck];
-  state.shiftActive = value > 0;
+    state.shiftActive = value > 0;
 
-  if (state.shiftActive) {
-    LaunchkeyJog.activeDeck = deck;
-    LaunchkeyJog.lastPosDeck1 = null;
-    print(">>> Shift Deck " + deck + " attivo: Pitch Strip riassegnata <<<");
-  }
+    if (state.shiftActive) {
+        LaunchkeyJog.activeDeck = deck;
+        LaunchkeyJog.lastPosDeck1 = null;
+        print(
+            `>>> Shift Deck ${  deck  } attivo: Pitch Strip riassegnata <<<`,
+        );
+    }
 };
 
 /**
@@ -84,56 +87,56 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     let groupTarget;
     const d1Pads = [0x3c, 0x3d, 0x3e, 0x40, 0x3f, 0x42];
 
-  if (d1Pads.indexOf(control) !== -1) {
-    deck = 1;
-    groupTarget = "[Channel1]";
-  } else {
-    deck = 2;
-    groupTarget = "[Channel2]";
-  }
+    if (d1Pads.indexOf(control) !== -1) {
+        deck = 1;
+        groupTarget = "[Channel1]";
+    } else {
+        deck = 2;
+        groupTarget = "[Channel2]";
+    }
 
     const state = LaunchkeyJog.deckState[deck];
 
-  switch (control) {
+    switch (control) {
     // Cue buttons
     case 0x3c:
     case 0x48:
-      if (!isPress) return;
-      engine.setValue(groupTarget, "cue_default", 1);
-      break;
+        if (!isPress) { return; }
+        engine.setValue(groupTarget, "cue_default", 1);
+        break;
 
-    // Play/Pause buttons
+        // Play/Pause buttons
     case 0x3d:
     case 0x4e: {
         // 🔑 Scope bracket added
-      if (!isPress) return;
+        if (!isPress) { return; }
         const currentPlay = engine.getValue(groupTarget, "play");
 
-      // Shift + Play triggers a 1-bar quantized pause
-      if (state.shiftActive && currentPlay === 1) {
+        // Shift + Play triggers a 1-bar quantized pause
+        if (state.shiftActive && currentPlay === 1) {
             let bpm = engine.getValue(groupTarget, "file_bpm");
-        if (bpm <= 0) bpm = engine.getValue(groupTarget, "bpm");
-        if (bpm <= 0) bpm = 120;
+            if (bpm <= 0) { bpm = engine.getValue(groupTarget, "bpm"); }
+            if (bpm <= 0) { bpm = 120; }
 
             const oneBarMs = (60000 / bpm) * 4;
-        print(
-          ">>> [SHIFT+PLAY] Pausa quantizzata: stop tra " +
-            Math.round(oneBarMs) +
-            "ms <<<",
-        );
+            print(
+                `>>> [SHIFT+PLAY] Pausa quantizzata: stop tra ${
+                    Math.round(oneBarMs)
+                }ms <<<`,
+            );
 
-        engine.beginTimer(
-          oneBarMs,
-          function () {
-            engine.setValue(groupTarget, "play", 0);
-          },
-          true,
-        );
-      } else {
-        // Standard toggle behavior
-        engine.setValue(groupTarget, "play", !currentPlay);
-      }
-      break;
+            engine.beginTimer(
+                oneBarMs,
+                function() {
+                    engine.setValue(groupTarget, "play", 0);
+                },
+                true,
+            );
+        } else {
+            // Standard toggle behavior
+            engine.setValue(groupTarget, "play", !currentPlay);
+        }
+        break;
     } // 🔑 Scope bracket added
 
     // Hotcue 1
@@ -141,8 +144,12 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     case 0x45: {
         // 🔑 Scope bracket added
         const action1 = state.shiftActive ? "clear" : "activate";
-      engine.setValue(groupTarget, "hotcue_1_" + action1, isPress ? 1 : 0);
-      break;
+        engine.setValue(
+            groupTarget,
+            `hotcue_1_${  action1}`,
+            isPress ? 1 : 0,
+        );
+        break;
     } // 🔑 Scope bracket added
 
     // Hotcue 2
@@ -150,52 +157,56 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     case 0x47: {
         // 🔑 Scope bracket added
         const action2 = state.shiftActive ? "clear" : "activate";
-      engine.setValue(groupTarget, "hotcue_2_" + action2, isPress ? 1 : 0);
-      break;
+        engine.setValue(
+            groupTarget,
+            `hotcue_2_${  action2}`,
+            isPress ? 1 : 0,
+        );
+        break;
     } // 🔑 Scope bracket added
 
     // Loop Control Left
     case 0x3f:
     case 0x49: {
         // 🔑 Scope bracket added
-      if (!isPress) return;
-      if (state.shiftActive) {
-        engine.setValue(groupTarget, "loop_exit", 1);
-        state.inLoop = false;
-      } else {
+        if (!isPress) { return; }
+        if (state.shiftActive) {
+            engine.setValue(groupTarget, "loop_exit", 1);
+            state.inLoop = false;
+        } else {
             const cmdLeft = state.inLoop
-          ? deck === 1
-            ? "loop_double"
-            : "loop_halve"
-          : "beatloop_activate";
-        if (!state.inLoop) engine.setValue(groupTarget, "beatloop_size", 1);
-        engine.setValue(groupTarget, cmdLeft, 1);
-        state.inLoop = true;
-      }
-      break;
+                ? deck === 1
+                    ? "loop_double"
+                    : "loop_halve"
+                : "beatloop_activate";
+            if (!state.inLoop) { engine.setValue(groupTarget, "beatloop_size", 1); }
+            engine.setValue(groupTarget, cmdLeft, 1);
+            state.inLoop = true;
+        }
+        break;
     } // 🔑 Scope bracket added
 
     // Loop Control Right
     case 0x42:
     case 0x4b: {
         // 🔑 Scope bracket added
-      if (!isPress) return;
-      if (state.shiftActive) {
-        engine.setValue(groupTarget, "loop_exit", 1);
-        state.inLoop = false;
-      } else {
+        if (!isPress) { return; }
+        if (state.shiftActive) {
+            engine.setValue(groupTarget, "loop_exit", 1);
+            state.inLoop = false;
+        } else {
             const cmdRight = state.inLoop
-          ? deck === 1
-            ? "loop_halve"
-            : "loop_double"
-          : "beatloop_activate";
-        if (!state.inLoop) engine.setValue(groupTarget, "beatloop_size", 1);
-        engine.setValue(groupTarget, cmdRight, 1);
-        state.inLoop = true;
-      }
-      break;
+                ? deck === 1
+                    ? "loop_halve"
+                    : "loop_double"
+                : "beatloop_activate";
+            if (!state.inLoop) { engine.setValue(groupTarget, "beatloop_size", 1); }
+            engine.setValue(groupTarget, cmdRight, 1);
+            state.inLoop = true;
+        }
+        break;
     } // 🔑 Scope bracket added
-  }
+    }
 };
 
 /**
@@ -208,9 +219,9 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
  * @param {string} _group The Mixxx control group (unused)
  */
 LaunchkeyJog.toggleDeck = function(channel, control, value, _status, _group) {
-  if (value === 0) return;
-  LaunchkeyJog.activeDeck = LaunchkeyJog.activeDeck === 1 ? 2 : 1;
-  LaunchkeyJog.lastPosDeck1 = null;
+    if (value === 0) { return; }
+    LaunchkeyJog.activeDeck = LaunchkeyJog.activeDeck === 1 ? 2 : 1;
+    LaunchkeyJog.lastPosDeck1 = null;
 };
 
 // ====================================================
@@ -218,19 +229,19 @@ LaunchkeyJog.toggleDeck = function(channel, control, value, _status, _group) {
 // ====================================================
 
 LaunchkeyJog.BEATMATCH_CONST = {
-  // EMA Filter: 1.0 = raw/instantaneous, 0.5 = balanced, 0.2 = smooth but delayed.
-  EMA_ALPHA: 0.8,
+    // EMA Filter: 1.0 = raw/instantaneous, 0.5 = balanced, 0.2 = smooth but delayed.
+    EMA_ALPHA: 0.8,
 
     // Speed scaling of the nudge.
-  SENSITIVITY: 0.05,
+    SENSITIVITY: 0.05,
 
     // Deadzone to ignore hardware noise when the encoder is resting.
-  DEADZONE: 1,
+    DEADZONE: 1,
 };
 
 LaunchkeyJog.beatmatchState = {
-  1: { msb: 64, lsb: 0, lastPos: null, emaVelocity: 0 },
-  2: { msb: 64, lsb: 0, lastPos: null, emaVelocity: 0 },
+    1: {msb: 64, lsb: 0, lastPos: null, emaVelocity: 0},
+    2: {msb: 64, lsb: 0, lastPos: null, emaVelocity: 0},
 };
 
 /**
@@ -242,14 +253,14 @@ LaunchkeyJog.beatmatchState = {
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleBeatmatchD1_MSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleBeatmatchD1Msb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.beatmatchState[1].msb = value;
+    LaunchkeyJog.beatmatchState[1].msb = value;
 };
 
 /**
@@ -261,15 +272,15 @@ LaunchkeyJog.handleBeatmatchD1_MSB = function (
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleBeatmatchD1_LSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleBeatmatchD1Lsb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.beatmatchState[1].lsb = value;
-  LaunchkeyJog.processBeatmatch(1);
+    LaunchkeyJog.beatmatchState[1].lsb = value;
+    LaunchkeyJog.processBeatmatch(1);
 };
 
 /**
@@ -281,14 +292,14 @@ LaunchkeyJog.handleBeatmatchD1_LSB = function (
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleBeatmatchD2_MSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleBeatmatchD2Msb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.beatmatchState[2].msb = value;
+    LaunchkeyJog.beatmatchState[2].msb = value;
 };
 
 /**
@@ -300,15 +311,15 @@ LaunchkeyJog.handleBeatmatchD2_MSB = function (
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleBeatmatchD2_LSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleBeatmatchD2Lsb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.beatmatchState[2].lsb = value;
-  LaunchkeyJog.processBeatmatch(2);
+    LaunchkeyJog.beatmatchState[2].lsb = value;
+    LaunchkeyJog.processBeatmatch(2);
 };
 
 /**
@@ -323,33 +334,32 @@ LaunchkeyJog.processBeatmatch = function (deck) {
 
     const rawPos = (state.msb << 7) | state.lsb;
 
-  if (state.lastPos === null) {
-    state.lastPos = rawPos;
-    return;
-  }
+    if (state.lastPos === null) {
+        state.lastPos = rawPos;
+        return;
+    }
 
     let rawDelta = rawPos - state.lastPos;
 
-  // Handle wrap-around for infinite encoders
-  if (rawDelta > 8192) rawDelta -= 16384;
-  else if (rawDelta < -8192) rawDelta += 16384;
+    // Handle wrap-around for infinite encoders
+    if (rawDelta > 8192) { rawDelta -= 16384; } else if (rawDelta < -8192) { rawDelta += 16384; }
 
-  state.lastPos = rawPos;
+    state.lastPos = rawPos;
 
-  if (Math.abs(rawDelta) <= C.DEADZONE) {
-    state.emaVelocity = 0;
-    return;
-  }
+    if (Math.abs(rawDelta) <= C.DEADZONE) {
+        state.emaVelocity = 0;
+        return;
+    }
 
-  // Smooth the velocity using Exponential Moving Average
-  state.emaVelocity =
-    C.EMA_ALPHA * rawDelta + (1.0 - C.EMA_ALPHA) * state.emaVelocity;
+    // Smooth the velocity using Exponential Moving Average
+    state.emaVelocity =
+        C.EMA_ALPHA * rawDelta + (1.0 - C.EMA_ALPHA) * state.emaVelocity;
 
-  engine.setValue(
-    "[Channel" + deck + "]",
-    "jog",
-    state.emaVelocity * C.SENSITIVITY,
-  );
+    engine.setValue(
+        `[Channel${  deck  }]`,
+        "jog",
+        state.emaVelocity * C.SENSITIVITY,
+    );
 };
 
 // ====================================================
@@ -357,10 +367,10 @@ LaunchkeyJog.processBeatmatch = function (deck) {
 // ====================================================
 
 LaunchkeyJog.LIBRARY_CONST = {
-  SCROLL_SENSITIVITY: 3,
+    SCROLL_SENSITIVITY: 3,
 };
 
-LaunchkeyJog.lib = { msb: 64, lsb: 0, lastVal: null, accumulator: 0 };
+LaunchkeyJog.lib = {msb: 64, lsb: 0, lastVal: null, accumulator: 0};
 
 /**
  * MSB Receiver for Library scrolling.
@@ -371,14 +381,14 @@ LaunchkeyJog.lib = { msb: 64, lsb: 0, lastVal: null, accumulator: 0 };
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleLibrary_MSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleLibraryMsb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.lib.msb = value;
+    LaunchkeyJog.lib.msb = value;
 };
 
 /**
@@ -390,20 +400,20 @@ LaunchkeyJog.handleLibrary_MSB = function (
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleLibrary_LSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleLibraryLsb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.lib.lsb = value;
-  LaunchkeyJog.processLibraryMovement(
-    LaunchkeyJog.lib,
-    "MoveDown",
-    "MoveUp",
-    LaunchkeyJog.LIBRARY_CONST.SCROLL_SENSITIVITY,
-  );
+    LaunchkeyJog.lib.lsb = value;
+    LaunchkeyJog.processLibraryMovement(
+        LaunchkeyJog.lib,
+        "MoveDown",
+        "MoveUp",
+        LaunchkeyJog.LIBRARY_CONST.SCROLL_SENSITIVITY,
+    );
 };
 
 /**
@@ -416,35 +426,35 @@ LaunchkeyJog.handleLibrary_LSB = function (
  * @param {number} sensitivity Number of physical ticks required to jump
  */
 LaunchkeyJog.processLibraryMovement = function (
-  state,
-  cmdForward,
-  cmdBackward,
-  sensitivity,
+    state,
+    cmdForward,
+    cmdBackward,
+    sensitivity,
 ) {
     const currentVal = (state.msb << 7) | state.lsb;
 
-  if (state.lastVal === null) {
-    state.lastVal = currentVal;
-    return;
-  }
+    if (state.lastVal === null) {
+        state.lastVal = currentVal;
+        return;
+    }
 
     const delta = currentVal - state.lastVal;
 
-  // Update lastVal immediately to keep tracking clean
-  state.lastVal = currentVal;
+    // Update lastVal immediately to keep tracking clean
+    state.lastVal = currentVal;
 
-  state.accumulator += delta;
+    state.accumulator += delta;
 
-  // Trigger UI movement ticks and completely RESET the accumulator remainder.
-  if (state.accumulator >= sensitivity) {
-    engine.setValue("[Library]", cmdForward, 1);
-    engine.setValue("[Library]", cmdForward, 0);
-    state.accumulator = 0; // Clear the remainder
-  } else if (state.accumulator <= -sensitivity) {
-    engine.setValue("[Library]", cmdBackward, 1);
-    engine.setValue("[Library]", cmdBackward, 0);
-    state.accumulator = 0; // Clear the remainder
-  }
+    // Trigger UI movement ticks and completely RESET the accumulator remainder.
+    if (state.accumulator >= sensitivity) {
+        engine.setValue("[Library]", cmdForward, 1);
+        engine.setValue("[Library]", cmdForward, 0);
+        state.accumulator = 0; // Clear the remainder
+    } else if (state.accumulator <= -sensitivity) {
+        engine.setValue("[Library]", cmdBackward, 1);
+        engine.setValue("[Library]", cmdBackward, 0);
+        state.accumulator = 0; // Clear the remainder
+    }
 };
 
 /**
@@ -459,28 +469,28 @@ LaunchkeyJog.processLibraryMovement = function (
  * @param {string} _group The Mixxx control group (unused)
  */
 LaunchkeyJog.handleLoadTrack = function (
-  channel,
-  control,
-  value,
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  if (value === 0) return;
+    if (value === 0) { return; }
 
     const deck = control === 0x41 ? 1 : 2;
     const state = LaunchkeyJog.deckState[deck];
     const groupTarget = `[Channel${deck}]`;
 
-  if (state.shiftActive) {
-    engine.setValue(groupTarget, "LoadSelectedTrack", 1);
-    print(">>> Caricamento traccia su Deck " + deck + " <<<");
-  } else {
-    engine.setValue(
-      groupTarget,
-      "sync_enabled",
-      !engine.getValue(groupTarget, "sync_enabled"),
-    );
-  }
+    if (state.shiftActive) {
+        engine.setValue(groupTarget, "LoadSelectedTrack", 1);
+        print(`>>> Caricamento traccia su Deck ${  deck  } <<<`);
+    } else {
+        engine.setValue(
+            groupTarget,
+            "sync_enabled",
+            !engine.getValue(groupTarget, "sync_enabled"),
+        );
+    }
 };
 
 // ========================
@@ -494,21 +504,21 @@ LaunchkeyJog.MODSTRIP_CONST = {
      * High α (0.5) = responsive but noisy, low α (0.2) = smooth but slow.
      * 0.35 is the ideal compromise for a 14-bit capacitive strip.
      */
-  EMA_ALPHA: 0.35,
+    EMA_ALPHA: 0.35,
 
     /**
      * Converts the filtered delta (14-bit units) into scratch ticks for Mixxx.
      * The strip has ~100mm of travel over 16384 steps → 1mm ≈ 164 steps.
      * 0.08 tick/step × 164 steps/mm ≈ 13 ticks/mm → similar to a 100mm jogwheel.
      */
-  SCRATCH_SENSITIVITY: 0.08,
+    SCRATCH_SENSITIVITY: 0.08,
 
     /**
      * Deadzone: we ignore delta ≤ 1 14-bit unit.
      * Capacitive noise from a stationary finger generates oscillations of ±1-2 LSB.
      * Without a deadzone, the track/disc "vibrates" imperceptibly but audibly.
      */
-  DEADZONE: 1,
+    DEADZONE: 1,
 
     /**
      * Watchdog interval (ms). A low-frequency timer checks
@@ -516,14 +526,14 @@ LaunchkeyJog.MODSTRIP_CONST = {
      * 50ms is a good compromise: fast enough to detect release,
      * slow enough for us to tolerate 1 lost packet without false release.
      */
-  WATCHDOG_INTERVAL_MS: 50,
+    WATCHDOG_INTERVAL_MS: 50,
 
     /**
      * Minimum EMA velocity (14-bit units/frame) to trigger inertia.
      * A fast swipe generates delta of ~30-80 units/frame on the strip.
      * Threshold at 5.0 covers only intentional swipes, where we ignore slow releases.
      */
-  INERTIA_THRESHOLD: 5.0,
+    INERTIA_THRESHOLD: 5.0,
 
     /**
      * Exponential decay of inertia per frame (every 16ms).
@@ -532,25 +542,25 @@ LaunchkeyJog.MODSTRIP_CONST = {
      * This gives a "light vinyl" feel — enough to continue
      * the momentum but not so long as to feel like a sled on ice.
      */
-  INERTIA_FRICTION: 0.95,
+    INERTIA_FRICTION: 0.95,
 
     /**
      * Inertia stop threshold (scratch ticks).
      * Below 1.5 ticks the sound is no longer audible, so we stop the loop.
      */
-  INERTIA_MIN_VELOCITY: 1.5,
+    INERTIA_MIN_VELOCITY: 1.5,
 };
 
 LaunchkeyJog.modStrip = {
-  msb: 64,
-  lsb: 0,
-  lastRawPos: null,
-  emaVelocity: 0,
-  isScratching: false,
-  midiPacketCount: 0,
-  watchdogTimerId: null,
-  inertiaTimerId: null,
-  inertiaVelocity: 0,
+    msb: 64,
+    lsb: 0,
+    lastRawPos: null,
+    emaVelocity: 0,
+    isScratching: false,
+    midiPacketCount: 0,
+    watchdogTimerId: null,
+    inertiaTimerId: null,
+    inertiaVelocity: 0,
 };
 
 /**
@@ -562,14 +572,14 @@ LaunchkeyJog.modStrip = {
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleModStrip_MSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleModStripMsb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.modStrip.msb = value;
+    LaunchkeyJog.modStrip.msb = value;
 };
 
 /**
@@ -581,15 +591,15 @@ LaunchkeyJog.handleModStrip_MSB = function (
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleModStrip_LSB = function (
-  channel,
-  control,
-  value,
+LaunchkeyJog.handleModStripLsb = function(
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
-  LaunchkeyJog.modStrip.lsb = value;
-  LaunchkeyJog.updateModStripTarget();
+    LaunchkeyJog.modStrip.lsb = value;
+    LaunchkeyJog.updateModStripTarget();
 };
 
 /**
@@ -601,42 +611,43 @@ LaunchkeyJog.updateModStripTarget = function () {
     const deck = LaunchkeyJog.activeDeck;
 
     const rawPos = (m.msb << 7) | m.lsb;
-  m.midiPacketCount++;
+    m.midiPacketCount++;
 
-  if (m.inertiaTimerId !== null) {
-    engine.stopTimer(m.inertiaTimerId);
-    m.inertiaVelocity = 0;
-  }
-
-  if (!m.isScratching) {
-    m.lastRawPos = rawPos;
-    m.emaVelocity = 0;
-    m.isScratching = true;
-
-    engine.scratchEnable(deck, 128, 33 + 1 / 3, 0.25, 1.0 / 256);
-
-    if (m.watchdogTimerId === null) {
-      m.watchdogTimerId = engine.beginTimer(
-        C.WATCHDOG_INTERVAL_MS,
-        function () {
-          LaunchkeyJog.modStripWatchdog();
-        },
-        false,
-      );
+    if (m.inertiaTimerId !== null) {
+        engine.stopTimer(m.inertiaTimerId);
+        m.inertiaVelocity = 0;
     }
-    return;
-  }
+
+    if (!m.isScratching) {
+        m.lastRawPos = rawPos;
+        m.emaVelocity = 0;
+        m.isScratching = true;
+
+        engine.scratchEnable(deck, 128, 33 + 1 / 3, 0.25, 1.0 / 256);
+
+        if (m.watchdogTimerId === null) {
+            m.watchdogTimerId = engine.beginTimer(
+                C.WATCHDOG_INTERVAL_MS,
+                function() {
+                    LaunchkeyJog.modStripWatchdog();
+                },
+                false,
+            );
+        }
+        return;
+    }
 
     const rawDelta = rawPos - m.lastRawPos;
-  m.lastRawPos = rawPos;
+    m.lastRawPos = rawPos;
 
-  if (Math.abs(rawDelta) <= C.DEADZONE) {
-    return;
-  }
+    if (Math.abs(rawDelta) <= C.DEADZONE) {
+        return;
+    }
 
-  m.emaVelocity = C.EMA_ALPHA * rawDelta + (1.0 - C.EMA_ALPHA) * m.emaVelocity;
+    m.emaVelocity =
+        C.EMA_ALPHA * rawDelta + (1.0 - C.EMA_ALPHA) * m.emaVelocity;
     const scratchTicks = m.emaVelocity * C.SCRATCH_SENSITIVITY;
-  engine.scratchTick(deck, scratchTicks);
+    engine.scratchTick(deck, scratchTicks);
 };
 
 /**
@@ -647,42 +658,42 @@ LaunchkeyJog.modStripWatchdog = function () {
     const C = LaunchkeyJog.MODSTRIP_CONST;
     const deck = LaunchkeyJog.activeDeck;
 
-  if (!m.isScratching) {
-    if (m.watchdogTimerId !== null) {
-      engine.stopTimer(m.watchdogTimerId);
-      m.watchdogTimerId = null;
+    if (!m.isScratching) {
+        if (m.watchdogTimerId !== null) {
+            engine.stopTimer(m.watchdogTimerId);
+            m.watchdogTimerId = null;
+        }
+        return;
     }
-    return;
-  }
 
-  if (m.midiPacketCount > 0) {
-    m.midiPacketCount = 0;
-    return;
-  }
+    if (m.midiPacketCount > 0) {
+        m.midiPacketCount = 0;
+        return;
+    }
 
-  engine.stopTimer(m.watchdogTimerId);
-  m.watchdogTimerId = null;
-  m.isScratching = false;
+    engine.stopTimer(m.watchdogTimerId);
+    m.watchdogTimerId = null;
+    m.isScratching = false;
 
     const releaseVelocity = m.emaVelocity;
     const releaseTickVelocity = releaseVelocity * C.SCRATCH_SENSITIVITY;
 
-  if (Math.abs(releaseVelocity) > C.INERTIA_THRESHOLD) {
-    m.inertiaVelocity = releaseTickVelocity;
-    m.inertiaTimerId = engine.beginTimer(
+    if (Math.abs(releaseVelocity) > C.INERTIA_THRESHOLD) {
+        m.inertiaVelocity = releaseTickVelocity;
+        m.inertiaTimerId = engine.beginTimer(
             16,
-      function () {
-        LaunchkeyJog.applyModStripInertia();
-      },
-      false,
-    );
-  } else {
-    engine.scratchTick(deck, 0);
-    engine.scratchDisable(deck, false);
-  }
+            function() {
+                LaunchkeyJog.applyModStripInertia();
+            },
+            false,
+        );
+    } else {
+        engine.scratchTick(deck, 0);
+        engine.scratchDisable(deck, false);
+    }
 
-  m.emaVelocity = 0;
-  m.lastRawPos = null;
+    m.emaVelocity = 0;
+    m.lastRawPos = null;
 };
 
 /**
@@ -693,24 +704,24 @@ LaunchkeyJog.applyModStripInertia = function () {
     const C = LaunchkeyJog.MODSTRIP_CONST;
     const deck = LaunchkeyJog.activeDeck;
 
-  m.inertiaVelocity *= C.INERTIA_FRICTION;
+    m.inertiaVelocity *= C.INERTIA_FRICTION;
 
-  if (Math.abs(m.inertiaVelocity) <= C.INERTIA_MIN_VELOCITY) {
-    engine.stopTimer(m.inertiaTimerId);
-    m.inertiaTimerId = null;
-    m.inertiaVelocity = 0;
-    engine.scratchTick(deck, 0);
-    engine.scratchDisable(deck, false);
-    return;
-  }
+    if (Math.abs(m.inertiaVelocity) <= C.INERTIA_MIN_VELOCITY) {
+        engine.stopTimer(m.inertiaTimerId);
+        m.inertiaTimerId = null;
+        m.inertiaVelocity = 0;
+        engine.scratchTick(deck, 0);
+        engine.scratchDisable(deck, false);
+        return;
+    }
 
-  if (engine.isScratching(deck)) {
-    engine.scratchTick(deck, m.inertiaVelocity);
-  } else {
-    engine.stopTimer(m.inertiaTimerId);
-    m.inertiaTimerId = null;
-    m.inertiaVelocity = 0;
-  }
+    if (engine.isScratching(deck)) {
+        engine.scratchTick(deck, m.inertiaVelocity);
+    } else {
+        engine.stopTimer(m.inertiaTimerId);
+        m.inertiaTimerId = null;
+        m.inertiaVelocity = 0;
+    }
 };
 
 // ====================================================
@@ -718,19 +729,19 @@ LaunchkeyJog.applyModStripInertia = function () {
 // ====================================================
 
 LaunchkeyJog.CROSSFADER_CONST = {
-  CATCHUP_THRESHOLD: 0.15,
-  EMA_ALPHA: 0.4,
+    CATCHUP_THRESHOLD: 0.15,
+    EMA_ALPHA: 0.4,
 };
 
 LaunchkeyJog.pitchBendTmp = {
-  msb: 64,
-  lsb: 0,
+    msb: 64,
+    lsb: 0,
 };
 
 LaunchkeyJog.crossfaderState = {
-  lastVirtualPos: 0.0,
+    lastVirtualPos: 0.0,
     isLocked: true,
-  isFirstTouch: true,
+    isFirstTouch: true,
 };
 
 /**
@@ -743,9 +754,9 @@ LaunchkeyJog.crossfaderState = {
  * @param {string} _group The Mixxx control group (unused)
  */
 LaunchkeyJog.handleCrossfaderStrip = function (
-  channel,
-  control,
-  value,
+    channel,
+    control,
+    value,
     _status,
     _group,
 ) {
@@ -756,41 +767,41 @@ LaunchkeyJog.handleCrossfaderStrip = function (
     const msb = value;
     const raw14Bit = (msb << 7) | lsb;
 
-  if (raw14Bit >= 8190 && raw14Bit <= 8194) {
-    state.isLocked = true;
-    state.isFirstTouch = true;
-    return;
-  }
+    if (raw14Bit >= 8190 && raw14Bit <= 8194) {
+        state.isLocked = true;
+        state.isFirstTouch = true;
+        return;
+    }
 
     let normalized = (raw14Bit - 8192) / 8192.0;
 
-  if (normalized < -1.0) normalized = -1.0;
-  if (normalized > 1.0) normalized = 1.0;
+    if (normalized < -1.0) { normalized = -1.0; }
+    if (normalized > 1.0) { normalized = 1.0; }
 
     const currentCrossfader = engine.getValue("[Master]", "crossfader");
 
-  if (state.isFirstTouch) {
-    state.lastVirtualPos = currentCrossfader;
-    state.isFirstTouch = false;
-    state.isLocked = true;
-  }
-
-  if (state.isLocked) {
-        const distance = Math.abs(normalized - currentCrossfader);
-    if (distance <= C.CATCHUP_THRESHOLD) {
-      state.isLocked = false;
-      state.lastVirtualPos = currentCrossfader;
-    } else {
-      return;
+    if (state.isFirstTouch) {
+        state.lastVirtualPos = currentCrossfader;
+        state.isFirstTouch = false;
+        state.isLocked = true;
     }
-  }
+
+    if (state.isLocked) {
+        const distance = Math.abs(normalized - currentCrossfader);
+        if (distance <= C.CATCHUP_THRESHOLD) {
+            state.isLocked = false;
+            state.lastVirtualPos = currentCrossfader;
+        } else {
+            return;
+        }
+    }
 
     let smoothed =
-    C.EMA_ALPHA * normalized + (1.0 - C.EMA_ALPHA) * state.lastVirtualPos;
+        C.EMA_ALPHA * normalized + (1.0 - C.EMA_ALPHA) * state.lastVirtualPos;
 
-  if (smoothed < -1.0) smoothed = -1.0;
-  if (smoothed > 1.0) smoothed = 1.0;
+    if (smoothed < -1.0) { smoothed = -1.0; }
+    if (smoothed > 1.0) { smoothed = 1.0; }
 
-  engine.setValue("[Master]", "crossfader", smoothed);
-  state.lastVirtualPos = smoothed;
+    engine.setValue("[Master]", "crossfader", smoothed);
+    state.lastVirtualPos = smoothed;
 };
