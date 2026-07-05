@@ -21,6 +21,7 @@
 #include "qml/asyncimageprovider.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
+#include "qmlcoreservices.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -120,6 +121,9 @@ QmlApplication::QmlApplication(
         m_mainFilePath = externalQmlDir + QStringLiteral("/main.qml");
     }
 #endif
+
+    QJSEngine::setObjectOwnership(QmlCoreServices::createInstance(this), QJSEngine::CppOwnership);
+    loadQml(m_mainFilePath);
 
     m_pCoreServices->initialize(app);
 
@@ -265,7 +269,11 @@ QmlApplication::QmlApplication(
     });
     m_guiTickTimer.start(std::chrono::milliseconds(16));
 
-    loadQml(m_mainFilePath);
+    // No memory leak here, the QQmlEngine takes ownership of the provider
+    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+            m_pCoreServices->getTrackCollectionManager());
+    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+    QmlCoreServices::instance()->setReady();
 
     m_pCoreServices->getControllerManager()->setUpDevices();
 
@@ -274,6 +282,10 @@ QmlApplication::QmlApplication(
             this,
             [this]() {
                 loadQml(m_mainFilePath);
+                // No memory leak here, the QQmlEngine takes ownership of the provider
+                QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+                        m_pCoreServices->getTrackCollectionManager());
+                m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
             });
 
 #if defined(Q_OS_ANDROID)
@@ -373,11 +385,6 @@ void QmlApplication::loadQml(const QString& path) {
     m_autoReload.clear();
     m_pAppEngine->addUrlInterceptor(&m_autoReload);
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
-
-    // No memory leak here, the QQmlEngine takes ownership of the provider
-    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
-            m_pCoreServices->getTrackCollectionManager());
-    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
 
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
