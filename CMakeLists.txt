@@ -402,14 +402,6 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-cmake_dependent_option(
-  QML
-  "Build with QML"
-  ON
-  "QT6"
-  OFF
-)
-
 if(QT6)
   set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
 else()
@@ -418,10 +410,6 @@ endif()
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
-endif()
-
-if(QML)
-  add_compile_definitions(MIXXX_USE_QML)
 endif()
 
 if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
@@ -1987,26 +1975,6 @@ set(
   src/util/workerthreadscheduler.h
   src/util/xml.h
 )
-if(NOT QML)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
-      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
-      # main target
-      src/control/controlmodel.cpp
-      src/control/controlsortfiltermodel.cpp
-  )
-else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following source depends of QML being available but aren't part of the new QML UI
-      src/controllers/rendering/controllerrenderingengine.cpp
-      src/controllers/controllerenginethreadcontrol.cpp
-      src/controllers/controllerscreenpreview.cpp
-  )
-endif()
 if(QOPENGL)
   target_sources(
     mixxx-lib
@@ -2366,6 +2334,21 @@ if(QT6)
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
   endif()
+
+  # We need Qt 6.4 for ComponentBehavior: Bound
+  cmake_dependent_option(
+    QML
+    "Build with QML"
+    ON
+    "Qt6_VERSION VERSION_GREATER_EQUAL 6.4"
+    OFF
+  )
+  if(QML)
+    add_compile_definitions(MIXXX_USE_QML)
+  else()
+    message(STATUS "Building without QML")
+  endif()
+
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
@@ -2463,6 +2446,27 @@ else()
     fatal_error_missing_env()
   endif()
   add_executable(mixxx WIN32 src/main.cpp)
+endif()
+
+if(NOT QML)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+      # main target
+      src/control/controlmodel.cpp
+      src/control/controlsortfiltermodel.cpp
+  )
+else()
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following source depends of QML being available but aren't part of the new QML UI
+      src/controllers/rendering/controllerrenderingengine.cpp
+      src/controllers/controllerenginethreadcontrol.cpp
+      src/controllers/controllerscreenpreview.cpp
+  )
 endif()
 
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
