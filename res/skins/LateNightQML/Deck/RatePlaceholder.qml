@@ -32,11 +32,12 @@ Item {
     }
 
     function rateRangeTopLabelY(labelHeight) {
-        return rateSlider.y - labelHeight / 2;
+        labelHeight;
+        return 0;
     }
 
     function rateRangeBottomLabelY(labelHeight) {
-        return rateSlider.y + rateSlider.height - labelHeight / 2;
+        return sliderContainer.height - labelHeight - 1;
     }
 
     property real previousSyncEnabledValue: syncEnabledProxy.value
@@ -235,6 +236,7 @@ Item {
                 // Rate range labels: top = negative direction, center = default, bottom = positive direction
                 Text {
                     width: 8
+                    height: 16
                     x: 1
                     y: root.rateRangeTopLabelY(height)
                     text: "-"
@@ -246,6 +248,7 @@ Item {
 
                 Text {
                     width: 8
+                    height: 16
                     x: parent.width - width - 1
                     y: root.rateRangeTopLabelY(height)
                     text: (rateRangeProxy.value * 100).toFixed(0)
@@ -257,6 +260,7 @@ Item {
 
                 Text {
                     width: 8
+                    height: 16
                     x: 1
                     y: root.rateRangeBottomLabelY(height)
                     text: "+"
@@ -268,6 +272,7 @@ Item {
 
                 Text {
                     width: 8
+                    height: 16
                     x: parent.width - width - 1
                     y: root.rateRangeBottomLabelY(height)
                     text: (rateRangeProxy.value * 100).toFixed(0)

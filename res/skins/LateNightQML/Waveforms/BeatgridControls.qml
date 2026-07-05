@@ -39,7 +39,7 @@ RowLayout {
 
         LateNightControlButton {
             anchors.fill: parent
-            backgroundSource: LateNightTheme.legacyTopRegionButton("library_tall")
+            backgroundSource: LateNightTheme.lateNightTopRegionButton("library_tall")
             iconSource: LateNightTheme.assetDeckBeatCurposLargeButton
             group: root.group
             key: "beats_translate_curpos"
@@ -73,7 +73,7 @@ RowLayout {
             LateNightControlButton {
                 width: 26
                 height: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("square")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckBeatsEarlierButton
                 group: root.group
                 key: "beats_translate_earlier"
@@ -92,7 +92,7 @@ RowLayout {
             LateNightControlButton {
                 width: 26
                 height: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("square")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckBeatsFasterButton
                 group: root.group
                 key: "beats_adjust_faster"
@@ -128,7 +128,7 @@ RowLayout {
             LateNightControlButton {
                 width: 26
                 height: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("square")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckBeatsLaterButton
                 group: root.group
                 key: "beats_translate_later"
@@ -147,7 +147,7 @@ RowLayout {
             LateNightControlButton {
                 width: 26
                 height: 26
-                backgroundSource: LateNightTheme.legacySubRegionButton("square")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckBeatsSlowerButton
                 group: root.group
                 key: "beats_adjust_slower"
@@ -183,7 +183,7 @@ RowLayout {
 
             LateNightControlButton {
                 anchors.fill: parent
-                backgroundSource: LateNightTheme.legacySubRegionButton("square")
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckUndoButton
                 group: root.group
                 key: "beats_undo_adjustment"
@@ -209,7 +209,7 @@ RowLayout {
         LateNightControlButton {
             width: 26
             height: 26
-            backgroundSource: LateNightTheme.legacySubRegionButton("square")
+            backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
             iconSource: isActive ? LateNightTheme.assetDeckBpmLockedButton : LateNightTheme.assetDeckBpmUnlockedButton
             group: root.group
             key: "bpmlock"
@@ -233,7 +233,7 @@ RowLayout {
         LateNightControlButton {
             width: 26
             height: 26
-            backgroundSource: LateNightTheme.legacySubRegionButton("square")
+            backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
             iconSource: LateNightTheme.assetDeckBeatsHotcuesEarlierButton
             group: root.group
             key: "shift_cues_earlier"
@@ -251,7 +251,7 @@ RowLayout {
         LateNightControlButton {
             width: 26
             height: 26
-            backgroundSource: LateNightTheme.legacySubRegionButton("square")
+            backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
             iconSource: LateNightTheme.assetDeckBeatsHotcuesLaterButton
             group: root.group
             key: "shift_cues_later"

@@ -20,6 +20,7 @@ QtObject {
     readonly property color deckBeatSpinBoxTextColor: isClassic ? "#888888" : "#a7998b"
     readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
     readonly property color deckTopRowBackgroundColor: "#181818"
+    readonly property color deckActiveButtonTextColor: "#000000"
     readonly property color deckPanelColor: "#1e1e20"
     readonly property color deckPanelBorderDark: "#0c0c0c"
     readonly property color deckPanelBorderLight: "#333333"
@@ -54,6 +55,11 @@ QtObject {
     readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
     readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
     readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
+    readonly property color vinylStatusSignalColor: isClassic ? "#659f08" : "#438225"
+    readonly property color vinylStatusSpeedColor: "#d09300"
+    readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
+    readonly property color vinylCueingActiveColor: "#888888"
+    readonly property color passthroughActiveColor: vinylStatusSpeedColor
     readonly property color white: "#D9D9D9"
 
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
@@ -66,6 +72,16 @@ QtObject {
     readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
     readonly property url assetDeckCoverDefault: lateNightAsset("style", "cover_default.svg")
     readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
+    readonly property url assetDeckBeatCurposLargeButton: lateNightAsset("buttons", "btn__beat_curpos_large.svg")
+    readonly property url assetDeckBeatsEarlierButton: lateNightAsset("buttons", "btn__beats_earlier.svg")
+    readonly property url assetDeckBeatsFasterButton: lateNightAsset("buttons", "btn__beats_faster.svg")
+    readonly property url assetDeckBeatsLaterButton: lateNightAsset("buttons", "btn__beats_later.svg")
+    readonly property url assetDeckBeatsSlowerButton: lateNightAsset("buttons", "btn__beats_slower.svg")
+    readonly property url assetDeckUndoButton: lateNightAsset("buttons", "btn__undo.svg")
+    readonly property url assetDeckBpmLockedButton: lateNightAsset("buttons", "btn__bpm_locked.svg")
+    readonly property url assetDeckBpmUnlockedButton: lateNightAsset("buttons", "btn__bpm_unlocked.svg")
+    readonly property url assetDeckBeatsHotcuesEarlierButton: lateNightAsset("buttons", "btn__beats_hotcues_earlier.svg")
+    readonly property url assetDeckBeatsHotcuesLaterButton: lateNightAsset("buttons", "btn__beats_hotcues_later.svg")
     readonly property url assetDeckCueButton: lateNightAsset("buttons", "btn__cue_deck.svg")
     readonly property url assetDeckEjectButton: lateNightAsset("buttons", "btn__eject.svg")
     readonly property url assetDeckIntroEndButton: lateNightAsset("buttons", "btn__intro_end.svg")
@@ -137,6 +153,19 @@ QtObject {
 
     function lateNightAsset(directory, fileName) {
         return Qt.resolvedUrl("../../LateNight/" + ColorScheme.name + "/" + directory + "/" + fileName);
+    }
+
+    function vinylStatusColor(status) {
+        switch (Math.round(status)) {
+        case 1:
+            return vinylStatusSignalColor;
+        case 2:
+            return vinylStatusSpeedColor;
+        case 3:
+            return vinylStatusSignalAndSpeedColor;
+        default:
+            return deckEmbeddedButtonInactiveColor;
+        }
     }
 
     function sharedImage(fileName) {
