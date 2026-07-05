@@ -82,10 +82,10 @@
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="toolTip">
-          <string>Relocate the source file of the selected track from the library.</string>
+          <string>Relink the selected track to its new file location.</string>
          </property>
          <property name="text">
-          <string>Relocate</string>
+          <string>Relink</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
