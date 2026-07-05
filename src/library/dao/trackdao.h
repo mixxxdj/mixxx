@@ -6,6 +6,7 @@
 #include <QString>
 #include <memory>
 
+#include "library/coverart.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
@@ -68,6 +69,12 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Return all tracks reported missing during last scan.
     QSet<QString> getAllMissingTrackLocations() const;
     QString getTrackLocation(TrackId trackId) const;
+
+    /// Lightweight query that fetches only the cover art info for the
+    /// track at the given location.
+    /// Returns a default-constructed CoverInfo (type == NONE) if the
+    /// track is not found in the library.
+    CoverInfo getCoverInfoByTrackLocation(const QString& trackLocation) const;
 
     // Only used by friend class LibraryScanner, but public for testing!
     bool detectMovedTracks(
