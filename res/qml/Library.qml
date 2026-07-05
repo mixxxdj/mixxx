@@ -270,6 +270,305 @@ Item {
                     }
                 }
             }
+
+            Rectangle {
+                id: searchPane
+
+                property bool activated: false
+                property int currentlyFocusedInput: 0
+
+                width: 250
+                height: 36
+
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                color: '#D9D9D9'
+                topLeftRadius: 16
+                focusPolicy: Qt.ClickFocus
+
+                function selectInput(){
+                    if (searchPane.currentlyFocusedInput === 0) {
+                        searchField.forceActiveFocus()
+                    } else {
+                        let criteria = criteriaInput.itemAt(searchPane.currentlyFocusedInput - 1);
+                        criteria.textInput.forceActiveFocus()
+                    }
+                }
+
+                function updateSearchQuery(){
+                    let query = []
+
+                    for (let i = 0; i < selectedCriteria.count; i++){
+                        let criteria = selectedCriteria.get(i)
+                        let item = criteriaInput.itemAt(i);
+                        let value = item.textInput.text
+                        if (value.length == 0) {
+                            continue
+                        }
+                        query.push(`${criteria.name.toLowerCase()}:${value}`)
+                    }
+
+                    if (searchField.text.length) {
+                        query.push(searchField.text)
+                    }
+
+                    searchDebounce.query = query.join(' ')
+                }
+
+                TapHandler {
+                    onTapped: event => {
+                        searchPane.selectInput()
+                        searchPane.activated = true
+                        event.accepted = true
+                    }
+                }
+
+                Timer {
+                    id: searchDebounce
+
+                    property var query: ""
+
+                    onQueryChanged: {
+                        restart()
+                    }
+
+                    interval: 800
+                    repeat: false
+                    onTriggered: {
+                        console.log(`searching: ${query}`)
+                        root.activeSidebar.tracklist.search(query)
+                    }
+                }
+
+                ListModel {
+                    id : fieldModel
+                    ListElement { name: "Artist" }
+                    ListElement { name: "Album" }
+                    ListElement { name: "BPM" }
+                    ListElement { name: "Title" }
+                    ListElement { name: "Filename" }
+                }
+
+                ListModel {
+                    id : selectedCriteria
+                }
+
+                SortFilterProxyModel {
+                    id: fieldFilter
+                    model: fieldModel
+                    filters: [
+                        FunctionFilter {
+                            component CustomData: QtObject { property string name }
+                            property var regExp: new RegExp(searchField.text, "i")
+                            onRegExpChanged: invalidate()
+                            function filter(data: CustomData): bool {
+                                return regExp.test(data.name);
+                            }
+                        }
+                    ]
+                }
+
+                FocusScope {
+                    width: parent.width
+                    height: parent.height
+                    focus: true
+
+                    Keys.onPressed: (event) => {
+                        switch(event.key) {
+                        case Qt.Key_Escape:
+                            browsingView.forceActiveFocus()
+                            break;
+                        }
+                    }
+
+                    onActiveFocusChanged: {
+                        if (!searchPane.activeFocus){
+                            searchPane.activated = false
+                        }
+                    }
+
+                    states: [
+                        State {
+                            when: searchPane.activated
+
+                            PropertyChanges {
+                                searchPane.width: 490
+                                searchPane.height: 144
+                            }
+                        }
+                    ]
+
+                    Behavior on width {
+                        NumberAnimation {}
+                    }
+
+                    Behavior on height {
+                        NumberAnimation {}
+                    }
+
+                    Column {
+                        anchors.fill: parent
+                        Row {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 11
+
+                            width: searchPane.width - 22
+                            spacing: 5
+                            Repeater {
+                                id: criteriaInput
+                                model: selectedCriteria
+
+                                Skin.SearchFieldCriteria {
+                                    required property int index
+                                    required property var modelData
+                                    anchors.margins: 5
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    interactive: true
+                                    focus: true
+                                    focusPolicy: Qt.StrongFocus
+                                    field: modelData
+                                    onActiveFocusChanged: {
+                                        if (this.activeFocus){
+                                            searchPane.activated = true
+                                        }
+                                    }
+
+                                    onDeleted: {
+                                        searchPane.currentlyFocusedInput = (searchPane.currentlyFocusedInput - 1) % (selectedCriteria.rowCount() + 1);
+                                        searchPane.selectInput()
+                                        selectedCriteria.remove(index)
+                                    }
+
+                                    onEdited: {
+                                        searchPane.updateSearchQuery()
+                                    }
+                                    Component.onCompleted: {
+                                        if (searchPane.currentlyFocusedInput === index + 1){
+                                            this.textInput.forceActiveFocus()
+                                        }
+                                    }
+                                }
+                            }
+                            Item {
+                                width: 224
+                                height: 38
+                                TextInput {
+                                    id: searchField
+                                    visible: searchPane.activated
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left
+                                    focus: true
+                                    focusPolicy: Qt.StrongFocus
+                                    clip: true
+                                    color: "#808080"
+                                    horizontalAlignment: TextInput.AlignLeft
+
+                                    Keys.onTabPressed: (event) => {
+                                        if (fieldFilter.rowCount() == 1 && fieldFilter.hasIndex(0, 0)) {
+                                            searchPane.currentlyFocusedInput = selectedCriteria.rowCount() + 1
+                                            selectedCriteria.append({"name": fieldFilter.data(fieldFilter.index(0, 0))})
+                                            searchField.clear()
+                                        } else {
+                                            searchPane.currentlyFocusedInput = (searchPane.currentlyFocusedInput + 1) % (selectedCriteria.rowCount() + 1)
+                                            searchPane.selectInput()
+                                        }
+                                        event.accepted = true
+
+                                    }
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Backspace && searchField.text.length == 0 && selectedCriteria.rowCount() > 0) {
+                                            selectedCriteria.remove(selectedCriteria.rowCount() - 1)
+                                            searchPane.currentlyFocusedInput = (searchPane.currentlyFocusedInput - 1) % (selectedCriteria.rowCount() + 1);
+                                            searchPane.selectInput()
+                                            event.accepted = true
+                                        }
+                                    }
+
+                                    onTextChanged: {
+                                        searchPane.updateSearchQuery()
+                                    }
+                                }
+                                FontMetrics {
+                                    id: fontMetrics
+                                    font: searchField.font
+                                }
+                                Text {
+                                    id: searchPlaceholder
+                                    readonly property double cursorOffset: fontMetrics.advanceWidth(searchField.text)
+                                    visible: (!searchPane.activated && criteriaInput.count == 0) || searchPane.activated && searchField.text.length == 0 || searchField.text.length >= 3 && suggestedFilters.count >= 1
+
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: searchField.text.length >= 3 && suggestedFilters.count >= 1 ? cursorOffset : 0
+
+                                    color: "#808080"
+                                    text: {
+                                        if (searchPane.activated && searchField.text.length >= 3 && suggestedFilters.count >= 1) {
+                                            let field = fieldFilter.data(fieldFilter.index(0, 0))
+                                            let pronoun = /^[aeiou]/i.test(field) ? "an" : "a"
+                                            return `Press “Tab” to search for ${pronoun} ${field}`
+                                        }
+                                        return searchPane.activated ? "Start typing to get suggestion" : "Search..."
+                                    }
+                                }
+                            }
+                        }
+                        Rectangle {
+                            width: searchPane.width
+                            height: 1
+                            color: '#757575'
+                        }
+                        Row {
+                            padding: 8
+                            visible: searchField.text.length >= 3
+                            Repeater {
+                                id: suggestedFilters
+                                model: fieldFilter
+                                Skin.SearchFieldCriteria {
+                                    required property var modelData
+                                    field: modelData
+                                    query: searchField.text
+                                }
+                            }
+                        }
+                        Text {
+                            width: searchPane.width - 10
+                            anchors.margins: 5
+                            height: 16
+                            text: "Recent searches"
+                            font.weight: Font.DemiBold
+                        }
+                        ListView {
+                            width: searchPane.width - 10
+                            anchors.margins: 5
+                            height: 100
+                            model: ["artist:=Gorillaz client eastwood", "artist:BLACKPINK album:JUMP"]
+                            delegate: Row {
+                                height: 20
+                                width: ListView.view.width - 10
+                                anchors.margins: 5
+
+                                readonly property var fields: Array(fieldModel.count).map(i => fieldModel.get(i))
+                                readonly property var criteriaRegex: new RegExp(/(artist|album):([^\s]+)/i)
+                                readonly property var criteria: modelData.split(' ').map(i => criteriaRegex.exec(i)).filter(i => i).map(r => ({name:r[1].charAt(0).toUpperCase() + r[1].substring(1).toLowerCase(), query:r[2]}))
+                                readonly property var query: modelData.split(' ').filter(i => !criteriaRegex.test(i)).join(' ')
+
+                                Repeater {
+                                    model: criteria
+                                    Skin.SearchFieldCriteria {
+                                        required property var modelData
+                                        field: modelData.name
+                                        textInput.text: modelData.query
+                                    }
+                                }
+
+                                Text {
+                                    text: query
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
