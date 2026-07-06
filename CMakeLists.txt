@@ -402,7 +402,7 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-option(HTTP_REMOTE "Build HttpRemote support" false)
+option(HTTP_REMOTE "Build HttpRemote support" OFF)
 
 cmake_dependent_option(
   QML
