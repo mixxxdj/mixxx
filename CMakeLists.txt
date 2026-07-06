@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 # lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
