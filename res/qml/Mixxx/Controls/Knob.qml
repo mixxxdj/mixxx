@@ -40,8 +40,10 @@ Item {
     property real min: 0
     property real value: min
     readonly property real valueCenter: (max - min) / 2
+    // QWheelEvent::angleDelta() reports one standard mouse-wheel step as 120.
     readonly property int wheelDeltaStep: 120
     property real wheelStepSize: (root.max - root.min) / root.wheelSteps
+    // Match the legacy MIDI-style knob resolution across the control range.
     readonly property int wheelSteps: 127
 
     signal turned(real value)

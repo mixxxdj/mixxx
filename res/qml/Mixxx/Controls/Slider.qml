@@ -34,6 +34,7 @@ Item {
     readonly property real visualPosition: vertical ? 1 - position : position
     property bool wheelEnabled: true
     property real wheelStepSize: (root.to - root.from) / root.wheelSteps
+    // Match the legacy MIDI-style fader resolution across the control range.
     readonly property int wheelSteps: 127
 
     signal moved(real value)
