@@ -986,16 +986,12 @@ void WTrackMenu::updateMenus() {
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
 
+    auto pTrack = getFirstTrackPointer();
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+
     if (featureIsEnabled(Feature::SearchRelated)) {
-        // Enable only if we have one valid track pointer.
-        // this prevents the cursor getting stuck on this menu in case it gets
-        // disabled when encountering a track nullptr in lambda function
-        // connected to aboutToShow() signal (see createMenus()).
-        // Note: track nullptr can happen when TrackDAO returns nullptr because
-        // the selected track references a file referenced by another cached track.
-        DEBUG_ASSERT(m_pSearchRelatedMenu);
-        const auto pTrack = getFirstTrackPointer();
-        m_pSearchRelatedMenu->setEnabled(pTrack != nullptr);
         // TODO Only enable for single track?
     }
 
@@ -1030,10 +1026,9 @@ void WTrackMenu::updateMenus() {
                 bool deckEnabled =
                         (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
                         singleTrackSelected;
-                auto pTrack = getFirstTrackPointer();
                 generateTrackLoadMenu(deckGroup,
                         tr("Deck %1").arg(i),
-                        getFirstTrackPointer(),
+                        pTrack,
                         m_pDeckMenu,
                         true,
                         deckEnabled);
@@ -1048,7 +1043,6 @@ void WTrackMenu::updateMenus() {
         if (singleTrackSelected && iNumSamplers > 0) {
             QMenu* pMenu = m_pSamplerMenu;
             int samplersInMenu = 0;
-            TrackPointer pTrack = getFirstTrackPointer();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 if (samplersInMenu == maxSamplersPerMenu) {
                     samplersInMenu = 0;
@@ -1078,7 +1072,7 @@ void WTrackMenu::updateMenus() {
             // currently there is only one preview deck so just map it here.
             generateTrackLoadMenu(PlayerManager::groupForPreviewDeck(0),
                     tr("Preview Deck"),
-                    getFirstTrackPointer(),
+                    pTrack,
                     m_pLoadToMenu,
                     false);
         }
@@ -1149,22 +1143,16 @@ void WTrackMenu::updateMenus() {
             m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
 
             // Append scaled BPM preview for single selection
+            // TODO ... and multiple tracks with same BPM.
+            // See DlgTrackInfoMulti
             if (singleTrackSelected) {
-                TrackPointer pTrack;
-                if (m_pTrackModel) {
-                    pTrack = getFirstTrackPointer();
-                } else if (m_pTrack) {
-                    pTrack = m_pTrack;
-                }
-                if (pTrack) {
-                    const double bpm = pTrack->getBpm();
-                    appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
-                }
+                const double bpm = pTrack->getBpm();
+                appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
             }
         }
     }
@@ -1238,9 +1226,7 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
-        const auto pTrack = getFirstTrackPointer();
-        const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
-        m_pFindOnWebMenu->setEnabled(enableMenu);
+        m_pFindOnWebMenu->setEnabled(WFindOnWebMenu::hasEntriesForTrack(*pTrack));
     }
 }
 
