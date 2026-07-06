@@ -13,11 +13,7 @@ Item {
     readonly property real availableHeight: Math.max(0, height - topPadding - bottomPadding)
     readonly property real availableWidth: Math.max(0, width - leftPadding - rightPadding)
     property alias background: backgroundItem.data
-    property bool bar: false
-    property alias barColor: barPath.strokeColor
-    property real barMargin: 0
-    property real barStart: 0
-    property alias barWidth: barPath.strokeWidth
+    property alias bar: barPath
     property real bottomPadding: 0
     readonly property real displayValue: dragHandler.active ? dragHandler.value : value
     property real from: 0
@@ -37,7 +33,8 @@ Item {
     readonly property bool vertical: orientation === Qt.Vertical
     readonly property real visualPosition: vertical ? 1 - position : position
     property bool wheelEnabled: true
-    property real wheelStepSize: (root.to - root.from) / 127
+    property real wheelStepSize: (root.to - root.from) / root.wheelSteps
+    readonly property int wheelSteps: 127
 
     signal moved(real value)
 
@@ -77,7 +74,7 @@ Item {
     implicitHeight: Math.max(backgroundItem.implicitHeight, handleItem.implicitHeight)
     implicitWidth: Math.max(backgroundItem.implicitWidth, handleItem.implicitWidth)
 
-    Keys.onPressed: function (event) {
+    Keys.onPressed: event => {
         if (event.key === Qt.Key_Left || event.key === Qt.Key_Down) {
             root.moved(stepValue(-1));
             event.accepted = true;
@@ -109,19 +106,25 @@ Item {
         id: barShape
 
         anchors.fill: parent
-        anchors.margins: root.barMargin
+        anchors.margins: root.bar.margin
         antialiasing: true
-        visible: root.bar
+        visible: root.bar.enabled
         z: 1
 
         ShapePath {
             id: barPath
 
+            property color color: "transparent"
+            property bool enabled: false
+            property real margin: 0
+            property real start: 0
+            property real width: 2
+
             fillColor: "transparent"
-            startX: barShape.width * (root.horizontal ? (1 - root.barStart) : 0.5)
-            startY: barShape.height * (root.vertical ? (1 - root.barStart) : 0.5)
-            strokeColor: "transparent"
-            strokeWidth: 2
+            startX: barShape.width * (root.horizontal ? (1 - root.bar.start) : 0.5)
+            startY: barShape.height * (root.vertical ? (1 - root.bar.start) : 0.5)
+            strokeColor: color
+            strokeWidth: width
 
             PathLine {
                 x: root.horizontal ? (barShape.width * root.position) : barPath.startX
@@ -172,8 +175,9 @@ Item {
         anchors.fill: parent
         enabled: root.enabled && root.wheelEnabled
 
-        onWheel: {
-            root.moved(root.stepValue(wheel.angleDelta.y > 0 ? 1 : -1));
+        onWheel: event => {
+            root.moved(root.stepValue(event.angleDelta.y > 0 ? 1 : -1));
+            event.accepted = true;
         }
     }
 }

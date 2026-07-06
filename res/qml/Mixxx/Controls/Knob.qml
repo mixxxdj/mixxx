@@ -40,7 +40,9 @@ Item {
     property real min: 0
     property real value: min
     readonly property real valueCenter: (max - min) / 2
-    property real wheelStepSize: (root.max - root.min) / 127
+    readonly property int wheelDeltaStep: 120
+    property real wheelStepSize: (root.max - root.min) / root.wheelSteps
+    readonly property int wheelSteps: 127
 
     signal turned(real value)
 
@@ -117,8 +119,7 @@ Item {
             if ((y_dominant && diff_y > 0) || (!y_dominant && diff_x < 0))
                 dist = -dist;
 
-            // For legacy (MIDI) reasons this is tuned to 127.
-            let value = root.value + dist / 127;
+            let value = root.value + dist / root.wheelSteps;
             // Clamp to [0.0, 1.0].
             value = Mixxx.MathUtils.clamp(value, 0, 1);
             root.turned(value);
@@ -141,11 +142,11 @@ Item {
         acceptedButtons: Qt.NoButton
         anchors.fill: parent
 
-        onWheel: {
-            const wheelAdjustment = wheel.angleDelta.y / 120 * root.wheelStepSize;
+        onWheel: event => {
+            const wheelAdjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
             const value = Mixxx.MathUtils.clamp(root.value + wheelAdjustment, root.min, root.max);
             root.turned(value);
-            wheel.accepted = true;
+            event.accepted = true;
             wheelHandler.value = value;
         }
     }
