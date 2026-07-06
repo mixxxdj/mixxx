@@ -391,7 +391,7 @@ void MixxxMainWindow::initialize() {
     // that says "mixxx will barely work with no outs".
     // In case of persisting errors, the user has already received a message
     // above. So we can just check the output count here.
-    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().count() == 0) {
+    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().isEmpty()) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         bool continueClicked = false;
@@ -1262,15 +1262,15 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
+    QMessageBox msgBox;
+    msgBox.setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    msgBox.setWindowTitle(tr("Library scan finished"));
 
     if (result.noDirectoriesConfigured) {
-        pMsg->setText(tr("No music directories configured for scanning.") +
+        msgBox.setText(tr("No music directories configured for scanning.") +
                 QStringLiteral("<br>") +
                 tr("Add directories in the library preferences."));
-        pMsg->show();
+        msgBox.show();
         return;
     }
 
@@ -1309,8 +1309,8 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 QStringLiteral("</b>");
     }
 
-    pMsg->setText(summary);
-    pMsg->show();
+    msgBox.setText(summary);
+    msgBox.show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {

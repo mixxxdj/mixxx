@@ -32,11 +32,28 @@ Rectangle {
         group: root.group
         key: "loop_enabled"
     }
-    Mixxx.ControlProxy {
+    BeatSizeSpinBoxBehavior {
         id: beatloopSize
 
         group: root.group
         key: "beatloop_size"
+        beatSizes: [
+            1 / 32,
+            1 / 16,
+            1 / 8,
+            1 / 4,
+            1 / 2,
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128,
+            256,
+            512
+        ]
     }
     Mixxx.ControlProxy {
         id: beatloopActivate
@@ -169,13 +186,7 @@ Rectangle {
 
             property int selectedIndex: 0
             property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56) / 40)), 4)
-            property list<double> values: {
-                let values = [1 / 32];
-                while (values[values.length - 1] < 512) {
-                    values.push(values[values.length - 1] * 2);
-                }
-                return values;
-            }
+            property list<double> values: beatloopSize.beatSizes
 
             function update() {
                 let values = [this.values[selectedIndex]];
@@ -228,11 +239,11 @@ Rectangle {
                 highlight: currentSize == beatloopSize.value && trackLoadedControl.value > 0
                 implicitHeight: 28
                 implicitWidth: 33
-                text: currentSize < 1 ? `1/${1 / currentSize}` : currentSize
+                text: beatloopSize.formatBeatSize(currentSize)
 
                 onPressed: {
                     if (loopEnabled.value) {
-                        beatloopSize.value = currentSize;
+                        beatloopSize.commitText(currentSize.toString());
                     } else {
                         sizedBeatloopActivate.trigger();
                     }
