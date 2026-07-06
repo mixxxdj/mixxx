@@ -1,6 +1,12 @@
 #include "mixer/playermanager.h"
 
+#include <QDir>
+#include <QDomDocument>
+#include <QFile>
+#include <QFileInfo>
 #include <QRegularExpression>
+#include <QStandardPaths>
+#include <QTextStream>
 
 #include "audio/types.h"
 #include "control/controlobject.h"
@@ -89,6 +95,126 @@ T* findFirstStoppedPlayerInList(const QList<T*>& players) {
 
 inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
     return pConfig->getSettingsPath() + QStringLiteral("/samplers.xml");
+}
+
+// Extracts sample files from the app's resource directory to a writable
+// location so the audio engine can load them. This is needed on platforms
+// where samples are bundled as read-only resources (e.g. Android assets:/).
+// Returns the writable destination directory path, or empty string on failure.
+QString extractSamplesToWritableLocation(UserSettingsPointer pConfig) {
+    const QString kSamplesSubdir = QStringLiteral("samples/");
+
+    // Source candidates: resource path first, then fallback to res/samples/
+    QStringList sourceCandidates = {
+            pConfig->getResourcePath() + kSamplesSubdir,
+            QStringLiteral("res/samples/"),
+    };
+
+    QString sourceDir;
+    for (const auto& candidate : sourceCandidates) {
+        QFileInfo fi(candidate);
+        if (fi.exists() && fi.isDir()) {
+            sourceDir = fi.absoluteFilePath();
+            break;
+        }
+    }
+
+    if (sourceDir.isEmpty()) {
+        return QString();
+    }
+
+    // Writable destination
+    QString destDir = QStandardPaths::writableLocation(
+                              QStandardPaths::AppLocalDataLocation) +
+            QStringLiteral("/") + kSamplesSubdir;
+    QDir dest(destDir);
+    if (!dest.exists()) {
+        dest.mkpath(QStringLiteral("."));
+    }
+
+    // Check if already extracted
+    QFileInfo destMarker(destDir + QStringLiteral(".extracted"));
+    if (destMarker.exists()) {
+        return destDir;
+    }
+
+    // Copy sample files
+    QDir source(sourceDir);
+    QStringList filters = {QStringLiteral("*.mp3"),
+            QStringLiteral("*.wav"),
+            QStringLiteral("*.aiff"),
+            QStringLiteral("*.m4a"),
+            QStringLiteral("*.ogg")};
+    const QFileInfoList files = source.entryInfoList(filters, QDir::Files);
+
+    for (const auto& fi : std::as_const(files)) {
+        QString destPath = destDir + fi.fileName();
+        if (!QFile::exists(destPath)) {
+            if (!QFile::copy(fi.absoluteFilePath(), destPath)) {
+                qWarning() << "Failed to copy sample:" << fi.absoluteFilePath();
+            }
+        }
+    }
+
+    // Create marker
+    QFile markerFile(destDir + QStringLiteral(".extracted"));
+    if (!markerFile.open(QIODevice::WriteOnly)) {
+        qWarning() << "Failed to create .extracted marker:"
+                    << destDir + QStringLiteral(".extracted");
+    }
+    markerFile.close();
+
+    return destDir;
+}
+
+// Creates a default sampler bank XML file with the 16 Rekordbox-style
+// sample slots. Only called on first start when no samplers.xml exists.
+bool createDefaultSamplerBank(const QString& samplerBankPath,
+        const QString& samplesDir) {
+    QFile file(samplerBankPath);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "Failed to create default sampler bank:" << samplerBankPath;
+        return false;
+    }
+
+    // The 16 Rekordbox-style samples, mapped to available files
+    QStringList defaultSamples = {
+            QStringLiteral("kick.mp3"),
+            QStringLiteral("kick-hard.mp3"),
+            QStringLiteral("snare.mp3"),
+            QStringLiteral("hi-hat.mp3"),
+            QStringLiteral("clap.mp3"),
+            QStringLiteral("tom-drum.mp3"),
+            QStringLiteral("crash-cymbal.mp3"),
+            QStringLiteral("percussion.mp3"),
+            QStringLiteral("riser-classic.mp3"),
+            QStringLiteral("transition-sweep.mp3"),
+            QStringLiteral("horn.mp3"),
+            QStringLiteral("siren-police.mp3"),
+            QStringLiteral("shotgun-blast.mp3"),
+            QStringLiteral("laser.mp3"),
+            QStringLiteral("explosion.mp3"),
+            QStringLiteral("vinyl-scratch.mp3"),
+    };
+
+    QDomDocument doc(QStringLiteral("SamplerBank"));
+    QDomElement root = doc.createElement(QStringLiteral("samplerbank"));
+    doc.appendChild(root);
+
+    for (int i = 0; i < defaultSamples.size(); ++i) {
+        QDomElement samplerNode = doc.createElement(QStringLiteral("sampler"));
+        samplerNode.setAttribute(QStringLiteral("group"),
+                QStringLiteral("[Sampler%1]").arg(i + 1));
+        samplerNode.setAttribute(QStringLiteral("location"),
+                samplesDir + defaultSamples.at(i));
+        root.appendChild(samplerNode);
+    }
+
+    QTextStream stream(&file);
+    stream << doc.toString();
+    file.close();
+
+    return true;
 }
 
 } // anonymous namespace
@@ -401,7 +527,19 @@ void PlayerManager::addDeckInner() {
 }
 
 void PlayerManager::loadSamplers() {
-    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig));
+    // On first start, extract sample files to writable location so the audio
+    // engine can read them (required on Android where assets are bundled).
+    QString samplesDir = extractSamplesToWritableLocation(m_pConfig);
+
+    // If no sampler bank exists yet, create a default one with 16 Rekordbox-
+    // style sample slots so the user has predefined content on first install.
+    // The bank is auto-saved on exit, so future restarts preserve user changes.
+    QString samplerBankPath = getDefaultSamplerPath(m_pConfig);
+    if (!QFileInfo::exists(samplerBankPath) && !samplesDir.isEmpty()) {
+        createDefaultSamplerBank(samplerBankPath, samplesDir);
+    }
+
+    m_pSamplerBank->loadSamplerBankFromPath(samplerBankPath);
 }
 
 void PlayerManager::addSampler() {
