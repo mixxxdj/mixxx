@@ -114,6 +114,8 @@ WTrackMenu::WTrackMenu(
           m_pNumSamplers(kAppGroup, QStringLiteral("num_samplers")),
           m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
+          m_bSearchRelatedMenuLoaded(false),
+          m_bFindOnWebMenuLoaded(false),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
@@ -241,10 +243,9 @@ void WTrackMenu::createMenus() {
                 &QMenu::aboutToShow,
                 this,
                 [this] {
-                    // TODO When accidentally leaving the menu and reopening it,
-                    // the previous check states are cleared.
-                    // Clear in closeEvent() only? And create actions on aboutToShow
-                    // only if it's empty?
+                    if (m_bSearchRelatedMenuLoaded) {
+                        return;
+                    }
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
@@ -256,6 +257,7 @@ void WTrackMenu::createMenus() {
                     }
                     m_pSearchRelatedMenu->setEnabled(
                             !m_pSearchRelatedMenu->isEmpty());
+                    m_bSearchRelatedMenuLoaded = true;
                 });
         connect(m_pSearchRelatedMenu,
                 &WSearchRelatedTracksMenu::triggerSearch,
@@ -273,6 +275,9 @@ void WTrackMenu::createMenus() {
                 &QMenu::aboutToShow,
                 this,
                 [this] {
+                    if (m_bFindOnWebMenuLoaded) {
+                        return;
+                    }
                     m_pFindOnWebMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
@@ -282,6 +287,7 @@ void WTrackMenu::createMenus() {
                     }
                     m_pFindOnWebMenu->setEnabled(
                             !m_pFindOnWebMenu->isEmpty());
+                    m_bFindOnWebMenuLoaded = true;
                 });
     }
 
@@ -992,7 +998,11 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::SearchRelated)) {
-        // TODO Only enable for single track?
+        m_bSearchRelatedMenuLoaded = false;
+    }
+
+    if (featureIsEnabled(Feature::FindOnWeb)) {
+        m_bFindOnWebMenuLoaded = false;
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
