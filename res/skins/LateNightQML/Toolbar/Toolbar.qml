@@ -10,6 +10,12 @@ import QtQuick.Layouts
 Rectangle {
     id: root
 
+    enum DeckSize {
+        Mini = 0,
+        Compact = 1,
+        Full = 2
+    }
+
     property bool editDeck: false
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
@@ -48,28 +54,10 @@ Rectangle {
         setControlValueIfInitialized(show4DecksControl, 0.0);
         showMaximizedLibraryControl.value = 0.0;
         maxLibraryDecksControl.value = 1.0;
-        deckSizeControl.value = 1.0;
-        eqKnobsControl.value = 1.0;
-        eqKillsControl.value = 1.0;
-        crossfaderControl.value = 1.0;
-        mainHeadMixerControl.value = 1.0;
-        show4EffectUnitsControl.value = 0.0;
-        showSuperKnobsControl.value = 0.0;
+        deckSizeControl.value = Toolbar.Compact;
         showPreviewDecksControl.value = 0.0;
         showLibraryCoverArtControl.value = 1.0;
         samplerRowsControl.value = 1.0;
-        showHotcuesControl.value = 1.0;
-        show8HotcuesControl.value = 1.0;
-        showIntroOutroCuesControl.value = 1.0;
-        showLoopControlsControl.value = 1.0;
-        showBeatjumpControlsControl.value = 1.0;
-        showRateControlsControl.value = 1.0;
-        showRateControlButtonsControl.value = 1.0;
-        showKeyControlsControl.value = 1.0;
-        showVinylControlsControl.value = 0.0;
-        showSpinniesControl.value = 1.0;
-        showCoverArtControl.value = 1.0;
-        selectBigSpinnyOrCoverControl.value = 0.0;
         toolbarDefaultsControl.value = 1.0;
     }
     function closeSettingsPopups() {
@@ -144,9 +132,9 @@ Rectangle {
     }
     function setDeckSize(size) {
         deckSizeControl.value = size;
-        showFullDeckControl.value = size === 2.0 ? 1.0 : 0.0;
-        showCompactDeckControl.value = size === 1.0 ? 1.0 : 0.0;
-        showMiniDeckControl.value = size === 0.0 ? 1.0 : 0.0;
+        showFullDeckControl.value = size === Toolbar.Full ? 1.0 : 0.0;
+        showCompactDeckControl.value = size === Toolbar.Compact ? 1.0 : 0.0;
+        showMiniDeckControl.value = size === Toolbar.Mini ? 1.0 : 0.0;
     }
     function broadcastBackgroundColor(status) {
         if (status === 1.0) {
@@ -1375,30 +1363,30 @@ Rectangle {
                     visible: !showMixerButton.checked
 
                     ToolbarMenuInlineChoice {
-                        checked: deckSizeControl.value === 2.0 || showFullDeckControl.value > 0
+                        checked: deckSizeControl.value === Toolbar.Full || showFullDeckControl.value > 0
+                        minimumWidth: 40
                         text: "Full"
-                        minimumWidth: 40
 
                         onClicked: {
-                            root.setDeckSize(2.0);
+                            root.setDeckSize(Toolbar.Full);
                         }
                     }
                     ToolbarMenuInlineChoice {
-                        checked: deckSizeControl.value === 1.0 || showCompactDeckControl.value > 0
-                        text: "Compact"
+                        checked: deckSizeControl.value === Toolbar.Compact || showCompactDeckControl.value > 0
                         minimumWidth: 66
+                        text: "Compact"
 
                         onClicked: {
-                            root.setDeckSize(1.0);
+                            root.setDeckSize(Toolbar.Compact);
                         }
                     }
                     ToolbarMenuInlineChoice {
-                        checked: deckSizeControl.value === 0.0 || showMiniDeckControl.value > 0
-                        text: "Mini"
+                        checked: deckSizeControl.value === Toolbar.Mini || showMiniDeckControl.value > 0
                         minimumWidth: 40
+                        text: "Mini"
 
                         onClicked: {
-                            root.setDeckSize(0.0);
+                            root.setDeckSize(Toolbar.Mini);
                         }
                     }
                 }
