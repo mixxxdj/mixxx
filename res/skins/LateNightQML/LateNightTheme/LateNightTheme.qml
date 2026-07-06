@@ -54,7 +54,7 @@ QtObject {
     readonly property color toolbarClockTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color toolbarMenuHoverColor: isPaleMoon ? "#2c454f" : "#5e4507"
     readonly property color toolbarMenuHoverTextColor: "#ffffff"
-    readonly property color toolbarMenuTextColor: "#d2d2d2"
+    readonly property color toolbarMenuTextColor: "#c2b3a5"
     readonly property color toolbarMenuDisabledTextColor: "#777777"
     readonly property color toolbarBroadcastOnColor: isClassic ? "#659f08" : "#438225"
     readonly property color toolbarRecordInitColor: "#d09300"
