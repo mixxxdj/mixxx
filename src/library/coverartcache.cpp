@@ -189,7 +189,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
         TrackPointer pTrack,
         CoverInfo coverInfo,
         int desiredWidth) {
-    SET_THREAD_NAME_P("CoverArtCache", pTrack.get());
+    SET_THREAD_NAME_P("CoverArtCache", &coverInfo);
     if (kLogger.traceEnabled()) {
         kLogger.trace()
                 << "loadCover"
