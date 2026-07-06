@@ -14,9 +14,9 @@ jobs:
       - name: Block Fixup Commit Merge
         run: |
           # Check for fixup! or squash! commits
-          if git log --oneline origin/main..HEAD | grep -qE '^(fixup!|squash!)'; then
+          if git log --format="%s" origin/main..HEAD | grep -qE '^(fixup!|squash!)'; then
             echo "❌ Blocking merge: fixup! or squash! commits found:"
-            git log --oneline origin/main..HEAD | grep -E '^(fixup!|squash!)'
+            git log --format="%h %s" origin/main..HEAD | grep -E '(fixup!|squash!)'
             exit 1
           fi
           echo "✅ No fixup! or squash! commits found"
