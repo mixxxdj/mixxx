@@ -14,7 +14,7 @@ CoverArtCopyWorker::~CoverArtCopyWorker() {
 }
 
 void CoverArtCopyWorker::run() {
-    SET_THREAD_NAME("CoverArtCopyWorker");
+    SET_THREAD_NAME_P("CoverArtCopyWorker", this);
     m_coverInfo.source = CoverInfo::USER_SELECTED;
 
     if (m_selectedCoverArtFilePath.isEmpty()) {

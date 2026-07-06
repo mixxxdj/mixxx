@@ -22,7 +22,7 @@ ImportFilesTask::ImportFilesTask(LibraryScanner* pScanner,
 }
 
 void ImportFilesTask::run() {
-    SET_THREAD_NAME("ImportFilesTask");
+    SET_THREAD_NAME_P("ImportFilesTask", this);
     ScopedTimer timer(QStringLiteral("ImportFilesTask::run"));
     for (const QFileInfo& fileInfo: m_filesToImport) {
         // If a flag was raised telling us to cancel the library scan then stop.

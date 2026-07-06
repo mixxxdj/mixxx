@@ -71,7 +71,7 @@ HidIoThread::~HidIoThread() {
 }
 
 void HidIoThread::run() {
-    SET_THREAD_NAME("HidIoThread");
+    SET_THREAD_NAME_P("HidIoThread", m_pHidDevice);
     const QSemaphoreReleaser releaser(m_runLoopSemaphore);
     m_runLoopSemaphore.acquire();
     while (!testAndSetThreadState(HidIoThreadState::StopRequested, HidIoThreadState::Stopped)) {

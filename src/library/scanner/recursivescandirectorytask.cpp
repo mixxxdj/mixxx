@@ -21,7 +21,7 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
 }
 
 void RecursiveScanDirectoryTask::run() {
-    SET_THREAD_NAME("RecursiveScanDirectoryTask");
+    SET_THREAD_NAME_P("RecursiveScanDirectoryTask", this);
     ScopedTimer timer(QStringLiteral("RecursiveScanDirectoryTask::run"));
     if (m_scannerGlobal->shouldCancel()) {
         setSuccess(false);
