@@ -9,7 +9,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - name: Block Fixup Commit Merge
-        uses: 13rac1/block-fixup-merge-action@v2.0.0
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+        run: |
+          # Check for fixup! or squash! commits
+          if git log --oneline origin/main..HEAD | grep -qE '^(fixup!|squash!)'; then
+            echo "❌ Blocking merge: fixup! or squash! commits found:"
+            git log --oneline origin/main..HEAD | grep -E '^(fixup!|squash!)'
+            exit 1
+          fi
+          echo "✅ No fixup! or squash! commits found"
