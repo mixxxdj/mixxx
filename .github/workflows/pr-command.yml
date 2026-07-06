@@ -7,7 +7,7 @@ jobs:
   softfix:
     name: Softfix action
     if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Check if commenter is maintainer
         id: check-maintainer
@@ -24,7 +24,7 @@ jobs:
             return isMaintainer;
       - name: Checkout repository
         if: steps.check-maintainer.outputs.result == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       # Using an app is the recommended way to allow recursive operations.
       # Apps offer a way to have reduced scoped permissions (like GITHUB_TOKEN)
       # and short lifespan, unlike PAT.

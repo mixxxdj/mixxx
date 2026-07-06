@@ -43,10 +43,8 @@ namespace {
 constexpr int kLeastPreferredPercent = 15;
 
 // These consts are only used for DEBUG_ASSERTs
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
 constexpr int kLeastPreferredPercentMin = 0;
 constexpr int kLeastPreferredPercentMax = 50;
-#endif
 
 int bounded_rand(int highest) {
     return QRandomGenerator::global()->bounded(highest);
