@@ -9,6 +9,7 @@ MixxxControls.Fader {
     property alias bg: backgroundImage.source
     property alias fg: handleImage.source
     property alias handleImage: handleImage
+    property bool showDefaultHandle: true
 
     bar: true
     barMargin: 10
@@ -25,6 +26,7 @@ MixxxControls.Fader {
         id: handleItem
 
         height: handleImage.paintedHeight
+        visible: root.showDefaultHandle
         width: handleImage.paintedWidth
         x: root.horizontal ? (root.visualPosition * (root.width - width)) : ((root.width - width) / 2)
         y: root.vertical ? (root.visualPosition * (root.height - height)) : ((root.height - height) / 2)
