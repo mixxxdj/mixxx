@@ -264,9 +264,6 @@ class EngineMixer : public QObject, public AudioSource {
     // non-owning. lifetime bound to EffectsManager
     EngineEffectsManager* m_pEngineEffectsManager;
 
-    // List of channels added to the engine.
-    QVarLengthArray<std::unique_ptr<ChannelInfo>, kPreallocatedChannels> m_channels;
-
     // The previous gain of each channel for each mixing output (main,
     // headphone, talkover).
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
@@ -345,4 +342,8 @@ class EngineMixer : public QObject, public AudioSource {
     // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
+
+    // Owning list of channels added to the engine.
+    // Keep at last position, it needs to be destroyed first
+    QVarLengthArray<std::unique_ptr<ChannelInfo>, kPreallocatedChannels> m_channels;
 };
