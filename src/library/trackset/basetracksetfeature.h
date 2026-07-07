@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QFileDialog>
+
 #include "library/libraryfeature.h"
 #include "util/parented_ptr.h"
 
@@ -25,4 +27,13 @@ class BaseTrackSetFeature : public LibraryFeature {
     const QString m_rootViewName;
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
+
+    QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
+    QStringList getPlaylistFiles() const;
+    QString getPlaylistFile() const;
+
+    static bool exportPlaylistItemsIntoFile(
+            QString playlistFilePath,
+            const QList<QString>& playlistItemLocations,
+            bool useRelativePath);
 };
