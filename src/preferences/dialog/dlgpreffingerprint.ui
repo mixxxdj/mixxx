@@ -90,48 +90,62 @@
      <property name="title">
       <string>Mastering / CMRT Grouping</string>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayoutCmrtThreshold">
+     <layout class="QVBoxLayout" name="verticalLayoutCmrtGrouping">
       <item>
-       <widget class="QLabel" name="labelCmrtMatchThreshold">
-        <property name="text">
-         <string>Match threshold:</string>
-        </property>
+       <layout class="QHBoxLayout" name="horizontalLayoutCmrtThreshold">
+        <item>
+         <widget class="QLabel" name="labelCmrtMatchThreshold">
+          <property name="text">
+           <string>Match threshold:</string>
+          </property>
+          <property name="toolTip">
+           <string>Minimum similarity score for two tracks to be treated as the same mastering and grouped together for offset calculation. Lower values group more aggressively but risk merging tracks that are not actually the same mastering; higher values are stricter. Default 90%.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxCmrtMatchThreshold">
+          <property name="suffix">
+           <string> %</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>50.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>90.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacerCmrtThreshold">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtAllowStemCanonical">
         <property name="toolTip">
-         <string>Minimum similarity score for two tracks to be treated as the same mastering and grouped together for offset calculation. Lower values group more aggressively but risk merging tracks that are not actually the same mastering; higher values are stricter. Default 90%.</string>
+         <string>When off (default), stem files can never outrank a regular audio file for becoming the canonical track (CMRT) of their group -- they only stay canonical if no non-stem copy exists. When on, stem files are scored the same way as any other format.</string>
+        </property>
+        <property name="text">
+         <string>Allow stem files to become the canonical track (CMRT)</string>
         </property>
        </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="spinBoxCmrtMatchThreshold">
-        <property name="suffix">
-         <string> %</string>
-        </property>
-        <property name="decimals">
-         <number>0</number>
-        </property>
-        <property name="minimum">
-         <double>50.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>100.000000000000000</double>
-        </property>
-        <property name="value">
-         <double>90.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacerCmrtThreshold">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>

@@ -133,6 +133,10 @@ void DlgPrefFingerprint::slotUpdate() {
     // Stored as a 0.0-1.0 fraction; the spin box shows it as a percentage.
     spinBoxCmrtMatchThreshold->setValue(matchThreshold * 100.0);
 
+    const bool allowStemCanonical = m_pConfig->getValue(
+            kCmrtAllowStemCanonicalConfigKey, false);
+    checkBoxCmrtAllowStemCanonical->setChecked(allowStemCanonical);
+
     const bool showArtist = m_pConfig->getValue(
             kCmrtColumnShowArtistConfigKey, BaseTrackTableModel::kCmrtColumnShowArtistDefault);
     checkBoxCmrtColumnShowArtist->setChecked(showArtist);
@@ -194,6 +198,10 @@ void DlgPrefFingerprint::slotApply() {
             kCmrtMatchThresholdConfigKey,
             ConfigValue{spinBoxCmrtMatchThreshold->value() / 100.0});
 
+    m_pConfig->set(
+            kCmrtAllowStemCanonicalConfigKey,
+            ConfigValue{checkBoxCmrtAllowStemCanonical->isChecked()});
+
     const bool showArtist = checkBoxCmrtColumnShowArtist->isChecked();
     m_pConfig->set(kCmrtColumnShowArtistConfigKey, ConfigValue{showArtist});
     BaseTrackTableModel::setCmrtColumnShowArtist(showArtist);
@@ -228,6 +236,7 @@ void DlgPrefFingerprint::slotResetToDefaults() {
     lineEditAcoustIdApiKey->clear();
     checkBoxAcoustIdAutoSubmit->setChecked(false);
     spinBoxCmrtMatchThreshold->setValue(kCmrtMatchThresholdDefault * 100.0);
+    checkBoxCmrtAllowStemCanonical->setChecked(false);
 
     checkBoxCmrtColumnShowArtist->setChecked(BaseTrackTableModel::kCmrtColumnShowArtistDefault);
     checkBoxCmrtColumnShowTitle->setChecked(BaseTrackTableModel::kCmrtColumnShowTitleDefault);
