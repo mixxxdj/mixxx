@@ -24,12 +24,29 @@ QVector<quint32> chromaBytesToVector(const QByteArray& rawChromaData) {
     return result;
 }
 
+// Always the track's real, unmodified QualityScorer result -- this is the
+// value that gets persisted to fingerprint_metadata/cmrt_members. It is
+// NEVER clamped for stems; see comparisonQualityScore() below for that.
 double scoreTrackQuality(const std::optional<TrackQualityInfo>& info) {
     if (!info) {
         return 0.0;
     }
     return QualityScorer::calculateScore(
             {info->filetype, info->sampleRate, info->fileSize});
+}
+
+// Unless the user has opted in via kCmrtAllowStemCanonicalConfigKey,
+// a stem's *comparison* score is
+// forced to 0.0 here --  so a stem can only win/keep a canonical election
+// when there is no non-stem alternative in its group.
+double comparisonQualityScore(double trueQualityScore,
+        const std::optional<TrackQualityInfo>& info,
+        bool allowStemCanonical) {
+    if (!allowStemCanonical && info &&
+            info->filetype.startsWith(QStringLiteral("stem"), Qt::CaseInsensitive)) {
+        return 0.0;
+    }
+    return trueQualityScore;
 }
 
 } // namespace
@@ -58,8 +75,15 @@ void CmrtGroupingService::processTrack(
         return;
     }
 
-    const double qualityScore =
-            scoreTrackQuality(m_fingerprintDao.getTrackQualityInfo(trackId));
+    // trackQualityInfo is fetched once and reused for both the true score
+    // (always persisted) and the comparison score (stem-clamped only when
+    // deciding a canonical election -- see comparisonQualityScore() above).
+    const auto trackQualityInfo = m_fingerprintDao.getTrackQualityInfo(trackId);
+    const double qualityScore = scoreTrackQuality(trackQualityInfo);
+    const bool allowStemCanonical = m_pConfig->getValue(
+            mixxx::library::prefs::kCmrtAllowStemCanonicalConfigKey, false);
+    const double qualityScoreForComparison =
+            comparisonQualityScore(qualityScore, trackQualityInfo, allowStemCanonical);
 
     // With an MBID, only groups whose canonical track shares it are worth
     // comparing against -- getGroupsForMbid() does that filtering in SQL.
@@ -116,7 +140,11 @@ void CmrtGroupingService::processTrack(
                      << "group:" << bestCandidate.cmrtGroupId
                      << "score:" << bestMatchResult.score;
         }
-        handleMatchedCandidate(trackId, bestCandidate, bestMatchResult, qualityScore);
+        handleMatchedCandidate(trackId,
+                bestCandidate,
+                bestMatchResult,
+                qualityScore,
+                qualityScoreForComparison);
         return;
     }
 
@@ -195,31 +223,51 @@ void CmrtGroupingService::createNewGroup(
 void CmrtGroupingService::handleMatchedCandidate(TrackId newTrackId,
         const MbidGroupCandidate& candidate,
         const FingerprintMatcher::MatchResult& matchResult,
-        double newTrackQualityScore) {
+        double newTrackQualityScore,
+        double newTrackComparisonScore) {
     const double offsetSeconds =
             matchResult.offsetItems * FingerprintMatcher::kItemDurationSeconds;
-    // Canonical's score was already computed and stored in cmrt_members when
-    // it became canonical (createNewGroup()/replaceCanonical()) -- reuse it
-    // instead of re-deriving it from TrackQualityInfo every time a new track
-    // matches into this group.
+    // Canonical's TRUE score was already computed and stored in
+    // cmrt_members when it became canonical (createNewGroup()/
+    // replaceCanonical()) -- reuse it instead of re-deriving it from
+    // TrackQualityInfo every time a new track matches into this group.
     double canonicalQualityScore =
             m_fingerprintDao.getMemberQualityScore(candidate.canonicalTrackId);
+
+    // Needed regardless of the branch above: comparisonQualityScore() below
+    // clamps based on filetype, and the canonical's filetype isn't part of
+    // what getMemberQualityScore() returns.
+    const auto canonicalQualityInfo =
+            m_fingerprintDao.getTrackQualityInfo(candidate.canonicalTrackId);
+
     if (canonicalQualityScore < 0.0) {
         // Shouldn't happen -- every canonical has a member row -- but fall
         // back rather than let an unscored canonical always lose ties.
-        canonicalQualityScore = scoreTrackQuality(
-                m_fingerprintDao.getTrackQualityInfo(candidate.canonicalTrackId));
+        canonicalQualityScore = scoreTrackQuality(canonicalQualityInfo);
     }
+
+    // Comparison-only, stem-clamped view of the canonical's TRUE score
+    const bool allowStemCanonical = m_pConfig->getValue(
+            mixxx::library::prefs::kCmrtAllowStemCanonicalConfigKey, false);
+    const double canonicalComparisonScore = comparisonQualityScore(
+            canonicalQualityScore, canonicalQualityInfo, allowStemCanonical);
 
     if (sDebugCmrtGroupingService) {
         qDebug() << "CmrtGroupingService -> [handleMatchedCandidate] ->"
-                 << "newTrack:" << newTrackId << "score:" << newTrackQualityScore
+                 << "newTrack:" << newTrackId
+                 << "trueScore:" << newTrackQualityScore
+                 << "comparisonScore:" << newTrackComparisonScore
                  << "vs canonical:" << candidate.canonicalTrackId
-                 << "score:" << canonicalQualityScore
+                 << "trueScore:" << canonicalQualityScore
+                 << "comparisonScore:" << canonicalComparisonScore
                  << "offsetSeconds:" << offsetSeconds;
     }
 
-    if (newTrackQualityScore > canonicalQualityScore) {
+    // The election runs on comparison scores (stem-clamped when the
+    // preference is off); whichever track wins still has its own TRUE,
+    // unclamped score written to the database below -- clamping only ever
+    // decides who wins, never what gets stored for either track.
+    if (newTrackComparisonScore > canonicalComparisonScore) {
         replaceCanonical(candidate.cmrtGroupId,
                 candidate.canonicalTrackId,
                 newTrackId,

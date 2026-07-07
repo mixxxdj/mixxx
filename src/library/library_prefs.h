@@ -76,6 +76,8 @@ extern const ConfigKey kCmrtMatchThresholdConfigKey;
 
 extern const double kCmrtMatchThresholdDefault;
 
+extern const ConfigKey kCmrtAllowStemCanonicalConfigKey;
+
 extern const ConfigKey kCmrtColumnShowArtistConfigKey;
 
 extern const ConfigKey kCmrtColumnShowTitleConfigKey;

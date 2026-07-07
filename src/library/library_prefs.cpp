@@ -152,6 +152,11 @@ const ConfigKey mixxx::library::prefs::kCmrtMatchThresholdConfigKey =
 
 const double mixxx::library::prefs::kCmrtMatchThresholdDefault = 0.80;
 
+const ConfigKey mixxx::library::prefs::kCmrtAllowStemCanonicalConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CmrtAllowStemCanonical")};
+
 const ConfigKey mixxx::library::prefs::kCmrtColumnShowArtistConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnShowArtist")};
