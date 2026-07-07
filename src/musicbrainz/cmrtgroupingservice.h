@@ -34,7 +34,8 @@ class CmrtGroupingService {
     void handleMatchedCandidate(TrackId newTrackId,
             const MbidGroupCandidate& candidate,
             const FingerprintMatcher::MatchResult& matchResult,
-            double newTrackQualityScore);
+            double newTrackQualityScore,
+            double newTrackComparisonScore);
 
     void replaceCanonical(int groupId,
             TrackId oldCanonicalId,
