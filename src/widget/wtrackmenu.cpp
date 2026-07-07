@@ -468,6 +468,13 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotClearFingerprint);
 
+        m_pClearMusicBrainzAction = make_parented<QAction>(
+                tr("MusicBrainz Data"), m_pClearMetadataMenu);
+        connect(m_pClearMusicBrainzAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearMusicBrainz);
+
         m_pClearAllMetadataAction = make_parented<QAction>(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
 
@@ -750,6 +757,7 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearFingerprintAction);
+        m_pClearMetadataMenu->addAction(m_pClearMusicBrainzAction);
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
@@ -2454,10 +2462,30 @@ void WTrackMenu::slotClearAllMetadata() {
             &trackOperator);
 
     clearFingerprintDataForSelection();
+    clearMusicBrainzDataForSelection();
 }
 
 void WTrackMenu::slotClearFingerprint() {
     clearFingerprintDataForSelection();
+}
+
+void WTrackMenu::slotClearMusicBrainz() {
+    clearMusicBrainzDataForSelection();
+}
+
+void WTrackMenu::clearMusicBrainzDataForSelection() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.empty()) {
+        return;
+    }
+
+    TrackDAO& trackDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getTrackDAO();
+
+    for (const TrackId& id : std::as_const(trackIds)) {
+        trackDao.clearMusicBrainzData(id);
+    }
 }
 
 void WTrackMenu::clearFingerprintDataForSelection() {

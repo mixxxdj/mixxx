@@ -110,6 +110,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
         return getTrackByRef(TrackRef::fromUrl(url));
     }
 
+    bool clearMusicBrainzData(TrackId trackId) const;
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId);
