@@ -444,6 +444,34 @@ bool TrackDAO::updateAcoustIdResult(
     return query.numRowsAffected() > 0;
 }
 
+bool TrackDAO::clearMusicBrainzData(TrackId trackId) const {
+    kLogger.debug() << "Clearing MusicBrainz/AcoustID data for track" << trackId;
+    if (!trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            "UPDATE library SET "
+            "acoustid_id=NULL, "
+            "acoustid_lookup_status=NULL, "
+            "acoustid_lookup_at=NULL, "
+            "musicbrainz_recording_id=NULL, "
+            "musicbrainz_release_id=NULL, "
+            "musicbrainz_track_id=NULL, "
+            "musicbrainz_artist_id=NULL "
+            "WHERE id=:track_id");
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't clear MusicBrainz data for track" << trackId;
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
+}
+
 void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
     if (!changedTrackIds.isEmpty()) {
         emit tracksChanged(changedTrackIds);
