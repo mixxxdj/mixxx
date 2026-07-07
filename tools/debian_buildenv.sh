@@ -119,6 +119,8 @@ case "$1" in
             libqt6opengl6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
+            qt6-httpserver-dev \
+            qt6-websockets-dev \
             librubberband-dev \
             libshout-idjc-dev \
             libsndfile1-dev \
