@@ -112,12 +112,12 @@ class EngineMixer : public QObject, public AudioSource {
         ChannelInfo(int index)
                 : m_index(index) {
         }
-        ChannelHandle m_handle{};
-        std::unique_ptr<EngineChannel> m_pChannel{nullptr};
-        mixxx::SampleBuffer m_pBuffer{};
-        std::unique_ptr<ControlObject> m_pVolumeControl{nullptr};
-        std::unique_ptr<ControlPushButton> m_pMuteControl{nullptr};
-        GroupFeatureState m_features{};
+        ChannelHandle m_handle;
+        std::unique_ptr<EngineChannel> m_pChannel;
+        mixxx::SampleBuffer m_pBuffer;
+        std::unique_ptr<ControlObject> m_pVolumeControl;
+        std::unique_ptr<ControlPushButton> m_pMuteControl;
+        GroupFeatureState m_features;
         int m_index;
     };
 
