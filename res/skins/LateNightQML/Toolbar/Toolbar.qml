@@ -32,8 +32,8 @@ Rectangle {
     property string hoveredAppMenuSubmenu: ""
     property string pinnedAppMenuSubmenu: ""
     property string selectedAppMenuSection: "Options"
-    property var recentlyClosedPopup: null
-    property var recentlyClosedPopupButton: null
+    property ToolbarSettingsPopup recentlyClosedPopup: null
+    property MouseArea recentlyClosedPopupButton: null
     property double recentlyClosedPopupTimestamp: 0
 
     function formatTime(date) {
@@ -991,19 +991,6 @@ Rectangle {
                 }
                 ToolbarAppMenuAction {
                     checkable: true
-                    checked: Mixxx.Config.libraryHideMenuBar
-                    text: "Auto-hide menu bar"
-                    visible: root.activeAppMenuSection === "View"
-
-                    onTriggered: {
-                        Mixxx.Config.libraryHideMenuBar = !Mixxx.Config.libraryHideMenuBar;
-                    }
-                }
-                ToolbarAppMenuSeparator {
-                    visible: root.activeAppMenuSection === "View"
-                }
-                ToolbarAppMenuAction {
-                    checkable: true
                     checked: showMicAuxControl.value > 0
                     shortcut: "Ctrl+2"
                     text: "Show Microphone Section"
@@ -1825,10 +1812,12 @@ Rectangle {
             anchors.fill: parent
             anchors.leftMargin: 15
             color: broadcastIndicator.status > 0 ? LateNightTheme.toolbarButtonActiveTextColor : LateNightTheme.toolbarButtonInactiveTextColor
-            font.family: "Open Sans"
-            font.pixelSize: 11
-            font.styleName: "Bold"
-            font.weight: Font.Bold
+            font {
+                family: "Open Sans"
+                pixelSize: 11
+                styleName: "Bold"
+                weight: Font.Bold
+            }
             horizontalAlignment: Text.AlignHCenter
             opacity: broadcastIndicator.status === 1.0 || broadcastIndicator.status === 3.0 || broadcastIndicator.status === 4.0 ? broadcastIndicator.pulseOpacity : 1.0
             renderType: Text.NativeRendering
@@ -1849,7 +1838,7 @@ Rectangle {
     component LateNightToolbarMenuButton: MouseArea {
         id: menuButton
 
-        required property var popup
+        required property ToolbarSettingsPopup popup
         property bool wasPopupOpenOnPress: false
 
         Layout.alignment: Qt.AlignVCenter
@@ -1898,10 +1887,12 @@ Rectangle {
             anchors.fill: parent
             color: toolbarButton.checked ? LateNightTheme.toolbarButtonActiveTextColor : LateNightTheme.toolbarButtonInactiveTextColor
             elide: Text.ElideRight
-            font.family: "Open Sans"
-            font.pixelSize: 11
-            font.styleName: "Bold"
-            font.weight: Font.Bold
+            font {
+                family: "Open Sans"
+                pixelSize: 11
+                styleName: "Bold"
+                weight: Font.Bold
+            }
             horizontalAlignment: Text.AlignHCenter
             renderType: Text.NativeRendering
             text: toolbarButton.text
@@ -1933,8 +1924,8 @@ Rectangle {
     component LateNightToolbarDropButton: MouseArea {
         id: dropButton
 
-        required property var popup
-        property var popupAnchor: null
+        required property ToolbarSettingsPopup popup
+        property MouseArea popupAnchor: null
         property bool wasPopupOpenOnPress: false
 
         Layout.alignment: Qt.AlignVCenter
@@ -2198,60 +2189,6 @@ Rectangle {
             width: 8
         }
     }
-    component ToolbarMenuChoice: Item {
-        id: menuChoice
-
-        property bool checked: false
-        property string text: ""
-
-        signal clicked
-
-        Layout.fillWidth: true
-        implicitHeight: 18
-        implicitWidth: menuChoiceText.implicitWidth + 22
-        opacity: enabled ? 1.0 : 0.45
-
-        Rectangle {
-            anchors.fill: parent
-            color: root.menuHoverColor(menuChoiceMouseArea.containsMouse, menuChoice.enabled)
-            radius: 1
-        }
-
-        MouseArea {
-            id: menuChoiceMouseArea
-            anchors.fill: parent
-            cursorShape: Qt.ArrowCursor
-            hoverEnabled: true
-
-            onClicked: {
-                if (parent.enabled) {
-                    parent.clicked();
-                }
-            }
-        }
-        Image {
-            anchors.left: parent.left
-            anchors.leftMargin: 2
-            anchors.verticalCenter: parent.verticalCenter
-            fillMode: Image.PreserveAspectFit
-            height: 14
-            source: parent.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
-            width: 14
-        }
-        Text {
-            id: menuChoiceText
-
-            anchors.left: parent.left
-            anchors.leftMargin: 20
-            anchors.verticalCenter: parent.verticalCenter
-            color: menuChoiceMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
-            elide: Text.ElideRight
-            font.family: "Open Sans"
-            font.pixelSize: 13
-            text: parent.text
-            width: parent.width - anchors.leftMargin
-        }
-    }
     component ToolbarMenuInlineChoice: Item {
         id: inlineChoice
         property bool checked: false
@@ -2315,7 +2252,7 @@ Rectangle {
     component ToolbarMenuSectionToggle: ColumnLayout {
         id: sectionToggle
         required property string title
-        required property var control
+        required property Mixxx.ControlProxy control
 
         Layout.fillWidth: true
         Layout.bottomMargin: 7
@@ -2378,7 +2315,7 @@ Rectangle {
         id: menuToggle
 
         property bool checked: control ? control.value > 0 : false
-        required property var control
+        required property Mixxx.ControlProxy control
         property int indent: 0
         property string text: ""
 
@@ -2431,7 +2368,7 @@ Rectangle {
     component ToolbarSettingsPopup: Popup {
         id: toolbarSettingsPopup
 
-        property var anchorButton: null
+        property MouseArea anchorButton: null
         property int minimumWidth: 190
 
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
