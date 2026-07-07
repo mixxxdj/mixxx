@@ -604,6 +604,20 @@ bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
         return false;
     }
 
+    QVariant qualityScoreValue;
+    if (member.qualityScore < 0.0) {
+        qualityScoreValue = QVariant(QMetaType(QMetaType::Double));
+    } else {
+        qualityScoreValue = member.qualityScore;
+    }
+
+    QVariant matchScoreValue;
+    if (member.matchScore < 0.0) {
+        matchScoreValue = QVariant(QMetaType(QMetaType::Double));
+    } else {
+        matchScoreValue = member.matchScore;
+    }
+
     QSqlQuery query(m_database);
     query.prepare(QString(
             "INSERT INTO %1 "
@@ -616,18 +630,8 @@ bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
     query.bindValue(":group_id", member.groupId);
     query.bindValue(":track_id", member.trackId.toVariant());
     query.bindValue(":offset", member.offsetFromCanonical);
-    // quality_score is nullable — -1.0 sentinel maps to NULL
-    if (member.qualityScore < 0.0) {
-        query.bindValue(":quality_score", QVariant(QMetaType(QMetaType::Double)));
-    } else {
-        query.bindValue(":quality_score", member.qualityScore);
-    }
-    // match_score is nullable — same -1.0 sentinel as quality_score
-    if (member.matchScore < 0.0) {
-        query.bindValue(":match_score", QVariant(QMetaType(QMetaType::Double)));
-    } else {
-        query.bindValue(":match_score", member.matchScore);
-    }
+    query.bindValue(":quality_score", qualityScoreValue);
+    query.bindValue(":match_score", matchScoreValue);
     query.bindValue(":is_fake_lossless", member.isFakeLossless ? 1 : 0);
     // Schema stores added_at as INTEGER (Unix timestamp)
     query.bindValue(":added_at", member.addedAt.toSecsSinceEpoch());
