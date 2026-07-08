@@ -87,13 +87,23 @@ void MusicBrainzQueueTableModel::setTableModel() {
 QVariant MusicBrainzQueueTableModel::rawValue(
         const QModelIndex& index) const {
     if (index.column() == COL_STATUS) {
-        // NULL status means the track has a valid fingerprint but has not yet
-        // been placed in acoustid_queue.  Show "pending" so the user knows the
-        // background worker will pick it up on its next poll cycle.
         const QVariant raw = BaseSqlTableModel::rawValue(index);
-        if (raw.isNull() || raw.toString().isEmpty()) {
-            return QStringLiteral("pending");
+        const QString rawStatus = raw.toString();
+
+        if (raw.isNull() || rawStatus.isEmpty()) {
+            return tr("Pending");
         }
+        if (rawStatus == QStringLiteral("queued")) {
+            return tr("Queued");
+        }
+        if (rawStatus == QStringLiteral("failed")) {
+            return tr("Lookup failed");
+        }
+        if (rawStatus == QStringLiteral("unmatched")) {
+            return tr("No match");
+        }
+
+        // Unknown/future status value -- show the raw text
         return raw;
     }
     return BaseSqlTableModel::rawValue(index);
