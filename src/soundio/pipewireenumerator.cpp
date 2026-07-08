@@ -18,6 +18,7 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/assert.h"
+#include "util/sample.h"
 #include "util/trace.h"
 #include "util/types.h"
 #include "waveform/visualplayposition.h"
@@ -530,6 +531,8 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
                         pInputBuffer[i * 2] = buffer[i];
                         pInputBuffer[i * 2 + 1] = buffer[i];
                     }
+                } else {
+                    SampleUtil::fill(pInputBuffer, 0, framesPerBuffer * 2);
                 }
             } else {
                 const float* bufferFL = static_cast<const float*>(
@@ -538,6 +541,10 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
                     for (uint64_t i = 0; i < framesPerBuffer; i++) {
                         pInputBuffer[iChannelBase + i * 2] = bufferFL[i];
                     }
+                } else {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        pInputBuffer[iChannelBase + i * 2] = 0;
+                    }
                 }
 
                 const float* bufferFR = static_cast<const float*>(
@@ -545,6 +552,10 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
                 if (bufferFR) {
                     for (uint64_t i = 0; i < framesPerBuffer; i++) {
                         pInputBuffer[iChannelBase + 1 + i * 2] = bufferFR[i];
+                    }
+                } else {
+                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                        pInputBuffer[iChannelBase + 1 + i * 2] = 0;
                     }
                 }
             }
