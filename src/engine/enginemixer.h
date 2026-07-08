@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QVarLengthArray>
+#include <array>
 #include <atomic>
 #include <memory>
 
