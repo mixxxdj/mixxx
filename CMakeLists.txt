@@ -2907,6 +2907,7 @@ if(BUILD_TESTING)
     src/test/fileinfo_test.cpp
     src/test/frametest.cpp
     src/test/globaltrackcache_test.cpp
+    src/test/hotcuebarcounter_test.cpp
     src/test/hotcuecontrol_test.cpp
     src/test/hotcueorderbyposition_test.cpp
     src/test/imageutils_test.cpp

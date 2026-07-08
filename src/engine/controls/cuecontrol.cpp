@@ -19,6 +19,16 @@ namespace {
 /// This is the position of a fresh loaded tack without any seek
 constexpr int kNoHotCueNumber = 0;
 
+/// Sentinel published on the beats_to_next_hotcue control when there is no
+/// beatgrid or no hot cue ahead of the play position. A negative value is used
+/// (the real count is always >= 0) so the UI can render a placeholder (e.g.
+/// "—") instead of a misleading number.
+constexpr double kNoBeatsToNextHotcue = -1.0;
+
+/// Beats per bar assumed for the bars_to_next_hotcue conversion. Mixxx has no
+/// time-signature model, so a 4/4 bar is assumed (see spec 001 Assumptions).
+constexpr int kBeatsPerBar = 4;
+
 // Helper function to convert control values (i.e. doubles) into RgbColor
 // instances (or nullopt if value < 0). This happens by using the integer
 // component as RGB color codes (e.g. 0xFF0000).
@@ -99,6 +109,8 @@ CueControl::CueControl(const QString& group,
           m_pPlay(ControlObject::getControl(ConfigKey(group, "play"))),
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_bypassCueSetByPlay(false),
+          m_lastBeatsToNextHotcue(kNoBeatsToNextHotcue),
+          m_lastBarsBeatsToNextHotcue(0.0),
           m_pCurrentSavedLoopControl(nullptr),
           m_trackMutex(QT_RECURSIVE_MUTEX_INIT) {
     createControls();
@@ -297,6 +309,16 @@ void CueControl::createControls() {
         HotcueControl* pControl = new HotcueControl(m_group, i);
         m_hotcueControls.append(pControl);
     }
+
+    m_pBeatsToNextHotcue = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "beats_to_next_hotcue"));
+    m_pBeatsToNextHotcue->forceSet(kNoBeatsToNextHotcue);
+    m_pBeatsToNextHotcue->setReadOnly();
+
+    m_pBarsBeatsToNextHotcue = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "bars_beats_to_next_hotcue"));
+    m_pBarsBeatsToNextHotcue->forceSet(0.0);
+    m_pBarsBeatsToNextHotcue->setReadOnly();
 }
 
 void CueControl::connectControls() {
@@ -595,6 +617,11 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_n60dBSoundStartPosition.setValue(Cue::kNoPosition);
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
+        m_pBeats.reset();
+        m_pBeatsToNextHotcue->forceSet(kNoBeatsToNextHotcue);
+        m_pBarsBeatsToNextHotcue->forceSet(0.0);
+        m_lastBeatsToNextHotcue = kNoBeatsToNextHotcue;
+        m_lastBarsBeatsToNextHotcue = 0.0;
         m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
     }
 
@@ -602,6 +629,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         return;
     }
     m_pLoadedTrack = pNewTrack;
+    m_pBeats = pNewTrack->getBeats();
 
     connect(m_pLoadedTrack.get(),
             &Track::analyzed,
@@ -895,8 +923,68 @@ void CueControl::trackCuesUpdated() {
 }
 
 void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
-    Q_UNUSED(pBeats);
+    m_pBeats = pBeats;
     loadCuesFromTrack();
+}
+
+void CueControl::process(const double rate,
+        mixxx::audio::FramePos currentPosition,
+        const std::size_t bufferSize) {
+    Q_UNUSED(rate);
+    Q_UNUSED(bufferSize);
+    updateBeatsToNextHotcue(currentPosition);
+}
+
+void CueControl::updateBeatsToNextHotcue(mixxx::audio::FramePos currentPosition) {
+    // Lock-free copy of the cached beatgrid (engine thread; see m_pBeats).
+    const mixxx::BeatsPointer pBeats = m_pBeats;
+
+    double value = kNoBeatsToNextHotcue;
+    if (pBeats && currentPosition.isValid()) {
+        // Find the nearest hot cue whose position is at or ahead of the play
+        // position (same selection idea as nextTrigger()). Hot cue positions are
+        // read through atomic ControlObjects, so no track lock is needed here.
+        mixxx::audio::FramePos nextCuePosition = mixxx::audio::kInvalidFramePos;
+        for (const auto& pControl : std::as_const(m_hotcueControls)) {
+            const mixxx::audio::FramePos cuePosition = pControl->getPosition();
+            if (!cuePosition.isValid() || cuePosition < currentPosition) {
+                continue;
+            }
+            if (!nextCuePosition.isValid() || cuePosition < nextCuePosition) {
+                nextCuePosition = cuePosition;
+            }
+        }
+
+        if (nextCuePosition.isValid()) {
+            value = static_cast<double>(
+                    pBeats->numBeatsInRange(currentPosition, nextCuePosition));
+        }
+    }
+
+    // "bar.beat" countdown ready to display, encoded as bar + beat/10 in a single
+    // value. The integer part is the number of whole bars still remaining after
+    // the current bar; the decimal is the beat left in the current bar. With a
+    // cue N beats ahead it counts down every beat and reaches 0.0 at the cue,
+    // e.g. for 16 bars: 15.4, 15.3, 15.2, 15.1, 14.4, ... 0.4, 0.3, 0.2, 0.1, 0.0.
+    // Shows 0.0 when there is no beatgrid or no hot cue ahead (unlike
+    // beats_to_next_hotcue, this display value is never negative).
+    double barBeatValue = 0.0;
+    if (value > 0.0) {
+        const int beats = static_cast<int>(value);
+        const int bar = (beats - 1) / kBeatsPerBar;
+        const int beatInBar = ((beats - 1) % kBeatsPerBar) + 1;
+        barBeatValue = bar + beatInBar / 10.0;
+    }
+
+    // Publish only on change to avoid redundant notifications every cycle.
+    if (value != m_lastBeatsToNextHotcue) {
+        m_pBeatsToNextHotcue->forceSet(value);
+        m_lastBeatsToNextHotcue = value;
+    }
+    if (barBeatValue != m_lastBarsBeatsToNextHotcue) {
+        m_pBarsBeatsToNextHotcue->forceSet(barBeatValue);
+        m_lastBarsBeatsToNextHotcue = barBeatValue;
+    }
 }
 
 void CueControl::quantizeChanged(double v) {

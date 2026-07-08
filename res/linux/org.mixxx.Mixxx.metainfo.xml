@@ -96,11 +96,22 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.7.0" type="development" date="2026-04-03" timestamp="1775221182">
+    <release version="2.7.0" type="development" date="2026-07-08" timestamp="1783484661">
       <description>
+ <ul>
+  <li>
+   Add a per-deck hot cue bar counter: a bar.beat countdown to the next hot cue
+  ahead (e.g. 15.4, 15.3, ... 0.1, 0.0), exposed as the
+   beats_to_next_hotcue
+   and
+   bars_beats_to_next_hotcue
+   controls and shown in the LateNightQML and
+  LateNight skins
+  </li>
+ </ul>
 </description>
     </release>
-    <release version="2.6.0" type="development" date="2026-04-03" timestamp="1775221182">
+    <release version="2.6.0" type="development" date="2026-07-08" timestamp="1783484661">
       <description>
  <p>
   STEM file support
@@ -1954,7 +1965,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-04-03" timestamp="1775221182">
+    <release version="2.5.5" type="development" date="2026-07-08" timestamp="1783484661">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.

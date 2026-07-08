@@ -2,6 +2,11 @@
 
 ## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
 
+* Add a per-deck hot cue bar counter: a bar.beat countdown to the next hot cue
+  ahead (e.g. 15.4, 15.3, ... 0.1, 0.0), exposed as the `beats_to_next_hotcue`
+  and `bars_beats_to_next_hotcue` controls and shown in the LateNightQML and
+  LateNight skins
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support

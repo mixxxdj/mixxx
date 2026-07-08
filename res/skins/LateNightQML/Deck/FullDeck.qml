@@ -291,6 +291,14 @@ Controls.Panel {
                             Layout.fillHeight: true
                             group: root.group
                         }
+
+                        // Bars remaining until the next hot cue ahead
+                        HotcueBarCounter {
+                            id: hotcueBarCounter
+                            Layout.preferredWidth: 54
+                            Layout.fillHeight: true
+                            group: root.group
+                        }
                     }
                 }
             }

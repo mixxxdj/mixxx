@@ -111,6 +111,21 @@
                       <Variable name="ChanNum"/>
                     </Channel>
                   </TrackProperty>
+                  <!-- Bar.beat countdown to the next hot cue (feature 001):
+                       e.g. 15.4, 15.3, ... 0.1, 0.0 (bar.beat). Shows 0.0 when
+                       there is no beatgrid or no hot cue ahead. -->
+                  <Number>
+                    <ObjectName>DurationText</ObjectName>
+                    <TooltipId>track_duration</TooltipId>
+                    <Size>0min,25f</Size>
+                    <Alignment>right</Alignment>
+                    <NumberOfDigits>1</NumberOfDigits>
+                    <Text>  %1</Text>
+                    <Channel><Variable name="ChanNum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,bars_beats_to_next_hotcue</ConfigKey>
+                    </Connection>
+                  </Number>
                 </Children>
               </WidgetGroup>
 

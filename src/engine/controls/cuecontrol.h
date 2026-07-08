@@ -215,6 +215,9 @@ class CueControl : public EngineControl {
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void process(const double rate,
+            mixxx::audio::FramePos currentPosition,
+            const std::size_t bufferSize) override;
 
   signals:
     void loopRemove();
@@ -296,6 +299,9 @@ class CueControl : public EngineControl {
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
+    // Recompute the beats-to-next-hotcue counter from the current play position,
+    // the cached beatgrid and the hot cue positions. Engine-thread only.
+    void updateBeatsToNextHotcue(mixxx::audio::FramePos currentPosition);
     mixxx::audio::FramePos quantizeCuePoint(mixxx::audio::FramePos position);
     mixxx::audio::FramePos getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
@@ -324,6 +330,22 @@ class CueControl : public EngineControl {
     ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
 
     QList<HotcueControl*> m_hotcueControls;
+
+    // Read-only per-deck counters for the hot cue bar counter. Both are
+    // recomputed each process() cycle and hold a negative sentinel when there is
+    // no beatgrid or no hot cue ahead of the play position:
+    //  - beats_to_next_hotcue: number of beats to the next hot cue ahead (>= 0).
+    //  - bars_beats_to_next_hotcue: a "bar.beat" countdown ready to display,
+    //    encoded as bar + beat/10, counting down every beat and reaching 0.0 at
+    //    the cue (e.g. 16 bars away: 15.4, 15.3, ... 0.2, 0.1, 0.0).
+    std::unique_ptr<ControlObject> m_pBeatsToNextHotcue;
+    std::unique_ptr<ControlObject> m_pBarsBeatsToNextHotcue;
+    // Cached beatgrid for lock-free reads on the engine thread (mirrors the
+    // pattern used by LoopingControl). Updated on track load and beats change.
+    mixxx::BeatsPointer m_pBeats;
+    // Last published values, to skip redundant CO updates every cycle.
+    double m_lastBeatsToNextHotcue;
+    double m_lastBarsBeatsToNextHotcue;
 
     ControlObject* m_pTrackSamples;
     std::unique_ptr<ControlObject> m_pCuePoint;
