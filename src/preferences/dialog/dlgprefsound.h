@@ -124,4 +124,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bSkipConfigClear;
     bool m_loading;
     bool m_configValid;
+
+#ifdef __PIPEWIRE__
+    parented_ptr<QCheckBox> m_pipewireCheckBox;
+#endif
 };

@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 
+#include <QCheckBox>
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
@@ -11,10 +12,14 @@
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefsound.cpp"
+#include "preferences/configobject.h"
+#include "preferences/dialog/dlgprefsound.h"
 #include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/cmdlineargs.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 
@@ -30,6 +35,8 @@ const ConfigKey kKeylockEngingeCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_engine"));
 const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
+const ConfigKey kPipeWire =
+        ConfigKey(kAppGroup, QStringLiteral("pipewire"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -204,6 +211,33 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::micMonitorModeComboBoxChanged);
+
+#ifdef __PIPEWIRE__
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        m_pipewireCheckBox = make_parented<QCheckBox>(this);
+        m_pipewireCheckBox->setText(tr("Use PipeWire API"));
+
+        bool checked = m_pSoundManager->isPipewireSelected();
+        m_pipewireCheckBox->setChecked(checked);
+        apiComboBox->setDisabled(checked);
+
+        m_pipewireCheckBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
+        apiHBox->addWidget(m_pipewireCheckBox.get());
+
+        connect(m_pipewireCheckBox,
+                &QCheckBox::toggled,
+                this,
+                [this](bool checked) {
+                    m_settingsModified = true;
+                    if (m_pSoundManager->isPipewireSelected() xor checked) {
+                        QMessageBox::information(this,
+                                tr("Information"),
+                                tr("Mixxx must be restarted for the PipeWire "
+                                   "API selection to take effect."));
+                    }
+                });
+    }
+#endif
 
     initializePaths();
     loadSettings();
@@ -416,6 +450,13 @@ void DlgPrefSound::slotApply() {
         m_settingsModified = false;
         m_bLatencyChanged = false;
     }
+
+#ifdef __PIPEWIRE__
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        m_pSettings->set(kPipeWire, ConfigValue(m_pipewireCheckBox->isChecked()));
+    }
+#endif
+
     m_bSkipConfigClear = true;
     loadSettings(); // in case SM decided to change anything it didn't like
     checkLatencyCompensation();
@@ -657,6 +698,13 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
                     QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
         }
     }
+
+#ifdef __PIPEWIRE__
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        m_pipewireCheckBox->setChecked(m_pSoundManager->isPipewireSelected());
+    }
+#endif
+
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
     emit loadPaths(m_config);

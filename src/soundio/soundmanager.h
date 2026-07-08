@@ -11,9 +11,11 @@
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
-#include "soundio/networkenumerator.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceenumerator.h"
+#include "soundio/sounddevicenetwork.h"
+#include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/cmdlineargs.h"
 #include "util/types.h"
@@ -89,7 +91,7 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
-        return m_pNetworkEnumerator->getNetworkStream();
+        return m_pNetworkStream;
     }
 
     void underflowHappened(int code) {
@@ -113,6 +115,9 @@ class SoundManager : public QObject {
 
     // currently only used by pipewire
     void updateDeviceChannels(SoundDevicePointer pDevice);
+#ifdef __PIPEWIRE__
+    bool isPipewireSelected();
+#endif
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
@@ -165,11 +170,8 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
 
-    std::unique_ptr<PortAudioEnumerator> m_pPaEnumerator;
+    std::unique_ptr<SoundDeviceEnumerator> m_pEnumerator;
 
-#ifdef __PIPEWIRE__
-    std::unique_ptr<PipewireEnumerator> m_pPipewireEnumerator;
-#endif
-
-    std::unique_ptr<NetworkEnumerator> m_pNetworkEnumerator;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+    QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;
 };

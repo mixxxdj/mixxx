@@ -29,6 +29,12 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
     m_sampleRate = getDefaultSampleRate();
 }
 
+SoundDevicePipewire::~SoundDevicePipewire() {
+    if (isOpen()) {
+        close();
+    }
+}
+
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
     m_error = m_pEnumerator->openDevice(*this, m_sampleRate, m_configFramesPerBuffer);
     if (m_error.empty()) {

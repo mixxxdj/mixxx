@@ -16,20 +16,23 @@ class PortAudioEnumerator : public SoundDeviceEnumerator {
     ~PortAudioEnumerator() override;
 
     std::vector<SoundDevicePointer> queryDevices() const override;
-    std::vector<std::string> getAPIs() const override;
-    QList<mixxx::audio::SampleRate> getSampleRates() const override;
-    QList<mixxx::audio::SampleRate> getJackSampleRates() const;
 
-    void initialize();
-    void terminate();
+    QList<QString> getAPIs() const override {
+        return m_apis;
+    }
+
+    QList<mixxx::audio::SampleRate> getSampleRates(bool jackSampleRate) const override;
+
+    void initialize() override;
+    void deinitialize() override;
 
   private:
     void setJACKName() const;
 
-    bool m_initialized;
     std::vector<QSharedPointer<SoundDevicePortAudio>> m_devices;
     mixxx::audio::SampleRate m_jackSampleRate;
 
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
+    QList<QString> m_apis;
 };
