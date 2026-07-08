@@ -2522,7 +2522,9 @@ void WTrackMenu::clearFingerprintDataForSelection() {
     // TODO(XXX): Add a progress dialog when
     // fingerprint clearing moves into a TrackPointerOperation.
 
-    Q_UNUSED(cleared);
+    if (cleared > 0) {
+        emit m_pLibrary->trackCollectionManager()->cmrtDataChanged();
+    }
 }
 
 namespace {
