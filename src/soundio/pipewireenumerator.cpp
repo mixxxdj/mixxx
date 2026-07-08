@@ -81,7 +81,6 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
           m_pPwRegistry(nullptr),
           m_pPwMetadata(nullptr),
           m_pPwFilter(nullptr),
-          m_initialized(false),
           m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesPerBuffer(0) {
@@ -103,38 +102,10 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
     spa_zero(m_pwRegistryListener);
     spa_zero(m_pwMetadataListener);
     spa_zero(m_pwFilterListener);
-
-    initialize();
 }
 
 PipewireEnumerator::~PipewireEnumerator() {
-    pw_thread_loop_stop(m_pPwThreadLoop);
-
-    if (m_pPwFilter) {
-        spa_hook_remove(&m_pwFilterListener);
-        pw_filter_destroy(m_pPwFilter);
-    }
-
-    if (m_pPwMetadata) {
-        spa_hook_remove(&m_pwMetadataListener);
-        pw_proxy_destroy((struct pw_proxy*)m_pPwMetadata);
-    }
-
-    if (m_pPwRegistry) {
-        spa_hook_remove(&m_pwRegistryListener);
-        pw_proxy_destroy((struct pw_proxy*)m_pPwRegistry);
-    }
-
-    if (m_pPwCore) {
-        pw_core_disconnect(m_pPwCore);
-    }
-
-    if (m_pPwContext) {
-        pw_context_destroy(m_pPwContext);
-    }
-
-    pw_thread_loop_destroy(m_pPwThreadLoop);
-    pw_deinit();
+    deinitialize();
 }
 
 void PipewireEnumerator::initialize() {
@@ -209,8 +180,48 @@ void PipewireEnumerator::initialize() {
     m_initialized = true;
 }
 
-QList<mixxx::audio::SampleRate> PipewireEnumerator::getSampleRates() const {
-    return m_samplerates;
+void PipewireEnumerator::deinitialize() {
+    if (!m_initialized) {
+        return;
+    }
+
+    pw_thread_loop_stop(m_pPwThreadLoop);
+
+    // clear everything we get through registry
+    m_openedDevices.clear();
+    m_soundDevices.clear();
+    m_objects.clear();
+
+    if (m_pPwFilter) {
+        spa_hook_remove(&m_pwFilterListener);
+        pw_filter_destroy(m_pPwFilter);
+        m_pPwFilter = nullptr;
+    }
+
+    if (m_pPwMetadata) {
+        spa_hook_remove(&m_pwMetadataListener);
+        pw_proxy_destroy((struct pw_proxy*)m_pPwMetadata);
+        m_pPwMetadata = nullptr;
+    }
+
+    if (m_pPwRegistry) {
+        spa_hook_remove(&m_pwRegistryListener);
+        pw_proxy_destroy((struct pw_proxy*)m_pPwRegistry);
+        m_pPwRegistry = nullptr;
+    }
+
+    if (m_pPwCore) {
+        pw_core_disconnect(m_pPwCore);
+        m_pPwCore = nullptr;
+    }
+
+    if (m_pPwContext) {
+        pw_context_destroy(m_pPwContext);
+        m_pPwContext = nullptr;
+    }
+
+    pw_deinit();
+    m_initialized = false;
 }
 
 void PipewireEnumerator::registryEventGlobal(uint32_t id,

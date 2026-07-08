@@ -81,7 +81,16 @@ bool SoundManagerConfig::readFromDisk() {
     }
     file.close();
     rootElement = doc.documentElement();
+
     setAPI(rootElement.attribute(xmlAttributeApi));
+
+#ifdef __PIPEWIRE__
+    if (m_pSoundManager->isPipewireSelected() and m_api != SoundManagerConfig::kAPIPipewire) {
+        // PipeWire check box just changed, current config is useless
+        return false;
+    }
+#endif
+
     setSampleRate(mixxx::audio::SampleRate(
             rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
     // audioBufferSizeIndex is refereed as "latency" in the config file
@@ -491,12 +500,18 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         QList<QString> apiList = soundManager->getHostAPIList();
         if (!apiList.isEmpty()) {
 #ifdef __LINUX__
-            //Check for JACK and use that if it's available, otherwise use ALSA
-            if (apiList.contains(SoundManagerConfig::kAPIJack)) {
-                m_api = SoundManagerConfig::kAPIJack;
-            } else {
-                m_api = SoundManagerConfig::kAPIAlsa;
-            }
+            // Check if PipeWire checkbox selected
+#ifdef __PIPEWIRE__
+            if (m_pSoundManager->isPipewireSelected()) {
+                m_api = SoundManagerConfig::kAPIPipewire;
+            } else
+#endif
+                // Check for JACK and use that if it's available, otherwise use ALSA
+                if (apiList.contains(SoundManagerConfig::kAPIJack)) {
+                    m_api = SoundManagerConfig::kAPIJack;
+                } else {
+                    m_api = SoundManagerConfig::kAPIAlsa;
+                }
 #endif
 #ifdef __WINDOWS__
             //Existence of ASIO doesn't necessarily mean you've got ASIO devices
@@ -505,7 +520,7 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
             // and then that we have at least one ASIO output device -- bkgood
             auto deviceList = soundManager->getDeviceList(
                     SoundManagerConfig::kAPIAsio, true, false);
-            if (apiList.contains(SoundManagerConfig::kAPIAsio) && !deviceList.isEmpty) {
+            if (apiList.contains(SoundManagerConfig::kAPIAsio) && !deviceList.isEmpty()) {
                 m_api = SoundManagerConfig::kAPIAsio;
             } else {
                 m_api = SoundManagerConfig::kAPIDirectSound;
