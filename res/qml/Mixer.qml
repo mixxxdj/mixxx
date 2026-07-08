@@ -240,8 +240,8 @@ Item {
                 Skin.ControlFader {
                     id: crossfaderSlider
 
-                    barColor: Theme.crossfaderBarColor
-                    barStart: 0.5
+                    bar.color: Theme.crossfaderBarColor
+                    bar.start: 0.5
                     bg: Theme.imgCrossfaderBackground
                     fg: Theme.imgCrossfaderHandle
                     group: "[Master]"
