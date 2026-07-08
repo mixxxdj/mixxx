@@ -45,6 +45,7 @@ class DlgMusicBrainzQueue : public QWidget,
     void slotSubmitSelected();
     void slotSubmitAll();
     void slotRetryFailed();
+    void slotAcoustIdQueueDrained();
 
   private:
     void activateButtons(bool enable);
