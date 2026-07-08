@@ -81,6 +81,11 @@ Library::Library(
             this,
             &Library::slotRefreshLibraryModels);
 
+    connect(m_pTrackCollectionManager,
+            &TrackCollectionManager::cmrtDataChanged,
+            this,
+            &Library::slotRefreshLibraryModels);
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = make_parented<MixxxLibraryFeature>(

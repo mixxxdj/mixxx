@@ -44,6 +44,16 @@ class AcoustIdWorker : public WorkerThread {
     /// Emitted when all pending jobs in the current batch have been handled.
     void queueDrained();
 
+    /// Emitted after CmrtGroupingService::processTrack() writes to
+    /// fingerprint_metadata/cmrt_groups/cmrt_members.
+    ///
+    /// Forwarded (signal-to-signal, Qt::QueuedConnection) into
+    /// TrackCollectionManager::cmrtDataChanged() in TrackCollectionManager's
+    /// constructor, which Library in turn connects to its existing
+    /// slotRefreshLibraryModels() -- the same slot already used for
+    /// libraryScanFinished().
+    void cmrtDataChanged();
+
     /// Emitted when a lookup result should be written back to the library
     /// table. Connected to TrackDAO::updateAcoustIdResult in the main
     /// thread via a queued connection — TrackDAO's m_database must not be

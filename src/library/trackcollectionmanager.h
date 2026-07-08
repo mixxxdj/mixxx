@@ -110,6 +110,13 @@ class TrackCollectionManager: public QObject,
     void libraryScanFinished();
     void libraryScanSummary(const LibraryScanResultSummary& result);
 
+    /// Forwarded (signal-to-signal) from AcoustIdWorker::cmrtDataChanged()
+    /// whenever CmrtGroupingService writes a grouping result.
+    /// Library connects this directly to its existing
+    /// slotRefreshLibraryModels(), the same slot used for
+    /// libraryScanFinished() above.
+    void cmrtDataChanged();
+
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
