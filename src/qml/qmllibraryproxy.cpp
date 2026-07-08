@@ -1,8 +1,6 @@
 #include "qml/qmllibraryproxy.h"
 
 #include <QAbstractItemModel>
-#include <QCursor>
-#include <QPoint>
 #include <QQmlEngine>
 #include <cmath>
 
@@ -16,9 +14,7 @@
 #include "qmltrackproxy.h"
 #include "track/cue.h"
 #include "track/track.h"
-#include "track/track_decl.h"
 #include "util/assert.h"
-#include "widget/wtrackmenu.h"
 
 namespace mixxx {
 namespace qml {
@@ -120,48 +116,6 @@ void QmlLibraryProxy::analyze(const QmlTrackProxy* track) const {
         return;
     }
     emit s_pLibrary->analyzeTracks({track->internal()->getId()});
-}
-
-void QmlLibraryProxy::showDeckTrackMenu(
-        QmlTrackProxy* track,
-        const QString& group,
-        const QString& property,
-        int globalXPosition,
-        int globalYPosition) {
-    VERIFY_OR_DEBUG_ASSERT(track && track->internal()) {
-        return;
-    }
-
-    ensureDeckTrackMenu();
-    VERIFY_OR_DEBUG_ASSERT(m_pDeckTrackMenu) {
-        return;
-    }
-
-    m_pDeckTrackMenu->loadTrack(track->internal(), group);
-    m_pDeckTrackMenu->updateMenus();
-    m_pDeckTrackMenu->setTrackPropertyName(property);
-    const QPoint globalPosition = globalXPosition >= 0 && globalYPosition >= 0
-            ? QPoint(globalXPosition, globalYPosition)
-            : QCursor::pos();
-    m_pDeckTrackMenu->popup(globalPosition);
-}
-
-void QmlLibraryProxy::showDeckTrackProperties(
-        QmlTrackProxy* track,
-        const QString& group,
-        const QString& property) {
-    VERIFY_OR_DEBUG_ASSERT(track && track->internal()) {
-        return;
-    }
-
-    ensureDeckTrackMenu();
-    VERIFY_OR_DEBUG_ASSERT(m_pDeckTrackMenu) {
-        return;
-    }
-
-    m_pDeckTrackMenu->loadTrack(track->internal(), group);
-    m_pDeckTrackMenu->setTrackPropertyName(property);
-    m_pDeckTrackMenu->slotShowDlgTrackInfo();
 }
 
 QString QmlLibraryProxy::deckHotcueLabel(
@@ -298,38 +252,6 @@ void QmlLibraryProxy::cleanupDeckHotcuePopup(
             pCue->getEndPosition().isValid()) {
         pCue->setEndPosition(mixxx::audio::FramePos());
     }
-}
-
-void QmlLibraryProxy::ensureDeckTrackMenu() {
-    if (m_pDeckTrackMenu) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(s_pLibrary && QmlConfigProxy::get()) {
-        return;
-    }
-
-    m_pDeckTrackMenu = std::make_unique<WTrackMenu>(
-            nullptr,
-            QmlConfigProxy::get(),
-            s_pLibrary.get(),
-            WTrackMenu::kDeckTrackMenuFeatures);
-    connect(m_pDeckTrackMenu.get(),
-            &WTrackMenu::trackMenuVisible,
-            this,
-            [this](bool visible) {
-                ControlObject::set(
-                        ConfigKey(m_pDeckTrackMenu->getDeckGroup(), kShowTrackMenuKey),
-                        visible ? 1.0 : 0.0);
-            });
-    connect(m_pDeckTrackMenu.get(),
-            &WTrackMenu::saveCurrentViewState,
-            s_pLibrary.get(),
-            &Library::slotSaveCurrentViewState);
-    connect(m_pDeckTrackMenu.get(),
-            &WTrackMenu::restoreCurrentViewStateOrIndex,
-            s_pLibrary.get(),
-            &Library::slotRestoreCurrentViewState);
 }
 
 // static

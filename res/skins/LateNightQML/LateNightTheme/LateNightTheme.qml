@@ -45,8 +45,35 @@ QtObject {
     readonly property color starsColor34: isClassic ? "#0bd9d1" : "#559b99"
     readonly property color toolbarActiveColor: white
     readonly property color toolbarBackgroundColor: "#242424"
+    readonly property color toolbarRootBackgroundColor: "#151517"
+    readonly property color toolbarBottomBorderColor: "#020202"
+    readonly property color toolbarButtonActiveBackgroundColor: isClassic ? "#d09300" : "#777777"
+    readonly property color toolbarButtonInactiveBackgroundColor: isClassic ? "#262626" : "#151517"
+    readonly property color toolbarButtonActiveTextColor: "#000000"
+    readonly property color toolbarButtonInactiveTextColor: isClassic ? "#d2d2d1" : "#777777"
+    readonly property color toolbarClockTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
+    readonly property color toolbarMenuHoverColor: isPaleMoon ? "#2c454f" : "#5e4507"
+    readonly property color toolbarMenuHoverTextColor: "#ffffff"
+    readonly property color toolbarMenuTextColor: "#c2b3a5"
+    readonly property color toolbarMenuDisabledTextColor: "#777777"
+    readonly property color toolbarBroadcastOnColor: isClassic ? "#659f08" : "#438225"
+    readonly property color toolbarRecordInitColor: "#d09300"
+    readonly property color toolbarRecordOnColor: isClassic ? "#db0000" : "#a80000"
+    readonly property color toolbarStatusErrorColor: "#f856e7"
     readonly property int toolbarButtonHeight: 26
     readonly property int toolbarButtonWidth: 52
+    readonly property url assetToolbarDropdownIcon: lateNightAsset("buttons", "btn__fx_selector_down.svg")
+    readonly property url assetToolbarMenuIcon: lateNightAsset("buttons", "btn__menu.svg")
+    readonly property color toolbarMeterBackgroundColor: darkGray
+    readonly property color toolbarLatencyBorderColor: "#040404"
+    readonly property color toolbarLatencyOverloadColor: "#ffff00"
+    readonly property color toolbarLatencyLabelColor: "#444444"
+    readonly property color toolbarPopupBorderColor: "#585858"
+    readonly property color toolbarPopupBackgroundColor: "#0f0f0f"
+    readonly property color toolbarStatusOkColor: "#54c76a"
+    readonly property color toolbarStatusWarnColor: "#d89124"
+    readonly property color toolbarRecordingColor: "#db0000"
+    readonly property color toolbarRecordingTextColor: "#ff7373"
     readonly property color syncExplicitLeaderColor: activePlayCueColor
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
     readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"

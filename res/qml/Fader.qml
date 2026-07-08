@@ -11,8 +11,8 @@ MixxxControls.Fader {
     property alias handleImage: handleImage
     property bool showDefaultHandle: true
 
-    bar: true
-    barMargin: 10
+    bar.enabled: true
+    bar.margin: 10
     implicitHeight: backgroundImage.implicitHeight
     implicitWidth: backgroundImage.implicitWidth
 
@@ -20,7 +20,7 @@ MixxxControls.Fader {
         id: backgroundImage
 
         anchors.fill: parent
-        anchors.margins: root.barMargin
+        anchors.margins: root.bar.margin
     }
     handle: Item {
         id: handleItem

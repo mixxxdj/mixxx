@@ -12,8 +12,8 @@ Column {
     }
 
     Skin.ControlFader {
-        barColor: Theme.crossfaderBarColor
-        barStart: 1
+        bar.color: Theme.crossfaderBarColor
+        bar.start: 1
         bg: Theme.imgMicDuckingSlider
         fg: Theme.imgMicDuckingSliderHandle
         group: "[Master]"
