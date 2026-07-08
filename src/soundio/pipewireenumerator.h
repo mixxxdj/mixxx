@@ -115,9 +115,9 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
     void setLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
-    void createInputPorts(const AudioInput& path);
-    void createOutputPorts(const AudioOutput& path);
-    uint32_t* createPorts(const AudioPath& path, bool channel);
+    std::pair<uint32_t*, uint32_t*> createInputPorts(const AudioInput& path);
+    std::pair<uint32_t*, uint32_t*> createOutputPorts(const AudioOutput& path);
+    std::pair<uint32_t*, uint32_t*> createPorts(std::string_view name, spa_direction direction);
 
     struct Link {
         uint32_t input;

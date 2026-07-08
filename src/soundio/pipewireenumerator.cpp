@@ -158,14 +158,12 @@ void PipewireEnumerator::initialize() {
 
     pw_filter_add_listener(m_pPwFilter, &m_pwFilterListener, &filter_events, this);
 
-    const auto registeredOutputs = m_pSoundManager->registeredOutputs();
-    for (const auto& output : registeredOutputs) {
-        createOutputPorts(output);
+    for (auto it = m_inputs.begin(); it != m_inputs.end(); ++it) {
+        it.value() = createInputPorts(it.key());
     }
 
-    const auto registeredInputs = m_pSoundManager->registeredInputs();
-    for (const auto& input : registeredInputs) {
-        createInputPorts(input);
+    for (auto it = m_outputs.begin(); it != m_outputs.end(); ++it) {
+        it.value() = createOutputPorts(it.key());
     }
 
     int res = pw_filter_connect(m_pPwFilter,
@@ -658,76 +656,79 @@ std::string PipewireEnumerator::createLink(uint32_t outNodeId,
 }
 
 void PipewireEnumerator::registerInput(const AudioInput& input, AudioDestination*) {
-    if (m_inputs.contains(input)) {
+    if (m_inputs.contains(input) or input.isHidden()) {
         // duplicate VinylControl signal
         return;
     }
 
     if (m_initialized) {
         pw_thread_loop_lock(m_pPwThreadLoop);
-        createInputPorts(input);
+        m_inputs.insert(input, createInputPorts(input));
         pw_thread_loop_unlock(m_pPwThreadLoop);
+    } else {
+        m_inputs.insert(input, {});
     }
 }
 
 void PipewireEnumerator::registerOutput(const AudioOutput& output, AudioSource*) {
+    if (output.isHidden()) {
+        return;
+    }
+
     if (m_initialized) {
         pw_thread_loop_lock(m_pPwThreadLoop);
-        createOutputPorts(output);
+        m_outputs.insert(output, createOutputPorts(output));
         pw_thread_loop_unlock(m_pPwThreadLoop);
+    } else {
+        m_outputs.insert(output, {});
     }
 }
 
 // need to pw_thread_loop_lock before calling this
-uint32_t* PipewireEnumerator::createPorts(const AudioPath& path, bool channel) {
-    spa_direction direction;
-    switch (path.getType()) {
-    case AudioPathType::Main:
-    case AudioPathType::Headphones:
-    case AudioPathType::Booth:
-    case AudioPathType::Bus:
-    case AudioPathType::Deck:
-        direction = SPA_DIRECTION_OUTPUT;
-        break;
-    case AudioPathType::VinylControl:
-    case AudioPathType::Microphone:
-    case AudioPathType::Auxiliary:
-    case AudioPathType::RecordBroadcast:
-        direction = SPA_DIRECTION_INPUT;
-        break;
-    default:
-        qWarning() << "PipewireEnumerator::createPorts path type AudioPathType::Invalid";
-        return nullptr;
-    }
-
+std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createPorts(
+        std::string_view name, spa_direction direction) {
     pw_properties* props = pw_properties_new(
             // see pipewire/keys.h header
             PW_KEY_FORMAT_DSP,
             "32 bit float mono audio",
             nullptr);
-    pw_properties_setf(props,
-            PW_KEY_PORT_NAME,
-            channel ? "%s:FR" : "%s:FL",
-            path.getString().toStdString().c_str());
-    return static_cast<uint32_t*>(pw_filter_add_port(m_pPwFilter,
+    pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FL", name.data());
+
+    void* leftPort = pw_filter_add_port(m_pPwFilter,
             direction,
             PW_FILTER_PORT_FLAG_MAP_BUFFERS,
             sizeof(uint32_t),
             props,
             nullptr,
-            0));
+            0);
+
+    props = pw_properties_new(
+            // see pipewire/keys.h header
+            PW_KEY_FORMAT_DSP,
+            "32 bit float mono audio",
+            nullptr);
+    pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FR", name.data());
+
+    void* rightPort = pw_filter_add_port(m_pPwFilter,
+            direction,
+            PW_FILTER_PORT_FLAG_MAP_BUFFERS,
+            sizeof(uint32_t),
+            props,
+            nullptr,
+            0);
+    return std::pair{static_cast<uint32_t*>(leftPort), static_cast<uint32_t*>(rightPort)};
 }
 
 // need to pw_thread_loop_lock before calling this
-void PipewireEnumerator::createInputPorts(const AudioInput& input) {
-    auto ports = std::pair{createPorts(input, false), createPorts(input, true)};
-    m_inputs.insert(input, ports);
+std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createInputPorts(const AudioInput& input) {
+    std::string inputName = input.getString().toStdString();
+    return createPorts(inputName, SPA_DIRECTION_INPUT);
 }
 
 // need to pw_thread_loop_lock before calling this
-void PipewireEnumerator::createOutputPorts(const AudioOutput& output) {
-    auto ports = std::pair{createPorts(output, false), createPorts(output, true)};
-    m_outputs.insert(output, ports);
+std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createOutputPorts(const AudioOutput& output) {
+    std::string outputName = output.getString().toStdString();
+    return createPorts(outputName, SPA_DIRECTION_OUTPUT);
 }
 
 void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int framesPerBuffer) {
