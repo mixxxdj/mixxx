@@ -87,6 +87,10 @@ DlgMusicBrainzQueue::DlgMusicBrainzQueue(
             &Library::setSelectedClick,
             m_pTrackTableView,
             &WTrackTableView::setSelectedClick);
+    connect(pLibrary->trackCollectionManager(),
+            &TrackCollectionManager::acoustIdQueueDrained,
+            this,
+            &DlgMusicBrainzQueue::slotAcoustIdQueueDrained);
 }
 
 DlgMusicBrainzQueue::~DlgMusicBrainzQueue() {
@@ -121,6 +125,10 @@ void DlgMusicBrainzQueue::selectionChanged(
         const QItemSelection& selected,
         const QItemSelection& /*deselected*/) {
     activateButtons(!selected.indexes().isEmpty());
+}
+
+void DlgMusicBrainzQueue::slotAcoustIdQueueDrained() {
+    m_pQueueTableModel->select();
 }
 
 bool DlgMusicBrainzQueue::hasFocus() const {

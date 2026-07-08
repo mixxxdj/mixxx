@@ -90,6 +90,12 @@ TrackCollectionManager::TrackCollectionManager(
                 &TrackCollectionManager::cmrtDataChanged,
                 Qt::QueuedConnection);
 
+        connect(m_pAcoustIdWorker.get(),
+                &mixxx::AcoustIdWorker::queueDrained,
+                this,
+                &TrackCollectionManager::acoustIdQueueDrained,
+                Qt::QueuedConnection);
+
         m_pAcoustIdWorker->start(QThread::LowPriority);
     }
 

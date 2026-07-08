@@ -117,6 +117,10 @@ class TrackCollectionManager: public QObject,
     /// libraryScanFinished() above.
     void cmrtDataChanged();
 
+    /// Forwarded (signal-to-signal) from AcoustIdWorker::queueDrained()
+    /// whenever the worker finishes processing a fetched batch of jobs.
+    void acoustIdQueueDrained();
+
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
