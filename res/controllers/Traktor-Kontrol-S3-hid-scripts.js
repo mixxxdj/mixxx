@@ -910,6 +910,7 @@ TraktorS3.Deck = class {
         // There is no control object to mark / unmark a track as played.
         // this.defineButton(messageShort, "!SetPlayed", 0x01, 0x10, 0x04, 0x20,
         // deckFn.SetPlayedHandler);
+        this.defineButton(messageShort, "!StarTrack", 0x01, 0x10, 0x04, 0x20, deckFn.StarTrackHandler);
         this.defineButton(messageShort, "!LibraryFocus", 0x01, 0x20, 0x04, 0x40, deckFn.LibraryFocusHandler);
         this.defineButton(messageShort, "!MaximizeLibrary", 0x01, 0x40, 0x04, 0x80, deckFn.MaximizeLibraryHandler);
 
@@ -1141,6 +1142,15 @@ TraktorS3.Deck = class {
             this.previewPressed = false;
             engine.setValue("[PreviewDeck1]", "play", 0);
         }
+    }
+
+    StarTrackHandler(field) {
+        this.colorOutput(field.value, "!StarTrack");
+        if (field.value === 0) {
+            return;
+        }
+
+        engine.setValue("[Library]", "sort_focused_column", 1);
     }
 
     LibraryFocusHandler(field) {
@@ -1430,6 +1440,7 @@ TraktorS3.Deck = class {
         this.defineOutput(outputA, "slip_enabled", 0x02, 0x1B);
         this.defineOutput(outputA, "reverse", 0x03, 0x1C);
         this.defineOutput(outputA, "!PreviewTrack", 0x04, 0x1D);
+        this.defineOutput(outputA, "!StarTrack", 0x05, 0x1E);
         this.defineOutput(outputA, "!LibraryFocus", 0x06, 0x1F);
         this.defineOutput(outputA, "!MaximizeLibrary", 0x07, 0x20);
         this.defineOutput(outputA, "quantize", 0x08, 0x21);

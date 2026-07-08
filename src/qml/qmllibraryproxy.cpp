@@ -1,12 +1,7 @@
 #include "qml/qmllibraryproxy.h"
 
 #include <QAbstractItemModel>
-#include <QCursor>
-#include <QDir>
-#include <QFile>
-#include <QPoint>
 #include <QQmlEngine>
-#include <QStyle>
 #include <cmath>
 
 #include "control/controlobject.h"
@@ -19,9 +14,7 @@
 #include "qmltrackproxy.h"
 #include "track/cue.h"
 #include "track/track.h"
-#include "track/track_decl.h"
 #include "util/assert.h"
-#include "widget/wtrackmenu.h"
 
 namespace mixxx {
 namespace qml {
@@ -32,55 +25,6 @@ const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorI
 const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_color_index");
 
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
-
-QString lateNightTrackMenuStyleSheet() {
-    UserSettingsPointer pConfig = QmlConfigProxy::get();
-    VERIFY_OR_DEBUG_ASSERT(pConfig) {
-        return {};
-    }
-
-    const QString resourcePath = pConfig->getResourcePath();
-    const QString skinsRoot = QDir::fromNativeSeparators(
-            resourcePath + QStringLiteral("skins/"));
-    const QString lateNightSkinRoot = QDir::fromNativeSeparators(
-            resourcePath + QStringLiteral("skins/LateNight"));
-    QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
-    QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinRoot});
-
-    const QString configScheme = pConfig->getValue(
-            ConfigKey(QStringLiteral("[Config]"), QStringLiteral("Scheme")));
-    const QString qssName =
-            configScheme.compare(QStringLiteral("Classic"), Qt::CaseInsensitive) == 0
-            ? QStringLiteral("style_classic.qss")
-            : QStringLiteral("style_palemoon.qss");
-    QString style;
-
-    const auto appendStyleFile = [&style](const QString& path) {
-        QFile file(path);
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            qWarning() << "QmlLibraryProxy: could not open" << path
-                       << "- deck track menu styling may be incomplete";
-            return false;
-        }
-        style.append(QString::fromUtf8(file.readAll()) + QChar('\n'));
-        return true;
-    };
-
-    appendStyleFile(skinsRoot + QStringLiteral("default.qss"));
-    appendStyleFile(skinsRoot + QStringLiteral("LateNight/style.qss"));
-    if (!appendStyleFile(skinsRoot + QStringLiteral("LateNight/") + qssName)) {
-        return {};
-    }
-
-    style.replace(QStringLiteral("url(skins:"),
-            QStringLiteral("url(") + skinsRoot);
-    style.replace(QStringLiteral("url(\"skins:"),
-            QStringLiteral("url(\"") + skinsRoot);
-    style.replace(QStringLiteral("url('skins:"),
-            QStringLiteral("url('") + skinsRoot);
-
-    return style;
-}
 
 CuePointer findDeckHotcue(QmlTrackProxy* track, int hotcueNumber) {
     if (!track || !track->internal() || hotcueNumber <= 0) {
@@ -172,48 +116,6 @@ void QmlLibraryProxy::analyze(const QmlTrackProxy* track) const {
         return;
     }
     emit s_pLibrary->analyzeTracks({track->internal()->getId()});
-}
-
-void QmlLibraryProxy::showDeckTrackMenu(
-        QmlTrackProxy* track,
-        const QString& group,
-        const QString& property,
-        int globalXPosition,
-        int globalYPosition) {
-    VERIFY_OR_DEBUG_ASSERT(track && track->internal()) {
-        return;
-    }
-
-    ensureDeckTrackMenu();
-    VERIFY_OR_DEBUG_ASSERT(m_pDeckTrackMenu) {
-        return;
-    }
-
-    m_pDeckTrackMenu->loadTrack(track->internal(), group);
-    m_pDeckTrackMenu->updateMenus();
-    m_pDeckTrackMenu->setTrackPropertyName(property);
-    const QPoint globalPosition = globalXPosition >= 0 && globalYPosition >= 0
-            ? QPoint(globalXPosition, globalYPosition)
-            : QCursor::pos();
-    m_pDeckTrackMenu->popup(globalPosition);
-}
-
-void QmlLibraryProxy::showDeckTrackProperties(
-        QmlTrackProxy* track,
-        const QString& group,
-        const QString& property) {
-    VERIFY_OR_DEBUG_ASSERT(track && track->internal()) {
-        return;
-    }
-
-    ensureDeckTrackMenu();
-    VERIFY_OR_DEBUG_ASSERT(m_pDeckTrackMenu) {
-        return;
-    }
-
-    m_pDeckTrackMenu->loadTrack(track->internal(), group);
-    m_pDeckTrackMenu->setTrackPropertyName(property);
-    m_pDeckTrackMenu->slotShowDlgTrackInfo();
 }
 
 QString QmlLibraryProxy::deckHotcueLabel(
@@ -350,47 +252,6 @@ void QmlLibraryProxy::cleanupDeckHotcuePopup(
             pCue->getEndPosition().isValid()) {
         pCue->setEndPosition(mixxx::audio::FramePos());
     }
-}
-
-void QmlLibraryProxy::ensureDeckTrackMenu() {
-    if (m_pDeckTrackMenu) {
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(s_pLibrary && QmlConfigProxy::get()) {
-        return;
-    }
-
-    m_pDeckTrackMenu = std::make_unique<WTrackMenu>(
-            nullptr,
-            QmlConfigProxy::get(),
-            s_pLibrary.get(),
-            WTrackMenu::kDeckTrackMenuFeatures);
-    const QString styleSheet = lateNightTrackMenuStyleSheet();
-    if (!styleSheet.isEmpty()) {
-        m_pDeckTrackMenu->setStyleSheet(styleSheet);
-        if (QStyle* pStyle = m_pDeckTrackMenu->style()) {
-            pStyle->unpolish(m_pDeckTrackMenu.get());
-            pStyle->polish(m_pDeckTrackMenu.get());
-        }
-        m_pDeckTrackMenu->ensurePolished();
-    }
-    connect(m_pDeckTrackMenu.get(),
-            &WTrackMenu::trackMenuVisible,
-            this,
-            [this](bool visible) {
-                ControlObject::set(
-                        ConfigKey(m_pDeckTrackMenu->getDeckGroup(), kShowTrackMenuKey),
-                        visible ? 1.0 : 0.0);
-            });
-    connect(m_pDeckTrackMenu.get(),
-            &WTrackMenu::saveCurrentViewState,
-            s_pLibrary.get(),
-            &Library::slotSaveCurrentViewState);
-    connect(m_pDeckTrackMenu.get(),
-            &WTrackMenu::restoreCurrentViewStateOrIndex,
-            s_pLibrary.get(),
-            &Library::slotRestoreCurrentViewState);
 }
 
 // static

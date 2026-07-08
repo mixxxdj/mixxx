@@ -321,10 +321,10 @@ Item {
                     y: 2
                     width: 40
                     height: 119
-                    bar: true
-                    barColor: "#888888"
-                    barMargin: 7
-                    barStart: 0.5
+                    bar.enabled: true
+                    bar.color: "#888888"
+                    bar.margin: 7
+                    bar.start: 0.5
                     showDefaultHandle: false
                     group: root.group
                     key: "rate"
