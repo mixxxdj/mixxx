@@ -656,7 +656,13 @@ QVariant BaseTrackTableModel::roleValue(
         int role) const {
     const auto field = mapColumn(index.column());
     if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-        return rawValue;
+        if (role == Qt::DisplayRole ||
+                role == Qt::ToolTipRole ||
+                role == Qt::EditRole ||
+                role == kDataExportRole) {
+            return rawValue;
+        }
+        return QVariant();
     }
     switch (role) {
     case Qt::ToolTipRole:
