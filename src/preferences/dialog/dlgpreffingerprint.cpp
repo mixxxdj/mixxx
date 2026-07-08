@@ -311,6 +311,8 @@ void DlgPrefFingerprint::slotClearAllFingerprints() {
             m_pTrackCollectionManager->internalCollection()->getTrackFingerprintDAO();
     const int cleared = dao.clearAllFingerprintData();
 
+    emit m_pTrackCollectionManager->cmrtDataChanged();
+
     QMessageBox::information(
             this,
             tr("Fingerprints Cleared"),

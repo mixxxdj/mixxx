@@ -279,6 +279,7 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
 
         if (m_pConfig->getValue(mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey, true)) {
             m_pGroupingService->processTrack(job.trackId, pCached->musicbrainzRecordingId);
+            emit cmrtDataChanged();
         }
 
         m_pFingerprintDao->deleteQueueEntry(job.trackId);
@@ -362,6 +363,7 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
         // limiter below.
         if (m_pConfig->getValue(mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey, true)) {
             m_pGroupingService->processTrack(job.trackId, mbRecordingId);
+            emit cmrtDataChanged();
         }
 
         m_pFingerprintDao->deleteQueueEntry(job.trackId);
@@ -401,6 +403,7 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
     // CMRT grouping just because AcoustID didn't recognize it.
     if (m_pConfig->getValue(mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey, true)) {
         m_pGroupingService->processTrack(job.trackId, QString());
+        emit cmrtDataChanged();
     }
 
     m_pFingerprintDao->updateQueueStatus(
