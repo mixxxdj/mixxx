@@ -86,6 +86,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_bSlipEnabledProcessing(false),
           m_slipModeState(SlipModeState::Disabled),
           m_quantize(ControlFlag::AllowMissingOrInvalid),
+          m_outroEndSamplePos(ControlFlag::AllowMissingOrInvalid),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -265,6 +266,8 @@ EngineBuffer::EngineBuffer(const QString& group,
             m_pLoopingControl,
             &LoopingControl::slotLoopRemove,
             Qt::DirectConnection);
+
+    m_outroEndSamplePos = PollingControlProxy(group, QStringLiteral("outro_end_position"));
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
             m_pLoopingControl,
@@ -639,6 +642,7 @@ void EngineBuffer::ejectTrack() {
             false,
             false,
             false,
+            0.0,
             0.0,
             0.0,
             0.0,
@@ -1506,8 +1510,16 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
         fFractionalLoopEndPos = fractionalPlayposFromAbsolute(loopInfo.endPosition);
     }
 
-    const double tempoTrackSeconds = m_trackEndPositionOld.value() /
-            m_trackSampleRateOld / getRateRatio();
+    const double tempoTrackSeconds = getRateRatio() *
+            m_trackEndPositionOld.value() / m_trackSampleRateOld;
+
+    double tempoOutroEndSeconds = tempoTrackSeconds;
+    const double outroEndPos = m_outroEndSamplePos.get();
+    if (outroEndPos > 0) {
+        tempoOutroEndSeconds = getRateRatio() * outroEndPos /
+                (m_trackSampleRateOld * mixxx::kEngineChannelOutputCount);
+    }
+
     if (speed > 0 && fFractionalPlaypos == 1.0) {
         // Play pos at Track end
         speed = 0;
@@ -1545,6 +1557,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
             fFractionalLoopStartPos,
             fFractionalLoopEndPos,
             tempoTrackSeconds,
+            tempoOutroEndSeconds,
             bufferSize / mixxx::kEngineChannelOutputCount / m_sampleRate.toDouble() * 1000000.0);
 
     // TODO: Especially with long audio buffers, jitter is visible. This can be fixed by moving the

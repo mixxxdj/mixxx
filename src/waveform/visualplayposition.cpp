@@ -35,6 +35,7 @@ void VisualPlayPosition::set(
         double loopStartPosition,
         double loopEndPosition,
         double tempoTrackSeconds,
+        double tempoOutroEndSeconds,
         double audioBufferMicroS) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
@@ -51,6 +52,7 @@ void VisualPlayPosition::set(
     data.m_loopStartPos = loopStartPosition;
     data.m_loopEndPos = loopEndPosition;
     data.m_tempoTrackSeconds = tempoTrackSeconds;
+    data.m_tempoOutroEndSeconds = tempoOutroEndSeconds;
     data.m_audioBufferMicroS = audioBufferMicroS;
 
     // Atomic write
@@ -202,6 +204,13 @@ void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrack
     }
 }
 
+double VisualPlayPosition::getTrackEndSeconds() const {
+    if (!m_valid.load()) {
+        return -1.0;
+    }
+    VisualPlayPositionData data = m_data.getValue();
+    return data.m_tempoOutroEndSeconds;
+}
 //static
 QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(const QString& group) {
     QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);

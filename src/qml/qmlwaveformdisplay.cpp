@@ -51,6 +51,7 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
             0.0,
             0.0,
             0.0,
+            0.0,
             0.0);
     setFlag(QQuickItem::ItemHasContents, true);
 
@@ -100,6 +101,7 @@ void QmlWaveformDisplay::setPosition(double value) {
             0,
             0,
             m_pTrack->internal()->getDuration(),
+            0.0,
             0);
     update();
 }
@@ -133,6 +135,10 @@ void QmlWaveformDisplay::setStaticTrack(QmlTrackProxy* track) {
             0,
             0,
             m_pTrack->internal()->getDuration(),
+            // outro end position, disabled for now with invalid value
+            // Used to set/unset the `end_of_track` CO
+            // TODO get `outro_end_position`, convert to seconds
+            0.0,
             1024. / static_cast<double>(mixxx::kEngineChannelOutputCount) /
                     static_cast<double>(m_pTrack->internal()->getSampleRate()) * 1000000.0);
     setCurrentTrack(track->internal());

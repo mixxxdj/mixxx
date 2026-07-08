@@ -30,9 +30,17 @@ void DeckVisuals::process(double remainingTimeTriggerSeconds) {
         return;
     }
 
-    double timeRemaining = (1.0 - playPosition) * tempoTrackSeconds;
+    const double playPosSeconds = playPosition * tempoTrackSeconds;
+    double timeRemaining = tempoTrackSeconds - playPosSeconds;
     m_timeRemaining.set(timeRemaining);
-    m_timeElapsed.set(tempoTrackSeconds - timeRemaining);
+    m_timeElapsed.set(playPosSeconds);
+
+    // get position of outro end and use it as remaining time
+    // for end-of-track warning if it's valid
+    const double outroEndPosSeconds = m_pVisualPlayPos->getTrackEndSeconds();
+    if (outroEndPosSeconds > 0) {
+        timeRemaining = outroEndPosSeconds - playPosSeconds;
+    }
 
     if (!m_playButton.toBool() ||                               // not playing
             m_loopEnabled.toBool() ||                           // in loop
