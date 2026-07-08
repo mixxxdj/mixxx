@@ -14,12 +14,17 @@
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
+#include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+
+#ifdef __PIPEWIRE__
+#include "soundio/pipewireenumerator.h"
+#endif
 
 namespace {
 
@@ -48,8 +53,11 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_underflowUpdateCount(0),
           m_audioLatencyOverloadCount(kAppGroup, QStringLiteral("audio_latency_overload_count")),
           m_audioLatencyOverload(kAppGroup, QStringLiteral("audio_latency_overload")),
-          m_paEnumerator(pConfig, this),
-          m_networkEnumerator(pConfig, this) {
+          m_pPaEnumerator(std::make_unique<PortAudioEnumerator>(pConfig, this)),
+#ifdef __PIPEWIRE__
+          m_pPipewireEnumerator(std::make_unique<PipewireEnumerator>(pConfig, this)),
+#endif
+          m_pNetworkEnumerator(std::make_unique<NetworkEnumerator>(pConfig, this)) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -95,7 +103,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
     // input/output.
     QList<SoundDevicePointer> filteredDeviceList;
 
-    for (const auto& pDevice : m_paEnumerator.queryDevices()) {
+    for (const auto& pDevice : m_devices) {
         // Skip devices that don't match the API, don't have input channels when
         // we want input devices, or don't have output channels when we want
         // output devices. If searching for both input and output devices,
@@ -103,7 +111,8 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
         const bool hasInputs = pDevice->getNumInputChannels().isValid();
         qDebug() << "SoundManager::getDeviceList" << pDevice->getHostAPI()
-                 << filterAPI << pDevice->getNumOutputChannels()
+                 << pDevice->getDeviceId().debugName() << filterAPI
+                 << pDevice->getNumOutputChannels()
                  << pDevice->getNumInputChannels();
         if (pDevice->getHostAPI() != filterAPI ||
                 (bOutputDevices && !bInputDevices && !hasOutputs) ||
@@ -111,6 +120,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
                 (!hasInputs && !hasOutputs)) {
             continue;
         }
+
         filteredDeviceList.push_back(pDevice);
     }
 
@@ -120,9 +130,15 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
 QList<QString> SoundManager::getHostAPIList() const {
     QList<QString> apiList;
 
-    for (const auto& api : m_paEnumerator.getAPIs()) {
+    for (const auto& api : m_pPaEnumerator->getAPIs()) {
         apiList.push_back(api.c_str());
     }
+
+#ifdef __PIPEWIRE__
+    for (const auto& api : m_pPipewireEnumerator->getAPIs()) {
+        apiList.push_back(api.c_str());
+    }
+#endif
 
     return apiList;
 }
@@ -215,17 +231,29 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     m_devices.clear();
     m_pErrorDevice.clear();
 
-    m_paEnumerator.terminate();
+    m_pPaEnumerator->terminate();
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
+    QList<mixxx::audio::SampleRate> samplerates;
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
-        return m_paEnumerator.getJackSampleRates();
-    } else if (!api.isEmpty()) {
-        return m_paEnumerator.getSampleRates();
+        samplerates = m_pPaEnumerator->getJackSampleRates();
     }
+#ifdef __PIPEWIRE__
+    else if (api == MIXXX_PIPEWIRE_STRING) {
+        samplerates = m_pPipewireEnumerator->getSampleRates();
+    }
+#endif
+    else if (!api.isEmpty()) {
+        samplerates = m_pPaEnumerator->getSampleRates();
+    }
+
+    if (!samplerates.empty()) {
+        return samplerates;
+    }
+
     return QList<mixxx::audio::SampleRate>{
             mixxx::audio::SampleRate(44100),
             mixxx::audio::SampleRate(48000),
@@ -234,20 +262,30 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api)
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
-    return getSampleRates("");
+    return getSampleRates(m_config.getAPI());
 }
 
 void SoundManager::queryDevices() {
     qDebug() << "SoundManager::queryDevices()";
 
-    m_paEnumerator.initialize();
+    m_devices.clear();
+    m_pPaEnumerator->initialize();
 
-    for (auto& device : m_paEnumerator.queryDevices()) {
-        m_devices.push_back(SoundDevicePointer(device));
+    for (auto& device : m_pPaEnumerator->queryDevices()) {
+        m_devices.push_back(device);
+        qDebug() << "m_devices.push_back " << device->getDisplayName();
     }
 
-    for (auto& device : m_networkEnumerator.queryDevices()) {
-        m_devices.push_back(SoundDevicePointer(device));
+#ifdef __PIPEWIRE__
+    for (auto& device : m_pPipewireEnumerator->queryDevices()) {
+        m_devices.push_back(device);
+        qDebug() << "m_devices.push_back " << device->getDisplayName();
+    }
+#endif
+
+    for (auto& device : m_pNetworkEnumerator->queryDevices()) {
+        m_devices.push_back(device);
+        qDebug() << "m_devices.push_back " << device->getDisplayName();
     }
 
     // now tell the prefs that we updated the device list -- bkgood
@@ -304,6 +342,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
     QVector<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
+
     for (const auto& pDevice : std::as_const(m_devices)) {
         DeviceMode mode = {pDevice, false, false};
         pDevice->clearInputs();
@@ -622,4 +661,25 @@ void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
     } else {
         --m_underflowUpdateCount;
     }
+}
+
+void SoundManager::addDevice(SoundDevicePointer pDevice) {
+    m_devices.push_back(pDevice);
+    qDebug() << "SoundManager::addDevice" << pDevice->getDisplayName();
+    emit deviceAdded(pDevice);
+}
+
+void SoundManager::removeDevice(SoundDevicePointer pDevice) {
+    for (const auto& device : std::as_const(m_devices)) {
+        if (device == pDevice) {
+            qDebug() << "SoundManager::removeDevice" << pDevice->getDisplayName();
+            m_devices.removeOne(pDevice);
+            emit deviceRemoved(pDevice);
+            return;
+        }
+    }
+}
+
+void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
+    emit deviceChannelsUpdated(pDevice);
 }
