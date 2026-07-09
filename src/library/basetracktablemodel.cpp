@@ -27,6 +27,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetracktablemodel.cpp"
+#include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -607,6 +608,17 @@ bool BaseTrackTableModel::setData(
                             ->getTrackFingerprintDAO()
                             .updateMemberUseCmrtData(trackId, checked)) {
                 return false;
+            }
+            if (TrackPointer pTrack = GlobalTrackCacheLocker().lookupTrackById(trackId)) {
+                if (checked) {
+                    m_pTrackCollectionManager->internalCollection()
+                            ->getTrackDAO()
+                            .applyCmrtOverlayToLoadedTrack(pTrack);
+                } else {
+                    m_pTrackCollectionManager->internalCollection()
+                            ->getTrackDAO()
+                            .reloadOwnCuesAndBeats(pTrack);
+                }
             }
             updateRowColumnValue(index.row(), index.column(), checked ? 1 : 0);
             emit dataChanged(index, index, {Qt::CheckStateRole});
