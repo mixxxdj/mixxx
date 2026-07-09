@@ -2365,7 +2365,7 @@ endif()
 # The mixxx executable
 if(QT6)
   if(HTTP_REMOTE)
-    find_package(Qt6 COMPONENTS Core HttpServer) # For Qt Core cmake functions
+    find_package(Qt6 COMPONENTS HttpServer) # For Qt Core cmake functions
     
     add_compile_definitions(-DHTTP_REMOTE=true)
 
@@ -2373,11 +2373,11 @@ if(QT6)
       src/preferences/dialog/dlgprefremotecontrol.cpp
       src/preferences/dialog/dlgprefremotecontrol.ui
       src/remote/remote.cpp
-    )
-
-  else()
-    find_package(Qt6 COMPONENTS Core)
+    ) 
   endif()
+
+  find_package(Qt6 COMPONENTS Core)
+
   # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
@@ -3813,7 +3813,6 @@ if(QT6)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
-  list(APPEND QT_EXTRA_COMPONENTS "HttpServer")
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
     # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
     list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
