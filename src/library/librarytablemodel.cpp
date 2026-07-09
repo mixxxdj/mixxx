@@ -55,7 +55,10 @@ void LibraryTableModel::setTableModel() {
                     LIBRARYTABLE_CMRT_MATCH_SCORE
             << "CASE WHEN cg.group_id IS NOT NULL "
                "THEN cm.quality_score ELSE NULL END AS " +
-                    LIBRARYTABLE_CMRT_QUALITY_SCORE;
+                    LIBRARYTABLE_CMRT_QUALITY_SCORE
+            << "CASE WHEN cg.group_id IS NOT NULL "
+               "THEN cm.use_cmrt_data ELSE NULL END AS " +
+                    LIBRARYTABLE_CMRT_USE_DATA;
 
     QSqlQuery query(m_database);
     query.prepare(
@@ -86,6 +89,7 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_CMRT_GROUP_ID;
     tableColumns << LIBRARYTABLE_CMRT_MATCH_SCORE;
     tableColumns << LIBRARYTABLE_CMRT_QUALITY_SCORE;
+    tableColumns << LIBRARYTABLE_CMRT_USE_DATA;
     setTable(tableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
