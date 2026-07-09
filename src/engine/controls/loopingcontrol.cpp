@@ -9,6 +9,7 @@
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "moc_loopingcontrol.cpp"
+#include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
@@ -214,6 +215,28 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pCOLoopMove, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopMove, Qt::DirectConnection);
 
+    m_pCOLoopMoveSize = new ControlObject(ConfigKey(group, "loopmove_size"),
+            true,
+            false,
+            false,
+            4.0);
+    m_pCOLoopMoveSize->connectValueChangeRequest(this,
+            &LoopingControl::slotLoopMoveSizeChangeRequest,
+            Qt::DirectConnection);
+
+    m_pCOLoopMoveForward = new ControlPushButton(ConfigKey(group, "loopmove_forward"));
+    m_pCOLoopMoveForward->setKbdRepeatable(true);
+    connect(m_pCOLoopMoveForward,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotLoopMoveForward);
+    m_pCOLoopMoveBackward = new ControlPushButton(ConfigKey(group, "loopmove_backward"));
+    m_pCOLoopMoveBackward->setKbdRepeatable(true);
+    connect(m_pCOLoopMoveBackward,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotLoopMoveBackward);
+
     // Create loop_move_(SIZE) CO's which all call loop_move, but with a set
     // value.
     for (unsigned int i = 0; i < (sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0])); ++i) {
@@ -287,6 +310,9 @@ LoopingControl::~LoopingControl() {
     }
 
     delete m_pCOLoopMove;
+    delete m_pCOLoopMoveSize;
+    delete m_pCOLoopMoveForward;
+    delete m_pCOLoopMoveBackward;
     while (!m_loopMoves.isEmpty()) {
         LoopMoveControl* pLoopMove = m_loopMoves.takeLast();
         delete pLoopMove;
@@ -1769,7 +1795,11 @@ void LoopingControl::slotBeatJump(double beats) {
     LoopInfo loopInfo = m_loopInfo.getValue();
     const auto currentPosition = m_currentPosition.getValue();
 
-    if (m_bLoopingEnabled && !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
+    bool beatjumpDoesLoopmove = m_pConfig->getValue(
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("BeatjumpDoesLoopmove")),
+            kDefaultBeatjumpDoesLoopmove);
+    if (m_bLoopingEnabled && beatjumpDoesLoopmove &&
+            !m_bAdjustingLoopIn && !m_bAdjustingLoopOut &&
             loopInfo.startPosition <= currentPosition &&
             loopInfo.endPosition >= currentPosition) {
         // If inside an active loop, move loop
@@ -1796,6 +1826,19 @@ void LoopingControl::slotBeatJumpSizeChangeRequest(double beats) {
     m_pCOBeatJumpSize->setAndConfirm(beats);
 }
 
+void LoopingControl::slotLoopMoveSizeChangeRequest(double beats) {
+    // Use same limits as for beat loop size
+    double maxBeatJumpSize = s_dBeatSizes[sizeof(s_dBeatSizes) / sizeof(s_dBeatSizes[0]) - 1];
+    double minBeatJumpSize = s_dBeatSizes[0];
+
+    if ((beats < minBeatJumpSize) || (beats > maxBeatJumpSize)) {
+        // Don't clamp the value here to not fall out of a measure
+        return;
+    }
+
+    m_pCOLoopMoveSize->setAndConfirm(beats);
+}
+
 void LoopingControl::slotBeatJumpSizeHalve(double pressed) {
     if (pressed > 0) {
         m_pCOBeatJumpSize->set(m_pCOBeatJumpSize->get() / 2);
@@ -1817,6 +1860,18 @@ void LoopingControl::slotBeatJumpForward(double pressed) {
 void LoopingControl::slotBeatJumpBackward(double pressed) {
     if (pressed > 0) {
         slotBeatJump(-1.0 * m_pCOBeatJumpSize->get());
+    }
+}
+
+void LoopingControl::slotLoopMoveForward(double pressed) {
+    if (pressed > 0) {
+        slotLoopMove(m_pCOBeatJumpSize->get());
+    }
+}
+
+void LoopingControl::slotLoopMoveBackward(double pressed) {
+    if (pressed > 0) {
+        slotLoopMove(-1.0 * m_pCOBeatJumpSize->get());
     }
 }
 
