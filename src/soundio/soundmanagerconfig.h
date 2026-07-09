@@ -52,8 +52,16 @@ class SoundManagerConfig {
     static constexpr auto kDefaultAudioBufferSizeIndex =
             static_cast<unsigned int>(AudioBufferSizeIndex::Size20xms);
 
-    static const QString kDefaultAPI;
+    static const QString kAPINone;
     static const QString kEmptyComboBox;
+    static const QString kAPIJack;
+    static const QString kAPIAlsa;
+    static const QString kAPIOss;
+    static const QString kAPIAsio;
+    static const QString kAPIDirectSound;
+    static const QString kAPIIosAudio;
+    static const QString kAPICoreAudio;
+    static const QString kAPIPipewire;
 
     /// The default sample rate that Mixxx uses.
     static constexpr mixxx::audio::SampleRate kMixxxDefaultSampleRate =

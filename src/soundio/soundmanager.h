@@ -145,7 +145,7 @@ class SoundManager : public QObject {
     void closeDevices(bool sleepAfterClosing, bool async = false);
 
     bool jackApiUsed() const {
-        return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
+        return m_config.getAPI() == SoundManagerConfig::kAPIJack;
     }
 
     EngineMixer* m_pEngineMixer;
