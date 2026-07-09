@@ -255,8 +255,7 @@ void PortAudioEnumerator::initialize() {
         auto currentDevice = QSharedPointer<SoundDevicePortAudio>::create(
                 m_pConfig, m_pSoundManager, deviceInfo, deviceTypeId, i);
         m_devices.push_back(currentDevice);
-        if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
-                    MIXXX_PORTAUDIO_JACK_STRING)) {
+        if (Pa_GetHostApiInfo(deviceInfo->hostApi)->name == SoundManagerConfig::kAPIJack) {
             m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
                     deviceInfo->defaultSampleRate);
         }

@@ -9,18 +9,6 @@
 #include "soundio/sounddeviceenumerator.h"
 #include "soundio/sounddeviceportaudio.h"
 
-#define MIXXX_PIPEWIRE_STRING "PipeWire"
-#define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
-#define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
-#define MIXXX_PORTAUDIO_OSS_STRING "OSS"
-#define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
-#define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
-// NOTE: This is what our patched version of PortAudio uses for the Core Audio
-// backend on iOS. If/when upstream supports iOS officially
-// (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
-#define MIXXX_PORTAUDIO_IOSAUDIO_STRING "iOS Audio"
-#define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
-
 class PortAudioEnumerator : public SoundDeviceEnumerator {
   public:
     PortAudioEnumerator(UserSettingsPointer config,

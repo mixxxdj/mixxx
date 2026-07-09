@@ -95,7 +95,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
-    if (filterAPI == SoundManagerConfig::kDefaultAPI) {
+    if (filterAPI == SoundManagerConfig::kAPINone) {
         return QList<SoundDevicePointer>();
     }
 
@@ -135,9 +135,7 @@ QList<QString> SoundManager::getHostAPIList() const {
     }
 
 #ifdef __PIPEWIRE__
-    for (const auto& api : m_pPipewireEnumerator->getAPIs()) {
-        apiList.push_back(api.c_str());
-    }
+    apiList.push_back(SoundManagerConfig::kAPIPipewire);
 #endif
 
     return apiList;
@@ -236,13 +234,13 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
     QList<mixxx::audio::SampleRate> samplerates;
-    if (api == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (api == SoundManagerConfig::kAPIJack) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
         samplerates = m_pPaEnumerator->getJackSampleRates();
     }
 #ifdef __PIPEWIRE__
-    else if (api == MIXXX_PIPEWIRE_STRING) {
+    else if (api == SoundManagerConfig::kAPIPipewire) {
         samplerates = m_pPipewireEnumerator->getSampleRates();
     }
 #endif
@@ -555,7 +553,7 @@ SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
 
 void SoundManager::checkConfig() {
     if (!m_config.checkAPI()) {
-        m_config.setAPI(SoundManagerConfig::kDefaultAPI);
+        m_config.setAPI(SoundManagerConfig::kAPINone);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {

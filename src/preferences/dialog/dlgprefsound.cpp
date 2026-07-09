@@ -114,7 +114,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     apiComboBox->clear();
     apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
-            SoundManagerConfig::kDefaultAPI);
+            SoundManagerConfig::kAPINone);
     updateAPIs();
     connect(apiComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -677,7 +677,7 @@ void DlgPrefSound::apiChanged(int index) {
     // For bigger buffers the user has to manually match the value with Jack.
     // TODO(Be): Get the buffer size from JACK and update audioBufferComboBox.
     // PortAudio as off v19.7.0 does not have a way to get the buffer size from JACK.
-    bool enable = m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING ? false : true;
+    bool enable = m_config.getAPI() == SoundManagerConfig::kAPIJack ? false : true;
     sampleRateComboBox->setEnabled(enable);
     deviceSyncComboBox->setEnabled(enable);
     engineClockComboBox->setEnabled(enable);
@@ -751,7 +751,7 @@ void DlgPrefSound::engineClockChanged(int index) {
 void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     QVariant oldSizeIndex = audioBufferComboBox->currentData();
     audioBufferComboBox->clear();
-    if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_config.getAPI() == SoundManagerConfig::kAPIJack) {
         // in case of jack we configure the frames/period
         // we cannot calc the resulting buffer size in ms because the
         // Sample rate is not known yet. We assume 48000 KHz here
@@ -803,7 +803,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
 /// Slot called when device lists go bad to refresh them, or the API
 /// just changes and we need to display new devices.
 void DlgPrefSound::refreshDevices() {
-    if (m_config.getAPI() == SoundManagerConfig::kDefaultAPI) {
+    if (m_config.getAPI() == SoundManagerConfig::kAPINone) {
         m_outputDevices.clear();
         m_inputDevices.clear();
     } else {
