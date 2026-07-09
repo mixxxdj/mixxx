@@ -4,6 +4,7 @@
 
 #include "sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/soundmanagerutil.h"
 
 class SoundManager;
 class PipewireEnumerator;
@@ -27,6 +28,7 @@ class SoundDevicePipewire : public SoundDevice {
         return m_error.c_str();
     }
 
+    QString getChannelString(ChannelGroup channelGroup, bool input) override;
     mixxx::audio::SampleRate getDefaultSampleRate() const override;
 
     void writeOutput(float* output, int channel, int framesPerBuffer, int offset = 0);

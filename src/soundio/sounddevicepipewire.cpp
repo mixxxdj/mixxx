@@ -2,6 +2,7 @@
 
 #include <spa/utils/defs.h>
 
+#include "audio/types.h"
 #include "soundio/pipewireenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicestatus.h"
@@ -108,13 +109,9 @@ void SoundDevicePipewire::writeInput(
 }
 
 void SoundDevicePipewire::registerPort(uint32_t id, const struct spa_dict* props) {
-    const char* nameStr = spa_dict_lookup(props, PW_KEY_PORT_ALIAS);
+    const char* nameStr = spa_dict_lookup(props, PW_KEY_PORT_NAME);
     const char* direction = spa_dict_lookup(props, PW_KEY_PORT_DIRECTION);
     std::string name;
-
-    if (!nameStr) {
-        nameStr = spa_dict_lookup(props, PW_KEY_PORT_NAME);
-    }
 
     if (nameStr) {
         name = nameStr;
@@ -179,4 +176,18 @@ void SoundDevicePipewire::unregisterLink(uint32_t id, spa_direction direction) {
             m_outLinks.erase(it);
         }
     }
+}
+
+QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool input) {
+    unsigned char base = channelGroup.getChannelBase();
+    mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
+
+    std::span<Port> ports = input ? m_outPorts : m_inPorts;
+    std::span<Port> subspan = ports.subspan(base, count - 1);
+
+    QString channelString = ports[base - 1].name.c_str();
+    for (const auto& port : subspan) {
+        channelString = channelString + "/" + port.name.c_str();
+    }
+    return channelString;
 }
