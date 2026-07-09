@@ -5,6 +5,7 @@
 
 #include "analyzer/qualityscorer.h"
 #include "library/library_prefs.h"
+#include "track/globaltrackcache.h"
 
 namespace mixxx {
 
@@ -363,6 +364,24 @@ void CmrtGroupingService::replaceCanonical(int groupId,
     if (sDebugCmrtGroupingService) {
         qDebug() << "CmrtGroupingService -> [replaceCanonical] -> done, recalculated"
                  << existingMembers.size() << "other member offset(s)";
+    }
+
+    // any member with use_cmrt_data=true was overlaying
+    // (via Track::applyCmrtOverlay()) a TrackPointer to the now-demoted
+    // oldCanonicalId. GlobalTrackCacheLocker().purgeTrackId() on each
+    // overlaying member forces the next getTrackById() to reconstruct the
+    // Track from scratch, which re-runs applyCmrtOverlayIfConfigured()
+    // against the new canonical
+    for (const CmrtMember& member : existingMembers) {
+        if (member.useCmrtData) {
+            GlobalTrackCacheLocker().purgeTrackId(member.trackId);
+        }
+    }
+    if (newMember.useCmrtData) {
+        // Shouldn't normally be true for a track that just became
+        // canonical (there's nothing to overlay onto itself), but purge
+        // defensively in case the flag was set before this election ran.
+        GlobalTrackCacheLocker().purgeTrackId(newCanonicalId);
     }
 }
 
