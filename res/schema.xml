@@ -697,6 +697,7 @@ reapplying those migrations.
         is_fake_lossless INTEGER DEFAULT 0,
         added_at INTEGER NOT NULL,
         user_quality_rating INTEGER,
+        use_cmrt_data INTEGER DEFAULT 0 NOT NULL,
         PRIMARY KEY (member_id),
         UNIQUE (track_id));
 
