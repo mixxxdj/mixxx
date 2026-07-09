@@ -65,8 +65,10 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary,
-        std::shared_ptr<mixxx::RemoteControl> pRemoteControl)
+        std::shared_ptr<Library> pLibrary
+#ifdef HTTP_REMOTE
+        , std::shared_ptr<mixxx::RemoteControl> pRemoteControl)
+#endif
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
