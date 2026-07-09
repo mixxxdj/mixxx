@@ -462,6 +462,21 @@ class Track : public QObject {
         return m_record.hasStreamInfoFromSource();
     }
 
+    // When active, this track's getCuePoints()/getBeats() return a
+    // shifted, resampled view of pCanonicalTrack's data instead of this
+    // track's own stored cues/beats, and mutators (createAndAddCue(),
+    // removeCue(), trySetBeats(), and cue position edits) write through to
+    // the canonical track instead. The track's own audio file is never
+    // touched -- EngineBuffer/SoundSourceProxy keep reading getFileInfo()
+    // as normal. See Track::applyCmrtOverlay() for the shift math.
+    void applyCmrtOverlay(TrackPointer pCanonicalTrack,
+            double offsetSeconds,
+            mixxx::audio::SampleRate memberSampleRate);
+    void clearCmrtOverlay();
+    bool hasCmrtOverlayActive() const;
+    TrackPointer getCanonicalTrack() const;
+    double getCmrtOffsetSeconds() const;
+
   signals:
     void artistChanged(const QString&);
     void titleChanged(const QString&);
@@ -507,6 +522,11 @@ class Track : public QObject {
 
   private slots:
     void slotCueUpdated();
+    // Connected to the canonical track's cuesUpdated()/beatsUpdated()
+    // while a CMRT overlay is active (see applyCmrtOverlay()), so edits
+    // made directly to the canonical -- not routed through this member's
+    // write-through mutators -- still refresh this member's shifted view.
+    void refreshCmrtOverlayFromCanonical();
 
   private:
     /// Set a unique identifier for the track.
@@ -651,4 +671,35 @@ class Track : public QObject {
     friend class GlobalTrackCache;
     friend class GlobalTrackCacheResolver;
     friend class SoundSourceProxy;
+
+    // Rebuilds m_pBeats as a copy of pCanonicalBeats's markers, converted
+    // through seconds (sample-rate independent) into memberSampleRate's
+    // frame domain and shifted by offsetSeconds. Handles the canonical and
+    // member tracks having different sample rates -- Beats::tryTranslate()
+    // alone cannot do this, since it preserves the original Beats object's
+    // sample rate rather than reprojecting into a new one.
+    mixxx::BeatsPointer buildOverlayBeats(
+            const mixxx::BeatsPointer& pCanonicalBeats,
+            mixxx::audio::SampleRate memberSampleRate,
+            double offsetSeconds) const;
+
+    // Clones pCanonicalCue's positions via its own sample-rate-independent
+    // CueInfo (millisecond) roundtrip, shifted by offsetSeconds, then
+    // reconstructed at memberSampleRate. Cloned, not shared -- CueControl/
+    // HotcueControl attach per-Cue Qt signal connections (see
+    // CueControl::attachCue()), and two decks sharing literal Cue objects
+    // would cross-wire those connections.
+    QList<CuePointer> buildOverlayCues(
+            const QList<CuePointer>& canonicalCues,
+            mixxx::audio::SampleRate canonicalSampleRate,
+            mixxx::audio::SampleRate memberSampleRate,
+            double offsetSeconds) const;
+
+    TrackPointer m_pCmrtCanonicalTrack; // nullptr when overlay inactive
+    double m_cmrtOffsetSeconds{0.0};    // canonical -> member offset, in seconds
+    bool m_cmrtOverlayActive{false};
+    // Live while m_cmrtOverlayActive is true; wired up in applyCmrtOverlay()
+    // and torn down in clearCmrtOverlay() / before re-wiring.
+    QMetaObject::Connection m_cmrtCanonicalCuesConnection;
+    QMetaObject::Connection m_cmrtCanonicalBeatsConnection;
 };
