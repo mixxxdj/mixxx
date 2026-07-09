@@ -1,13 +1,12 @@
 
+#include "library/trackset/basetracksetfeature.h"
+
 #include <QStandardPaths>
 
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-#include "library/trackset/basetracksetfeature.h"
-#include "util/logger.h"
-
-#include "analyzer/analyzerscheduledtrack.h"
 #include "moc_basetracksetfeature.cpp"
+#include "util/logger.h"
 
 namespace {
 const mixxx::Logger kLogger("BaseTrackSetFeature");
