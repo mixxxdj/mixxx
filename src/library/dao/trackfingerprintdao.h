@@ -57,6 +57,11 @@ struct CmrtMember {
     bool isFakeLossless{false};
     QDateTime addedAt;
     int userQualityRating{-1}; // -1 if unrated
+    // Whether this member loads its CMRT's beatgrid/cues (shifted by
+    // offsetFromCanonical) instead of its own, at deck-load time. Purely
+    // a display-time preference -- never touched by CmrtGroupingService,
+    // only by the user via the library checkbox column.
+    bool useCmrtData{false};
 };
 
 struct AcoustIdJob {
@@ -131,6 +136,10 @@ class TrackFingerprintDao : public DAO {
     QList<CmrtMember> getCmrtMembersForGroup(int groupId) const;
     bool deleteCmrtMember(TrackId trackId) const;
     bool updateMemberOffset(TrackId trackId, double offsetFromCanonical) const;
+
+    std::unique_ptr<CmrtMember> getCmrtMemberByTrackId(TrackId trackId) const;
+
+    bool updateMemberUseCmrtData(TrackId trackId, bool useCmrtData) const;
 
     bool updateMemberMatchScore(TrackId trackId, double matchScore) const;
 

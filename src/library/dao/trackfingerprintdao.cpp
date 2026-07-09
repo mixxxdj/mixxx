@@ -618,13 +618,24 @@ bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
         matchScoreValue = member.matchScore;
     }
 
+    QVariant userQualityRatingValue;
+    if (member.userQualityRating < 0) {
+        userQualityRatingValue = QVariant(QMetaType(QMetaType::Int));
+    } else {
+        userQualityRatingValue = member.userQualityRating;
+    }
+
+    const int useCmrtDataValue = member.useCmrtData ? 1 : 0;
+
     QSqlQuery query(m_database);
     query.prepare(QString(
             "INSERT INTO %1 "
             "(group_id, track_id, offset_from_canonical, quality_score, "
-            "match_score, is_fake_lossless, added_at, user_quality_rating) "
+            "match_score, is_fake_lossless, added_at, user_quality_rating, "
+            "use_cmrt_data) "
             "VALUES (:group_id, :track_id, :offset, :quality_score, "
-            ":match_score, :is_fake_lossless, :added_at, :user_quality_rating)")
+            ":match_score, :is_fake_lossless, :added_at, :user_quality_rating, "
+            ":use_cmrt_data)")
                     .arg(kCmrtMembersTableName));
 
     query.bindValue(":group_id", member.groupId);
@@ -636,11 +647,8 @@ bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
     // Schema stores added_at as INTEGER (Unix timestamp)
     query.bindValue(":added_at", member.addedAt.toSecsSinceEpoch());
     // user_quality_rating is nullable — -1 sentinel maps to NULL
-    if (member.userQualityRating < 0) {
-        query.bindValue(":user_quality_rating", QVariant(QMetaType(QMetaType::Int)));
-    } else {
-        query.bindValue(":user_quality_rating", member.userQualityRating);
-    }
+    query.bindValue(":user_quality_rating", userQualityRatingValue);
+    query.bindValue(":use_cmrt_data", useCmrtDataValue);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
@@ -789,7 +797,8 @@ QList<CmrtMember> TrackFingerprintDao::getCmrtMembersForGroup(int groupId) const
     QSqlQuery query(m_database);
     query.prepare(QString(
             "SELECT member_id, track_id, offset_from_canonical, quality_score, "
-            "match_score, is_fake_lossless, added_at, user_quality_rating "
+            "match_score, is_fake_lossless, added_at, user_quality_rating, "
+            "use_cmrt_data "
             "FROM %1 WHERE group_id=:group_id")
                     .arg(kCmrtMembersTableName));
     query.bindValue(":group_id", groupId);
@@ -826,6 +835,9 @@ QList<CmrtMember> TrackFingerprintDao::getCmrtMembersForGroup(int groupId) const
         QVariant ratingVar = query.value(record.indexOf("user_quality_rating"));
         member.userQualityRating = ratingVar.isNull() ? -1 : ratingVar.toInt();
 
+        member.useCmrtData =
+                query.value(record.indexOf("use_cmrt_data")).toBool();
+
         members.append(member);
     }
 
@@ -834,6 +846,106 @@ QList<CmrtMember> TrackFingerprintDao::getCmrtMembersForGroup(int groupId) const
                  << members.size() << "members for groupId:" << groupId;
     }
     return members;
+}
+
+std::unique_ptr<CmrtMember> TrackFingerprintDao::getCmrtMemberByTrackId(TrackId trackId) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getCmrtMemberByTrackId] -> entry"
+                 << "trackId:" << trackId;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [getCmrtMemberByTrackId] -> "
+                    "aborting: database not open or invalid trackId";
+        return nullptr;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "SELECT member_id, group_id, offset_from_canonical, quality_score, "
+            "match_score, is_fake_lossless, added_at, user_quality_rating, "
+            "use_cmrt_data "
+            "FROM %1 WHERE track_id=:track_id")
+                    .arg(kCmrtMembersTableName));
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't fetch cmrt_member for track" << trackId;
+        return nullptr;
+    }
+
+    if (!query.next()) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [getCmrtMemberByTrackId] -> "
+                        "not found for trackId:"
+                     << trackId;
+        }
+        return nullptr;
+    }
+
+    QSqlRecord record = query.record();
+    auto pMember = std::make_unique<CmrtMember>();
+    pMember->memberId = query.value(record.indexOf("member_id")).toInt();
+    pMember->groupId = query.value(record.indexOf("group_id")).toInt();
+    pMember->trackId = trackId;
+    pMember->offsetFromCanonical =
+            query.value(record.indexOf("offset_from_canonical")).toDouble();
+
+    QVariant qualityVar = query.value(record.indexOf("quality_score"));
+    pMember->qualityScore = qualityVar.isNull() ? -1.0 : qualityVar.toDouble();
+
+    QVariant matchScoreVar = query.value(record.indexOf("match_score"));
+    pMember->matchScore = matchScoreVar.isNull() ? -1.0 : matchScoreVar.toDouble();
+
+    pMember->isFakeLossless = query.value(record.indexOf("is_fake_lossless")).toBool();
+    pMember->addedAt = QDateTime::fromSecsSinceEpoch(
+            query.value(record.indexOf("added_at")).toLongLong());
+
+    QVariant ratingVar = query.value(record.indexOf("user_quality_rating"));
+    pMember->userQualityRating = ratingVar.isNull() ? -1 : ratingVar.toInt();
+
+    pMember->useCmrtData = query.value(record.indexOf("use_cmrt_data")).toBool();
+
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [getCmrtMemberByTrackId] -> found"
+                 << "memberId:" << pMember->memberId << "groupId:" << pMember->groupId;
+    }
+
+    return pMember;
+}
+
+bool TrackFingerprintDao::updateMemberUseCmrtData(TrackId trackId, bool useCmrtData) const {
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [updateMemberUseCmrtData] -> entry"
+                 << "trackId:" << trackId
+                 << "useCmrtData:" << useCmrtData;
+    }
+
+    if (!m_database.isOpen() || !trackId.isValid()) {
+        qDebug() << "TrackFingerprintDao -> [updateMemberUseCmrtData] -> "
+                    "aborting: database not open or invalid trackId";
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QString(
+            "UPDATE %1 SET use_cmrt_data = :use_cmrt_data WHERE track_id = :track_id")
+                    .arg(kCmrtMembersTableName));
+    query.bindValue(":use_cmrt_data", useCmrtData ? 1 : 0);
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't update use_cmrt_data for track" << trackId;
+        return false;
+    }
+
+    const bool affected = query.numRowsAffected() > 0;
+    if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [updateMemberUseCmrtData] ->"
+                 << (affected ? "updated" : "no row found")
+                 << "trackId:" << trackId;
+    }
+    return affected;
 }
 
 bool TrackFingerprintDao::deleteCmrtMember(TrackId trackId) const {
