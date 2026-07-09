@@ -263,7 +263,7 @@ void SoundManager::clearAndQueryDevices() {
 SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
         const QHash<SoundDevicePointer, QList<AudioOutput>>& deviceOutputs,
         const QList<SoundDevicePointer>& devices) {
-    const std::array<AudioPathType, 5> priorityOrder = {
+    constexpr std::array<AudioPathType, 5> priorityOrder = {
             AudioPathType::Main,
             AudioPathType::Deck,
             AudioPathType::Bus,
