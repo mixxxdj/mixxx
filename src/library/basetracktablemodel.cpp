@@ -386,7 +386,8 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA);
 }
 
 QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
@@ -446,6 +447,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new KeyDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT)) {
         return new CmrtDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA)) {
+        return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
         auto* pOverviewDelegate = new OverviewDelegate(pTableView);
         connect(pOverviewDelegate,
@@ -592,6 +595,23 @@ bool BaseTrackTableModel::setData(
                     fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
             return setData(bpmLockedIndex, checked, Qt::EditRole);
         }
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA: {
+            const TrackId trackId(index.sibling(
+                                               index.row(),
+                                               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID))
+                            .data());
+            if (!trackId.isValid()) {
+                return false;
+            }
+            if (!m_pTrackCollectionManager->internalCollection()
+                            ->getTrackFingerprintDAO()
+                            .updateMemberUseCmrtData(trackId, checked)) {
+                return false;
+            }
+            updateRowColumnValue(index.row(), index.column(), checked ? 1 : 0);
+            emit dataChanged(index, index, {Qt::CheckStateRole});
+            return true;
+        }
         default:
             return false;
         }
@@ -677,6 +697,32 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA: {
+            const QVariant canonVal = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+            if (canonVal.isNull()) {
+                return tr(
+                        "This track isn't linked to a CMRT group yet. "
+                        "Either fingerprint analysis or AcoustID lookup "
+                        "hasn't run on it, or it's currently the only "
+                        "copy of its mastering Mixxx has found in your "
+                        "collection");
+            }
+            if (canonVal.toBool()) {
+                return tr(
+                        "This is the canonical (reference) track for its group — "
+                        "it has no offset to apply.");
+            }
+            return rawValue.toBool()
+                    ? tr("Using CMRT (canonical) beatgrid and cues, "
+                         "shifted by this track's offset.") +
+                            "\n" +
+                            tr("Uncheck to restore this track's own "
+                               "stored beatgrid and cues.")
+                    : tr("Check to use the canonical track's "
+                         "beatgrid and cues, shifted by this "
+                         "track's offset, instead of its own.");
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_CMRT: {
             if (role == kDataExportRole) {
                 // CSV/library export wants the same "GroupId - Artist -
@@ -784,6 +830,18 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return QString::number(timesPlayed);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA: {
+            const QVariant canonVal = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+            if (canonVal.isNull()) {
+                return QStringLiteral("--");
+            }
+            if (canonVal.toBool()) {
+                return tr("Canonical");
+            }
+            // Non‑canonical member -> no text (checkbox will be painted)
+            return QVariant();
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
@@ -1068,6 +1126,18 @@ QVariant BaseTrackTableModel::roleValue(
                     index,
                     ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK);
             break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA: {
+            const QVariant canonVal = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+            if (canonVal.isNull()) {
+                return QVariant(); // solo / ungrouped
+            }
+            if (canonVal.toBool()) {
+                return QVariant(); // canonical
+            }
+            boolValue = rawValue;
+            break; // non‑canonical
+        }
         default:
             // No check state supported
             return QVariant();
@@ -1234,6 +1304,12 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
         // Checkable cells
         itemFlags |= Qt::ItemIsUserCheckable;
+    } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_USE_DATA)) {
+        const QVariant canonVal = rawSiblingValue(
+                index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+        if (!canonVal.isNull() && !canonVal.toBool()) {
+            itemFlags |= Qt::ItemIsUserCheckable;
+        }
     } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         // Always allow checking of the BPM-locked indicator
         itemFlags |= Qt::ItemIsUserCheckable;

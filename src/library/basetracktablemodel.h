@@ -296,6 +296,16 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return false;
     }
 
+    // Updates a single cell in the in-memory row cache without a full
+    // select(). Called from setData() after a direct DAO write so
+    // rawValue() returns the new value immediately on the next paint.
+    // No-op in the base class; overridden by BaseSqlTableModel.
+    virtual void updateRowColumnValue(int row, int column, const QVariant& value) {
+        Q_UNUSED(row);
+        Q_UNUSED(column);
+        Q_UNUSED(value);
+    }
+
   private slots:
     void slotTrackChanged(
             const QString& group,
