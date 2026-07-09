@@ -60,6 +60,10 @@ double ControlWidgetConnection::getControlParameter() const {
     return parameter;
 }
 
+bool ControlWidgetConnection::isControlParameterDefault() const {
+    return m_pControl->isDefault();
+}
+
 double ControlWidgetConnection::getControlParameterForValue(double value) const {
     double parameter = m_pControl->getParameterForValue(value);
     if (m_pValueTransformer != nullptr) {
