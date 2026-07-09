@@ -166,6 +166,7 @@
                             <Pos>50,10</Pos>
                             <TooltipId>rate_ultra</TooltipId>
                             <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra.svg</Handle>
+                            <HandleNeutral scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra_neutral.svg</HandleNeutral>
                             <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_sync_ultra.svg</Slider>
                             <Horizontal>false</Horizontal>
                             <BarWidth><Variable name="BarWidth"/></BarWidth>
@@ -246,6 +247,7 @@
                             <Pos>50,10</Pos>
                             <TooltipId>rate_ultra</TooltipId>
                             <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra.svg</Handle>
+                            <HandleNeutral scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra_neutral.svg</HandleNeutral>
                             <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_ultra.svg</Slider>
                             <Horizontal>false</Horizontal>
                             <BarWidth><Variable name="BarWidth"/></BarWidth>

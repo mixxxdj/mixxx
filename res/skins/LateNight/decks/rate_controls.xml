@@ -160,6 +160,7 @@
                         <Pos>45,12</Pos>
                         <TooltipId>rate_ultra</TooltipId>
                         <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra.svg</Handle>
+                        <HandleNeutral scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck_ultra_neutral.svg</HandleNeutral>
                         <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_ultra.svg</Slider>
                         <Horizontal>false</Horizontal>
                         <BarWidth><Variable name="BarWidth"/></BarWidth>
