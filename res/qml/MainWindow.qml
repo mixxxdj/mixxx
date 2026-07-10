@@ -575,7 +575,7 @@ Item {
                     sourceComponent: Component {
                         Deck {
                             anchors.bottom: parent.bottom
-                            anchors.right: parent.right
+                            anchors.left: parent.left
                             editMode: root.editDeck
                             group: deck4.group
                             minimized: root.maximizeLibrary

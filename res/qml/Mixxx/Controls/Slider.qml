@@ -135,7 +135,7 @@ Item {
 
             PathLine {
                 x: root.horizontal ? (barShape.width * root.position) : barPath.startX
-                y: root.vertical ? (barShape.height * (1 - root.position)) : barPath.startY
+                y: root.vertical ? (barShape.height * (1 - root.position)) + 4 : barPath.startY
             }
         }
     }

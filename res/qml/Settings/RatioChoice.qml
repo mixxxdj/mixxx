@@ -28,7 +28,7 @@ Item {
         let minimumSize = options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing * 2, 0);
         let normalizedSize = root.cellSize * root.options.length;
         let size = root.normalizedWidth ? normalizedSize : minimumSize;
-        if (root.maxWidth && root.maxWidth > size) {
+        if (contentList.visible) {
             return size + root.spacing;
         } else {
             return contentSpin.implicitWidth;
@@ -204,10 +204,17 @@ Item {
 
         Component.onCompleted: updatePopup()
 
-        onValueChanged: {
-            root.selected = contentSpin.textFromValue(value) ?? "";
-            updatePopup()
-        }
+                        onValueChanged: {
+                            if (root.selected === null) {
+                                // The SpinBox initialises its value from the
+                                // binding, which clamps indexOf(null) to the
+                                // first option. Do not let that preselect an
+                                // option the user has not chosen.
+                                return;
+                            }
+                            root.selected = contentSpin.textFromValue(value) ?? "";
+                            updatePopup()
+                        }
 
         MouseArea {
             anchors.fill: parent
