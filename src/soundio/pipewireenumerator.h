@@ -54,6 +54,27 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void registerOutput(const AudioOutput& output, AudioSource* src);
 
   private:
+    static void coreEventError(void* data, uint32_t id, int seq, int res, const char* message) {
+        static_cast<PipewireEnumerator*>(data)->coreEventError(id, seq, res, message);
+    }
+
+    static constexpr pw_core_events coreEvents = {
+            .version = PW_VERSION_CORE_EVENTS,
+            .info = nullptr,
+            .done = nullptr,
+            .ping = nullptr,
+            .error = coreEventError,
+            .remove_id = nullptr,
+            .bound_id = nullptr,
+            .add_mem = nullptr,
+            .remove_mem = nullptr,
+#if PW_CHECK_VERSION(0, 3, 68)
+            .bound_props = nullptr,
+#endif
+    };
+
+    void coreEventError(uint32_t id, int seq, int res, const char* message);
+
     static void registryEventGlobalOuter(void* data,
             uint32_t id,
             uint32_t permissions,
@@ -151,6 +172,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     pw_registry* m_pPwRegistry;
     pw_metadata* m_pPwMetadata;
     pw_filter* m_pPwFilter;
+    spa_hook m_pwCoreListener;
     spa_hook m_pwRegistryListener;
     spa_hook m_pwFilterListener;
     spa_hook m_pwMetadataListener;
