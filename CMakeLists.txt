@@ -3742,7 +3742,7 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 
 # PipeWire
-default_option(PIPEWIRE "Enable the PipeWire backend" "UNIX AND NOT APPLE AND NOT ANDROID")
+option(PIPEWIRE "Enable the PipeWire backend" OFF)
 if(PIPEWIRE)
   find_package(PipeWire REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC PipeWire::PipeWire)
