@@ -322,6 +322,20 @@ void DlgTrackInfo::init() {
                 trackColorDialogSetColor(newColor);
                 m_trackRecord.setColor(newColor);
             });
+    // Required to show CMRT-disabled tooltip.
+    bpmHalve->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmTwoThirds->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmThreeFourths->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmFourFifths->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmFiveFourths->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmFourThirds->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmThreeHalves->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmDouble->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmClear->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmLock->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmConst->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    spinBpm->setAttribute(Qt::WA_AlwaysShowToolTips, true);
+    bpmTap->setAttribute(Qt::WA_AlwaysShowToolTips, true);
 }
 
 void DlgTrackInfo::slotApply() {
@@ -489,18 +503,50 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
 void DlgTrackInfo::updateBpmEditControls() {
     bpmLock->setText(m_bpmLocked ? tr("Unlock BPM") : tr("Lock BPM"));
 
-    bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
-    spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
-    bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
-    bpmHalve->setEnabled(!m_bpmLocked);
-    bpmTwoThirds->setEnabled(!m_bpmLocked);
-    bpmThreeFourths->setEnabled(!m_bpmLocked);
-    bpmFourFifths->setEnabled(!m_bpmLocked);
-    bpmFiveFourths->setEnabled(!m_bpmLocked);
-    bpmFourThirds->setEnabled(!m_bpmLocked);
-    bpmThreeHalves->setEnabled(!m_bpmLocked);
-    bpmDouble->setEnabled(!m_bpmLocked);
-    bpmClear->setEnabled(!m_bpmLocked);
+    // CMRT-managed tracks own their beatgrid data, so any BPM control
+    // needs to be disabled.
+    const bool cmrtActive = m_pLoadedTrack && m_pLoadedTrack->hasCmrtOverlayActive();
+    const QString cmrtDisabledTooltip = tr(
+            "Disabled because the track is using CMRT data. "
+            "Uncheck \"Use CMRT Data\" first.");
+
+    const auto applyCmrtRestriction = [cmrtActive, &cmrtDisabledTooltip](QWidget* widget) {
+        if (!widget) {
+            return;
+        }
+        widget->setEnabled(!cmrtActive);
+        widget->setToolTip(cmrtActive ? cmrtDisabledTooltip : QString());
+    };
+
+    applyCmrtRestriction(bpmLock);
+    applyCmrtRestriction(bpmConst);
+    applyCmrtRestriction(spinBpm);
+    applyCmrtRestriction(bpmTap);
+    applyCmrtRestriction(bpmHalve);
+    applyCmrtRestriction(bpmTwoThirds);
+    applyCmrtRestriction(bpmThreeFourths);
+    applyCmrtRestriction(bpmFourFifths);
+    applyCmrtRestriction(bpmFiveFourths);
+    applyCmrtRestriction(bpmFourThirds);
+    applyCmrtRestriction(bpmThreeHalves);
+    applyCmrtRestriction(bpmDouble);
+    applyCmrtRestriction(bpmClear);
+
+    // When CMRT is not active, apply the original enable logic.
+    if (!cmrtActive) {
+        bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
+        spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+        bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+        bpmHalve->setEnabled(!m_bpmLocked);
+        bpmTwoThirds->setEnabled(!m_bpmLocked);
+        bpmThreeFourths->setEnabled(!m_bpmLocked);
+        bpmFourFifths->setEnabled(!m_bpmLocked);
+        bpmFiveFourths->setEnabled(!m_bpmLocked);
+        bpmFourThirds->setEnabled(!m_bpmLocked);
+        bpmThreeHalves->setEnabled(!m_bpmLocked);
+        bpmDouble->setEnabled(!m_bpmLocked);
+        bpmClear->setEnabled(!m_bpmLocked);
+    }
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {

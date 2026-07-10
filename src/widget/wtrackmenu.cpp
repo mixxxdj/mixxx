@@ -214,6 +214,8 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::BPM)) {
         m_pBPMMenu = make_parented<QMenu>(this);
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
+        // Required to show CMRT-disabled tooltip.
+        m_pBPMMenu->setToolTipsVisible(true);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -223,11 +225,15 @@ void WTrackMenu::createMenus() {
 
     m_pHotcueMenu = make_parented<QMenu>(this);
     m_pHotcueMenu->setTitle(tr("Hotcues"));
+    // Required to show CMRT-disabled tooltip.
+    m_pHotcueMenu->setToolTipsVisible(true);
 
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = make_parented<QMenu>(this);
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Clear"));
+        // Required to show CMRT-disabled tooltip.
+        m_pClearMetadataMenu->setToolTipsVisible(true);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -835,6 +841,26 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
 }
 
+bool WTrackMenu::anySelectedTrackUsesCmrtOverlay() const {
+    if (m_pTrackModel) {
+        const int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_CMRT_USE_DATA);
+        if (column < 0) {
+            return false;
+        }
+        for (const auto& trackIndex : m_trackIndexList) {
+            const QModelIndex useCmrtDataIndex =
+                    trackIndex.sibling(trackIndex.row(), column);
+            if (useCmrtDataIndex.data(Qt::CheckStateRole).toInt() == Qt::Checked) {
+                return true;
+            }
+        }
+        return false;
+    } else if (m_pTrack) {
+        return m_pTrack->hasCmrtOverlayActive();
+    }
+    return false;
+}
+
 int WTrackMenu::getCommonTrackRating() const {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return 0;
@@ -1012,6 +1038,15 @@ void WTrackMenu::updateMenus() {
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
 
+    // CMRT-managed tracks own their beatgrid/hotcue/cue/loop data, so any
+    // control that would let the user edit that data needs to be disabled
+    // regardless of which feature section it lives in.
+    // Applied consistently everywhere it's needed below.
+    const bool cmrtActive = anySelectedTrackUsesCmrtOverlay();
+    const QString cmrtDisabledTooltip = tr(
+            "Disabled because one or more tracks are using CMRT data. "
+            "Uncheck \"Use CMRT Data\" first.");
+
     if (featureIsEnabled(Feature::SearchRelated)) {
         // Enable only if we have one valid track pointer.
         // this prevents the cursor getting stuck on this menu in case it gets
@@ -1153,27 +1188,67 @@ void WTrackMenu::updateMenus() {
         m_pReanalyzeVarBpmAction->setVisible(useFixedTempo);
     }
 
+    const auto applyCmrtRestriction = [cmrtActive, &cmrtDisabledTooltip](QAction* pAction) {
+        if (!pAction) {
+            return;
+        }
+        pAction->setEnabled(!cmrtActive);
+        pAction->setToolTip(cmrtActive ? cmrtDisabledTooltip : QString());
+    };
+
     if (featureIsEnabled(Feature::Reset) ||
             featureIsEnabled(Feature::BPM)) {
         bool anyBpmLocked;
         bool anyBpmNotLocked;
         std::tie(anyBpmLocked, anyBpmNotLocked) = getTrackBpmLockStates();
         if (featureIsEnabled(Feature::Reset)) {
-            m_pClearBeatsAction->setEnabled(!anyBpmLocked);
+            m_pClearBeatsAction->setEnabled(!anyBpmLocked && !cmrtActive);
+            m_pClearBeatsAction->setToolTip(
+                    cmrtActive ? cmrtDisabledTooltip : QString());
+
+            // Hotcue sorting also touches CMRT-owned hotcue data.
+            applyCmrtRestriction(m_pSortHotcuesByPositionCompressAction);
+            applyCmrtRestriction(m_pSortHotcuesByPositionAction);
+
+            applyCmrtRestriction(m_pClearHotCuesAction);
+            applyCmrtRestriction(m_pClearMainCueAction);
+            applyCmrtRestriction(m_pClearIntroCueAction);
+            applyCmrtRestriction(m_pClearOutroCueAction);
+            applyCmrtRestriction(m_pClearLoopsAction);
+            applyCmrtRestriction(m_pClearAllMetadataAction);
         }
         if (featureIsEnabled(Feature::BPM)) {
-            m_pBpmUnlockAction->setEnabled(anyBpmLocked);
-            m_pBpmLockAction->setEnabled(anyBpmNotLocked);
-            m_pBpmHalveAction->setEnabled(!anyBpmLocked);
-            m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
-            m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
-            m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
-            m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
-            m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
-            m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
-            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
-            m_pBpmResetAction->setEnabled(!anyBpmLocked);
-            m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
+            m_pBpmUnlockAction->setEnabled(anyBpmLocked && !cmrtActive);
+            m_pBpmLockAction->setEnabled(anyBpmNotLocked && !cmrtActive);
+            applyCmrtRestriction(m_pBpmHalveAction);
+            applyCmrtRestriction(m_pBpmTwoThirdsAction);
+            applyCmrtRestriction(m_pBpmThreeFourthsAction);
+            applyCmrtRestriction(m_pBpmFourFifthsAction);
+            applyCmrtRestriction(m_pBpmFiveFourthsAction);
+            applyCmrtRestriction(m_pBpmFourThirdsAction);
+            applyCmrtRestriction(m_pBpmThreeHalvesAction);
+            applyCmrtRestriction(m_pBpmDoubleAction);
+            applyCmrtRestriction(m_pBpmResetAction);
+            m_pBpmUndoAction->setEnabled(
+                    !anyBpmLocked && !cmrtActive && canUndoBeatsChange());
+            m_pBpmUndoAction->setToolTip(
+                    cmrtActive ? cmrtDisabledTooltip : QString());
+
+            // The BPM scale actions above already reflect anyBpmLocked via
+            // the "!anyBpmLocked" part of their original logic; folding
+            // that into applyCmrtRestriction would lose the lock check, so
+            // apply it explicitly here instead.
+            if (!cmrtActive) {
+                m_pBpmHalveAction->setEnabled(!anyBpmLocked);
+                m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
+                m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+                m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
+                m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
+                m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
+                m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+                m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
+                m_pBpmResetAction->setEnabled(!anyBpmLocked);
+            }
 
             // Append scaled BPM preview for single selection
             if (singleTrackSelected) {
@@ -1206,7 +1281,9 @@ void WTrackMenu::updateMenus() {
     }
 
     if (m_pTranslateBeatsHalf) {
-        m_pTranslateBeatsHalf->setEnabled(!m_deckGroup.isEmpty());
+        m_pTranslateBeatsHalf->setEnabled(!m_deckGroup.isEmpty() && !cmrtActive);
+        m_pTranslateBeatsHalf->setToolTip(
+                cmrtActive ? cmrtDisabledTooltip : QString());
     }
 
     if (featureIsEnabled(Feature::Color)) {
