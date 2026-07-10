@@ -254,6 +254,7 @@ class WTrackMenu : public QMenu {
     void clearBeats();
     void clearFingerprintDataForSelection();
     void clearMusicBrainzDataForSelection();
+    bool anySelectedTrackUsesCmrtOverlay() const;
     void lockBpm(bool lock);
 
 #ifdef __STEM__
