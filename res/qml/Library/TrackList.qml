@@ -12,10 +12,42 @@ import "../Theme"
 Rectangle {
     id: root
 
+    objectName: "trackList"
+
     required property var model
     property var sidebar: model.sidebar()
 
     property var movedColumn: new Object()
+
+    // Display labels of every column in model order, as a JSON array. Exposed
+    // for the E2E test harness: unlike a header delegate, this also covers
+    // columns that are hidden and therefore have no delegate to read ``index``
+    // from.
+    readonly property string columnLabels: {
+        if (!root.sidebar) {
+            return "[]";
+        }
+        const columns = root.sidebar.tracklist.columns;
+        let labels = [];
+        for (let i = 0; i < columns.length; i++) {
+            labels.push(columns[i].label);
+        }
+        return JSON.stringify(labels);
+    }
+
+    // Restore the library columns to their default order, visibility and sort
+    // state. Used by the E2E test harness to reset state between scenarios
+    // that share a running Mixxx instance, without a full QML reload.
+    function resetColumns() {
+        root.movedColumn = new Object()
+        view.clearColumnReordering()
+        horizontalHeader.sortingColumn = -1
+        horizontalHeader.sortingOrder = Qt.DescendingOrder
+        for (let i = 0; i < view.model.columns.length; i++) {
+            view.model.columns[i].display = Mixxx.TrackListColumn.Display.Auto
+        }
+        view.clearColumnWidths()
+    }
 
     color: Theme.darkGray
 
@@ -41,6 +73,8 @@ Rectangle {
     }
     Menu {
         id: columnSelectionMenu
+
+        contentItem.objectName: "columnPickerMenu"
 
         Instantiator {
             model: root.sidebar.tracklist.columns
@@ -104,6 +138,8 @@ Rectangle {
     HorizontalHeaderView {
         id: horizontalHeader
 
+        objectName: "columnHeader"
+
         property int sortingColumn: -1
         property var sortingOrder: Qt.Descending
 
@@ -117,6 +153,8 @@ Rectangle {
 
         delegate: Item {
             id: column
+
+            objectName: display
 
             required property string display
             required property int index
@@ -221,6 +259,8 @@ Rectangle {
     }
     TableView {
         id: view
+
+        objectName: "trackTableView"
 
         onColumnMoved: (logicalIndex, oldVisualIndex, newVisualIndex) => {
             if (root.movedColumn[newVisualIndex] !== undefined && logicalIndex === newVisualIndex){
@@ -360,6 +400,8 @@ Rectangle {
             }
         }
         selectionModel: ItemSelectionModel {
+            objectName: "selectionModel"
+
             function moveSelectionVertical(value) {
                 if (value == 0)
                     return;

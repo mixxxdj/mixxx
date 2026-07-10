@@ -67,6 +67,7 @@ Rectangle {
         }
         Skin.ControlButton {
             id: loopInButton
+            objectName: "loopIn"
 
             Layout.fillWidth: true
             Layout.minimumWidth: 28
@@ -79,6 +80,7 @@ Rectangle {
         }
         Skin.ControlButton {
             id: loopOutButton
+            objectName: "loopOut"
 
             Layout.fillWidth: true
             Layout.minimumWidth: 28
@@ -91,6 +93,7 @@ Rectangle {
         }
         Skin.ControlButton {
             id: loopRecallButton
+            objectName: "reloopToggle"
 
             Layout.fillWidth: true
             Layout.minimumWidth: 40
@@ -124,6 +127,7 @@ Rectangle {
         }
         Skin.Button {
             id: loopSizeHalfButton
+            objectName: "loopHalve"
 
             activeColor: root.buttonColor
             implicitHeight: 28
@@ -265,6 +269,7 @@ Rectangle {
         }
         Skin.Button {
             id: loopSizeDoubleButton
+            objectName: "loopDouble"
 
             activeColor: root.buttonColor
             implicitHeight: 28

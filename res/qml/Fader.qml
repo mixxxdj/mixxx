@@ -24,6 +24,8 @@ MixxxControls.Fader {
     handle: Item {
         id: handleItem
 
+        objectName: "handle"
+
         height: handleImage.paintedHeight
         width: handleImage.paintedWidth
         x: root.horizontal ? (root.visualPosition * (root.width - width)) : ((root.width - width) / 2)

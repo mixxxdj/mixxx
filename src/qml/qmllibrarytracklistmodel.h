@@ -103,8 +103,9 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
             QQmlListProperty<QmlLibraryTrackListColumn>* p, qsizetype idx) {
         auto* const v = reinterpret_cast<
                 std::vector<parented_ptr<QmlLibraryTrackListColumn>>*>(p->data);
-        if (v->size() <= idx)
+        if (v->size() <= static_cast<std::size_t>(idx)) {
             return nullptr;
+        }
         return v
                 ->at(idx)
                 .get();

@@ -37,6 +37,10 @@ class MixxxTest : public testing::Test {
     };
     friend class ApplicationScope;
 
+    static QApplication* application() {
+        return s_pApplication.data();
+    }
+
     static const QDir& getOrInitTestDir() {
         if (s_TestDir.path() == ".") {
             s_TestDir.setPath(
@@ -46,10 +50,6 @@ class MixxxTest : public testing::Test {
     }
 
   protected:
-    static QApplication* application() {
-        return s_pApplication.data();
-    }
-
     UserSettingsPointer config() const {
         return m_pConfig;
     }

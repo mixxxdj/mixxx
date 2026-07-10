@@ -45,6 +45,8 @@ Item {
     Menu {
         id: contextMenu
 
+        contentItem.objectName: "trackContextMenu"
+
         title: qsTr("File")
 
         Menu {

@@ -249,6 +249,8 @@ Item {
             roleValue: "beatjump"
 
             LayoutItem {
+                objectName: "beatjump"
+
                 Layout.preferredWidth: 120
                 editLabel.color: Theme.white
                 editLabel.font.capitalization: Font.AllUppercase
@@ -266,6 +268,8 @@ Item {
             roleValue: "waveformOverview"
 
             LayoutItem {
+                objectName: "overview"
+
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 blurRadius: 4
@@ -306,6 +310,8 @@ Item {
             roleValue: "tempo"
 
             LayoutItem {
+                objectName: "rateSlider"
+
                 Layout.fillHeight: true
                 Layout.preferredWidth: 75
                 blurRadius: 4
@@ -324,6 +330,8 @@ Item {
             roleValue: "play"
 
             LayoutItem {
+                objectName: "playButtonItem"
+
                 Layout.preferredHeight: root.minimized ? 32 : 60
                 Layout.preferredWidth: 60
                 editLabel.color: Theme.white
@@ -334,6 +342,8 @@ Item {
                 editOverlay.color: Theme.darkGray2
 
                 DeckComponent.PlayButton {
+                    objectName: "playButton"
+
                     anchors.fill: parent
                     group: root.group
                     minimized: root.minimized
@@ -344,6 +354,8 @@ Item {
             roleValue: "cue"
 
             LayoutItem {
+                objectName: "cueButton"
+
                 Layout.preferredHeight: root.minimized ? 32 : 60
                 Layout.preferredWidth: 60
                 editLabel.color: Theme.white
@@ -364,6 +376,8 @@ Item {
             roleValue: "spinny"
 
             LayoutItem {
+                objectName: "spinny"
+
                 Layout.alignment: Qt.AlignTop
                 editLabel.color: Theme.midGray
                 editLabel.font.pixelSize: 14
@@ -417,6 +431,8 @@ Item {
             roleValue: "hotcueAndStem"
 
             LayoutItem {
+                objectName: "hotcueAndStem"
+
                 Layout.fillWidth: true
                 Layout.minimumWidth: 250
                 blurRadius: 4
@@ -747,6 +763,8 @@ Item {
         Rectangle {
             id: overlay
 
+            objectName: visible ? "selectedGroupOverlay" : "groupOverlay"
+
             color: Qt.alpha(Theme.accentColor, 0.2)
             parent: root
             visible: root.editMode && selected
@@ -835,6 +853,8 @@ Item {
         }
         Rectangle {
             id: overlayItem
+
+            objectName: "overlayItem"
 
             anchors.fill: layoutItem
             color: Qt.alpha("black", 0.4)

@@ -56,3 +56,15 @@ res/          Resources (controllers/ JS/XML, skins/, qml/)
 cmake/        CMake modules
 tools/        Python helper scripts
 ```
+
+## E2E UI Tests (behave, QML only)
+
+Gherkin-driven BDD tests in `src/test/behave/`. See the dedicated
+[src/test/behave/README.md](src/test/behave/README.md) for a human-friendly
+introduction, or [src/test/behave/AGENTS.md](src/test/behave/AGENTS.md) for the
+full technical reference:
+
+- spix RPC API reference
+- QML objectName path map
+- Step DSL reference and how to add steps/features
+- Known limitations (TapHandler, Menu overlay, drag-and-drop, layout)

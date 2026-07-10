@@ -1,0 +1,513 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 49ab11f..68b3541 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ cmake_minimum_required(VERSION 3.18)
+ project(Spix LANGUAGES CXX)
++find_package(BZip2 REQUIRED)
+ 
+ option(SPIX_BUILD_EXAMPLES "Build Spix examples." ON)
+ option(SPIX_BUILD_TESTS "Build Spix unit tests." OFF)
+diff --git a/libs/Core/CMakeLists.txt b/libs/Core/CMakeLists.txt
+index 86d89cc..415665c 100644
+--- a/libs/Core/CMakeLists.txt
++++ b/libs/Core/CMakeLists.txt
+@@ -9,6 +9,13 @@ include(CMakePackageConfigHelpers)
+ #
+ find_package(Threads REQUIRED)
+ find_package(AnyRPC REQUIRED)
++find_package(Qt${SPIX_QT_MAJOR}
++    COMPONENTS
++        Core
++        Gui
++        Quick
++    REQUIRED)
++message("Building Spix QtQuick for Qt ${SPIX_QT_MAJOR}")
+ 
+ #
+ # Sources
+@@ -27,6 +34,8 @@ set(SOURCES
+     src/Commands/Command.cpp
+     src/Commands/CustomCmd.cpp
+     src/Commands/CustomCmd.h
++    src/Commands/Drag.cpp
++    src/Commands/Drag.h
+     src/Commands/DragBegin.cpp
+     src/Commands/DragBegin.h
+     src/Commands/DragEnd.cpp
+@@ -101,6 +110,9 @@ target_include_directories(SpixCore
+ target_link_libraries(SpixCore
+     PUBLIC
+         Threads::Threads
++        Qt${SPIX_QT_MAJOR}::Core
++        Qt${SPIX_QT_MAJOR}::Gui
++        Qt${SPIX_QT_MAJOR}::Quick
+     PRIVATE
+         AnyRPC::anyrpc
+ )
+diff --git a/libs/Core/include/Spix/TestServer.h b/libs/Core/include/Spix/TestServer.h
+index 9ff7819..fc4e3b8 100644
+--- a/libs/Core/include/Spix/TestServer.h
++++ b/libs/Core/include/Spix/TestServer.h
+@@ -51,8 +51,10 @@ public:
+     void mouseClick(ItemPath path, Point proportion);
+     void mouseClick(ItemPath path, Point proportion, Point offset);
+     void mouseClick(ItemPath path, MouseButton mouseButton, KeyModifier keyModifier = spix::KeyModifiers::None);
++    void mouseClick(ItemPath path, MouseButton mouseButton, KeyModifier keyModifier, uint holdTime);
+ 
+-    void mouseBeginDrag(ItemPath path);
++    void mouseDrag(ItemPath startPath, Point startProportion, Point endPosition, uint time = 50);
++    void mouseBeginDrag(ItemPath startPath, Point startProportion, ItemPath endPath, Point endProportion);
+     void mouseEndDrag(ItemPath path);
+     void mouseDropUrls(ItemPath path, const std::vector<std::string>& urls);
+     void genericCommand(std::string command, std::string payload);
+diff --git a/libs/Core/src/AnyRpcServer.cpp b/libs/Core/src/AnyRpcServer.cpp
+index 6916697..311364b 100644
+--- a/libs/Core/src/AnyRpcServer.cpp
++++ b/libs/Core/src/AnyRpcServer.cpp
+@@ -57,9 +57,36 @@ AnyRpcServer::AnyRpcServer(int anyrpcPort)
+             mouseClick(std::move(path), proportion);
+         });
+ 
+-    utils::AddFunctionToAnyRpc<void(std::string)>(methodManager, "mouseBeginDrag",
++    utils::AddFunctionToAnyRpc<void(std::string, int, int, uint)>(methodManager, "mouseClickAndHold",
++        "Click on the object at the given path for a given duration (In msec)"
++        "| mouseClickAndHold(string path, int mouseButton, int keyModifier, uint holdTime)",
++        [this](std::string path, int mouseButton, int keyModifier, uint holdTime) {
++            mouseClick(std::move(path), mouseButton, keyModifier, holdTime);
++        });
++
++    utils::AddFunctionToAnyRpc<void(std::string startPath, double, double, std::string, double, double)>(methodManager, "mouseBeginDrag",
++        "Begin a drag with the mouse | mouseBeginDrag(string path)",
++        [this](std::string startPath, double startProportionX, double startProportionY, std::string endPath, double endProportionX, double endProportionY) { 
++            auto startProportion = Point(startProportionX, startProportionY);
++            auto endProportion = Point(endProportionX, endProportionY);
++            mouseBeginDrag(
++                std::move(startPath),
++                startProportion,
++                std::move(endPath),
++                endProportion
++            ); });
++
++    utils::AddFunctionToAnyRpc<void(std::string startPath, double, double, double, double, uint)>(methodManager, "mouseDrag",
+         "Begin a drag with the mouse | mouseBeginDrag(string path)",
+-        [this](std::string path) { mouseBeginDrag(std::move(path)); });
++        [this](std::string startPath, double startProportionX, double startProportionY, double deltaOffsetX, double deltaOffsetY, uint time) { 
++            auto startProportion = Point(startProportionX, startProportionY);
++            auto endPosition = Point(deltaOffsetX, deltaOffsetY);
++            mouseDrag(
++                std::move(startPath),
++                startProportion,
++                endPosition,
++                time
++            ); });
+ 
+     utils::AddFunctionToAnyRpc<void(std::string)>(methodManager, "mouseEndDrag",
+         "End a drag with the mouse | mouseEndDrag(string path)",
+diff --git a/libs/Core/src/Commands/ClickOnItem.cpp b/libs/Core/src/Commands/ClickOnItem.cpp
+index 26810ea..61ce750 100644
+--- a/libs/Core/src/Commands/ClickOnItem.cpp
++++ b/libs/Core/src/Commands/ClickOnItem.cpp
+@@ -7,14 +7,22 @@
+ #include "ClickOnItem.h"
+ 
+ #include <Spix/Scene/Scene.h>
++#include <QTime>
++#include <QEventLoop>
++#include <QCoreApplication>
++
++#include <future>
++#include <thread>         // std::this_thread::sleep_for
++#include <chrono>         // std::chrono::seconds
+ 
+ namespace spix {
+ namespace cmd {
+ 
+-ClickOnItem::ClickOnItem(ItemPosition path, MouseButton mouseButton, KeyModifier keyModifier)
++ClickOnItem::ClickOnItem(ItemPosition path, MouseButton mouseButton, KeyModifier keyModifier, uint holdTime)
+ : m_position(std::move(path))
+ , m_mouseButton(mouseButton)
+ , m_keyModifier(keyModifier)
++, m_holdTime(holdTime)
+ {
+ }
+ 
+@@ -30,8 +38,18 @@ void ClickOnItem::execute(CommandEnvironment& env)
+ 
+     auto size = item->size();
+     auto mousePoint = m_position.positionForItemSize(size);
+-    env.scene().events().mouseDown(item.get(), mousePoint, m_mouseButton, m_keyModifier);
+-    env.scene().events().mouseUp(item.get(), mousePoint, m_mouseButton, m_keyModifier);
++
++    // Using a future to time precisely the sequence of events and prevent deadlock on Xcb QPA related to DragHandler
++    auto future = std::async(std::launch::async, [this, &item, &env, mousePoint] { 
++        qWarning() << "ClickOnItem::ClickOnItem:" << static_cast<int>(m_mouseButton) << static_cast<int>(m_keyModifier) << mousePoint.x << mousePoint.y << m_holdTime;        
++        env.scene().events().mouseDown(item.get(), mousePoint, m_mouseButton, m_keyModifier);
++        std::this_thread::sleep_for (std::chrono::milliseconds(m_holdTime));
++        env.scene().events().mouseUp(item.get(), mousePoint, m_mouseButton, m_keyModifier);
++    });
++    for (auto status = future.wait_for(std::chrono::milliseconds(0)); status != std::future_status::ready; status = future.wait_for(std::chrono::milliseconds(5))){
++        QCoreApplication::processEvents(QEventLoop::AllEvents | QEventLoop::WaitForMoreEvents, m_holdTime);
++    }
++    qWarning() << "ClickOnItem::ClickOnItem: finished";     
+ }
+ 
+ } // namespace cmd
+diff --git a/libs/Core/src/Commands/ClickOnItem.h b/libs/Core/src/Commands/ClickOnItem.h
+index c434971..2664bc0 100644
+--- a/libs/Core/src/Commands/ClickOnItem.h
++++ b/libs/Core/src/Commands/ClickOnItem.h
+@@ -17,7 +17,7 @@ namespace cmd {
+ 
+ class SPIXCORE_EXPORT ClickOnItem : public Command {
+ public:
+-    ClickOnItem(ItemPosition path, MouseButton mouseButton, KeyModifier keyModifier = KeyModifiers::None);
++    ClickOnItem(ItemPosition path, MouseButton mouseButton, KeyModifier keyModifier = KeyModifiers::None, uint holdTime = 50);
+ 
+     void execute(CommandEnvironment& env) override;
+ 
+@@ -25,6 +25,7 @@ private:
+     ItemPosition m_position;
+     MouseButton m_mouseButton;
+     KeyModifier m_keyModifier;
++    uint m_holdTime;
+ };
+ 
+ } // namespace cmd
+diff --git a/libs/Core/src/Commands/Drag.cpp b/libs/Core/src/Commands/Drag.cpp
+new file mode 100644
+index 0000000..ae5d62f
+--- /dev/null
++++ b/libs/Core/src/Commands/Drag.cpp
+@@ -0,0 +1,58 @@
++/***
++ * Copyright (C) Falko Axmann. All rights reserved.
++ * Licensed under the MIT license.
++ * See LICENSE.txt file in the project root for full license information.
++ ****/
++
++#include "Drag.h"
++
++#include <Spix/Scene/Scene.h>
++#include <QTime>
++#include <QEventLoop>
++#include <QCoreApplication>
++
++namespace spix {
++namespace cmd {
++
++Drag::Drag(ItemPosition startPath, Point delta, uint time)
++: m_startPath(std::move(startPath)), m_delta(std::move(delta)), m_time(time)
++{
++}
++
++void Drag::execute(CommandEnvironment& env)
++{
++    auto path = env.scene().itemAtPath(m_startPath.itemPath());
++
++    if (!path) {
++        env.state().reportError("Drag: Item not found: " + m_startPath.itemPath().string());
++        return;
++    }
++
++    auto startMousePoint = m_startPath.positionForItemSize(path->size());
++    
++    qWarning() << "Drag::Drag:" << startMousePoint.x << startMousePoint.y << m_delta.x << m_delta.y;
++
++    env.scene().events().mouseMove(path.get(), startMousePoint);
++    QTime dieTime = QTime::currentTime().addMSecs(50);
++    while (QTime::currentTime() < dieTime)
++        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
++    env.scene().events().mouseDown(path.get(), startMousePoint, MouseButtons::Left, KeyModifiers::None);
++    dieTime = QTime::currentTime().addMSecs(50);
++    while (QTime::currentTime() < dieTime)
++        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
++    Point currentMousePoint(0, 0);
++    for (int i = 0; i <= 10; i++) {
++        if (i < 2) {
++            currentMousePoint.x +=  m_delta.x / 10;
++            currentMousePoint.y +=  m_delta.y / 10;
++        }
++        env.scene().events().mouseMove(path.get(), currentMousePoint);
++        dieTime = QTime::currentTime().addMSecs(m_time / 10);
++        while (QTime::currentTime() < dieTime) {}
++            QCoreApplication::processEvents(QEventLoop::AllEvents, m_time / 10);
++    }
++    env.scene().events().mouseUp(path.get(), startMousePoint, MouseButtons::Left, KeyModifiers::None);
++}
++
++} // namespace cmd
++} // namespace spix
+diff --git a/libs/Core/src/Commands/Drag.h b/libs/Core/src/Commands/Drag.h
+new file mode 100644
+index 0000000..a3dd9bd
+--- /dev/null
++++ b/libs/Core/src/Commands/Drag.h
+@@ -0,0 +1,28 @@
++/***
++ * Copyright (C) Falko Axmann. All rights reserved.
++ * Licensed under the MIT license.
++ * See LICENSE.txt file in the project root for full license information.
++ ****/
++
++#pragma once
++
++#include <Spix/Commands/Command.h>
++#include <Spix/Data/ItemPosition.h>
++
++namespace spix {
++namespace cmd {
++
++class Drag : public Command {
++public:
++    Drag(ItemPosition startPath, Point delta, uint time);
++
++    void execute(CommandEnvironment& env) override;
++
++private:
++    ItemPosition m_startPath;
++    Point m_delta;
++    uint m_time;
++};
++
++} // namespace cmd
++} // namespace spix
+diff --git a/libs/Core/src/Commands/DragBegin.cpp b/libs/Core/src/Commands/DragBegin.cpp
+index 50f0c8b..0b13e2c 100644
+--- a/libs/Core/src/Commands/DragBegin.cpp
++++ b/libs/Core/src/Commands/DragBegin.cpp
+@@ -7,28 +7,48 @@
+ #include "DragBegin.h"
+ 
+ #include <Spix/Scene/Scene.h>
++#include <QTime>
++#include <QEventLoop>
++#include <QCoreApplication>
+ 
+ namespace spix {
+ namespace cmd {
+ 
+-DragBegin::DragBegin(ItemPath path)
+-: m_path(std::move(path))
++DragBegin::DragBegin(ItemPosition startPath, ItemPosition endPath)
++: m_startPath(std::move(startPath)), m_endPath(std::move(endPath))
+ {
+ }
+ 
+ void DragBegin::execute(CommandEnvironment& env)
+ {
+-    auto item = env.scene().itemAtPath(m_path);
++    auto start = env.scene().itemAtPath(m_startPath.itemPath());
++    auto end = env.scene().itemAtPath(m_endPath.itemPath());
+ 
+-    if (!item) {
+-        env.state().reportError("DragBegin: Item not found: " + m_path.string());
++    if (!start || !end) {
++        env.state().reportError("DragBegin: Item not found: " + m_startPath.itemPath().string());
+         return;
+     }
+ 
+-    auto size = item->size();
+-    Point midPoint(size.width / 2.0, size.height / 2.0);
+-    env.scene().events().mouseDown(item.get(), midPoint, MouseButtons::Left, KeyModifiers::None);
+-    env.scene().events().mouseMove(item.get(), midPoint);
++    auto startMousePoint = m_startPath.positionForItemSize(start->size());
++    auto endMousePoint = m_endPath.positionForItemSize(end->size());
++    
++    qWarning() << "DragBegin::DragBegin:" << startMousePoint.x << startMousePoint.y << endMousePoint.x << endMousePoint.y;
++
++    env.scene().events().mouseMove(start.get(), startMousePoint);
++    QTime dieTime = QTime::currentTime().addMSecs(50);
++    while (QTime::currentTime() < dieTime)
++        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
++    env.scene().events().mouseDown(start.get(), startMousePoint, MouseButtons::Left, KeyModifiers::None);
++    dieTime = QTime::currentTime().addMSecs(50);
++    while (QTime::currentTime() < dieTime)
++        QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
++    for (int i = 0; i < 3; i++) {
++        env.scene().events().mouseMove(i % 2 == 0 ? start.get() : end.get(), i % 2 == 0 ? startMousePoint : endMousePoint);
++        dieTime = QTime::currentTime().addMSecs(400);
++        while (QTime::currentTime() < dieTime) {}
++            QCoreApplication::processEvents(QEventLoop::AllEvents, 400);
++    }
++    env.scene().events().mouseUp(end.get(), endMousePoint, MouseButtons::Left, KeyModifiers::None);
+ }
+ 
+ } // namespace cmd
+diff --git a/libs/Core/src/Commands/DragBegin.h b/libs/Core/src/Commands/DragBegin.h
+index 5300e78..1bf2a34 100644
+--- a/libs/Core/src/Commands/DragBegin.h
++++ b/libs/Core/src/Commands/DragBegin.h
+@@ -7,19 +7,20 @@
+ #pragma once
+ 
+ #include <Spix/Commands/Command.h>
+-#include <Spix/Data/ItemPath.h>
++#include <Spix/Data/ItemPosition.h>
+ 
+ namespace spix {
+ namespace cmd {
+ 
+ class DragBegin : public Command {
+ public:
+-    DragBegin(ItemPath path);
++    DragBegin(ItemPosition startPath, ItemPosition endPath);
+ 
+     void execute(CommandEnvironment& env) override;
+ 
+ private:
+-    ItemPath m_path;
++    ItemPosition m_startPath;
++    ItemPosition m_endPath;
+ };
+ 
+ } // namespace cmd
+diff --git a/libs/Core/src/TestServer.cpp b/libs/Core/src/TestServer.cpp
+index 6a20e28..2d30410 100644
+--- a/libs/Core/src/TestServer.cpp
++++ b/libs/Core/src/TestServer.cpp
+@@ -10,6 +10,7 @@
+ 
+ #include <Commands/ClickOnItem.h>
+ #include <Commands/CustomCmd.h>
++#include <Commands/Drag.h>
+ #include <Commands/DragBegin.h>
+ #include <Commands/DragEnd.h>
+ #include <Commands/DropFromExt.h>
+@@ -88,9 +89,21 @@ void TestServer::mouseClick(ItemPath path, MouseButton mouseButton, KeyModifier
+     m_cmdExec->enqueueCommand<cmd::ClickOnItem>(path, mouseButton, keyModifier);
+ }
+ 
+-void TestServer::mouseBeginDrag(ItemPath path)
++void TestServer::mouseClick(ItemPath path, MouseButton mouseButton, KeyModifier keyModifier, uint holdTime)
+ {
+-    m_cmdExec->enqueueCommand<cmd::DragBegin>(path);
++    m_cmdExec->enqueueCommand<cmd::ClickOnItem>(path, mouseButton, keyModifier, holdTime);
++}
++
++void TestServer::mouseBeginDrag(ItemPath startPath, Point startProportion, ItemPath endPath, Point endProportion)
++{
++    auto startPathWithOffset = ItemPosition(startPath.string(), startProportion);
++    auto endPathWithOffset = ItemPosition(endPath.string(), endProportion);
++    m_cmdExec->enqueueCommand<cmd::DragBegin>(startPathWithOffset, endPathWithOffset);
++}
++
++void TestServer::mouseDrag(ItemPath startPath, Point startProportion, Point endPosition, uint time)
++{
++    m_cmdExec->enqueueCommand<cmd::Drag>(ItemPosition(startPath, startProportion), endPosition, time);
+ }
+ 
+ void TestServer::mouseEndDrag(ItemPath path)
+diff --git a/libs/Scenes/QtQuick/src/QtEvents.cpp b/libs/Scenes/QtQuick/src/QtEvents.cpp
+index fe4b0e9..459baff 100644
+--- a/libs/Scenes/QtQuick/src/QtEvents.cpp
++++ b/libs/Scenes/QtQuick/src/QtEvents.cpp
+@@ -103,31 +103,50 @@ void QtEvents::mouseDown(Item* item, Point loc, MouseButton button, KeyModifier
+     Qt::MouseButtons activeButtons = getQtMouseButtonValue(m_pressedMouseButtons);
+ 
+     auto qtmod = getQtKeyboardModifiers(mod);
+-    QMouseEvent* event = new QMouseEvent(QEvent::MouseButtonPress, windowLoc, eventCausingButton, activeButtons, qtmod);
++
++    auto qtitem = dynamic_cast<QtItem*>(item);
++    if (!qtitem)
++        return;
++    QPointF globalPos = window->mapToGlobal(windowLoc.toPoint());
++
++    auto *event = new QMouseEvent(
++        QEvent::MouseButtonPress,
++        QPointF(loc.x, loc.y),
++        windowLoc,
++        globalPos,
++        eventCausingButton,
++        activeButtons,
++        qtmod);
++    qWarning() << "mouseDown" << event;
+     QGuiApplication::postEvent(window, event);
+ }
+ 
+ void QtEvents::mouseUp(Item* item, Point loc, MouseButton button, KeyModifier mod)
+ {
+-    QPointF windowLoc;
++   QPointF windowLoc;
+     auto window = getWindowAndPositionForItem(item, loc, windowLoc);
+     if (!window)
+         return;
+ 
+-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+-    // Qt6 expects the mouse to be down during the event
+-    Qt::MouseButton eventCausingButton = getQtMouseButtonValue(button);
+-    Qt::MouseButtons activeButtons = getQtMouseButtonValue(m_pressedMouseButtons);
+-    m_pressedMouseButtons ^= button;
+-#else
+-    // Qt5 expects the mouse to be up during the event
+     m_pressedMouseButtons ^= button;
+     Qt::MouseButton eventCausingButton = getQtMouseButtonValue(button);
+     Qt::MouseButtons activeButtons = getQtMouseButtonValue(m_pressedMouseButtons);
+-#endif
++    
+     auto qtmod = getQtKeyboardModifiers(mod);
+-    QMouseEvent* event
+-        = new QMouseEvent(QEvent::MouseButtonRelease, windowLoc, eventCausingButton, activeButtons, qtmod);
++    auto qtitem = dynamic_cast<QtItem*>(item);
++    if (!qtitem)
++        return;
++    QPointF globalPos = window->mapToGlobal(windowLoc.toPoint());
++
++    auto *event = new QMouseEvent(
++        QEvent::MouseButtonRelease,
++        QPointF(loc.x, loc.y),
++        windowLoc,
++        globalPos,
++        eventCausingButton,
++        activeButtons,
++        qtmod);
++    qWarning() << "mouseUp" << event;
+     QGuiApplication::postEvent(window, event);
+ }
+ 
+@@ -140,17 +159,21 @@ void QtEvents::mouseMove(Item* item, Point loc)
+ 
+     Qt::MouseButton activeButtons = getQtMouseButtonValue(m_pressedMouseButtons);
+ 
+-    // Wiggle the cursor a bit. This is needed to correctly recognize drag events
+-    windowLoc.rx() -= 1;
+-    QMouseEvent* mouseMoveEvent
+-        = new QMouseEvent(QEvent::MouseMove, windowLoc, Qt::MouseButton::NoButton, activeButtons, Qt::NoModifier);
+-    QGuiApplication::postEvent(window, mouseMoveEvent);
+-
+-    // Wiggle the cursor a bit. This is needed to correctly recognize drag events
+-    windowLoc.rx() += 1;
+-    mouseMoveEvent
+-        = new QMouseEvent(QEvent::MouseMove, windowLoc, Qt::MouseButton::NoButton, activeButtons, Qt::NoModifier);
+-    QGuiApplication::postEvent(window, mouseMoveEvent);
++    auto qtitem = dynamic_cast<QtItem*>(item);
++    if (!qtitem)
++        return;
++    QPointF globalPos = window->mapToGlobal(windowLoc.toPoint());
++
++    auto *event = new QMouseEvent(
++        QEvent::MouseMove,
++        QPointF(loc.x, loc.y),
++        windowLoc,
++        globalPos,
++        Qt::MouseButton::NoButton,
++        activeButtons,
++        Qt::NoModifier);
++    qWarning() << "mouseMove" << event;
++    QGuiApplication::postEvent(window, event);
+ }
+ 
+ void QtEvents::stringInput(Item* item, const std::string& text)
+diff --git a/libs/Scenes/QtQuick/src/QtEvents.h b/libs/Scenes/QtQuick/src/QtEvents.h
+index bd978e5..84f2c92 100644
+--- a/libs/Scenes/QtQuick/src/QtEvents.h
++++ b/libs/Scenes/QtQuick/src/QtEvents.h
+@@ -24,6 +24,7 @@ public:
+ private:
+     /// Keep track of which buttons are currently pressed
+     MouseButton m_pressedMouseButtons = MouseButtons::None;
++    Point m_lastMouseMove = {};
+ };
+ 
+ } // namespace spix

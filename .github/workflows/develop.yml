@@ -17,6 +17,7 @@ on:
 permissions:
   contents: read #  to fetch code (actions/checkout)
   checks: write #  to create new checks (coverallsapp/github-action)
+  pull-requests: write # To publish the E2E video
 
 jobs:
   stop-build:

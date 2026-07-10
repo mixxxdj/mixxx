@@ -110,6 +110,7 @@ Item {
 
                     Item {
                         required property int index
+                        objectName: "hotcue_" + (index + 1)
 
                         Layout.column: index % 4
                         Layout.fillHeight: true

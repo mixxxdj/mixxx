@@ -28,6 +28,7 @@ Rectangle {
     }
     Skin.ControlButton {
         id: jumpBackButton
+        objectName: "beatjumpBackwardButton"
 
         group: root.group
         implicitHeight: 26
@@ -122,6 +123,7 @@ Rectangle {
     }
     Skin.ControlButton {
         id: jumpForwardButton
+        objectName: "beatjumpForwardButton"
 
         group: root.group
         implicitHeight: 26

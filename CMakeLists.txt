@@ -53,6 +53,9 @@ endif()
 if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
+if(POLICY CMP0177)
+  cmake_policy(SET CMP0177 NEW)
+endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Android)
   if(NOT DEFINED ENV{JAVA_HOME})
@@ -2770,7 +2773,7 @@ if(BUILD_UI_TEST)
   set(ANYRPC_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libanyrpc-install")
   set(
     ANYRPC_LIBRARY
-    "lib/${CMAKE_SHARED_LIBRARY_PREFIX}Spix${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "lib/${CMAKE_STATIC_LIBRARY_PREFIX}anyrpc${CMAKE_STATIC_LIBRARY_SUFFIX}"
   )
   ExternalProject_Add(
     libanyrpc
@@ -2782,6 +2785,7 @@ if(BUILD_UI_TEST)
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_WITH_LOG4CPLUS=OFF
       -DCMAKE_INSTALL_PREFIX=${ANYRPC_INSTALL_DIR} -DBUILD_EXAMPLES=OFF
       -DBUILD_PROTOCOL_MESSAGEPACK=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+      -DANYRPC_LIB_BUILD_SHARED=OFF
     BUILD_BYPRODUCTS <INSTALL_DIR>/${ANYRPC_LIBRARY}
     EXCLUDE_FROM_ALL TRUE
   )
@@ -2794,6 +2798,17 @@ if(BUILD_UI_TEST)
     SPIX_CORE_LIBRARY
     "${CMAKE_STATIC_LIBRARY_PREFIX}SpixQtQuick${CMAKE_STATIC_LIBRARY_SUFFIX}"
   )
+  if(MSVC)
+    file(
+      WRITE
+      "${CMAKE_CURRENT_BINARY_DIR}/spix_uint_compat.h"
+      "#pragma once\n#ifdef _MSC_VER\ntypedef unsigned int uint;\n#endif\n"
+    )
+    set(
+      SPIX_CXX_FLAGS
+      "-DCMAKE_CXX_FLAGS=/FI${CMAKE_CURRENT_BINARY_DIR}/spix_uint_compat.h"
+    )
+  endif()
   ExternalProject_Add(
     libspix
     GIT_REPOSITORY https://github.com/faaxm/spix.git
@@ -2802,7 +2817,7 @@ if(BUILD_UI_TEST)
     LIST_SEPARATOR "|"
     CMAKE_ARGS
       -DSPIX_BUILD_EXAMPLES=OFF -DSPIX_CMAKE_CONFIG_DIR=${SPIX_INSTALL_DIR}
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DSPIX_QT_MAJOR=6 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -DCMAKE_INSTALL_PREFIX=${SPIX_INSTALL_DIR}
       -DCMAKE_INSTALL_BINDIR=${SPIX_INSTALL_DIR}
       -DCMAKE_INSTALL_LIBDIR=${SPIX_INSTALL_DIR}
@@ -2811,11 +2826,16 @@ if(BUILD_UI_TEST)
       -DAnyRPC_INCLUDE_DIRS=${ANYRPC_INSTALL_DIR}/include
       -DAnyRPC_LIBRARIES=${ANYRPC_INSTALL_DIR}/lib -DQt6Core_DIR=${Qt6Core_DIR}
       -DQt6Gui_DIR=${Qt6Gui_DIR} -DQt6_DIR=${Qt6_DIR}
-      -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+      -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_ALT_SEP}
+      -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH} ${SPIX_CXX_FLAGS}
     BUILD_BYPRODUCTS
       <INSTALL_DIR>/${SPIX_QTQUICK_LIBRARY}
       <INSTALL_DIR>/${SPIX_CORE_LIBRARY}
     EXCLUDE_FROM_ALL TRUE
+    PATCH_COMMAND
+      ${CMAKE_COMMAND} -DPATCH_FILE=${CMAKE_CURRENT_LIST_DIR}/spix.patch
+      -DWORKING_DIR=<SOURCE_DIR> -P
+      ${CMAKE_CURRENT_LIST_DIR}/cmake/ApplyPatch.cmake
   )
   add_dependencies(libspix libanyrpc)
 endif()
@@ -3116,12 +3136,13 @@ if(BUILD_TESTING)
       PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/lib/libspix-install/
     )
 
-    add_library(AnyRpc SHARED IMPORTED)
+    file(MAKE_DIRECTORY "${ANYRPC_INSTALL_DIR}/include")
+    add_library(AnyRpc STATIC IMPORTED)
     set_target_properties(
       AnyRpc
       PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${ANYRPC_INSTALL_DIR}/include"
-        IMPORTED_LOCATION "${ANYRPC_INSTALL_DIR}/lib/libanyrpc.so"
+        IMPORTED_LOCATION "${ANYRPC_INSTALL_DIR}/${ANYRPC_LIBRARY}"
     )
 
     add_library(SpixCore STATIC IMPORTED)
@@ -3130,9 +3151,7 @@ if(BUILD_TESTING)
       PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${SPIX_INSTALL_DIR}"
         IMPORTED_LOCATION "${SPIX_INSTALL_DIR}/${SPIX_QTQUICK_LIBRARY}"
-        INTERFACE_LINK_LIBRARIES "AnyRpc"
     )
-
     add_library(SpixQtQuick STATIC IMPORTED)
     set_target_properties(
       SpixQtQuick
@@ -3186,37 +3205,99 @@ if(BUILD_TESTING)
 
   if(BUILD_UI_TEST)
     find_program(PYTHON3_EXECUTABLE python3)
-    if(PYTHON3_EXECUTABLE)
-      execute_process(
-        COMMAND ${PYTHON3_EXECUTABLE} -m behave --version
-        RESULT_VARIABLE BEHAVE_FOUND
-        OUTPUT_QUIET
-        ERROR_QUIET
-      )
-      if(BEHAVE_FOUND EQUAL 0)
-        if(UNIX AND NOT APPLE)
-          file(
-            GLOB BEHAVE_FEATURE_FILES
-            "${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/features/*.feature"
-          )
-          foreach(FEATURE_FILE ${BEHAVE_FEATURE_FILES})
-            get_filename_component(FEATURE_NAME ${FEATURE_FILE} NAME_WE)
-            add_test(
-              NAME "mixxx-behave-${FEATURE_NAME}"
-              COMMAND
-                ${PYTHON3_EXECUTABLE}
-                ${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/mixxx_test_runner.py
-                --binary "$<TARGET_FILE:mixxx-test>" ${FEATURE_FILE}
-              WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            )
-            set_tests_properties(
-              "mixxx-behave-${FEATURE_NAME}"
-              PROPERTIES LABELS "e2e;ui;qt" TIMEOUT 250 DEPENDS mixxx-test
-            )
-          endforeach()
-        endif()
-      endif()
+    if(NOT PYTHON3_EXECUTABLE)
+      find_program(PYTHON3_EXECUTABLE python)
     endif()
+    if(NOT PYTHON3_EXECUTABLE)
+      message(
+        FATAL_ERROR
+        "Python executable could not be found. Make sure to install it if you wish to run the UI tests"
+      )
+    endif()
+    set(MIXXX_BEHAVE_VENV "${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/.venv")
+    if(WIN32)
+      set(MIXXX_BEHAVE_PYTHON "${MIXXX_BEHAVE_VENV}/Scripts/python.exe")
+    else()
+      set(MIXXX_BEHAVE_PYTHON "${MIXXX_BEHAVE_VENV}/bin/python")
+    endif()
+    execute_process(
+      COMMAND ${PYTHON3_EXECUTABLE} -m venv "${MIXXX_BEHAVE_VENV}"
+      RESULT_VARIABLE VENV_RESULT
+    )
+    if(NOT VENV_RESULT EQUAL 0)
+      message(
+        FATAL_ERROR
+        "Failed to create Python venv at ${MIXXX_BEHAVE_VENV}"
+      )
+    endif()
+    execute_process(
+      COMMAND "${MIXXX_BEHAVE_PYTHON}" -m pip install behave
+      RESULT_VARIABLE PIP_RESULT
+    )
+    if(NOT PIP_RESULT EQUAL 0)
+      message(
+        FATAL_ERROR
+        "Failed to pip install behave into ${MIXXX_BEHAVE_VENV}"
+      )
+    endif()
+    file(
+      GLOB BEHAVE_FEATURE_FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/features/*.feature"
+    )
+    # TODO add option to control these args via CMake
+    default_option(MIXXX_BEHAVE_HEADLESS "Run the UI test in headless mode. On non-Linux platform, headless is incompatible with recording." "LINUX")
+    option(
+      MIXXX_BEHAVE_RECORD
+      "Run the UI test in headless mode. On non-Linux platform, headless is incompatible with recording."
+      OFF
+    )
+    set(
+      MIXXX_BEHAVE_RETRY
+      "3"
+      CACHE STRING
+      "Max retry attempts for autoretry per scenario"
+    )
+    if(
+      NOT CMAKE_SYSTEM_NAME STREQUAL Linux
+      AND MIXXX_BEHAVE_RECORD
+      AND MIXXX_BEHAVE_HEADLESS
+    )
+      message(
+        FATAL_ERROR
+        "Headless and record is incompatible for UI tests on non-Linux platform?"
+      )
+    endif()
+    set(MIXXX_BEHAVE_ARGS "")
+    if(MIXXX_BEHAVE_HEADLESS)
+      list(APPEND MIXXX_BEHAVE_ARGS "--headless")
+    endif()
+    if(MIXXX_BEHAVE_RECORD)
+      list(APPEND MIXXX_BEHAVE_ARGS "--record")
+    endif()
+    list(APPEND MIXXX_BEHAVE_ARGS "--retry" "${MIXXX_BEHAVE_RETRY}")
+    list(JOIN MIXXX_BEHAVE_ARGS " " MIXXX_BEHAVE_ARGS_JOINED)
+    foreach(FEATURE_FILE ${BEHAVE_FEATURE_FILES})
+      get_filename_component(FEATURE_NAME ${FEATURE_FILE} NAME_WE)
+      add_test(
+        NAME "mixxx-behave-${FEATURE_NAME}"
+        COMMAND
+          "${MIXXX_BEHAVE_PYTHON}"
+          ${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/mixxx_test_runner.py
+          ${MIXXX_BEHAVE_ARGS} --binary "$<TARGET_FILE:mixxx-test>" --label
+          "${FEATURE_NAME}" ${FEATURE_FILE}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      )
+      set_tests_properties(
+        "mixxx-behave-${FEATURE_NAME}"
+        PROPERTIES
+          LABELS "e2e;ui;qml"
+          DEPENDS mixxx-test
+          # Every behave test drives mixxx-test on the same XML-RPC port and
+          # uses the same global tracks cache, so they must never run in
+          # parallel with each other.
+          RESOURCE_LOCK mixxx-behave-rpc-port
+      )
+    endforeach()
   endif()
 
   if(BUILD_BENCH)
