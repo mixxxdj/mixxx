@@ -328,7 +328,7 @@ LaunchkeyJog.handleBeatmatchD2Lsb = function(
  *
  * @param {number} deck The targeted deck index (1 or 2)
  */
-LaunchkeyJog.processBeatmatch = function (deck) {
+LaunchkeyJog.processBeatmatch = function(deck) {
     const state = LaunchkeyJog.beatmatchState[deck];
     const C = LaunchkeyJog.BEATMATCH_CONST;
 
@@ -425,7 +425,7 @@ LaunchkeyJog.handleLibraryLsb = function(
  * @param {string} cmdBackward The backward command execution identifier
  * @param {number} sensitivity Number of physical ticks required to jump
  */
-LaunchkeyJog.processLibraryMovement = function (
+LaunchkeyJog.processLibraryMovement = function(
     state,
     cmdForward,
     cmdBackward,
@@ -468,7 +468,7 @@ LaunchkeyJog.processLibraryMovement = function (
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleLoadTrack = function (
+LaunchkeyJog.handleLoadTrack = function(
     channel,
     control,
     value,
@@ -605,7 +605,7 @@ LaunchkeyJog.handleModStripLsb = function(
 /**
  * Processes Mod Strip inputs to control scratching.
  */
-LaunchkeyJog.updateModStripTarget = function () {
+LaunchkeyJog.updateModStripTarget = function() {
     const m = LaunchkeyJog.modStrip;
     const C = LaunchkeyJog.MODSTRIP_CONST;
     const deck = LaunchkeyJog.activeDeck;
@@ -653,7 +653,7 @@ LaunchkeyJog.updateModStripTarget = function () {
 /**
  * Runs a watchdog checking function periodically to manage finger releases.
  */
-LaunchkeyJog.modStripWatchdog = function () {
+LaunchkeyJog.modStripWatchdog = function() {
     const m = LaunchkeyJog.modStrip;
     const C = LaunchkeyJog.MODSTRIP_CONST;
     const deck = LaunchkeyJog.activeDeck;
@@ -699,7 +699,7 @@ LaunchkeyJog.modStripWatchdog = function () {
 /**
  * Simulates slide friction tracking calculations.
  */
-LaunchkeyJog.applyModStripInertia = function () {
+LaunchkeyJog.applyModStripInertia = function() {
     const m = LaunchkeyJog.modStrip;
     const C = LaunchkeyJog.MODSTRIP_CONST;
     const deck = LaunchkeyJog.activeDeck;
@@ -753,7 +753,7 @@ LaunchkeyJog.crossfaderState = {
  * @param {number} _status The MIDI status byte (unused)
  * @param {string} _group The Mixxx control group (unused)
  */
-LaunchkeyJog.handleCrossfaderStrip = function (
+LaunchkeyJog.handleCrossfaderStrip = function(
     channel,
     control,
     value,
