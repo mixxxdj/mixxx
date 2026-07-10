@@ -380,19 +380,22 @@ void PlaylistFeature::slotTogglePrepPlaylist() {
         return;
     }
 
+    bool wasSelected = isChildIndexSelectedInSidebar(m_lastRightClickedIndex);
     // Update the sidebar model (Prep icon)
-    int prepPlaylistIdBefore = m_playlistDao.getPrepPlaylistId();
-    int prepPlaylistIdAfter = m_playlistDao.togglePrepPlaylist(playlistId);
-    QSet<int> prepPlaylistIdsBeforeAfter;
-    if (prepPlaylistIdBefore != kInvalidPlaylistId) {
-        prepPlaylistIdsBeforeAfter << prepPlaylistIdBefore;
+    // TODO is toggle, ie. setting same pl again unsets it (plId = -1)
+    // Adjust action name accordingly + crossed heart
+    int prepPlaylistId = m_playlistDao.togglePrepPlaylist(playlistId);
+    // Reconstruct, not just updateChildModel(allIds), in order to move the Prep playlist
+    // to the top -- or back to the position where it belongs (sorted a-z)
+    clearChildModel();
+    QModelIndex newIndex = constructChildModel(playlistId);
+    if (wasSelected && newIndex.isValid()) {
+        // reselect (former) Prep playlist
+        selectAndActivate(newIndex);
     }
-    if (prepPlaylistIdAfter != kInvalidPlaylistId) {
-        prepPlaylistIdsBeforeAfter << prepPlaylistIdAfter;
-    }
-    updateChildModel(prepPlaylistIdsBeforeAfter);
+
     // Store the id for the next session
-    m_pPlaylistTableModel->setModelSetting(kPrepPlaylistModelKey, prepPlaylistIdAfter);
+    m_pPlaylistTableModel->setModelSetting(kPrepPlaylistModelKey, prepPlaylistId);
 }
 
 /// Purpose: When inserting or removing playlists,
@@ -404,25 +407,31 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
-    int row = 0;
     const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
     for (const auto& idAndLabel : playlistLabels) {
         int playlistId = idAndLabel.id;
         QString playlistLabel = idAndLabel.label;
-
-        if (selectedId == playlistId) {
-            // save index for selection
-            selectedRow = row;
-        }
 
         // Create the TreeItem whose parent is the invisible root item
         auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
         pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
         decorateChild(pItem.get(), playlistId);
-        childrenToAdd.push_back(std::move(pItem));
 
-        ++row;
+        // Add the Prep as first item (sticky)
+        if (playlistId == m_playlistDao.getPrepPlaylistId()) {
+            childrenToAdd.insert(childrenToAdd.begin(), std::move(pItem));
+            // save index for selection
+            if (selectedId == playlistId) {
+                selectedRow = 0;
+            }
+        } else {
+            childrenToAdd.push_back(std::move(pItem));
+            // save index for selection
+            if (selectedId == playlistId) {
+                selectedRow = static_cast<int>(childrenToAdd.size()) - 1;
+            }
+        }
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
