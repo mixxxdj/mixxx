@@ -99,6 +99,7 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
     pw_init(nullptr, nullptr);
 
     m_pPwThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
+    spa_zero(m_pwCoreListener);
     spa_zero(m_pwRegistryListener);
     spa_zero(m_pwMetadataListener);
     spa_zero(m_pwFilterListener);
@@ -106,6 +107,10 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
 
 PipewireEnumerator::~PipewireEnumerator() {
     deinitialize();
+    if (m_pPwContext) {
+        pw_context_destroy(m_pPwContext);
+    }
+    pw_deinit();
 }
 
 void PipewireEnumerator::initialize() {
@@ -131,6 +136,7 @@ void PipewireEnumerator::initialize() {
                    << spa_strerror(errno);
         return;
     }
+    pw_core_add_listener(m_pPwCore, &m_pwCoreListener, &coreEvents, this);
 
     m_pPwRegistry = pw_core_get_registry(m_pPwCore, PW_VERSION_REGISTRY, 0);
     pw_registry_add_listener(m_pPwRegistry, &m_pwRegistryListener, &registry_events, this);
@@ -192,6 +198,9 @@ void PipewireEnumerator::deinitialize() {
     m_soundDevices.clear();
     m_objects.clear();
 
+    // or is it better to m_pSoundManager->removeDevice(device) for every device?
+    emit m_pSoundManager->devicesUpdated();
+
     if (m_pPwFilter) {
         spa_hook_remove(&m_pwFilterListener);
         pw_filter_destroy(m_pPwFilter);
@@ -211,16 +220,11 @@ void PipewireEnumerator::deinitialize() {
     }
 
     if (m_pPwCore) {
+        spa_hook_remove(&m_pwCoreListener);
         pw_core_disconnect(m_pPwCore);
         m_pPwCore = nullptr;
     }
 
-    if (m_pPwContext) {
-        pw_context_destroy(m_pPwContext);
-        m_pPwContext = nullptr;
-    }
-
-    pw_deinit();
     m_initialized = false;
 }
 
@@ -823,5 +827,16 @@ void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int frames
                       "pw_filter_update_properties failed:"
                    << spa_strerror(res);
         qWarning() << "Unable to set requested samplerate";
+    }
+}
+
+void PipewireEnumerator::coreEventError(uint32_t id, int seq, int res, const char* message) {
+    qWarning() << "PipewireEnumerator::coreEventError" << id << seq << res << message;
+    if (id == 0) {
+        if (res == -EPIPE) {
+            // should display a popup here?
+            qWarning() << "Deinitializing PipeWire due to server disconnect";
+            deinitialize();
+        }
     }
 }
