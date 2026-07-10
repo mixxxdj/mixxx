@@ -2,6 +2,9 @@
 
 #include <spa/utils/defs.h>
 
+#include <QRegularExpression>
+#include <string_view>
+
 #include "audio/types.h"
 #include "soundio/pipewireenumerator.h"
 #include "soundio/sounddevice.h"
@@ -183,11 +186,27 @@ QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool in
     mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
 
     std::span<Port> ports = input ? m_outPorts : m_inPorts;
-    std::span<Port> subspan = ports.subspan(base, count - 1);
+    std::span<Port> subspan = ports.subspan(base - 1, count);
 
-    QString channelString = ports[base - 1].name.c_str();
-    for (const auto& port : subspan) {
-        channelString = channelString + "/" + port.name.c_str();
+    static const QRegularExpression regex{R"(^(.+?)[._:-]?(FL|FR|[0-9]+)$)",
+            QRegularExpression::CaseInsensitiveOption};
+
+    QString channelString;
+    QString currentCommonSubstr;
+    for (auto it = subspan.begin(); it != subspan.end(); it++) {
+        const auto match = regex.match(it->name.c_str());
+        if (match.hasMatch()) {
+            const QStringView name = match.capturedView(1);
+            const QStringView suffix = match.capturedView(2);
+            if (name == currentCommonSubstr) {
+                channelString = channelString + '/' + suffix;
+            } else {
+                currentCommonSubstr = name.toString();
+                channelString = channelString + ' ' + name + ':' + suffix;
+            }
+        } else {
+            channelString = channelString + ' ' + it->name.c_str();
+        }
     }
     return channelString;
 }
