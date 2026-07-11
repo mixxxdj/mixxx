@@ -6,6 +6,7 @@
 #include "analyzer/qualityscorer.h"
 #include "library/library_prefs.h"
 #include "track/globaltrackcache.h"
+#include "track/track.h"
 
 namespace mixxx {
 
@@ -152,6 +153,48 @@ void CmrtGroupingService::processTrack(
     // No existing group matched -- this track is the first one seen for
     // this mastering.
     createNewGroup(trackId, *pFpRow, qualityScore);
+}
+
+bool CmrtGroupingService::promoteToCanonical(TrackId trackId) {
+    if (sDebugCmrtGroupingService) {
+        qDebug() << "CmrtGroupingService -> [promoteToCanonical] -> entry"
+                 << "trackId:" << trackId;
+    }
+
+    auto pMember = m_fingerprintDao.getCmrtMemberByTrackId(trackId);
+    if (!pMember) {
+        if (sDebugCmrtGroupingService) {
+            qDebug() << "CmrtGroupingService -> [promoteToCanonical] -> "
+                        "not a cmrt_members row, skipping"
+                     << "trackId:" << trackId;
+        }
+        return false;
+    }
+
+    auto pGroup = m_fingerprintDao.getCmrtGroup(pMember->groupId);
+    if (!pGroup) {
+        qWarning() << "CmrtGroupingService -> [promoteToCanonical] -> "
+                      "member row references missing group"
+                   << pMember->groupId << "for track" << trackId;
+        return false;
+    }
+
+    if (pGroup->canonicalTrackId == trackId) {
+        if (sDebugCmrtGroupingService) {
+            qDebug() << "CmrtGroupingService -> [promoteToCanonical] -> "
+                        "trackId is already canonical, skipping"
+                     << trackId;
+        }
+        return false;
+    }
+
+    replaceCanonical(pMember->groupId,
+            pGroup->canonicalTrackId,
+            trackId,
+            pMember->offsetFromCanonical,
+            pMember->qualityScore,
+            pMember->matchScore);
+    return true;
 }
 
 void CmrtGroupingService::assignToExistingGroup(
@@ -307,15 +350,26 @@ void CmrtGroupingService::replaceCanonical(int groupId,
     // 1. Point the group at the new canonical track.
     m_fingerprintDao.updateCanonicalTrack(groupId, newCanonicalId);
 
-    // 2. Add the new track as a member at offset 0 and mark it canonical.
-    CmrtMember newMember;
-    newMember.groupId = groupId;
-    newMember.trackId = newCanonicalId;
-    newMember.offsetFromCanonical = 0.0;
-    newMember.qualityScore = newCanonicalQualityScore;
-    newMember.addedAt = QDateTime::currentDateTimeUtc();
-    m_fingerprintDao.addCmrtMember(newMember);
-    m_fingerprintDao.updateCmrtGroupTrackCount(groupId, +1);
+    // 2. If already a member, update its offset to 0 and mark it canonical.
+    // If not, add the new track as a member at offset 0 and mark it canonical.
+    bool newCanonicalWasUsingCmrtData = false;
+    if (auto pExistingMember = m_fingerprintDao.getCmrtMemberByTrackId(newCanonicalId)) {
+        newCanonicalWasUsingCmrtData = pExistingMember->useCmrtData;
+        m_fingerprintDao.updateMemberOffset(newCanonicalId, 0.0);
+        if (newCanonicalWasUsingCmrtData) {
+            m_fingerprintDao.updateMemberUseCmrtData(newCanonicalId, false);
+        }
+    } else {
+        // 2
+        CmrtMember newMember;
+        newMember.groupId = groupId;
+        newMember.trackId = newCanonicalId;
+        newMember.offsetFromCanonical = 0.0;
+        newMember.qualityScore = newCanonicalQualityScore;
+        newMember.addedAt = QDateTime::currentDateTimeUtc();
+        m_fingerprintDao.addCmrtMember(newMember);
+        m_fingerprintDao.updateCmrtGroupTrackCount(groupId, +1);
+    }
 
     if (auto pNewMeta = m_fingerprintDao.getFingerprintMetadata(newCanonicalId)) {
         pNewMeta->cmrtGroupId = groupId;
@@ -343,6 +397,13 @@ void CmrtGroupingService::replaceCanonical(int groupId,
     const QVector<quint32> newCanonicalFp =
             chromaBytesToVector(m_fingerprintDao.loadChromaFile(newCanonicalId));
 
+    // Looked up once -- every overlaying member below hands the same
+    // pointer to applyCmrtOverlay(). Null if the new canonical isn't
+    // currently loaded anywhere, in which case there's nothing live to
+    // push the update onto (handled per-member below).
+    const TrackPointer pNewCanonicalTrack =
+            GlobalTrackCacheLocker().lookupTrackById(newCanonicalId);
+
     for (const CmrtMember& member : existingMembers) {
         if (member.trackId == oldCanonicalId || member.trackId == newCanonicalId) {
             continue;
@@ -359,6 +420,27 @@ void CmrtGroupingService::replaceCanonical(int groupId,
             pMemberMeta->cmrtOffsetSeconds = offsetSeconds;
             m_fingerprintDao.saveFingerprintMetadata(*pMemberMeta);
         }
+
+        if (!member.useCmrtData) {
+            continue;
+        }
+        // This member's *live* Track object (if it has one -- e.g.
+        // loaded on a deck) is still overlaying the demoted
+        // oldCanonicalId, and will keep doing so Push the new canonical
+        // the freshly-recalculated offset onto it directly instead.
+        if (TrackPointer pOverlayingMember =
+                        GlobalTrackCacheLocker().lookupTrackById(member.trackId)) {
+            if (pNewCanonicalTrack) {
+                pOverlayingMember->applyCmrtOverlay(pNewCanonicalTrack,
+                        offsetSeconds,
+                        pOverlayingMember->getSampleRate());
+            } else {
+                GlobalTrackCacheLocker().purgeTrackId(member.trackId);
+            }
+        }
+        // Not currently loaded anywhere: nothing live to refresh. The
+        // next getTrackById() picks it up naturally, since
+        // applyCmrtOverlayIfConfigured() always reads current DB state.
     }
 
     if (sDebugCmrtGroupingService) {
@@ -366,21 +448,12 @@ void CmrtGroupingService::replaceCanonical(int groupId,
                  << existingMembers.size() << "other member offset(s)";
     }
 
-    // any member with use_cmrt_data=true was overlaying
-    // (via Track::applyCmrtOverlay()) a TrackPointer to the now-demoted
-    // oldCanonicalId. GlobalTrackCacheLocker().purgeTrackId() on each
-    // overlaying member forces the next getTrackById() to reconstruct the
-    // Track from scratch, which re-runs applyCmrtOverlayIfConfigured()
-    // against the new canonical
-    for (const CmrtMember& member : existingMembers) {
-        if (member.useCmrtData) {
-            GlobalTrackCacheLocker().purgeTrackId(member.trackId);
-        }
-    }
-    if (newMember.useCmrtData) {
-        // Shouldn't normally be true for a track that just became
-        // canonical (there's nothing to overlay onto itself), but purge
-        // defensively in case the flag was set before this election ran.
+    if (newCanonicalWasUsingCmrtData) {
+        // newCanonicalId's own overlay flag was just cleared in step 2
+        // above -- purge it too so a live, already-loaded Track object
+        // for it (if any) reconstructs on next load with its own real
+        // cues/beats instead of the stale overlay snapshot it was
+        // showing back when it was still a member.
         GlobalTrackCacheLocker().purgeTrackId(newCanonicalId);
     }
 }

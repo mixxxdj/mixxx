@@ -22,6 +22,8 @@ class CmrtGroupingService {
 
     void processTrack(TrackId trackId, const QString& musicbrainzRecordingId);
 
+    bool promoteToCanonical(TrackId trackId);
+
   private:
     void assignToExistingGroup(TrackId trackId,
             int groupId,
