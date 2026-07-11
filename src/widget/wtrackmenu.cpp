@@ -13,6 +13,7 @@
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
+#include "library/dao/trackdao.h"
 #include "library/dao/trackfingerprintdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
@@ -500,6 +501,18 @@ void WTrackMenu::createActions() {
                 [this]() {
                     slotSortHotcuesByPosition(HotcueSortMode::KeepOffsets);
                 });
+        m_pCopyCmrtHotcuesAction = make_parented<QAction>(
+                tr("Copy CMRT Hotcues (replace existing)"), m_pHotcueMenu);
+        connect(m_pCopyCmrtHotcuesAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotCopyCmrtHotcues);
+        m_pAddCmrtHotcuesAction = make_parented<QAction>(
+                tr("Add CMRT Hotcues (keep existing)"), m_pHotcueMenu);
+        connect(m_pAddCmrtHotcuesAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotAddCmrtHotcues);
     }
 
     if (featureIsEnabled(Feature::BPM)) {
@@ -745,6 +758,9 @@ void WTrackMenu::setupActions() {
 
         m_pHotcueMenu->addAction(m_pSortHotcuesByPositionCompressAction);
         m_pHotcueMenu->addAction(m_pSortHotcuesByPositionAction);
+        m_pHotcueMenu->addSeparator();
+        m_pHotcueMenu->addAction(m_pCopyCmrtHotcuesAction);
+        m_pHotcueMenu->addAction(m_pAddCmrtHotcuesAction);
         addMenu(m_pHotcueMenu);
     }
 
@@ -859,6 +875,65 @@ bool WTrackMenu::anySelectedTrackUsesCmrtOverlay() const {
         return m_pTrack->hasCmrtOverlayActive();
     }
     return false;
+}
+
+bool WTrackMenu::anySelectedTrackIsCmrtMember() const {
+    if (m_pTrackModel) {
+        const int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_CMRT_USE_DATA);
+        if (column < 0) {
+            return false;
+        }
+        for (const auto& trackIndex : m_trackIndexList) {
+            const QModelIndex useCmrtDataIndex =
+                    trackIndex.sibling(trackIndex.row(), column);
+            // An invalid QVariant means ungrouped or canonical,
+            // neither of which has a canonical track to pull from.
+            if (useCmrtDataIndex.data(Qt::CheckStateRole).isValid()) {
+                return true;
+            }
+        }
+        return false;
+    } else if (m_pTrack) {
+        double offsetSeconds = 0.0;
+        return m_pLibrary->trackCollectionManager()
+                       ->internalCollection()
+                       ->getTrackDAO()
+                       .getCmrtCanonicalTrack(m_pTrack->getId(), &offsetSeconds) !=
+                nullptr;
+    }
+    return false;
+}
+
+void WTrackMenu::slotCopyCmrtHotcues() {
+    copyOrAddCmrtHotcuesForSelection(/*replaceExisting*/ true);
+}
+
+void WTrackMenu::slotAddCmrtHotcues() {
+    copyOrAddCmrtHotcuesForSelection(/*replaceExisting*/ false);
+}
+
+void WTrackMenu::copyOrAddCmrtHotcuesForSelection(bool replaceExisting) {
+    const auto pTrackPointerIter = newTrackPointerIterator();
+    if (!pTrackPointerIter) {
+        return;
+    }
+    TrackDAO& trackDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getTrackDAO();
+    while (auto nextTrackPointer = pTrackPointerIter->nextItem()) {
+        const TrackPointer pTrack = *nextTrackPointer;
+        if (!pTrack || pTrack->hasCmrtOverlayActive()) {
+            // Skip overlay-active tracks -- guarded here too,
+            continue;
+        }
+        double offsetSeconds = 0.0;
+        const TrackPointer pCanonical =
+                trackDao.getCmrtCanonicalTrack(pTrack->getId(), &offsetSeconds);
+        if (!pCanonical) {
+            continue;
+        }
+        pTrack->copyOrMergeCmrtHotcues(pCanonical, offsetSeconds, replaceExisting);
+    }
 }
 
 int WTrackMenu::getCommonTrackRating() const {
@@ -1216,6 +1291,31 @@ void WTrackMenu::updateMenus() {
             applyCmrtRestriction(m_pClearOutroCueAction);
             applyCmrtRestriction(m_pClearLoopsAction);
             applyCmrtRestriction(m_pClearAllMetadataAction);
+
+            const bool canUseCmrtHotcueActions =
+                    !cmrtActive && anySelectedTrackIsCmrtMember();
+            const QString cmrtHotcueActionsTooltip = cmrtActive
+                    ? cmrtDisabledTooltip
+                    : tr("No canonical track (CMRT) to copy hotcues from.");
+            m_pCopyCmrtHotcuesAction->setEnabled(canUseCmrtHotcueActions);
+            m_pCopyCmrtHotcuesAction->setToolTip(canUseCmrtHotcueActions
+                            ? tr("Copy Hotcues from canonical track (CMRT).") +
+                                    "\n\n" +
+                                    tr("This will overwrite all existing "
+                                       "hotcues in the selected track(s).")
+                            : cmrtHotcueActionsTooltip);
+            m_pAddCmrtHotcuesAction->setEnabled(canUseCmrtHotcueActions);
+            m_pAddCmrtHotcuesAction->setToolTip(canUseCmrtHotcueActions
+                            ? tr("Add Hotcues from canonical track (CMRT).") +
+                                    "\n\n" +
+                                    tr("This will add hotcues to the selected "
+                                       "track(s) without overwriting existing "
+                                       "hotcues.") +
+                                    "\n" +
+                                    tr("CMRT hotcues are sorted and appended "
+                                       "after the last saved hotcue in the "
+                                       "selected track(s).")
+                            : cmrtHotcueActionsTooltip);
         }
         if (featureIsEnabled(Feature::BPM)) {
             m_pBpmUnlockAction->setEnabled(anyBpmLocked && !cmrtActive);

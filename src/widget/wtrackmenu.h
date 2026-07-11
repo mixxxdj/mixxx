@@ -174,6 +174,8 @@ class WTrackMenu : public QMenu {
 
     // Hotcues
     void slotSortHotcuesByPosition(HotcueSortMode sortMode);
+    void slotCopyCmrtHotcues();
+    void slotAddCmrtHotcues();
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -254,7 +256,15 @@ class WTrackMenu : public QMenu {
     void clearBeats();
     void clearFingerprintDataForSelection();
     void clearMusicBrainzDataForSelection();
+    // Pulls the canonical (CMRT) track's hotcues into each selected
+    // member track's own storage, shifted by that member's
+    // offset_from_canonical
+    // replaceExisting selects between the "Copy" and "Add" actions.
+    void copyOrAddCmrtHotcuesForSelection(bool replaceExisting);
     bool anySelectedTrackUsesCmrtOverlay() const;
+    // Whether any currently selected track is a non-canonical member of
+    // a CMRT group (use: has a canonical track to copy/add hotcues from).
+    bool anySelectedTrackIsCmrtMember() const;
     void lockBpm(bool lock);
 
 #ifdef __STEM__
@@ -387,6 +397,8 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pClearAllMetadataAction;
     parented_ptr<QAction> m_pSortHotcuesByPositionAction{};
     parented_ptr<QAction> m_pSortHotcuesByPositionCompressAction{};
+    parented_ptr<QAction> m_pCopyCmrtHotcuesAction{};
+    parented_ptr<QAction> m_pAddCmrtHotcuesAction{};
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;

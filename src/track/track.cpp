@@ -9,6 +9,7 @@
 #include "sources/metadatasource.h"
 #include "track/keyfactory.h"
 #include "util/assert.h"
+#include "util/defs.h"
 #include "util/logger.h"
 #include "util/time.h"
 
@@ -2244,6 +2245,87 @@ void Track::refreshCmrtOverlayFromCanonical() {
     const auto memberSampleRate = getSampleRate();
     locked.unlock();
     applyCmrtOverlay(pCanonical, offsetSeconds, memberSampleRate);
+}
+
+void Track::copyOrMergeCmrtHotcues(TrackPointer pCanonical,
+        double offsetSeconds,
+        bool replaceExisting) {
+    VERIFY_OR_DEBUG_ASSERT(pCanonical) {
+        return;
+    }
+    const auto memberSampleRate = getSampleRate();
+
+    const QList<CuePointer> canonicalCues = pCanonical->getCuePoints();
+    const QList<CuePointer> shiftedCues = buildOverlayCues(canonicalCues,
+            pCanonical->getSampleRate(),
+            memberSampleRate,
+            offsetSeconds);
+    QList<CuePointer> hotcuesToAdd;
+    for (const auto& pCue : shiftedCues) {
+        if (pCue->getType() == mixxx::CueType::HotCue) {
+            hotcuesToAdd.append(pCue);
+        }
+    }
+
+    auto locked = lockMutex(&m_qMutex);
+    VERIFY_OR_DEBUG_ASSERT(!m_cmrtOverlayActive) {
+        // Caller (WTrackMenu::copyOrAddCmrtHotcuesForSelection()) is
+        // expected to have already skipped overlay-active tracks. Bail
+        // out defensively rather than merge on top of the overlay
+        // snapshot, which would silently corrupt it once the checkbox is
+        // unchecked and reloadOwnCuesAndBeats() replaces m_cuePoints
+        // wholesale from the cues table.
+        return;
+    }
+
+    if (replaceExisting) {
+        QMutableListIterator<CuePointer> it(m_cuePoints);
+        while (it.hasNext()) {
+            CuePointer pCue = it.next();
+            if (pCue->getType() == mixxx::CueType::HotCue) {
+                disconnect(pCue.get(), nullptr, this, nullptr);
+                it.remove();
+            }
+        }
+    } else {
+        // Sort the incoming hotcues by their (already shifted) position,
+        // so they appear in chronological order on the member's waveform.
+        std::sort(hotcuesToAdd.begin(),
+                hotcuesToAdd.end(),
+                [](const CuePointer& a, const CuePointer& b) {
+                    return a->getPosition() < b->getPosition();
+                });
+
+        // Find the highest hotcue index currently used by the member track.
+        int maxIndex = -1;
+        for (const auto& pCue : std::as_const(m_cuePoints)) {
+            if (pCue->getType() == mixxx::CueType::HotCue) {
+                maxIndex = std::max(maxIndex, pCue->getHotCue());
+            }
+        }
+
+        // Assign the sorted cues new indices starting from maxIndex+1,
+        // capped by kMaxNumberOfHotcues (0‑based, so max index is 35).
+        for (auto& pCue : hotcuesToAdd) {
+            ++maxIndex;
+            if (maxIndex >= kMaxNumberOfHotcues) {
+                qWarning() << "Track::copyOrMergeCmrtHotcues: Hotcue limit"
+                           << kMaxNumberOfHotcues
+                           << "reached, ignoring further cues.";
+                break;
+            }
+            pCue->setHotCue(maxIndex);
+        }
+    }
+
+    for (const auto& pCue : hotcuesToAdd) {
+        pCue->setDirty(true);
+        pCue->moveToThread(thread());
+        connect(pCue.get(), &Cue::updated, this, &Track::slotCueUpdated);
+        m_cuePoints.push_back(pCue);
+    }
+    markDirtyAndUnlock(&locked);
+    emit cuesUpdated();
 }
 
 void Track::clearCmrtOverlay() {

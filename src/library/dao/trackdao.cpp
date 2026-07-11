@@ -1822,12 +1822,6 @@ void TrackDAO::applyCmrtOverlayIfConfigured(const TrackPointer& pTrack) const {
     if (!pMember || !pMember->useCmrtData) {
         return;
     }
-    auto pGroup = m_fingerprintDao.getCmrtGroup(pMember->groupId);
-    if (!pGroup || pGroup->canonicalTrackId == pTrack->getId()) {
-        // No group, or this track already IS the canonical -- nothing to
-        // overlay onto itself.
-        return;
-    }
     // Flush any pending edits to this track's own cues/beats before
     // overwriting the in-memory copy with the canonical's overlay data.
     // Otherwise those edits are lost from memory without ever having
@@ -1837,18 +1831,37 @@ void TrackDAO::applyCmrtOverlayIfConfigured(const TrackPointer& pTrack) const {
     if (pTrack->isDirty()) {
         saveTrack(pTrack.get());
     }
-    TrackPointer pCanonical = getTrackById(pGroup->canonicalTrackId);
+    double offsetSeconds = 0.0;
+    TrackPointer pCanonical = getCmrtCanonicalTrack(pTrack->getId(), &offsetSeconds);
     if (!pCanonical) {
-        qWarning() << "TrackDAO -> [applyCmrtOverlayIfConfigured] -> "
-                      "canonical track"
-                   << pGroup->canonicalTrackId << "for group" << pMember->groupId
-                   << "could not be loaded; leaving track"
-                   << pTrack->getId() << "with its own cues/beats";
         return;
     }
-    pTrack->applyCmrtOverlay(pCanonical,
-            pMember->offsetFromCanonical,
-            pTrack->getSampleRate());
+    pTrack->applyCmrtOverlay(pCanonical, offsetSeconds, pTrack->getSampleRate());
+}
+
+TrackPointer TrackDAO::getCmrtCanonicalTrack(TrackId trackId, double* pOffsetSeconds) const {
+    VERIFY_OR_DEBUG_ASSERT(pOffsetSeconds) {
+        return nullptr;
+    }
+    auto pMember = m_fingerprintDao.getCmrtMemberByTrackId(trackId);
+    if (!pMember) {
+        return nullptr;
+    }
+    auto pGroup = m_fingerprintDao.getCmrtGroup(pMember->groupId);
+    if (!pGroup || pGroup->canonicalTrackId == trackId) {
+        // No group, or this track already IS the canonical
+        // nothing to pull from.
+        return nullptr;
+    }
+    TrackPointer pCanonical = getTrackById(pGroup->canonicalTrackId);
+    if (!pCanonical) {
+        qWarning() << "TrackDAO -> [getCmrtCanonicalTrack] -> canonical track"
+                   << pGroup->canonicalTrackId << "for group" << pMember->groupId
+                   << "could not be loaded";
+        return nullptr;
+    }
+    *pOffsetSeconds = pMember->offsetFromCanonical;
+    return pCanonical;
 }
 
 void TrackDAO::applyCmrtOverlayToLoadedTrack(const TrackPointer& pTrack) const {

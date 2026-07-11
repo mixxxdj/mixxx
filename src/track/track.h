@@ -477,6 +477,10 @@ class Track : public QObject {
     TrackPointer getCanonicalTrack() const;
     double getCmrtOffsetSeconds() const;
 
+    void copyOrMergeCmrtHotcues(TrackPointer pCanonical,
+            double offsetSeconds,
+            bool replaceExisting);
+
   signals:
     void artistChanged(const QString&);
     void titleChanged(const QString&);

@@ -122,6 +122,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // cues/beats from the database.
     void reloadOwnCuesAndBeats(const TrackPointer& pTrack) const;
 
+    TrackPointer getCmrtCanonicalTrack(TrackId trackId, double* pOffsetSeconds) const;
+
     bool clearMusicBrainzData(TrackId trackId) const;
 
   signals:
