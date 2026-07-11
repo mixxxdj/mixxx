@@ -176,6 +176,10 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
                 &LIBRARYTABLE_CMRT_USE_DATA,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Use CMRT Data"),
                 kDefaultColumnWidth},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_HAS_GROUP){
+                &LIBRARYTABLE_CMRT_HAS_GROUP,
+                nullptr,
+                0},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE){&LIBRARYTABLE_COVERART_SOURCE,
                 nullptr,
                 0},

@@ -121,6 +121,7 @@ const QString LIBRARYTABLE_CMRT_GROUP_ID = QStringLiteral("cmrt_group_num");
 const QString LIBRARYTABLE_CMRT_MATCH_SCORE = QStringLiteral("cmrt_match_score");
 const QString LIBRARYTABLE_CMRT_QUALITY_SCORE = QStringLiteral("cmrt_quality_score");
 const QString LIBRARYTABLE_CMRT_USE_DATA = QStringLiteral("cmrt_use_data");
+const QString LIBRARYTABLE_CMRT_HAS_GROUP = QStringLiteral("cmrt_has_group");
 
 namespace mixxx {
 namespace trackschema {
