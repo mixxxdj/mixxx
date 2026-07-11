@@ -138,24 +138,42 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     // DlgPrefFingerprint's UI, not here; this class trusts its callers.
     static constexpr bool kCmrtColumnShowArtistDefault = true;
     static void setCmrtColumnShowArtist(bool show);
+    static bool cmrtColumnShowArtist() {
+        return s_cmrtColumnShowArtist;
+    }
 
     static constexpr bool kCmrtColumnShowTitleDefault = true;
     static void setCmrtColumnShowTitle(bool show);
+    static bool cmrtColumnShowTitle() {
+        return s_cmrtColumnShowTitle;
+    }
 
     static constexpr bool kCmrtColumnShowGroupIdDefault = false;
     static void setCmrtColumnShowGroupId(bool show);
+    static bool cmrtColumnShowGroupId() {
+        return s_cmrtColumnShowGroupId;
+    }
 
     static constexpr bool kCmrtColumnShowOffsetDefault = false;
     static void setCmrtColumnShowOffset(bool show);
+    static bool cmrtColumnShowOffset() {
+        return s_cmrtColumnShowOffset;
+    }
 
     static constexpr bool kCmrtColumnShowMatchScoreDefault = false;
     static void setCmrtColumnShowMatchScore(bool show);
+    static bool cmrtColumnShowMatchScore() {
+        return s_cmrtColumnShowMatchScore;
+    }
 
     // true = append "(#id)" after the name (default), false = prepend.
     // Only has an observable effect when Artist or Title is also shown --
     // see roleValue() for why it's a no-op otherwise.
     static constexpr bool kCmrtColumnGroupIdAppendDefault = true;
     static void setCmrtColumnGroupIdAppend(bool append);
+    static bool cmrtColumnGroupIdAppend() {
+        return s_cmrtColumnGroupIdAppend;
+    }
 
     // Single delimiter used between every pair of adjacent segments in
     // the CMRT column text. Default " - ".
