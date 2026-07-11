@@ -12,6 +12,7 @@
 #include <QStyle>
 #include <QtGlobal>
 
+#include "controllers/controller.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
@@ -316,8 +317,14 @@ void DlgPreferences::showSoundHardwarePage(
         std::optional<mixxx::preferences::SoundHardwareTab> tab) {
     switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
-    if (tab.has_value()) {
+    if (tab) {
         m_pSoundDlg->selectIOTab(*tab);
+    }
+}
+
+void DlgPreferences::openControllerLearningWizard(Controller* pController) {
+    if (m_pControllersDlg) {
+        m_pControllersDlg->openLearningWizard(pController);
     }
 }
 
