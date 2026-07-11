@@ -1253,6 +1253,8 @@ QVariant BaseTrackTableModel::roleValue(
             QVariantMap decoration;
             decoration["isCanonical"] = rawSiblingValue(
                     index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+            decoration["matchScore"] = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_MATCH_SCORE);
             return decoration;
         }
         default:
