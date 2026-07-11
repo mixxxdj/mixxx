@@ -58,7 +58,8 @@ void LibraryTableModel::setTableModel() {
                     LIBRARYTABLE_CMRT_QUALITY_SCORE
             << "CASE WHEN cg.group_id IS NOT NULL "
                "THEN cm.use_cmrt_data ELSE NULL END AS " +
-                    LIBRARYTABLE_CMRT_USE_DATA;
+                    LIBRARYTABLE_CMRT_USE_DATA
+            << "(cm.group_id IS NOT NULL) AS " + LIBRARYTABLE_CMRT_HAS_GROUP;
 
     QSqlQuery query(m_database);
     query.prepare(
@@ -90,6 +91,7 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_CMRT_MATCH_SCORE;
     tableColumns << LIBRARYTABLE_CMRT_QUALITY_SCORE;
     tableColumns << LIBRARYTABLE_CMRT_USE_DATA;
+    tableColumns << LIBRARYTABLE_CMRT_HAS_GROUP;
     setTable(tableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
@@ -134,6 +136,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_GROUP_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_MATCH_SCORE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_QUALITY_SCORE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_HAS_GROUP) ||
             (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
