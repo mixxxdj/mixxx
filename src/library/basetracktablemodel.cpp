@@ -1031,7 +1031,8 @@ QVariant BaseTrackTableModel::roleValue(
                 const QVariant groupIdValue = rawSiblingValue(
                         index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_GROUP_ID);
                 if (!groupIdValue.isNull()) {
-                    groupIdTag = QStringLiteral("(#%1)").arg(groupIdValue.toInt());
+                    groupIdTag = QStringLiteral("%1").arg(
+                            groupIdValue.toInt(), 4, 10, QChar('0'));
                 }
             }
 
