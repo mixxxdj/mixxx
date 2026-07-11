@@ -8,15 +8,36 @@
 #include "moc_cmrtdelegate.cpp"
 
 namespace {
-// Matches the existing Mixxx hotcue "Green" (0x32BE44, see schema.xml
-// revision 32 / colorpalette.h) so the canonical-track swatch reads as
-// consistent with the rest of the app's color language instead of
-// introducing a brand-new green.
-const QColor kCanonicalColor(0x32, 0xBE, 0x44);
-// A clearly-distinct, non-alarming color for "this is a member, not the
-// canonical file" — not red, since being a member isn't an error state.
-const QColor kMemberColor(0xE6, 0x96, 0x28);
+const QColor kCanonicalColor(0x1E, 0x88, 0xE5);
+const QColor kUnscoredMemberColor(Qt::black);
 constexpr int kSwatchWidth = 4;
+
+QColor matchScoreColor(double matchScore) {
+    const double clamped = qBound(0.0, matchScore, 1.0);
+
+    // Colour components we'll interpolate
+    int hue, value;
+    constexpr int sat = 200;
+
+    if (clamped <= 0.5) {
+        // 0.0 → deep red (value=100), 0.5 → bright red (value=220)
+        hue = 0;
+        constexpr int vLow = 100, vHigh = 220;
+        value = vLow + static_cast<int>((vHigh - vLow) * (clamped / 0.5));
+    } else if (clamped <= 0.75) {
+        // 0.5 → red (hue=0), 0.75 → yellow (hue=60)
+        value = 220;
+        double t = (clamped - 0.5) / 0.25;
+        hue = static_cast<int>(t * 60.0);
+    } else {
+        // 0.75 → yellow (hue=60), 1.0 → green (hue=120)
+        value = 220;
+        double t = (clamped - 0.75) / 0.25;
+        hue = 60 + static_cast<int>(t * 60.0);
+    }
+
+    return QColor::fromHsv(hue, sat, value);
+}
 } // namespace
 
 void CmrtDelegate::paintItem(
@@ -35,30 +56,40 @@ void CmrtDelegate::paintItem(
         painter->setPen(QPen(opt.palette.text().color()));
     }
 
-    if (cmrtName.isEmpty()) {
+    const QVariant decorationVariant = index.data(Qt::DecorationRole);
+    if (!decorationVariant.isValid()) {
         // No CMRT group, or group has exactly one member — library_view
         // returns NULL for cmrt_track_name in both cases (see the
         // "cg.track_count > 1" join condition), so there's nothing to draw
         // beyond the placeholder.
-        painter->drawText(option.rect, Qt::AlignVCenter, QStringLiteral("--"));
+        painter->drawText(option.rect,
+                Qt::AlignVCenter,
+                cmrtName.isEmpty() ? QStringLiteral("--") : cmrtName);
         if (option.state & QStyle::State_HasFocus) {
             drawBorder(painter, m_focusBorderColor, option.rect);
         }
         return;
     }
 
-    const bool isCanonical = index.data(Qt::DecorationRole)
-                                     .value<QVariantMap>()
-                                     .value("isCanonical")
-                                     .toBool();
+    const QVariantMap decoration = decorationVariant.value<QVariantMap>();
+    const bool isCanonical = decoration.value("isCanonical").toBool();
 
     const int x = option.rect.x();
     constexpr int yPad = 2;
+    QColor swatchColor;
+    if (isCanonical) {
+        swatchColor = kCanonicalColor;
+    } else {
+        const QVariant matchScoreValue = decoration.value("matchScore");
+        swatchColor = matchScoreValue.isNull()
+                ? kUnscoredMemberColor
+                : matchScoreColor(matchScoreValue.toDouble());
+    }
     painter->fillRect(x,
             option.rect.y() + yPad,
             kSwatchWidth,
             option.rect.height() - 2 * yPad,
-            isCanonical ? kCanonicalColor : kMemberColor);
+            swatchColor);
 
     const QString elidedText = option.fontMetrics.elidedText(
             cmrtName,
