@@ -176,6 +176,7 @@ class WTrackMenu : public QMenu {
     void slotSortHotcuesByPosition(HotcueSortMode sortMode);
     void slotCopyCmrtHotcues();
     void slotAddCmrtHotcues();
+    void slotMakeCmrtCanonical();
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -265,6 +266,7 @@ class WTrackMenu : public QMenu {
     // Whether any currently selected track is a non-canonical member of
     // a CMRT group (use: has a canonical track to copy/add hotcues from).
     bool anySelectedTrackIsCmrtMember() const;
+    void promoteSelectionToCmrtCanonical();
     void lockBpm(bool lock);
 
 #ifdef __STEM__
@@ -399,6 +401,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pSortHotcuesByPositionCompressAction{};
     parented_ptr<QAction> m_pCopyCmrtHotcuesAction{};
     parented_ptr<QAction> m_pAddCmrtHotcuesAction{};
+    parented_ptr<QAction> m_pMakeCmrtCanonicalAction{};
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;

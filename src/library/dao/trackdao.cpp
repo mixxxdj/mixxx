@@ -22,6 +22,7 @@
 #include "library/library_prefs.h"
 #include "library/queryutil.h"
 #include "moc_trackdao.cpp"
+#include "musicbrainz/cmrtgroupingservice.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beats.h"
 #include "track/globaltrackcache.h"
@@ -1862,6 +1863,11 @@ TrackPointer TrackDAO::getCmrtCanonicalTrack(TrackId trackId, double* pOffsetSec
     }
     *pOffsetSeconds = pMember->offsetFromCanonical;
     return pCanonical;
+}
+
+bool TrackDAO::promoteCmrtCanonical(TrackId trackId) const {
+    mixxx::CmrtGroupingService groupingService(m_fingerprintDao, m_pConfig);
+    return groupingService.promoteToCanonical(trackId);
 }
 
 void TrackDAO::applyCmrtOverlayToLoadedTrack(const TrackPointer& pTrack) const {

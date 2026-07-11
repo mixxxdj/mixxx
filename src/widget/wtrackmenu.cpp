@@ -240,6 +240,8 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu = make_parented<QMenu>(this);
         m_pAnalyzeMenu->setTitle(tr("Analyze"));
+        // Required to show CMRT-disabled tooltip.
+        m_pAnalyzeMenu->setToolTipsVisible(true);
     }
 
     if (featureIsEnabled(Feature::SearchRelated)) {
@@ -610,6 +612,13 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotAnalyzeFingerprint);
+
+        m_pMakeCmrtCanonicalAction =
+                make_parented<QAction>(tr("Make Canonical (CMRT)"), this);
+        connect(m_pMakeCmrtCanonicalAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotMakeCmrtCanonical);
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -792,6 +801,8 @@ void WTrackMenu::setupActions() {
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
         m_pAnalyzeMenu->addSeparator();
         m_pAnalyzeMenu->addAction(m_pAnalyzeFingerprintAction.get());
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pMakeCmrtCanonicalAction);
         addMenu(m_pAnalyzeMenu);
     }
 
@@ -933,6 +944,32 @@ void WTrackMenu::copyOrAddCmrtHotcuesForSelection(bool replaceExisting) {
             continue;
         }
         pTrack->copyOrMergeCmrtHotcues(pCanonical, offsetSeconds, replaceExisting);
+    }
+}
+
+void WTrackMenu::slotMakeCmrtCanonical() {
+    promoteSelectionToCmrtCanonical();
+}
+
+void WTrackMenu::promoteSelectionToCmrtCanonical() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.isEmpty()) {
+        return;
+    }
+
+    TrackDAO& trackDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getTrackDAO();
+
+    bool anyPromoted = false;
+    for (const TrackId& id : std::as_const(trackIds)) {
+        if (trackDao.promoteCmrtCanonical(id)) {
+            anyPromoted = true;
+        }
+    }
+
+    if (anyPromoted) {
+        emit m_pLibrary->trackCollectionManager()->cmrtDataChanged();
     }
 }
 
@@ -1261,6 +1298,24 @@ void WTrackMenu::updateMenus() {
         // https://github.com/mixxxdj/mixxx/pull/10931#issuecomment-1262559750
         m_pReanalyzeConstBpmAction->setVisible(!useFixedTempo);
         m_pReanalyzeVarBpmAction->setVisible(useFixedTempo);
+
+        const bool anyOverlayActive = anySelectedTrackUsesCmrtOverlay();
+        const bool anyPromotable =
+                !anyOverlayActive && anySelectedTrackIsCmrtMember();
+        m_pMakeCmrtCanonicalAction->setEnabled(anyPromotable);
+        m_pMakeCmrtCanonicalAction->setToolTip(anyPromotable
+                        ? tr("Make the selected track(s) the new canonical track(s) of their "
+                             "CMRT groups.\n"
+                             "Offsets of other members in the group are recalculated with "
+                             "respect to the new canonical track.")
+                        : anyOverlayActive
+                        ? tr("Disabled while \"Use CMRT Data\" is "
+                             "checked. Uncheck it first.")
+                        : tr("Disabled: the selected track(s) are "
+                             "either already the canonical (CMRT) "
+                             "track for their group, or aren't "
+                             "linked to a CMRT group with another "
+                             "track to compare against."));
     }
 
     const auto applyCmrtRestriction = [cmrtActive, &cmrtDisabledTooltip](QAction* pAction) {

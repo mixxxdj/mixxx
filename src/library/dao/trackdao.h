@@ -124,6 +124,11 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     TrackPointer getCmrtCanonicalTrack(TrackId trackId, double* pOffsetSeconds) const;
 
+    // the same re-election CmrtGroupingService::handleMatchedCandidate()
+    // already runs automatically when a fresh AcoustID match's quality score
+    // beats the existing canonical, just triggered by user choice
+    bool promoteCmrtCanonical(TrackId trackId) const;
+
     bool clearMusicBrainzData(TrackId trackId) const;
 
   signals:
