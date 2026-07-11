@@ -137,6 +137,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     // called.
     QString orderByClause() const;
 
+    QString buildCmrtOrderByClause(Qt::SortOrder order) const;
+
     struct RowInfo {
         TrackId trackId;
         int row;

@@ -152,6 +152,63 @@ void BaseSqlTableModel::initSortColumnMapping() {
     }
 }
 
+QString BaseSqlTableModel::buildCmrtOrderByClause(Qt::SortOrder order) const {
+    const QString dir = (order == Qt::AscendingOrder) ? QStringLiteral("ASC")
+                                                      : QStringLiteral("DESC");
+
+    auto fieldRef = [this](const QString& fieldName) {
+        return QStringLiteral("%1.%2").arg(m_tableName, fieldName);
+    };
+    // group_id, offset, and match_score are stored as INTEGER/REAL --
+    // sorted numerically as-is, sign and all, no text encoding needed.
+    auto numericTerm = [&](const QString& fieldName) {
+        return QStringLiteral("%1 %2").arg(fieldRef(fieldName), dir);
+    };
+    auto textTerm = [&](const QString& fieldName) {
+        return QStringLiteral("%1 %2")
+                .arg(mixxx::DbConnection::collateLexicographically(
+                             QStringLiteral("lower(%1)").arg(fieldRef(fieldName))),
+                        dir);
+    };
+
+    const QString bucketRank = QStringLiteral(
+            "CASE WHEN %1 IS NOT NULL THEN 0 "
+            "WHEN %2 THEN 1 "
+            "ELSE 2 END")
+                                       .arg(fieldRef(LIBRARYTABLE_CMRT_NAME),
+                                               fieldRef(LIBRARYTABLE_CMRT_HAS_GROUP));
+    QStringList terms;
+    terms << QStringLiteral("%1 %2").arg(bucketRank, dir);
+
+    const bool showGroupId = BaseTrackTableModel::cmrtColumnShowGroupId();
+    const bool appendGroupId = BaseTrackTableModel::cmrtColumnGroupIdAppend();
+
+    // Mirrors roleValue()'s segment order exactly: group id goes first
+    // only in the prepend case, last only in the append case, so a tie
+    // on an earlier-displayed field cascades to whatever's displayed
+    // right after it -- same as reading the built string left to right.
+    if (showGroupId && !appendGroupId) {
+        terms << numericTerm(LIBRARYTABLE_CMRT_GROUP_ID);
+    }
+    if (BaseTrackTableModel::cmrtColumnShowArtist()) {
+        terms << textTerm(LIBRARYTABLE_CMRT_CANONICAL_ARTIST);
+    }
+    if (BaseTrackTableModel::cmrtColumnShowTitle()) {
+        terms << textTerm(LIBRARYTABLE_CMRT_CANONICAL_TITLE);
+    }
+    if (showGroupId && appendGroupId) {
+        terms << numericTerm(LIBRARYTABLE_CMRT_GROUP_ID);
+    }
+    if (BaseTrackTableModel::cmrtColumnShowOffset()) {
+        terms << numericTerm(LIBRARYTABLE_CMRT_OFFSET);
+    }
+    if (BaseTrackTableModel::cmrtColumnShowMatchScore()) {
+        terms << numericTerm(LIBRARYTABLE_CMRT_MATCH_SCORE);
+    }
+
+    return terms.join(QStringLiteral(", "));
+}
+
 void BaseSqlTableModel::clearRows() {
     DEBUG_ASSERT(m_rowInfo.empty() == m_trackIdToRows.empty());
     DEBUG_ASSERT(m_rowInfo.size() >= m_trackIdToRows.size());
@@ -532,6 +589,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             // Random sort easter egg
             m_tableOrderBy = "ORDER BY RANDOM()";
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT)) {
+            m_tableOrderBy = QStringLiteral("ORDER BY ") + buildCmrtOrderByClause(order);
         } else {
             m_tableOrderBy = "ORDER BY ";
             QString field = m_tableColumns[column];
