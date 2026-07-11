@@ -182,6 +182,24 @@ class LoopingControl : public EngineControl {
                 mixxx::Bpm(60.0));
         return fakeBeats;
     }
+    bool loopIsValid() {
+        LoopInfo loopInfo = getLoopInfo();
+        return loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid();
+    }
+    bool playposInsideLoop() {
+        LoopInfo loopInfo = getLoopInfo();
+        FrameInfo info = frameInfo();
+        mixxx::audio::FramePos currentPosition = info.currentPosition;
+        return loopIsValid() &&
+                currentPosition >= loopInfo.startPosition &&
+                currentPosition <= loopInfo.endPosition;
+    }
+    bool playposAfterLoop() {
+        LoopInfo loopInfo = getLoopInfo();
+        FrameInfo info = frameInfo();
+        mixxx::audio::FramePos currentPosition = info.currentPosition;
+        return loopIsValid() && currentPosition >= loopInfo.startPosition;
+    }
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
