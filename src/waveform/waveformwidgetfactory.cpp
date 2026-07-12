@@ -699,14 +699,12 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
 
 WaveformWidgetBackend WaveformWidgetFactory::setAcceleration(bool enabled) {
     WaveformWidgetBackend backend = WaveformWidgetBackend::None;
-    if (enabled) {
-        backend =
+    if (enabled && (isOpenGlAvailable() || isOpenGlesAvailable())) {
 #ifdef MIXXX_USE_QOPENGL
-                WaveformWidgetBackend::AllShader
+        backend = WaveformWidgetBackend::AllShader;
 #else
-                WaveformWidgetBackend::GL
+        backend = WaveformWidgetBackend::GL;
 #endif
-                ;
     }
     m_config->setValue(kHardwareAccelerationKey, backend);
     return backend;
