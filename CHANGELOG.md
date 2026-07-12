@@ -1,5 +1,64 @@
 # Changelog
 
+## 2.5.7 (unreleased)
+
+### Controller Mappings
+
+* Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
+
+### Library
+
+* Fix color column sorting for dirty tracks
+  [#16662](https://github.com/mixxxdj/mixxx/pull/16662)
+* Fix relocate directory: remove old dir if new is child of a root dir [#16203](https://github.com/mixxxdj/mixxx/pull/16203)
+* Fix library scanner: allow resuming canceled scan by clearing hashes of unfinished dirs
+  [#16300](https://github.com/mixxxdj/mixxx/pull/16300)
+  [#16198](https://github.com/mixxxdj/mixxx/issues/16198)
+* Fix missing tracks showing up in Hidden, Missing empty [#16419](https://github.com/mixxxdj/mixxx/pull/16419)
+* Adjust FocusWidget: GoToItem emulates Space key in WSearchRelatedTracksMenu [#13282](https://github.com/mixxxdj/mixxx/pull/13282)
+
+### Target support
+
+* Support Ubuntu Stonking 26.10
+  [#16507](https://github.com/mixxxdj/mixxx/pull/16507)
+  [#16619](https://github.com/mixxxdj/mixxx/pull/16619)
+  [#16614](https://github.com/mixxxdj/mixxx/issues/16614)
+* Support Windows 11 25H2
+  [#16401](https://github.com/mixxxdj/mixxx/pull/16401)
+* Add Arch Linux build environment script [#16594](https://github.com/mixxxdj/mixxx/pull/16594)
+* Fix race condition in fonts-ubuntu check in Debian environment script [#16575](https://github.com/mixxxdj/mixxx/pull/16575)
+* Fix various warnings when using recent build environments
+  [#16537](https://github.com/mixxxdj/mixxx/pull/16537)
+  [#16514](https://github.com/mixxxdj/mixxx/pull/16514)
+  [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+  [#16368](https://github.com/mixxxdj/mixxx/pull/16368)
+
+### Miscellaneous
+
+* macOS: fix system theme in preferences after switch rendering and icons
+  [#16661](https://github.com/mixxxdj/mixxx/pull/16661)
+  [#13643](https://github.com/mixxxdj/mixxx/issues/13643)
+* macOS: request security scoped bookmark for files in imported playlists
+  [#16369](https://github.com/mixxxdj/mixxx/pull/16369)
+* macOS: Discover both Effect and MusicEffect AudioUnits in one pass [#16287](https://github.com/mixxxdj/mixxx/pull/16287)
+* Fix killing Analysis worker threads during shutdown, possible data loss. [#16064](https://github.com/mixxxdj/mixxx/pull/16064)
+* MIDI: guard against null script engine in makeInputHandler [#16003](https://github.com/mixxxdj/mixxx/pull/16003)
+* EngineBuffer: Reset sample counter after indicator update [#16245](https://github.com/mixxxdj/mixxx/pull/16245)
+* libfdk_aac: SoundSourceProxyTest.seekBoundaries fix
+  [#16440](https://github.com/mixxxdj/mixxx/pull/16440)
+  [#16440](https://github.com/mixxxdj/mixxx/issues/14624)
+* FFmpeg: fix of gap bug fix
+  [#16439](https://github.com/mixxxdj/mixxx/pull/16439)
+  [#10464](https://github.com/mixxxdj/mixxx/issues/10464)
+* Fix flaky test, due to not waiting for a fully loaded EngineBufferE2ETest
+  [#16275](https://github.com/mixxxdj/mixxx/pull/16275)
+  [#12554](https://github.com/mixxxdj/mixxx/issues/12554)
+* Fix flaky test ControllerScriptEngineLegacyTimerTest.beginTimer_repeatedTimer [#16332](https://github.com/mixxxdj/mixxx/pull/16332)
+* Fix flaky test for org.mixxx.Mixxx.metainfo.xml
+  [#16290](https://github.com/mixxxdj/mixxx/pull/16290)
+  [#16162](https://github.com/mixxxdj/mixxx/issues/16162)
+* Fix warning/violated debug assertion when opening Preferences (backport [#16257](https://github.com/mixxxdj/mixxx/pull/16257)) [#16274](https://github.com/mixxxdj/mixxx/pull/16274)
+
 ## [2.5.6](https://github.com/mixxxdj/mixxx/milestone/53) (2026-03-25)
 
 ### Library
