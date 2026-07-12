@@ -1104,9 +1104,10 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    allshader::WaveformRendererSignalBase::Options options =
-            m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                    allshader::WaveformRendererSignalBase::Option::None);
+    allshader::WaveformRendererSignalBase::Options options = m_config->getValue(
+            ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::Options(
+                    allshader::WaveformRendererSignalBase::Option::None));
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
 
@@ -1391,9 +1392,9 @@ void WaveformWidgetFactory::setDefaultBackend() {
 }
 
 allshader::WaveformRendererSignalBase::Options WaveformWidgetFactory::getWaveformOptions() {
-    auto options = m_config->getValue(
-            kWaveformOptionsKey,
-            allshader::WaveformRendererSignalBase::Option::None);
+    auto options = m_config->getValue(kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Options(
+                    allshader::WaveformRendererSignalBase::Option::None));
     return options;
 }
 
