@@ -321,16 +321,22 @@ void LibraryScanner::cleanUpScan() {
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     ScopedTransaction transaction(dbConnection);
 
-    kLogger.debug() << "Marking tracks in changed directories as verified";
+    // verifiedTracks() now contains both:
+    // - tracks emitted by ImportFilesTask for changed-hash directories, and
+    // - tracks observed by RecursiveScanDirectoryTask in unchanged-hash
+    //   directories (slotDirectoryUnchanged feeds them in).
+    // markTrackLocationsAsVerified clears needs_verification AND fs_deleted
+    // for exactly those locations, so a track row whose file was deleted
+    // before the saved directory hash was last updated stays fs_deleted=1
+    // (its location is not in the present-files list).
+    kLogger.debug() << "Marking verified track locations as present";
     m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());
 
-    kLogger.debug() << "Marking unchanged directories and tracks as verified";
+    kLogger.debug() << "Marking unchanged directories as verified";
     m_libraryHashDao.updateDirectoryStatuses(
             m_scannerGlobal->verifiedDirectories(),
             false,
             true);
-    m_trackDao.markTracksInDirectoriesAsVerified(
-            m_scannerGlobal->verifiedDirectories());
 
     // After verifying tracks and directories via recursive scanning of the
     // library directories the only unverified tracks will be files that are
@@ -573,11 +579,21 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
     emit progressHashing(directoryPath);
 }
 
-void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
+void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath,
+        const QStringList& presentTrackLocations) {
     ScopedTimer timer(u"LibraryScanner::slotDirectoryUnchanged");
     //kLogger.debug() << "slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
+        // The directory hash matched the saved one, so every file currently
+        // present in this directory is verified to exist on disk. Feed those
+        // locations into the same verified-tracks list that ImportFilesTask
+        // populates, so the cleanup phase clears fs_deleted/needs_verification
+        // for them — without touching rows whose file was genuinely removed
+        // before the saved hash was last updated.
+        for (const QString& location : presentTrackLocations) {
+            m_scannerGlobal->addVerifiedTrack(location);
+        }
     }
     emit progressHashing(directoryPath);
 }
