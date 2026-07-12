@@ -83,6 +83,7 @@ const ConfigKey kDefaultZoomKey =
 const ConfigKey kFrameRateKey =
         ConfigKey(kWaveformGroup, QStringLiteral("FrameRate"));
 const ConfigKey kVSyncKey = ConfigKey(kWaveformGroup, QStringLiteral("VSync"));
+const ConfigKey kBeatGridAlpha = ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha"));
 
 ConfigKey visualGainKey(int index) {
     return ConfigKey(kWaveformGroup, QStringLiteral("VisualGain_") + QString::number(index));
@@ -390,9 +391,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool zoomSync = m_config->getValue(kZoomSyncKey, m_zoomSync);
     setZoomSync(zoomSync);
 
-    int beatGridAlpha =
-            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")),
-                    m_beatGridAlpha);
+    int beatGridAlpha = m_config->getValue(kBeatGridAlpha, m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
@@ -747,7 +746,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
-    m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")), alpha);
+    m_config->setValue(kBeatGridAlpha, alpha);
 }
 
 void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
