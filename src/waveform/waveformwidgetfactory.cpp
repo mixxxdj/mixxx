@@ -1118,11 +1118,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
+    case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-    case WaveformWidgetBackend::AllShader: {
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer);
-    }
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1132,10 +1134,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveform
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new HSVWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1145,10 +1150,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new RGBWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1156,12 +1164,16 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer) {
-#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetBackend backend = getBackendFromConfig();
+
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1171,10 +1183,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1349,13 +1364,13 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
             backend = WaveformWidgetBackend::None;
         }
         break;
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         if (!m_openGlAvailable && !m_openGlesAvailable) {
             backend = WaveformWidgetBackend::None;
         }
-        break;
 #endif
+        break;
     }
     return backend;
 };
