@@ -334,6 +334,43 @@ TEST(BeatsBarTest, MutationsPreserveBeatsPerBar) {
     EXPECT_EQ((*pNewBpm)->beatsPerBar(), 5);
 }
 
+TEST(BeatsBarTest, TrySetDownbeatNearestToSelectsClosestBeat) {
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+
+    const double beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
+    // A position just past beat 5 must select beat 5 as the downbeat.
+    const auto position = audio::FramePos(beatLengthFrames * 5.0 + 30.0);
+    auto result = pBeats->trySetDownbeatNearestTo(position);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ((*result)->downbeatOffset(), 5);
+    // The original object is untouched (immutability).
+    EXPECT_EQ(pBeats->downbeatOffset(), 0);
+}
+
+TEST(BeatsBarTest, TranslateThenSetDownbeatAtTappedBeat) {
+    // Simulates the "Adjust Beatgrid" workflow: the grid is translated so the
+    // beat nearest the play position aligns to it, and that beat becomes the
+    // downbeat -- even for tracks that start a few beats before the first bar.
+    auto pBeats = Beats::fromConstTempo(
+            kSampleRate, kStartPosition, kBpm);
+    ASSERT_NE(pBeats, nullptr);
+
+    const double beatLengthFrames = 60.0 * kSampleRate.value() / kBpm.value();
+    // Play head sits 2 beats into the track, slightly off-grid.
+    const auto playPosition = audio::FramePos(beatLengthFrames * 2.0 + 30.0);
+    const auto closestBeat = pBeats->findClosestBeat(playPosition);
+    const auto frameOffset = playPosition - closestBeat;
+
+    auto translated = pBeats->tryTranslate(frameOffset);
+    ASSERT_TRUE(translated.has_value());
+    auto withDownbeat = (*translated)->trySetDownbeatNearestTo(playPosition);
+    ASSERT_TRUE(withDownbeat.has_value());
+    // The tapped beat (index 2) is now the downbeat.
+    EXPECT_EQ((*withDownbeat)->downbeatOffset(), 2);
+}
+
 TEST(BeatsBarTest, FactoryPreservesBeatsPerBar) {
     QVector<audio::FramePos> beatPositions;
     for (int i = 0; i < 100; ++i) {

@@ -429,6 +429,14 @@ class Beats : private std::enable_shared_from_this<Beats> {
     std::optional<BeatsPointer> trySetBeatsPerBar(int beatsPerBar) const;
     std::optional<BeatsPointer> trySetDownbeatOffset(int downbeatOffset) const;
 
+    /// Mark the beat closest to `position` as the downbeat (first beat of the
+    /// bar). Only the downbeat offset changes; the beat positions themselves
+    /// are left untouched.
+    //
+    /// Returns a pointer to the modified beats object, or `nullopt` on
+    /// failure.
+    std::optional<BeatsPointer> trySetDownbeatNearestTo(audio::FramePos position) const;
+
   protected:
     /// Type tag for making public constructors of derived classes inaccessible.
     ///

@@ -784,6 +784,15 @@ std::optional<BeatsPointer> Beats::trySetDownbeatOffset(int downbeatOffset) cons
     return pBeats;
 }
 
+std::optional<BeatsPointer> Beats::trySetDownbeatNearestTo(audio::FramePos position) const {
+    const auto closestBeat = findClosestBeat(position);
+    if (!closestBeat.isValid()) {
+        return std::nullopt;
+    }
+    const int beatIndex = iteratorFrom(closestBeat) - cfirstmarker();
+    return trySetDownbeatOffset(beatIndex);
+}
+
 bool Beats::isValid() const {
     if (!m_lastMarkerPosition.isValid() || !m_lastMarkerBpm.isValid()) {
         return false;
