@@ -805,7 +805,7 @@ QString BpmFilterNode::toSql() const {
         searchClauses << rangeSqlString(m_rangeLower, m_rangeUpper);
         searchClauses << rangeSqlString(m_bpmHalfLower, m_bpmHalfUpper);
         searchClauses << rangeSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
-        qWarning() << "BpmFilterNode:" << concatSqlClauses(searchClauses, "OR");
+        // qDebug() << "BpmFilterNode:" << concatSqlClauses(searchClauses, "OR");
         return concatSqlClauses(searchClauses, "OR");
     }
     case MatchMode::Operator: {
