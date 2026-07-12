@@ -1421,7 +1421,7 @@ void WaveformWidgetFactory::setWaveformOption(
     currentOptions.setFlag(option, enabled);
     // clear unsupported options
     currentOptions &= supportedOptions;
-    m_config->setValue<int>(kWaveformOptionsKey, currentOptions);
+    m_config->setValue(kWaveformOptionsKey, currentOptions);
 }
 
 void WaveformWidgetFactory::resetWaveformOptions() {
