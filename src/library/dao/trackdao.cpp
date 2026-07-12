@@ -6,7 +6,6 @@
 #include <QThread>
 #include <QtDebug>
 
-
 #ifdef __SQLITE3__
 #include <sqlite3.h>
 #endif // __SQLITE3__
@@ -2489,24 +2488,26 @@ QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
     if (m_lastAddedToHistoryQuery.lastQuery().isEmpty()) {
         m_lastAddedToHistoryQuery = QSqlQuery(m_database);
         m_lastAddedToHistoryQuery.prepare(
-            "SELECT MAX(PlaylistTracks.pl_datetime_added) "
-            "FROM PlaylistTracks "
-            "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
-            "WHERE PlaylistTracks.track_id = :id "
-            "AND Playlists.hidden = " + QString::number(PlaylistDAO::PLHT_SET_LOG)
-        );
+                "SELECT MAX(PlaylistTracks.pl_datetime_added) "
+                "FROM PlaylistTracks "
+                "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
+                "WHERE PlaylistTracks.track_id = :id "
+                "AND Playlists.hidden = " +
+                QString::number(PlaylistDAO::PLHT_SET_LOG));
     }
 
     m_lastAddedToHistoryQuery.bindValue(":id", trackId.toVariant());
-    
+
     if (!m_lastAddedToHistoryQuery.exec()) {
-        LOG_FAILED_QUERY(m_lastAddedToHistoryQuery) << "Failed to find last time added to history for track" << trackId;
+        LOG_FAILED_QUERY(m_lastAddedToHistoryQuery)
+                << "Failed to find last time added to history for track"
+                << trackId;
         return QString();
     }
-    
+
     if (m_lastAddedToHistoryQuery.next()) {
         return m_lastAddedToHistoryQuery.value(0).toString();
     }
-    
+
     return QString();
 }
