@@ -1,6 +1,5 @@
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
-import QtQml 2.12
 
 Item {
     id: root
@@ -14,6 +13,7 @@ Item {
     readonly property real availableHeight: Math.max(0, height - topPadding - bottomPadding)
     readonly property real availableWidth: Math.max(0, width - leftPadding - rightPadding)
     property alias background: backgroundItem.data
+    // A typed property is required so inherited controls accept grouped bindings such as bar.margin.
     property BarSettings bar: BarSettings {
     }
     property real bottomPadding: 0
