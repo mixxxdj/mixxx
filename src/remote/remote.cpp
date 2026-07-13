@@ -1,6 +1,8 @@
 #include <memory>
 #include <vector>
 
+#include <QDir>
+#include <QFileInfo>
 #include <QHttpServer>
 #include <QHttpServerResponse>
 #include <QJsonValue>
@@ -360,8 +362,38 @@ namespace mixxx {
                 return jsonResponse.toJson();
             });
 
-            httpServer.route("/<arg>",QHttpServerRequest::Method::Get, [settings] (const QString &url) {
-                return QHttpServerResponse::fromFile(QString(settings->getResourcePath())+"/web/"+url);
+            // Serves everything under res/web recursively (nested folders too),
+            // since QHttpServer's "/<arg>" route pattern can only match a
+            // single path segment and would miss e.g. "/js/vendor/foo.js".
+            httpServer.setMissingHandler(&httpServer,
+                    [settings] (const QHttpServerRequest &request, QHttpServerResponder &responder) {
+                if (request.method() != QHttpServerRequest::Method::Get
+                        && request.method() != QHttpServerRequest::Method::Head) {
+                    responder.write(QHttpServerResponder::StatusCode::NotFound);
+                    return;
+                }
+
+                const QString webRoot = QDir(QString(settings->getResourcePath())+"/web").canonicalPath();
+                QString requestedPath = QDir::cleanPath(webRoot+"/"+request.url().path());
+
+                if (requestedPath != webRoot && !requestedPath.startsWith(webRoot+"/")) {
+                    // path escapes the web root (e.g. "..") - refuse it
+                    responder.write(QHttpServerResponder::StatusCode::Forbidden);
+                    return;
+                }
+
+                QFileInfo fileInfo(requestedPath);
+                if (fileInfo.isDir()) {
+                    requestedPath += "/index.html";
+                    fileInfo.setFile(requestedPath);
+                }
+
+                if (!fileInfo.isFile()) {
+                    responder.write(QHttpServerResponder::StatusCode::NotFound);
+                    return;
+                }
+
+                responder.sendResponse(QHttpServerResponse::fromFile(requestedPath));
             });
 
             tcpserver = new QTcpServer();
