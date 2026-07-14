@@ -42,6 +42,13 @@ case "$1" in
                 )
         esac
 
+        # Detect Ubuntu 26.04+ for workarounds
+        NEEDS_PORTTIME_WORKAROUND=false
+        if [[ "${ID}" == "ubuntu" ]] && [[ "${VERSION_ID}" =~ ^(2[6-9]|[3-9][0-9]) ]]; then
+            NEEDS_PORTTIME_WORKAROUND=true
+            echo "Detected Ubuntu ${VERSION_ID} - applying compatibility workarounds"
+        fi
+
         sudo apt-get update
 
         # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
@@ -153,6 +160,35 @@ case "$1" in
             qml6-module-qt-labs-folderlistmodel \
             qml6-module-qtmultimedia \
             "${PACKAGES_EXTRA[@]}"
+
+        # Ubuntu 26.04+ workarounds
+        # Missing libporttime.so
+        if [ "$NEEDS_PORTTIME_WORKAROUND" = true ]; then
+            echo ""
+            echo "=== Applying Ubuntu 26.04+ workarounds ==="
+
+            # Create libporttime.so symlink (now part of libportmidi)
+            if [[ ! -f "/usr/lib/x86_64-linux-gnu/libporttime.so" ]] && [[ -f "/usr/lib/x86_64-linux-gnu/libportmidi.so" ]]; then
+                echo "Creating libporttime.so symlink to libportmidi.so"
+                sudo ln -sf /usr/lib/x86_64-linux-gnu/libportmidi.so /usr/lib/x86_64-linux-gnu/libporttime.so
+                sudo ldconfig
+            fi
+
+            # Missing libXext.so
+            # Install additional X11 dev packages
+            echo "Ensuring X11 development packages are installed"
+            sudo apt-get install -y --no-install-recommends \
+                libxext-dev \
+                libx11-dev \
+                libxcb1-dev \
+                libxrender-dev \
+                libxrandr-dev \
+                libxi-dev \
+                libxfixes-dev \
+                libxcomposite-dev \
+                libxcursor-dev \
+                libxinerama-dev
+        fi
         ;;
     *)
         echo "Usage: $0 [options]"
