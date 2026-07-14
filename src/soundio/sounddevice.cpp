@@ -227,10 +227,11 @@ void SoundDevice::clearInputBuffer(const SINT framesToPush,
 
 QString SoundDevice::getChannelString(ChannelGroup channelGroup, bool) {
     mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
-    unsigned char base = channelGroup.getChannelBase();
+    unsigned char channelBase = channelGroup.getChannelBase();
     if (count == 1) {
-        return "Channel " + QString::number(base);
+        return "Channel " + QString::number(channelBase + 1);
     } else {
-        return "Channels " + QString::number(base) + " - " + QString::number(base + count - 1);
+        return "Channels " + QString::number(channelBase + 1) + " - " +
+                QString::number(channelBase + count);
     }
 }
