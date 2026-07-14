@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QSet>
 #include <QString>
+#include <QtSql/QSqlQuery>
 #include <memory>
 
 #include "library/dao/dao.h"
@@ -140,6 +141,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     friend class TrackAnalysisScheduler;
     FRIEND_TEST(TrackDAOTest, markTrackLocationsAsVerifiedRecoversPresentFilesOnly);
 
+    QString findLastTimeAddedToHistory(TrackId trackId) const;
+
     QList<TrackId> resolveTrackIds(
             const QStringList& pathList,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
@@ -222,6 +225,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     QSet<TrackId> m_tracksAddedSet;
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
+    mutable QSqlQuery m_lastAddedToHistoryQuery;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
