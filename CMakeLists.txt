@@ -46,6 +46,11 @@ if(POLICY CMP0111)
   cmake_policy(SET CMP0111 NEW)
 endif()
 
+# dims a lot of warnings after upgrading to Ubuntu 26.04 containing Cmake 4.2
+if(POLICY CMP0200)
+  cmake_policy(SET CMP0200 OLD)
+endif()
+
 # Set the timestamp of extracted files to the time of the extraction instead of
 # the archived timestamp to make sure that dependent files are rebuilt if the
 # URL changes.
