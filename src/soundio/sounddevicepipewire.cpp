@@ -186,7 +186,7 @@ QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool in
     mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
 
     std::span<Port> ports = input ? m_outPorts : m_inPorts;
-    std::span<Port> subspan = ports.subspan(base - 1, count);
+    std::span<Port> subspan = ports.subspan(base, count);
 
     static const QRegularExpression regex{R"(^(.+?)[._:-]?(FL|FR|FC|LFE|SL|SR|RL|RR|[0-9]+)$)",
             QRegularExpression::CaseInsensitiveOption};
