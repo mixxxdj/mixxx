@@ -1116,6 +1116,7 @@ void WTrackMenu::updateMenus() {
 
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
+        // This clears the menu and creates all actions as required
         m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
     }
 
