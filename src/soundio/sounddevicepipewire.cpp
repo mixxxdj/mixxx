@@ -112,25 +112,31 @@ void SoundDevicePipewire::writeInput(
 }
 
 void SoundDevicePipewire::registerPort(uint32_t id, const struct spa_dict* props) {
-    const char* nameStr = spa_dict_lookup(props, PW_KEY_PORT_NAME);
+    const char* portName = spa_dict_lookup(props, PW_KEY_PORT_NAME);
+    const char* channel = spa_dict_lookup(props, PW_KEY_AUDIO_CHANNEL);
     const char* direction = spa_dict_lookup(props, PW_KEY_PORT_DIRECTION);
-    std::string name;
+    const char* portId = spa_dict_lookup(props, PW_KEY_PORT_ID);
 
-    if (nameStr) {
-        name = nameStr;
-    } else {
-        name = direction;
-        name += ":";
-        name += spa_dict_lookup(props, PW_KEY_PORT_ID);
+    Port port{};
+    port.id = id;
+    port.channel = channel ? channel : (portName ? portName : portId);
+
+    if (portName && channel) {
+        std::string_view name = portName;
+        const size_t last = name.find_last_of("_:-");
+        const bool nameContainsChannel = last != std::string_view::npos and
+                port.channel == name.substr(last + 1);
+        port.name = nameContainsChannel ? name.substr(0, last) : portName;
+        port.name += ':';
     }
 
     // m_numInputChannels, m_numOutputChannels, m_audioInputs, m_audioOutputs
     // are with respect to Mixxx and not the SoundDevice
     if (strcmp(direction, "in") == 0) {
-        m_inPorts.emplace_back(id, name);
+        m_inPorts.push_back(std::move(port));
         m_numOutputChannels = mixxx::audio::ChannelCount::fromInt(m_inPorts.size());
     } else if (strcmp(direction, "out") == 0) {
-        m_outPorts.emplace_back(id, name);
+        m_outPorts.push_back(std::move(port));
         m_numInputChannels = mixxx::audio::ChannelCount::fromInt(m_outPorts.size());
     }
 }
@@ -186,27 +192,20 @@ QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool in
     mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
 
     std::span<Port> ports = input ? m_outPorts : m_inPorts;
-    std::span<Port> subspan = ports.subspan(base, count);
+    std::span<Port> subspan = ports.subspan(base + 1, count - 1);
 
-    static const QRegularExpression regex{R"(^(.+?)[._:-]?(FL|FR|FC|LFE|SL|SR|RL|RR|[0-9]+)$)",
-            QRegularExpression::CaseInsensitiveOption};
+    // without this 1st port will always take else branch, inserting unnecessary ' '
+    Port& firstPort = ports[base];
+    std::string_view currentCommonSubstr = firstPort.name;
+    std::string channelString = firstPort.name + firstPort.channel;
 
-    QString channelString;
-    QString currentCommonSubstr;
-    for (auto it = subspan.begin(); it != subspan.end(); it++) {
-        const auto match = regex.match(it->name.c_str());
-        if (match.hasMatch()) {
-            const QStringView name = match.capturedView(1);
-            const QStringView suffix = match.capturedView(2);
-            if (name == currentCommonSubstr) {
-                channelString = channelString + '/' + suffix;
-            } else {
-                currentCommonSubstr = name.toString();
-                channelString = channelString + ' ' + name + ':' + suffix;
-            }
+    for (Port& port : subspan) {
+        if (!port.name.empty() and port.name == currentCommonSubstr) {
+            channelString = channelString + '/' + port.channel;
         } else {
-            channelString = channelString + ' ' + it->name.c_str();
+            channelString = channelString + ' ' + port.name + port.channel;
+            currentCommonSubstr = port.name;
         }
     }
-    return channelString;
+    return QString::fromStdString(channelString);
 }

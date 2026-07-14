@@ -52,8 +52,17 @@ class SoundDevicePipewire : public SoundDevice {
     }
 
     struct Port {
+        std::string getDisplayName() const {
+            return name + channel;
+        }
+
         uint32_t id;
+        // this is port.name after stripping out channel and delimiter,
+        // and appending a ':' to simplify logic
         std::string name;
+        // in case port had no recognizable channel, entire name is put
+        // here so SoundDevicePipewire::getChannelString logic works fine
+        std::string channel;
     };
 
     std::span<const Port> getInPorts() const {

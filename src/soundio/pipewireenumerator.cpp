@@ -731,7 +731,11 @@ std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createPorts(
             // see pipewire/keys.h header
             PW_KEY_FORMAT_DSP,
             "32 bit float mono audio",
+            PW_KEY_AUDIO_CHANNEL,
+            "FL",
             nullptr);
+    // any changes to port name needs to update port name parsing logic in
+    // PipewireEnumerator::registryEventGlobal
     pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FL", name.data());
 
     void* leftPort = pw_filter_add_port(m_pPwFilter,
@@ -746,7 +750,11 @@ std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createPorts(
             // see pipewire/keys.h header
             PW_KEY_FORMAT_DSP,
             "32 bit float mono audio",
+            PW_KEY_AUDIO_CHANNEL,
+            "FR",
             nullptr);
+    // any changes to port name needs to update port name parsing logic in
+    // PipewireEnumerator::registryEventGlobal
     pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FR", name.data());
 
     void* rightPort = pw_filter_add_port(m_pPwFilter,
