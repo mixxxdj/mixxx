@@ -2,6 +2,10 @@
 
 #include <spa/utils/defs.h>
 
+#include <QRegularExpression>
+#include <string_view>
+
+#include "audio/types.h"
 #include "soundio/pipewireenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicestatus.h"
@@ -108,29 +112,31 @@ void SoundDevicePipewire::writeInput(
 }
 
 void SoundDevicePipewire::registerPort(uint32_t id, const struct spa_dict* props) {
-    const char* nameStr = spa_dict_lookup(props, PW_KEY_PORT_ALIAS);
+    const char* portName = spa_dict_lookup(props, PW_KEY_PORT_NAME);
+    const char* channel = spa_dict_lookup(props, PW_KEY_AUDIO_CHANNEL);
     const char* direction = spa_dict_lookup(props, PW_KEY_PORT_DIRECTION);
-    std::string name;
+    const char* portId = spa_dict_lookup(props, PW_KEY_PORT_ID);
 
-    if (!nameStr) {
-        nameStr = spa_dict_lookup(props, PW_KEY_PORT_NAME);
-    }
+    Port port{};
+    port.id = id;
+    port.channel = channel ? channel : (portName ? portName : portId);
 
-    if (nameStr) {
-        name = nameStr;
-    } else {
-        name = direction;
-        name += ":";
-        name += spa_dict_lookup(props, PW_KEY_PORT_ID);
+    if (portName && channel) {
+        std::string_view name = portName;
+        const size_t last = name.find_last_of("_:-");
+        const bool nameContainsChannel = last != std::string_view::npos and
+                port.channel == name.substr(last + 1);
+        port.name = nameContainsChannel ? name.substr(0, last) : portName;
+        port.name += ':';
     }
 
     // m_numInputChannels, m_numOutputChannels, m_audioInputs, m_audioOutputs
     // are with respect to Mixxx and not the SoundDevice
     if (strcmp(direction, "in") == 0) {
-        m_inPorts.emplace_back(id, name);
+        m_inPorts.push_back(std::move(port));
         m_numOutputChannels = mixxx::audio::ChannelCount::fromInt(m_inPorts.size());
     } else if (strcmp(direction, "out") == 0) {
-        m_outPorts.emplace_back(id, name);
+        m_outPorts.push_back(std::move(port));
         m_numInputChannels = mixxx::audio::ChannelCount::fromInt(m_outPorts.size());
     }
 }
@@ -179,4 +185,27 @@ void SoundDevicePipewire::unregisterLink(uint32_t id, spa_direction direction) {
             m_outLinks.erase(it);
         }
     }
+}
+
+QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool input) {
+    unsigned char base = channelGroup.getChannelBase();
+    mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
+
+    std::span<Port> ports = input ? m_outPorts : m_inPorts;
+    std::span<Port> subspan = ports.subspan(base + 1, count - 1);
+
+    // without this 1st port will always take else branch, inserting unnecessary ' '
+    Port& firstPort = ports[base];
+    std::string_view currentCommonSubstr = firstPort.name;
+    std::string channelString = firstPort.name + firstPort.channel;
+
+    for (Port& port : subspan) {
+        if (!port.name.empty() and port.name == currentCommonSubstr) {
+            channelString = channelString + '/' + port.channel;
+        } else {
+            channelString = channelString + ' ' + port.name + port.channel;
+            currentCommonSubstr = port.name;
+        }
+    }
+    return QString::fromStdString(channelString);
 }

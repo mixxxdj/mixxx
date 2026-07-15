@@ -28,21 +28,48 @@ namespace {
 constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 const QString kAppGroup = QStringLiteral("[App]");
 
-static const char* find_node_name(const struct spa_dict* props) {
-    static const char* const name_keys[] = {
-            PW_KEY_NODE_NAME,
+static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
+    std::string name;
+    static const char* const nameKeys[] = {
             PW_KEY_NODE_DESCRIPTION,
-            PW_KEY_APP_NAME,
+            PW_KEY_NODE_NICK,
             PW_KEY_MEDIA_NAME,
+            PW_KEY_APP_NAME,
+            PW_KEY_NODE_NAME,
     };
 
-    for (const char* key : name_keys) {
-        const char* name = spa_dict_lookup(props, key);
-        if (name) {
-            return name;
+    for (const char* key : nameKeys) {
+        const char* prop = spa_dict_lookup(props, key);
+        if (prop) {
+            name = prop;
+            break;
         }
     }
-    return nullptr;
+
+    const char* mediaClass = spa_dict_lookup(props, PW_KEY_MEDIA_CLASS);
+    static const char* const subtypes[] = {
+            "Output",
+            "Input",
+            "Source",
+            "Sink",
+            "Duplex",
+    };
+
+    if (mediaClass) {
+        for (const char* subtype : subtypes) {
+            if (std::strstr(mediaClass, subtype)) {
+                name = name + " (" + subtype + ")";
+            }
+        }
+    } else {
+        const char* mediaCategory = spa_dict_lookup(props, PW_KEY_MEDIA_CATEGORY);
+        if (mediaCategory) {
+            name = name + " (" + mediaCategory + ")";
+        }
+    }
+
+    // worst case scenario, we still have node ID as name
+    return name + ":" + std::to_string(id);
 }
 } // namespace
 
@@ -215,7 +242,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             return;
         }
 
-        const char* name = find_node_name(pProps);
+        std::string name = find_node_name(id, pProps);
 
         m_objects.insert_or_assign(id, Object{Node{}});
         auto pDevice = QSharedPointer<SoundDevicePipewire>::create(
@@ -225,9 +252,11 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         // any previous element is either invalid or already removed
         m_soundDevices.insert_or_assign(id, std::move(pDevice));
 
-        // this can be fooled if a different application names its node "Mixxx"
-        if (strcmp(name, "Mixxx") == 0) {
-            m_filterId = id;
+        if (name.find("Mixxx") != std::string::npos) {
+            uint32_t filterId = pw_filter_get_node_id(m_pPwFilter);
+            if (filterId == id) {
+                m_filterId = filterId;
+            }
         }
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Port) == 0) {
         const uint32_t node_id = pw_properties_parse_int(spa_dict_lookup(pProps, PW_KEY_NODE_ID));
@@ -702,7 +731,11 @@ std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createPorts(
             // see pipewire/keys.h header
             PW_KEY_FORMAT_DSP,
             "32 bit float mono audio",
+            PW_KEY_AUDIO_CHANNEL,
+            "FL",
             nullptr);
+    // any changes to port name needs to update port name parsing logic in
+    // PipewireEnumerator::registryEventGlobal
     pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FL", name.data());
 
     void* leftPort = pw_filter_add_port(m_pPwFilter,
@@ -717,7 +750,11 @@ std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createPorts(
             // see pipewire/keys.h header
             PW_KEY_FORMAT_DSP,
             "32 bit float mono audio",
+            PW_KEY_AUDIO_CHANNEL,
+            "FR",
             nullptr);
+    // any changes to port name needs to update port name parsing logic in
+    // PipewireEnumerator::registryEventGlobal
     pw_properties_setf(props, PW_KEY_PORT_NAME, "%s:FR", name.data());
 
     void* rightPort = pw_filter_add_port(m_pPwFilter,
