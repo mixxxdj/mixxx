@@ -51,7 +51,7 @@ repos:
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
+    rev: v2.4.3
     hooks:
       - id: codespell
         args:
