@@ -7,9 +7,19 @@
     <wiki/>
     <forums/>
   </info>
+  <settings>
+    <group label="Pad Modes">
+      <option variable="samplerPadMode" type="enum" label="What should the sampler pads do?">
+        <description>
+            Sampler pads or stem mutes.
+        </description>
+        <value label="Sampler" default="true">sampler</value>
+        <value label="Stem mutes">stems</value>
+      </option>
+    </group>
+  </settings>
   <controller id="Numark DJ2GO2 Touch">
     <scriptfiles>
-      <file filename="lodash.mixxx.js"/>
       <file filename="midi-components-0.0.js"/>
       <file functionprefix="DJ2GO2Touch" filename="Numark_DJ2GO2_Touch_scripts.js"/>
     </scriptfiles>
@@ -295,7 +305,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[1].input</key>
         <status>0x84</status>
         <midino>0x21</midino>
         <options>
@@ -304,7 +314,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[1].input</key>
         <status>0x94</status>
         <midino>0x21</midino>
         <options>
@@ -313,7 +323,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[2].input</key>
         <status>0x84</status>
         <midino>0x22</midino>
         <options>
@@ -322,7 +332,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[2].input</key>
         <status>0x94</status>
         <midino>0x22</midino>
         <options>
@@ -331,7 +341,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[4].input</key>
         <status>0x84</status>
         <midino>0x24</midino>
         <options>
@@ -340,7 +350,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[4].input</key>
         <status>0x94</status>
         <midino>0x24</midino>
         <options>
@@ -394,7 +404,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[3].input</key>
         <status>0x84</status>
         <midino>0x23</midino>
         <options>
@@ -403,7 +413,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.leftDeck.manualLoopButtons[3].input</key>
         <status>0x94</status>
         <midino>0x23</midino>
         <options>
@@ -718,7 +728,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[1].input</key>
         <status>0x85</status>
         <midino>0x21</midino>
         <options>
@@ -727,7 +737,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[1].input</key>
         <status>0x95</status>
         <midino>0x21</midino>
         <options>
@@ -736,7 +746,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[2].input</key>
         <status>0x85</status>
         <midino>0x22</midino>
         <options>
@@ -745,7 +755,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[2].input</key>
         <status>0x95</status>
         <midino>0x22</midino>
         <options>
@@ -754,8 +764,8 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.reLoopStop.input</key>
-        <status>0x95</status>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[4].input</key>
+        <status>0x85</status>
         <midino>0x24</midino>
         <options>
           <script-binding/>
@@ -763,7 +773,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.reLoopStop.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[4].input</key>
         <status>0x95</status>
         <midino>0x24</midino>
         <options>
@@ -817,7 +827,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[3].input</key>
         <status>0x85</status>
         <midino>0x23</midino>
         <options>
@@ -826,7 +836,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.rightDeck.manualLoopButtons[3].input</key>
         <status>0x95</status>
         <midino>0x23</midino>
         <options>
@@ -918,7 +928,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[1].input</key>
         <status>0x84</status>
         <midino>0x31</midino>
@@ -927,7 +937,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[1].input</key>
         <status>0x94</status>
         <midino>0x31</midino>
@@ -936,7 +946,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[2].input</key>
         <status>0x84</status>
         <midino>0x32</midino>
@@ -945,7 +955,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[2].input</key>
         <status>0x94</status>
         <midino>0x32</midino>
@@ -954,7 +964,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[3].input</key>
         <status>0x84</status>
         <midino>0x33</midino>
@@ -963,7 +973,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[3].input</key>
         <status>0x94</status>
         <midino>0x33</midino>
@@ -972,7 +982,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[4].input</key>
         <status>0x84</status>
         <midino>0x34</midino>
@@ -981,7 +991,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group/>
         <key>DJ2GO2Touch.leftDeck.samplerButtons[4].input</key>
         <status>0x94</status>
         <midino>0x34</midino>
@@ -990,7 +1000,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler5]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[1].input</key>
         <status>0x85</status>
         <midino>0x31</midino>
@@ -999,7 +1009,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler5]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[1].input</key>
         <status>0x95</status>
         <midino>0x31</midino>
@@ -1008,7 +1018,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler6]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[2].input</key>
         <status>0x85</status>
         <midino>0x32</midino>
@@ -1017,7 +1027,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler6]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[2].input</key>
         <status>0x95</status>
         <midino>0x32</midino>
@@ -1026,7 +1036,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler7]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[3].input</key>
         <status>0x85</status>
         <midino>0x33</midino>
@@ -1035,7 +1045,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler7]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[3].input</key>
         <status>0x95</status>
         <midino>0x33</midino>
@@ -1044,7 +1054,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler8]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[4].input</key>
         <status>0x85</status>
         <midino>0x34</midino>
@@ -1053,7 +1063,7 @@
         </options>
       </control>
       <control>
-        <group>[Sampler8]</group>
+        <group/>
         <key>DJ2GO2Touch.rightDeck.samplerButtons[4].input</key>
         <status>0x95</status>
         <midino>0x34</midino>

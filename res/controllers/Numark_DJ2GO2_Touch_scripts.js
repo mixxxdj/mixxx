@@ -3,6 +3,8 @@ DJ2GO2Touch.ControllerStatusSysex = [0xF0, 0x00, 0x01, 0x3F, 0x3C, 0x48, 0xF7];
 DJ2GO2Touch.padsPerDeck = 4;
 DJ2GO2Touch.samplerCount = 2 * DJ2GO2Touch.padsPerDeck;
 
+const samplerIsStems = engine.getSetting("samplerPadMode") === "stems";
+
 DJ2GO2Touch.init = function() {
     if (engine.getValue("[App]", "num_samplers") < DJ2GO2Touch.samplerCount) {
         engine.setValue("[App]", "num_samplers", DJ2GO2Touch.samplerCount);
@@ -90,6 +92,7 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
     this.hotcueButtons = [];
     this.samplerButtons = [];
     this.beatloopButtons = [];
+    this.manualLoopButtons = [];
     for (var i = 1; i <= 4; i++) {
         this.hotcueButtons[i] = new components.HotcueButton({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
@@ -109,36 +112,43 @@ DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {
                 }
             },
         });
-        var sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
-        this.samplerButtons[i] = new components.SamplerButton({
-            group: "[Sampler" + sampler + "]",
-            midi: [0x94 + midiChannel, 0x30 + i],
-            number: sampler
-        });
+        if (samplerIsStems) {
+            this.samplerButtons[i] = new components.Button({
+                group: `[Channel${  script.deckFromGroup(this.currentDeck)  }_Stem${  i  }]`,
+                type: components.Button.prototype.types.powerWindow,
+                midi: [0x94 + midiChannel, 0x30 + i],
+                key: "mute",
+                on: 0,
+                off: 127,
+            });
+        } else {
+            const sampler = i + (midiChannel * DJ2GO2Touch.padsPerDeck);
+            this.samplerButtons[i] = new components.SamplerButton({
+                group: `[Sampler${  sampler  }]`,
+                midi: [0x94 + midiChannel, 0x30 + i],
+                number: sampler
+            });
+        }
         this.beatloopButtons[i] = new components.Button({
             group: "[Channel" + script.deckFromGroup(this.currentDeck) + "]",
             midi: [0x94 + midiChannel, 0x10 + i],
             number: i,
             key: "beatloop_" + Math.pow(2, i-1) + "_toggle"
         });
+        this.manualLoopButtons[1] = new components.Button({
+            midi: [0x94 + midiChannel, 0x21],
+            key: "loop_in",
+        });
+        this.manualLoopButtons[2] = new components.Button({
+            midi: [0x94 + midiChannel, 0x22],
+            key: "loop_out",
+        });
+        this.manualLoopButtons[3] = new components.LoopToggleButton([0x94 + midiChannel, 0x23]);
+        this.manualLoopButtons[4] = new components.Button({
+            midi: [0x94 + midiChannel, 0x24],
+            key: "reloop_andstop",
+        });
     }
-
-    this.loopIn = new components.Button({
-        midi: [0x94 + midiChannel, 0x21],
-        key: "loop_in",
-    });
-
-    this.loopOut = new components.Button({
-        midi: [0x94 + midiChannel, 0x22],
-        key: "loop_out",
-    });
-
-    this.LoopToggleButton = new components.LoopToggleButton([0x94 + midiChannel, 0x23]);
-
-    this.reLoopStop = new components.Button({
-        midi: [0x94 + midiChannel, 0x24],
-        key: "reloop_andstop",
-    });
 
     this.wheelTouch = function(channel, control, value, status, _group) {
         if ((status & 0xF0) === 0x90) {
