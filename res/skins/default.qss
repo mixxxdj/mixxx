@@ -168,6 +168,10 @@ WLibrarySidebar QMenu::item {
 WLibrarySidebar QMenu::indicator {
   margin: 0em -0.1em 0em 0.3em;
 }
+WTrackTableViewHeader QMenu::item {
+  /* Indicator width is 0.7 + 0.3 margin-left + 0.25 text pad-left */
+  padding: 0.17em 0 0.17em 1.25em;
+}
 
 WLibrarySidebar QMenu::indicator,
 WTrackTableViewHeader QMenu QCheckBox::indicator,
