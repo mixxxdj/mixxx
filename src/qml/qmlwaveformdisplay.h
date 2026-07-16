@@ -46,7 +46,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged)
     Q_PROPERTY(QmlTrackProxy* track READ getTrack WRITE setStaticTrack NOTIFY trackChanged)
     Q_PROPERTY(double position READ getPosition WRITE setPosition NOTIFY positionChanged)
-    Q_PROPERTY(QQmlListProperty<QmlWaveformRendererFactory> renderers READ renderers)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers READ renderers)
     Q_PROPERTY(double zoom READ getZoom WRITE setZoom NOTIFY zoomChanged)
     Q_PROPERTY(QColor backgroundColor READ getBackgroundColor WRITE
                     setBackgroundColor NOTIFY backgroundColorChanged)
@@ -109,7 +109,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     void componentComplete() override;
 
-    QQmlListProperty<QmlWaveformRendererFactory> renderers();
+    QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers();
     static void renderers_append(
             QQmlListProperty<QmlWaveformRendererFactory>* property,
             QmlWaveformRendererFactory* value);
