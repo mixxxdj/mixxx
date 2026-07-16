@@ -7,7 +7,7 @@ jobs:
   softfix:
     name: Softfix action
     if: github.event.issue.pull_request != '' && startsWith(github.event.comment.body, '/softfix')
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - name: Check if commenter is maintainer
         id: check-maintainer
