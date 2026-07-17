@@ -11,13 +11,13 @@ const Logger kLogger("DbConnectionPool");
 
 } // anonymous namespace
 
-bool DbConnectionPool::createThreadLocalConnection() {
+QString DbConnectionPool::createThreadLocalConnection() {
     VERIFY_OR_DEBUG_ASSERT(!m_threadLocalConnections.hasLocalData()) {
         DEBUG_ASSERT(m_threadLocalConnections.localData());
         kLogger.critical()
                 << "Thread-local database connection already exists"
                 << *m_threadLocalConnections.localData();
-        return false; // abort
+        return ""; // abort
     }
     const int connectionIndex =
             m_connectionCounter.fetchAndAddAcquire(1) + 1;
@@ -30,7 +30,7 @@ bool DbConnectionPool::createThreadLocalConnection() {
         kLogger.critical()
                 << "Failed to open thread-local database connection"
                 << *pConnection;
-        return false; // abort
+        return ""; // abort
     }
 
     // m_threadLocalConnections takes the ownership of pConnection
@@ -41,7 +41,7 @@ bool DbConnectionPool::createThreadLocalConnection() {
     kLogger.info()
             << "Cloned thread-local database connection"
             << *m_threadLocalConnections.localData();
-    return true;
+    return indexedConnectionName;
 }
 
 void DbConnectionPool::destroyThreadLocalConnection() {

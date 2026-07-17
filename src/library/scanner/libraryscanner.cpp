@@ -16,6 +16,7 @@
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
 #include "util/performancetimer.h"
+#include "util/qthread_name.h"
 #include "util/timer.h"
 #include "util/trace.h"
 
@@ -26,7 +27,6 @@ constexpr int kScannerThreadPoolSize = 1;
 
 mixxx::Logger kLogger("LibraryScanner");
 
-QAtomicInt s_instanceCounter(0);
 
 // Returns the number of affected rows or -1 on error
 int execRowCountQuery(FwdSqlQuery& query) {
@@ -112,10 +112,6 @@ LibraryScanner::LibraryScanner(
     // queue to our event loop.
     moveToThread(this);
     m_pool.moveToThread(this);
-
-    const int instanceId = s_instanceCounter.fetchAndAddAcquire(1) + 1;
-    setObjectName(QString("LibraryScanner %1").arg(instanceId));
-
     m_pool.setMaxThreadCount(kScannerThreadPoolSize);
 
     // Listen to signals from our public methods (invoked by other threads) and
@@ -158,6 +154,7 @@ LibraryScanner::~LibraryScanner() {
 }
 
 void LibraryScanner::run() {
+    SET_THREAD_NAME("LibraryScanner");
     kLogger.debug() << "Entering thread";
     {
         Trace trace("LibraryScanner");
@@ -170,6 +167,7 @@ void LibraryScanner::run() {
             kLogger.debug() << "Exiting thread";
             return;
         }
+        SET_THREAD_NAME_FMT("LibraryScanner", dbConnection.connectionName());
 
         m_libraryHashDao.initialize(dbConnection);
         m_cueDao.initialize(dbConnection);

@@ -13,6 +13,7 @@
 #include "library/trackset/crate/crate.h"
 #include "moc_engineprimeexportjob.cpp"
 #include "track/track.h"
+#include "util/qthread_name.h"
 #include "util/thread_affinity.h"
 #include "waveform/waveformfactory.h"
 
@@ -601,6 +602,7 @@ void EnginePrimeExportJob::loadPlaylist(int playlistId, const QString& playlistN
 }
 
 void EnginePrimeExportJob::run() {
+    SET_THREAD_NAME_P("EnginePrimeExportJob", this);
     // Crate music directory if it doesn't already exist.
     QDir().mkpath(m_pRequest->musicFilesDir.path());
 

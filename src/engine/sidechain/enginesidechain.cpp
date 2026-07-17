@@ -15,6 +15,7 @@
 #include "moc_enginesidechain.cpp"
 #include "util/counter.h"
 #include "util/event.h"
+#include "util/qthread_name.h"
 #include "util/sample.h"
 #include "util/trace.h"
 
@@ -92,11 +93,8 @@ void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
 }
 
 void EngineSideChain::run() {
-    // the id of this thread, for debugging purposes //XXX copypasta (should
-    // factor this out somehow), -kousu 2/2009
-    unsigned static id = 0;
-    QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
     static const QString tag("EngineSideChain");
+    SET_THREAD_NAME_P(tag.toStdString().c_str(), this);
     Event::start(tag);
     while (!m_bStopThread) {
         // Sleep until samples are available.

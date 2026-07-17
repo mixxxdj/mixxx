@@ -12,6 +12,7 @@
 
 #include "controllers/defs_controllers.h"
 #include "moc_hidcontroller.cpp"
+#include "util/qthread_name.h"
 #include "util/string.h"
 
 class LegacyControllerMapping;
@@ -398,6 +399,7 @@ void HidController::fetchReportDescriptorInBackground() {
 #ifndef Q_OS_ANDROID
     // Launch a concurrent task to open the device and fetch the report descriptor
     m_reportDescriptorFuture = QtConcurrent::run([this]() {
+        SET_THREAD_NAME("HidController");
         // Try to acquire the mutex. If another thread already
         // locked the report descriptor mutex, skip the background fetch.
         std::unique_lock<std::mutex> lock(this->m_reportDescriptorMutex, std::try_to_lock);

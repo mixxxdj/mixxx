@@ -10,6 +10,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
+#include "util/qthread_name.h"
 #include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformfactory.h"
@@ -161,6 +162,7 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
     }
 
     mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
+    SET_THREAD_NAME_FMT("OverviewCache", dbConnectionPooler.connectionName());
 
     AnalysisDao analysisDao(pConfig);
     analysisDao.initialize(mixxx::DbConnectionPooled(pDbConnectionPool));

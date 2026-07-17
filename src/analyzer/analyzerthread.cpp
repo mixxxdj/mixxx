@@ -17,6 +17,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
+#include "util/qthread_name.h"
 
 namespace {
 
@@ -100,8 +101,11 @@ void AnalyzerThread::doRun() {
                     << "Failed to obtain database connection for analyzer thread";
             return;
         }
+        SET_THREAD_NAME_FMT("AnalyzerThread", dbConnectionPooler.connectionName());
         QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
         m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerWaveform>(m_pConfig, dbConnection)));
+    } else {
+        SET_THREAD_NAME_P("AnalyzerThread", this);
     }
     if (AnalyzerGain::isEnabled(ReplayGainSettings(m_pConfig))) {
         m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerGain>(m_pConfig)));

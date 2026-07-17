@@ -8,6 +8,7 @@
 #include "moc_coverartcache.cpp"
 #include "track/track.h"
 #include "util/logger.h"
+#include "util/qthread_name.h"
 #include "util/thread_affinity.h"
 
 namespace {
@@ -188,6 +189,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
         TrackPointer pTrack,
         CoverInfo coverInfo,
         int desiredWidth) {
+    SET_THREAD_NAME_P("CoverArtCache", &coverInfo);
     if (kLogger.traceEnabled()) {
         kLogger.trace()
                 << "loadCover"

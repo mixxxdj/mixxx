@@ -8,6 +8,7 @@
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
 #include "util/cmdlineargs.h"
+#include "util/qthread_name.h"
 #include "util/time.h"
 
 #if defined(Q_OS_ANDROID)
@@ -135,6 +136,7 @@ void BulkReader::stop() {
 }
 
 void BulkReader::run() {
+    SET_THREAD_NAME("BulkReader");
     m_stop.storeRelease(0);
 
     m_pInTransfer = transfer_create(m_pHandle, m_in_epaddr, m_in_length, 500);

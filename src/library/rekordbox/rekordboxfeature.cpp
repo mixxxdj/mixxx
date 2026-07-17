@@ -27,6 +27,7 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
+#include "util/qthread_name.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 #include "widget/wlibrary.h"
@@ -168,6 +169,7 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
 QList<TreeItem*> findRekordboxDevices() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
+    SET_THREAD_NAME("RekordboxFeature");
 
     QList<TreeItem*> foundDevices;
 

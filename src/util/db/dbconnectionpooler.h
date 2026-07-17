@@ -32,6 +32,10 @@ class DbConnectionPooler final {
         return m_pDbConnectionPool;
     }
 
+    const QString& connectionName() const {
+        return m_name;
+    }
+
     DbConnectionPooler& operator=(const DbConnectionPooler&) = delete;
     DbConnectionPooler& operator=(DbConnectionPooler&&) = default;
 
@@ -41,6 +45,7 @@ class DbConnectionPooler final {
     static void * operator new[](std::size_t);
 
     DbConnectionPoolPtr m_pDbConnectionPool;
+    QString m_name;
 };
 
 } // namespace mixxx

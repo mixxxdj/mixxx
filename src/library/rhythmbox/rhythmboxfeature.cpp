@@ -15,6 +15,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_rhythmboxfeature.cpp"
+#include "util/qthread_name.h"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("rhythmbox")),
@@ -155,7 +156,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
 }
 
 TreeItem* RhythmboxFeature::importMusicCollection() {
-    qDebug() << "importMusicCollection Thread Id: " << QThread::currentThread();
+    SET_THREAD_NAME("RhythmboxFeature");
      // Try and open the Rhythmbox DB. An API call which tells us where
      // the file is would be nice.
     QFile db(QDir::homePath() + "/.gnome2/rhythmbox/rhythmdb.xml");
