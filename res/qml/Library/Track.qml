@@ -1,37 +1,46 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls 2.15
 import "../Theme"
 
 Item {
     id: root
 
-    required property var capabilities
-    property alias drag: dragHandler
     readonly property var library: Mixxx.Library
+
+    required property var capabilities
+    required property var view
+
     property alias tap: tapHandler
+
+    property var _lazyTrack: null
 
     function hasCapabilities(caps) {
         return (root.capabilities & caps) == caps;
     }
 
-    DragHandler {
-        id: dragHandler
 
-        target: value
-    }
     TapHandler {
         id: tapHandler
 
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        onLongPressed: mouse => {
-            contextMenu.popup();
-        }
         onTapped: (eventPoint, button) => {
+            view.selectionModel.selectRow(row);
             if (button === Qt.RightButton) {
+                _lazyTrack = view.model?.getTrackByRow(row) ?? null;
                 contextMenu.popup();
             }
+        }
+        onDoubleTapped: (eventPoint, button) => {
+            view.selectionModel.selectRow(row);
+            view.loadSelectedTrackIntoNextAvailableDeck(false);
+        }
+        onLongPressed: (eventPoint, button) => {
+            view.selectionModel.selectRow(row);
+            _lazyTrack = view.model?.getTrackByRow(row) ?? null;
+            contextMenu.popup();
         }
     }
     Menu {
@@ -57,7 +66,9 @@ Item {
                     delegate: MenuItem {
                         text: qsTr("Deck %1").arg(modelData + 1)
 
-                        onTriggered: Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`).loadTrack(track)
+                        onTriggered: {
+                            if (_lazyTrack) Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`).loadTrack(_lazyTrack);
+                        }
                     }
 
                     onObjectAdded: (index, object) => loadToDeckMenu.insertItem(index, object)
@@ -68,18 +79,6 @@ Item {
                 enabled: hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToSampler)
                 title: qsTr("Sampler")
             }
-
-            // Instantiator {
-            //     id: recentFilesInstantiator
-            //     model: settings.recentFiles
-            //     delegate: MenuItem {
-            //         text: settings.displayableFilePath(modelData)
-            //         onTriggered: loadFile(modelData)
-            //     }
-
-            //     onObjectAdded: (index, object) => recentFilesMenu.insertItem(index, object)
-            //     onObjectRemoved: (index, object) => recentFilesMenu.removeItem(object)
-            // }
         }
         Menu {
             id: addToPlaylistMenu
@@ -123,7 +122,7 @@ Item {
                 text: qsTr("Analyze")
 
                 onTriggered: {
-                    library.analyze(track);
+                    if (_lazyTrack) library.analyze(_lazyTrack);
                 }
             }
             MenuItem {

@@ -12,7 +12,7 @@ import "Theme"
 
 import "Deck" as DeckComponent
 
-Item {
+Rectangle {
     id: root
 
     enum Cardinality {
@@ -27,6 +27,8 @@ Item {
     property bool editMode: false
     required property string group
     property bool minimized: false
+
+    color: Theme.backgroundColor
 
     signal toggleFocus
 

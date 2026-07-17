@@ -593,6 +593,12 @@ TrackPointer TrackCollectionManager::getTrackByRef(
             trackRef);
 }
 
+CoverInfo TrackCollectionManager::getCoverInfoForTrackLocation(
+        const QString& trackLocation) const {
+    return internalCollection()->getTrackDAO().getCoverInfoByTrackLocation(
+            trackLocation);
+}
+
 QList<TrackId> TrackCollectionManager::resolveTrackIds(
         const QList<mixxx::FileInfo>& fileInfos,
         QObject* pSource) const {

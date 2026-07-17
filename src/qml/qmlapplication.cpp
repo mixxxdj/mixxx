@@ -21,6 +21,7 @@
 #include "qml/asyncimageprovider.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
+#include "qmlcoreservices.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -30,6 +31,10 @@
 #include <android/api-level.h>
 #include <android/log.h>
 #include <android/performance_hint.h>
+
+#include <QDir>
+#include <QFile>
+#include <QJniObject>
 #endif
 
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
@@ -47,6 +52,46 @@ auto lambda_to_singleton_type_factory_ptr(F&& f) {
         return fn(pEngine, pScriptEngine);
     };
 }
+#if defined(Q_OS_ANDROID)
+// Directories under res/qml/ that are compiled into the binary as QML modules
+// and should not be copied to external storage.
+const QStringList kSkipQmlDirs = {
+        QStringLiteral("Mixxx"),
+};
+
+bool canWriteToExternalStorage() {
+    // API 30+ (Android 11+) requires MANAGE_EXTERNAL_STORAGE.
+    // Older: WRITE_EXTERNAL_STORAGE is granted at install time.
+    if (android_get_device_api_level() >= 30) {
+        return QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+    }
+    return true;
+}
+
+void copyAssetDir(const QString& src, const QString& dst) {
+    QDir().mkpath(dst);
+
+    QDir srcDir(src);
+    const QStringList files = srcDir.entryList(QDir::Files);
+    for (const QString& file : files) {
+        QFile srcFile(srcDir.absoluteFilePath(file));
+        QFile dstFile(dst + '/' + file);
+        if (srcFile.open(QIODevice::ReadOnly) && dstFile.open(QIODevice::WriteOnly)) {
+            dstFile.write(srcFile.readAll());
+        }
+    }
+
+    const QStringList dirs = srcDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString& dir : dirs) {
+        if (kSkipQmlDirs.contains(dir)) {
+            continue;
+        }
+        copyAssetDir(src + '/' + dir, dst + '/' + dir);
+    }
+}
+#endif
+
 } // namespace
 
 namespace mixxx {
@@ -63,12 +108,22 @@ QmlApplication::QmlApplication(
                           ? m_pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName
                           : mainQmlFilePath),
           m_pAppEngine(nullptr),
-          m_loadSucceeded(false),
 #if defined(Q_OS_ANDROID)
           m_perfSession(nullptr),
 #endif
           m_autoReload() {
     QQuickStyle::setStyle("Basic");
+
+#if defined(Q_OS_ANDROID)
+    if (canWriteToExternalStorage()) {
+        const QString externalQmlDir = QStringLiteral("/storage/emulated/0/Mixxx/qml");
+        copyAssetDir(QStringLiteral("assets:/qml"), externalQmlDir);
+        m_mainFilePath = externalQmlDir + QStringLiteral("/main.qml");
+    }
+#endif
+
+    QJSEngine::setObjectOwnership(QmlCoreServices::createInstance(this), QJSEngine::CppOwnership);
+    loadQml(m_mainFilePath);
 
     m_pCoreServices->initialize(app);
 
@@ -86,7 +141,7 @@ QmlApplication::QmlApplication(
     // is taken and the gate remains in effect as designed.
     const bool viaNewUiFlag = CmdlineArgs::Instance().isQml();
 
-    if (configVersion == VersionStore::FUTURE_UNSTABLE) {
+    if (configVersion == VersionStore::FUTURE_UNSTABLE || configVersion.isEmpty()) {
         qDebug() << "Generating a new user profile for safe testing with unstable code";
     } else if (!viaNewUiFlag) {
         qDebug() << "QmlApplication: QML skin loaded via preferences, "
@@ -214,10 +269,11 @@ QmlApplication::QmlApplication(
     });
     m_guiTickTimer.start(std::chrono::milliseconds(16));
 
-    m_loadSucceeded = loadQml(m_mainFilePath);
-    if (!m_loadSucceeded) {
-        return;
-    }
+    // No memory leak here, the QQmlEngine takes ownership of the provider
+    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+            m_pCoreServices->getTrackCollectionManager());
+    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+    QmlCoreServices::instance()->setReady();
 
     m_pCoreServices->getControllerManager()->setUpDevices();
 
@@ -225,10 +281,11 @@ QmlApplication::QmlApplication(
             &QmlAutoReload::triggered,
             this,
             [this]() {
-                if (!loadQml(m_mainFilePath)) {
-                    qWarning() << "Auto-reload failed to load QML. Exiting.";
-                    QCoreApplication::exit(-1);
-                }
+                loadQml(m_mainFilePath);
+                // No memory leak here, the QQmlEngine takes ownership of the provider
+                QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
+                        m_pCoreServices->getTrackCollectionManager());
+                m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
             });
 
 #if defined(Q_OS_ANDROID)
@@ -320,7 +377,7 @@ void QmlApplication::updateSpinnyCoverControls() {
                     : 0.0);
 }
 
-bool QmlApplication::loadQml(const QString& path) {
+void QmlApplication::loadQml(const QString& path) {
     // QQmlApplicationEngine::load creates a new window but also leaves the old one,
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
@@ -329,16 +386,9 @@ bool QmlApplication::loadQml(const QString& path) {
     m_pAppEngine->addUrlInterceptor(&m_autoReload);
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
 
-    // No memory leak here, the QQmlEngine takes ownership of the provider
-    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
-            m_pCoreServices->getTrackCollectionManager());
-    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
-
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
-        qWarning() << "Failed to load QML file" << path;
-        m_pAppEngine.reset();
-        return false;
+        qCritical() << "Failed to load QML file" << path;
     }
 
 #if defined(Q_OS_ANDROID)
@@ -351,7 +401,6 @@ bool QmlApplication::loadQml(const QString& path) {
         break;
     }
 #endif
-    return true;
 }
 
 } // namespace qml

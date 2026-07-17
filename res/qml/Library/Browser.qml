@@ -7,7 +7,6 @@ import QtQml.Models
 import QtQuick.Layouts
 import QtQuick.Controls 2.15
 import QtQuick.Shapes 1.12
-import Qt5Compat.GraphicalEffects
 import "../Theme"
 
 Rectangle {
@@ -17,6 +16,7 @@ Rectangle {
     }
     required property var model
 
+    property var currentSelectedIndex: null
     color: Theme.backgroundColor
 
     Component.onCompleted: {
@@ -24,10 +24,10 @@ Rectangle {
     }
 
     Rectangle {
-        anchors.bottomMargin: 40
+        anchors.bottomMargin: 1
         anchors.fill: parent
         anchors.leftMargin: 7
-        anchors.rightMargin: 15
+        anchors.rightMargin: 1
         anchors.topMargin: 7
         color: Theme.sunkenBackgroundColor
 
@@ -46,6 +46,14 @@ Rectangle {
                     clip: true
                     model: root.model
                     selectionModel: featureSelection
+
+                    Connections {
+                        target: featureSelection
+                        function onSelectionChanged(selected, deselected) {
+                            if (!selected.length) return;
+                            root.currentSelectedIndex = selected[0]
+                        }
+                    }
 
                     delegate: FocusScope {
                         required property int column
@@ -91,21 +99,21 @@ Rectangle {
                             anchors.fill: parent
                             color: depth == 0 ? Theme.midGray2 : 'transparent'
 
-                            MouseArea {
-                                id: rowMouseArea
+                            TapHandler {
+                                id: rowTapHandler
 
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                anchors.fill: parent
-                                hoverEnabled: true
 
-                                onClicked: event => {
+                                onTapped: (eventPoint, button) => {
                                     treeView.selectionModel.select(treeView.selectionModel.model.index(row, 0), ItemSelectionModel.Rows | ItemSelectionModel.Select | ItemSelectionModel.Clear | ItemSelectionModel.Current);
                                     treeView.model.activate(index);
                                     if (isTreeNode && hasChildren) {
                                         treeView.toggleExpanded(row);
                                     }
-                                    event.accepted = true;
                                 }
+                            }
+                            HoverHandler {
+                                id: rowHoverHandler
                             }
                             Rectangle {
                                 anchors.bottom: parent.bottom
@@ -159,7 +167,7 @@ Rectangle {
                                     id: newItem
 
                                     height: parent.height
-                                    visible: rowMouseArea.containsMouse && isTreeNode && hasChildren
+                                    visible: rowHoverHandler.hovered && isTreeNode && hasChildren
 
                                     anchors {
                                         right: parent.right

@@ -1,3 +1,4 @@
+import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Shapes
 import "../Theme"
@@ -142,14 +143,13 @@ Item {
     }
 
     Shape {
+        property int multiSamplingLevel: Mixxx.Config.multiSamplingLevel
+
         anchors.fill: parent
         // anchors.centerIn: parent
         antialiasing: true
-        layer.enabled: true
-
-        // FIXME: This is causing GL glitched in Android
-        // layer.samples: 16
-        // layer.textureMirroring: ShaderEffectSource.MirrorHorizontally
+        layer.enabled: multiSamplingLevel > 1
+        layer.samples: multiSamplingLevel
         ShapePath {
             id: line
 
