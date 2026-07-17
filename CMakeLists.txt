@@ -2367,7 +2367,7 @@ if(QT6)
   if(HTTP_REMOTE)
     find_package(Qt6 COMPONENTS HttpServer REQUIRED)
 
-    add_compile_definitions(-DHTTP_REMOTE=true)
+    add_compile_definitions(HTTP_REMOTE=true)
 
     target_sources(mixxx-lib PRIVATE
       src/preferences/dialog/dlgprefremotecontrol.cpp

@@ -54,9 +54,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
-            std::shared_ptr<Library> pLibrary,
+            std::shared_ptr<Library> pLibrary
 #ifdef HTTP_REMOTE
-            std::shared_ptr<mixxx::RemoteControl> pRemoteControl = nullptr
+            ,std::shared_ptr<mixxx::RemoteControl> pRemoteControl = nullptr
 #endif
     );
     virtual ~DlgPreferences();
