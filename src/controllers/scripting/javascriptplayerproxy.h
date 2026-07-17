@@ -47,17 +47,17 @@ class JavascriptPlayerProxy : public QObject {
 
   signals:
     void trackUnloaded();
-    void albumChanged(QString newAlbum);
-    void titleChanged(QString newTitle);
-    void artistChanged(QString newArtist);
-    void albumArtistChanged(QString newAlbumArtist);
-    void genreChanged(QString newGenre);
-    void composerChanged(QString newComposer);
-    void groupingChanged(QString grouping);
-    void yearChanged(QString newYear);
-    void trackNumberChanged(QString newTrackNumber);
-    void trackTotalChanged(QString newTrackTotal);
-    void keyChanged(QString newKey);
+    void albumChanged(const QString& newAlbum);
+    void titleChanged(const QString& newTitle);
+    void artistChanged(const QString& newArtist);
+    void albumArtistChanged(const QString& newAlbumArtist);
+    void genreChanged(const QString& newGenre);
+    void composerChanged(const QString& newComposer);
+    void groupingChanged(const QString& grouping);
+    void yearChanged(const QString& newYear);
+    void trackNumberChanged(const QString& newTrackNumber);
+    void trackTotalChanged(const QString& newTrackTotal);
+    void keyChanged(const QString& newKey);
 
   private slots:
     // Track::keyChanged has no arguments,

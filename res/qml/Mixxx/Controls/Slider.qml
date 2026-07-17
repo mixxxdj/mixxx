@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+import Mixxx 1.0 as Mixxx
 
 Item {
     id: root
@@ -137,8 +138,11 @@ Item {
         property real value: root.value
 
         acceptedButtons: Qt.LeftButton
-        enabled: root.enabled
+        enabled: root.enabled && !Mixxx.Core.hasPopup
         target: null
+        dragThreshold: 0
+        maximumPointCount: 1
+        minimumPointCount: 1
 
         onActiveChanged: {
             if (active) {
@@ -161,9 +165,7 @@ Item {
             root.applyInteractiveValue(value + (diff / length) * (root.to - root.from), false);
         }
     }
-    Binding {
-        property: "value"
-        target: root
+    Binding on value {
         value: dragHandler.value
         when: dragHandler.active && root.live
     }

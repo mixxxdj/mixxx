@@ -2,19 +2,18 @@
 
 #include <QImage>
 #include <QQuickAsyncImageProvider>
-#include <QRunnable>
 #include <QSize>
 #include <QString>
-#include <QThreadPool>
 #include <memory>
 
 #include "library/coverart.h"
+#include "library/coverartcache.h"
 #include "library/trackcollectionmanager.h"
 
 namespace mixxx {
 namespace qml {
 
-class AsyncImageResponse : public QQuickImageResponse, public QRunnable {
+class AsyncImageResponse : public QQuickImageResponse {
     Q_OBJECT
   public:
     AsyncImageResponse(
@@ -24,13 +23,25 @@ class AsyncImageResponse : public QQuickImageResponse, public QRunnable {
 
     QQuickTextureFactory* textureFactory() const override;
 
-    void run() override;
+    /// Must be called on the main thread (the thread that the
+    /// TrackCollectionManager lives on) before the response is
+    /// returned to the QML engine. It performs the lightweight
+    /// CoverInfo lookup, checks the CoverArtCache for a synchronous
+    /// cache hit, and otherwise initiates an asynchronous load via
+    /// CoverArtCache and connects to its coverFound signal.
+    void initialize();
+
+  private slots:
+    void slotCoverFound(
+            const QObject* pRequester,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap);
 
   private:
     QString m_id;
     QSize m_requestedSize;
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
-
+    CoverInfo m_coverInfo;
     QImage m_image;
 };
 
@@ -46,7 +57,6 @@ class AsyncImageProvider : public QQuickAsyncImageProvider {
     static QString coverArtUrlIdToTrackLocation(const QString& coverArtUrlId);
 
   private:
-    QThreadPool pool;
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
 };
 

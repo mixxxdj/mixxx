@@ -104,6 +104,10 @@ Item {
         property real value
 
         target: null
+        enabled: !Mixxx.Core.hasPopup
+        dragThreshold: 0
+        maximumPointCount: 1
+        minimumPointCount: 1
 
         onActiveChanged: {
             dragHandler.value = root.value;

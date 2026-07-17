@@ -623,7 +623,7 @@ Item {
             candidate = null;
         }
         onPositionChanged: drag => {
-            if (drag.formats.includes("mixxx/player")) {
+            if (drag.formats.includes("mixxx/player") || drag.formats.includes("text/uri-list")) {
                 return;
             }
 

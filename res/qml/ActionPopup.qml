@@ -4,11 +4,19 @@ import QtQml.Models
 import QtQuick.Layouts
 import QtQuick.Controls 2.15
 import QtQuick.Shapes 1.12
-import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
+import Mixxx 1.0 as Mixxx
 import "Theme"
 
 Popup {
     id: root
+
+    onOpened: {
+        Mixxx.Core.addOpenedPopup(this)
+    }
+    onClosed: {
+        Mixxx.Core.removeOpenedPopup(this)
+    }
 
     enum Facing {
         Left,
@@ -78,13 +86,12 @@ Popup {
                 radius: 8
             }
         }
-        DropShadow {
+        MultiEffect {
             anchors.fill: parent
-            color: "#80000000"
-            horizontalOffset: 0
-            radius: 8.0
             source: content3
-            verticalOffset: 0
+            shadowEnabled: true
+            shadowColor: "#80000000"
+            shadowBlur: 0.1
         }
     }
     contentItem: Item {

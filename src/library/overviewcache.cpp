@@ -2,11 +2,14 @@
 
 #include <QFutureWatcher>
 #include <QPixmapCache>
+#include <QPointer>
 #include <QSqlDatabase>
 #include <QtConcurrentRun>
 
 #include "library/dao/analysisdao.h"
+#include "library/dao/trackdao.h"
 #include "moc_overviewcache.cpp"
+#include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
@@ -37,11 +40,14 @@ inline QImage resizeImageSize(const QImage& image, QSize size) {
 OverviewCache::OverviewCache(UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool)
         : m_pConfig(pConfig),
-          m_pDbConnectionPool(std::move(pDbConnectionPool)) {
+          m_pDbConnectionPool(std::move(pDbConnectionPool)),
+          m_analysisDao(pConfig) {
+    m_analysisDao.initialize(mixxx::DbConnectionPooled(m_pDbConnectionPool));
 }
 
-void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {
-    if (analyzerProgress < 1.0) {
+void OverviewCache::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress progress) {
+    if (progress < 1.0) {
+        emit analyzerProgress(trackId, progress);
         return;
     }
     m_tracksWithoutOverview.remove(trackId);
@@ -222,4 +228,25 @@ void OverviewCache::overviewPrepared() {
     m_currentlyLoading.remove(res.trackId);
 
     emit overviewReady(res.requester, res.trackId, !pixmap.isNull());
+}
+
+ConstWaveformPointer OverviewCache::fetchWaveformSummary(TrackId trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return {};
+    }
+
+    QList<AnalysisDao::AnalysisInfo> analyses =
+            m_analysisDao.getAnalysesForTrackByType(
+                    trackId, AnalysisDao::AnalysisType::TYPE_WAVESUMMARY);
+
+    for (const AnalysisDao::AnalysisInfo& analysis : std::as_const(analyses)) {
+        const WaveformFactory::VersionClass vc =
+                WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
+        if (vc == WaveformFactory::VC_USE) {
+            return ConstWaveformPointer(
+                    WaveformFactory::loadWaveformFromAnalysis(analysis));
+        }
+    }
+
+    return {};
 }

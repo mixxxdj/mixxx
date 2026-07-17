@@ -631,6 +631,13 @@ void CoreServices::initialize(QApplication* pApp) {
             &TrackDAO::waveformSummaryUpdated,
             pOverviewCache,
             &OverviewCache::onTrackSummaryChanged);
+    // Forward per-track analyzer progress to OverviewCache so that
+    // OverviewCache clients (e.g. QmlWaveformOverview) can repaint
+    // the partial waveform during analysis.
+    connect(m_pPlayerManager.get(),
+            &PlayerManager::trackAnalyzerProgress,
+            pOverviewCache,
+            &OverviewCache::onTrackAnalysisProgress);
 
     // Binding the PlayManager to the Library may already trigger
     // loading of tracks which requires that the GlobalTrackCache has

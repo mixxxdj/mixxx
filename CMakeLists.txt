@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.22)
 # lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
@@ -3819,6 +3819,7 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
   list(APPEND QT_EXTRA_COMPONENTS "QuickDialogs2")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickEffects")
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
@@ -3987,6 +3988,7 @@ if(QML)
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
       src/qml/qmlrecordingproxy.cpp
+      src/qml/qmlcoreservices.cpp
       src/qml/qmlsidebarmodelproxy.cpp
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp
@@ -4031,6 +4033,10 @@ if(QML)
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
+  # Set QT_QML_MODULE_NO_IMPORT_SCAN to avoid warnings about missing QML plugin
+  # targets. The plugins are loaded dynamically at runtime from the system Qt
+  # installation on Linux.
+  set_target_properties(mixxx PROPERTIES QT_QML_MODULE_NO_IMPORT_SCAN ON)
   qt_finalize_target(mixxx)
 
   install(
@@ -4331,6 +4337,15 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickDialogs2Utils
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickEffects
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
