@@ -2364,6 +2364,12 @@ endif()
 
 # The mixxx executable
 if(QT6)
+  find_package(Qt6 COMPONENTS Core REQUIRED)
+  # This is the first package form the environment, if this fails give hints how to install the environment
+  if(NOT Qt6_FOUND)
+    fatal_error_missing_env()
+  endif()
+  
   if(HTTP_REMOTE)
     find_package(Qt6 COMPONENTS HttpServer REQUIRED)
 
@@ -2377,12 +2383,6 @@ if(QT6)
     target_link_libraries(mixxx-lib PRIVATE Qt6::HttpServer)
   endif()
 
-  find_package(Qt6 COMPONENTS Core REQUIRED)
-
-  # This is the first package form the environment, if this fails give hints how to install the environment
-  if(NOT Qt6_FOUND)
-    fatal_error_missing_env()
-  endif()
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
