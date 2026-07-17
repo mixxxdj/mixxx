@@ -1,7 +1,6 @@
 // created jan.koester
 #pragma once
 
-#include <QtCore>
 #include <preferences/usersettings.h>
 
 #include "library/trackcollectionmanager.h"
@@ -34,6 +33,5 @@ namespace mixxx {
         std::shared_ptr<DbConnectionPool>     m_database;
         std::shared_ptr<PlayerManager>        m_ainf;
         std::shared_ptr<RemoteController>     m_RemoteController;
-        QObject*                                              m_Parent;
    };
 };
