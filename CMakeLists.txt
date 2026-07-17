@@ -2377,7 +2377,7 @@ if(QT6)
     target_link_libraries(mixxx-lib PRIVATE Qt6::HttpServer)
   endif()
 
-  find_package(Qt6 COMPONENTS Core)
+  find_package(Qt6 COMPONENTS Core REQUIRED)
 
   # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
