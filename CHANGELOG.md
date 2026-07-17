@@ -5,6 +5,7 @@
 ### Controller Mappings
 
 * Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
+* Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
 
 ### Library
 
@@ -16,6 +17,12 @@
   [#16198](https://github.com/mixxxdj/mixxx/issues/16198)
 * Fix missing tracks showing up in Hidden, Missing empty [#16419](https://github.com/mixxxdj/mixxx/pull/16419)
 * Adjust FocusWidget: GoToItem emulates Space key in WSearchRelatedTracksMenu [#13282](https://github.com/mixxxdj/mixxx/pull/13282)
+* Fixing last played time being wiped on history deletion
+  [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
+  [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+* Fix false-positive missing tracks
+  [#16685](https://github.com/mixxxdj/mixxx/pull/16685)
+  [#13533](https://github.com/mixxxdj/mixxx/issues/13533)
 
 ### Target support
 
@@ -32,6 +39,8 @@
   [#16514](https://github.com/mixxxdj/mixxx/pull/16514)
   [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
   [#16368](https://github.com/mixxxdj/mixxx/pull/16368)
+* Flatpak: fix building with Soundtouch, update to 2.4.1
+  [#16720](https://github.com/mixxxdj/mixxx/pull/16720)
 
 ### Miscellaneous
 
