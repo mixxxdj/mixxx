@@ -73,7 +73,7 @@ class ControllerRenderingEngine : public QObject {
 
   signals:
     void frameRendered(const LegacyControllerMapping::ScreenInfo& screeninfo,
-            QImage frame,
+            const QImage& frame,
             const QDateTime& timestamp);
     void stopping();
     /// @brief Request the screen thread to send a frame to the device.
