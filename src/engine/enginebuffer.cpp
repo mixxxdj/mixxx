@@ -80,6 +80,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_baserate_old(0),
           m_rate_old(0.),
           m_trackEndPositionOld(mixxx::audio::kInvalidFramePos),
+          m_samplesSinceLastIndicatorUpdate(0),
           m_slipPos(mixxx::audio::kStartFramePos),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
@@ -757,10 +758,9 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     VERIFY_OR_DEBUG_ASSERT(!util_isnan(fractionalPos)) {
         return;
     }
-
-    // FIXME: Use maybe invalid here
     const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
-    VERIFY_OR_DEBUG_ASSERT(trackEndPosition.isValid()) {
+    if (!trackEndPosition.isValid()) {
+        // happens if no track is loaded
         return;
     }
     const auto seekPosition = trackEndPosition * fractionalPos;
@@ -1233,8 +1233,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
 #endif
 
-    bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
-    if (hasStableTrack && m_pause.tryLock()) {
+    if (isTrackLoaded() && m_pause.tryLock()) {
         processTrackLocked(pOutput, bufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
@@ -1527,6 +1526,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
                     kPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
+        m_samplesSinceLastIndicatorUpdate = 0;
     }
 
     // Update visual control object, this needs to be done more often than the
@@ -1612,10 +1612,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 }
 
 bool EngineBuffer::isTrackLoaded() const {
-    if (m_pCurrentTrack) {
-        return true;
-    }
-    return false;
+    return (m_pCurrentTrack && m_iTrackLoading.loadAcquire() == 0);
 }
 
 TrackPointer EngineBuffer::getLoadedTrack() const {

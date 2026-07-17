@@ -5,11 +5,14 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "audio/types.h"
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
+#include "soundio/networkenumerator.h"
+#include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/cmdlineargs.h"
@@ -17,17 +20,7 @@
 
 class EngineMixer;
 class ControlObject;
-
-#define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
-#define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
-#define MIXXX_PORTAUDIO_OSS_STRING "OSS"
-#define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
-#define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
-// NOTE: This is what our patched version of PortAudio uses for the Core Audio
-// backend on iOS. If/when upstream supports iOS officially
-// (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
-#define MIXXX_PORTAUDIO_IOSAUDIO_STRING "iOS Audio"
-#define MIXXX_PORTAUDIO_COREAUDIO_STRING "Core Audio"
+class PipewireEnumerator;
 
 #define SOUNDMANAGER_DISCONNECTED 0
 #define SOUNDMANAGER_CONNECTING 1
@@ -49,8 +42,6 @@ class SoundManager : public QObject {
     // Creates a list of sound devices
     void clearAndQueryDevices();
     void queryDevices();
-    void queryDevicesPortaudio();
-    void queryDevicesMixxx();
 
     // Opens all the devices chosen by the user in the preferences dialog, and
     // establishes the proper connections between them and the mixing engine.
@@ -98,7 +89,7 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
-        return m_pNetworkStream;
+        return m_pNetworkEnumerator->getNetworkStream();
     }
 
     void underflowHappened(int code) {
@@ -120,7 +111,16 @@ class SoundManager : public QObject {
         m_audioLatencyOverloadCount.set(0);
     }
 
+    // currently only used by pipewire
+    void updateDeviceChannels(SoundDevicePointer pDevice);
+
   signals:
+    void deviceAdded(SoundDevicePointer pDevice);
+    void deviceRemoved(SoundDevicePointer pDevice);
+    void deviceChannelsUpdated(SoundDevicePointer pDevice);
+    void deviceConnected(const SoundDeviceId& pDevice, const AudioPath* pPath);
+    void deviceDisconnected(const AudioPath* pPath);
+
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
     void devicesClosed(); // emitted when the sound devices have been closed and resources freed
@@ -129,6 +129,10 @@ class SoundManager : public QObject {
 
   private slots:
     void completeDevicesClosing();
+
+  public slots:
+    void addDevice(SoundDevicePointer pDevice);
+    void removeDevice(SoundDevicePointer pDevice);
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -140,17 +144,13 @@ class SoundManager : public QObject {
     // isn't open is safe.
     void closeDevices(bool sleepAfterClosing, bool async = false);
 
-    void setJACKName() const;
     bool jackApiUsed() const {
         return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
     EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
-    bool m_paInitialized;
-    mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
-    QList<mixxx::audio::SampleRate> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
@@ -160,10 +160,16 @@ class SoundManager : public QObject {
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
 
-    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
-
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
+
+    std::unique_ptr<PortAudioEnumerator> m_pPaEnumerator;
+
+#ifdef __PIPEWIRE__
+    std::unique_ptr<PipewireEnumerator> m_pPipewireEnumerator;
+#endif
+
+    std::unique_ptr<NetworkEnumerator> m_pNetworkEnumerator;
 };

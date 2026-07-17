@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QString>
+#include <Qt>
 #include <memory>
 
 #include "library/dao/directorydao.h"
@@ -120,6 +122,7 @@ class QmlLibraryProxy : public QObject {
     Q_ENUM(SourceRemovalType);
 
     explicit QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent = nullptr);
+    ~QmlLibraryProxy() override;
 
     static QmlLibraryProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static void registerLibrary(std::shared_ptr<Library> pLibrary) {
@@ -153,6 +156,21 @@ class QmlLibraryProxy : public QObject {
 
     QmlLibraryTrackListModel* model() const;
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
+    Q_INVOKABLE QString deckHotcueLabel(
+            mixxx::qml::QmlTrackProxy* track,
+            int hotcueNumber) const;
+    Q_INVOKABLE bool setDeckHotcueLabel(
+            mixxx::qml::QmlTrackProxy* track,
+            int hotcueNumber,
+            const QString& label);
+    Q_INVOKABLE bool setDeckHotcueType(
+            mixxx::qml::QmlTrackProxy* track,
+            const QString& group,
+            int hotcueNumber,
+            const QString& action);
+    Q_INVOKABLE void cleanupDeckHotcuePopup(
+            mixxx::qml::QmlTrackProxy* track,
+            int hotcueNumber);
 
   private:
     static inline std::shared_ptr<Library> s_pLibrary;

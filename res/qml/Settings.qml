@@ -22,6 +22,9 @@ Popup {
         root.activeCategory?.activated();
     }
 
+    horizontalPadding: 20
+    verticalPadding: 20
+
     background: Rectangle {
         anchors.fill: parent
         color: Theme.darkGray2

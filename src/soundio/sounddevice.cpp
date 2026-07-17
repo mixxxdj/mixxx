@@ -1,5 +1,6 @@
 #include "soundio/sounddevice.h"
 
+#include "audio/types.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "soundmanagerconfig.h"
@@ -221,5 +222,16 @@ void SoundDevice::clearInputBuffer(const SINT framesToPush,
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();  // Always stereo
         SampleUtil::clear(&pInputBuffer[framesWriteOffset * 2], framesToPush * 2);
+    }
+}
+
+QString SoundDevice::getChannelString(ChannelGroup channelGroup, bool) {
+    mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
+    unsigned char channelBase = channelGroup.getChannelBase();
+    if (count == 1) {
+        return "Channel " + QString::number(channelBase + 1);
+    } else {
+        return "Channels " + QString::number(channelBase + 1) + " - " +
+                QString::number(channelBase + count);
     }
 }
