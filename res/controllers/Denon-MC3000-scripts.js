@@ -32,15 +32,17 @@
  *  - Functions used as engine.makeConnection() callbacks are called as
  *    (value, group, control) instead -- a different shape, easy to confuse
  *    with the one above.
- *  - A few functions here (fxEnableLed, fxOnLed, sampLed) are factories:
- *    called once at init() with setup args, they return the actual
- *    connection callback as a closure.
+ *  - A few functions here (fxEnableLed, fxOnLed) are factories: called once
+ *    at init() with setup args, they return the actual connection callback
+ *    as a closure.
  *  - Unused parameters are prefixed with _ (kept only to preserve the
  *    required call signature).
- *  - EFX buttons/knobs are the exception to the first bullet: they're
- *    components.Button/components.Pot instances (midi-components-0.0.js),
- *    bound directly from XML via a dotted key on the instance (e.g.
- *    mc3000.effectUnit1.button2.input) rather than a plain function name.
+ *  - EFX buttons/knobs and SAMP pads are the exception to the first bullet:
+ *    they're components.Button/components.Pot/components.SamplerButton
+ *    instances (midi-components-0.0.js), bound directly from XML via a
+ *    dotted key on the instance (e.g. mc3000.effectUnit1.button2.input,
+ *    mc3000.samplerButtons[1].input) rather than a plain function name.
+ *    SYNC (components.SyncButton) is bound the same way.
  *
  **/
 
@@ -50,10 +52,8 @@ var mc3000 = function() {};
 
 mc3000.deck2ch = [0,2,1,3];
 
-mc3000.nearEnd = [0,0,0,0];
-
-mc3000.loophotcue = [0,0,0,0];
-mc3000.loophotcuebeatnb = [8,8,8,8];
+// The other deck sharing a side with this one (1<->3 left, 2<->4 right).
+mc3000.otherDeckOnSide = {1: 3, 2: 4, 3: 1, 4: 2};
 
 mc3000.hotcues = {
     23: 1, 24: 2, 25: 3, 32: 4, 72: 5, 73: 6, 74: 7, 75: 8,
@@ -67,21 +67,26 @@ mc3000.leds = {
 };
 
 mc3000.state = {
-    shift1: false, shift2: false, alshift1: false, alshift2: false, pfl1: 0, pfl2: 0,
+    shift1: false, shift2: false,
 };
 
 
 mc3000.vumetermaxled = [0,0,0,0];
 mc3000.vumeteroffset = [9,41,25,57];
 
-mc3000.scratch =[false,false,false,false];
-//mc3000.scratch =[true,true,true,true];
+// VINYL MODE's startup default is a single global setting (Preferences >
+// Controllers > Denon MC3000 > Jog Wheels), applied to all four decks.
+mc3000.vinylModeDefault = engine.getSetting("vinylModeDefault") ?? false;
+mc3000.scratch = [
+    mc3000.vinylModeDefault, mc3000.vinylModeDefault,
+    mc3000.vinylModeDefault, mc3000.vinylModeDefault,
+];
 
 mc3000.scratchpressed = [false,false,false,false];
 mc3000.alpha =  (1.0/8);
 mc3000.beta = mc3000.alpha/32;
-mc3000.jogSensitivity = 2.0;
-mc3000.scratchSensitivity = 1;
+mc3000.jogSensitivity = engine.getSetting("jogSensitivity") ?? 2.0;
+mc3000.scratchSensitivity = engine.getSetting("scratchSensitivity") ?? 1;
 
 // BeatLoop 2 4 8 16 to 1 2 3 4
 
@@ -111,8 +116,7 @@ mc3000.init = function(id) {
     for (i=1;i<=4;i++) {
         engine.makeConnection("[Channel"+i+"]", "keylock", mc3000.keylockSetLed);
         engine.makeConnection("[Channel"+i+"]", "play", mc3000.playSetLed);
-        engine.makeConnection("[Channel"+i+"]", "playposition", mc3000.playPositionSetLed);
-        engine.makeConnection("[Channel"+i+"]", "peak_indicator", mc3000.peakIndicatorSetLed);
+        engine.makeConnection(`[Channel${i}]`, "sync_enabled", mc3000.syncEnabledSetLed).trigger();
         engine.makeConnection("[Channel"+i+"]", "vu_meter", mc3000.vuMeterSetLeds);
         engine.makeConnection("[Channel"+i+"]", "pfl", mc3000.pflSetLed);
     }
@@ -121,8 +125,6 @@ mc3000.init = function(id) {
         engine.makeConnection("[Channel"+i+"]", "loop_start_position", mc3000.loopStartSetLed);
         engine.makeConnection("[Channel"+i+"]", "loop_end_position", mc3000.loopEndSetLed);
         engine.makeConnection("[Channel"+i+"]", "loop_enabled", mc3000.loopEnableSetLed);
-        // NOTE: beatloop_X_enabled -> EFX LED connections removed. The EFX buttons
-        // are now FX/Sampler controls, so their LEDs are driven by mc3000.fxEnableLed.
     }
 
     mc3000.allLedOff();
@@ -159,12 +161,11 @@ mc3000.init = function(id) {
         }
     }
 
-    // Sampler pad LEDs: light the SAMP pad while a sample is loaded (armed).
-    // LED ids and channels from the MC3000 reception table (left on ch1, right on ch3).
-    var sledL = [25,27,29,32], sledR = [65,67,69,71];
-    for (i=1;i<=4;i++) {
-        engine.makeConnection("[Sampler"+i+"]", "track_loaded", mc3000.sampLed(1, sledL[i-1])).trigger();
-        engine.makeConnection("[Sampler"+(i+4)+"]", "track_loaded", mc3000.sampLed(2, sledR[i-1])).trigger();
+    // Sampler pad LEDs: each SamplerButton wires its own track_loaded/play
+    // connections (see mc3000.makeSamplerButton); just connect + trigger them.
+    for (i=1; i<=8; i++) {
+        mc3000.samplerButtons[i].connect();
+        mc3000.samplerButtons[i].trigger();
     }
 };
 
@@ -227,13 +228,6 @@ mc3000.groupToDeck = function(group) {
     }
 };
 
-mc3000.samplesPerBeat = function(group) {
-    var sampleRate = engine.getValue(group, "track_samplerate");
-    var channels = 2;
-    var bpm = engine.getValue(group, "file_bpm");
-    return channels * sampleRate * 60 / bpm;
-};
-
 // Pitch Rate MSB/LSB
 mc3000.rate = function(_channel, control, value, _status, group) {
     // 0..16383 -> -1..1
@@ -251,41 +245,6 @@ mc3000.rate = function(_channel, control, value, _status, group) {
 
 // ---------- 5. PLAYLIST / TRACK SELECT ----------
 mc3000.selectKnob = function(_channel, _control, value, _status, group) {
-    var offset = value === 0 ? 250 : -250;
-    var deck;
-
-    // TRACK SELECT KNOB is a single global control, but SHIFT/AUTO LOOP can be
-    // held on any of the 4 decks (2 physical SHIFT buttons, each covering
-    // whichever deck is currently active on that side) -- check all 4, not
-    // just decks 1/2.
-
-    // AUTOLOOP + SelectKnob ? -> MOVE LOOP
-    var anyAlshift = false;
-    for (deck=1; deck<=4; deck++) {
-        if (mc3000.state["alshift"+deck]) {
-            anyAlshift = true;
-            mc3000.moveLoop("[Channel"+deck+"]",offset);
-        }
-    }
-    if (anyAlshift) {
-        return;
-    }
-
-    // SHIFT + SelectKnob ? -> MOVE CUE
-    var anyShift = false;
-    for (deck=1; deck<=4; deck++) {
-        if (mc3000.state["shift"+deck]) {
-            anyShift = true;
-            var g = "[Channel"+deck+"]";
-            var curpos = engine.getValue(g,"cue_point");
-            engine.setValue(g,"cue_point",curpos+offset);
-        }
-    }
-    if (anyShift) {
-        return;
-    }
-
-    // NORMAL MODE - NEXT/PREV TRACK
     if (value === 0) {
         engine.setValue(group, "SelectNextTrack", 1);
     } else {
@@ -293,14 +252,13 @@ mc3000.selectKnob = function(_channel, _control, value, _status, group) {
     }
 };
 
-// LOAD A (note 0x62) and LOAD B (note 0x63) -- two independent physical buttons,
-// fixed-channel. Matches the official VirtualDJ MC3000 mapping's documented
-// behavior for these same buttons: LOAD A always targets deck A, hold SHIFT to
-// target deck C instead; LOAD B always targets deck B, hold SHIFT for deck D.
-// (The DECK CHG A/B/C/D buttons are not involved -- their documented MIDI signal
-// never actually fires on this unit, verified live -- and this SHIFT-based
-// design doesn't need it: it's a fixed, deterministic mapping, not a guess at
-// which deck is "active".)
+// LOAD A (note 0x62) and LOAD B (note 0x63) -- two independent physical
+// buttons, fixed-channel. LOAD A always targets deck A, hold SHIFT to target
+// deck C instead; LOAD B always targets deck B, hold SHIFT for deck D.
+// (The DECK CHG A/B/C/D buttons are not involved -- their documented MIDI
+// signal never actually fires on this unit, verified live -- and this
+// SHIFT-based design doesn't need it: it's a fixed, deterministic mapping,
+// not a guess at which deck is "active".)
 mc3000.loadSelected = function(_channel, control, value, status, _group) {
     if ((status & 0xF0) !== 0x90 || value === 0) {
         return;   // on real press only
@@ -312,11 +270,6 @@ mc3000.loadSelected = function(_channel, control, value, status, _group) {
     engine.setValue("[Channel"+deck+"]", "LoadSelectedTrack", 1);
 };
 
-// NOTE (FLANGER, removed): the old lfoDepth / lfoDelay / lfoPeriod controls
-// were removed in Mixxx 2.0's effects rewrite. Those handlers were unbound
-// and are intentionally deleted so nothing calls a control that no longer
-// exists.
-
 // ---------- 6. CUE AND HOTCUE ----------
 mc3000.cueDefault = function(_channel, _control, _value, status, group) {
     var isPressed = (status & 0xF0) === 0x90 ? 1 : 0;
@@ -324,27 +277,33 @@ mc3000.cueDefault = function(_channel, _control, _value, status, group) {
     mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["cue"],isPressed);
 };
 
+// SYNC: components.SyncButton (midi-components-0.0.js) adds real sync-lock
+// (hold past a short delay to enable continuous tempo-follow, not just a
+// one-shot beatsync) plus SHIFT -> quantize toggle. outConnect stays false
+// because this hardware's LED protocol (mc3000.setled) is incompatible with
+// the Component base class's default send(); the LED is instead driven by
+// mc3000.syncEnabledSetLed, connected directly to sync_enabled in init().
+mc3000.makeSyncButton = function(deck) {
+    return new components.SyncButton({
+        group: `[Channel${deck}]`,
+        outConnect: false,
+    });
+};
+
+mc3000.syncButtons = {};
+for (let syncDeck=1; syncDeck<=4; syncDeck++) {
+    mc3000.syncButtons[syncDeck] = mc3000.makeSyncButton(syncDeck);
+}
+
 mc3000.hotcueset = function(_channel, control, _value, status, group) {
     var deck=mc3000.groupToDeck(group);
     var nocue=mc3000.hotcues[control];
-    var isPlay = engine.getValue(group,"play") === 1 ? true : false;
 
     if ((status & 0xF0) !== 0x90) {    // Is Released ?
-        if (mc3000.state["alshift"+deck] || mc3000.state["shift"+deck]) {
-            return; // DO NOTHING ON RELEASE IF ALSHIFT OR SHIFT
+        if (mc3000.state[`shift${deck}`]) {
+            return; // DO NOTHING ON RELEASE IF SHIFT
         }
         engine.setValue(group,"hotcue_"+nocue+"_activate",0);
-        return;
-    }
-
-    // AUTOLOOP + HOTCUE MODE ?
-    if (mc3000.state["alshift"+deck]) {
-        if (engine.getValue(group,"hotcue_"+nocue+"_status")) {
-            mc3000.setLoopAtHotCue(group,nocue,mc3000.loophotcuebeatnb[deck-1]);
-            if (!isPlay) {
-                engine.setValue(group, "reloop_exit", 1);
-            }
-        }
         return;
     }
 
@@ -354,50 +313,33 @@ mc3000.hotcueset = function(_channel, control, _value, status, group) {
         return;
     }
 
-    if (isPlay) {
-        // LOOP HOTCUE OR NORMAL HOTCUE ?
-        if (mc3000.loophotcue[deck-1] === nocue) {
-            mc3000.loophotcue[deck-1]=0;
-            engine.setValue(group, "reloop_exit", 1);
-        } else {
-            engine.setValue(group,"hotcue_"+nocue+"_activate",1);
-        }
-    } else {
-        engine.setValue(group,"hotcue_"+nocue+"_activate",1);
-    }
-};
-
-// ==== Set a loop at the hotcue_X_position
-mc3000.setLoopAtHotCue = function(group,nohotcue,nbbeat) {
-    var position = engine.getValue(group,"hotcue_"+nohotcue+"_position");
-    var deck = mc3000.groupToDeck(group);
-
-    // Old HotCue Led Off if exist
-    if (mc3000.loophotcue[deck-1]>0) {
-        mc3000.hotcueSetLed(0,group,"hotcue_"+mc3000.loophotcue[deck-1]);
-    }
-
-    // if loop set, exit from loop
-    if (engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "reloop_exit", 1);
-    }
-
-    // Set new loop_start
-    engine.setValue(group, "loop_start_position", position);
-    // Delete loop_end
-    engine.setValue(group, "loop_end_position", -1);
-    // Set Loop End
-    engine.setValue(group, "loop_end_position", position+(mc3000.samplesPerBeat(group)*nbbeat));
-
-    mc3000.loophotcue[deck-1]=nohotcue;
-
-    // New HotCue Led Blink
-    mc3000.hotcueSetLed(2,group,"hotcue_"+nohotcue);
+    engine.setValue(group, `hotcue_${nocue}_activate`, 1);
 };
 
 mc3000.shift = function(_channel, _control, _value, status, group) {
     var deck = mc3000.groupToDeck(group);
-    mc3000.state["shift"+deck] = (status & 0xF0) === 0x90 ? true : false; // 1 if pressed
+    const isPressed = (status & 0xF0) === 0x90; // 1 if pressed
+    mc3000.state[`shift${deck}`] = isPressed;
+
+    // SYNC is genuinely per-deck (one SyncButton per deck), so react directly.
+    if (isPressed) {
+        mc3000.syncButtons[deck].shift();
+    } else {
+        mc3000.syncButtons[deck].unshift();
+    }
+
+    // Samplers are side-based (shared by both decks on a side, unlike SYNC),
+    // so react whenever either deck's SHIFT state on that side changes.
+    const sideShifted = isPressed || mc3000.state[`shift${mc3000.otherDeckOnSide[deck]}`];
+    const side = (deck === 1 || deck === 3) ? 1 : 2;
+    const samplerOffset = side === 1 ? 0 : 4;
+    for (let s=1; s<=4; s++) {
+        if (sideShifted) {
+            mc3000.samplerButtons[samplerOffset+s].shift();
+        } else {
+            mc3000.samplerButtons[samplerOffset+s].unshift();
+        }
+    }
 };
 
 mc3000.vinylmode = function(_channel, _control, _value, _status, group) {
@@ -432,7 +374,6 @@ mc3000.jogWheel = function(_channel, _control, value, _status, group) {
 
     var gammaInputRange = 64;    // Max jog speed
     var maxOutFraction = 0.5;    // Where on the curve it should peak; 0.5 is half-way
-    var sensitivity = 0.5;        // Adjustment gamma 0.5 def
     var gammaOutputRange = 3;    // Max rate change
     adjustedJog = gammaOutputRange * adjustedJog / (gammaInputRange * maxOutFraction);
     engine.setValue(group, "jog", adjustedJog/mc3000.jogSensitivity);
@@ -473,51 +414,25 @@ mc3000.bendDown = function(_channel, _control, _value, status, group) {
 
 // Shift and autoloop : delete loop point ELSE toggle a beat-synced auto loop
 mc3000.autoLoop = function(_channel, _control, _value, status, group) {
-    var deck = mc3000.groupToDeck(group);
-    var i=0;
-    if ((status & 0xF0) === 0x90) {
-        // LIGHT LED CUE_X EN MODE CUE LOOP
-        for (i=1;i<=8;i++) {
-            mc3000.hotcueSetLed(0,group,"hotcue_"+i);
-        }
-        if (mc3000.loophotcue[deck-1] > 0) {
-            mc3000.hotcueSetLed(2,group,"hotcue_"+mc3000.loophotcue[deck-1]);
-        }
-
-        // DELETE LOOP POINTS IF SHIFT, ELSE TOGGLE A BEAT-SYNCED AUTO LOOP.
-        // beatloop_activate is NOT a toggle by itself -- per the Mixxx docs it
-        // only ever "sets a loop ... and enables it". To get real toggle
-        // behavior (press to engage and keep looping after release, press
-        // again to release) we have to check loop_enabled ourselves, the same
-        // way loopIn/loopOut already do below.
-        if (mc3000.state["shift"+deck]) {
-            engine.setValue(group, "reloop_exit", 1);
-            engine.setValue(group, "loop_end_position", -1);
-            engine.setValue(group, "loop_start_position", -1);
-        } else if (engine.getValue(group, "loop_enabled")) {
-            engine.setValue(group, "reloop_exit", 1);
-        } else {
-            engine.setValue(group, "beatloop_activate", 1);
-        }
-
-    } else { //released
-        // RESTORE LED STATE CUE_X
-        for (i=1;i<=8;i++) {
-            // hotcue_status is a tri-state (0=unset, 1=set, 2=active/looping) --
-            // pass it straight through so an actively-looping hot cue keeps
-            // blinking instead of collapsing to solid-on.
-            mc3000.hotcueSetLed(engine.getValue(group,"hotcue_"+i+"_status"), group, "hotcue_"+i);
-        }
-        // NOTE: release used to compare loop_start_position against a snapshot
-        // taken on press and call reloop_exit if it had "moved", meant to
-        // commit a loop moved via the track-select knob while held (see
-        // mc3000.moveLoop). In practice this fired on nearly every plain
-        // press+release too, killing the loop the instant the button was
-        // released -- that was the actual bug. Loop engage/release is now
-        // handled entirely on press above, so release only restores LEDs.
+    if ((status & 0xF0) !== 0x90) {
+        return;   // on real press only
     }
-
-    mc3000.state["alshift"+deck] = (status & 0xF0) === 0x90 ? true : false; // true if pressed
+    // DELETE LOOP POINTS IF SHIFT, ELSE TOGGLE A BEAT-SYNCED AUTO LOOP.
+    // beatloop_activate is NOT a toggle by itself -- per the Mixxx docs it
+    // only ever "sets a loop ... and enables it". To get real toggle
+    // behavior (press to engage and keep looping after release, press
+    // again to release) we have to check loop_enabled ourselves, the same
+    // way loopIn/loopOut already do below.
+    const deck = mc3000.groupToDeck(group);
+    if (mc3000.state[`shift${deck}`]) {
+        engine.setValue(group, "reloop_exit", 1);
+        engine.setValue(group, "loop_end_position", -1);
+        engine.setValue(group, "loop_start_position", -1);
+    } else if (engine.getValue(group, "loop_enabled")) {
+        engine.setValue(group, "reloop_exit", 1);
+    } else {
+        engine.setValue(group, "beatloop_activate", 1);
+    }
 };
 
 mc3000.loopCutM = function(_channel, _control, _value, _status, group) {
@@ -559,30 +474,12 @@ mc3000.loopOut = function(_channel, _control, _value, _status, group) {
 // deck, so it needs to be re-verified against the device before being wired
 // to anything real.
 
-mc3000.moveLoop = function(group,offset) {
-    var start = engine.getValue(group, "loop_start_position");
-    var end = engine.getValue(group, "loop_end_position");
-
-    if ((start !== -1) && (end !== -1)) {
-        engine.setValue(group, "loop_start_position", start+offset);
-        engine.setValue(group, "loop_end_position", end+offset);
-    }
-};
-
 // ---------- 8. FX SECTION (EFX buttons/knobs, SAMP pads) ----------
 // NOTE: the SAMP switch is handled entirely in HARDWARE. When SAMP is ON the
 // EFX buttons physically send the SAMP notes (0x21-0x24 / 0x31-0x34) and the
 // knobs send the SAMP CCs, which are mapped directly to the [Sampler] decks in
 // the XML. So there is no software SAMP mode here -- these handlers only ever
 // run in FX mode (EFX buttons 0x12-0x15 / 0x52-0x55, knobs 0x55-0x58 / 0x59-0x5C).
-
-// The FX/SAMP section re-channels with the active deck like everything else:
-// left side arrives on ch1 (deck A) or ch2 (deck C); right side on ch3 (deck B)
-// or ch4 (deck D). Map the MIDI channel nibble to the FX side (1=left, 2=right).
-mc3000.sideFromStatus = function(status) {
-    var ch = status & 0x0F;            // 0=A,1=C -> left ; 2=B,3=D -> right
-    return (ch === 0 || ch === 1) ? 1 : 2;
-};
 
 // "efx"+n+mc3000.sideSuffix(side) -> the leds dict key for one EFX-row LED (e.g. "efx2L")
 mc3000.sideSuffix = function(side) {
@@ -604,7 +501,7 @@ mc3000.decksOfSide = function(side) {
 // unconditionally (ignoring outConnect:false), using generic on/off values -- that
 // doesn't fit the MC3000's non-standard 74/75/76 LED protocol or its need to broadcast
 // one LED to both decks sharing a side, so LEDs stay wired through mc3000.fxEnableLed
-// below, same as before.
+// below.
 //
 // Each button/knob's group is fixed to one effect slot (e.g. left EFX button 1 always
 // targets EffectUnit1_Effect1, regardless of whether deck A or C is currently active
@@ -655,41 +552,52 @@ mc3000.fxOnLed = function(deck, unit) {
     };
 };
 
-// Connection callback for the SAMP pad LEDs. Samplers are global (not deck-bound),
-// so like the FX-enable LEDs this is keyed by side and must broadcast to both of
-// that side's decks so the LED shows correctly regardless of which is active.
-mc3000.sampLed = function(side, led) {
-    var decks = mc3000.decksOfSide(side);
-    return function(value) {
+// SAMP pads use components.SamplerButton (midi-components-0.0.js). Pressing
+// an empty pad loads the currently selected library track into that sampler
+// slot (SamplerButton's default unshifted behavior). LEDs are wired through
+// our own broadcast-to-both-decks setled() protocol via the send() override
+// below (same pattern as the EFX buttons), using the hardware's 3-state LED
+// to distinguish loaded-but-stopped (solid) from playing (blink).
+//
+// SHIFT+press: if playing, jumps back to the cue point and stops; if
+// stopped, ejects the loaded track (both press and release are handled, so
+// eject doesn't re-fire on release).
+mc3000.makeSamplerButton = function(n, led, decks) {
+    const button = new components.SamplerButton({
+        number: n,
+        off: 0,
+        loaded: 1,
+        playing: 2,
+        outConnect: false,
+    });
+    button.shift = function() {
+        this.input = function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status)) {
+                if (engine.getValue(this.group, "play") === 1) {
+                    engine.setValue(this.group, "cue_gotoandstop", 1);
+                } else {
+                    engine.setValue(this.group, "eject", 1);
+                }
+            } else if (engine.getValue(this.group, "play") === 0) {
+                engine.setValue(this.group, "eject", 0);
+            }
+        };
+    };
+    button.send = function(value) {
         for (var d=0; d<decks.length; d++) {
             mc3000.setled(decks[d], led, value);
         }
     };
+    return button;
 };
 
-// SAMP pad: press = retrigger from cue; SHIFT+press = stop if playing, else eject if loaded.
-// Bound directly from XML, so this must be the real handler (channel,control,value,status,group)
-// -- NOT a factory -- since Mixxx calls it straight with the raw MIDI bytes.
-mc3000.sampButton = function(_channel, control, value, status, _group) {
-    if ((status & 0xF0) !== 0x90 || value === 0) {
-        return;   // on real press only
-    }
-    var side = mc3000.sideFromStatus(status);             // 1=left(1-4), 2=right(5-8)
-    var n = side === 1 ? control - 0x20 : control - 0x2C; // left 0x21-24->1-4, right 0x31-34->5-8
-    if (n < 1 || n > 8) {
-        return;
-    }
-    var g = "[Sampler"+n+"]";
-    if (mc3000.state["shift"+side]) {
-        if (engine.getValue(g, "play")) {
-            engine.setValue(g, "cue_gotoandstop", 1);
-        } else if (engine.getValue(g, "track_loaded")) {
-            engine.setValue(g, "eject", 1);
-        }
-    } else {
-        engine.setValue(g, "cue_gotoandplay", 1);
-    }
-};
+// LED ids from the MC3000 reception table (left pads on ch1, right on ch3).
+mc3000.samplerButtons = {};
+const sledL = [25, 27, 29, 32], sledR = [65, 67, 69, 71];
+for (let sN=1; sN<=4; sN++) {
+    mc3000.samplerButtons[sN] = mc3000.makeSamplerButton(sN, sledL[sN-1], mc3000.decksOfSide(1));
+    mc3000.samplerButtons[sN+4] = mc3000.makeSamplerButton(sN+4, sledR[sN-1], mc3000.decksOfSide(2));
+}
 
 // ---------- 9. LED CALLBACKS ----------
 
@@ -721,7 +629,7 @@ mc3000.loopEnableSetLed = function(value, group, _control) {
     mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["autoloop"],value);
 };
 
-mc3000.peakIndicatorSetLed = function(value, group) {
+mc3000.syncEnabledSetLed = function(value, group) {
     mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["sync"],value);
 };
 
@@ -745,21 +653,3 @@ mc3000.vuMeterSetLeds = function(value,group) {
     }
 };
 
-mc3000.playPositionSetLed = function(playposition, group) {
-    var nearEnd = 0;
-
-    if (playposition < 0.80) {
-        nearEnd = 0;
-    }
-    if (playposition > 0.80) {
-        nearEnd = 2;  // The song is going to end
-    }
-    if (playposition === 1) {
-        nearEnd = 0;
-    }
-
-    if (nearEnd !== mc3000.nearEnd[mc3000.groupToDeck(group)-1]) {
-        mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["sync"],nearEnd);
-        mc3000.nearEnd[mc3000.groupToDeck(group)-1] = nearEnd;
-    }
-};

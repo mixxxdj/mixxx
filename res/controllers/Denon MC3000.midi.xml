@@ -7,6 +7,46 @@
         <manual>denon_mc3000</manual>
         <forums>https://mixxx.discourse.group/t/denon-mc3000-midi-script/12283</forums>
     </info>
+    <settings>
+        <group label="Jog Wheels">
+            <option
+                variable="jogSensitivity"
+                type="real"
+                min="0.05"
+                max="10.0"
+                default="2.0"
+                label="Jog wheel sensitivity">
+                <description>
+                    Sensitivity factor for pitch-bend when turning the jog wheel
+                    without touch-scratching (i.e. whenever VINYL MODE is off, or
+                    the wheel isn't currently touched). Higher values reduce
+                    sensitivity.
+                </description>
+            </option>
+            <option
+                variable="scratchSensitivity"
+                type="real"
+                min="0.05"
+                max="10.0"
+                default="1.0"
+                label="Scratch sensitivity">
+                <description>
+                    Sensitivity factor while actively touch-scratching with
+                    VINYL MODE on. Higher values reduce sensitivity.
+                </description>
+            </option>
+            <option
+                variable="vinylModeDefault"
+                type="boolean"
+                default="false"
+                label="VINYL MODE on by default">
+                <description>
+                    Whether VINYL MODE is enabled by default at startup, for all
+                    four decks.
+                </description>
+            </option>
+        </group>
+    </settings>
     <controller id="MC3000">
         <scriptfiles>
             <file functionprefix="" filename="lodash.mixxx.js"/>
@@ -945,7 +985,7 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[1].input</key>
                 <status>0x90</status>
                 <midino>0x21</midino>
                 <options>
@@ -954,7 +994,7 @@
             </control>
             <control>
                 <group>[Sampler1]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[1].input</key>
                 <description>SAMP pad (deck C side=left=Sampler1)</description>
                 <status>0x91</status>
                 <midino>0x21</midino>
@@ -964,7 +1004,7 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[2].input</key>
                 <status>0x90</status>
                 <midino>0x22</midino>
                 <options>
@@ -973,7 +1013,7 @@
             </control>
             <control>
                 <group>[Sampler2]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[2].input</key>
                 <description>SAMP pad (deck C side=left=Sampler2)</description>
                 <status>0x91</status>
                 <midino>0x22</midino>
@@ -983,7 +1023,7 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[3].input</key>
                 <status>0x90</status>
                 <midino>0x23</midino>
                 <options>
@@ -992,7 +1032,7 @@
             </control>
             <control>
                 <group>[Sampler3]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[3].input</key>
                 <description>SAMP pad (deck C side=left=Sampler3)</description>
                 <status>0x91</status>
                 <midino>0x23</midino>
@@ -1002,7 +1042,7 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[4].input</key>
                 <status>0x90</status>
                 <midino>0x24</midino>
                 <options>
@@ -1011,7 +1051,7 @@
             </control>
             <control>
                 <group>[Sampler4]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[4].input</key>
                 <description>SAMP pad (deck C side=left=Sampler4)</description>
                 <status>0x91</status>
                 <midino>0x24</midino>
@@ -1070,7 +1110,7 @@
             </control>
             <control>
                 <group>[Sampler5]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[5].input</key>
                 <status>0x92</status>
                 <midino>0x31</midino>
                 <options>
@@ -1079,7 +1119,7 @@
             </control>
             <control>
                 <group>[Sampler5]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[5].input</key>
                 <description>SAMP pad (deck D side=right=Sampler5)</description>
                 <status>0x93</status>
                 <midino>0x31</midino>
@@ -1108,7 +1148,7 @@
             </control>
             <control>
                 <group>[Sampler6]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[6].input</key>
                 <status>0x92</status>
                 <midino>0x32</midino>
                 <options>
@@ -1117,7 +1157,7 @@
             </control>
             <control>
                 <group>[Sampler6]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[6].input</key>
                 <description>SAMP pad (deck D side=right=Sampler6)</description>
                 <status>0x93</status>
                 <midino>0x32</midino>
@@ -1146,7 +1186,7 @@
             </control>
             <control>
                 <group>[Sampler7]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[7].input</key>
                 <status>0x92</status>
                 <midino>0x33</midino>
                 <options>
@@ -1155,7 +1195,7 @@
             </control>
             <control>
                 <group>[Sampler7]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[7].input</key>
                 <description>SAMP pad (deck D side=right=Sampler7)</description>
                 <status>0x93</status>
                 <midino>0x33</midino>
@@ -1184,7 +1224,7 @@
             </control>
             <control>
                 <group>[Sampler8]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[8].input</key>
                 <status>0x92</status>
                 <midino>0x34</midino>
                 <options>
@@ -1193,7 +1233,7 @@
             </control>
             <control>
                 <group>[Sampler8]</group>
-                <key>mc3000.sampButton</key>
+                <key>mc3000.samplerButtons[8].input</key>
                 <description>SAMP pad (deck D side=right=Sampler8)</description>
                 <status>0x93</status>
                 <midino>0x34</midino>
@@ -2461,42 +2501,42 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatsync</key>
+                <key>mc3000.syncButtons[1].input</key>
                 <description>Sync BT deck1 (A)</description>
                 <status>0x90</status>
                 <midino>0x6B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatsync</key>
+                <key>mc3000.syncButtons[3].input</key>
                 <description>Sync BT deck3 (C)</description>
                 <status>0x91</status>
                 <midino>0x6B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatsync</key>
+                <key>mc3000.syncButtons[2].input</key>
                 <description>Sync BT deck2 (B)</description>
                 <status>0x92</status>
                 <midino>0x6B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatsync</key>
+                <key>mc3000.syncButtons[4].input</key>
                 <description>Sync BT deck4 (D)</description>
                 <status>0x93</status>
                 <midino>0x6B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
