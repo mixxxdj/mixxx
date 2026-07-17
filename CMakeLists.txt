@@ -2365,15 +2365,16 @@ endif()
 # The mixxx executable
 if(QT6)
   if(HTTP_REMOTE)
-    find_package(Qt6 COMPONENTS HttpServer) # For Qt Core cmake functions
-    
+    find_package(Qt6 COMPONENTS HttpServer REQUIRED)
+
     add_compile_definitions(-DHTTP_REMOTE=true)
 
     target_sources(mixxx-lib PRIVATE
       src/preferences/dialog/dlgprefremotecontrol.cpp
       src/preferences/dialog/dlgprefremotecontrol.ui
       src/remote/remote.cpp
-    ) 
+    )
+    target_link_libraries(mixxx-lib PRIVATE Qt6::HttpServer)
   endif()
 
   find_package(Qt6 COMPONENTS Core)
