@@ -493,7 +493,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.button2.input</key>
+                <key>mc3000.effectUnit1.enableButtons[2].input</key>
                 <description>EFX button left</description>
                 <status>0x90</status>
                 <midino>0x12</midino>
@@ -503,7 +503,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.button2.input</key>
+                <key>mc3000.effectUnit1.enableButtons[2].input</key>
                 <description>EFX button (deck C side=left=Unit1)</description>
                 <status>0x91</status>
                 <midino>0x12</midino>
@@ -524,7 +524,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.button3.input</key>
+                <key>mc3000.effectUnit1.enableButtons[3].input</key>
                 <description>EFX button left</description>
                 <status>0x90</status>
                 <midino>0x13</midino>
@@ -534,7 +534,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.button3.input</key>
+                <key>mc3000.effectUnit1.enableButtons[3].input</key>
                 <description>EFX button (deck C side=left=Unit1)</description>
                 <status>0x91</status>
                 <midino>0x13</midino>
@@ -555,8 +555,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.button4.input</key>
-                <description>EFX button left</description>
+                <key>mc3000.effectUnit1.effectFocusButton.input</key>
+                <description>EFX.4 = FX focus button (left, Unit1)</description>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <options>
@@ -565,8 +565,8 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.button4.input</key>
-                <description>EFX button (deck C side=left=Unit1)</description>
+                <key>mc3000.effectUnit1.effectFocusButton.input</key>
+                <description>EFX.4 = FX focus button (deck C side=left=Unit1)</description>
                 <status>0x91</status>
                 <midino>0x14</midino>
                 <options>
@@ -586,7 +586,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.button1.input</key>
+                <key>mc3000.effectUnit1.enableButtons[1].input</key>
                 <description>EFX button left</description>
                 <status>0x90</status>
                 <midino>0x15</midino>
@@ -596,7 +596,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.button1.input</key>
+                <key>mc3000.effectUnit1.enableButtons[1].input</key>
                 <description>EFX button (deck C side=left=Unit1)</description>
                 <status>0x91</status>
                 <midino>0x15</midino>
@@ -1943,7 +1943,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.button2.input</key>
+                <key>mc3000.effectUnit2.enableButtons[2].input</key>
                 <description>EFX button right</description>
                 <status>0x92</status>
                 <midino>0x52</midino>
@@ -1953,7 +1953,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.button2.input</key>
+                <key>mc3000.effectUnit2.enableButtons[2].input</key>
                 <description>EFX button (deck D side=right=Unit2)</description>
                 <status>0x93</status>
                 <midino>0x52</midino>
@@ -1974,7 +1974,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.button3.input</key>
+                <key>mc3000.effectUnit2.enableButtons[3].input</key>
                 <description>EFX button right</description>
                 <status>0x92</status>
                 <midino>0x53</midino>
@@ -1984,7 +1984,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.button3.input</key>
+                <key>mc3000.effectUnit2.enableButtons[3].input</key>
                 <description>EFX button (deck D side=right=Unit2)</description>
                 <status>0x93</status>
                 <midino>0x53</midino>
@@ -2005,8 +2005,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.button4.input</key>
-                <description>EFX button right</description>
+                <key>mc3000.effectUnit2.effectFocusButton.input</key>
+                <description>EFX.4 = FX focus button (right, Unit2)</description>
                 <status>0x92</status>
                 <midino>0x54</midino>
                 <options>
@@ -2015,8 +2015,8 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.button4.input</key>
-                <description>EFX button (deck D side=right=Unit2)</description>
+                <key>mc3000.effectUnit2.effectFocusButton.input</key>
+                <description>EFX.4 = FX focus button (deck D side=right=Unit2)</description>
                 <status>0x93</status>
                 <midino>0x54</midino>
                 <options>
@@ -2035,7 +2035,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.button1.input</key>
+                <key>mc3000.effectUnit2.enableButtons[1].input</key>
                 <description>EFX button right</description>
                 <status>0x92</status>
                 <midino>0x55</midino>
@@ -2045,7 +2045,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.button1.input</key>
+                <key>mc3000.effectUnit2.enableButtons[1].input</key>
                 <description>EFX button (deck D side=right=Unit2)</description>
                 <status>0x93</status>
                 <midino>0x55</midino>
@@ -2055,7 +2055,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.knob1.input</key>
+                <key>mc3000.effectUnit1.knobs[1].input</key>
                 <description>EFX knob left</description>
                 <status>0xB0</status>
                 <midino>0x55</midino>
@@ -2065,7 +2065,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.knob1.input</key>
+                <key>mc3000.effectUnit1.knobs[1].input</key>
                 <description>EFX knob (deck C side=left=Unit1)</description>
                 <status>0xB1</status>
                 <midino>0x55</midino>
@@ -2115,7 +2115,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.knob2.input</key>
+                <key>mc3000.effectUnit1.knobs[2].input</key>
                 <description>EFX knob left</description>
                 <status>0xB0</status>
                 <midino>0x56</midino>
@@ -2125,7 +2125,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.knob2.input</key>
+                <key>mc3000.effectUnit1.knobs[2].input</key>
                 <description>EFX knob (deck C side=left=Unit1)</description>
                 <status>0xB1</status>
                 <midino>0x56</midino>
@@ -2175,7 +2175,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.knob3.input</key>
+                <key>mc3000.effectUnit1.knobs[3].input</key>
                 <description>EFX knob left</description>
                 <status>0xB0</status>
                 <midino>0x57</midino>
@@ -2185,7 +2185,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.knob3.input</key>
+                <key>mc3000.effectUnit1.knobs[3].input</key>
                 <description>EFX knob (deck C side=left=Unit1)</description>
                 <status>0xB1</status>
                 <midino>0x57</midino>
@@ -2195,8 +2195,8 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>mc3000.effectUnit1.knob4.input</key>
-                <description>EFX knob left</description>
+                <key>mc3000.effectUnit1.dryWetKnob.input</key>
+                <description>EFX.4 knob = FX dry/wet mix (left, Unit1)</description>
                 <status>0xB0</status>
                 <midino>0x58</midino>
                 <options>
@@ -2205,8 +2205,8 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>mc3000.effectUnit1.knob4.input</key>
-                <description>EFX knob (deck C side=left=Unit1)</description>
+                <key>mc3000.effectUnit1.dryWetKnob.input</key>
+                <description>EFX.4 knob = FX dry/wet mix (deck C side=left=Unit1)</description>
                 <status>0xB1</status>
                 <midino>0x58</midino>
                 <options>
@@ -2215,7 +2215,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.knob1.input</key>
+                <key>mc3000.effectUnit2.knobs[1].input</key>
                 <description>EFX knob right (Unit2 meta)</description>
                 <status>0xB2</status>
                 <midino>0x59</midino>
@@ -2225,7 +2225,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.knob1.input</key>
+                <key>mc3000.effectUnit2.knobs[1].input</key>
                 <description>EFX knob (deck D side=right=Unit2)</description>
                 <status>0xB3</status>
                 <midino>0x59</midino>
@@ -2235,7 +2235,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.knob2.input</key>
+                <key>mc3000.effectUnit2.knobs[2].input</key>
                 <description>EFX knob right (Unit2 meta)</description>
                 <status>0xB2</status>
                 <midino>0x5A</midino>
@@ -2245,7 +2245,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.knob2.input</key>
+                <key>mc3000.effectUnit2.knobs[2].input</key>
                 <description>EFX knob (deck D side=right=Unit2)</description>
                 <status>0xB3</status>
                 <midino>0x5A</midino>
@@ -2255,7 +2255,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.knob3.input</key>
+                <key>mc3000.effectUnit2.knobs[3].input</key>
                 <description>EFX knob right (Unit2 meta)</description>
                 <status>0xB2</status>
                 <midino>0x5B</midino>
@@ -2265,7 +2265,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.knob3.input</key>
+                <key>mc3000.effectUnit2.knobs[3].input</key>
                 <description>EFX knob (deck D side=right=Unit2)</description>
                 <status>0xB3</status>
                 <midino>0x5B</midino>
@@ -2275,8 +2275,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>mc3000.effectUnit2.knob4.input</key>
-                <description>EFX knob right (Unit2 meta)</description>
+                <key>mc3000.effectUnit2.dryWetKnob.input</key>
+                <description>EFX.4 knob = FX dry/wet mix (right, Unit2)</description>
                 <status>0xB2</status>
                 <midino>0x5C</midino>
                 <options>
@@ -2285,8 +2285,8 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>mc3000.effectUnit2.knob4.input</key>
-                <description>EFX knob (deck D side=right=Unit2)</description>
+                <key>mc3000.effectUnit2.dryWetKnob.input</key>
+                <description>EFX.4 knob = FX dry/wet mix (deck D side=right=Unit2)</description>
                 <status>0xB3</status>
                 <midino>0x5C</midino>
                 <options>

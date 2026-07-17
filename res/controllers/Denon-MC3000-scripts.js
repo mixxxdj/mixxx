@@ -32,15 +32,15 @@
  *  - Functions used as engine.makeConnection() callbacks are called as
  *    (value, group, control) instead -- a different shape, easy to confuse
  *    with the one above.
- *  - A few functions here (fxEnableLed, fxOnLed) are factories: called once
- *    at init() with setup args, they return the actual connection callback
- *    as a closure.
+ *  - A few functions here (fxOnLed) are factories: called once at init()
+ *    with setup args, they return the actual connection callback as a
+ *    closure.
  *  - Unused parameters are prefixed with _ (kept only to preserve the
  *    required call signature).
  *  - EFX buttons/knobs and SAMP pads are the exception to the first bullet:
- *    they're components.Button/components.Pot/components.SamplerButton
- *    instances (midi-components-0.0.js), bound directly from XML via a
- *    dotted key on the instance (e.g. mc3000.effectUnit1.button2.input,
+ *    they're components.EffectUnit/components.SamplerButton instances
+ *    (midi-components-0.0.js), bound directly from XML via a dotted key on
+ *    the instance (e.g. mc3000.effectUnit1.enableButtons[2].input,
  *    mc3000.samplerButtons[1].input) rather than a plain function name.
  *    SYNC (components.SyncButton) is bound the same way.
  *
@@ -129,15 +129,11 @@ mc3000.init = function(id) {
 
     mc3000.allLedOff();
 
-    // FX effect-enable -> EFX button LEDs (both sides, EffectUnit1 & EffectUnit2).
-    // .trigger() initialises each LED to the effect's current state.
-    var fxs, fxn;
-    for (fxs=1; fxs<=2; fxs++) {
-        for (fxn=1; fxn<=4; fxn++) {
-            engine.makeConnection("[EffectRack1_EffectUnit"+fxs+"_Effect"+fxn+"]",
-                "enabled", mc3000.fxEnableLed(fxs, fxn)).trigger();
-        }
-    }
+    // EffectUnit1/2's own init() connects and triggers their enable buttons,
+    // focus button, and knobs (LEDs go through the send() overrides set up
+    // in mc3000.makeEffectUnit).
+    mc3000.effectUnit1.init();
+    mc3000.effectUnit2.init();
 
     // FX-ON (assign unit to deck) -> FX ON button LEDs. Under the uniform
     // re-channel model the FX-ON button for deck N arrives on that deck's channel,
@@ -494,57 +490,46 @@ mc3000.decksOfSide = function(side) {
     return side === 1 ? [1,3] : [2,4];
 };
 
-// EFX buttons/knobs use components.Button/components.Pot (midi-components-0.0.js)
-// for the standard enabled-toggle and meta-parameter bindings instead of hand-rolled
-// engine.getValue/setValue/setParameter calls. components.EffectUnit's higher-level
-// wrapper is deliberately NOT used here: its enable buttons wire their own LED output
-// unconditionally (ignoring outConnect:false), using generic on/off values -- that
-// doesn't fit the MC3000's non-standard 74/75/76 LED protocol or its need to broadcast
-// one LED to both decks sharing a side, so LEDs stay wired through mc3000.fxEnableLed
-// below.
+// EFX buttons/knobs use components.EffectUnit (midi-components-0.0.js), matching
+// Mixxx's standard 3-effect-slot model: EFX.1-3 buttons/knobs are the enable
+// toggles and meta knobs for that side's three effect slots, EFX.4 button is the
+// focus button (press to focus one effect for per-parameter control instead of
+// just its meta knob), and EFX.4 knob is the effect unit's overall dry/wet mix.
+// unitNumbers is a single-element array (not e.g. [1,3]) because deck assignment
+// is already handled by FX ON 1/2 below -- this side's EFX cluster always targets
+// the one EffectRack1_EffectUnit assigned to it, never a second unit to toggle to.
 //
-// Each button/knob's group is fixed to one effect slot (e.g. left EFX button 1 always
-// targets EffectUnit1_Effect1, regardless of whether deck A or C is currently active
-// on that side) -- unlike the deck-facing controls, the FX target itself never needs a
-// per-press group lookup, so the XML <group> for these controls (still the deck's own
-// channel group, since that's what re-channels) is otherwise unused here.
-mc3000.makeEfxButton = function(side, n) {
-    return new components.Button({
-        group: "[EffectRack1_EffectUnit"+side+"_Effect"+n+"]",
-        inKey: "enabled",
-        type: components.Button.prototype.types.toggle,
-        outConnect: false,
-    });
-};
+// EffectUnit's enable/focus buttons wire their own LED output unconditionally via
+// engine.makeConnection, ignoring outConnect:false, so outConnect isn't used to
+// stop that -- instead, each button's send() is overridden below to broadcast
+// through mc3000.setled() to both of this side's decks, using this hardware's
+// on/off/blink LED protocol instead of the component's generic on/off send().
+// send() is untouched by every mode EffectUnit puts these buttons in (normal,
+// focus-choose, focused), so overriding it once here is enough.
+mc3000.makeEffectUnit = function(side) {
+    const eu = new components.EffectUnit([side], false);
+    const decks = mc3000.decksOfSide(side);
+    const suffix = mc3000.sideSuffix(side);
 
-mc3000.makeEfxKnob = function(side, n) {
-    return new components.Pot({
-        group: "[EffectRack1_EffectUnit"+side+"_Effect"+n+"]",
-        inKey: "meta",
-    });
-};
-
-mc3000.effectUnit1 = new components.ComponentContainer();
-mc3000.effectUnit2 = new components.ComponentContainer();
-for (var efxN=1; efxN<=4; efxN++) {
-    mc3000.effectUnit1["button"+efxN] = mc3000.makeEfxButton(1, efxN);
-    mc3000.effectUnit1["knob"+efxN] = mc3000.makeEfxKnob(1, efxN);
-    mc3000.effectUnit2["button"+efxN] = mc3000.makeEfxButton(2, efxN);
-    mc3000.effectUnit2["knob"+efxN] = mc3000.makeEfxKnob(2, efxN);
-}
-
-// Connection callback: drive one EFX button LED from its effect-enabled state
-mc3000.fxEnableLed = function(side, n) {
-    var decks = mc3000.decksOfSide(side);
-    return function(value) {
-        for (var d=0; d<decks.length; d++) {
-            mc3000.setled(decks[d], mc3000.leds["efx"+n+mc3000.sideSuffix(side)], value);
-        }
+    const broadcastSend = function(led) {
+        return function(value) {
+            for (let d=0; d<decks.length; d++) {
+                mc3000.setled(decks[d], led, value);
+            }
+        };
     };
+
+    for (let n=1; n<=3; n++) {
+        eu.enableButtons[n].send = broadcastSend(mc3000.leds[`efx${n}${suffix}`]);
+    }
+    eu.effectFocusButton.send = broadcastSend(mc3000.leds[`efx4${suffix}`]);
+
+    return eu;
 };
 
+mc3000.effectUnit1 = mc3000.makeEffectUnit(1);
+mc3000.effectUnit2 = mc3000.makeEffectUnit(2);
 
-// Connection callback for the FX-ON (unit assign) button LEDs
 // FX-ON LED callback factory: light the FX-ON LED on the deck's own channel.
 mc3000.fxOnLed = function(deck, unit) {
     return function(value) {
