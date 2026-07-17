@@ -798,8 +798,7 @@ void CoreServices::initialize(QApplication* pApp) {
         m_pTrackCollectionManager,
         m_pLibrary,
         m_pDbConnectionPool,
-        m_pPlayerManager,
-       this
+        m_pPlayerManager
     );
 #endif
 

@@ -46,8 +46,7 @@ namespace mixxx {
                          std::shared_ptr<TrackCollectionManager> &collectionManager,
                          std::shared_ptr<Library> &library,
                          std::shared_ptr<PlayerManager> &ainf,
-                         std::shared_ptr<DbConnectionPool> db,
-                         QObject* parent=0) {
+                         std::shared_ptr<DbConnectionPool> db) {
 
             httpServer.route("/", [settings] () {
                 return QHttpServerResponse::fromFile(QString(settings->getResourcePath())+"/web/index.html" );
@@ -415,28 +414,28 @@ namespace mixxx {
         };
     private:
     	QTcpServer*  	      tcpserver;
-        QObject*              m_Parent;
         QHttpServer           httpServer;
     };
 };
 
-mixxx::RemoteControl::RemoteControl(UserSettingsPointer pConfig,
-                                                                    std::shared_ptr<TrackCollectionManager> &trackscollmngr,
-                                                                    std::shared_ptr<Library> &library,
-                                                                    std::shared_ptr<DbConnectionPool> &database,
-                                                                    std::shared_ptr<PlayerManager> &ainf,
-                                    QObject* pParent)
+mixxx::RemoteControl::RemoteControl(
+                                        UserSettingsPointer pConfig,
+                                        std::shared_ptr<TrackCollectionManager> &trackscollmngr,
+                                        std::shared_ptr<Library> &library,
+                                        std::shared_ptr<DbConnectionPool> &database,
+                                        std::shared_ptr<PlayerManager> &ainf
+                                    )
         : m_pConfig(pConfig),
           m_trackscollmngr(trackscollmngr),
           m_library(library),
           m_database(database),
-          m_ainf(ainf),
-          m_Parent(pParent) {
+          m_ainf(ainf)
+{
     kLogger.debug() << "Starting RemoteControl";
     if(QVariant(m_pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Starting RemoteControl Webserver";
         m_RemoteController = std::make_shared<RemoteController>(
-                m_pConfig,m_trackscollmngr,m_library,m_ainf,m_database,m_Parent);
+                m_pConfig,m_trackscollmngr,m_library,m_ainf,m_database);
     }
 }
 
@@ -451,7 +450,7 @@ void mixxx::RemoteControl::reload(){
     if(QVariant(m_pConfig->get(ConfigKey("[RemoteControl]","actv")).value).toBool()){
         kLogger.debug() << "Restarting RemoteControl Webserver";
         m_RemoteController = std::make_shared<RemoteController>(
-                m_pConfig,m_trackscollmngr,m_library,m_ainf,m_database,m_Parent);
+                m_pConfig,m_trackscollmngr,m_library,m_ainf,m_database);
     }
 }
 
