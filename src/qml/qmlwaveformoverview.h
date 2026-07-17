@@ -1,12 +1,17 @@
 #pragma once
 
+#include <QHash>
 #include <QPainter>
+#include <QPixmap>
 #include <QPointer>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
+#include <QString>
 
+#include "library/overviewcache.h"
 #include "qmltrackproxy.h"
+#include "track/trackid.h"
 #include "waveform/waveform.h"
 
 namespace mixxx {
@@ -52,6 +57,10 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Channels getChannels() const;
   private slots:
     void slotWaveformUpdated();
+    void slotOverviewChanged(TrackId trackId);
+    void slotWaveformSummaryReady(const QObject* pRequester,
+            TrackId trackId,
+            ConstWaveformPointer pWaveform);
 
   signals:
     void trackChanged();
@@ -71,12 +80,35 @@ class QmlWaveformOverview : public QQuickPaintedItem {
             ConstWaveformPointer pWaveform,
             int completion) const;
     QColor getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const;
-    QmlTrackProxy* m_pTrack;
+
+    /// Render the waveform overview into a freshly created off-screen
+    /// `QPixmap`, populate the global `QPixmapCache` with it and return
+    /// it. The caller is responsible for drawing the pixmap onto the
+    /// item's painter.
+    QPixmap renderWaveformToPixmap(ConstWaveformPointer pWaveform, int completion) const;
+
+    /// Build a unique `QPixmapCache` key for the current state of the
+    /// item (track id + geometry + renderer + channels + colors +
+    /// waveform completion).
+    QString pixmapCacheKey(TrackId trackId, QSize size, int completion) const;
+
+    /// Remove all cached pixmap entries that this item has registered
+    /// for `trackId`.
+    void invalidatePixmapCache(TrackId trackId);
+
+    QPointer<QmlTrackProxy> m_pTrack;
     Channels m_channels;
     Renderer m_renderer;
     QColor m_colorHigh;
     QColor m_colorMid;
     QColor m_colorLow;
+
+    OverviewCache* const m_pCache;
+
+    /// Tracks every `QPixmapCache` key inserted by this item keyed by
+    /// the track id it relates to, so we can evict all of them when the
+    /// waveform for that track is changed/cleared.
+    QMultiHash<TrackId, QString> m_cacheKeysByTrackId;
 };
 
 } // namespace qml

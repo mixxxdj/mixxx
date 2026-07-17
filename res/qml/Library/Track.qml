@@ -1,37 +1,49 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls 2.15
 import "../Theme"
+import ".." as Skin
 
 Item {
     id: root
 
-    required property var capabilities
-    property alias drag: dragHandler
     readonly property var library: Mixxx.Library
+
+    required property var capabilities
+    required property var view
+    required property var playlists
+    required property var crates
+
     property alias tap: tapHandler
+
+    property var _lazyTrack: null
 
     function hasCapabilities(caps) {
         return (root.capabilities & caps) == caps;
     }
 
-    DragHandler {
-        id: dragHandler
 
-        target: value
-    }
     TapHandler {
         id: tapHandler
 
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-        onLongPressed: mouse => {
-            contextMenu.popup();
-        }
         onTapped: (eventPoint, button) => {
+            view.selectionModel.selectRow(row);
             if (button === Qt.RightButton) {
+                _lazyTrack = view.model?.getTrackByRow(row) ?? null;
                 contextMenu.popup();
             }
+        }
+        onDoubleTapped: (eventPoint, button) => {
+            view.selectionModel.selectRow(row);
+            view.loadSelectedTrackIntoNextAvailableDeck(false);
+        }
+        onLongPressed: (eventPoint, button) => {
+            view.selectionModel.selectRow(row);
+            _lazyTrack = view.model?.getTrackByRow(row) ?? null;
+            contextMenu.popup();
         }
     }
     Menu {
@@ -57,7 +69,9 @@ Item {
                     delegate: MenuItem {
                         text: qsTr("Deck %1").arg(modelData + 1)
 
-                        onTriggered: Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`).loadTrack(track)
+                        onTriggered: {
+                            if (_lazyTrack) Mixxx.PlayerManager.getPlayer(`[Channel${modelData + 1}]`).loadTrack(_lazyTrack);
+                        }
                     }
 
                     onObjectAdded: (index, object) => loadToDeckMenu.insertItem(index, object)
@@ -68,18 +82,6 @@ Item {
                 enabled: hasCapabilities(Mixxx.LibraryTrackListModel.Capability.LoadToSampler)
                 title: qsTr("Sampler")
             }
-
-            // Instantiator {
-            //     id: recentFilesInstantiator
-            //     model: settings.recentFiles
-            //     delegate: MenuItem {
-            //         text: settings.displayableFilePath(modelData)
-            //         onTriggered: loadFile(modelData)
-            //     }
-
-            //     onObjectAdded: (index, object) => recentFilesMenu.insertItem(index, object)
-            //     onObjectRemoved: (index, object) => recentFilesMenu.removeItem(object)
-            // }
         }
         Menu {
             id: addToPlaylistMenu
@@ -89,11 +91,72 @@ Item {
             }
             title: qsTr("Add to playlists")
 
-            MenuSeparator {
+            Instantiator {
+                model: playlists.list()
+                delegate: MenuItem {
+                    text: modelData.name
+                    onTriggered: modelData.addTrack(root._lazyTrack)
+                    enabled: !modelData.locked
+                }
+
+                onObjectAdded: (index, object) => addToPlaylistMenu.insertItem(index, object)
+                onObjectRemoved: (index, object) => addToPlaylistMenu.removeItem(object)
             }
+
+            MenuSeparator {}
+
             MenuItem {
-                enabled: false // TODO implement
+                id: createPlaylistItem
+
+                property bool creating: false
+
                 text: qsTr("Create New Playlist")
+                contentItem: Item {
+                    TextInput {
+                        id: playlistNewName
+                        visible: createPlaylistItem.creating
+                        anchors.fill: parent
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.margins: 7
+                        focus: true
+                        clip: true
+                        color: acceptableInput ? "#000000" : 'red'
+                        horizontalAlignment: TextInput.AlignLeft
+                        onAccepted: {
+                            if (!text) {
+                                return
+                            }
+                            let result = playlists.create(text)
+                            if (result != Mixxx.LibraryPlaylistSource.PlaylistCreateResult.Ok) {
+                                // TODO UX feedback
+                                console.warn("Create New Playlist", text, result)
+                                return
+                            }
+                            playlists.get(text).addTrack(root._lazyTrack)
+                            text = ""
+                            createPlaylistItem.creating = false
+                        }
+                    }
+                    Text {
+                        visible: !createPlaylistItem.creating
+                        leftPadding: createPlaylistItem.indicator.width
+                        rightPadding: createPlaylistItem.arrow.width
+                        text: createPlaylistItem.text
+                        font: createPlaylistItem.font
+                        opacity: enabled ? 1.0 : 0.3
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    TapHandler {
+                        onTapped: {
+                            createPlaylistItem.creating = true
+                            playlistNewName.forceActiveFocus();
+                        }
+                    }
+                }
             }
         }
         Menu {
@@ -104,11 +167,73 @@ Item {
             }
             title: qsTr("Crates")
 
-            MenuSeparator {
+            Instantiator {
+                model: root._lazyTrack ? crates.list([root._lazyTrack]) : 0
+                delegate: MenuItem {
+                    text: modelData.name
+                    checked: modelData.trackCount() == 1
+                    checkable: true
+                    onToggled: {
+                        if (checked) {
+                            modelData.addTrack(root._lazyTrack)
+                        } else {
+                            modelData.removeTrack(root._lazyTrack)
+                        }
+                    }
+                    enabled: !modelData.locked
+                }
+
+                onObjectAdded: (index, object) => addToCrateMenu.insertItem(index, object)
+                onObjectRemoved: (index, object) => addToCrateMenu.removeItem(object)
             }
+
+            MenuSeparator {}
+
             MenuItem {
-                enabled: false // TODO implement
+                id: createCrateItem
+
+                property bool creating: false
+
                 text: qsTr("Create New Crate")
+                contentItem: Item {
+                    TextInput {
+                        id: crateNewName
+                        visible: createCrateItem.creating
+                        anchors.fill: parent
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.margins: 7
+                        focus: true
+                        clip: true
+                        color: acceptableInput ? "#000000" : 'red'
+                        horizontalAlignment: TextInput.AlignLeft
+                        onAccepted: {
+                            if (text) {
+                                crates.create(text)
+                            }
+                            text = ""
+                            createCrateItem.creating = false
+                        }
+                    }
+                    Text {
+                        visible: !createCrateItem.creating
+                        leftPadding: createCrateItem.indicator.width
+                        rightPadding: createCrateItem.arrow.width
+                        text: createCrateItem.text
+                        font: createCrateItem.font
+                        opacity: enabled ? 1.0 : 0.3
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignLeft
+                        verticalAlignment: Text.AlignVCenter
+                        elide: Text.ElideRight
+                    }
+                    TapHandler {
+                        onTapped: {
+                            createPlaylistItem.creating = true
+                            playlistNewName.forceActiveFocus();
+                        }
+                    }
+                }
             }
         }
         Menu {
@@ -123,7 +248,7 @@ Item {
                 text: qsTr("Analyze")
 
                 onTriggered: {
-                    library.analyze(track);
+                    if (_lazyTrack) library.analyze(_lazyTrack);
                 }
             }
             MenuItem {

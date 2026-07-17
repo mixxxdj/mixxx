@@ -13,6 +13,9 @@ Rectangle {
     id: root
 
     required property var model
+    property var sidebar: model.sidebar()
+
+    property var movedColumn: new Object()
 
     color: Theme.darkGray
 
@@ -36,6 +39,55 @@ Rectangle {
             view.selectionModel.moveSelectionVertical(offset);
         }
     }
+    Menu {
+        id: columnSelectionMenu
+
+        Instantiator {
+            model: root.sidebar.tracklist.columns
+
+            delegate: Action {
+                property var data: view.getColumn(index)
+
+                checkable: true
+                checked: (!view.columnShouldAutoHide(data) || data?.display == Mixxx.TrackListColumn.Display.Show) && data?.display != Mixxx.TrackListColumn.Display.Hide
+                text: qsTr(data?.label)
+
+                onTriggered: {
+                    // console.log(`columnShouldAutoHide: ${view.columnShouldAutoHide(data)}, want: ${checked}`)
+                    if (!view.columnShouldAutoHide(data) === checked){
+                        data.display = Mixxx.TrackListColumn.Display.Auto
+                    } else {
+                        data.display = checked ? Mixxx.TrackListColumn.Display.Show : Mixxx.TrackListColumn.Display.Hide
+                    }
+                    // console.log(`columnShouldAutoHide: ${data.display}`)
+                    let currentExplicitWidth = view.explicitColumnWidth(index)
+                    if (data.display == Mixxx.TrackListColumn.Display.Hide) {
+                        // console.log(`if ${currentExplicitWidth}`)
+                        if (currentExplicitWidth > 0) {
+                            data.preferredWidth = currentExplicitWidth;
+                        }
+                        view.setColumnWidth(index, 0)
+                    } else if (data.display != Mixxx.TrackListColumn.Display.Hide) {
+                        // console.log(`else ${data.preferredWidth}`)
+                        view.setColumnWidth(index, data.preferredWidth)
+                    }
+                }
+            }
+
+            onObjectAdded: (index, object) => columnSelectionMenu.insertAction(index, object)
+            onObjectRemoved: (index, object) => columnSelectionMenu.removeAction(object)
+        }
+
+        Connections {
+            function onColumnMoved(logicalId, oldId, newId) {
+                let previousName = columnSelectionMenu.actionAt(logicalId).data.label
+                columnSelectionMenu.actionAt(newId).data = view.model.columns[logicalId]
+                // console.log(`FFFFFFFFF ${logicalId}: ${previousName} -> ${columnSelectionMenu.actionAt(newId).data.label}`)
+            }
+
+            target: view
+        }
+    }
     HorizontalHeaderView {
         id: horizontalHeader
 
@@ -47,6 +99,9 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         syncView: view
+        movableColumns: true
+        flickableDirection: Flickable.VerticalFlick
+        clip: true
 
         delegate: Item {
             id: column
@@ -57,13 +112,9 @@ Rectangle {
             implicitHeight: columnName.contentHeight + 5
             implicitWidth: columnName.contentWidth + 5
 
-            MouseArea {
-                id: columnMouseHandler
-
+            TapHandler {
                 acceptedButtons: Qt.LeftButton
-                anchors.fill: parent
-
-                onClicked: {
+                onTapped: {
                     if (horizontalHeader.sortingColumn == index) {
                         horizontalHeader.sortingOrder = horizontalHeader.sortingOrder == Qt.DescendingOrder ? Qt.AscendingOrder : Qt.DescendingOrder;
                     } else {
@@ -71,6 +122,16 @@ Rectangle {
                         horizontalHeader.sortingOrder = Qt.AscendingOrder;
                     }
                     view.model.sort(horizontalHeader.sortingColumn, horizontalHeader.sortingOrder);
+                }
+                onLongPressed: (eventPoint, button) => {
+                    columnSelectionMenu.popup();
+                }
+            }
+
+            TapHandler {
+                acceptedButtons: Qt.RightButton
+                onTapped: {
+                    columnSelectionMenu.popup();
                 }
             }
             Text {
@@ -92,7 +153,7 @@ Rectangle {
                 anchors {
                     bottom: parent.bottom
                     left: parent.left
-                    leftMargin: 5
+                    leftMargin: 8
                     top: parent.top
                 }
                 Label {
@@ -126,8 +187,6 @@ Rectangle {
                 MouseArea {
                     id: columnResizeHandler
 
-                    property int sizeOffset: 0
-
                     anchors.fill: parent
                     cursorShape: Qt.SizeHorCursor
                     preventStealing: true
@@ -135,7 +194,7 @@ Rectangle {
                     onMouseXChanged: {
                         if (drag.active) {
                             column.width += mouseX;
-                            sizeOffset += mouseX;
+                            view.setColumnWidth(index, column.width)
                         }
                     }
 
@@ -143,15 +202,6 @@ Rectangle {
                         axis: Drag.XAxis
                         target: parent
                         threshold: 2
-
-                        onActiveChanged: {
-                            if (!drag.active && columnResizeHandler.sizeOffset !== 0) {
-                                view.model.columns[index].preferredWidth = column.width;
-                                columnResizeHandler.sizeOffset = 0;
-                                view.updateColumnSize();
-                                view.forceLayout();
-                            }
-                        }
                     }
                 }
             }
@@ -160,8 +210,23 @@ Rectangle {
     TableView {
         id: view
 
-        property int dynamicColumnCount: 0
-        property int usedWidth: 0
+        onColumnMoved: (logicalIndex, oldVisualIndex, newVisualIndex) => {
+            if (root.movedColumn[newVisualIndex] !== undefined && logicalIndex === newVisualIndex){
+                delete root.movedColumn[newVisualIndex]
+                return;
+            }
+            console.log(`onColumnMoved: ${logicalIndex} -> ${newVisualIndex}`)
+            root.movedColumn[newVisualIndex] = logicalIndex
+        }
+
+        function getColumn(index){
+            return model.columns[root.movedColumn[index] !== undefined ? root.movedColumn[index] : index]
+        }
+
+        function columnShouldAutoHide(column){
+            // console.log(`columnShouldAutoHide: ${column.display} ${column.autoHideWidth > 0 && column.autoHideWidth > view.width}`)
+            return column?.display == Mixxx.TrackListColumn.Display.Auto && column?.autoHideWidth > 0 && column?.autoHideWidth > view.width
+        }
 
         function loadSelectedTrack(group, play) {
             const urls = this.selectionModel.selectedTrackUrls();
@@ -177,95 +242,136 @@ Rectangle {
 
             Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(urls[0], play);
         }
-        function updateColumnSize() {
-            const oldUsedWidth = usedWidth;
-            const oldDynamicColumnCount = dynamicColumnCount;
-            usedWidth = 0;
-            dynamicColumnCount = 0;
-            if (model == null) {
-                return;
-            }
-            for (let c = 0; c < model.columns.length; c++) {
-                if (model.columns[c].hidden || model.columns[c].autoHideWidth > view.width) {
-                    continue;
-                } else if (model.columns[c].preferredWidth > 0) {
-                    usedWidth += model.columns[c].preferredWidth;
-                } else {
-                    dynamicColumnCount += model.columns[c].fillSpan || 1;
-                }
-            }
-            return oldDynamicColumnCount != dynamicColumnCount || oldUsedWidth != usedWidth;
-        }
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.margins: 5
         anchors.right: parent.right
         anchors.top: horizontalHeader.bottom
+        flickableDirection: Flickable.VerticalFlick
         clip: true
+        rowHeightProvider: () => 30
         columnWidthProvider: function (column) {
-            const columnDef = view.model.columns[column];
-            if (columnDef.hidden) {
+            const columnDef = getColumn(column);
+            let explicitWidth = explicitColumnWidth(column);
+            if (explicitWidth == -1){
+                explicitWidth = columnDef.preferredWidth
+            }
+            // console.warn(`Column size for ${columnDef.label}: ${explicitWidth}`)
+            if (columnDef.display == Mixxx.TrackListColumn.Display.Hide || view.columnShouldAutoHide(columnDef)) {
                 return 0;
             }
-            if (columnDef.autoHideWidth > 0 && columnDef.autoHideWidth > view.width) {
+            if (explicitWidth != -1) {
+                return explicitWidth;
+            }
+            if (model == null) {
                 return 0;
             }
-            if (columnDef.preferredWidth >= 0) {
-                return columnDef.preferredWidth;
+
+            let usedWidth = 0;
+            let dynamicColumnCount = 0;
+            for (let c = 0; c < model.columns.length; c++) {
+                 const columnDef = getColumn(c);
+                if (columnDef.display == Mixxx.TrackListColumn.Display.Hide || view.columnShouldAutoHide(columnDef)) {
+                    continue;
+                }
+                let explicitWidth = explicitColumnWidth(c);
+                if (explicitWidth == -1){
+                    explicitWidth = columnDef.preferredWidth
+                }
+
+                if (explicitWidth >= 0) {
+                    usedWidth += explicitWidth;
+                } else if (explicitWidth != 0) {
+                    dynamicColumnCount += columnDef.fillSpan || 1;
+                }
             }
             const span = columnDef.fillSpan || 1;
-            return span * (view.width - view.usedWidth) / view.dynamicColumnCount;
+            return span * (view.width - usedWidth) / dynamicColumnCount;
         }
         keyNavigationEnabled: false
-        model: root.model
+        model: root.sidebar.tracklist
         pointerNavigationEnabled: false
         reuseItems: true
+        selectionBehavior: TableView.SelectRows
 
         ScrollBar.vertical: ScrollBar {
             policy: ScrollBar.AlwaysOn
         }
-        delegate: Item {
-            id: item
+        delegate: DelegateChooser {
+            role: "columnType"
 
-            required property url cover_art
-            required property color decoration
-            required property var display
-            required property string file_url
-            required property int row
-            required property bool selected
-            required property var track
+            DelegateChoice {
+                roleValue: Mixxx.TrackListColumn.ColumnType.AlbumArt
+                Rectangle {
+                    required property url cover_art
+                    required property color decoration
 
-            implicitHeight: 30
+                    color: decoration
+                    implicitHeight: 30
 
-            Loader {
-                id: loader
-
-                property var capabilities: root.model ? root.model.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
-                property url cover_art: item.cover_art
-                property color decoration: item.decoration
-                property var display: item.display
-                property url file_url: item.file_url
-                property int row: item.row
-                property bool selected: item.selected
-                property var tableView: view
-                property var track: item.track
-
-                anchors.fill: parent
-                focus: true
-                sourceComponent: delegate
-
-                onLoaded:
-                // Workaround needed for WaveformOverview column to load the data
-                //     if (track)
-                //         Mixxx.Library.analyze(track)
-                {}
+                    Image {
+                        anchors.fill: parent
+                        asynchronous: true
+                        clip: true
+                        fillMode: Image.PreserveAspectCrop
+                        source: cover_art
+                    }
+                }
             }
-            // Workaround needed for WaveformOverview column to load the data
-            // TableView.onReused: {
-            //     if (track)
-            //         Mixxx.Library.analyze(track)
-            // }
+
+            DelegateChoice {
+                roleValue: Mixxx.TrackListColumn.ColumnType.Overview
+
+                Mixxx.WaveformOverview {
+                    id: waveformOverview
+                    channels: Mixxx.WaveformOverview.Channels.LeftChannel
+                    colorHigh: Theme.white
+                    colorLow: Theme.green
+                    colorMid: Theme.blue
+                    renderer: Mixxx.WaveformOverview.Renderer.Filtered
+                    track: null // Lazy loaded
+                    implicitHeight: 30
+                    implicitWidth: 30
+
+                    Component.onCompleted: {
+                        waveformOverview.track = TableView.view.model?.getTrackByRow(row)
+                    }
+                }
+            }
+            DelegateChoice {
+                Cell {
+                    track.capabilities: root.sidebar.tracklist ? root.sidebar.tracklist.getCapabilities() : Mixxx.LibraryTrackListModel.Capability.None
+                    track.playlists: root.model.playlist
+                    track.crates: root.model.crate
+                    // required property bool selected
+
+                    // readonly property alias dragImage: dragImageSource
+
+                    // Drag.dragType: Drag.Automatic
+                    // Drag.mimeData: {
+                    //     "text/uri-list": file_url.toString(),
+                    //     "text/plain": file_url.toString()
+                    // }
+                    // Drag.supportedActions: Qt.CopyAction
+                    // anchors.fill: parent
+                    color: selected ? Theme.accentColor : (row % 2 == 0 ? Theme.sunkenBackgroundColor : Theme.backgroundColor)
+
+                    Text {
+                        // required property string display
+                        // id: value
+
+                        anchors.fill: parent
+                        // anchors.leftMargin: 15
+                        color: Theme.textColor
+                        elide: Text.ElideRight
+                        font.pixelSize: 14
+                        text: display ?? ""
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                // LibraryComponent.TableTextDelegate {}
+            }
         }
         selectionModel: ItemSelectionModel {
             function moveSelectionVertical(value) {
@@ -284,6 +390,9 @@ Rectangle {
                 }
                 const newRow = Mixxx.MathUtils.positiveModulo(row, rowCount);
                 this.select(this.model.index(newRow, 0), ItemSelectionModel.Rows | ItemSelectionModel.Select | ItemSelectionModel.Clear | ItemSelectionModel.Current);
+                if (!view.isRowLoaded(newRow)) {
+                    view.positionViewAtRow(newRow, TableView.Visible | TableView.AlignVCenter);
+                }
             }
             function selectedTrackUrls() {
                 return this.selectedIndexes.map(index => {
@@ -294,17 +403,9 @@ Rectangle {
             model: view.model
         }
 
-        Component.onCompleted: this.updateColumnSize()
         Keys.onDownPressed: this.selectionModel.moveSelectionVertical(1)
         Keys.onEnterPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
         Keys.onReturnPressed: this.loadSelectedTrackIntoNextAvailableDeck(false)
         Keys.onUpPressed: this.selectionModel.moveSelectionVertical(-1)
-        onModelChanged: this.updateColumnSize()
-        onWidthChanged: {
-            if (view.updateColumnSize()) {
-                // forceLayout is costly - only invoke if there was a change in the column layouts
-                view.forceLayout();
-            }
-        }
     }
 }

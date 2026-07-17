@@ -1,5 +1,7 @@
 #pragma once
+#include <QHash>
 #include <QIdentityProxyModel>
+#include <QPointer>
 #include <QQmlEngine>
 
 #include "library/trackmodel.h"
@@ -12,15 +14,15 @@ namespace qml {
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_OBJECT
     QML_NAMED_ELEMENT(LibraryTrackListModel)
-    Q_PROPERTY(QQmlListProperty<QmlLibraryTrackListColumn> columns READ columns FINAL)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns
+                    READ columns NOTIFY columnsChanged)
     QML_UNCREATABLE("Only accessible via Mixxx.Library")
 
   public:
     enum Roles {
-        Track = Qt::UserRole,
-        FileURL,
+        FileURL = Qt::UserRole,
         CoverArt,
-        Delegate
+        ColumnTypeRole
     };
     Q_ENUM(Roles);
 
@@ -67,7 +69,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     QVariant data(const QModelIndex& index, int role) const override;
     int columnCount(const QModelIndex& index = QModelIndex()) const override;
     Q_INVOKABLE QUrl getUrl(int row) const;
-    Q_INVOKABLE mixxx::qml::QmlTrackProxy* getTrack(int row) const;
+    Q_INVOKABLE mixxx::qml::QmlTrackProxy* getTrackByRow(int row) const;
     Q_INVOKABLE TrackModel::Capabilities getCapabilities() const;
     Q_INVOKABLE bool hasCapabilities(TrackModel::Capabilities caps) const;
     QHash<int, QByteArray> roleNames() const override;
@@ -76,7 +78,13 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
             int role = Qt::DisplayRole) const override;
     Q_INVOKABLE void sort(int column, Qt::SortOrder order) override;
 
+  signals:
+    void columnsChanged();
+
   private:
+    QmlTrackProxy* getOrCreateTrackProxy(int row) const;
+
+    mutable QHash<int, QPointer<QmlTrackProxy>> m_trackProxyCache;
     std::vector<parented_ptr<QmlLibraryTrackListColumn>> m_columns;
 
     static void parent_qlist_append(

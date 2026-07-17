@@ -1,160 +1,71 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
-import "." as LibraryComponent
 import "../Theme"
 
 Mixxx.LibrarySourceTree {
     id: root
 
+    property alias playlist: playlistSource
+    property alias crate: crateSource
+
     defaultColumns: [
         Mixxx.TrackListColumn {
             autoHideWidth: 750
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Album
+            columnType: Mixxx.TrackListColumn.ColumnType.AlbumArt
             preferredWidth: 100
-
-            delegate: Rectangle {
-                color: decoration
-                implicitHeight: 30
-
-                Image {
-                    anchors.fill: parent
-                    asynchronous: true
-                    clip: true
-                    fillMode: Image.PreserveAspectCrop
-                    source: cover_art
-                }
-            }
         },
-        // FIXME: WaveformOverview is currently disabled due to performance limitation. Like for the legacy UI, a cache likely needs to be implemented to help
-        // Mixxx.TrackListColumn {
-        //     label: qsTr("Preview")
-        //     fillSpan: 3
-        //     preferredWidth: 300
-        //     columnIdx: Mixxx.TrackListColumn.SQLColumns.Title
-
-        //     delegate: LibraryCell {
-        //         // implicitHeight: 30
-        //         anchors.fill: parent
-
-        //         readonly property var trackProxy: track
-
-        //         Drag.active: dragArea.drag.active
-        //         Drag.dragType: Drag.Automatic
-        //         Drag.supportedActions: Qt.CopyAction
-        //         Drag.mimeData: {
-        //             "text/uri-list": file_url,
-        //             "text/plain": file_url
-        //         }
-
-        //         LibraryComponent.Track {
-        //             id: dragArea
-        //             anchors.fill: parent
-        //             capabilities: parent.capabilities
-
-        //             onPressed: {
-        //                 if (pressedButtons == Qt.LeftButton) {
-        //                     tableView.selectionModel.selectRow(row);
-        //                     parent.dragImage.grabToImage((result) => {
-        //                             parent.Drag.imageSource = result.url;
-        //                     });
-        //                 } else {
-        //                 }
-        //             }
-        //             onDoubleClicked: {
-        //                 tableView.selectionModel.selectRow(row);
-        //                 tableView.loadSelectedTrackIntoNextAvailableDeck(false);
-        //             }
-        //         }
-
-        //         Mixxx.WaveformOverview {
-        //             anchors.fill: parent
-        //             channels: Mixxx.WaveformOverview.Channels.LeftChannel
-        //             renderer: Mixxx.WaveformOverview.Renderer.Filtered
-        //             colorHigh: Theme.white
-        //             colorMid: Theme.blue
-        //             colorLow: Theme.green
-        //             track: trackProxy
-        //         }
-        //         Rectangle {
-        //             id: border
-        //             color: Theme.darkGray2
-        //             width: 1
-        //             anchors {
-        //                 top: parent.top
-        //                 bottom: parent.bottom
-        //                 right: parent.right
-        //             }
-        //         }
-        //     }
-
-        // },
+        Mixxx.TrackListColumn {
+            autoHideWidth: 850
+            columnIdx: Mixxx.TrackListColumn.SQLColumns.Title
+            columnType: Mixxx.TrackListColumn.ColumnType.Overview
+            fillSpan: 3
+            label: qsTr("Preview")
+            preferredWidth: 200
+        },
         Mixxx.TrackListColumn {
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Title
             fillSpan: 3
             label: qsTr("Title")
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Artist
             fillSpan: 2
             label: qsTr("Artist")
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             autoHideWidth: 690
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Album
             fillSpan: 1
             label: qsTr("Album")
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             autoHideWidth: 750
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Year
             label: qsTr("Year")
             preferredWidth: 80
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Bpm
-            label: qsTr("Bpm")
+            label: qsTr("BPM")
             preferredWidth: 60
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Key
             label: qsTr("Key")
             preferredWidth: 70
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             autoHideWidth: 900
             columnIdx: Mixxx.TrackListColumn.SQLColumns.FileType
             label: qsTr("File Type")
             preferredWidth: 70
-
-            delegate: DefaultDelegate {
-            }
         },
         Mixxx.TrackListColumn {
             autoHideWidth: 1200
             columnIdx: Mixxx.TrackListColumn.SQLColumns.Bitrate
             label: qsTr("Bitrate")
             preferredWidth: 70
-
-            delegate: DefaultDelegate {
-            }
         }
     ]
 
@@ -162,54 +73,138 @@ Mixxx.LibrarySourceTree {
         columns: root.defaultColumns
         label: qsTr("All...")
     }
-
-    component DefaultDelegate: LibraryComponent.Cell {
-        id: cell
-
-        readonly property var caps: capabilities
-
-        // FIXME: https://bugreports.qt.io/browse/QTBUG-111789
-        Binding on Drag.active {
-            // This delays the update until the even queue is cleared
-            // preventing any potential oscillations causing a loop
-            delayed: true
-            value: dragArea.drag.active
+    Mixxx.LibraryPlaylistSource {
+        id: playlistSource
+        label: qsTr("Playlist")
+        itemName: qsTr("playlist")
+        capabilities: Mixxx.LibrarySource.Capability.Create | Mixxx.LibrarySource.Capability.AddTrack
+        onRequestCreate: (name) => {
+            // TODO create a new item with given name
+            print("onRequestCreate", name)
         }
-
-        LibraryComponent.Track {
-            id: dragArea
-
-            anchors.fill: parent
-            capabilities: cell.caps
-
-            drag.onGrabChanged: (transition, eventPoint) => {
-                if (transition != PointerDevice.GrabPassive && transition != PointerDevice.GrabExclusive) {
-                    return;
-                }
-                parent.dragImage.grabToImage(result => {
-                    parent.Drag.imageSource = result.url;
-                }, Qt.size(parent.dragImage.width, parent.dragImage.height));
-            }
-            tap.onDoubleTapped: {
-                tableView.selectionModel.selectRow(row);
-                tableView.loadSelectedTrackIntoNextAvailableDeck(false);
-            }
-            tap.onTapped: (eventPoint, button) => {
-                if (button == Qt.LeftButton) {
-                    tableView.selectionModel.selectRow(row);
-                }
-            }
+        onRequestAddTrack: (item, track) => {
+            // TODO add track to current item
+            print("onRequestAddTrack", item, track)
         }
-        Text {
-            id: value
+        icon: "../images/library_playlist.png"
 
-            anchors.fill: parent
-            anchors.leftMargin: 15
-            color: Theme.textColor
-            elide: Text.ElideRight
-            font.pixelSize: 14
-            text: display ?? ""
-            verticalAlignment: Text.AlignVCenter
+        columns: root.defaultColumns
+    }
+    Mixxx.LibraryCrateSource {
+        id: crateSource
+        label: qsTr("Crate")
+        itemName: qsTr("crate")
+        capabilities: Mixxx.LibrarySource.Capability.Create | Mixxx.LibrarySource.Capability.AddTrack
+        onRequestCreate: (name) => {
+            // TODO create a new item with given name
+            print("onRequestCreate", name)
         }
+        onRequestAddTrack: (item, track) => {
+            // TODO add track to current item
+            print("onRequestAddTrack", item, track)
+        }
+        icon: "../images/library_crates.png"
+
+        columns: root.defaultColumns
+    }
+    Mixxx.LibraryExplorerSource {
+        label: qsTr("Explorer")
+        icon: "../images/library_explorer.png"
+        columns: [
+            Mixxx.TrackListColumn {
+                autoHideWidth: 850
+                columnType: Mixxx.TrackListColumn.ColumnType.Overview
+                fillSpan: 3
+                label: qsTr("Preview")
+                preferredWidth: 200
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Filename")
+                fillSpan: 4
+            },
+            Mixxx.TrackListColumn {
+                role: Mixxx.TrackListColumn.Role.Artist
+                label: qsTr("Artist")
+                fillSpan: 2
+            },
+            Mixxx.TrackListColumn {
+                role: Mixxx.TrackListColumn.Role.Title
+                label: qsTr("Title")
+                fillSpan: 2
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Album")
+                fillSpan: 1
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Track #")
+                display: Mixxx.TrackListColumn.Display.Hide
+                preferredWidth: 60
+            },
+            Mixxx.TrackListColumn {
+                autoHideWidth: 750
+                label: qsTr("Year")
+                preferredWidth: 80
+            },
+            Mixxx.TrackListColumn {
+                autoHideWidth: 750
+                label: qsTr("Genre")
+                preferredWidth: 80
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Composer")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Comment")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Duration")
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("BPM")
+                preferredWidth: 60
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Key")
+                preferredWidth: 70
+            },
+            Mixxx.TrackListColumn {
+                autoHideWidth: 900
+                label: qsTr("File Type")
+                preferredWidth: 70
+            },
+            Mixxx.TrackListColumn {
+                autoHideWidth: 1200
+                label: qsTr("Bitrate")
+                preferredWidth: 70
+            },
+            Mixxx.TrackListColumn {
+                role: Mixxx.TrackListColumn.Role.Location
+                label: qsTr("Location")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Album Artist")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("Grouping")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("File Modified")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("File Created")
+                display: Mixxx.TrackListColumn.Display.Hide
+            },
+            Mixxx.TrackListColumn {
+                label: qsTr("ReplayGain")
+                display: Mixxx.TrackListColumn.Display.Hide
+            }
+        ]
     }
 }
