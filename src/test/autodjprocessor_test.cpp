@@ -32,7 +32,10 @@ const QString kAppGroup = QStringLiteral("[App]");
 class FakeMixer {
   public:
     FakeMixer()
-            : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
+            : crossfader(ConfigKey(QStringLiteral("[Mixer]"),
+                                 QStringLiteral("crossfader")),
+                      -1.0,
+                      1.0),
               crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
         crossfaderReverse.setButtonMode(mixxx::control::ButtonMode::Toggle);
     }

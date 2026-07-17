@@ -585,7 +585,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xBF</status>
                 <midino>0x08</midino>
@@ -634,7 +634,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>volume</key>
                 <status>0xBF</status>
                 <midino>0x0A</midino>
@@ -791,7 +791,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>MixtrackPlatinum.head_gain.input</key>
                 <status>0xBF</status>
                 <midino>0x0C</midino>
@@ -820,8 +820,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xBF</status>
                 <midino>0x0D</midino>
                 <options>

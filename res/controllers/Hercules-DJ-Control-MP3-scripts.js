@@ -506,14 +506,14 @@ HerculesMp3.pitchpot = function (group, control, value, status) {
         max = 4;
     }
     else if (name == "fx 2"){
-        chan = "[Master]";
-        action="headVolume";
+        chan = "[Mixer]";
+        action="headphone_gain";
         min=0;
         max=5;
     }
     else if (name == "fx 3"){
-        chan = "[Master]";
-        action="headMix";
+        chan = "[Mixer]";
+        action="headphone_mix";
         min=-1;
         max=1;
     }

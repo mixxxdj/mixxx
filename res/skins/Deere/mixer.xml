@@ -180,7 +180,7 @@
                     <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Master],crossfader</ConfigKey>
+                      <ConfigKey>[Mixer],crossfader</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </SliderComposed>

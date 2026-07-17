@@ -23,7 +23,7 @@
         </State>
         <Pos>6,30</Pos>
         <Connection>
-          <ConfigKey>[Master],talkoverDucking</ConfigKey>
+          <ConfigKey>[Mixer],talkover_ducking_mode</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
@@ -35,7 +35,7 @@
         <Path>knobs_no_center_inverted/knob_rotary_s%1.png</Path>
         <Pos>27,22</Pos>
         <Connection>
-          <ConfigKey>[Master],duckStrength</ConfigKey>
+          <ConfigKey>[Mixer],talkover_ducking_strength</ConfigKey>
         </Connection>
       </Knob>
     </Children>

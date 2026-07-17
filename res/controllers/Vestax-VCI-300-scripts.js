@@ -283,7 +283,7 @@ VestaxVCI300.initValues = function() {
     VestaxVCI300.scrollState = false;
     VestaxVCI300.numDecksBackup = engine.getValue("[App]", "num_decks");
     engine.setValue("[App]", "num_decks", 2);
-    engine.setValue(VestaxVCI300.group, "headMix", 0.0);
+    engine.setValue(VestaxVCI300.group, "headphone_mix", 0.0);
 };
 
 VestaxVCI300.restoreValues = function() {

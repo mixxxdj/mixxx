@@ -119,7 +119,7 @@ AutoDJProcessor::AutoDJProcessor(
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault),
           m_pPlayerManager(pPlayerManager),
-          m_coCrossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
+          m_coCrossfader(QStringLiteral("[Mixer]"), QStringLiteral("crossfader")),
           m_coCrossfaderReverse(QStringLiteral("[Mixer Profile]"), QStringLiteral("xFaderReverse")),
           m_shufflePlaylist(ConfigKey(kControlGroup, QStringLiteral("shuffle_playlist"))),
           m_skipNext(ConfigKey(kControlGroup, QStringLiteral("skip_next"))),

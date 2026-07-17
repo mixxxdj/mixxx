@@ -404,7 +404,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x1</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description></description>
                 <options>
@@ -414,7 +414,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x10</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>balance</key>
                 <description></description>
                 <options>
@@ -594,7 +594,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x1c</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>BehringerBCD3000.keykey</key>
                 <options>
                     <script-binding/>

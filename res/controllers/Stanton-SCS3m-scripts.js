@@ -882,24 +882,24 @@ SCS3M.Agent = function(device) {
         expect(device.master.release, repatch(master.cancel));
         if (master.engaged()) {
             modeset(device.left.pitch.mode.absolute);
-            watch("[Master]", "headMix", patch(device.left.pitch.meter.centerbar));
+            watch("[Mixer]", "headphone_mix", patch(device.left.pitch.meter.centerbar));
             expect(device.left.pitch.slide,
-                eqheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
+            eqheld.left.engaged() ? reset("[Mixer]", "headphone_mix") : set("[Mixer]", "headphone_mix")
             );
 
             modeset(device.right.pitch.mode.absolute);
-            watch("[Master]", "balance", patch(device.right.pitch.meter.centerbar));
+            watch("[Mixer]", "balance", patch(device.right.pitch.meter.centerbar));
             expect(device.right.pitch.slide,
-                eqheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
+            eqheld.right.engaged() ? reset("[Mixer]", "balance") : set("[Mixer]", "balance")
             );
 
             modeset(device.left.gain.mode.relative);
-            watch("[Master]", "headVolume", patch(device.left.gain.meter.centerbar));
-            expect(device.left.gain.slide, budge('[Master]', 'headVolume'));
+            watch("[Mixer]", "headphone_gain", patch(device.left.gain.meter.centerbar));
+            expect(device.left.gain.slide, budge("[Mixer]", "headphone_gain"));
 
             modeset(device.right.gain.mode.relative);
-            watch("[Master]", "volume", patch(device.right.gain.meter.centerbar));
-            expect(device.right.gain.slide, budge('[Master]', 'volume'));
+            watch("[Mixer]", "main_gain", patch(device.right.gain.meter.centerbar));
+            expect(device.right.gain.slide, budge("[Mixer]", "main_gain"));
 
             watch("[Main]", "vu_meter_left", vupatch(device.left.meter.bar));
             watch("[Main]", "vu_meter_right", vupatch(device.right.meter.bar));
@@ -908,8 +908,8 @@ SCS3M.Agent = function(device) {
         if (deck.left.held() || deck.right.held()) {
             // Needledrop handled in Side()
         } else {
-            expect(device.crossfader.slide, set("[Master]", "crossfader"));
-            watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
+            expect(device.crossfader.slide, set("[Mixer]", "crossfader"));
+            watch("[Mixer]", "crossfader", patch(device.crossfader.meter.centerbar));
         }
 
         // Communicate currently selected channel of each deck so SCS3d can read it

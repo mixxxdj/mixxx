@@ -19,8 +19,8 @@ PioneerDDJSB3.jogwheelSensitivity = 1.0;
 // Set to 1 to disable jogwheel sensitivity increase when holding shift.
 PioneerDDJSB3.jogwheelShiftMultiplier = 100;
 
-// If true Level-Meter shows VU-Master left & right. If false shows level of active deck.
-PioneerDDJSB3.showVumeterMaster = false;
+// If true Level-Meter shows VU-Main left & right. If false shows level of active deck.
+PioneerDDJSB3.showVumeterMain = false;
 
 // If true VU-Level twinkle if AutoDJ is ON.
 PioneerDDJSB3.twinkleVumeterAutodjOn = true;
@@ -675,7 +675,7 @@ PioneerDDJSB3.bindNonDeckControlConnections = function(isUnbinding) {
         PioneerDDJSB3.bindSamplerControlConnections("[Sampler" + samplerIndex + "]", isUnbinding);
     }
 
-    if (PioneerDDJSB3.showVumeterMaster) {
+    if (PioneerDDJSB3.showVumeterMain) {
         engine.connectControl("[Main]", "vu_meter_left", PioneerDDJSB3.VuMeterLeds, isUnbinding);
         engine.connectControl("[Main]", "vu_meter_right", PioneerDDJSB3.VuMeterLeds, isUnbinding);
     } else {
@@ -897,16 +897,16 @@ PioneerDDJSB3.headphoneMasterUpdate = function() {
     if (masterCue) {
         if (anyDeckCue) {
             // 50% master 50% cue
-            engine.setValue("[Master]", "headMix", 0);
+            engine.setValue("[Master]", "headphone_mix", 0);
         } else {
             // 100% master
             // Check if 1 is all master or all cue
-            engine.setValue("[Master]", "headMix", 1);
+            engine.setValue("[Master]", "headphone_mix", 1);
         }
     } else {
         // 0% master
         // Check if 1 is all master or all cue
-        engine.setValue("[Master]", "headMix", -1);
+        engine.setValue("[Master]", "headphone_mix", -1);
     }
 };
 
@@ -1106,7 +1106,7 @@ PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
 
     if (!(PioneerDDJSB3.twinkleVumeterAutodjOn && engine.getValue("[AutoDJ]", "enabled"))) {
         var midiChannel;
-        if (PioneerDDJSB3.showVumeterMaster) {
+        if (PioneerDDJSB3.showVumeterMain) {
             if (control === "vu_meter_left") {
                 midiChannel = 0;
             } else if (control === "vu_meter_right") {
@@ -1121,7 +1121,7 @@ PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
             midi.sendShortMsg(0xB0 + midiChannel, 2, value);
         }
     } else {
-        if (group === "[Master]") {
+        if (group === "[Mixer]") {
             if (control === "vu_meter_left") {
                 PioneerDDJSB3.valueVuMeter["[Channel1]_current"] = value;
                 PioneerDDJSB3.valueVuMeter["[Channel3]_current"] = value;

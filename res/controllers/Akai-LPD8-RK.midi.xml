@@ -25,7 +25,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xB0</status>
                 <midino>0x66</midino>
@@ -34,8 +34,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headVolume</key>
+                <group>[Mixer]</group>
+                <key>headphone_gain</key>
                 <status>0xB0</status>
                 <midino>0x67</midino>
                 <options>
@@ -43,8 +43,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB0</status>
                 <midino>0x68</midino>
                 <options>
@@ -343,7 +343,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xB1</status>
                 <midino>0x66</midino>
@@ -352,8 +352,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headVolume</key>
+                <group>[Mixer]</group>
+                <key>headphone_gain</key>
                 <status>0xB1</status>
                 <midino>0x67</midino>
                 <options>
@@ -361,8 +361,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB1</status>
                 <midino>0x68</midino>
                 <options>
@@ -663,7 +663,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xB2</status>
                 <midino>0x66</midino>
@@ -672,8 +672,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headVolume</key>
+                <group>[Mixer]</group>
+                <key>headphone_gain</key>
                 <status>0xB2</status>
                 <midino>0x67</midino>
                 <options>
@@ -681,8 +681,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB2</status>
                 <midino>0x68</midino>
                 <options>
@@ -983,7 +983,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xb3</status>
                 <midino>0x66</midino>
@@ -992,8 +992,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headVolume</key>
+                <group>[Mixer]</group>
+                <key>headphone_gain</key>
                 <status>0xb3</status>
                 <midino>0x67</midino>
                 <options>
@@ -1001,8 +1001,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xb3</status>
                 <midino>0x68</midino>
                 <options>
