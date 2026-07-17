@@ -2,9 +2,12 @@
 
 #include <QPoint>
 
+#include "audio/types.h"
 #include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/assert.h"
 
 /// Constructs a new preferences sound item, representing an AudioPath and SoundDevice
 /// with a label and two combo boxes.
@@ -42,7 +45,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
-
 }
 
 /// Slot called when the parent preferences pane updates its list of sound
@@ -68,17 +70,91 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
     }
 }
 
+void DlgPrefSoundItem::addDevice(const SoundDevicePointer pDevice) {
+    // SoundDeviceId oldDev =
+    // deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
+    deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
+
+    // int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
+    // deviceComboBox->setCurrentIndex(newIndex);
+
+    m_devices.push_back(pDevice);
+}
+
+void DlgPrefSoundItem::removeDevice(const SoundDevicePointer pDevice) {
+    int removeIndex = deviceComboBox->findData(QVariant::fromValue(pDevice->getDeviceId()));
+    int currentIndex = deviceComboBox->currentIndex();
+
+    if (currentIndex == removeIndex) {
+        deviceComboBox->setCurrentIndex(0);
+        deviceComboBox->removeItem(removeIndex);
+    } else {
+        SoundDeviceId oldDev = deviceComboBox->itemData(currentIndex).value<SoundDeviceId>();
+        deviceComboBox->removeItem(removeIndex);
+
+        int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
+        if (newIndex != currentIndex) {
+            deviceComboBox->setCurrentIndex(newIndex);
+        }
+    }
+    m_devices.removeOne(pDevice);
+}
+
+void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
+    const auto& id = pDevice->getDeviceId();
+    int index = deviceComboBox->findData(QVariant::fromValue(id));
+    if (index >= 0 && deviceComboBox->currentIndex() == index) {
+        // if changed device is not selected no need to update
+        int currentIndex = channelComboBox->currentIndex();
+        auto channelData = channelComboBox->itemData(currentIndex).value<QPoint>();
+        deviceChanged(index);
+        auto newIndex = channelComboBox->findData(QVariant::fromValue(channelData));
+
+        m_emitSettingChanged = false;
+        channelComboBox->setCurrentIndex(newIndex);
+        m_emitSettingChanged = true;
+    }
+}
+
+void DlgPrefSoundItem::updateDeviceRoute(const SoundDeviceId& id, const AudioPath* pPath) {
+    if (pPath->getType() != m_type || pPath->getIndex() != m_index) {
+        return;
+    }
+
+    // qWarning() << "DlgPrefSoundItem::updateDevice" << id.name;
+    int index = deviceComboBox->findData(QVariant::fromValue(id));
+
+    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+        return;
+    }
+
+    if (index != deviceComboBox->currentIndex()) {
+        deviceComboBox->blockSignals(true);
+        deviceComboBox->setCurrentIndex(index);
+        deviceComboBox->blockSignals(false);
+        deviceChanged(index);
+    }
+
+    auto channelGroup = pPath->getChannelGroup();
+    QPoint point = QPoint(channelGroup.getChannelBase(), channelGroup.getChannelCount());
+    int channelIndex = channelComboBox->findData(QVariant::fromValue(point));
+    channelComboBox->setCurrentIndex(channelIndex);
+}
+
 /// Slot called when the device combo box selection changes. Updates the channel
 /// combo box.
 void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
     mixxx::audio::ChannelCount numChannels;
+    SoundDevicePointer selectedDevice;
+
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
         for (const auto& pDevice : std::as_const(m_devices)) {
             if (pDevice->getDeviceId() == selection) {
+                selectedDevice = pDevice;
                 if (m_isInput) {
                     numChannels = pDevice->getNumInputChannels();
                 } else {
@@ -99,23 +175,16 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
                  channelsForType >= minChannelsForType; --channelsForType) {
-            for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
-                     i += channelsForType) {
-                QString channelString;
-                if (channelsForType == 1) {
-                    channelString = tr("Channel %1").arg(i);
-                } else {
-                    channelString = tr("Channels %1 - %2").arg(
-                            QString::number(i),
-                            QString::number(i + channelsForType - 1));
-                }
+            for (unsigned int i = 0; i + channelsForType <= numChannels;
+                    i += channelsForType) {
+                ChannelGroup channels(i, mixxx::audio::ChannelCount(channelsForType));
+                QString channelString = selectedDevice->getChannelString(channels, m_isInput);
 
                 // Because QComboBox supports QPoint natively (via QVariant) we
                 // use a QPoint to store the channel info. x is the channel base
-                // and y is the channel count. We use i - 1 because the channel
-                // base is 0-indexed.
+                // and y is the channel count.
                 channelComboBox->addItem(channelString,
-                                         QPoint(i - 1, channelsForType));
+                        QPoint(i, channelsForType));
             }
         }
         channelComboBox->setCurrentIndex(-1); // clear selection

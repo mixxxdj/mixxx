@@ -32,6 +32,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
         return channelComboBox->currentIndex();
     }
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
+    void setDevice(const SoundDeviceId& device);
 
   signals:
     void selectedDeviceChanged();
@@ -46,10 +47,13 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void writePath(SoundManagerConfig *config) const;
     void save();
     void reload();
+    void addDevice(SoundDevicePointer pDevice);
+    void removeDevice(SoundDevicePointer pDevice);
+    void updateDeviceChannels(SoundDevicePointer pDevice);
+    void updateDeviceRoute(const SoundDeviceId& pDevice, const AudioPath* pPath);
 
   private:
     SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
-    void setDevice(const SoundDeviceId& device);
     void setChannel(unsigned int channelBase, unsigned int channels);
     int hasSufficientChannels(const SoundDevice& device) const;
 

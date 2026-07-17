@@ -28,7 +28,7 @@ const QString xmlAttributeDeckCount = "deck_count";
 const QString xmlElementSoundDevice = "SoundDevice";
 const QString xmlAttributeDeviceName = "name";
 const QString xmlAttributeAlsaHwDevice = "alsaHwDevice";
-const QString xmlAttributePortAudioIndex = "portAudioIndex";
+const QString xmlAttributeDeviceIndex = "deviceIndex";
 
 const QString xmlElementOutput = "output";
 const QString xmlElementInput = "input";
@@ -104,10 +104,10 @@ bool SoundManagerConfig::readFromDisk() {
         if (match.hasMatch()) {
             deviceIdFromFile.name = match.captured(3);
             deviceIdFromFile.alsaHwDevice = match.captured(5);
-            deviceIdFromFile.portAudioIndex = match.captured(2).toInt();
+            deviceIdFromFile.deviceIndex = match.captured(2).toInt();
         } else {
             deviceIdFromFile.alsaHwDevice = devElement.attribute(xmlAttributeAlsaHwDevice);
-            deviceIdFromFile.portAudioIndex = devElement.attribute(xmlAttributePortAudioIndex).toInt();
+            deviceIdFromFile.deviceIndex = devElement.attribute(xmlAttributeDeviceIndex).toInt();
         }
 
         int devicesMatchingByName = 0;
@@ -125,15 +125,15 @@ bool SoundManagerConfig::readFromDisk() {
             continue;
         } else if (devicesMatchingByName == 1) {
             // There is only one device with this name, so it is unambiguous
-            // which it is. Neither the alsaHwDevice nor portAudioIndex are
+            // which it is. Neither the alsaHwDevice nor deviceIndex are
             // very reliable as persistent identifiers across restarts of Mixxx.
-            // Set deviceIdFromFile's alsaHwDevice and portAudioIndex to match
+            // Set deviceIdFromFile's alsaHwDevice and deviceIndex to match
             // the hardwareDeviceId so operator== works for SoundDeviceId.
             for (const auto& soundDevice : soundDevices) {
                 SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                 if (hardwareDeviceId.name == deviceIdFromFile.name) {
                     deviceIdFromFile.alsaHwDevice = hardwareDeviceId.alsaHwDevice;
-                    deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                    deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                 }
             }
         } else {
@@ -152,7 +152,7 @@ bool SoundManagerConfig::readFromDisk() {
                     SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                     if (hardwareDeviceId.name == deviceIdFromFile.name
                             && hardwareDeviceId.alsaHwDevice == deviceIdFromFile.alsaHwDevice) {
-                        deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                        deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                         break;
                     }
                 }
@@ -165,7 +165,7 @@ bool SoundManagerConfig::readFromDisk() {
                                     outElements.count() &&
                             soundDevice->getNumInputChannels() >=
                                     inElements.count()) {
-                        deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                        deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                         break;
                     }
                 }
@@ -236,7 +236,7 @@ bool SoundManagerConfig::writeToDisk() const {
     for (const auto& deviceId : deviceIds) {
         QDomElement devElement(doc.createElement(xmlElementSoundDevice));
         devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
-        devElement.setAttribute(xmlAttributePortAudioIndex, deviceId.portAudioIndex);
+        devElement.setAttribute(xmlAttributeDeviceIndex, deviceId.deviceIndex);
         if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
             devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }

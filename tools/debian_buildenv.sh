@@ -114,6 +114,7 @@ case "$1" in
             libmsgsl-dev \
             libopus-dev \
             libopusfile-dev \
+            libpipewire-0.3-dev \
             libportmidi-dev \
             libprotobuf-dev \
             libqt6opengl6-dev \
@@ -125,6 +126,7 @@ case "$1" in
             libshout-idjc-dev \
             libsndfile1-dev \
             libsoundtouch-dev \
+            libspa-0.2-dev \
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
