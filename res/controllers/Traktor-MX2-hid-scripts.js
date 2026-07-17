@@ -1241,7 +1241,7 @@ class TraktorMX2Class {
 
         // Favorites
         // Add to List
-        engine.makeConnection("[PreviewDeck1]", "indicatorL", this.previewOutputHandler.bind(this));
+        engine.makeConnection("[PreviewDeck1]", "play_indicator", this.previewOutputHandler.bind(this));
         // Maximize Library
 
         this.linkOutput("[Channel1]", "slip_enabled", this.outputHandler.bind(this));
