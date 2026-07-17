@@ -1,4 +1,4 @@
-// modplug settings dialog
+// libopenmpt module decoder settings dialog
 
 #pragma once
 
@@ -6,15 +6,15 @@
 #include "preferences/usersettings.h"
 
 namespace Ui {
-class DlgPrefModplug;
+class DlgPrefOpenMPT;
 } // namespace Ui
 
-class DlgPrefModplug : public DlgPreferencePage {
+class DlgPrefOpenMPT : public DlgPreferencePage {
     Q_OBJECT
 
   public:
-    explicit DlgPrefModplug(QWidget* parent, UserSettingsPointer _config);
-    virtual ~DlgPrefModplug();
+    explicit DlgPrefOpenMPT(QWidget* parent, UserSettingsPointer pConfig);
+    ~DlgPrefOpenMPT() override;
 
   public slots:
     void slotApply() override;
@@ -26,6 +26,6 @@ class DlgPrefModplug : public DlgPreferencePage {
     void applySettings();
 
   private:
-    Ui::DlgPrefModplug* m_pUi;
+    Ui::DlgPrefOpenMPT* m_pUi;
     UserSettingsPointer m_pConfig;
 };

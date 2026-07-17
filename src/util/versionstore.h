@@ -39,7 +39,7 @@ QString gitVersion();
 /// Returns the version of Qt used to build Mixxx.
 QString qtVersion();
 
-/// Returns the build flags used to build Mixxx (e.g. "hid=1 modplug=0") or
+/// Returns the build flags used to build Mixxx (e.g. "hid=1 opus=1") or
 /// the null string if the flags are unknown.
 QString buildFlags();
 

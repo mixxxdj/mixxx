@@ -1062,7 +1062,7 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         QStringLiteral("mp3"),
         QStringLiteral("mp4"),
         QStringLiteral("ogg"),
-        // Test fails for file type "okt" supported by SoundSourceModPlug
+        // Test fails for file type "okt" supported by SoundSourceOpenMPT
         // QStringLiteral("okt"),
         QStringLiteral("opus"),
         QStringLiteral("s3m"),
