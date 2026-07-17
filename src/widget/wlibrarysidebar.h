@@ -5,6 +5,7 @@
 #include <QTreeView>
 
 #include "library/library_decl.h"
+#include "preferences/usersettings.h"
 #include "widget/wbasewidget.h"
 
 class LibraryFeature;
@@ -14,6 +15,9 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
   public:
     explicit WLibrarySidebar(QWidget* parent = nullptr);
+    ~WLibrarySidebar() override;
+
+    void setup(UserSettingsPointer pConfig);
 
     void contextMenuEvent(QContextMenuEvent* pEvent) override;
     void dragMoveEvent(QDragMoveEvent* pEvent) override;
@@ -31,8 +35,10 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
   public slots:
-    void selectIndex(const QModelIndex& index, bool scrollToIndex = true);
-    void selectChildIndex(const QModelIndex&, bool selectItem = true);
+    void selectIndex(const QModelIndex& index, bool scrollTo = true);
+    void saveScrollPosition();
+    void restoreScrollPosition();
+    void selectChildIndex(const QModelIndex& index, bool selectItem = true);
     void slotSetFont(const QFont& font);
     void slotSetExpandOnHoverDelay(int delay);
 
@@ -57,4 +63,5 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     int m_hoverExpandDelay;
     QModelIndex m_hoverIndex;
     bool m_lastDragMoveAccepted;
+    UserSettingsPointer m_pConfig;
 };
