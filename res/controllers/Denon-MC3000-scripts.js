@@ -37,6 +37,10 @@
  *    connection callback as a closure.
  *  - Unused parameters are prefixed with _ (kept only to preserve the
  *    required call signature).
+ *  - EFX buttons/knobs are the exception to the first bullet: they're
+ *    components.Button/components.Pot instances (midi-components-0.0.js),
+ *    bound directly from XML via a dotted key on the instance (e.g.
+ *    mc3000.effectUnit1.button2.input) rather than a plain function name.
  *
  **/
 
@@ -62,10 +66,8 @@ mc3000.leds = {
     efx1L: 92, efx2L: 93, efx3L: 94, efx4L: 95, efx1R: 96, efx2R: 97, efx3R: 98, efx4R: 99,
 };
 
-// which of A/C, B/D is currently displayed -- see mc3000.trackDeck
 mc3000.state = {
     shift1: false, shift2: false, alshift1: false, alshift2: false, pfl1: 0, pfl2: 0,
-    leftDeck: 1, rightDeck: 2,
 };
 
 
@@ -291,36 +293,22 @@ mc3000.selectKnob = function(_channel, _control, value, _status, group) {
     }
 };
 
-// LOAD A/B are fixed-channel buttons (confirmed by field testing: binding them
-// per-deck like a normal transport control only ever worked for deck A). The
-// DECK CHG A/B/C/D buttons would be the ideal trigger for this, but their real
-// MIDI signal is still unconfirmed (the documented NOTE ON 0x90, notes
-// 0x03/0x08/0x09/0x0A never fires on this unit -- verified live). Until that is
-// nailed down, this infers the active deck from other controls that are already
-// known to work correctly per-deck (jog wheel touch, hotcues, bend, loop, EFX,
-// shift...): call mc3000.trackDeck(deck) from those INPUT handlers (never from
-// LED/connection callbacks -- those fire for decks that aren't currently
-// on-screen too, e.g. a background VU meter update, which would corrupt the
-// tracking). Whichever deck's controls were touched most recently on a given
-// side is which deck LOAD for that side targets.
-mc3000.trackDeck = function(deck) {
-    if (deck === 1 || deck === 3) {
-        mc3000.state.leftDeck = deck;
-    } else if (deck === 2 || deck === 4) {
-        mc3000.state.rightDeck = deck;
-    }
-};
-
-// LOAD A (note 0x62) and LOAD B (note 0x63) -- two independent physical buttons.
-// LOAD A loads onto whichever of A/C is currently active on the left; LOAD B
-// loads onto whichever of B/D is currently active on the right. Both are also
-// fixed-channel, so route through mc3000.trackDeck's tracking rather than a
-// single hardcoded [ChannelN].
+// LOAD A (note 0x62) and LOAD B (note 0x63) -- two independent physical buttons,
+// fixed-channel. Matches the official VirtualDJ MC3000 mapping's documented
+// behavior for these same buttons: LOAD A always targets deck A, hold SHIFT to
+// target deck C instead; LOAD B always targets deck B, hold SHIFT for deck D.
+// (The DECK CHG A/B/C/D buttons are not involved -- their documented MIDI signal
+// never actually fires on this unit, verified live -- and this SHIFT-based
+// design doesn't need it: it's a fixed, deterministic mapping, not a guess at
+// which deck is "active".)
 mc3000.loadSelected = function(_channel, control, value, status, _group) {
     if ((status & 0xF0) !== 0x90 || value === 0) {
         return;   // on real press only
     }
-    var deck = control === 0x62 ? mc3000.state.leftDeck : mc3000.state.rightDeck;
+    var primaryDeck = control === 0x62 ? 1 : 2;
+    var secondaryDeck = control === 0x62 ? 3 : 4;
+    var shifted = mc3000.state["shift"+primaryDeck] || mc3000.state["shift"+secondaryDeck];
+    var deck = shifted ? secondaryDeck : primaryDeck;
     engine.setValue("[Channel"+deck+"]", "LoadSelectedTrack", 1);
 };
 
@@ -332,14 +320,12 @@ mc3000.loadSelected = function(_channel, control, value, status, _group) {
 // ---------- 6. CUE AND HOTCUE ----------
 mc3000.cueDefault = function(_channel, _control, _value, status, group) {
     var isPressed = (status & 0xF0) === 0x90 ? 1 : 0;
-    mc3000.trackDeck(mc3000.groupToDeck(group));
     engine.setValue(group,"cue_default", isPressed);
     mc3000.setled(mc3000.groupToDeck(group),mc3000.leds["cue"],isPressed);
 };
 
 mc3000.hotcueset = function(_channel, control, _value, status, group) {
     var deck=mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     var nocue=mc3000.hotcues[control];
     var isPlay = engine.getValue(group,"play") === 1 ? true : false;
 
@@ -411,20 +397,17 @@ mc3000.setLoopAtHotCue = function(group,nohotcue,nbbeat) {
 
 mc3000.shift = function(_channel, _control, _value, status, group) {
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     mc3000.state["shift"+deck] = (status & 0xF0) === 0x90 ? true : false; // 1 if pressed
 };
 
 mc3000.vinylmode = function(_channel, _control, _value, _status, group) {
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     mc3000.scratch[deck-1] = !mc3000.scratch[deck-1];
 };
 
 // JOG with WHEELTOUCH
 mc3000.wheelTouch = function(_channel, _control, _value, status, group) {
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     if (mc3000.scratch[deck-1]) {
         if ((status & 0xF0) === 0x90) {    // Is pressed ?
             engine.scratchEnable(deck, 100, 330, mc3000.alpha, mc3000.beta); // 128, 33+1/3 aussi
@@ -438,7 +421,6 @@ mc3000.wheelTouch = function(_channel, _control, _value, status, group) {
 // The wheel that actually controls the scratching
 mc3000.jogWheel = function(_channel, _control, value, _status, group) {
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     var adjustedJog = value - 64; // Control centers on 0x40 (64)
 
     if (mc3000.scratch[deck-1]) {
@@ -460,7 +442,6 @@ mc3000.jogWheel = function(_channel, _control, value, _status, group) {
 mc3000.bendUp = function(_channel, _control, _value, status, group) {
     var isPressed = (status & 0xF0) === 0x90 ? 1 : 0;
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     if (engine.getValue(group,"play") === 1) {
         engine.setValue(group, "rate_temp_up", isPressed);
     } else {
@@ -476,7 +457,6 @@ mc3000.bendUp = function(_channel, _control, _value, status, group) {
 mc3000.bendDown = function(_channel, _control, _value, status, group) {
     var isPressed = (status & 0xF0) === 0x90 ? 1 : 0;
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
 
     if (engine.getValue(group,"play") === 1) {
         engine.setValue(group, "rate_temp_down", isPressed);
@@ -494,7 +474,6 @@ mc3000.bendDown = function(_channel, _control, _value, status, group) {
 // Shift and autoloop : delete loop point ELSE toggle a beat-synced auto loop
 mc3000.autoLoop = function(_channel, _control, _value, status, group) {
     var deck = mc3000.groupToDeck(group);
-    mc3000.trackDeck(deck);
     var i=0;
     if ((status & 0xF0) === 0x90) {
         // LIGHT LED CUE_X EN MODE CUE LOOP
@@ -544,19 +523,16 @@ mc3000.autoLoop = function(_channel, _control, _value, status, group) {
 mc3000.loopCutM = function(_channel, _control, _value, _status, group) {
     // loop_halve halves beatloop_size, and also resizes the active loop if its
     // length currently equals beatloop_size. Safe to call with no loop active.
-    mc3000.trackDeck(mc3000.groupToDeck(group));
     engine.setValue(group, "loop_halve", 1);
 };
 
 mc3000.loopCutP = function(_channel, _control, _value, _status, group) {
     // loop_double doubles beatloop_size, and also resizes the active loop if its
     // length currently equals beatloop_size. Safe to call with no loop active.
-    mc3000.trackDeck(mc3000.groupToDeck(group));
     engine.setValue(group, "loop_double", 1);
 };
 
 mc3000.loopIn = function(_channel, _control, _value, _status, group) {
-    mc3000.trackDeck(mc3000.groupToDeck(group));
     if (engine.getValue(group, "loop_enabled")) {
         engine.setValue(group, "reloop_exit", 1);
     }
@@ -565,7 +541,6 @@ mc3000.loopIn = function(_channel, _control, _value, _status, group) {
 };
 
 mc3000.loopOut = function(_channel, _control, _value, _status, group) {
-    mc3000.trackDeck(mc3000.groupToDeck(group));
     var start = engine.getValue(group, "loop_start_position");
     var end = engine.getValue(group, "loop_end_position");
     if (start !== -1) {
@@ -601,13 +576,6 @@ mc3000.moveLoop = function(group,offset) {
 // the XML. So there is no software SAMP mode here -- these handlers only ever
 // run in FX mode (EFX buttons 0x12-0x15 / 0x52-0x55, knobs 0x55-0x58 / 0x59-0x5C).
 
-mc3000.efxIndex = function(control) {
-    // EFX buttons are NOT in note order: EFX1 sends the high nibble (0x15/0x55),
-    // EFX2/3/4 send nibbles 2/3/4. Map physical EFX button N -> Effect N.
-    var n = control & 0x0F;      // 0x12/0x52 -> 2 ... 0x15/0x55 -> 5
-    return n > 4 ? n - 4 : n;    // nibbles 2,3,4 -> 2,3,4 ; nibble 5 -> 1
-};
-
 // The FX/SAMP section re-channels with the active deck like everything else:
 // left side arrives on ch1 (deck A) or ch2 (deck C); right side on ch3 (deck B)
 // or ch4 (deck D). Map the MIDI channel nibble to the FX side (1=left, 2=right).
@@ -621,31 +589,6 @@ mc3000.sideSuffix = function(side) {
     return side === 1 ? "L" : "R";
 };
 
-// EFX button -> toggle an effect on/off, OR while AUTO LOOP is held on this
-// deck, pick the beat length for the hold-AUTO-LOOP+hotcue quick-loop shortcut.
-mc3000.efxButton = function(_channel, control, value, status, group) {
-    if ((status & 0xF0) !== 0x90 || value === 0) {
-        return;   // on real press only
-    }
-    mc3000.trackDeck(mc3000.groupToDeck(group));
-    var side = mc3000.sideFromStatus(status);             // left=Unit1, right=Unit2
-    var n = mc3000.efxIndex(control);                     // 1..4
-    var g = "[EffectRack1_EffectUnit"+side+"_Effect"+n+"]";
-    engine.setValue(g, "enabled", engine.getValue(g, "enabled") ? 0 : 1);
-};
-
-// EFX knob -> effect metaknob (left knobs 0x55-0x58, right knobs 0x59-0x5C)
-mc3000.efxKnob = function(_channel, control, value, status, _group) {
-    var side = mc3000.sideFromStatus(status);
-    var n = control - (side === 1 ? 0x54 : 0x58);         // both -> 1..4
-    if (n < 1 || n > 4) {
-        return;
-    }
-    // meta is a continuous 0-1 parameter -- setParameter (not setValue) is the
-    // documented API for controls like this.
-    engine.setParameter("[EffectRack1_EffectUnit"+side+"_Effect"+n+"]", "meta", value/127);
-};
-
 // The effect-enabled state lives on one shared CO per side (EffectUnit1/2),
 // not per deck, so an LED update for it has no way to know which of the two
 // decks on that side is currently active. Broadcast to both of that side's
@@ -654,19 +597,44 @@ mc3000.decksOfSide = function(side) {
     return side === 1 ? [1,3] : [2,4];
 };
 
-// Refresh one side's 4 EFX button LEDs from the effect-enabled state
-mc3000.refreshEfxLeds = function(side) {
-    if (side < 1 || side > 2) {
-        return;
-    }
-    var decks = mc3000.decksOfSide(side);
-    for (var n=1; n<=4; n++) {
-        var on = engine.getValue("[EffectRack1_EffectUnit"+side+"_Effect"+n+"]", "enabled") ? 1 : 0;
-        for (var d=0; d<decks.length; d++) {
-            mc3000.setled(decks[d], mc3000.leds["efx"+n+mc3000.sideSuffix(side)], on);
-        }
-    }
+// EFX buttons/knobs use components.Button/components.Pot (midi-components-0.0.js)
+// for the standard enabled-toggle and meta-parameter bindings instead of hand-rolled
+// engine.getValue/setValue/setParameter calls. components.EffectUnit's higher-level
+// wrapper is deliberately NOT used here: its enable buttons wire their own LED output
+// unconditionally (ignoring outConnect:false), using generic on/off values -- that
+// doesn't fit the MC3000's non-standard 74/75/76 LED protocol or its need to broadcast
+// one LED to both decks sharing a side, so LEDs stay wired through mc3000.fxEnableLed
+// below, same as before.
+//
+// Each button/knob's group is fixed to one effect slot (e.g. left EFX button 1 always
+// targets EffectUnit1_Effect1, regardless of whether deck A or C is currently active
+// on that side) -- unlike the deck-facing controls, the FX target itself never needs a
+// per-press group lookup, so the XML <group> for these controls (still the deck's own
+// channel group, since that's what re-channels) is otherwise unused here.
+mc3000.makeEfxButton = function(side, n) {
+    return new components.Button({
+        group: "[EffectRack1_EffectUnit"+side+"_Effect"+n+"]",
+        inKey: "enabled",
+        type: components.Button.prototype.types.toggle,
+        outConnect: false,
+    });
 };
+
+mc3000.makeEfxKnob = function(side, n) {
+    return new components.Pot({
+        group: "[EffectRack1_EffectUnit"+side+"_Effect"+n+"]",
+        inKey: "meta",
+    });
+};
+
+mc3000.effectUnit1 = new components.ComponentContainer();
+mc3000.effectUnit2 = new components.ComponentContainer();
+for (var efxN=1; efxN<=4; efxN++) {
+    mc3000.effectUnit1["button"+efxN] = mc3000.makeEfxButton(1, efxN);
+    mc3000.effectUnit1["knob"+efxN] = mc3000.makeEfxKnob(1, efxN);
+    mc3000.effectUnit2["button"+efxN] = mc3000.makeEfxButton(2, efxN);
+    mc3000.effectUnit2["knob"+efxN] = mc3000.makeEfxKnob(2, efxN);
+}
 
 // Connection callback: drive one EFX button LED from its effect-enabled state
 mc3000.fxEnableLed = function(side, n) {
