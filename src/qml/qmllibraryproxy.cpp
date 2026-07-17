@@ -18,6 +18,9 @@
 #include "track/track.h"
 #include "util/assert.h"
 
+namespace mixxx {
+namespace qml {
+
 namespace {
 const ConfigKey kHotcueDefaultColorIndexConfigKey("[Controls]", "HotcueDefaultColorIndex");
 const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorIndex");
@@ -97,9 +100,6 @@ mixxx::audio::FramePos getCurrentPlayPositionWithQuantize(
     return position;
 }
 } // namespace
-
-namespace mixxx {
-namespace qml {
 
 QmlLibraryProxy::QmlLibraryProxy(
         std::shared_ptr<Library> pLibrary, QObject* parent)
