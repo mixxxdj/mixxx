@@ -177,7 +177,8 @@ template <class ValueType> class ConfigObject {
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns default_value.
-    template <class ResultType>
+    template<class ResultType>
+        requires(!std::is_enum_v<ResultType>)
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
     template<typename EnumType>
