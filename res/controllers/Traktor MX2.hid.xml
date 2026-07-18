@@ -24,6 +24,13 @@
               description="Use Master gain knob, or send output directly to soundcard"
               default="false"
       />
+      <option
+              variable="usePatternModeForSamplers"
+              label="Use Pattern Mode for Samplers"
+              type="boolean"
+              description="Map pads to trigger samplers in (Traktors) Pattern Mode"
+              default="false"
+      />
     </group>
   </settings>
 </MixxxControllerPreset>
