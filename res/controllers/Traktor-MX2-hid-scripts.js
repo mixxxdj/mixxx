@@ -46,6 +46,9 @@ class TraktorMX2Class {
 
         this.shiftPressed = {"[Channel1]": false, "[Channel2]": false};
 
+        this.gfxPressed = {"[Channel1]": false, "[Channel2]": false};
+        this.gfxUsedAsModifier = {"[Channel1]": false, "[Channel2]": false};
+
         this.keylockPressed = {"[Channel1]": false, "[Channel2]": false};
         this.keylockIgnore = {"[Channel1]": false, "[Channel2]": false};
 
@@ -597,11 +600,11 @@ class TraktorMX2Class {
 
         if (this.shiftPressed[field.group]) {
             engine.setValue("[Library]", "focused_widget", 2);
-            engine.setValue("[Library]", "MoveVertical", delta);
         } else {
             engine.setValue("[Library]", "focused_widget", 3);
-            engine.setValue("[Library]", "MoveVertical", delta);
         }
+
+        engine.setValue("[Library]", "MoveVertical", delta);
 
         this.browseKnobEncoderState[field.group] = field.value;
     };
@@ -609,7 +612,7 @@ class TraktorMX2Class {
     loadTrackHandler(field) {
         if (this.shiftPressed[field.group]) {
             engine.setValue("[Library]", "GoToItem", field.value);
-        } else {
+        } else if (engine.getValue("[Library]", "focused_widget") === 3) {
             engine.setValue(field.group, "LoadSelectedTrack", field.value);
         }
     };
@@ -1011,25 +1014,40 @@ class TraktorMX2Class {
     };
 
     gfxToggleHandler(field) {
-        if (field.value === 0) {
-            return;
+        this.gfxPressed[field.group] = field.value;
+        if (field.value !== 0) {
+            this.gfxUsedAsModifier[field.group] = false;
+        } else {
+            if (!this.gfxUsedAsModifier[field.group]) {
+                const group = `[QuickEffectRack1_${field.group}]`;
+                const control = "enabled";
+                script.toggleControl(group, control);
+            }
         }
-        const group = `[QuickEffectRack1_${field.group}]`;
-        const control = "enabled";
-
-        script.toggleControl(group, control);
     };
 
     globalfxHandler(field) {
         /* We support 8 effects in total by having 2 effects per fx button. *
          * First press of the button will load the preset at the index of the quick effect preset list *
          * Second press will load the preset index + 4 *
-         * Arrange your quick effect preset list from 1 to 8 like this: 1/5, 2/6, 3/7, 4/8 */
+         * Arrange your quick effect preset list from 1 to 8 like this: 1/5, 2/6, 3/7, 4/8
+         * Holding fxToggle while pressing one of the gfx_toggle buttons will apply the preset only to the deck that whose button was pressed. */
         if (field.value === 0) {
             return;
         }
 
-        const availableGroups = ["[Channel1]", "[Channel2]"];
+        let availableGroups = ["[Channel1]", "[Channel2]"];
+        if (this.gfxPressed["[Channel1]"] && !this.gfxPressed["[Channel2]"]) {
+            availableGroups = ["[Channel1]"];
+            this.gfxUsedAsModifier["[Channel1]"] = true;
+        } else if (!this.gfxPressed["[Channel1]"] && this.gfxPressed["[Channel2]"]) {
+            availableGroups = ["[Channel2]"];
+            this.gfxUsedAsModifier["[Channel2]"] = true;
+        } else if (this.gfxPressed["[Channel1]"] && this.gfxPressed["[Channel2]"]) {
+            this.gfxUsedAsModifier["[Channel1]"] = true;
+            this.gfxUsedAsModifier["[Channel2]"] = true;
+        }
+
         const fxButtonCount = 4;
         const fxNumber = parseInt(field.id[field.id.length - 1]);
 
@@ -1051,18 +1069,20 @@ class TraktorMX2Class {
             }
         }
 
-        const [deck1, deck2] = availableGroups;
-        const activeFxDeck1 = activeFx[deck1];
-        const activeFxDeck2 = activeFx[deck2];
-        const fxToApplyDeck1 = fxToApply[deck1];
-        const fxToApplyDeck2 = fxToApply[deck2];
+        if (availableGroups.length === 2) {
+            const [deck1, deck2] = availableGroups;
+            const activeFxDeck1 = activeFx[deck1];
+            const activeFxDeck2 = activeFx[deck2];
+            const fxToApplyDeck1 = fxToApply[deck1];
+            const fxToApplyDeck2 = fxToApply[deck2];
 
-        // If any of deck has already fx enabled but different value to apply
-        if ((activeFxDeck1 === fxNumber || activeFxDeck2 === fxNumber) && fxToApplyDeck1 !== fxToApplyDeck2) {
-            // find lower value to reset both to the same one
-            const fxToApplyAll = Math.min(fxToApplyDeck1, fxToApplyDeck2);
-            fxToApply[deck1] = fxToApplyAll;
-            fxToApply[deck2] = fxToApplyAll;
+            // If any of deck has already fx enabled but different value to apply
+            if ((activeFxDeck1 === fxNumber || activeFxDeck2 === fxNumber) && fxToApplyDeck1 !== fxToApplyDeck2) {
+                // find lower value to reset both to the same one
+                const fxToApplyAll = Math.min(fxToApplyDeck1, fxToApplyDeck2);
+                fxToApply[deck1] = fxToApplyAll;
+                fxToApply[deck2] = fxToApplyAll;
+            }
         }
 
         // Now apply the new fx value
@@ -1407,10 +1427,11 @@ class TraktorMX2Class {
     gfxOutputHandler() {
         const fxButtonCount = 4;
 
-        const presetNum = engine.getValue("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset") - 1;
+        const preset1 = engine.getValue("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset") - 1;
+        const preset2 = engine.getValue("[QuickEffectRack1_[Channel2]]", "loaded_chain_preset") - 1;
 
         for (let fxButton = 0; fxButton <= fxButtonCount; fxButton++) {
-            const active = (presetNum === fxButton || (fxButton !== 0 && (fxButton === presetNum - fxButtonCount)));
+            const active = (preset1 === fxButton || (fxButton !== 0 && (fxButton === preset1 - fxButtonCount))) || (preset2 === fxButton || (fxButton !== 0 && (fxButton === preset2 - fxButtonCount)));
             this.outputHandler(active, "[ChannelX]", `gfx_${fxButton}`);
         }
     };
