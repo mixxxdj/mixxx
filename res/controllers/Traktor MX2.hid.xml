@@ -18,17 +18,17 @@
   <settings>
     <group label="Controller modes">
       <option
-              variable="enableMasterGain"
-              label="Enable Master gain"
-              type="boolean"
-              description="Use Master gain knob, or send output directly to soundcard"
-              default="false"
-      />
-      <option
               variable="usePatternModeForSamplers"
               label="Use Pattern Mode for Samplers"
               type="boolean"
               description="Map pads to trigger samplers in (Traktors) Pattern Mode"
+              default="false"
+      />
+      <option
+              variable="enableMasterGain"
+              label="Enable Master Gain – EXPERIMENTAL: IF YOUR VOLUME STARTS FLUCTUATING, TURN THIS OFF!"
+              type="boolean"
+              description="Adjust mixxxs' master gain when the master knob is turned"
               default="false"
       />
     </group>
