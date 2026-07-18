@@ -108,9 +108,6 @@ class TraktorMX2Class {
             vu6: 8 / 9,
         };
 
-        this.baseColors = this.getBaseColors();
-        this.outputColorMap = this.getOutputColorMap();
-        this.padColorMap = this.getPadColorMap();
     }
 
     init(_id) {
@@ -118,6 +115,11 @@ class TraktorMX2Class {
 
         this.enableMasterGain = engine.getSetting("enableMasterGain");
         this.usePatternModeForSamplers = engine.getSetting("usePatternModeForSamplers");
+
+        this.baseColors = this.getBaseColors();
+        this.outputColorMap = this.getOutputColorMap();
+        this.padColorMap = this.getPadColorMap();
+
         this.registerInputPackets();
         this.registerOutputPackets();
 
@@ -411,7 +413,18 @@ class TraktorMX2Class {
         if (this.keylockIgnore[field.group]) {
             this.keylockIgnore[field.group] = false;
         } else {
-            script.toggleControl(field.group, "keylock");
+            if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+                // Change Functionality in Pattern Mode with pressed any of Pad 5-8: Toggle Keylock for the corresponding Sampler(s)
+                for (const padNum in this.padPressed[field.group]) {
+                    if (this.padPressed[field.group][padNum]) {
+                        const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                        script.toggleControl(`[Sampler${samplerNum}]`, "keylock");
+                    }
+                }
+            } else {
+                // Default Functionality: Toggle Keylock for the current Deck
+                script.toggleControl(field.group, "keylock");
+            }
         }
     };
 
@@ -472,8 +485,9 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "stems");
             this.outputHandler(0, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
+
             // Light LEDs (blue for all enabled hotcues, dimmed white for disabled)
-            for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+            for (let padIdx = 1; padIdx <= 8; padIdx++) {
                 const active = engine.getValue(field.group, `hotcue_${padIdx}_status`);
                 if (active) {
                     const color = engine.getValue(field.group, `hotcue_${padIdx}_color`);
@@ -501,16 +515,14 @@ class TraktorMX2Class {
             break;
 
         case "!patterns":
-            // Patterns mode not implemented yet -> does nothing except lighting
-            this.padModeState[field.group] = 2;
+            // Samplers Mode (Traktor Pattern Mode)
+            this.padModeState[field.group] = this.usePatternModeForSamplers ? 2 : -2;
             this.outputHandler(0, field.group, "hotcues");
             this.outputHandler(0, field.group, "stems");
             this.outputHandler(1, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
-            // Turn off LEDs
-            for (let padIdx = 1; padIdx <= 8; ++padIdx) {
-                this.outputHandler(0x00, field.group, `pad_${padIdx}`);
-            }
+            // Light LEDs as play_indicators
+            this.patternOutputHandler(field.value, field.group, field.name);
             break;
 
         case "!loops":
@@ -520,7 +532,7 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "patterns");
             this.outputHandler(1, field.group, "loops");
             // Turn LEDs green
-            for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+            for (let padIdx = 1; padIdx <= 8; padIdx++) {
                 this.outputHandler(this.baseColors.dimmedGreen, field.group, `pad_${padIdx}`);
             }
             break;
@@ -567,7 +579,29 @@ class TraktorMX2Class {
             break;
 
         case 2:
-            // Patterns Mode
+            // Samplers (Traktor Pattern) Mode
+            // ignore if no samplers available
+            if (engine.getValue("[App]", "num_samplers") === 0) {
+                return;
+            }
+
+            // only first 4 pads are used for sample play / pause
+            if (padNumber <= 4) {
+                if (field.value === 0) {
+                    return;
+                }
+
+                const channelNumber = field.group[field.group.length - 2];
+                const samplerNumber = padNumber + (channelNumber - 1) * 4;
+
+                if (samplerNumber <= Math.min(8, engine.getValue("[App]", "num_samplers"))) {
+                	script.toggleControl(`[Sampler${samplerNumber}]`, "play");
+                }
+
+            } else {
+                // pads 5-8 are used for volume and filter control of the stems
+                this.padPressed[field.group][padNumber] = field.value;
+            }
             break;
 
         case 3:
@@ -592,8 +626,18 @@ class TraktorMX2Class {
             return;
         }
 
-        script.toggleControl(field.group, "pfl");
-        this.outputHandler(engine.getValue(field.group, "pfl"), field.group, "pfl");
+        if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+            // Change Functionality in Pattern Mode with pressed any of Pad 5-8: Toggle PFL for the corresponding Sampler(s)
+            for (const padNum in this.padPressed[field.group]) {
+                if (this.padPressed[field.group][padNum]) {
+                    const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                    script.toggleControl(`[Sampler${samplerNum}]`, "pfl");
+                }
+            }
+        } else {
+            // Default functionality: toggle PFL for the channel
+            script.toggleControl(field.group, "pfl");
+        }
     };
 
     selectTrackHandler(field) {
@@ -602,14 +646,33 @@ class TraktorMX2Class {
             delta = -1;
         }
 
-        if (this.shiftPressed[field.group]) {
-            engine.setValue("[Library]", "focused_widget", 2);
+        if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+            for (const padNum in this.padPressed[field.group]) {
+                if (this.padPressed[field.group][padNum]) {
+                    const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                    if (delta > 0) {
+                        script.toggleControl(`[Sampler${samplerNum}]`, "pregain_up_small");
+                    } else {
+                        script.toggleControl(`[Sampler${samplerNum}]`, "pregain_down_small");
+                    }
+                }
+            }
+        } else if (engine.getValue("[PreviewDeck1]", "play")) {
+            // Change Functionality when Preview Deck is playing: seek through the Preview Deck
+            if (delta > 0) {
+                script.toggleControl("[PreviewDeck1]", "playposition_up_small");
+            } else {
+                script.toggleControl("[PreviewDeck1]", "playposition_down_small");
+            }
         } else {
-            engine.setValue("[Library]", "focused_widget", 3);
+        	if (this.shiftPressed[field.group]) {
+            	engine.setValue("[Library]", "focused_widget", 2);
+        	} else {
+            	engine.setValue("[Library]", "focused_widget", 3);
+        	}
+
+        	engine.setValue("[Library]", "MoveVertical", delta);
         }
-
-        engine.setValue("[Library]", "MoveVertical", delta);
-
         this.browseKnobEncoderState[field.group] = field.value;
     };
 
@@ -617,7 +680,18 @@ class TraktorMX2Class {
         if (this.shiftPressed[field.group]) {
             engine.setValue("[Library]", "GoToItem", field.value);
         } else if (engine.getValue("[Library]", "focused_widget") === 3) {
-            engine.setValue(field.group, "LoadSelectedTrack", field.value);
+            if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+                // Change Functionality in Pattern Mode with pressed any of Pad 5-8: load selected track to sampler
+                for (const padNum in this.padPressed[field.group]) {
+                    if (this.padPressed[field.group][padNum]) {
+                        const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                        engine.setValue(`[Sampler${samplerNum}]`, "LoadSelectedTrack", field.value);
+                    }
+                }
+            } else {
+                // Default functionality: load selected track to deck
+                engine.setValue(field.group, "LoadSelectedTrack", field.value);
+            }
         }
     };
 
@@ -686,6 +760,17 @@ class TraktorMX2Class {
 
                 }
             }
+        } else if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+            for (const padNum in this.padPressed[field.group]) {
+                if (this.padPressed[field.group][padNum]) {
+                    const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                    if (delta > 0) {
+                        script.triggerControl(`[Sampler${samplerNum}]`, "rate_down_small");
+                    } else {
+                        script.triggerControl(`[Sampler${samplerNum}]`, "rate_up_small");
+                    }
+                }
+            }
         } else if (this.keylockPressed[field.group]) {
 
             this.keylockIgnore[field.group] = true;
@@ -714,14 +799,22 @@ class TraktorMX2Class {
         }
 
         if (this.padModeState[field.group] === 1 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
-            // Change Functionality in Stems Mode with pressed any of Pad 5-8
+            // Change Functionality in Stems Mode with pressed any of Pad 5-8: toggle effect for the corresponding stem
             for (const padNum in this.padPressed[field.group]) {
                 if (this.padPressed[field.group][padNum]) {
                     script.toggleControl(`[QuickEffectRack1_[Channel${field.group[field.group.length - 2]}_Stem${padNum - 4}]]`, "enabled");
                 }
             }
+        } else if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+            // Change Functionality in Pattern Mode with pressed any of Pad 5-8: toggle repeat for the corresponding sampler
+            for (const padNum in this.padPressed[field.group]) {
+                if (this.padPressed[field.group][padNum]) {
+                    const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                    script.toggleControl(`[Sampler${samplerNum}]`, "repeat");
+                }
+            }
         } else {
-            //Default Functionality
+            //Default Functionality: loop roll if shift is pressed, otherwise toggle loop
             if (this.shiftPressed[field.group]) {
                 engine.setValue(field.group, "reloop_toggle", field.value);
             } else {
@@ -748,7 +841,17 @@ class TraktorMX2Class {
 
                 }
             }
-
+        } else if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
+            for (const padNum in this.padPressed[field.group]) {
+                if (this.padPressed[field.group][padNum]) {
+                    const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
+                    if (delta > 0) {
+                        script.triggerControl(`[Sampler${samplerNum}]`, "playposition_up_small");
+                    } else {
+                        	script.triggerControl(`[Sampler${samplerNum}]`, "playposition_down_small");
+                    }
+                }
+            }
         } else {
             //Default Functionality
             if (this.shiftPressed[field.group]) {
@@ -1385,15 +1488,19 @@ class TraktorMX2Class {
 
         this.linkOutput("[Microphone]", "talkover", this.outputHandler.bind(this));
 
-        for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+        for (let padIdx = 1; padIdx <= 8; padIdx++) {
             engine.makeConnection("[Channel1]", `hotcue_${padIdx}_status`, this.hotcueOutputHandler.bind(this));
             engine.makeConnection("[Channel2]", `hotcue_${padIdx}_status`, this.hotcueOutputHandler.bind(this));
 
             engine.makeConnection("[Channel1]", `hotcue_${padIdx}_color`, this.hotcueColorHandler.bind(this));
             engine.makeConnection("[Channel2]", `hotcue_${padIdx}_color`, this.hotcueColorHandler.bind(this));
         }
-        engine.makeConnection("[Channel1]", "stem_count", this.patternOutputHandler.bind(this));
-        engine.makeConnection("[Channel2]", "stem_count", this.patternOutputHandler.bind(this));
+        engine.makeConnection("[Channel1]", "stem_count", this.stemOutputHandler.bind(this));
+        engine.makeConnection("[Channel2]", "stem_count", this.stemOutputHandler.bind(this));
+
+        for (let samplerIdx = 1; samplerIdx <= 8; samplerIdx++) {
+            engine.makeConnection(`[Sampler${samplerIdx}]`, "play_indicator", this.patternOutputHandler.bind(this));
+        }
 
         // Bottom LEDs
 
@@ -1565,13 +1672,25 @@ class TraktorMX2Class {
         }
     };
 
-    patternOutputHandler(value, group, name) {
+    stemOutputHandler(value, group, name) {
         if (this.padModeState[group] === 1) {
             for (let padIdx = 1; padIdx <= engine.getValue(group, name); padIdx++) {
                 const color = engine.getValue(`[Channel${group[group.length - 2]}_Stem${padIdx}]`, "color");
                 const status = engine.getValue(`[Channel${group[group.length - 2]}_Stem${padIdx}]`, "mute");
                 const colorValue = status ? this.baseColors.dimmedRed : this.padColorMap.getValueForNearestColor(color);
                 this.outputHandler(colorValue, group, `pad_${padIdx}`);
+            }
+        }
+    };
+
+    patternOutputHandler(_value, _group, _name) {
+        for (const group of ["[Channel1]", "[Channel2]"]) {
+        	if (this.padModeState[group] === 2) {
+                for (let padIdx = 1; padIdx <= 4; padIdx++) {
+                    const samplerIdx = padIdx + 4 * (group[group.length - 2] - 1);
+            		const state = engine.getValue(`[Sampler${samplerIdx}]`, "play_indicator");
+                    this.outputHandler(state ? this.baseColors.green : this.baseColors.dimmedGreen, group, `pad_${padIdx}`);
+             	}
             }
         }
     };
@@ -1660,7 +1779,7 @@ class TraktorMX2Class {
         current = engine.getValue("[Channel2]", "keylock");
         this.controller.setOutput("[Channel2]", "keylock", getColorValue("[Channel2]", "keylock", current), false);
 
-        for (let padIdx = 1; padIdx <= 8; ++padIdx) {
+        for (let padIdx = 1; padIdx <= 8; padIdx++) {
             if (switchOff) {
                 // do not dim but turn completely off
                 this.outputHandler(0x00, "[Channel1]", `pad_${padIdx}`);
@@ -1796,7 +1915,7 @@ class TraktorMX2Class {
                 "keylock": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "hotcues": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "stems": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
-                "patterns": {dim: this.baseColors.off, full: this.baseColors.red},
+                "patterns": {dim: this.usePatternModeForSamplers? this.baseColors.dimmedBlue : this.baseColors.off, full: this.usePatternModeForSamplers? this.baseColors.blue : this.baseColors.red},
                 "loops": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "cue_indicator": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "play_indicator": {dim: this.baseColors.dimmedGreen, full: this.baseColors.green},
@@ -1823,7 +1942,7 @@ class TraktorMX2Class {
                 "keylock": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "hotcues": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "stems": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
-                "patterns": {dim: this.baseColors.off, full: this.baseColors.red},
+                "patterns": {dim: this.usePatternModeForSamplers? this.baseColors.dimmedBlue : this.baseColors.off, full: this.usePatternModeForSamplers? this.baseColors.blue : this.baseColors.red},
                 "loops": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "cue_indicator": {dim: this.baseColors.dimmedBlue, full: this.baseColors.blue},
                 "play_indicator": {dim: this.baseColors.dimmedGreen, full: this.baseColors.green},
