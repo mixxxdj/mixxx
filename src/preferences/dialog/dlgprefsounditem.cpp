@@ -2,9 +2,11 @@
 
 #include <QPoint>
 
+#include "audio/types.h"
 #include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/assert.h"
 
 /// Constructs a new preferences sound item, representing an AudioPath and SoundDevice
@@ -43,7 +45,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
-
 }
 
 /// Slot called when the parent preferences pane updates its list of sound
@@ -146,11 +147,14 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
     mixxx::audio::ChannelCount numChannels;
+    SoundDevicePointer selectedDevice;
+
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
         for (const auto& pDevice : std::as_const(m_devices)) {
             if (pDevice->getDeviceId() == selection) {
+                selectedDevice = pDevice;
                 if (m_isInput) {
                     numChannels = pDevice->getNumInputChannels();
                 } else {
@@ -171,23 +175,16 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
                  channelsForType >= minChannelsForType; --channelsForType) {
-            for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels;
-                     i += channelsForType) {
-                QString channelString;
-                if (channelsForType == 1) {
-                    channelString = tr("Channel %1").arg(i);
-                } else {
-                    channelString = tr("Channels %1 - %2").arg(
-                            QString::number(i),
-                            QString::number(i + channelsForType - 1));
-                }
+            for (unsigned int i = 0; i + channelsForType <= numChannels;
+                    i += channelsForType) {
+                ChannelGroup channels(i, mixxx::audio::ChannelCount(channelsForType));
+                QString channelString = selectedDevice->getChannelString(channels, m_isInput);
 
                 // Because QComboBox supports QPoint natively (via QVariant) we
                 // use a QPoint to store the channel info. x is the channel base
-                // and y is the channel count. We use i - 1 because the channel
-                // base is 0-indexed.
+                // and y is the channel count.
                 channelComboBox->addItem(channelString,
-                                         QPoint(i - 1, channelsForType));
+                        QPoint(i, channelsForType));
             }
         }
         channelComboBox->setCurrentIndex(-1); // clear selection
