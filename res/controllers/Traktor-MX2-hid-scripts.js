@@ -55,7 +55,9 @@ class TraktorMX2Class {
         this.jogModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Scratch, 1 = Bend
         this.jogTimer = {"[Channel1]": 0, "[Channel2]": 0};
 
-        this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues, 1 = Stems, 2 = Patterns, 3 = Loops
+        this.effectUnitMode = {"EffectUnit1": 0, "EffectUnit2": 0}; // 0 = Group, 1 = Single
+
+        this.padModeState = {"[Channel1]": 0, "[Channel2]": 0}; // 0 = Hotcues, 1 = Stems, 2 = Samplers (Patterns in Traktor), 3 = Loops
         this.padPressed = {
             "[Channel1]": {5: false, 6: false, 7: false, 8: false},
             "[Channel2]": {5: false, 6: false, 7: false, 8: false}
@@ -67,6 +69,7 @@ class TraktorMX2Class {
         };
 
         this.enableMasterGain = false;
+        this.usePatternModeForSamplers = false;
 
         // Knob encoder states (hold values between 0x0 and 0xF)
         // Rotate to the right is +1 and to the left is means -1
@@ -114,6 +117,7 @@ class TraktorMX2Class {
         this.id = _id;
 
         this.enableMasterGain = engine.getSetting("enableMasterGain");
+        this.usePatternModeForSamplers = engine.getSetting("usePatternModeForSamplers");
         this.registerInputPackets();
         this.registerOutputPackets();
 
@@ -135,7 +139,7 @@ class TraktorMX2Class {
         // Channel 1
 
         // // Channel FX
-        this.registerInputButton(inputReportButton, "EffectUnit1", "misc", 0x01, 0x01, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit1", "misc", 0x01, 0x01, this.fxMiscHandler.bind(this));
         this.registerInputButton(inputReportButton, "EffectUnit1", "Effect1", 0x01, 0x02, this.fxHandler.bind(this));
         this.registerInputButton(inputReportButton, "EffectUnit1", "Effect2", 0x01, 0x04, this.fxHandler.bind(this));
         this.registerInputButton(inputReportButton, "EffectUnit1", "Effect3", 0x01, 0x08, this.fxHandler.bind(this));
@@ -183,7 +187,7 @@ class TraktorMX2Class {
         // Channel 2
 
         // // Channel FX
-        this.registerInputButton(inputReportButton, "EffectUnit2", "misc", 0x04, 0x40, this.fxHandler.bind(this));
+        this.registerInputButton(inputReportButton, "EffectUnit2", "misc", 0x04, 0x40, this.fxMiscHandler.bind(this));
         this.registerInputButton(inputReportButton, "EffectUnit2", "Effect1", 0x04, 0x80, this.fxHandler.bind(this));
         this.registerInputButton(inputReportButton, "EffectUnit2", "Effect2", 0x05, 0x01, this.fxHandler.bind(this));
         this.registerInputButton(inputReportButton, "EffectUnit2", "Effect3", 0x05, 0x02, this.fxHandler.bind(this));
@@ -296,15 +300,15 @@ class TraktorMX2Class {
         this.registerInputScaler(inputReportKnob, "[Channel2]", "rate", 0x33, 0xffff, this.parameterHandler.bind(this));
 
         // FX Parameter
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect1]", "meta", 0x03, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect2]", "meta", 0x05, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect3]", "meta", 0x07, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1]", "mix", 0x01, 0xffff, this.fxParameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect1]", "meta", 0x03, 0xffff, this.fxParameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect2]", "meta", 0x05, 0xffff, this.fxParameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit1_Effect3]", "meta", 0x07, 0xffff, this.fxParameterHandler.bind(this));
 
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2]", "mix", 0x09, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect1]", "meta", 0x0b, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect2]", "meta", 0x0d, 0xffff, this.parameterHandler.bind(this));
-        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect3]", "meta", 0x0f, 0xffff, this.parameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2]", "mix", 0x09, 0xffff, this.fxParameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect1]", "meta", 0x0b, 0xffff, this.fxParameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect2]", "meta", 0x0d, 0xffff, this.fxParameterHandler.bind(this));
+        this.registerInputScaler(inputReportKnob, "[EffectRack1_EffectUnit2_Effect3]", "meta", 0x0f, 0xffff, this.fxParameterHandler.bind(this));
 
         // EQ Parameter
         this.registerInputScaler(inputReportKnob, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x13, 0xffff, this.parameterHandler.bind(this));
@@ -802,6 +806,23 @@ class TraktorMX2Class {
         engine.setParameter(field.group, field.name, field.value / 4095);
     };
 
+    fxParameterHandler(field) {
+        let group = field.group;
+        let name = field.name;
+
+        const effectUnit = `EffectUnit${group[23]}`;
+        const mode = this.effectUnitMode[effectUnit];
+        if (mode > 0) { // Single mode
+            if (name === "meta") {
+                const effectNum = group[31];
+                group = `[EffectRack1_${effectUnit}_Effect${mode}]`;
+                name = `parameter${effectNum}`;
+            }
+        }
+
+        engine.setParameter(group, name, field.value / 4095);
+    };
+
     masterGainHandler(field) {
         if (this.enableMasterGain) {
             engine.setParameter(field.group, field.name, field.value / 4095);
@@ -987,19 +1008,51 @@ class TraktorMX2Class {
     };
 
 
-    fxHandler(field) {
-        if (field.value === 0 || field.name === "misc") {
+    fxMiscHandler(field) {
+        if (field.value === 0) {
             return;
         }
 
-        const group = `[EffectRack1_${field.group}_${field.name}]`;
-        if (!this.shiftPressed[`[Channel${field.group[field.group.length - 1]}]`]) {
-            script.toggleControl(group, "enabled");
+        const unit = field.group;
+        const channel = `[Channel${unit[unit.length - 1]}]`;
+
+        if (this.shiftPressed[channel]) {
+            this.effectUnitMode[unit] = (this.effectUnitMode[unit] + 1) % 4;
+            engine.setParameter(`[EffectRack1_${unit}]`, "focused_effect", this.effectUnitMode[unit]);
+            this.updateFxLeds(unit);
         } else {
-            script.triggerControl(group, "next_effect");
+            const mode = this.effectUnitMode[unit];
+            if (mode > 0) {
+                script.toggleControl(`[EffectRack1_${unit}_Effect${mode}]`, "enabled");
+            }
+        }
+    };
+
+    fxHandler(field) {
+        if (field.value === 0) {
+            return;
         }
 
+        const unit = field.group;
+        const channel = `[Channel${unit[unit.length - 1]}]`;
+        const mode = this.effectUnitMode[unit];
 
+        if (mode === 0) { // Group mode
+            const group = `[EffectRack1_${field.group}_${field.name}]`;
+            if (this.shiftPressed[channel]) {
+                script.triggerControl(group, "next_effect");
+            } else {
+                script.toggleControl(group, "enabled");
+            }
+        } else { // Single mode
+            const paramIndex = field.name[6];
+            const group = `[EffectRack1_${unit}_Effect${mode}]`;
+            if (this.shiftPressed[channel]) {
+                script.triggerControl(group, "next_effect");
+            } else {
+                script.toggleControl(group, `button_parameter${paramIndex}`);
+            }
+        }
     };
 
     fxSelectHandler(field) {
@@ -1255,9 +1308,13 @@ class TraktorMX2Class {
         // Link outputs to handlers
 
         // Channel 1
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "enabled", this.fxOutputHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "enabled", this.fxOutputHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "enabled", this.fxOutputHandler.bind(this));
+        for (let i = 1; i <= 3; i++) {
+            engine.makeConnection(`[EffectRack1_EffectUnit1_Effect${i}]`, "enabled", this.fxOutputHandler.bind(this));
+            engine.makeConnection(`[EffectRack1_EffectUnit1_Effect${i}]`, "next_effect", this.fxOutputHandler.bind(this));
+            for (let j = 1; j <= 3; j++) {
+                engine.makeConnection(`[EffectRack1_EffectUnit1_Effect${i}]`, `button_parameter${j}`, this.fxOutputHandler.bind(this));
+            }
+        }
 
         // Favorites
         // Add to List
@@ -1280,9 +1337,14 @@ class TraktorMX2Class {
 
         // Channel 2
 
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "enabled", this.fxOutputHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "enabled", this.fxOutputHandler.bind(this));
-        engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "enabled", this.fxOutputHandler.bind(this));
+        for (let i = 1; i <= 3; i++) {
+            engine.makeConnection(`[EffectRack1_EffectUnit2_Effect${i}]`, "enabled", this.fxOutputHandler.bind(this));
+            engine.makeConnection(`[EffectRack1_EffectUnit2_Effect${i}]`, "next_effect", this.fxOutputHandler.bind(this));
+            for (let j = 1; j <= 3; j++) {
+                engine.makeConnection(`[EffectRack1_EffectUnit2_Effect${i}]`, `button_parameter${j}`, this.fxOutputHandler.bind(this));
+            }
+        }
+
 
         // Favorites
         // Add to List
@@ -1420,8 +1482,53 @@ class TraktorMX2Class {
         this.outputHandler(engine.getValue(group, name), `[Channel${name[name.length - 9]}]`, `fx_select_${group[group.length - 2]}`);
     };
 
+ 	updateFxLeds(unit) {
+        const channel = `[Channel${unit[unit.length - 1]}]`;
+        const mode = this.effectUnitMode[unit];
+        if (mode > 0) {
+            const group = `[EffectRack1_${unit}_Effect${mode}]`;
+            this.fxOutputHandler(0, group, "enabled");
+            this.fxOutputHandler(0, group, "button_parameter1");
+            this.fxOutputHandler(0, group, "button_parameter2");
+            this.fxOutputHandler(0, group, "button_parameter3");
+        } else {
+            this.outputHandler(this.baseColors.off, channel, "fx_misc");
+            this.fxOutputHandler(0, `[EffectRack1_${unit}_Effect1]`, "enabled");
+            this.fxOutputHandler(0, `[EffectRack1_${unit}_Effect2]`, "enabled");
+            this.fxOutputHandler(0, `[EffectRack1_${unit}_Effect3]`, "enabled");
+        }
+    };
+
     fxOutputHandler(_value, group, name) {
-        this.outputHandler(engine.getValue(group, name), `[Channel${group[group.length - 10]}]`, `fx_${group[group.length - 2]}`);
+        const unit = `EffectUnit${group[23]}`;
+        const effectNum = parseInt(group[31]);
+        const channel = `[Channel${unit[unit.length - 1]}]`;
+        const mode = this.effectUnitMode[unit];
+
+        if (mode > 0) { // Single mode
+            if (effectNum === mode) {
+                if (name === "enabled") {
+                    const enabled = engine.getValue(group, name);
+                    const color = mode === 1 ? (enabled ? this.baseColors.red : this.baseColors.dimmedRed) :
+                        mode === 2 ? (enabled ? this.baseColors.blue : this.baseColors.dimmedBlue) :
+                            mode === 3 ? (enabled ? this.baseColors.green : this.baseColors.dimmedGreen) : this.baseColors.off;
+
+                    this.colorOutputHandler(color, channel, "fx_misc");
+                } else if (name.startsWith("button_parameter")) {
+                    const paramNum = name[name.length - 1];
+
+                    if (paramNum <=engine.getValue(group, "num_button_parameters")) {
+                        this.outputHandler(engine.getValue(group, name), channel, `fx_${paramNum}`);
+                    } else {
+                        this.colorOutputHandler(this.baseColors.off, channel, `fx_${paramNum}`);
+                    }
+                }
+            }
+        } else { // Group mode
+            if (name === "enabled") {
+                this.outputHandler(engine.getValue(group, name), channel, `fx_${effectNum}`);
+            }
+        }
     };
 
     gfxOutputHandler() {
@@ -1672,7 +1779,7 @@ class TraktorMX2Class {
         return {
             // Channel 1
             "[Channel1]": {
-                "fx_misc": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
+                "fx_misc": {dim: this.baseColors.off, full: this.baseColors.white},
                 "fx_1": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
                 "fx_2": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
                 "fx_3": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
@@ -1699,7 +1806,7 @@ class TraktorMX2Class {
                 "pfl": {dim: this.baseColors.dimmedWhite, full: this.baseColors.white},
             }, // Channel 2 (same structure)
             "[Channel2]": {
-                "fx_misc": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
+                "fx_misc": {dim: this.baseColors.off, full: this.baseColors.white},
                 "fx_1": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
                 "fx_2": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
                 "fx_3": {dim: this.baseColors.dimmedOrange, full: this.baseColors.orange},
