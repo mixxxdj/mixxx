@@ -10,6 +10,7 @@
 #include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "preferences/dialog/dlgprefsound.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -27,7 +28,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     QList<mixxx::audio::SampleRate> getSampleRates(
             [[maybe_unused]] bool jackSampleRates) const override {
-        return m_samplerates;
+        return {};
     }
 
     std::vector<SoundDevicePointer> queryDevices() const override;
@@ -39,8 +40,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::string openDeviceInput(uint32_t id, const AudioInput& input);
     std::string openDeviceOutput(uint32_t id, const AudioOutput& output);
     void closeDevices();
-
-    void setLatencyParams(mixxx::audio::SampleRate sampleRate, SINT framesPerBuffer) override;
 
     mixxx::audio::SampleRate getDefaultSampleRate() const {
         return m_defaultSampleRate;
@@ -59,6 +58,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
   private slots:
     void registerInput(const AudioInput& input, AudioDestination* dest);
     void registerOutput(const AudioOutput& output, AudioSource* src);
+    void devicesSetup();
 
   private:
     struct Link {
@@ -201,7 +201,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void createPorts(PortPair& ports, std::string_view name, spa_direction direction);
     void closePorts(PortPair& ports);
 
-    void updateFilterLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
+    void updateFilterLatency();
     bool nodeHasPorts(const Node& node);
 
     std::unordered_map<uint32_t, Node> m_nodes;
@@ -237,6 +237,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;
+    ControlObject m_coBufferSize;
     ControlProxy m_coOutputLatencyMs;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
@@ -248,4 +249,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
     int m_coreSyncSeq;
+    bool m_forceSamplerate;
+    bool m_forceQuantum;
 };

@@ -1,7 +1,9 @@
 #include "soundio/pipewireenumerator.h"
 
 #include <pipewire/pipewire.h>
-#include <qobjectdefs.h>
+#include <qendian.h>
+#include <qlogging.h>
+#include <qobject.h>
 #include <spa/utils/defs.h>
 #include <spa/utils/dict.h>
 #include <spa/utils/result.h>
@@ -17,6 +19,8 @@
 #include "audio/types.h"
 #include "control/controlobject.h"
 #include "moc_pipewireenumerator.cpp"
+#include "preferences/configobject.h"
+#include "preferences/dialog/dlgprefsound.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicepipewire.h"
 #include "soundio/soundmanager.h"
@@ -76,8 +80,9 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
 }
 } // namespace
 
-PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
+PipewireEnumerator::PipewireEnumerator(UserSettingsPointer pConfig, SoundManager* pManager)
         : m_pSoundManager(pManager),
+          m_pConfig(pConfig),
           m_pPwThreadLoop(nullptr),
           m_pPwContext(nullptr),
           m_pPwCore(nullptr),
@@ -87,8 +92,11 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
           m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_coPipewirePatchbaySync(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
+          m_coBufferSize(ConfigKey(kAppGroup, QStringLiteral("buffer_size"))),
           m_coOutputLatencyMs(kAppGroup, QStringLiteral("output_latency_ms")),
-          m_framesPerBuffer(0) {
+          m_framesPerBuffer(1024),
+          m_forceSamplerate(false),
+          m_forceQuantum(false) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -97,6 +105,11 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
             &SoundManager::outputRegistered,
             this,
             &PipewireEnumerator::registerOutput);
+
+    connect(m_pSoundManager,
+            &SoundManager::devicesSetup,
+            this,
+            &PipewireEnumerator::devicesSetup);
 
     connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
     connect(this, &PipewireEnumerator::deviceRemoved, m_pSoundManager, &SoundManager::removeDevice);
@@ -528,19 +541,8 @@ int PipewireEnumerator::metadataProperty(
 
     if (strcmp(key, "clock.rate") == 0) {
         pEnumerator->m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
-    } else if (strcmp(key, "clock.allowed-rates") == 0) {
-        qDebug() << "PipewireEnumerator::metadataProperty clock.allowed-rates" << value;
-        // parse json arrays like [ 44100, 48000, 96000 ]
-        QString s = value;
-        s.remove('[');
-        s.remove(']');
-
-        const QStringList parts = s.split(',', Qt::SkipEmptyParts);
-
-        for (const QString& part : parts) {
-            pEnumerator->m_samplerates.push_back(mixxx::audio::SampleRate(part.trimmed().toInt()));
-        }
     }
+
     return 0;
 }
 
@@ -705,7 +707,6 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
         setLatency(sampleRate, framesPerBuffer);
     }
 
-    // qDebug() << "PipewireEnumerator::callback" << sampleRate << framesPerBuffer;
     m_pSoundManager->processUnderflowHappened(framesPerBuffer);
 
     for (const auto& [input, ports] : m_inputs) {
@@ -917,31 +918,27 @@ void PipewireEnumerator::createOutputPorts(const AudioOutput& output, PortPair& 
     createPorts(ports, outputName, SPA_DIRECTION_OUTPUT);
 }
 
-void PipewireEnumerator::updateFilterLatency(
-        unsigned int sampleRate, unsigned int framesPerBuffer) {
-    qDebug() << "PipewireEnumerator::updateFilterLatency" << sampleRate << framesPerBuffer;
-    std::string rate = std::to_string(sampleRate);
-    std::string rateStr = "1/" + rate;
-    std::string quantumStr = std::to_string(framesPerBuffer);
-    std::string latencyStr = quantumStr + "/" + std::to_string(sampleRate);
+void PipewireEnumerator::updateFilterLatency() {
+    qDebug() << "PipewireEnumerator::updateFilterLatency" << m_forceQuantum
+             << m_framesPerBuffer << m_forceSamplerate << m_sampleRate;
 
-    spa_dict_item items[] = {
-            SPA_DICT_ITEM_INIT(PW_KEY_NODE_RATE, rateStr.c_str()),
-            SPA_DICT_ITEM_INIT(PW_KEY_NODE_LATENCY, latencyStr.c_str()),
+    std::string rate = m_forceSamplerate ? std::to_string(m_sampleRate) : "";
+    std::string rateFraction = m_forceSamplerate ? "1/" + std::to_string(m_sampleRate) : "";
+    std::string quantum = m_forceQuantum ? std::to_string(m_framesPerBuffer) : "";
+    std::string latency = m_forceQuantum ? rate + "/" + std::to_string(m_framesPerBuffer) : "";
+
+    const spa_dict_item propItems[] = {
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_RATE, rate.c_str()),
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_QUANTUM, quantum.c_str()),
     };
 
-    // don't set PW_KEY_NODE_LATENCY if framesPerBuffer is 0 (uninitialized)
-    uint32_t numProps = framesPerBuffer == 0 ? 1 : 2;
-    spa_dict properties = SPA_DICT_INIT(items, numProps);
+    spa_dict properties = SPA_DICT_INIT(propItems, std::size(propItems));
 
     pw_thread_loop_lock(m_pPwThreadLoop);
-
     int res = pw_filter_update_properties(m_pPwFilter, nullptr, &properties);
-
     pw_thread_loop_unlock(m_pPwThreadLoop);
-    if (res >= 0) {
-        setLatency(sampleRate, framesPerBuffer);
-    } else {
+
+    if (res < 0) {
         qDebug() << "PipewireEnumerator::setLatency "
                     "pw_filter_update_properties failed:"
                  << spa_strerror(res);
@@ -950,13 +947,16 @@ void PipewireEnumerator::updateFilterLatency(
 }
 
 void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int framesPerBuffer) {
-    qDebug() << "PipewireEnumerator::setLatency" << sampleRate << framesPerBuffer;
+    qDebug() << "PipewireEnumerator::setLatency" << m_sampleRate << sampleRate
+             << m_framesPerBuffer << framesPerBuffer;
+
     m_sampleRate = sampleRate;
     m_framesPerBuffer = framesPerBuffer;
     ControlObject::set(
             ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
             m_framesPerBuffer * 1000 / m_sampleRate);
     ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
+    m_coBufferSize.set(m_framesPerBuffer);
 }
 
 void PipewireEnumerator::coreEventDone(uint32_t id, int seq) {
@@ -1022,10 +1022,31 @@ bool PipewireEnumerator::nodeHasPorts(const Node& node) {
     return false;
 }
 
-void PipewireEnumerator::setLatencyParams(
-        mixxx::audio::SampleRate sampleRate, SINT framesPerBuffer) {
-    qDebug() << "PipewireEnumerator::setLatencyParams" << sampleRate << framesPerBuffer;
-    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
-        updateFilterLatency(sampleRate, framesPerBuffer);
+void PipewireEnumerator::devicesSetup() {
+    const mixxx::audio::SampleRate samplerate = m_pSoundManager->getConfig().getSampleRate();
+    const unsigned int framesPerBuffer = m_pSoundManager->getConfig().getFramesPerBuffer();
+    const bool samplerateChanged = samplerate != m_sampleRate;
+    const bool framesPerBufferChanged = framesPerBuffer != m_framesPerBuffer;
+
+    const bool configForceQuantum = m_pConfig->getValue(
+            ConfigKey(kAppGroup, QStringLiteral("force_buffer_size")), false);
+    const bool configForceSamplerate = m_pConfig->getValue(
+            ConfigKey(kAppGroup, QStringLiteral("force_samplerate")), false);
+    const bool forceQuantumChanged = m_forceQuantum != configForceQuantum;
+    const bool forceSamplerateChanged = m_forceSamplerate != configForceSamplerate;
+    qDebug() << "PipewireEnumerator::devicesSetup" << configForceQuantum
+             << m_forceQuantum << configForceSamplerate << m_forceSamplerate
+             << samplerate << m_sampleRate << framesPerBuffer
+             << m_framesPerBuffer;
+
+    m_sampleRate = samplerate;
+    m_framesPerBuffer = framesPerBuffer;
+
+    if ((forceQuantumChanged || forceSamplerateChanged) ||
+            ((samplerateChanged || framesPerBufferChanged) &&
+                    (configForceQuantum || configForceSamplerate))) {
+        m_forceQuantum = configForceQuantum;
+        m_forceSamplerate = configForceSamplerate;
+        updateFilterLatency();
     }
 }

@@ -263,7 +263,7 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api)
         return samplerates;
     }
 
-    return QList<mixxx::audio::SampleRate>{
+    return {
             mixxx::audio::SampleRate(44100),
             mixxx::audio::SampleRate(48000),
             mixxx::audio::SampleRate(96000),
@@ -335,8 +335,6 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // loop over all available devices
 
     std::vector<SoundDevicePointer> devices = m_pEnumerator->queryDevices();
-
-    m_pEnumerator->setLatencyParams(m_config.getSampleRate(), m_config.getFramesPerBuffer());
 
     // here some network device conditions can be separated, currently simply
     // add it to the list of other devices
