@@ -31,6 +31,10 @@
 
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
 Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
+#ifdef QT_STATIC
+Q_IMPORT_QML_PLUGIN(QtGraphicalEffectsPrivatePlugin)
+Q_IMPORT_QML_PLUGIN(QMultimediaQuickModule)
+#endif
 
 namespace {
 const QString kMainQmlFileName = QStringLiteral("qml/main.qml");

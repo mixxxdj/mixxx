@@ -1,6 +1,7 @@
 #include "controllers/scripting/controllerscriptenginebase.h"
 
 #include <QJSEngine>
+#include <QQuickStyle>
 
 #include "controllers/controller.h"
 #include "controllers/scripting/colormapperjsproxy.h"

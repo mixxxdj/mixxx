@@ -88,7 +88,7 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             # FIXME: QML deployment on Mac appears to be incomplete (#12527)
-            qml: OFF
+            qml: ON
           - name: macOS 15 arm64
             os: macos-15-intel
             cmake_args: >-
@@ -108,7 +108,7 @@ jobs:
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
-            qml: OFF
+            qml: ON
           - name: Windows Server 2025 VS2026 x64
             os: windows-2025-vs2026
             # Attention: If you change the cmake_args for the Windows CI build,
@@ -391,25 +391,6 @@ jobs:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
 
-      - name: "[Windows] Find FFMPEG"
-        if: runner.os == 'Windows' && matrix.qml == 'ON' && matrix.crosscompile != true
-        shell: bash
-        run: |
-          find "/c/buildenv/$(echo $BUILDENV_NAME)/installed/$(echo $VCPKG_TARGET_TRIPLET)/tools/" -name '*.exe'
-          # Using $(echo ) to trim spaces
-          MIXXX_FFMPEG_BIN="/c/buildenv/$(echo $BUILDENV_NAME)/installed/$(echo $VCPKG_TARGET_TRIPLET)/tools/ffmpeg/ffmpeg.exe"
-          if [ ! -f "$MIXXX_FFMPEG_BIN" ]; then
-            echo "Cannot find ffmpeg at: $MIXXX_FFMPEG_BIN"
-            exit 1
-          fi
-          # Rewriting in Windows format
-          MIXXX_FFMPEG_BIN="C:\\buildenv\\$(echo $BUILDENV_NAME)\\installed\\$(echo $VCPKG_TARGET_TRIPLET)\\tools\\ffmpeg\\ffmpeg.exe"
-          echo "MIXXX_FFMPEG_BIN=$MIXXX_FFMPEG_BIN" >> $GITHUB_ENV
-
-      - name: "[Windows] Test FFMPEG"
-        if: runner.os == 'Windows' && matrix.qml == 'ON' && matrix.crosscompile != true
-        run: ${{ env.MIXXX_FFMPEG_BIN }} -formats
-
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
         uses: ammaraskar/gcc-problem-matcher@0.3.0
@@ -450,7 +431,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y xvfb ffmpeg
 
       - name: "[Windows] Setup UI test dependencies"
-        if: runner.os == 'Windows' && matrix.qml == 'ON' && matrix.crosscompile != true && matrix.os != 'windows-11-vs2026-arm'
+        if: runner.os == 'Windows' && matrix.qml == 'ON' && matrix.os != 'windows-11-vs2026-arm'
         timeout-minutes: 5
         shell: pwsh
         working-directory: build
@@ -488,7 +469,7 @@ jobs:
           Set-DisplayResolution -Width 1920 -Height 1080
 
       - name: "Run QML UI tests"
-        if: matrix.qml == 'ON' && matrix.crosscompile != true && matrix.os != 'windows-11-vs2026-arm'
+        if: matrix.qml == 'ON' && matrix.os != 'windows-11-vs2026-arm'
         id: ui_test
         working-directory: build
         run: |

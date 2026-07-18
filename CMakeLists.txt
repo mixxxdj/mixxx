@@ -2809,6 +2809,14 @@ if(BUILD_UI_TEST)
       "-DCMAKE_CXX_FLAGS=/FI${CMAKE_CURRENT_BINARY_DIR}/spix_uint_compat.h"
     )
   endif()
+  string(
+    REPLACE
+    ";"
+    "|"
+    PIPE_DELIMITED_CMAKE_PREFIX_PATH
+    "${CMAKE_PREFIX_PATH}"
+  )
+
   ExternalProject_Add(
     libspix
     GIT_REPOSITORY https://github.com/faaxm/spix.git
@@ -2826,7 +2834,7 @@ if(BUILD_UI_TEST)
       -DAnyRPC_INCLUDE_DIRS=${ANYRPC_INSTALL_DIR}/include
       -DAnyRPC_LIBRARIES=${ANYRPC_INSTALL_DIR}/lib -DQt6Core_DIR=${Qt6Core_DIR}
       -DQt6Gui_DIR=${Qt6Gui_DIR} -DQt6_DIR=${Qt6_DIR}
-      -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH_ALT_SEP}
+      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
       -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH} ${SPIX_CXX_FLAGS}
     BUILD_BYPRODUCTS
       <INSTALL_DIR>/${SPIX_QTQUICK_LIBRARY}
@@ -4381,6 +4389,40 @@ if(Qt_IS_STATIC)
           Qt${QT_VERSION_MAJOR}::QMacStylePlugin
       )
     endif()
+  endif()
+
+  if(QML)
+    #install qml6-module-qt5compat-graphicaleffects
+    target_link_libraries(
+      mixxx-qml-lib
+      PRIVATE
+        Qt${QT_VERSION_MAJOR}::qtgraphicaleffectsprivate
+        Qt${QT_VERSION_MAJOR}::qtgraphicaleffectsplugin
+    )
+    install(
+      DIRECTORY
+        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt5Compat/GraphicalEffects"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt5Compat"
+      COMPONENT applocal
+    )
+    install(
+      DIRECTORY
+        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt5Compat/GraphicalEffects/private"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt5Compat/GraphicalEffects"
+      COMPONENT applocal
+    )
+
+    # install qml6-module-qtmultimedia
+    target_link_libraries(
+      mixxx-qml-lib
+      PRIVATE Qt${QT_VERSION_MAJOR}::quickmultimedia
+    )
+    install(
+      DIRECTORY
+        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtMultimedia"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
+      COMPONENT applocal
+    )
   endif()
 else()
   if(QT6 AND (WIN32 OR APPLE))
