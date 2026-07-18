@@ -1,5 +1,6 @@
 #include "soundio/pipewireenumerator.h"
 
+#include <pipewire/keys.h>
 #include <pipewire/pipewire.h>
 #include <spa/utils/defs.h>
 #include <spa/utils/dict.h>
@@ -14,6 +15,7 @@
 #include "audio/types.h"
 #include "control/controlobject.h"
 #include "moc_pipewireenumerator.cpp"
+#include "preferences/dialog/dlgprefsound.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicepipewire.h"
 #include "soundio/soundmanager.h"
@@ -75,8 +77,9 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
 }
 } // namespace
 
-PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
+PipewireEnumerator::PipewireEnumerator(UserSettingsPointer pConfig, SoundManager* pManager)
         : m_pSoundManager(pManager),
+          m_pConfig(pConfig),
           m_pPwThreadLoop(nullptr),
           m_pPwContext(nullptr),
           m_pPwCore(nullptr),
@@ -85,7 +88,8 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
           m_pPwFilter(nullptr),
           m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
-          m_framesPerBuffer(0) {
+          m_framesPerBuffer(0),
+          m_forceQuantumRate(false) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -424,7 +428,11 @@ std::string PipewireEnumerator::openDevice(const SoundDevicePipewire& device,
         return "PipewireEnumerator uninitialized";
     }
 
-    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
+    bool forceQuantumRate = m_pConfig->getValue(DlgPrefSound::kPipeWireForceQuantumRate, false);
+
+    if (sampleRate != m_sampleRate or framesPerBuffer != m_framesPerBuffer or
+            forceQuantumRate != m_forceQuantumRate) {
+        m_forceQuantumRate = forceQuantumRate;
         updateFilterLatency(sampleRate, framesPerBuffer);
     }
 
@@ -798,26 +806,31 @@ std::pair<uint32_t*, uint32_t*> PipewireEnumerator::createOutputPorts(const Audi
 
 void PipewireEnumerator::updateFilterLatency(
         unsigned int sampleRate, unsigned int framesPerBuffer) {
-    qWarning() << "PipewireEnumerator::updateFilterLatency" << sampleRate << framesPerBuffer;
-    std::string rate = std::to_string(sampleRate);
-    std::string rateStr = "1/" + rate;
-    std::string quantumStr = std::to_string(framesPerBuffer);
-    std::string latencyStr = quantumStr + "/" + std::to_string(sampleRate);
+    qDebug() << "PipewireEnumerator::updateFilterLatency" << sampleRate
+             << framesPerBuffer << m_forceQuantumRate;
 
-    spa_dict_item items[] = {
-            SPA_DICT_ITEM_INIT(PW_KEY_NODE_RATE, rateStr.c_str()),
-            SPA_DICT_ITEM_INIT(PW_KEY_NODE_LATENCY, latencyStr.c_str()),
+    std::string rate = std::to_string(sampleRate);
+    std::string rateFraction = "1/" + rate;
+    std::string quantum = std::to_string(framesPerBuffer);
+    std::string latency = quantum + "/" + rate;
+
+    const spa_dict_item propItems[] = {
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_RATE, rateFraction.c_str()),
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_RATE,
+                    m_forceQuantumRate ? rate.c_str() : ""),
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_LATENCY, latency.c_str()),
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_QUANTUM,
+                    m_forceQuantumRate ? quantum.c_str() : ""),
     };
 
     // don't set PW_KEY_NODE_LATENCY if framesPerBuffer is 0 (uninitialized)
-    uint32_t numProps = framesPerBuffer == 0 ? 1 : 2;
-    spa_dict properties = SPA_DICT_INIT(items, numProps);
+    uint32_t numProps = framesPerBuffer == 0 ? 2 : 4;
+    spa_dict properties = SPA_DICT_INIT(propItems, numProps);
 
     pw_thread_loop_lock(m_pPwThreadLoop);
-
     int res = pw_filter_update_properties(m_pPwFilter, nullptr, &properties);
-
     pw_thread_loop_unlock(m_pPwThreadLoop);
+
     if (res >= 0) {
         setLatency(sampleRate, framesPerBuffer);
     } else {
@@ -829,7 +842,7 @@ void PipewireEnumerator::updateFilterLatency(
 }
 
 void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int framesPerBuffer) {
-    qWarning() << "PipewireEnumerator::setLatency" << sampleRate << framesPerBuffer;
+    qDebug() << "PipewireEnumerator::setLatency" << sampleRate << framesPerBuffer;
     m_sampleRate = sampleRate;
     m_framesPerBuffer = framesPerBuffer;
     ControlObject::set(
