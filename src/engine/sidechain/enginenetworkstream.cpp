@@ -43,7 +43,6 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
           m_numInputChannels(numInputChannels),
           m_sampleRate(),
           m_inputStreamStartTimeUs(-1),
-          m_inputStreamFramesWritten(0),
           m_inputStreamFramesRead(0),
           m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
     if (numInputChannels) {
@@ -77,7 +76,6 @@ EngineNetworkStream::~EngineNetworkStream() {
 void EngineNetworkStream::startStream(mixxx::audio::SampleRate sampleRate) {
     m_sampleRate = sampleRate;
     m_inputStreamStartTimeUs = getNetworkTimeUs();
-    m_inputStreamFramesWritten = 0;
 
     for (NetworkOutputStreamWorkerPtr worker : std::as_const(m_outputWorkers)) {
         if (worker.isNull()) {
