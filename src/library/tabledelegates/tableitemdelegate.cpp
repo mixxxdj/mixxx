@@ -2,6 +2,8 @@
 
 #include <QPainter>
 
+#include "library/basetracktablemodel.h"
+#include "library/columncache.h"
 #include "moc_tableitemdelegate.cpp"
 #include "util/painterscope.h"
 #include "widget/wtracktableview.h"
@@ -113,6 +115,16 @@ void TableItemDelegate::drawBorder(
             rect.top(),
             rect.width() - 1,
             rect.height() - 1);
+}
+
+// static
+bool TableItemDelegate::isEndMarkerRow(const QModelIndex& index) {
+    const auto* pModel = qobject_cast<const BaseTrackTableModel*>(index.model());
+    if (!pModel) {
+        return false;
+    }
+    int col = pModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_IS_AUTODJ_END_MARKER);
+    return col >= 0 && index.sibling(index.row(), col).data().toInt() == 1;
 }
 
 void TableItemDelegate::paintItem(

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QTimer>
 #include <QWidget>
 
 #include "library/autodj/autodjprocessor.h"
@@ -8,6 +9,7 @@
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 
 class PlaylistTableModel;
 class WLibrary;
@@ -42,9 +44,10 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    void updateSelectionInfo();
+
     void slotTransitionModeChanged(int comboboxIndex);
     void slotRepeatPlaylistChanged(bool checked);
+    void slotAddEndMarker(bool);
 
   signals:
     void addRandomTrackButton(bool buttonChecked);
@@ -59,11 +62,18 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 #endif
     void trackSelected(TrackPointer pTrack);
 
+  private slots:
+    void slotRecalcQueueDuration();
+    void slotUpdateQueueDuration();
+
   private:
     void setupActionButton(QPushButton* pButton,
             void (DlgAutoDJ::*pSlot)(bool),
             const QString& fallbackText);
+    void refocusPrevWidget();
+    bool eventFilter(QObject* pObj, QEvent* pEvent) override;
     void keyPressEvent(QKeyEvent* pEvent) override;
+    void hideEvent(QHideEvent* event) override;
 
     const UserSettingsPointer m_pConfig;
 
@@ -72,6 +82,10 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     const bool m_bShowButtonText;
 
     PlaylistTableModel* m_pAutoDJTableModel;
+    parented_ptr<QTimer> m_pQueueDurationTimer;
+    double m_queueSeconds;
+    bool m_showEndTime;
+    bool m_autoDJWasActive;
 
     QString m_enableBtnTooltip;
     QString m_disableBtnTooltip;
