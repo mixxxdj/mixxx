@@ -24,7 +24,8 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
           m_bufferPtrs(),
           m_interleavedReadBuffer(MAX_BUFFER_LEN),
           m_bBackwards(false),
-          m_useEngineFiner(false) {
+          m_useEngineFiner(false),
+          m_useOptionWindowShort(false) {
     // Initialize the internal buffers to prevent re-allocations
     // in the real-time thread.
     onSignalChanged();
@@ -134,6 +135,9 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
                 // Process Channels Together. otherwise the result is not
                 // mono-compatible. See #11361
                 RubberBandStretcher::OptionChannelsTogether;
+        if (m_useOptionWindowShort) {
+            rubberbandOptions |= RubberBandStretcher::OptionWindowShort;
+        }
     }
 #endif
 
@@ -377,6 +381,13 @@ bool EngineBufferScaleRubberBand::isEngineFinerAvailable() {
 void EngineBufferScaleRubberBand::useEngineFiner(bool enable) {
     if (isEngineFinerAvailable()) {
         m_useEngineFiner = enable;
+        onSignalChanged();
+    }
+}
+
+void EngineBufferScaleRubberBand::useOptionWindowShort(bool enable) {
+    if (isEngineFinerAvailable()) {
+        m_useOptionWindowShort = enable;
         onSignalChanged();
     }
 }

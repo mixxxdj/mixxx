@@ -872,11 +872,18 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 #ifdef __RUBBERBAND__
     case KeylockEngine::RubberBandFaster:
         m_pScaleRB->useEngineFiner(false);
+        m_pScaleRB->useOptionWindowShort(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
     case KeylockEngine::RubberBandFiner:
         m_pScaleRB->useEngineFiner(
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
+        m_pScaleRB->useOptionWindowShort(false);
+        m_pScaleKeylock = m_pScaleRB;
+        break;
+    case KeylockEngine::RubberBandR3ShortWindow:
+        m_pScaleRB->useEngineFiner(true);
+        m_pScaleRB->useOptionWindowShort(true);
         m_pScaleKeylock = m_pScaleRB;
         break;
 #endif
