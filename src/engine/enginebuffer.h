@@ -88,6 +88,7 @@ class EngineBuffer : public EngineObject {
 #ifdef __RUBBERBAND__
         RubberBandFaster = 1,
         RubberBandFiner = 2,
+        RubberBandR3ShortWindow = 3,
 #endif
     };
 
@@ -96,7 +97,8 @@ class EngineBuffer : public EngineObject {
             KeylockEngine::SoundTouch,
 #ifdef __RUBBERBAND__
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner
+            KeylockEngine::RubberBandFiner,
+            KeylockEngine::RubberBandR3ShortWindow,
 #endif
     };
 
@@ -180,6 +182,11 @@ class EngineBuffer : public EngineObject {
                 return tr("Rubberband R3 (near-hi-fi quality)");
             }
             [[fallthrough]];
+        case KeylockEngine::RubberBandR3ShortWindow:
+            if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
+                return tr("Rubberband R3 short window (near-hi-fi quality)");
+            }
+            [[fallthrough]];
 #endif
         default:
 #ifdef __RUBBERBAND__
@@ -198,6 +205,7 @@ class EngineBuffer : public EngineObject {
         case KeylockEngine::RubberBandFaster:
             return true;
         case KeylockEngine::RubberBandFiner:
+        case KeylockEngine::RubberBandR3ShortWindow:
             return EngineBufferScaleRubberBand::isEngineFinerAvailable();
 #endif
         default:
