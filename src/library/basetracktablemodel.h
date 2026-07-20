@@ -3,6 +3,7 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
+#include <QSet>
 #include <optional>
 
 #include "library/columncache.h"
@@ -144,6 +145,14 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static const QString kDateFormatDefault;
     static void setDateFormat(const QString& format);
+
+    /// Updates the reference set of harmonically compatible musical keys
+    /// (as numeric `mixxx::track::io::key::ChromaticKey` values) and the
+    /// reference BPM values used to highlight Key/BPM cells of tracks that
+    /// mix well with the tracks currently loaded on decks.
+    static void setMixCompatibilityReference(
+            const QSet<int>& compatibleKeyValues,
+            const QList<double>& referenceBpmValues);
 
   protected:
     // Build a map from the column names to their indices
@@ -297,6 +306,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QList<QUrl> collectUrls(
             const QModelIndexList& indexes) const;
 
+    static bool isKeyCompatibleWithLoadedDecks(int keyValue);
+    static bool isBpmCompatibleWithLoadedDecks(double bpmValue);
+
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
@@ -323,4 +335,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static bool s_bApplyPlayedTrackColor;
     static QString s_dateFormat;
+
+    static QSet<int> s_mixCompatibleKeyValues;
+    static QList<double> s_mixReferenceBpmValues;
 };
