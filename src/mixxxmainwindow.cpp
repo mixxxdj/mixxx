@@ -38,6 +38,7 @@
 #include "library/library.h"
 #include "library/library_decl.h"
 #include "library/library_prefs.h"
+#include "library/parser.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -456,6 +457,21 @@ void MixxxMainWindow::initialize() {
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
+
+    // Import playlist files passed as command line arguments.
+    // Activate only the last one to avoid repeated sidebar updates.
+    const QList<QString>& musicFiles = CmdlineArgs::Instance().getMusicFiles();
+    QStringList playlistArgs;
+    for (const QString& file : musicFiles) {
+        if (Parser::isPlaylistFilenameSupported(file)) {
+            playlistArgs.append(file);
+        }
+    }
+    for (int i = 0; i < playlistArgs.count(); ++i) {
+        m_pCoreServices->getLibrary()->importPlaylistFromFile(
+                playlistArgs.at(i),
+                /*activatePlaylist=*/i == playlistArgs.count() - 1);
+    }
 
     // Start Auto DJ if the cmdline arg is passed.
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
