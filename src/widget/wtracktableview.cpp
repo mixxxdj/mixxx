@@ -459,6 +459,21 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     return pTrackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
+void WTrackTableView::toggleBpmLock(bool locked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QModelIndexList indices = getSelectedRows();
+    for (const auto& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setBpmLocked(locked);
+        }
+    }
+}
+
 void WTrackTableView::assignPreviousTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
@@ -496,6 +511,27 @@ void WTrackTableView::assignNextTrackColor() {
         ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
         mixxx::RgbColor::optional_t color = pTrack->getColor();
         pTrack->setColor(colorPalette.nextColor(color));
+    }
+}
+
+void WTrackTableView::trackRatingChangeRequestRelative(int change) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    const QModelIndexList indices = getSelectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex index = indices.at(0);
+    TrackPointer pTrack = pTrackModel->getTrack(index);
+    if (pTrack) {
+        int newRating = pTrack->getRating() + change;
+        if (mixxx::TrackRecord::isValidRating(newRating) &&
+                newRating != pTrack->getRating()) {
+            pTrack->setRating(newRating);
+        }
     }
 }
 
