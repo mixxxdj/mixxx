@@ -6,6 +6,7 @@
 #include <spa/utils/result.h>
 
 #include <QList>
+#include <QMessageBox>
 #include <QSharedPointer>
 #include <QStringView>
 #include <string>
@@ -834,8 +835,10 @@ void PipewireEnumerator::coreEventError(uint32_t id, int seq, int res, const cha
     qWarning() << "PipewireEnumerator::coreEventError" << id << seq << res << message;
     if (id == 0) {
         if (res == -EPIPE) {
-            // should display a popup here?
             qWarning() << "Deinitializing PipeWire due to server disconnect";
+            QMessageBox::information(nullptr,
+                    tr("Information"),
+                    tr("PipeWire server disconnected, query devices to reconnect."));
             deinitialize();
         }
     }
