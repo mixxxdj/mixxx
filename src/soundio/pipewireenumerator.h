@@ -12,6 +12,7 @@
 #include "soundio/sounddeviceenumerator.h"
 #include "soundio/sounddevicepipewire.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerconfig.h"
 
 class PipewireEnumerator : public SoundDeviceEnumerator {
     Q_OBJECT
@@ -20,21 +21,28 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             SoundManager* pManager);
     ~PipewireEnumerator() override;
 
-    QList<mixxx::audio::SampleRate> getSampleRates() const override;
-    std::vector<SoundDevicePointer> queryDevices() const override;
-    std::vector<std::string> getAPIs() const override {
-        return m_initialized ? std::vector<std::string>{"PipeWire"} : std::vector<std::string>{};
+    QList<mixxx::audio::SampleRate> getSampleRates(
+            [[maybe_unused]] bool jackSampleRates) const override {
+        return m_samplerates;
     }
 
-    void initialize();
+    std::vector<SoundDevicePointer> queryDevices() const override;
+
+    void initialize() override;
+    void deinitialize() override;
 
     bool isOpen(uint32_t id);
     std::string openDevice(const SoundDevicePipewire& device,
             mixxx::audio::SampleRate sampleRate,
             SINT framesPerBuffer);
     void closeDevice(uint32_t id);
+
     mixxx::audio::SampleRate getDefaultSampleRate() const {
         return m_defaultSampleRate;
+    }
+
+    QList<QString> getAPIs() const override {
+        return {SoundManagerConfig::kAPIPipewire};
     }
 
   signals:
@@ -46,6 +54,27 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void registerOutput(const AudioOutput& output, AudioSource* src);
 
   private:
+    static void coreEventError(void* data, uint32_t id, int seq, int res, const char* message) {
+        static_cast<PipewireEnumerator*>(data)->coreEventError(id, seq, res, message);
+    }
+
+    static constexpr pw_core_events coreEvents = {
+            .version = PW_VERSION_CORE_EVENTS,
+            .info = nullptr,
+            .done = nullptr,
+            .ping = nullptr,
+            .error = coreEventError,
+            .remove_id = nullptr,
+            .bound_id = nullptr,
+            .add_mem = nullptr,
+            .remove_mem = nullptr,
+#if PW_CHECK_VERSION(0, 3, 68)
+            .bound_props = nullptr,
+#endif
+    };
+
+    void coreEventError(uint32_t id, int seq, int res, const char* message);
+
     static void registryEventGlobalOuter(void* data,
             uint32_t id,
             uint32_t permissions,
@@ -143,6 +172,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     pw_registry* m_pPwRegistry;
     pw_metadata* m_pPwMetadata;
     pw_filter* m_pPwFilter;
+    spa_hook m_pwCoreListener;
     spa_hook m_pwRegistryListener;
     spa_hook m_pwFilterListener;
     spa_hook m_pwMetadataListener;
@@ -150,7 +180,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
     std::vector<uint32_t> m_openedDevices;
 
-    bool m_initialized;
     uint64_t xrun_duration;
     int m_invalidTimeInfoCount;
     double m_lastCallbackEntrytoDacSecs;

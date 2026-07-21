@@ -1584,7 +1584,6 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
-  src/soundio/networkenumerator.cpp
   src/soundio/portaudioenumerator.cpp
   src/soundio/sounddeviceenumerator.cpp
   src/soundio/sounddevice.cpp
@@ -3742,9 +3741,9 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 
 # PipeWire
-option(PIPEWIRE "Enable the PipeWire backend" OFF)
+find_package(PipeWire)
+default_option(PIPEWIRE "Enable the PipeWire backend" "PipeWire_FOUND")
 if(PIPEWIRE)
-  find_package(PipeWire REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC PipeWire::PipeWire)
   target_compile_definitions(mixxx-lib PUBLIC __PIPEWIRE__)
   target_sources(

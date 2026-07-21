@@ -10,7 +10,21 @@
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
-const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
+const QString SoundManagerConfig::kAPINone = QStringLiteral("None");
+const QString SoundManagerConfig::kAPIJack = QStringLiteral("JACK Audio Connection Kit");
+const QString SoundManagerConfig::kAPIAlsa = QStringLiteral("ALSA");
+const QString SoundManagerConfig::kAPIOss = QStringLiteral("OSS");
+const QString SoundManagerConfig::kAPIAsio = QStringLiteral("ASIO");
+const QString SoundManagerConfig::kAPIDirectSound = QStringLiteral("Windows DirectSound");
+// NOTE: This is what our patched version of PortAudio uses for the Core Audio
+// backend on iOS. If/when upstream supports iOS officially
+// (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
+const QString SoundManagerConfig::kAPIIosAudio = QStringLiteral("iOS Audio");
+const QString SoundManagerConfig::kAPICoreAudio = QStringLiteral("Core Audio");
+#ifdef __PIPEWIRE__
+const QString SoundManagerConfig::kAPIPipewire = QStringLiteral("PipeWire");
+#endif
+
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 
@@ -37,15 +51,15 @@ const QRegularExpression kLegacyFormatRegex("((\\d*), )(.*) \\((plug)?(hw:(\\d)+
 } // namespace
 
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
-    : m_api(kDefaultAPI),
-      m_sampleRate(kFallbackSampleRate),
-      m_deckCount(kDefaultDeckCount),
-      m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
-      m_syncBuffers(2),
-      m_forceNetworkClock(false),
-      m_iNumMicInputs(0),
-      m_bExternalRecordBroadcastConnected(false),
-      m_pSoundManager(pSoundManager) {
+        : m_api(kAPINone),
+          m_sampleRate(kFallbackSampleRate),
+          m_deckCount(kDefaultDeckCount),
+          m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
+          m_syncBuffers(2),
+          m_forceNetworkClock(false),
+          m_iNumMicInputs(0),
+          m_bExternalRecordBroadcastConnected(false),
+          m_pSoundManager(pSoundManager) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -67,7 +81,16 @@ bool SoundManagerConfig::readFromDisk() {
     }
     file.close();
     rootElement = doc.documentElement();
+
     setAPI(rootElement.attribute(xmlAttributeApi));
+
+#ifdef __PIPEWIRE__
+    if (m_pSoundManager->isPipewireSelected() and m_api != SoundManagerConfig::kAPIPipewire) {
+        // PipeWire check box just changed, current config is useless
+        return false;
+    }
+#endif
+
     setSampleRate(mixxx::audio::SampleRate(
             rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
     // audioBufferSizeIndex is refereed as "latency" in the config file
@@ -237,7 +260,7 @@ bool SoundManagerConfig::writeToDisk() const {
         QDomElement devElement(doc.createElement(xmlElementSoundDevice));
         devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
         devElement.setAttribute(xmlAttributeDeviceIndex, deviceId.deviceIndex);
-        if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
+        if (m_api == SoundManagerConfig::kAPIAlsa) {
             devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }
 
@@ -288,7 +311,7 @@ bool SoundManagerConfig::checkAPI() {
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
-    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != kDefaultAPI) {
+    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != kAPINone) {
         return false;
     }
     return true;
@@ -385,7 +408,7 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
-    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_api == SoundManagerConfig::kAPIJack) {
         // in case of jack we configure the frames/period
         if (m_audioBufferSizeIndex ==
                 static_cast<unsigned int>(
@@ -477,30 +500,36 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         QList<QString> apiList = soundManager->getHostAPIList();
         if (!apiList.isEmpty()) {
 #ifdef __LINUX__
-            //Check for JACK and use that if it's available, otherwise use ALSA
-            if (apiList.contains(MIXXX_PORTAUDIO_JACK_STRING)) {
-                m_api = MIXXX_PORTAUDIO_JACK_STRING;
-            } else {
-                m_api = MIXXX_PORTAUDIO_ALSA_STRING;
-            }
+            // Check if PipeWire checkbox selected
+#ifdef __PIPEWIRE__
+            if (m_pSoundManager->isPipewireSelected()) {
+                m_api = SoundManagerConfig::kAPIPipewire;
+            } else
+#endif
+                // Check for JACK and use that if it's available, otherwise use ALSA
+                if (apiList.contains(SoundManagerConfig::kAPIJack)) {
+                    m_api = SoundManagerConfig::kAPIJack;
+                } else {
+                    m_api = SoundManagerConfig::kAPIAlsa;
+                }
 #endif
 #ifdef __WINDOWS__
             //Existence of ASIO doesn't necessarily mean you've got ASIO devices
             //Do something more advanced one day if you like - Adam
             // hoping this counts as more advanced, tests if ASIO is an option
             // and then that we have at least one ASIO output device -- bkgood
-            if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING)
-                   && !soundManager->getDeviceList(
-                       MIXXX_PORTAUDIO_ASIO_STRING, true, false).isEmpty()) {
-                m_api = MIXXX_PORTAUDIO_ASIO_STRING;
+            auto deviceList = soundManager->getDeviceList(
+                    SoundManagerConfig::kAPIAsio, true, false);
+            if (apiList.contains(SoundManagerConfig::kAPIAsio) && !deviceList.isEmpty()) {
+                m_api = SoundManagerConfig::kAPIAsio;
             } else {
-                m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;
+                m_api = SoundManagerConfig::kAPIDirectSound;
             }
 #endif
 #ifdef Q_OS_IOS
-            m_api = MIXXX_PORTAUDIO_IOSAUDIO_STRING;
+            m_api = SoundManagerConfig::kAPIIosAudio;
 #elif defined(Q_OS_MACOS)
-            m_api = MIXXX_PORTAUDIO_COREAUDIO_STRING;
+            m_api = SoundManagerConfig::kAPICoreAudio;
 #endif
         }
     }

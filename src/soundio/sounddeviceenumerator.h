@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <string>
 #include <vector>
 
 #include "soundio/sounddevice.h"
@@ -12,6 +11,15 @@ class SoundDeviceEnumerator : public QObject {
     ~SoundDeviceEnumerator() override;
 
     virtual std::vector<SoundDevicePointer> queryDevices() const = 0;
-    virtual QList<mixxx::audio::SampleRate> getSampleRates() const = 0;
-    virtual std::vector<std::string> getAPIs() const = 0;
+    virtual QList<mixxx::audio::SampleRate> getSampleRates(bool jackSampleRate) const = 0;
+    virtual QList<QString> getAPIs() const = 0;
+    virtual void initialize() = 0;
+    virtual void deinitialize() = 0;
+
+    bool initialized() const {
+        return m_initialized;
+    }
+
+  protected:
+    bool m_initialized;
 };
