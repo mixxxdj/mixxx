@@ -73,12 +73,12 @@ PLATFORMS = [
         "release_triplet": "arm64-osx-rel",
         "file": "tools/macos_buildenv.sh",
     },
-    #  {
-    #      "host_os": "Linux",
-    #      "triplet": "arm64-android",
-    #      "release_triplet": "arm64-android-release",
-    #      "file": "tools/android_buildenv.sh",
-    #  },
+    {
+        "host_os": "Linux",
+        "triplet": "arm64-android",
+        "release_triplet": "arm64-android-release",
+        "file": "tools/android_buildenv.sh",
+    },
     #  {
     #      "host_os": "Linux",
     #      "triplet": "x64-linux",
