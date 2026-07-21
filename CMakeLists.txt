@@ -1435,6 +1435,7 @@ add_library(
   src/library/itunes/itunesplaylistmodel.cpp
   src/library/itunes/itunestrackmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
+  src/library/keyhighlightmanager.cpp
   src/library/library_prefs.cpp
   src/library/library.cpp
   src/library/librarycontrol.cpp
@@ -2912,6 +2913,7 @@ if(BUILD_TESTING)
     src/test/indexrange_test.cpp
     src/test/itunesxmlimportertest.cpp
     src/test/keyfactorytest.cpp
+    src/test/keyhighlightmanagertest.cpp
     src/test/keyutilstest.cpp
     src/test/lcstest.cpp
     src/test/learningutilstest.cpp

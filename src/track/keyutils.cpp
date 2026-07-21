@@ -791,6 +791,72 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
     return compatible;
 }
 
+KeyUtils::KeyHighlightClass KeyUtils::classifyAgainst(
+        mixxx::track::io::key::ChromaticKey trackKey,
+        mixxx::track::io::key::ChromaticKey refKey) {
+    if (!ChromaticKey_IsValid(trackKey) ||
+            trackKey == mixxx::track::io::key::INVALID ||
+            !ChromaticKey_IsValid(refKey) ||
+            refKey == mixxx::track::io::key::INVALID) {
+        return KeyHighlightClass::None;
+    }
+
+    const QList<mixxx::track::io::key::ChromaticKey> compatible =
+            getCompatibleKeys(refKey);
+    if (compatible.contains(trackKey)) {
+        // Same key, or relative major/minor: a relative pair sits on the same
+        // radial of the Circle of Fifths (same OpenKey number) but differs in
+        // mode (e.g. C major / A minor). This is the strongest harmonic match.
+        if (trackKey == refKey ||
+                (keyToOpenKeyNumber(trackKey) == keyToOpenKeyNumber(refKey) &&
+                        keyIsMajor(trackKey) != keyIsMajor(refKey))) {
+            return KeyHighlightClass::GreenPerfect;
+        }
+        // Otherwise a Circle-of-Fifths neighbour (perfect 4th/5th).
+        return KeyHighlightClass::GreenNeighbour;
+    }
+
+    // Not directly compatible, but transposing the track up or down one
+    // semitone may land on a compatible key.
+    if (compatible.contains(scaleKeySteps(trackKey, 1)) ||
+            compatible.contains(scaleKeySteps(trackKey, -1))) {
+        return KeyHighlightClass::Yellow;
+    }
+
+    return KeyHighlightClass::Red;
+}
+
+KeyUtils::YellowShift KeyUtils::yellowShiftDirection(
+        mixxx::track::io::key::ChromaticKey trackKey,
+        mixxx::track::io::key::ChromaticKey refKey) {
+    if (!ChromaticKey_IsValid(trackKey) ||
+            trackKey == mixxx::track::io::key::INVALID ||
+            !ChromaticKey_IsValid(refKey) ||
+            refKey == mixxx::track::io::key::INVALID) {
+        return YellowShift::None;
+    }
+
+    const QList<mixxx::track::io::key::ChromaticKey> compatible =
+            getCompatibleKeys(refKey);
+    // Already compatible -> green, not yellow; no transpose hint applies.
+    if (compatible.contains(trackKey)) {
+        return YellowShift::None;
+    }
+
+    // +1 = pitch the track up a semitone, -1 = down. Both can hold at once.
+    const bool up = compatible.contains(scaleKeySteps(trackKey, 1));
+    const bool down = compatible.contains(scaleKeySteps(trackKey, -1));
+    if (up && down) {
+        return YellowShift::Both;
+    } else if (up) {
+        return YellowShift::Up;
+    } else if (down) {
+        return YellowShift::Down;
+    }
+    // Unreachable by +/-1 -> red.
+    return YellowShift::None;
+}
+
 int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
                                        KeyNotation notation) {
     if (!ChromaticKey_IsValid(key)) {
