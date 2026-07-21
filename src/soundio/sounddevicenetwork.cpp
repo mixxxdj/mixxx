@@ -58,7 +58,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
 SoundDeviceNetwork::~SoundDeviceNetwork() {
 }
 
-SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceStatus SoundDeviceNetwork::open(bool isTransportDriver, int syncBuffers) {
     Q_UNUSED(syncBuffers);
     kLogger.debug() << "open:" << m_deviceId.name;
 
@@ -86,7 +86,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
     m_pNetworkStream->startStream(m_sampleRate);
 
     // Create the callback Thread if requested
-    if (isClkRefDevice) {
+    if (isTransportDriver) {
         kLogger.debug() << "Clock Reference with:" << framesPerBuffer << "frames/buffer @"
                         << m_sampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
 
@@ -435,7 +435,7 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
     }
 }
 
-void SoundDeviceNetwork::callbackProcessClkRef() {
+void SoundDeviceNetwork::callbackProcessTransportDriver() {
     const SINT framesPerBuffer = m_configFramesPerBuffer;
 
     // This must be the very first call, to measure an exact value
@@ -443,9 +443,8 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     //       size
     updateCallbackEntryToDacTime(framesPerBuffer);
 
-    Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
-                m_deviceId.name);
-
+    Trace trace("SoundDeviceNetwork::callbackProcessTransportDriver %1",
+            m_deviceId.name);
 
     if (!m_denormals) {
         m_denormals = true;
@@ -522,13 +521,13 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 }
 
 void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
-    m_clkRefTimer.start();
+    m_transportDriverTimer.start();
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     // This deadline for the next buffer in microseconds since the Unix epoch
     m_targetTime += static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000);
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
-    VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_transportDriverTimer);
     //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs;
 }
 
@@ -556,7 +555,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
     //qDebug() << "sleep" << sleepUs;
 
     // measure time in Audio callback at the very last
-    m_timeInAudioCallback += m_clkRefTimer.elapsed();
+    m_timeInAudioCallback += m_transportDriverTimer.elapsed();
 
     // now go to sleep until the next callback
     if (sleepUs > 0) {

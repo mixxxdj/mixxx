@@ -279,6 +279,46 @@ void SoundManager::clearAndQueryDevices() {
     queryDevices();
 }
 
+SoundDevicePointer SoundManager::selectLatencyRefDevice(
+        const QHash<SoundDevicePointer, QList<AudioOutput>>& deviceOutputs,
+        const QList<SoundDevicePointer>& devices) {
+    constexpr std::array<AudioPathType, 5> priorityOrder = {
+            AudioPathType::Main,
+            AudioPathType::Deck,
+            AudioPathType::Bus,
+            AudioPathType::Headphones,
+            AudioPathType::Booth};
+
+    for (const auto& pDevice : devices) {
+        if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
+            continue;
+        }
+        const QList<AudioOutput>& outputs = deviceOutputs[pDevice];
+        for (const auto& type : priorityOrder) {
+            const auto it = std::find_if(outputs.cbegin(),
+                    outputs.cend(),
+                    [type](const AudioOutput& out) {
+                        return out.getType() == type;
+                    });
+            if (it != outputs.end()) {
+                return pDevice;
+            }
+        }
+    }
+
+    // Fallback to keep waveforms running if no local SoundDevice is configured:
+    // set it to the first network clock device.
+    for (const auto& pDevice : devices) {
+        if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
+            qWarning() << "No local sound device configured, local "
+                          "sync reference not set! Using"
+                       << pDevice->getDisplayName();
+            return pDevice;
+        }
+    }
+    return nullptr;
+}
+
 SoundDeviceStatus SoundManager::setupDevices() {
     // NOTE(rryan): Big warning: This function is concurrent with calls to
     // pushBuffer and onDeviceOutputCallback until closeDevices() below.
@@ -287,11 +327,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
-    // SoundDevice that is the clock reference, then it is safe to leave it as
+    // SoundDevice that is the Transport-Driver, then it is safe to leave it as
     // it was. Clearing it causes the engine to stop being processed which
     // results in a stuttering noise (sometimes a loud buzz noise at low
     // latencies) when changing devices.
-    //m_pClkRefDevice = NULL;
+    // m_pClkRefDevice = NULL;
     m_pErrorDevice.clear();
     int outputDevicesOpened = 0;
     int inputDevicesOpened = 0;
@@ -309,10 +349,6 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // callback from the logic in SoundDevicePortAudio. They should communicate
     // via message passing over a request/response FIFO.
 
-    // Instead of clearing m_pClkRefDevice and then assigning it directly,
-    // compute the new one then atomically hand off below.
-    SoundDevicePointer pNewMainClockRef;
-
     m_audioLatencyOverloadCount.set(0);
 
     // load with all configured devices.
@@ -321,7 +357,54 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     // pair is isInput, isOutput
     QVector<DeviceMode> toOpen;
-    bool haveOutput = false;
+
+    // Get all outputs for each device
+    QHash<SoundDevicePointer, QList<AudioOutput>> deviceOutputs;
+    const QMultiHash<SoundDeviceId, AudioOutput> outputs = m_config.getOutputs();
+    for (const auto& pDevice : std::as_const(m_devices)) {
+        deviceOutputs.insert(pDevice, outputs.values(pDevice->getDeviceId()));
+        // Statically connect the Network Device to the Sidechain
+        if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
+            AudioOutput out(AudioPathType::RecordBroadcast,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    0);
+            deviceOutputs[pDevice].append(out);
+        }
+    }
+
+    // Select pLatencyRefDevice
+    // The local time sync reference is the device that is used for the
+    // synchronization of processes outside the audio processing engine
+    // to the DAC timing of the local sounddevice the DJ hears.
+    // This sync reference shall be used for:
+    // 1.) VSync of the waveforms
+    // 2.) Sync of external audio device (e.g. drum machine) with feedback
+    //     to an auxiliary input of the mixer in a external mixing setup
+    // 3.) Sync of lighting (DMX) or video (VJ)
+    SoundDevicePointer pLatencyRefDevice = selectLatencyRefDevice(deviceOutputs, m_devices);
+
+    // Select pTransportDriver
+    // The main clock reference is the device that is used for the
+    // audio processing in the engine. It can be either a local
+    // PortAudio device or the Network clock in case of broadcasting.
+    // There are four use cases:
+    // 1.) No broadcasting->Always Soundcard Clock
+    // 2.) JACK API used->Always Soundcard Clock
+    // 3.) Broadcasting of internal mixed Main signal->Always Network Clock
+    // 4.) Broadcasting of Record/Broadcast input SoundDevice->Always Soundcard Clock
+    SoundDevicePointer pTransportDriver = nullptr;
+    if (m_config.getForceNetworkClock() && !jackApiUsed()) {
+        for (const auto& pDevice : std::as_const(m_devices)) {
+            if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
+                pTransportDriver = pDevice;
+                break;
+            }
+        }
+    } else {
+        pTransportDriver = pLatencyRefDevice;
+    }
+
     // loop over all available devices
 
     std::vector<SoundDevicePointer> devices = m_pEnumerator->queryDevices();
@@ -356,26 +439,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 m_pEngineMixer->onInputConnected(in);
             }
         }
-        QList<AudioOutput> outputs =
-                m_config.getOutputs().values(pDevice->getDeviceId());
 
-        // Statically connect the Network Device to the Sidechain
-        if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
-            AudioOutput out(AudioPathType::RecordBroadcast,
-                    0,
-                    mixxx::audio::ChannelCount::stereo(),
-                    0);
-            outputs.append(out);
-            if (m_config.getForceNetworkClock() && !jackApiUsed()) {
-                pNewMainClockRef = pDevice;
-            }
-        }
-
-        for (const auto& out : std::as_const(outputs)) {
+        // Iterate over all outputs for the current device
+        for (const auto& out : std::as_const(deviceOutputs[pDevice])) {
             mode.isOutput = true;
-            if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
-                haveOutput = true;
-            }
             // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out).data();
@@ -388,16 +455,6 @@ SoundDeviceStatus SoundManager::setupDevices() {
             status = pDevice->addOutput(aob);
             if (status != SoundDeviceStatus::Ok) {
                 goto closeAndError;
-            }
-
-            if (!m_config.getForceNetworkClock() || jackApiUsed()) {
-                if (out.getType() == AudioPathType::Main) {
-                    pNewMainClockRef = pDevice;
-                } else if ((out.getType() == AudioPathType::Deck ||
-                                   out.getType() == AudioPathType::Bus) &&
-                        !pNewMainClockRef) {
-                    pNewMainClockRef = pDevice;
-                }
             }
 
             // Check if any AudioSource is registered for this AudioOutput and
@@ -416,18 +473,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
-    for (const auto& mode: toOpen) {
+    for (const auto& mode : toOpen) {
         SoundDevicePointer pDevice = mode.pDevice;
         m_pErrorDevice = pDevice;
-
-        // If we have not yet set a clock source then we use the first
-        // output pDevice
-        if (pNewMainClockRef.isNull() &&
-                (!haveOutput || mode.isOutput)) {
-            pNewMainClockRef = pDevice;
-            qWarning() << "Output sound device clock reference not set! Using"
-                       << pDevice->getDisplayName();
-        }
 
         int syncBuffers = m_config.getSyncBuffers();
         // If we are in safe mode and using experimental polling support, use
@@ -435,7 +483,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
             syncBuffers = 2;
         }
-        status = pDevice->open(pNewMainClockRef == pDevice, syncBuffers);
+        status = pDevice->open(pTransportDriver == pDevice, syncBuffers);
         if (status != SoundDeviceStatus::Ok) {
             goto closeAndError;
         }
@@ -448,11 +496,14 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
-    if (pNewMainClockRef) {
-        qDebug() << "Using" << pNewMainClockRef->getDisplayName()
-                 << "as output sound device clock reference";
-    } else {
+    VERIFY_OR_DEBUG_ASSERT(pTransportDriver) {
+        // This should never happen, because the user can't delete the last
+        // broadcast device in the preferences.
         qWarning() << "No output devices opened, no clock reference device set";
+    }
+    else {
+        qDebug() << "Using" << pTransportDriver->getDisplayName()
+                 << "as output sound device clock reference";
     }
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
@@ -462,8 +513,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
     }
 
     m_pControlObjectSoundStatusCO->set(
-            outputDevicesOpened > 0 ?
-                    SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
+            outputDevicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
 
     // returns OK if we were able to open all the devices the user wanted
     if (devicesNotFound.isEmpty()) {
