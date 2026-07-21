@@ -25,6 +25,7 @@
 #include "library/library.h"
 #include "library/library_decl.h"
 #include "library/library_prefs.h"
+#include "remote/remote.h"
 #include "library/overviewcache.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -790,6 +791,17 @@ void CoreServices::initialize(QApplication* pApp) {
         }
     }
 
+#ifdef HTTP_REMOTE
+    //initalize Remote Controll Plugin
+    m_RemoteControl=std::make_shared<mixxx::RemoteControl>(
+        m_pSettingsManager->settings(),
+        m_pTrackCollectionManager,
+        m_pLibrary,
+        m_pDbConnectionPool,
+        m_pPlayerManager
+    );
+#endif
+
     m_isInitialized = true;
 
     ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
@@ -890,7 +902,12 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary());
+            getLibrary()
+#ifdef HTTP_REMOTE
+            ,
+            getRemoteControl()
+#endif // HTTP_REMOTE
+    );
     return pDlgPreferences;
 }
 

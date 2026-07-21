@@ -53,6 +53,10 @@
 #include "util/darkappearance.h"
 #endif
 
+#ifdef HTTP_REMOTE
+#include "preferences/dialog/dlgprefremotecontrol.h"
+#endif // HTTP_REMOTE
+
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
         std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
@@ -61,7 +65,11 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary)
+        std::shared_ptr<Library> pLibrary
+#ifdef HTTP_REMOTE
+        , std::shared_ptr<mixxx::RemoteControl> pRemoteControl
+#endif
+        )
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -222,6 +230,14 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Recording"),
             "ic_preferences_recording.svg");
+
+#ifdef HTTP_REMOTE
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRemoteControl(this, m_pConfig, pRemoteControl),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Remote Control"),
+            "ic_preferences_broadcast.svg");
+#endif // HTTP_REMOTE
 
     addPageWidget(PreferencesPage(
                           new DlgPrefBeats(this, m_pConfig),

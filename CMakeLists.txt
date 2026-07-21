@@ -402,6 +402,8 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(HTTP_REMOTE "Build HttpRemote support" OFF)
+
 cmake_dependent_option(
   QML
   "Build with QML"
@@ -1571,7 +1573,7 @@ add_library(
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
-  src/recording/recordingmanager.cpp
+  src/recording/recordingmanager.cpp 
   src/skin/legacy/colorschemeparser.cpp
   src/skin/legacy/imgcolor.cpp
   src/skin/legacy/imginvert.cpp
@@ -2361,11 +2363,25 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+  find_package(Qt6 COMPONENTS Core REQUIRED)
   # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
   endif()
+  
+  if(HTTP_REMOTE)
+    find_package(Qt6 COMPONENTS HttpServer REQUIRED)
+
+    add_compile_definitions(HTTP_REMOTE=true)
+
+    target_sources(mixxx-lib PRIVATE
+      src/preferences/dialog/dlgprefremotecontrol.cpp
+      src/preferences/dialog/dlgprefremotecontrol.ui
+      src/remote/remote.cpp
+    )
+    target_link_libraries(mixxx-lib PRIVATE Qt6::HttpServer)
+  endif()
+
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
@@ -2568,6 +2584,14 @@ if(NOT ANDROID)
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/effects"
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
   )
+
+  # RemoteControl web interface
+  if(HTTP_REMOTE)
+    install(
+      DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/web"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    )
+  endif()
 
   # Translation files
   install(
