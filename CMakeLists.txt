@@ -2893,6 +2893,7 @@ if(BUILD_TESTING)
     src/test/dbconnectionpool_test.cpp
     src/test/dbidtest.cpp
     src/test/directorydaotest.cpp
+    src/test/tracklocations_extension_test.cpp
     src/test/duration_test.cpp
     src/test/durationutiltest.cpp
     #TODO: write useful tests for refactored effects system
