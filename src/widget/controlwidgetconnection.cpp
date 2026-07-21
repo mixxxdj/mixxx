@@ -60,6 +60,10 @@ double ControlWidgetConnection::getControlParameter() const {
     return parameter;
 }
 
+bool ControlWidgetConnection::isControlParameterDefault() const {
+    return m_pControl->isDefault();
+}
+
 double ControlWidgetConnection::getControlParameterForValue(double value) const {
     double parameter = m_pControl->getParameterForValue(value);
     if (m_pValueTransformer != nullptr) {
@@ -190,6 +194,17 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     m_propertyValue = vParameter;
 
     pWidget->style()->polish(pWidget);
+
+    // This fixes a bug with the `visible` property (and maybe also `highlight`?)
+    // where showing/hiding a widget would not trigger resizing of the parent
+    // WidgetGroup, particularly those with no layout (where child widgets are
+    // laid out with 'Pos' and 'Size').
+    // Note: this also requires overrides for sizeHint() and minimumSizeHint()
+    // in WWidgetGroup.
+    pWidget->updateGeometry();
+    if (pWidget->parentWidget()) {
+        pWidget->parentWidget()->updateGeometry();
+    }
 
     // These calls don't always trigger the repaint, so call it explicitly.
     pWidget->repaint();

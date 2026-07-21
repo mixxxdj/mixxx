@@ -323,6 +323,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pTimeRemaining = std::make_unique<ControlObject>(ConfigKey(getGroup(), "time_remaining"));
     m_pEndOfTrack = std::make_unique<ControlObject>(ConfigKey(getGroup(), "end_of_track"));
 
+    // TODO use PollingControlProxy
     m_pReplayGain = make_parented<ControlProxy>(getGroup(), "replaygain", this);
     m_pPlay = make_parented<ControlProxy>(getGroup(), "play", this);
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
@@ -752,15 +753,26 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             TrackLoadReset reset = m_pConfig->getValue(
                     ConfigKey("[Controls]", "SpeedAutoReset"), TrackLoadReset::RESET_PITCH);
             if (reset == TrackLoadReset::RESET_SPEED ||
-                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
+                    reset == TrackLoadReset::RESET_ULTRASPEED ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_ULTRASPEED) {
                 // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMixer->getEngineSync()->otherSyncedPlaying(getGroup())) {
-                    m_pRateRatio->set(1.0);
+                    if (reset == TrackLoadReset::RESET_SPEED ||
+                            reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
+                        m_pRateRatio->set(1.0);
+                    }
+
+                    auto* pRateUltraControl = ControlObject::getControl(m_group, "rate_ultra");
+                    if (pRateUltraControl) {
+                        pRateUltraControl->set(0);
+                    }
                 }
             }
             if (reset == TrackLoadReset::RESET_PITCH ||
-                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED) {
+                    reset == TrackLoadReset::RESET_PITCH_AND_SPEED ||
+                    reset == TrackLoadReset::RESET_PITCH_AND_ULTRASPEED) {
                 // With KeylockMode::LockCurrentKey we need to reset `pitch`
                 // instead of `pitch_adjust` to avoid a roundtrip in KeyControl
                 // which would lead `pitch` != 0

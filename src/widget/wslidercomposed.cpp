@@ -29,7 +29,8 @@ WSliderComposed::WSliderComposed(QWidget* parent)
           m_barBgColor(nullptr),
           m_barPenCap(Qt::FlatCap),
           m_pSlider(nullptr),
-          m_pHandle(nullptr) {
+          m_pHandle(nullptr),
+          m_pHandleNeutral(nullptr) {
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -79,6 +80,16 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             sourceHandle,
             context.selectScaleMode(handle, Paintable::DrawMode::Fixed),
             scaleFactor);
+
+    // Setup the handle pixmap for the neutral state (centered)
+    QDomElement handleNeutral = context.selectElement(node, "HandleNeutral");
+    PixmapSource sourceHandleNeutral = context.getPixmapSource(handleNeutral);
+    if (!sourceHandleNeutral.isEmpty()) {
+        setHandleNeutralPixmap(
+                sourceHandleNeutral,
+                context.selectScaleMode(handle, Paintable::DrawMode::Fixed),
+                scaleFactor);
+    }
 
     // Set up the level bar.
     QColor barColor = context.selectColor(node, "BarColor");
@@ -159,7 +170,7 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
 
     QString eventWhileDrag;
     if (context.hasNodeSelectString(node, "EventWhileDrag", &eventWhileDrag)) {
-        if (eventWhileDrag.contains("no")) {
+        if (eventWhileDrag.contains("no")) { // no | false | off ?
             m_handler.setEventWhileDrag(false);
         }
     }
@@ -207,6 +218,24 @@ void WSliderComposed::setHandlePixmap(
     }
 }
 
+void WSliderComposed::setHandleNeutralPixmap(
+        const PixmapSource& sourceHandle,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
+    m_handler.setHorizontal(m_bHorizontal);
+    m_pHandleNeutral = WPixmapStore::getPaintable(sourceHandle, mode, scaleFactor);
+    m_dHandleLength = calculateHandleLength();
+    m_handler.setHandleLength(m_dHandleLength);
+    if (!m_pHandleNeutral) {
+        qDebug() << "WSliderComposed: Error loading handle neutral pixmap:"
+                 << sourceHandle.getPath();
+    } else {
+        // Value is unused in WSliderComposed.
+        onConnectedControlChanged(getControlParameter(), 0);
+        update();
+    }
+}
+
 void WSliderComposed::unsetPixmaps() {
     m_pSlider.reset();
     m_pHandle.reset();
@@ -247,8 +276,22 @@ void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
         drawBar(&p);
     }
 
-    if (m_pHandle && !m_pHandle->isNull()) {
-        // Slider position rounded, verify this for HiDPI : bug 1479037
+    if (isControlParameterDefault() && m_pHandleNeutral && !m_pHandleNeutral->isNull()) {
+        // Slider position rounded, verify this for HiDPI
+        // bug https://github.com/mixxxdj/mixxx/issues/8176
+        double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
+        QRectF targetRect;
+        if (m_bHorizontal) {
+            // The handle's draw mode determines whether it is stretched.
+            targetRect = QRectF(drawPos, 0, m_dHandleLength, height());
+        } else {
+            // The handle's draw mode determines whether it is stretched.
+            targetRect = QRectF(0, drawPos, width(), m_dHandleLength);
+        }
+        m_pHandleNeutral->draw(targetRect, &p);
+    } else if (m_pHandle && !m_pHandle->isNull()) {
+        // Slider position rounded, verify this for HiDPI
+        // bug https://github.com/mixxxdj/mixxx/issues/8176
         double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
         QRectF targetRect;
         if (m_bHorizontal) {
