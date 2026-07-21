@@ -48,6 +48,8 @@ modules:
   - modules/portmidi.yaml
   - modules/hidapi.yaml
   - modules/chromaprint.yaml
+  - modules/asio.yaml
+  - modules/ableton-link.yaml
   - modules/rubberband.yaml
   - modules/soundtouch.yaml
   - modules/libid3tag.yaml

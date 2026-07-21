@@ -57,6 +57,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotResetUnderflowCounter();
     void outputLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
+    void externalSyncLatencyCompensationSpinboxChanged(double value);
     void mainDelaySpinboxChanged(double value);
     void headDelaySpinboxChanged(double value);
     void boothDelaySpinboxChanged(double value);
@@ -104,6 +105,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     SoundManagerConfig m_config;
 
     PollingControlProxy m_pLatencyCompensation;
+    PollingControlProxy m_pExternalSyncLatencyCompensation;
     PollingControlProxy m_pMainDelay;
     PollingControlProxy m_pHeadDelay;
     PollingControlProxy m_pBoothDelay;

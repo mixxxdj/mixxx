@@ -85,6 +85,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pSettings(pSettings),
           m_config(pSoundManager.get()),
           m_pLatencyCompensation(kMasterGroup, QStringLiteral("microphoneLatencyCompensation")),
+          m_pExternalSyncLatencyCompensation(
+                  kMasterGroup, QStringLiteral("externalSyncLatencyCompensation")),
           m_pMainDelay(kMasterGroup, QStringLiteral("delay")),
           m_pHeadDelay(kMasterGroup, QStringLiteral("headDelay")),
           m_pBoothDelay(kMasterGroup, QStringLiteral("boothDelay")),
@@ -172,6 +174,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     }
 
     latencyCompensationSpinBox->setValue(m_pLatencyCompensation.get());
+    externalSyncLatencyCompensationSpinBox->setValue(
+            m_pExternalSyncLatencyCompensation.get());
     latencyCompensationWarningLabel->setWordWrap(true);
     mainDelaySpinBox->setValue(m_pMainDelay.get());
     headDelaySpinBox->setValue(m_pHeadDelay.get());
@@ -184,6 +188,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &DlgPrefSound::latencyCompensationSpinboxChanged);
+    connect(externalSyncLatencyCompensationSpinBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefSound::externalSyncLatencyCompensationSpinboxChanged);
     connect(mainDelaySpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -1086,6 +1094,8 @@ void DlgPrefSound::slotResetToDefaults() {
                     static_cast<int>(EngineMixer::MicMonitorMode::Main)));
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
+    externalSyncLatencyCompensationSpinBox->setValue(0.0);
+    m_pExternalSyncLatencyCompensation.set(0.0);
 
     settingChanged();
 #ifdef __RUBBERBAND__
@@ -1110,6 +1120,10 @@ void DlgPrefSound::outputLatencyChanged(double latency) {
 void DlgPrefSound::latencyCompensationSpinboxChanged(double value) {
     m_pLatencyCompensation.set(value);
     checkLatencyCompensation();
+}
+
+void DlgPrefSound::externalSyncLatencyCompensationSpinboxChanged(double value) {
+    m_pExternalSyncLatencyCompensation.set(value);
 }
 
 void DlgPrefSound::mainDelaySpinboxChanged(double value) {
