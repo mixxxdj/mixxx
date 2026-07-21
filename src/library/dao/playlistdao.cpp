@@ -14,7 +14,8 @@
 
 PlaylistDAO::PlaylistDAO()
         : m_currentHistoryPlaylist(kInvalidPlaylistId),
-          m_pAutoDJProcessor(nullptr) {
+          m_pAutoDJProcessor(nullptr),
+          m_prepPlaylistId(kInvalidPlaylistId) {
 }
 
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
@@ -1525,4 +1526,58 @@ void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJS
         }
         break;
     }
+}
+
+bool PlaylistDAO::isTrackInPrepPlaylist(TrackId id) {
+    if (!id.isValid()) {
+        return false;
+    }
+    if (m_prepPlaylistId == kInvalidPlaylistId) {
+        return false;
+    }
+    return isTrackInPlaylist(id, m_prepPlaylistId);
+}
+
+bool PlaylistDAO::appendTrackToPrepPlaylist(TrackId id) {
+    if (!id.isValid()) {
+        return false;
+    }
+    if (m_prepPlaylistId == kInvalidPlaylistId) {
+        return false;
+    }
+    if (isPlaylistLocked(m_prepPlaylistId)) {
+        return false;
+    }
+    if (isTrackInPlaylist(id, m_prepPlaylistId)) {
+        return false;
+    }
+    return appendTracksToPlaylist(QList<TrackId>{id}, m_prepPlaylistId);
+}
+
+bool PlaylistDAO::removeTrackFromPrepPlaylist(TrackId id) {
+    if (!id.isValid()) {
+        return false;
+    }
+    if (m_prepPlaylistId == kInvalidPlaylistId) {
+        return false;
+    }
+    if (isPlaylistLocked(m_prepPlaylistId)) {
+        return false;
+    }
+    if (!isTrackInPlaylist(id, m_prepPlaylistId)) {
+        return false;
+    }
+    removeTracksFromPlaylistById(m_prepPlaylistId, id);
+    return true;
+}
+
+/// Set/unset the given playlist as Quick Prep playlist.
+/// Use kInvalidPlaylistId to unset.
+int PlaylistDAO::togglePrepPlaylist(int playlistId) {
+    if (m_prepPlaylistId == playlistId) {
+        m_prepPlaylistId = kInvalidPlaylistId;
+    } else {
+        m_prepPlaylistId = playlistId;
+    }
+    return m_prepPlaylistId;
 }
