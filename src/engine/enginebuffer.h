@@ -424,6 +424,7 @@ class EngineBuffer : public EngineObject {
     ControlPushButton* m_pSlipButton;
 
     PollingControlProxy m_quantize;
+    PollingControlProxy m_outroEndSamplePos;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
