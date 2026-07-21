@@ -173,18 +173,18 @@ class EngineBuffer : public EngineObject {
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
         case KeylockEngine::SoundTouch:
-            return tr("Soundtouch (faster)");
+            return tr("Soundtouch (fastest, low quality)");
 #ifdef __RUBBERBAND__
         case KeylockEngine::RubberBandFaster:
-            return tr("Rubberband (better)");
+            return tr("Rubberband (fast, medium quality)");
         case KeylockEngine::RubberBandFiner:
             if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
-                return tr("Rubberband R3 (near-hi-fi quality)");
+                return tr("Rubberband R3 MW (slow, highest quality)");
             }
             [[fallthrough]];
         case KeylockEngine::RubberBandR3ShortWindow:
             if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
-                return tr("Rubberband R3 short window (near-hi-fi quality)");
+                return tr("Rubberband R3 SW (fast, high quality)");
             }
             [[fallthrough]];
 #endif
