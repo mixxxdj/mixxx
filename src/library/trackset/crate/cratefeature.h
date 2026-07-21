@@ -69,6 +69,7 @@ class CrateFeature : public BaseTrackSetFeature {
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
     void slotExportTrackFiles();
     void slotAnalyzeCrate();
+    void slotMarkTracksPlayed();
     void slotCrateTableChanged(CrateId crateId);
     void slotCrateContentChanged(CrateId crateId);
     void htmlLinkClicked(const QUrl& link);
@@ -125,6 +126,7 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
+    parented_ptr<QAction> m_pMarkTracksPlayedAction;
 #ifdef __ENGINEPRIME__
     parented_ptr<QAction> m_pExportAllCratesAction;
     parented_ptr<QAction> m_pExportCrateAction;
