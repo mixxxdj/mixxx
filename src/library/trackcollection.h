@@ -163,6 +163,9 @@ class TrackCollection : public QObject,
     bool purgeTracks(const QList<TrackId>& trackIds);
     bool purgeAllTracks(const QDir& rootDir);
 
+    std::optional<RelocatedTrack> relocateTrack(
+            const TrackId trackId, const mixxx::FileInfo& newLocation);
+
     DirectoryDAO::AddResult addDirectory(const mixxx::FileInfo& rootDir);
     DirectoryDAO::RemoveResult removeDirectory(const mixxx::FileInfo& rootDir);
     DirectoryDAO::RelocateResult relocateDirectory(const QString& oldDir, const QString& newDir);
