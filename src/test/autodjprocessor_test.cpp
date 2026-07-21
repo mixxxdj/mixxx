@@ -1896,3 +1896,45 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
 }
+
+// End marker tests
+
+TEST_F(AutoDJProcessorTest, EndMarker_OnlyInQueue_ReturnsQueueEmpty) {
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertEndMarker(-1);
+    EXPECT_EQ(1, pAutoDJTableModel->rowCount());
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
+    EXPECT_EQ(0, pAutoDJTableModel->rowCount());
+}
+
+TEST_F(AutoDJProcessorTest, EndMarker_AtHead_RealTrackAfter_ReturnsQueueEmpty) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertEndMarker(-1);
+    pAutoDJTableModel->appendTrack(testId);
+    EXPECT_EQ(2, pAutoDJTableModel->rowCount());
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_QUEUE_EMPTY, err);
+    EXPECT_EQ(1, pAutoDJTableModel->rowCount());
+    EXPECT_FALSE(pAutoDJTableModel->isEndMarker(pAutoDJTableModel->index(0, 0)));
+}
+
+TEST_F(AutoDJProcessorTest, EndMarker_NeverEmitsLoadTrackToPlayer) {
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->insertEndMarker(-1);
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, _, _)).Times(0);
+
+    pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+    EXPECT_EQ(0, pAutoDJTableModel->rowCount());
+}
