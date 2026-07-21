@@ -2384,7 +2384,7 @@ if(QT6)
     set_property(
       TARGET mixxx
       PROPERTY
-        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/packaging/android"
+        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_BINARY_DIR}/android"
     )
     set_target_properties(mixxx PROPERTIES QT_ANDROID_ABIS "${ANDROID_ABI}")
     set_target_properties(mixxx PROPERTIES QT_ANDROID_PACKAGE_NAME "org.mixxx")
@@ -2449,6 +2449,11 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets
+      COMMAND
+        ${CMAKE_COMMAND}
+        -DTEMPLATE_FILE="${CMAKE_SOURCE_DIR}/packaging/android/usb_device_filter.xml.in"
+        -DTARGET_FILE="${CMAKE_CURRENT_BINARY_DIR}/android/res/xml/usb_device_filter.xml"
+        -P ${CMAKE_SOURCE_DIR}/cmake/modules/gen_usb_device_filter.cmake
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
     add_dependencies(mixxx copy-resource-android)
