@@ -3,15 +3,12 @@
 #include <QDialog>
 #include <QHash>
 #include <QModelIndex>
-#include <memory>
 
 #include "library/ui_dlgtrackinfomulti.h"
 #include "preferences/usersettings.h"
-#include "track/beats.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
-#include "util/tapfilter.h"
 #include "widget/wcolorpickeraction.h"
 
 class WColorPickerAction;
@@ -27,6 +24,19 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
   public:
     explicit DlgTrackInfoMulti(UserSettingsPointer pUserSettings);
     ~DlgTrackInfoMulti() override = default;
+
+    /// enum for editable QString track properties
+    enum class TrackProperty {
+        Invalid = 0,
+        Artist,
+        Title,
+        Album,
+        AlbumArtist,
+        Genre,
+        Grouping,
+        Composer,
+        Comment
+    };
 
     void loadTracks(const QList<TrackPointer>& pTracks);
     void focusField(const QString& property);
@@ -67,6 +77,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
+    void slotUpdateFindReplaceGUI();
+
     void slotOpenInFileBrowser();
 
   private:
@@ -103,6 +115,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
         return trackIt.value();
     }
 
+    TrackProperty getSelectedFindReplacePropMaybeInvalid() const;
+
     const UserSettingsPointer m_pUserSettings;
 
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
@@ -119,3 +133,5 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     mixxx::RgbColor::optional_t m_newColor;
     parented_ptr<WColorPickerAction> m_pColorPicker;
 };
+
+Q_DECLARE_METATYPE(DlgTrackInfoMulti::TrackProperty)

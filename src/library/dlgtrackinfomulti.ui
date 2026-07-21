@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>575</width>
-    <height>642</height>
+    <height>350</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -421,7 +421,7 @@
       <item row="9" column="1" colspan="3">
        <widget class="QPushButton" name="btnColorPicker">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -429,8 +429,102 @@
        </widget>
       </item>
 
-      <item row="10" column="0">
-       <spacer name="spacerColorPicker">
+      <item row="10" column="0" colspan="4">
+       <widget class="Line" name="separatorFindReplace">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+
+      <item row="11" column="0">
+       <widget class="QCheckBox" name="checkboxReplace">
+        <property name="text">
+         <string>Find/Replace</string>
+        </property>
+       </widget>
+      </item>
+      <item row="11" column="1" colspan="3">
+       <widget class="QComboBox" name="comboFindReplace">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+
+      <item row="12" column="0">
+       <widget class="QLabel" name="lblFind">
+        <property name="text">
+         <string>Find:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignRight|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="1" colspan="3">
+       <widget class="QLineEdit" name="txtFind">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+
+      <item row="13" column="0">
+       <widget class="QLabel" name="lblReplace">
+        <property name="text">
+         <string>Replace:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignRight|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="1" colspan="3">
+       <widget class="QLineEdit" name="txtReplace">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+
+      <item row="14" column="0" colspan="4">
+       <widget class="Line" name="separatorMetadataImport">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+
+      <item row="15" column="0">
+       <spacer name="spacerImportMetadata">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -443,7 +537,7 @@
        </spacer>
       </item>
 
-      <item row="11" column="0" colspan="4">
+      <item row="15" column="0" colspan="4">
        <widget class="QPushButton" name="btnImportMetadataFromFile">
         <property name="text">
          <string>Re-Import Metadata from files</string>
@@ -745,6 +839,10 @@
   <tabstop>txtGrouping</tabstop>
   <tabstop>txtCommentBox</tabstop>
   <tabstop>txtComment</tabstop>
+  <tabstop>checkboxReplace</tabstop>
+  <tabstop>comboFindReplace</tabstop>
+  <tabstop>txtFind</tabstop>
+  <tabstop>txtReplace</tabstop>
   <tabstop>txtYear</tabstop>
   <tabstop>txtKey</tabstop>
   <tabstop>txtTrackNumber</tabstop>
