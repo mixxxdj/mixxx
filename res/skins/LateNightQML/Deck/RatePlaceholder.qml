@@ -32,11 +32,12 @@ Item {
     }
 
     function rateRangeTopLabelY(labelHeight) {
-        return rateSlider.y - labelHeight / 2;
+        labelHeight;
+        return 0;
     }
 
     function rateRangeBottomLabelY(labelHeight) {
-        return rateSlider.y + rateSlider.height - labelHeight / 2;
+        return sliderContainer.height - labelHeight - 1;
     }
 
     property real previousSyncEnabledValue: syncEnabledProxy.value
@@ -45,6 +46,12 @@ Item {
         id: bpmProxy
         group: root.group
         key: "bpm"
+    }
+
+    Mixxx.ControlProxy {
+        id: visualBpmProxy
+        group: root.group
+        key: "visual_bpm"
     }
 
     Mixxx.ControlProxy {
@@ -116,29 +123,52 @@ Item {
         anchors.leftMargin: 2
         spacing: 3
 
-        // BPM display
-        Text {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 24
-            text: bpmProxy.value.toFixed(2)
-            font.family: "Open Sans"
-            font.pixelSize: 20
-            font.bold: true
-            color: root.bpmTextColor
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-        }
+        Item {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: 62
+            Layout.preferredHeight: 42
 
-        // Rate percentage display
-        Text {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 17
-            text: ((rateRatioProxy.value - 1) * 100).toFixed(2)
-            font.family: "Open Sans"
-            font.pixelSize: 13
-            color: root.rateTextColor
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            Rectangle {
+                anchors.fill: parent
+                color: LateNightTheme.bpmTapEditorSelectBackgroundColor
+                radius: 1
+                visible: bpmTapEditor.mode === "listen" && bpmTapEditor.listenHovered
+            }
+
+            Column {
+                anchors.fill: parent
+
+                // BPM display
+                Text {
+                    width: parent.width
+                    height: 24
+                    text: visualBpmProxy.value.toFixed(2)
+                    font.family: "Open Sans"
+                    font.pixelSize: 20
+                    font.bold: true
+                    color: root.bpmTextColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                // Rate percentage display
+                Text {
+                    width: parent.width
+                    height: 18
+                    text: ((rateRatioProxy.value - 1) * 100).toFixed(2)
+                    font.family: "Open Sans"
+                    font.pixelSize: 13
+                    color: root.rateTextColor
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            LateNightBpmTapEditor {
+                id: bpmTapEditor
+                anchors.fill: parent
+                group: root.group
+            }
         }
 
         // Sync + Leader buttons
@@ -234,47 +264,55 @@ Item {
 
                 // Rate range labels: top = negative direction, center = default, bottom = positive direction
                 Text {
-                    width: 8
-                    x: 1
+                    width: 7
+                    height: 16
+                    x: 3
                     y: root.rateRangeTopLabelY(height)
                     text: "-"
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     color: root.rateTextColor
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
-                    width: 8
-                    x: parent.width - width - 1
-                    y: root.rateRangeTopLabelY(height)
+                    width: 18
+                    height: 16
+                    x: 35
+                    y: root.rateRangeTopLabelY(height) + 1
                     text: (rateRangeProxy.value * 100).toFixed(0)
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: 10
                     color: root.rateTextColor
-                    horizontalAlignment: Text.AlignRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
-                    width: 8
-                    x: 1
+                    width: 7
+                    height: 16
+                    x: 3
                     y: root.rateRangeBottomLabelY(height)
                     text: "+"
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     color: root.rateTextColor
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
-                    width: 8
-                    x: parent.width - width - 1
+                    width: 18
+                    height: 16
+                    x: 35
                     y: root.rateRangeBottomLabelY(height)
                     text: (rateRangeProxy.value * 100).toFixed(0)
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: 10
                     color: root.rateTextColor
-                    horizontalAlignment: Text.AlignRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Skin.ControlFader {
