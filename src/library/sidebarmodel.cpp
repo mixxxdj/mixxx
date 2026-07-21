@@ -8,6 +8,10 @@
 #include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
+#include <QMimeData>
+#include "library/dao/playlistdao.h"
+#include "library/library.h"
+#include "library/trackset/playlistfeature.h"
 
 namespace {
 
@@ -32,6 +36,11 @@ SidebarModel::SidebarModel(
             &QTimer::timeout,
             this,
             &SidebarModel::slotPressedUntilClickedTimeout);
+
+    // Queue the move operation so drag-and-drop stays thread-safe.
+    connect(this, &SidebarModel::requestPlaylistMove,
+            this, &SidebarModel::slotExecutePlaylistMove,
+            Qt::QueuedConnection);
 }
 
 void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
@@ -175,45 +184,35 @@ void SidebarModel::paste(const QModelIndex& index) {
 }
 
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
-    if constexpr (kDebug) {
-        qDebug() << "SidebarModel::parent index=" << index;
+    if (!index.isValid()) {
+        return QModelIndex();
     }
-    if (index.isValid()) {
-        // If we have selected the root of a library feature
-        // its internal pointer is the current sidebar object model
-        // A root library feature has no parent and thus we return
-        // an invalid QModelIndex
-        if (index.internalPointer() == this) {
-            return QModelIndex();
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(index.internalPointer());
-            if (pTreeItem == nullptr) {
-                return QModelIndex();
-            }
-            TreeItem* pTreeItemParent = pTreeItem->parent();
-            // if we have selected an item at the first level of a childnode
 
-            if (pTreeItemParent) {
-                if (pTreeItemParent->isRoot()) {
-                    LibraryFeature* pFeature = pTreeItem->feature();
-                    for (int i = 0; i < m_sFeatures.size(); ++i) {
-                        if (pFeature == m_sFeatures[i]) {
-                            // create a ModelIndex for parent 'this' having a
-                            // library feature at position 'i'
-                            // `this` is const, but the function expects a
-                            // non-const pointer.
-                            // TODO: Check if we can get rid of this const cast
-                            // somehow.
-                            return createIndex(i, 0, const_cast<SidebarModel*>(this));
-                        }
-                    }
-                }
-                // if we have selected an item at some deeper level of a childnode
-                return createIndex(pTreeItemParent->parentRow(), 0, pTreeItemParent);
-            }
-        }
+    if (index.internalPointer() == this) {
+        return QModelIndex();
     }
-    return QModelIndex();
+
+    TreeItem* pChildItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pChildItem) {
+        return QModelIndex();
+    }
+
+    TreeItem* pParentItem = pChildItem->parent();
+
+    if (!pParentItem || pParentItem->isRoot()) {
+        LibraryFeature* pFeature = pChildItem->feature();
+        if (!pFeature) {
+            return QModelIndex();
+        }
+        
+        int featureRow = m_sFeatures.indexOf(pFeature);
+        if (featureRow != -1) {
+            return createIndex(featureRow, 0, const_cast<SidebarModel*>(this));
+        }
+        return QModelIndex();
+    }
+
+    return createIndex(pParentItem->parentRow(), 0, pParentItem);
 }
 
 int SidebarModel::rowCount(const QModelIndex& parent) const {
@@ -224,7 +223,6 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
         if (parent.internalPointer() == this) {
             return m_sFeatures[parent.row()]->sidebarModel()->rowCount();
         } else {
-            // We support tree models deeper than 1 level
             TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
             if (pTreeItem) {
                 return pTreeItem->childRows();
@@ -245,19 +243,16 @@ int SidebarModel::columnCount(const QModelIndex& parent) const {
 }
 
 bool SidebarModel::hasChildren(const QModelIndex& parent) const {
-    if (parent.isValid()) {
-        if (parent.internalPointer() == this) {
-            return QAbstractItemModel::hasChildren(parent);
-        } else {
-            TreeItem* pTreeItem = static_cast<TreeItem*>(parent.internalPointer());
-            if (pTreeItem) {
-                LibraryFeature* pFeature = pTreeItem->feature();
-                return pFeature->sidebarModel()->hasChildren(parent);
-            }
-        }
+    if (!parent.isValid()) {
+        return true;
     }
 
-    return QAbstractItemModel::hasChildren(parent);
+    if (parent.internalPointer() == this) {
+        return rowCount(parent) > 0;
+    }
+
+    TreeItem* pItem = static_cast<TreeItem*>(parent.internalPointer());
+    return pItem ? (pItem->childRows() > 0) : false;
 }
 
 QVariant SidebarModel::data(const QModelIndex& index, int role) const {
@@ -468,10 +463,20 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QList<QUrl>& u
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::dragMoveAccept() index=" << index << urls;
     }
+    
+    // If there is no URL, we are dragging an internal item within Playlists,
+    // so we must allow the drop.
+    if (urls.isEmpty() && index.isValid() && index.internalPointer() != this) {
+        TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+        if (pItem && pItem->feature() && pItem->feature()->title().toString() == QStringLiteral("Playlists")) {
+            return true;
+        }
+    }
+
+    // Otherwise keep the default Mixxx logic for external files and similar drops.
     if (!index.isValid()) {
         return false;
     }
-
     if (index.internalPointer() == this) {
         return m_sFeatures[index.row()]->dragMoveAccept(urls);
     } else {
@@ -546,8 +551,6 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    // qDebug() << "slotRowsInserted" << parent << start << end;
-    // QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 
@@ -613,4 +616,153 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature,
         }
     }
     emit selectIndex(ind, scrollTo);
+}
+
+
+Qt::ItemFlags SidebarModel::flags(const QModelIndex& index) const {
+    Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
+
+    if (!index.isValid() || index.internalPointer() == this) {
+        defaultFlags |= Qt::ItemIsDropEnabled;
+        return defaultFlags;
+    }
+
+    TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+    if (pItem) {
+        LibraryFeature* pFeature = pItem->feature();
+        // Allow drag and drop for items that belong to a feature.
+        if (pFeature) {
+            defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+        }
+    }
+
+    return defaultFlags;
+}
+
+Qt::DropActions SidebarModel::supportedDropActions() const {
+    // Handle internal reparenting within the tree.
+    return Qt::MoveAction;
+}
+
+QStringList SidebarModel::mimeTypes() const {
+    QStringList types;
+    types << QStringLiteral("application/x-mixxx-playlist-id");
+    return types;
+}
+
+QMimeData* SidebarModel::mimeData(const QModelIndexList& indexes) const {
+    QMimeData* mimeData = new QMimeData();
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    for (const QModelIndex& index : indexes) {
+        if (index.isValid() && index.internalPointer() != this) {
+            TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+            if (pItem) {
+                int playlistId = pItem->getData().toInt();
+                stream << playlistId;
+            }
+        }
+    }
+
+    mimeData->setData(QStringLiteral("application/x-mixxx-playlist-id"), encodedData);
+    return mimeData;
+}
+
+bool SidebarModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
+                                int row, int column, const QModelIndex& parent) {
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+
+    if (action == Qt::IgnoreAction) {
+        return true;
+    }
+
+    if (!data->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
+        return false;
+    }
+
+    QByteArray encodedData = data->data(QStringLiteral("application/x-mixxx-playlist-id"));
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    int movedPlaylistId = kInvalidPlaylistId;
+    stream >> movedPlaylistId;
+
+    if (movedPlaylistId == kInvalidPlaylistId) {
+        return false;
+    }
+
+    int targetParentId = kInvalidPlaylistId;
+    TreeItem* pTargetItem = nullptr;
+    if (parent.isValid() && parent.internalPointer() != this) {
+        pTargetItem = static_cast<TreeItem*>(parent.internalPointer());
+    }
+
+    if (pTargetItem) {
+        const int targetItemId = pTargetItem->getData().toInt();
+        if (targetItemId != kInvalidPlaylistId) {
+            PlaylistFeature* pPlaylistFeature = nullptr;
+            for (LibraryFeature* pFeature : m_sFeatures) {
+                if (pFeature && pFeature->title().toString() == QStringLiteral("Playlists")) {
+                    pPlaylistFeature = qobject_cast<PlaylistFeature*>(pFeature);
+                    break;
+                }
+            }
+
+            if (pPlaylistFeature && pPlaylistFeature->playlistDao().isFolder(targetItemId)) {
+                targetParentId = targetItemId;
+            } else {
+                TreeItem* pAncestor = pTargetItem->parent();
+                while (pAncestor) {
+                    if (pAncestor->getData().toInt() == movedPlaylistId) {
+                        return false;
+                    }
+                    pAncestor = pAncestor->parent();
+                }
+
+                if (pTargetItem->parent() && !pTargetItem->parent()->isRoot()) {
+                    const int parentItemId = pTargetItem->parent()->getData().toInt();
+                    if (parentItemId != kInvalidPlaylistId) {
+                        targetParentId = parentItemId;
+                    }
+                }
+            }
+        }
+
+        TreeItem* pAncestor = pTargetItem;
+        while (pAncestor) {
+            if (pAncestor->getData().toInt() == movedPlaylistId) {
+                return false;
+            }
+            pAncestor = pAncestor->parent();
+        }
+    }
+
+    if (movedPlaylistId == targetParentId) {
+        return false;
+    }
+
+    emit requestPlaylistMove(movedPlaylistId, targetParentId);
+    return true;
+}
+
+void SidebarModel::slotExecutePlaylistMove(int movedPlaylistId, int targetParentId) {
+    PlaylistFeature* pPlaylistFeature = nullptr;
+    for (LibraryFeature* pFeature : m_sFeatures) {
+        if (pFeature && pFeature->title().toString() == QStringLiteral("Playlists")) {
+            pPlaylistFeature = qobject_cast<PlaylistFeature*>(pFeature);
+            break;
+        }
+    }
+
+    if (!pPlaylistFeature) {
+        return;
+    }
+
+    PlaylistDAO& liveDao = pPlaylistFeature->playlistDao();
+    if (liveDao.movePlaylist(movedPlaylistId, targetParentId)) {
+        qDebug() << "D&D move applied to playlist" << movedPlaylistId
+                 << "parent" << targetParentId;
+    } else {
+        qDebug() << "D&D move failed for playlist" << movedPlaylistId;
+    }
 }

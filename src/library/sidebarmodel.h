@@ -47,6 +47,14 @@ class SidebarModel : public QAbstractItemModel {
     }
     QModelIndex getFeatureRootIndex(LibraryFeature* pFeature);
 
+
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    Qt::DropActions supportedDropActions() const override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action,
+                    int row, int column, const QModelIndex& parent) override;
+    
     void clear(const QModelIndex& index);
     void paste(const QModelIndex& index);
   public slots:
@@ -100,4 +108,10 @@ class SidebarModel : public QAbstractItemModel {
 
     void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();
+
+  signals:
+    void requestPlaylistMove(int movedPlaylistId, int targetParentId);
+
+  private slots:
+    void slotExecutePlaylistMove(int movedPlaylistId, int targetParentId);
 };
