@@ -24,7 +24,7 @@ class SoundDevicePortAudio : public SoundDevice {
             unsigned int devIndex);
     ~SoundDevicePortAudio() override;
 
-    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override;
+    SoundDeviceStatus open(bool isTransportDriver, int syncBuffers) override;
     bool isOpen() const override;
     SoundDeviceStatus close() override;
     void readProcess(SINT framesPerBuffer) override;
@@ -43,10 +43,11 @@ class SoundDevicePortAudio : public SoundDevice {
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
     // The same as above but drives the MixxEngine
-    int callbackProcessClkRef(const SINT framesPerBuffer,
-                        CSAMPLE *output, const CSAMPLE* in,
-                        const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags);
+    int callbackProcessTransportDriver(const SINT framesPerBuffer,
+            CSAMPLE* output,
+            const CSAMPLE* in,
+            const PaStreamCallbackTimeInfo* timeInfo,
+            PaStreamCallbackFlags statusFlags);
 
     // Callback called once the process callback returns paAbort.
     void finishedCallback();
@@ -88,7 +89,7 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;
     int m_invalidTimeInfoCount;
-    PerformanceTimer m_clkRefTimer;
+    PerformanceTimer m_transportDriverTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
     std::atomic<int> m_callbackResult;
     std::mutex m_finishedMutex;

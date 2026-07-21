@@ -260,7 +260,7 @@ void SoundManager::clearAndQueryDevices() {
     queryDevices();
 }
 
-SoundDevicePointer SoundManager::selectLocalTimeSyncRef(
+SoundDevicePointer SoundManager::selectLatencyRefDevice(
         const QHash<SoundDevicePointer, QList<AudioOutput>>& deviceOutputs,
         const QList<SoundDevicePointer>& devices) {
     constexpr std::array<AudioPathType, 5> priorityOrder = {
@@ -308,11 +308,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     // NOTE(rryan): Do not clear m_pClkRefDevice here. If we didn't touch the
-    // SoundDevice that is the clock reference, then it is safe to leave it as
+    // SoundDevice that is the Transport-Driver, then it is safe to leave it as
     // it was. Clearing it causes the engine to stop being processed which
     // results in a stuttering noise (sometimes a loud buzz noise at low
     // latencies) when changing devices.
-    //m_pClkRefDevice = NULL;
+    // m_pClkRefDevice = NULL;
     m_pErrorDevice.clear();
     int outputDevicesOpened = 0;
     int inputDevicesOpened = 0;
@@ -354,7 +354,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
-    // Select pNewLocalTimeSyncRef
+    // Select pLatencyRefDevice
     // The local time sync reference is the device that is used for the
     // synchronization of processes outside the audio processing engine
     // to the DAC timing of the local sounddevice the DJ hears.
@@ -363,9 +363,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // 2.) Sync of external audio device (e.g. drum machine) with feedback
     //     to an auxiliary input of the mixer in a external mixing setup
     // 3.) Sync of lighting (DMX) or video (VJ)
-    SoundDevicePointer pNewLocalTimeSyncRef = selectLocalTimeSyncRef(deviceOutputs, m_devices);
+    SoundDevicePointer pLatencyRefDevice = selectLatencyRefDevice(deviceOutputs, m_devices);
 
-    // Select pNewMainClockRef
+    // Select pTransportDriver
     // The main clock reference is the device that is used for the
     // audio processing in the engine. It can be either a local
     // PortAudio device or the Network clock in case of broadcasting.
@@ -374,16 +374,16 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // 2.) JACK API used->Always Soundcard Clock
     // 3.) Broadcasting of internal mixed Main signal->Always Network Clock
     // 4.) Broadcasting of Record/Broadcast input SoundDevice->Always Soundcard Clock
-    SoundDevicePointer pNewMainClockRef = nullptr;
+    SoundDevicePointer pTransportDriver = nullptr;
     if (m_config.getForceNetworkClock() && !jackApiUsed()) {
         for (const auto& pDevice : std::as_const(m_devices)) {
             if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
-                pNewMainClockRef = pDevice;
+                pTransportDriver = pDevice;
                 break;
             }
         }
     } else {
-        pNewMainClockRef = pNewLocalTimeSyncRef;
+        pTransportDriver = pLatencyRefDevice;
     }
 
     // loop over all available devices
@@ -459,7 +459,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
             syncBuffers = 2;
         }
-        status = pDevice->open(pNewMainClockRef == pDevice, syncBuffers);
+        status = pDevice->open(pTransportDriver == pDevice, syncBuffers);
         if (status != SoundDeviceStatus::Ok) {
             goto closeAndError;
         }
@@ -472,13 +472,13 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
-    VERIFY_OR_DEBUG_ASSERT(pNewMainClockRef) {
+    VERIFY_OR_DEBUG_ASSERT(pTransportDriver) {
         // This should never happen, because the user can't delete the last
         // broadcast device in the preferences.
         qWarning() << "No output devices opened, no clock reference device set";
     }
     else {
-        qDebug() << "Using" << pNewMainClockRef->getDisplayName()
+        qDebug() << "Using" << pTransportDriver->getDisplayName()
                  << "as output sound device clock reference";
     }
 

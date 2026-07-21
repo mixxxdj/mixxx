@@ -71,14 +71,18 @@ int paV19CallbackDrift(const void *inputBuffer, void *outputBuffer,
             (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
 }
 
-int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
-                        unsigned long framesPerBuffer,
-                        const PaStreamCallbackTimeInfo *timeInfo,
-                        PaStreamCallbackFlags statusFlags,
-                        void *soundDevice) {
-    return ((SoundDevicePortAudio*) soundDevice)->callbackProcessClkRef(
-            (SINT) framesPerBuffer, (CSAMPLE*) outputBuffer,
-            (const CSAMPLE*) inputBuffer, timeInfo, statusFlags);
+int paV19CallbackTransportDriver(const void* inputBuffer,
+        void* outputBuffer,
+        unsigned long framesPerBuffer,
+        const PaStreamCallbackTimeInfo* timeInfo,
+        PaStreamCallbackFlags statusFlags,
+        void* soundDevice) {
+    return ((SoundDevicePortAudio*)soundDevice)
+            ->callbackProcessTransportDriver((SINT)framesPerBuffer,
+                    (CSAMPLE*)outputBuffer,
+                    (const CSAMPLE*)inputBuffer,
+                    timeInfo,
+                    statusFlags);
 }
 
 const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
@@ -150,7 +154,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
 SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
-SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
+SoundDeviceStatus SoundDevicePortAudio::open(bool isTransportDriver, int syncBuffers) {
     qDebug() << "SoundDevicePortAudio::open()" << m_deviceId;
     PaError err;
 
@@ -283,8 +287,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
     // Create the callback function pointer.
     PaStreamCallback* pCallback = nullptr;
-    if (isClkRefDevice) {
-        pCallback = paV19CallbackClkRef;
+    if (isTransportDriver) {
+        pCallback = paV19CallbackTransportDriver;
     } else if (framesPerBuffer == paFramesPerBufferUnspecified) {
         m_syncBuffers = 1;
         // This happens in case of JACK, where PortAudio creates artificial
@@ -419,7 +423,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     qDebug() << "   Actual sample rate: " << m_sampleRate << "Hz, latency:"
              << currentLatencyMSec << "ms";
 
-    if (isClkRefDevice) {
+    if (isTransportDriver) {
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(
@@ -427,7 +431,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
                 currentLatencyMSec);
         ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
         m_invalidTimeInfoCount = 0;
-        m_clkRefTimer.start();
+        m_transportDriverTimer.start();
     }
     m_pStream.store(pStream, std::memory_order_release);
 
@@ -957,14 +961,16 @@ int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
     return m_callbackResult.load(std::memory_order_acquire);
 }
 
-int SoundDevicePortAudio::callbackProcessClkRef(
-        const SINT framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
-        const PaStreamCallbackTimeInfo *timeInfo,
+int SoundDevicePortAudio::callbackProcessTransportDriver(
+        const SINT framesPerBuffer,
+        CSAMPLE* out,
+        const CSAMPLE* in,
+        const PaStreamCallbackTimeInfo* timeInfo,
         PaStreamCallbackFlags statusFlags) {
     // This must be the very first call, else timeInfo becomes invalid
     updateCallbackEntryToDacTime(framesPerBuffer, timeInfo);
 
-    Trace trace("SoundDevicePortAudio::callbackProcessClkRef %1",
+    Trace trace("SoundDevicePortAudio::callbackProcessTransportDriver %1",
             m_deviceId.debugName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << m_deviceId;
@@ -1112,7 +1118,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 void SoundDevicePortAudio::updateCallbackEntryToDacTime(
         SINT framesPerBuffer,
         const PaStreamCallbackTimeInfo* timeInfo) {
-    double timeSinceLastCbSecs = m_clkRefTimer.restart().toDoubleSeconds();
+    double timeSinceLastCbSecs = m_transportDriverTimer.restart().toDoubleSeconds();
 
     // Plausibility check:
     // We have the DAC timing as reference with almost no jitter
@@ -1174,7 +1180,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
         callbackEntrytoDacSecs = math_clamp(callbackEntrytoDacSecs, 0.0, bufferSizeSec * 2);
     }
 
-    VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
+    VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_transportDriverTimer);
     m_lastCallbackEntrytoDacSecs = callbackEntrytoDacSecs;
 
     //qDebug() << callbackEntrytoDacSecs << timeSinceLastCbSecs;
@@ -1193,5 +1199,5 @@ void SoundDevicePortAudio::updateAudioLatencyUsage(
         //          << m_audioLatencyUsage->get();
     }
     // measure time in Audio callback at the very last
-    m_timeInAudioCallback += m_clkRefTimer.elapsed();
+    m_timeInAudioCallback += m_transportDriverTimer.elapsed();
 }

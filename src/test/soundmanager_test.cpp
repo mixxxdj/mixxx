@@ -41,7 +41,7 @@ class MockSoundDevice : public SoundDevice {
     }
 };
 
-TEST(SoundManagerTest, SelectLocalTimeSyncRefNoSoundDevice) {
+TEST(SoundManagerTest, SelectLatencyRefDeviceNoSoundDevice) {
     QHash<SoundDevicePointer, QList<AudioOutput>> deviceOutputs;
     QList<SoundDevicePointer> devices;
 
@@ -49,11 +49,11 @@ TEST(SoundManagerTest, SelectLocalTimeSyncRefNoSoundDevice) {
     // deviceOutputs and devices are empty
 
     // Test case: Select local time sync reference with no sound devices
-    SoundDevicePointer result = SoundManager::selectLocalTimeSyncRef(deviceOutputs, devices);
+    SoundDevicePointer result = SoundManager::selectLatencyRefDevice(deviceOutputs, devices);
     EXPECT_EQ(result, nullptr);
 }
 
-TEST(SoundManagerTest, SelectLocalTimeSyncRefNoDeviceOutput) {
+TEST(SoundManagerTest, SelectLatencyRefDeviceNoDeviceOutput) {
     QHash<SoundDevicePointer, QList<AudioOutput>> deviceOutputs;
     QList<SoundDevicePointer> devices;
 
@@ -68,11 +68,11 @@ TEST(SoundManagerTest, SelectLocalTimeSyncRefNoDeviceOutput) {
     devices.append(portAudioDevice2);
 
     // Test case: Select local time sync reference with no device outputs
-    SoundDevicePointer result = SoundManager::selectLocalTimeSyncRef(deviceOutputs, devices);
+    SoundDevicePointer result = SoundManager::selectLatencyRefDevice(deviceOutputs, devices);
     EXPECT_EQ(result, nullptr);
 }
 
-TEST(SoundManagerTest, SelectLocalTimeSyncRefOneDevice) {
+TEST(SoundManagerTest, SelectLatencyRefDeviceOneDevice) {
     QHash<SoundDevicePointer, QList<AudioOutput>> deviceOutputs;
     QList<SoundDevicePointer> devices;
 
@@ -94,11 +94,11 @@ TEST(SoundManagerTest, SelectLocalTimeSyncRefOneDevice) {
     devices.append(portAudioDevice2);
 
     // Test case: Select local time sync reference
-    SoundDevicePointer result = SoundManager::selectLocalTimeSyncRef(deviceOutputs, devices);
+    SoundDevicePointer result = SoundManager::selectLatencyRefDevice(deviceOutputs, devices);
     EXPECT_EQ(result, portAudioDevice1);
 }
 
-TEST(SoundManagerTest, SelectLocalTimeSyncRefTwoDevices) {
+TEST(SoundManagerTest, SelectLatencyRefDeviceTwoDevices) {
     QHash<SoundDevicePointer, QList<AudioOutput>> deviceOutputs;
     QList<SoundDevicePointer> devices;
 
@@ -116,11 +116,11 @@ TEST(SoundManagerTest, SelectLocalTimeSyncRefTwoDevices) {
     devices.append(portAudioDevice2);
 
     // Test case: Select local time sync reference
-    SoundDevicePointer result = SoundManager::selectLocalTimeSyncRef(deviceOutputs, devices);
+    SoundDevicePointer result = SoundManager::selectLatencyRefDevice(deviceOutputs, devices);
     EXPECT_EQ(result, portAudioDevice1);
 }
 
-TEST(SoundManagerTest, SelectLocalTimeSyncRefWithNetworkDevice) {
+TEST(SoundManagerTest, SelectLatencyRefDeviceWithNetworkDevice) {
     QHash<SoundDevicePointer, QList<AudioOutput>> deviceOutputs;
     QList<SoundDevicePointer> devices;
 
@@ -146,6 +146,6 @@ TEST(SoundManagerTest, SelectLocalTimeSyncRefWithNetworkDevice) {
     devices.append(portAudioDevice2);
 
     // Test case: Select local time sync reference
-    SoundDevicePointer result = SoundManager::selectLocalTimeSyncRef(deviceOutputs, devices);
+    SoundDevicePointer result = SoundManager::selectLatencyRefDevice(deviceOutputs, devices);
     EXPECT_EQ(result->getDeviceId(), portAudioDevice2->getDeviceId());
 }

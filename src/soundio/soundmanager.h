@@ -41,7 +41,7 @@ class SoundManager : public QObject {
     void clearAndQueryDevices();
     void queryDevices();
 
-    static SoundDevicePointer selectLocalTimeSyncRef(
+    static SoundDevicePointer selectLatencyRefDevice(
             const QHash<SoundDevicePointer, QList<AudioOutput>>& deviceOutputs,
             const QList<SoundDevicePointer>& devices);
 
