@@ -143,6 +143,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     QString findLastTimeAddedToHistory(TrackId trackId) const;
 
+    void resetPlayedState();
+
     QList<TrackId> resolveTrackIds(
             const QStringList& pathList,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);

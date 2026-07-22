@@ -101,6 +101,7 @@ TrackDAO::TrackDAO(CueDAO& cueDao,
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
+    resetPlayedState();
     connect(&m_playlistDao,
             &PlaylistDAO::tracksRemovedFromPlayedHistory,
             this,
@@ -124,15 +125,7 @@ TrackDAO::~TrackDAO() {
 void TrackDAO::finish() {
     kLogger.debug() << "finish()";
 
-    // clear out played information on exit
-    // crash prevention: if mixxx crashes, played information will be maintained
-    kLogger.debug() << "Clearing played information for this session";
-    QSqlQuery query(m_database);
-    if (!query.exec("UPDATE library SET played=0 where played>0")) {
-        // Note: without where, this call updates every row which takes long
-        LOG_FAILED_QUERY(query)
-                << "Error clearing played value";
-    }
+    resetPlayedState();
 
     // Do housekeeping on the LibraryHashes/track_locations tables.
     kLogger.debug() << "Cleaning LibraryHashes/track_locations tables.";
@@ -149,6 +142,18 @@ void TrackDAO::finish() {
         markTrackLocationsAsDeleted(m_database, dir);
     }
     transaction.commit();
+}
+
+void TrackDAO::resetPlayedState() {
+    // clear out played information on exit
+    // crash prevention: if mixxx crashes, played information will be maintained
+    kLogger.debug() << "Clearing played information for this session";
+    QSqlQuery query(m_database);
+    if (!query.exec("UPDATE library SET played=0 where played>0")) {
+        // Note: without where, this call updates every row which takes long
+        LOG_FAILED_QUERY(query)
+                << "Error clearing played value";
+    }
 }
 
 TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
