@@ -14,8 +14,8 @@ class LibraryTableModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) final;
     // Takes a list of locations and add the tracks to the library. Returns the
     // number of successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
-    TrackModel::Capabilities getCapabilities() const final;
+    int addTracks(const QModelIndex& index, const QList<QString>& locations) override;
+    TrackModel::Capabilities getCapabilities() const override;
 
     void select() override;
 
