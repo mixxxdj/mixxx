@@ -1309,6 +1309,26 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     QTableView::keyPressEvent(event);
 }
 
+void WTrackTableView::selectPinnedTrack(const TrackId& id) {
+    qWarning() << "WTrackTableView::selectPinnedTrack" << id;
+    if (!isVisible()) {
+        qWarning() << "-> not visible, return";
+        return;
+    }
+    if (!id.isValid()) {
+        qWarning() << "-> id invalid, return";
+        return;
+    }
+    selectTrack(id);
+    // emit trackSelected() in order to keep/restore the sidebar item decoration
+    // (bold) that allows to identify playlists/crates that also hold the track
+    TrackPointer pTrack = m_pLibrary->trackCollectionManager()->getTrackById(id);
+    if (!pTrack) {
+        qWarning() << "-> no track for id" << id;
+    }
+    emit trackSelected(pTrack);
+}
+
 void WTrackTableView::resizeEvent(QResizeEvent* event) {
     // When the tracks view shrinks in height, e.g. when other skin regions expand,
     // and if the row was visible before resizing, scroll to it afterwards.
@@ -1832,6 +1852,10 @@ void WTrackTableView::selectTracksById(const QList<TrackId>& trackIds, int prevC
     // Refocus the cell in the column that was focused before sorting.
     // With this, any Up/Down key press moves the selection and keeps the
     // horizontal scrollbar position we will restore below.
+    // Use our prevColumn if the argument is invalid.
+    if (prevColum == -1) {
+        prevColum = m_prevColumn;
+    }
     QModelIndex restoreIndex = pItemModel->index(currentIndex().row(), prevColum);
     if (restoreIndex.isValid()) {
         setCurrentIndex(restoreIndex);
