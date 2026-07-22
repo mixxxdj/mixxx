@@ -1,18 +1,17 @@
 /**
- * Denon MC3000 controller script for Mixxx
+* Denon MC3000 controller script for Mixxx
  *
- * Based on BeMixxx's mapping for the Denon MC3000.
- * Updated for mixxx 2.6 by dtavan:
+ * Original script written by Bertrand Espern (BeMixxx) in 2012.
+ * 4-deck support, but no loop and no cue function on decks 3/4.
+ *
+ * Updated for Mixxx 2.5+ by dtavan (2026):
  *   Ported to the per-deck MIDI-channel architecture, added full 4-deck
  *   support (loop and hotcue functions now also work on decks C/D), updated
  *   to the current EffectRack/beatloop/QuickEffect control set, and
  *   implemented the MC3000's LED feedback protocol.
  *
- * Special Thanks to the Programmers of Mixxx and all the contributors.
- *
- * Copyright (c) 2012 Bertrand Espern (BeMixxx)
- * Copyright (c) 2026 Damien Tavan (dtavan)
- * Licensed under the GNU General Public License, version 2 or later.
+ * Special thanks to Bertrand Espern for the original mapping, and to the
+ * programmers of Mixxx and all its contributors.
  *
  * Sections:
  *  1. GLOBAL VARIABLES & CONFIG
@@ -29,7 +28,7 @@
  *  - XML <key>-bound functions are called (channel, control, value, status,
  *    group); engine.makeConnection() callbacks are called (value, group,
  *    control) instead -- different shape, easy to mix up.
- *  - Unused parameters are prefixed with _.
+ *  - Unused parameters are usually prefixed with _.
  *  - EFX buttons/knobs, SAMP pads, and SYNC are the exception: they're
  *    components.EffectUnit/SamplerButton/SyncButton instances
  *    (midi-components-0.0.js), bound via a dotted key on the instance
@@ -80,6 +79,14 @@ mc3000.beta = mc3000.alpha/32;
 mc3000.jogSensitivity = engine.getSetting("jogSensitivity") ?? 2.0;
 mc3000.scratchSensitivity = engine.getSetting("scratchSensitivity") ?? 1;
 
+// KEY LOCK's startup default is a single global setting (Preferences >
+// Controllers > Denon MC3000 > Deck), applied to all four decks.
+mc3000.keyLockDefault = engine.getSetting("keyLockDefault") ?? false;
+
+// Quantize's startup default is a single global setting (Preferences >
+// Controllers > Denon MC3000 > Deck), applied to all four decks.
+mc3000.quantizeDefault = engine.getSetting("quantizeDefault") ?? false;
+
 // BeatLoop 2 4 8 16 to 1 2 3 4
 
 // ---------- 2. INIT / SHUTDOWN ----------
@@ -120,6 +127,18 @@ mc3000.init = function(id) {
     }
 
     mc3000.allLedOff();
+
+    // Apply KEY LOCK's startup default to all four decks.
+    for (i=1; i<=4; i++) {
+        engine.setValue(`[Channel${i}]`, "keylock", mc3000.keyLockDefault);
+        mc3000.setled(i, mc3000.leds.keylock, mc3000.keyLockDefault);
+    }
+
+    // Apply quantize's startup default to all four decks (no LED on this
+    // hardware for quantize).
+    for (i=1; i<=4; i++) {
+        engine.setValue(`[Channel${i}]`, "quantize", mc3000.quantizeDefault);
+    }
 
     // EffectUnit1/2's own init() connects and triggers their enable buttons,
     // focus button, and knobs (LEDs go through the send() overrides set up

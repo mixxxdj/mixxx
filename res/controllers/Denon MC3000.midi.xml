@@ -2,8 +2,8 @@
 <MixxxControllerPreset mixxxVersion="2.4+" schemaVersion="1">
     <info>
         <name>Denon MC3000</name>
-        <author>dtavan, BeMixxx</author>
-        <description>Optimized for Denon MC3000 - Default Midi Channel. Updated for full 4-deck support (A/B/C/D) and current Mixxx effects/beatloop controls.</description>
+        <author>BeMixxx, dtavan</author>
+        <description>Optimized for Denon MC3000 - Default Midi Channel</description>
         <manual>denon_mc3000</manual>
         <forums>https://mixxx.discourse.group/t/denon-mc3000-midi-script/12283</forums>
     </info>
@@ -43,6 +43,28 @@
                 <description>
                     Whether VINYL MODE is enabled by default at startup, for all
                     four decks.
+                </description>
+            </option>
+        </group>
+        <group label="Deck">
+            <option
+                variable="keyLockDefault"
+                type="boolean"
+                default="false"
+                label="KEY LOCK on by default">
+                <description>
+                    Whether KEY LOCK is enabled by default at startup, for all
+                    four decks.
+                </description>
+            </option>
+            <option
+                variable="quantizeDefault"
+                type="boolean"
+                default="false"
+                label="Quantize on by default">
+                <description>
+                    Whether quantize (SHIFT + SYNC) is enabled by default at
+                    startup, for all four decks.
                 </description>
             </option>
         </group>
