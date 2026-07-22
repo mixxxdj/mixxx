@@ -8,6 +8,7 @@
 #ifdef __STEM__
 #include "engine/engine.h"
 #endif
+#include "control/pollingcontrolproxy.h"
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
 #include "preferences/colorpalettesettings.h"
@@ -153,6 +154,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotWaveformZoomSetDefault(double pressed);
     void slotShiftCuesMillis(double milliseconds);
     void slotShiftCuesMillisButton(double value, double milliseconds);
+    void slotShiftFocusedHotcueMillis(double milliseconds);
+    void slotShiftFocusedHotcueMillisButton(double value, double milliseconds);
     void slotUpdateReplayGainFromPregain(double pressed);
 
   private:
@@ -223,6 +226,15 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlPushButton> m_pShiftFocusedHotcueEarlier;
+    std::unique_ptr<ControlPushButton> m_pShiftFocusedHotcueEarlierSmall;
+    std::unique_ptr<ControlPushButton> m_pShiftFocusedHotcueLater;
+    std::unique_ptr<ControlPushButton> m_pShiftFocusedHotcueLaterSmall;
+    std::unique_ptr<ControlObject> m_pShiftFocusedHotcue;
+
+    PollingControlProxy m_focusedHotcueIndexCO;
+    PollingControlProxy m_pQuantizeEnabled;
 
     std::unique_ptr<ControlPushButton> m_pShowTrackMenuControl;
 

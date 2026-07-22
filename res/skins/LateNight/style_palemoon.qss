@@ -1569,10 +1569,7 @@ WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
 #LibraryFeatureControls QPushButton:enabled,
-#CueDeleteButton,
-#CueStandardButton,
-#CueSavedLoopButton,
-#CueSavedJumpButton {
+WCueMenuPopup QPushButton {
   outline: none;
   border-width: 2px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
@@ -1592,20 +1589,14 @@ WEffectSelector:!editable,
   #BroadcastButton[displayValue="3"],
   #BroadcastButton[displayValue="4"],
   #SkinSettingsToggle[displayValue="1"],
-  #LibraryFeatureControls QPushButton:pressed
+  #LibraryFeatureControls QPushButton:pressed,
   QPushButton#pushButtonAutoDJ:checked,
   QPushButton#pushButtonRepeatPlaylist:checked,
   QPushButton#pushButtonAnalyze:checked,
   QPushButton#pushButtonRecording:checked,
   WEffectSelector:!editable:on,
   #fadeModeCombobox:!editable:on,
-  #CueDeleteButton[pressed="true"],
-  #CueStandardButton[pressed="true"],
-  #CueStandardButton:checked,
-  #CueSavedLoopButton[pressed="true"],
-  #CueSavedLoopButton:checked,
-  #CueSavedJumpButton[pressed="true"],
-  #CueSavedJumpButton:checked {
+  WCueMenuPopup QPushButton:pressed {
     border-width: 2px;
     border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -1739,10 +1730,7 @@ WBpmEditor QDoubleSpinBox {
   }
   /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
-  #CueDeleteButton,
-  #CueStandardButton,
-  #CueSavedLoopButton,
-  #CueSavedJumpButton,
+  WCueMenuPopup QPushButton,
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
   /* library controls */
@@ -1780,9 +1768,13 @@ WPushButton#Reverse[pressed="true"],
 WPushButton#StemMuteButton,
 #PassthroughButton[displayValue="1"],
 #BroadcastButton[displayValue="4"], /* warning */
+#CueStandardButton:pressed, #CueStandardButton:checked,
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked,
+#CueSavedJumpButton:pressed, #CueSavedJumpButton:checked,
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonAnalyze:checked {
   background-color: #b24c12;
+  outline: none;
   }
   /* Orange border for Play buttons when previewing from
     Cue or Hotcue */
@@ -2863,31 +2855,56 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 
 /* widgets in cue popup menu */
 WCueMenuPopup #CueDeleteButton {
-  icon: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
-  width: 24px;
-  height: 24px;
-  icon-size: 18px;
+  /* For QPushButtons, the border is added (here: 2px in each direction).
+     This sets the minimum size, the button may expand depending on the
+     layout and stretch options set in src/widget/wcuemenupopup.cpp */
+  width: 44px;
+  height: 20px;
+  icon: url(skin:../LateNight/palemoon/buttons/btn__delete.svg);
+  /* make the icon slightly larger than default 16px */
+  /* icon-size: 18px; */
 }
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
+  /* Try to make these look like other square buttons (decks, mixer etc.)
+     which have a visible area of 24x24 px..
+     Here however border (2px) is ADDED to the set size, hence subtract 2px on each side. */
+  width: 20px;
+  height: 20px;
+  qproperty-iconSize: 20px;
+}
+
+WCueMenuPopup #CueShiftEarlier {
+  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__hotcue_earlier.svg);
+}
+WCueMenuPopup #CueShiftLater {
+  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__hotcue_later.svg);
+}
+
+WCueMenuPopup #CueStandardButton,
+WCueMenuPopup #CueSavedLoopButton,
+WCueMenuPopup #CueSavedJumpButton {
+  width: 44px;
+  /* don't let the type buttons make the dialog expand */
+  /* Note: we could try min-height / max-height if we want more control */
+  /* height: 32px; */
+  icon-size: 20px;
+}
+
 WCueMenuPopup #CueStandardButton {
   icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later.svg);
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  icon-size: 24px;
 }
+#CueStandardButton:pressed, #CueStandardButton:checked {
+  icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg);
+}
+
 WCueMenuPopup #CueSavedLoopButton {
   icon: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  icon-size: 24px;
 }
-WCueMenuPopup #CueSavedJumpButton {
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  icon-size: 24px;
+#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
+  icon: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
 }
+
 WCueMenuPopup #CueSavedJumpButton[direction="impossible"],
 WCueMenuPopup #CueSavedJumpButton[direction="forward"] {
   icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_right.svg);
@@ -2896,38 +2913,11 @@ WCueMenuPopup #CueSavedJumpButton[direction="backward"] {
   icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_left.svg);
 }
 
-#CueDeleteButton:hover {
-  background-color: #6c2e2e;
-}
-
-#CueDeleteButton[pressed="true"], #CueDeleteButton:pressed, #CueDeleteButton:clicked {
-  background-color: #dc4141 !important;
-  outline: none;
-}
-
-#CueSavedLoopButton:pressed, #CueSavedLoopButton:checked {
-  background-color: #b24c12;
-  outline: none;
-  icon: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
-}
-#CueSavedJumpButton:pressed, #CueSavedJumpButton:checked {
-  background-color: #b24c12;
-  outline: none;
-}
-#CueSavedJumpButton[direction="impossible"] {
-  background-color: #787878 !important;
-  outline: none;
-}
 #CueSavedJumpButton[direction="forward"]:pressed, #CueSavedJumpButton[direction="forward"]:checked {
   icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_right_active.svg);
 }
 #CueSavedJumpButton[direction="backward"]:pressed, #CueSavedJumpButton[direction="backward"]:checked {
   icon: url(skins:LateNight/palemoon/buttons/btn__beatjump_left_active.svg);
-}
-#CueStandardButton:pressed, #CueStandardButton:checked {
-  background-color: #b24c12;
-  outline: none;
-  icon: url(skins:LateNight/palemoon/buttons/btn__beats_hotcues_later_active.svg);
 }
 
 WCueMenuPopup #CueLabelEdit {
