@@ -124,3 +124,18 @@ const ConfigKey mixxx::library::prefs::kSidebarHoverExpandDelayConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("sidebar_hover_expand_delay")};
+
+const ConfigKey mixxx::library::prefs::kFingerprintAnalysisEnabledConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("FingerprintAnalysisEnabled")};
+
+const ConfigKey mixxx::library::prefs::kAcoustIdUserApiKeyConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("AcoustIdUserApiKey")};
+
+const ConfigKey mixxx::library::prefs::kAcoustIdAutoSubmitConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("AcoustIdAutoSubmit")};
