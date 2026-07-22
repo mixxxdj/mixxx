@@ -68,6 +68,10 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
+EngineBuffer* EngineControl::getEngineBuffer() const {
+    return m_pEngineBuffer;
+}
+
 void EngineControl::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
     if (m_pEngineBuffer) {
         m_pEngineBuffer->setBeatLoop(startPosition, enabled);
