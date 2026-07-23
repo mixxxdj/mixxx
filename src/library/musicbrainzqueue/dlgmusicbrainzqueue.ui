@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgAnalysis</class>
- <widget class="QWidget" name="DlgAnalysis">
+ <class>DlgMusicBrainzQueue</class>
+ <widget class="QWidget" name="DlgMusicBrainzQueue">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>560</width>
     <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Analyze</string>
+   <string>Fingerprint Queue</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -48,80 +48,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QRadioButton" name="radioButtonRecentlyAdded">
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="toolTip">
-          <string>Shows tracks added to the library recently.</string>
-         </property>
-         <property name="text">
-          <string>New</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spinBoxRecentDays">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>55</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="toolTip">
-          <string>Number of days to filter recently added tracks.</string>
-         </property>
-         <property name="frame">
-          <bool>false</bool>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>3650</number>
-         </property>
-         <property name="value">
-          <number>7</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="labelRecentDaysAppendix">
-         <property name="styleSheet">
-          <string notr="true">margin-left: 5px;</string>
-         </property>
-         <property name="text">
-          <string>days</string>
-         </property>
-         <property name="toolTip">
-          <string>Days</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButtonAllSongs">
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="toolTip">
-          <string>Shows all tracks in the library.</string>
-         </property>
-         <property name="text">
-          <string>All</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButtonSelectAll">
+        <widget class="QPushButton" name="btnSelectAll">
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
          </property>
@@ -134,25 +61,41 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButtonAnalyze">
+        <widget class="QPushButton" name="btnSubmitSelected">
          <property name="focusPolicy">
           <enum>Qt::NoFocus</enum>
          </property>
          <property name="toolTip">
-          <string>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Also computes Chromaprint fingerprints if fingerprint analysis is enabled in Preferences. Does not generate waveforms to save disk space.</string>
+          <string>Queue selected tracks for AcoustID fingerprint lookup.</string>
          </property>
          <property name="text">
-          <string>Analyze</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
+          <string>Submit Selected</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="labelProgress">
+        <widget class="QPushButton" name="btnSubmitAll">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Queue all listed tracks for AcoustID fingerprint lookup.</string>
+         </property>
          <property name="text">
-          <string>Progress</string>
+          <string>Submit All</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnRetryFailed">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="toolTip">
+          <string>Reset all failed lookup jobs so the background worker retries them.</string>
+         </property>
+         <property name="text">
+          <string>Retry Failed</string>
          </property>
         </widget>
        </item>
@@ -181,6 +124,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../res/mixxx.qrc"/>
+ </resources>
  <connections/>
 </ui>
