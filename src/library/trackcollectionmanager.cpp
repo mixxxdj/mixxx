@@ -14,13 +14,11 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
 
+using namespace mixxx::library::prefs;
+
 namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
-
-const QString kConfigGroup = QStringLiteral("[TrackCollection]");
-
-const ConfigKey kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
 inline
 parented_ptr<TrackCollection> createInternalTrackCollection(
@@ -47,10 +45,10 @@ TrackCollectionManager::TrackCollectionManager(
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
-    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
+    if (pConfig->getValue(kRepairDatabaseOnNextRestartConfigKey, false)) {
         m_pInternalCollection->repairDatabase(dbConnection);
         // Reset config value
-        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
+        pConfig->setValue(kRepairDatabaseOnNextRestartConfigKey, false);
     }
 
     m_pInternalCollection->connectDatabase(dbConnection);
@@ -313,7 +311,7 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
             (pTrack->isDirty() &&
                     m_pConfig &&
                     m_pConfig->getValueString(
-                                     mixxx::library::prefs::kSyncTrackMetadataConfigKey)
+                                     kSyncTrackMetadataConfigKey)
                                     .toInt() == 1)) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {
