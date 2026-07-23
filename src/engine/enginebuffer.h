@@ -190,9 +190,9 @@ class EngineBuffer : public EngineObject {
 #endif
         default:
 #ifdef __RUBBERBAND__
-            return tr("Unknown, using Rubberband (better)");
+            return tr("Unknown, using Rubberband (fast, medium quality)");
 #else
-            return tr("Unknown, using Soundtouch");
+            return tr("Unknown, using Soundtouch (fastest, low quality)");
 #endif
         }
     }
