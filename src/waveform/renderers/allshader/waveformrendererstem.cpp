@@ -77,6 +77,11 @@ bool WaveformRendererStem::init() {
 
 #ifndef __SCENEGRAPH__
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    setSplitStemTracks(pWaveformWidgetFactory->isStemSplitTracks());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemSplitTracksChanged,
+            this,
+            &WaveformRendererStem::setSplitStemTracks);
     setReorderOnChange(pWaveformWidgetFactory->isStemReorderOnChange());
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::stemReorderOnChangeChanged,
@@ -244,15 +249,18 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Lines are thin rectangles
                 // shadow
+                float height = heightFactor * max;
+                if (m_splitStemTracks) {
+                    height = std::min(height, halfBreadth);
+                }
+                const int yIndex = m_splitStemTracks ? stemIdx : stemLayer;
                 vertexUpdater.addRectangle(
                         {fVisualIdx - halfStripSize,
-                                stemLayer * stemBreadth + halfBreadth -
-                                        heightFactor * max},
+                                yIndex * stemBreadth + halfBreadth - height},
                         {fVisualIdx + halfStripSize,
                                 m_isSlipRenderer
-                                        ? stemLayer * stemBreadth + halfBreadth
-                                        : stemLayer * stemBreadth + halfBreadth +
-                                                heightFactor * max},
+                                        ? yIndex * stemBreadth + halfBreadth
+                                        : yIndex * stemBreadth + halfBreadth + height},
                         {color_r, color_g, color_b, color_a});
             }
             stemLayer++;
