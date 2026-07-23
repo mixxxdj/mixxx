@@ -133,6 +133,35 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
 
+    // Per-field visibility for the CMRT column. Constraint: at least one
+    // of the five show-* toggles must stay true -- enforced by
+    // DlgPrefFingerprint's UI, not here; this class trusts its callers.
+    static constexpr bool kCmrtColumnShowArtistDefault = true;
+    static void setCmrtColumnShowArtist(bool show);
+
+    static constexpr bool kCmrtColumnShowTitleDefault = true;
+    static void setCmrtColumnShowTitle(bool show);
+
+    static constexpr bool kCmrtColumnShowGroupIdDefault = false;
+    static void setCmrtColumnShowGroupId(bool show);
+
+    static constexpr bool kCmrtColumnShowOffsetDefault = false;
+    static void setCmrtColumnShowOffset(bool show);
+
+    static constexpr bool kCmrtColumnShowMatchScoreDefault = false;
+    static void setCmrtColumnShowMatchScore(bool show);
+
+    // true = append "(#id)" after the name (default), false = prepend.
+    // Only has an observable effect when Artist or Title is also shown --
+    // see roleValue() for why it's a no-op otherwise.
+    static constexpr bool kCmrtColumnGroupIdAppendDefault = true;
+    static void setCmrtColumnGroupIdAppend(bool append);
+
+    // Single delimiter used between every pair of adjacent segments in
+    // the CMRT column text. Default " - ".
+    static inline const QString kCmrtColumnDelimiterDefault = QStringLiteral(" - ");
+    static void setCmrtColumnDelimiter(const QString& delimiter);
+
     enum class DateFormat {
         Native = 0,        // System Default
         ISO8601 = 1,       // yyyy-MM-dd
@@ -229,6 +258,16 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_PREVIEW: bool
     /// COLUMN_LIBRARYTABLE_COLOR: mixxx::RgbColor::code_t
     /// COLUMN_LIBRARYTABLE_COVERART: virtual column for CoverArtDelegate
+    /// COLUMN_LIBRARYTABLE_CMRT: QString (virtual column; "Artist - Title" of
+    ///     the canonical/CMRT track for this row's group; NULL if the track
+    ///     isn't grouped or its group has only one member)
+    /// COLUMN_LIBRARYTABLE_CMRT_CANONICAL: bool (virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_OFFSET: double (seconds; virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_CANONICAL_ARTIST: QString (virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_CANONICAL_TITLE: QString (virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_GROUP_ID: int (virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_MATCH_SCORE: double (0.0-1.0; virtual column, internal only)
+    /// COLUMN_LIBRARYTABLE_CMRT_QUALITY_SCORE: double (virtual column, internal only)
     /// COLUMN_LIBRARYTABLE_COVERART_SOURCE: int (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_TYPE: int (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_LOCATION: QString (pass-through)
@@ -323,4 +362,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     static bool s_bApplyPlayedTrackColor;
     static QString s_dateFormat;
+    static bool s_cmrtColumnShowArtist;
+    static bool s_cmrtColumnShowTitle;
+    static bool s_cmrtColumnShowGroupId;
+    static bool s_cmrtColumnShowOffset;
+    static bool s_cmrtColumnShowMatchScore;
+    static bool s_cmrtColumnGroupIdAppend;
+    static QString s_cmrtColumnDelimiter;
 };

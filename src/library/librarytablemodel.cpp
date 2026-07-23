@@ -26,7 +26,36 @@ void LibraryTableModel::setTableModel() {
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << "library." + LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+            << "(cg.group_id || ' - ' || cmrt_canonical.artist || ' - ' || "
+               "cmrt_canonical.title) AS " +
+                    LIBRARYTABLE_CMRT_NAME
+            << "(cg.canonical_track_id = library.id) AS " +
+                    LIBRARYTABLE_CMRT_CANONICAL
+            << "CASE WHEN cg.group_id IS NOT NULL "
+               "THEN cm.offset_from_canonical ELSE NULL END AS " +
+                    LIBRARYTABLE_CMRT_OFFSET
+            // Raw artist/title, separate from the fused cmrt_track_name
+            // above, so C++ can show either independently. cmrt_canonical
+            // is already NULL whenever cg is (LEFT JOIN), same as every
+            // other field sourced from that alias -- no CASE needed here.
+            << "cmrt_canonical.artist AS " + LIBRARYTABLE_CMRT_CANONICAL_ARTIST
+            << "cmrt_canonical.title AS " + LIBRARYTABLE_CMRT_CANONICAL_TITLE
+            // Also unguarded -- cg.group_id comes from the same join row
+            // as canonical/offset, already NULL in lockstep with them.
+            << "cg.group_id AS " + LIBRARYTABLE_CMRT_GROUP_ID
+            // match_score and quality_score DO need the CASE, same reason
+            // cmrt_offset already has one: cm (cmrt_members) is joined on
+            // track_id alone, so without gating on cg.group_id these two
+            // could survive past the "track_count > 1" filter that only
+            // lives on the cg join and show a stale value on an
+            // ungrouped-alone row.
+            << "CASE WHEN cg.group_id IS NOT NULL "
+               "THEN cm.match_score ELSE NULL END AS " +
+                    LIBRARYTABLE_CMRT_MATCH_SCORE
+            << "CASE WHEN cg.group_id IS NOT NULL "
+               "THEN cm.quality_score ELSE NULL END AS " +
+                    LIBRARYTABLE_CMRT_QUALITY_SCORE;
 
     QSqlQuery query(m_database);
     query.prepare(
@@ -35,7 +64,12 @@ void LibraryTableModel::setTableModel() {
             " FROM library "
             "INNER JOIN track_locations "
             "ON library.location=track_locations.id "
-            "WHERE (mixxx_deleted=0 AND fs_deleted=0)");
+            "LEFT JOIN cmrt_members cm ON library.id = cm.track_id "
+            "LEFT JOIN cmrt_groups cg "
+            "  ON cm.group_id = cg.group_id AND cg.track_count > 1 "
+            "LEFT JOIN library cmrt_canonical "
+            "  ON cg.canonical_track_id = cmrt_canonical.id "
+            "WHERE (library.mixxx_deleted=0 AND fs_deleted=0)");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -44,6 +78,14 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
+    tableColumns << LIBRARYTABLE_CMRT_NAME;
+    tableColumns << LIBRARYTABLE_CMRT_CANONICAL;
+    tableColumns << LIBRARYTABLE_CMRT_OFFSET;
+    tableColumns << LIBRARYTABLE_CMRT_CANONICAL_ARTIST;
+    tableColumns << LIBRARYTABLE_CMRT_CANONICAL_TITLE;
+    tableColumns << LIBRARYTABLE_CMRT_GROUP_ID;
+    tableColumns << LIBRARYTABLE_CMRT_MATCH_SCORE;
+    tableColumns << LIBRARYTABLE_CMRT_QUALITY_SCORE;
     setTable(tableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
@@ -81,6 +123,13 @@ bool LibraryTableModel::isColumnInternal(int column) {
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL_ARTIST) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL_TITLE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_GROUP_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_MATCH_SCORE) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT_QUALITY_SCORE) ||
             (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||

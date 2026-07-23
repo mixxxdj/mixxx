@@ -20,6 +20,7 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+class TrackFingerprintDao;
 
 namespace mixxx {
 class FileInfo;
@@ -45,6 +46,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             PlaylistDAO& playlistDao,
             AnalysisDao& analysisDao,
             LibraryHashDAO& libraryHashDao,
+            TrackFingerprintDao& fingerprintDao,
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
@@ -111,6 +113,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
         return getTrackByRef(TrackRef::fromUrl(url));
     }
 
+    bool clearMusicBrainzData(TrackId trackId) const;
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId);
@@ -134,6 +138,18 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QSet<TrackId>& changedTrackIds);
     void slotDatabaseTracksRelocated(
             const QList<RelocatedTrack>& relocatedTracks);
+
+    // Writes AcoustID lookup results back to the library table.
+    // Called by the AcoustID worker after a successful lookup or submission.
+    // Passing empty strings for any MBID field leaves that column unchanged.
+    bool updateAcoustIdResult(
+            TrackId trackId,
+            const QString& acoustidId,
+            const QString& acoustidLookupStatus,
+            const QString& musicbrainzRecordingId,
+            const QString& musicbrainzReleaseId,
+            const QString& musicbrainzTrackId,
+            const QString& musicbrainzArtistId);
 
   private:
     friend class LibraryScanner;
@@ -209,6 +225,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
+    TrackFingerprintDao& m_fingerprintDao;
 
     const UserSettingsPointer m_pConfig;
 

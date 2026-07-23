@@ -96,12 +96,17 @@ void updateQueryPlannerStatisticsForDatabase(const QSqlDatabase& database) {
 
 } // anonymous namespace
 
-LibraryScanner::LibraryScanner(
-        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+LibraryScanner::LibraryScanner(mixxx::DbConnectionPoolPtr pDbConnectionPool,
         const UserSettingsPointer& pConfig)
         : m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_analysisDao(pConfig),
-          m_trackDao(m_cueDao, m_playlistDao, m_analysisDao, m_libraryHashDao, pConfig),
+          m_fingerprintDao(pConfig),
+          m_trackDao(m_cueDao,
+                  m_playlistDao,
+                  m_analysisDao,
+                  m_libraryHashDao,
+                  m_fingerprintDao,
+                  pConfig),
           m_stateSema(1), // only one transaction is possible at a time
           m_state(IDLE),
           m_numRelocatedTracks(0),
@@ -177,6 +182,7 @@ void LibraryScanner::run() {
         m_playlistDao.initialize(dbConnection);
         m_analysisDao.initialize(dbConnection);
         m_directoryDao.initialize(dbConnection);
+        m_fingerprintDao.initialize(dbConnection);
 
         // Start the event loop.
         kLogger.debug() << "Event loop starting";
