@@ -197,7 +197,9 @@ void PipewireEnumerator::deinitialize() {
     // clear everything we get through registry
     m_openedDevices.clear();
     m_soundDevices.clear();
-    m_objects.clear();
+    m_nodes.clear();
+    m_ports.clear();
+    m_links.clear();
 
     // or is it better to m_pSoundManager->removeDevice(device) for every device?
     emit m_pSoundManager->devicesUpdated();
@@ -260,7 +262,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
 
         std::string name = find_node_name(id, pProps);
 
-        m_objects.insert_or_assign(id, Object{Node{}});
+        m_nodes.insert_or_assign(id, Node{});
         auto pDevice = QSharedPointer<SoundDevicePipewire>::create(
                 m_pConfig, m_pSoundManager, this, id, name);
         emit deviceAdded(pDevice);
@@ -281,7 +283,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             return;
         }
 
-        m_objects.insert_or_assign(id, Object{Port(node_id)});
+        m_ports.insert_or_assign(id, Port(node_id));
         QSharedPointer<SoundDevicePipewire> pSoundDevice = m_soundDevices.at(node_id);
         pSoundDevice->registerPort(id, pProps);
         m_pSoundManager->updateDeviceChannels(pSoundDevice);
@@ -328,24 +330,17 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                 spa_dict_lookup(pProps, PW_KEY_LINK_OUTPUT_PORT));
 
         if (in_node == m_filterId) {
-            m_objects.insert_or_assign(id, Object{Link(in_port, out_port)});
+            m_links.insert_or_assign(id, Link(in_port, out_port));
             m_soundDevices.at(out_node)->registerLink(id, SPA_DIRECTION_OUTPUT);
         } else if (out_node == m_filterId) {
-            m_objects.insert_or_assign(id, Object{Link(in_port, out_port)});
+            m_links.insert_or_assign(id, Link(in_port, out_port));
             m_soundDevices.at(in_node)->registerLink(id, SPA_DIRECTION_INPUT);
         }
     }
 }
 
 void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
-    if (!m_objects.contains(id)) {
-        return;
-    }
-
-    auto pair = m_objects.extract(id);
-    Object& object = pair.mapped();
-
-    if (std::get_if<Node>(&object)) {
+    if (m_nodes.contains(id)) {
         if (!m_soundDevices.contains(id)) {
             return;
         }
@@ -357,24 +352,28 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
 
         m_soundDevices.erase(id);
         emit deviceRemoved(pDevice);
-        // m_pSoundManager->removeDevice(device);
-    } else if (Port* port = std::get_if<Port>(&object)) {
-        VERIFY_OR_DEBUG_ASSERT(m_soundDevices.contains(port->node)) {
+        m_nodes.erase(id);
+    } else if (m_ports.contains(id)) {
+        Port& port = m_ports.at(id);
+        VERIFY_OR_DEBUG_ASSERT(m_soundDevices.contains(port.node)) {
             return;
         }
 
-        QSharedPointer<SoundDevicePipewire> pSoundDevice = m_soundDevices.at(port->node);
+        QSharedPointer<SoundDevicePipewire> pSoundDevice = m_soundDevices.at(port.node);
         pSoundDevice->unregisterPort(id);
         m_pSoundManager->updateDeviceChannels(pSoundDevice);
-    } else if (Link* link = std::get_if<Link>(&object)) {
-        Port input = std::get<Port>(m_objects.at(link->input));
-        Port output = std::get<Port>(m_objects.at(link->output));
+        m_ports.erase(id);
+    } else if (m_links.contains(id)) {
+        Link& link = m_links.at(id);
+        Port input = m_ports.at(link.input);
+        Port output = m_ports.at(link.output);
 
         if (input.node == m_filterId) {
             m_soundDevices.at(output.node)->unregisterLink(id, SPA_DIRECTION_OUTPUT);
         } else if (output.node == m_filterId) {
             m_soundDevices.at(input.node)->unregisterLink(id, SPA_DIRECTION_INPUT);
         }
+        m_links.erase(id);
     }
 }
 

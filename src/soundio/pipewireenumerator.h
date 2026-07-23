@@ -158,9 +158,10 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     };
 
     struct Node {};
-    using Object = std::variant<Node, Port, Link>;
 
-    std::unordered_map<uint32_t, Object> m_objects;
+    std::unordered_map<uint32_t, Node> m_nodes;
+    std::unordered_map<uint32_t, Port> m_ports;
+    std::unordered_map<uint32_t, Link> m_links;
     QList<mixxx::audio::SampleRate> m_samplerates;
 
     SoundManager* m_pSoundManager;
