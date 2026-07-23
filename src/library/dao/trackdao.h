@@ -20,6 +20,7 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+class TrackFingerprintDao;
 
 namespace mixxx {
 class FileInfo;
@@ -45,6 +46,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             PlaylistDAO& playlistDao,
             AnalysisDao& analysisDao,
             LibraryHashDAO& libraryHashDao,
+            TrackFingerprintDao& fingerprintDao,
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
@@ -111,6 +113,20 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
         return getTrackByRef(TrackRef::fromUrl(url));
     }
 
+    // Re-applies (or applies for the first time) the CMRT overlay onto an
+    // already in-memory Track, per its cmrt_members.use_cmrt_data flag.
+    // Called from BaseTrackTableModel::setData() right after the checkbox
+    // is checked, so a deck that already has the track loaded picks up the
+    // overlay without needing to be re-loaded.
+    void applyCmrtOverlayToLoadedTrack(const TrackPointer& pTrack) const;
+
+    // Inverse of the above -- called right after the checkbox is
+    // unchecked. Clears overlay state and restores this track's own stored
+    // cues/beats from the database.
+    void reloadOwnCuesAndBeats(const TrackPointer& pTrack) const;
+
+    bool clearMusicBrainzData(TrackId trackId) const;
+
   signals:
     // Forwarded from Track object
     void trackDirty(TrackId trackId);
@@ -135,6 +151,18 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void slotDatabaseTracksRelocated(
             const QList<RelocatedTrack>& relocatedTracks);
 
+    // Writes AcoustID lookup results back to the library table.
+    // Called by the AcoustID worker after a successful lookup or submission.
+    // Passing empty strings for any MBID field leaves that column unchanged.
+    bool updateAcoustIdResult(
+            TrackId trackId,
+            const QString& acoustidId,
+            const QString& acoustidLookupStatus,
+            const QString& musicbrainzRecordingId,
+            const QString& musicbrainzReleaseId,
+            const QString& musicbrainzTrackId,
+            const QString& musicbrainzArtistId);
+
   private:
     friend class LibraryScanner;
     friend class TrackCollection;
@@ -142,6 +170,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     FRIEND_TEST(TrackDAOTest, markTrackLocationsAsVerifiedRecoversPresentFilesOnly);
 
     QString findLastTimeAddedToHistory(TrackId trackId) const;
+
+    void applyCmrtOverlayIfConfigured(const TrackPointer& pTrack) const;
 
     QList<TrackId> resolveTrackIds(
             const QStringList& pathList,
@@ -209,6 +239,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
+    TrackFingerprintDao& m_fingerprintDao;
 
     const UserSettingsPointer m_pConfig;
 

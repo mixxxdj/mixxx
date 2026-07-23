@@ -429,6 +429,26 @@ bool Track::trySetBpm(mixxx::Bpm bpm) {
 
 bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
     auto locked = lockMutex(&m_qMutex);
+    if (m_cmrtOverlayActive) {
+        TrackPointer pCanonical = m_pCmrtCanonicalTrack;
+        const double offsetSeconds = m_cmrtOffsetSeconds;
+        const auto memberSampleRate = getSampleRate();
+        locked.unlock();
+        // Same seconds-based reprojection as buildOverlayBeats(), run in
+        // reverse: convert the caller's new grid (in member frames) into
+        // canonical's sample rate, subtracting the offset instead of
+        // adding it.
+        mixxx::BeatsPointer pForCanonical = pBeats
+                ? buildOverlayBeats(pBeats, pCanonical->getSampleRate(), -offsetSeconds)
+                : nullptr;
+        if (pForCanonical) {
+            pCanonical->trySetBeats(pForCanonical);
+        }
+        // Re-derive from canonical's accepted result -- it may adjust or
+        // reject what was passed in.
+        applyCmrtOverlay(pCanonical, offsetSeconds, memberSampleRate);
+        return true;
+    }
     return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, false);
 }
 
@@ -1066,6 +1086,61 @@ mixxx::audio::FramePos Track::getMainCuePosition() const {
 }
 
 void Track::slotCueUpdated() {
+    auto locked = lockMutex(&m_qMutex);
+    if (m_cmrtOverlayActive) {
+        TrackPointer pCanonical = m_pCmrtCanonicalTrack;
+        const double offsetSeconds = m_cmrtOffsetSeconds;
+        const auto memberSampleRate =
+                getSampleRate();
+        // The cue that emitted the signal is our local overlay copy.
+        // Use sender() to get a pointer to it.
+        Cue* pLocalCue = qobject_cast<Cue*>(sender());
+        locked.unlock(); // release our mutex before calling into canonical
+
+        if (!pLocalCue || !pCanonical) {
+            return;
+        }
+
+        // Find the matching cue on the canonical track by (type, hotcue index).
+        CuePointer pCanonicalCue;
+        const QList<CuePointer> canonicalCues = pCanonical->getCuePoints();
+        for (const auto& c : canonicalCues) {
+            if (c->getType() == pLocalCue->getType() &&
+                    c->getHotCue() == pLocalCue->getHotCue()) {
+                pCanonicalCue = c;
+                break;
+            }
+        }
+
+        if (!pCanonicalCue) {
+            return;
+        }
+
+        // Convert the local overlay position back to canonical’s frame domain.
+        const double startSeconds =
+                pLocalCue->getPosition().value() / memberSampleRate.value() -
+                offsetSeconds;
+        pCanonicalCue->setStartPosition(
+                mixxx::audio::FramePos(startSeconds *
+                        pCanonical->getSampleRate().value()));
+
+        if (pLocalCue->getEndPosition().isValid()) {
+            const double endSeconds =
+                    pLocalCue->getEndPosition().value() / memberSampleRate.value() -
+                    offsetSeconds;
+            pCanonicalCue->setEndPosition(
+                    mixxx::audio::FramePos(endSeconds *
+                            pCanonical->getSampleRate().value()));
+        } else {
+            pCanonicalCue->setEndPosition(mixxx::audio::kInvalidFramePos);
+        }
+
+        // Do NOT mark the overlay track dirty – the edit belongs to the canonical.
+        return;
+    }
+    locked.unlock();
+
+    // Original behaviour for non‑overlay tracks:
     markDirty();
     emit cuesUpdated();
 }
@@ -1098,6 +1173,43 @@ CuePointer Track::createAndAddCue(
             this,
             &Track::slotCueUpdated);
     auto locked = lockMutex(&m_qMutex);
+    if (m_cmrtOverlayActive) {
+        TrackPointer pCanonical = m_pCmrtCanonicalTrack;
+        const double offsetSeconds = m_cmrtOffsetSeconds;
+        const auto memberSampleRate = getSampleRate();
+        locked.unlock();
+        // Convert this track's frame positions to canonical's frame domain
+        // via CueInfo's sample-rate-independent millisecond fields -- the
+        // exact inverse of buildOverlayCues() above, one cue at a time
+        // instead of the whole list.
+        const auto toCanonicalMillis = [&](mixxx::audio::FramePos pos) -> std::optional<double> {
+            if (!pos.isValid()) {
+                return std::nullopt;
+            }
+            const double memberSeconds = pos.value() / memberSampleRate.value();
+            return (memberSeconds - offsetSeconds) * 1000.0;
+        };
+        // Round-trip through millis via a throwaway CueInfo/Cue so the
+        // conversion logic lives in exactly one place (CueInfo's own
+        // millis<->frames math), instead of duplicating positionFramesToMillis
+        // math here.
+        const auto canonicalSampleRate = pCanonical->getSampleRate();
+        const auto framesFromMillis = [&](std::optional<double> millis) {
+            return millis
+                    ? mixxx::audio::FramePos(*millis / 1000.0 * canonicalSampleRate.value())
+                    : mixxx::audio::kInvalidFramePos;
+        };
+        CuePointer pCanonicalCue = pCanonical->createAndAddCue(type,
+                hotCueIndex,
+                framesFromMillis(toCanonicalMillis(startPosition)),
+                framesFromMillis(toCanonicalMillis(endPosition)),
+                color);
+        // Re-derive our local shifted view from canonical's accepted result
+        // (single source of truth for the shift math is applyCmrtOverlay(),
+        // not a hand-built local Cue that could drift from it).
+        applyCmrtOverlay(pCanonical, offsetSeconds, memberSampleRate);
+        return pCanonicalCue;
+    }
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&locked);
     emit cuesUpdated();
@@ -1150,6 +1262,30 @@ void Track::removeCue(const CuePointer& pCue) {
     }
 
     auto locked = lockMutex(&m_qMutex);
+    if (m_cmrtOverlayActive) {
+        TrackPointer pCanonical = m_pCmrtCanonicalTrack;
+        const double offsetSeconds = m_cmrtOffsetSeconds;
+        const auto memberSampleRate = getSampleRate();
+        locked.unlock();
+        // Match by (type, hotcue index) rather than position -- no
+        // position math needed for a deletion, and it's robust to the
+        // small floating-point drift a frame<->millis<->frame round trip
+        // can introduce.
+        CuePointer pCanonicalCue;
+        const QList<CuePointer> canonicalCues = pCanonical->getCuePoints();
+        for (const auto& c : canonicalCues) {
+            if (c->getType() == pCue->getType() &&
+                    c->getHotCue() == pCue->getHotCue()) {
+                pCanonicalCue = c;
+                break;
+            }
+        }
+        if (pCanonicalCue) {
+            pCanonical->removeCue(pCanonicalCue);
+        }
+        applyCmrtOverlay(pCanonical, offsetSeconds, memberSampleRate);
+        return;
+    }
     disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
@@ -2031,3 +2167,180 @@ bool Track::updateMood(
     return true;
 }
 #endif // __EXTRA_METADATA__
+
+void Track::applyCmrtOverlay(TrackPointer pCanonical,
+        double offsetSeconds,
+        mixxx::audio::SampleRate memberSampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(pCanonical) {
+        return;
+    }
+    auto locked = lockMutex(&m_qMutex);
+    // Drop any connection to a previous canonical before wiring up the new
+    // one. This also covers the case where this function is being called
+    // *because* refreshCmrtOverlayFromCanonical() fired -- we're about to
+    // reconnect to the same canonical with a fresh, up-to-date snapshot.
+    disconnect(m_cmrtCanonicalCuesConnection);
+    disconnect(m_cmrtCanonicalBeatsConnection);
+
+    m_pCmrtCanonicalTrack = pCanonical;
+    m_cmrtOffsetSeconds = offsetSeconds;
+    m_cmrtOverlayActive = true;
+
+    mixxx::BeatsPointer pCanonicalBeats = pCanonical->getBeats();
+    mixxx::BeatsPointer pOverlayBeats;
+    if (pCanonicalBeats) {
+        pOverlayBeats = buildOverlayBeats(pCanonicalBeats, memberSampleRate, offsetSeconds);
+    }
+
+    const QList<CuePointer> canonicalCues = pCanonical->getCuePoints();
+    const QList<CuePointer> overlayCues = buildOverlayCues(canonicalCues,
+            pCanonical->getSampleRate(),
+            memberSampleRate,
+            offsetSeconds);
+
+    locked.unlock();
+    // trySetBeats()/setCuePoints() take the overlay-inactive path here
+    // because m_cmrtOverlayActive was just set above but these are our OWN
+    // local caches being populated, not a write-through -- guarded inside
+    // each mutator via a private, lock-free "raw" setter would be cleaner
+    // long-term; for now this direct member assignment under a second
+    // short lock keeps the change scoped to this function.
+    {
+        auto lock2 = lockMutex(&m_qMutex);
+        m_pBeats = pOverlayBeats;
+        m_cuePoints = overlayCues;
+    }
+    emit beatsUpdated();
+    emit cuesUpdated();
+
+    // Whenever the canonical's own cues/beats change from now on -- e.g.
+    // edited directly on another deck rather than through this member's
+    // write-through mutators (createAndAddCue()/removeCue()/trySetBeats()
+    // above) -- rebuild this member's shifted view so the change shows up
+    // immediately instead of only becoming visible the next time something
+    // else happens to call applyCmrtOverlay() again.
+    m_cmrtCanonicalCuesConnection = connect(pCanonical.get(),
+            &Track::cuesUpdated,
+            this,
+            &Track::refreshCmrtOverlayFromCanonical);
+    m_cmrtCanonicalBeatsConnection = connect(pCanonical.get(),
+            &Track::beatsUpdated,
+            this,
+            &Track::refreshCmrtOverlayFromCanonical);
+}
+
+void Track::refreshCmrtOverlayFromCanonical() {
+    auto locked = lockMutex(&m_qMutex);
+    if (!m_cmrtOverlayActive || !m_pCmrtCanonicalTrack) {
+        locked.unlock();
+        return;
+    }
+    TrackPointer pCanonical = m_pCmrtCanonicalTrack;
+    const double offsetSeconds = m_cmrtOffsetSeconds;
+    const auto memberSampleRate = getSampleRate();
+    locked.unlock();
+    applyCmrtOverlay(pCanonical, offsetSeconds, memberSampleRate);
+}
+
+void Track::clearCmrtOverlay() {
+    auto lock = lockMutex(&m_qMutex);
+    disconnect(m_cmrtCanonicalCuesConnection);
+    disconnect(m_cmrtCanonicalBeatsConnection);
+    m_pCmrtCanonicalTrack.reset();
+    m_cmrtOverlayActive = false;
+    m_cmrtOffsetSeconds = 0.0;
+}
+
+bool Track::hasCmrtOverlayActive() const {
+    const auto lock = lockMutex(&m_qMutex);
+    return m_cmrtOverlayActive;
+}
+
+TrackPointer Track::getCanonicalTrack() const {
+    const auto lock = lockMutex(&m_qMutex);
+    return m_pCmrtCanonicalTrack;
+}
+
+double Track::getCmrtOffsetSeconds() const {
+    const auto lock = lockMutex(&m_qMutex);
+    return m_cmrtOffsetSeconds;
+}
+
+mixxx::BeatsPointer Track::buildOverlayBeats(
+        const mixxx::BeatsPointer& pCanonicalBeats,
+        mixxx::audio::SampleRate memberSampleRate,
+        double offsetSeconds) const {
+    const double canonicalSampleRate = pCanonicalBeats->getSampleRate().value();
+
+    // Constant-tempo grids (BeatGrid, no markers) only need their single
+    // downbeat position converted -- Beats::fromConstTempo() rebuilds the
+    // rest from BPM, which is sample-rate independent and needs no scaling.
+    if (pCanonicalBeats->hasConstantTempo()) {
+        const double canonicalSeconds =
+                pCanonicalBeats->getLastMarkerPosition().value() / canonicalSampleRate;
+        const auto memberDownbeat = mixxx::audio::FramePos(
+                (canonicalSeconds + offsetSeconds) * memberSampleRate.value());
+        return mixxx::Beats::fromConstTempo(memberSampleRate,
+                memberDownbeat.toLowerFrameBoundary(),
+                pCanonicalBeats->getLastMarkerBpm(),
+                pCanonicalBeats->getSubVersion());
+    }
+
+    // Variable-tempo (BeatMap): every marker position must be individually
+    // reprojected. Going through seconds (position / canonicalSampleRate)
+    // as the common unit is what makes this correct across a sample-rate
+    // mismatch -- a straight frame-offset add (Beats::tryTranslate()) would
+    // be wrong here, since it assumes both Beats share one sample rate.
+    QVector<mixxx::audio::FramePos> memberPositions;
+    for (auto it = pCanonicalBeats->cfirstmarker();
+            it != pCanonicalBeats->clastmarker() + 1;
+            ++it) {
+        const double canonicalSeconds = (*it).value() / canonicalSampleRate;
+        const double memberSeconds = canonicalSeconds + offsetSeconds;
+        memberPositions.append(mixxx::audio::FramePos(
+                memberSeconds * memberSampleRate.value()));
+    }
+    if (memberPositions.size() < 2) {
+        // fromBeatPositions() requires >= 2 positions; a group this small
+        // shouldn't have hasConstantTempo() == false in practice, but bail
+        // out to a null grid rather than assert if it somehow does.
+        return nullptr;
+    }
+    return mixxx::Beats::fromBeatPositions(
+            memberSampleRate, memberPositions, pCanonicalBeats->getSubVersion());
+}
+
+QList<CuePointer> Track::buildOverlayCues(
+        const QList<CuePointer>& canonicalCues,
+        mixxx::audio::SampleRate canonicalSampleRate,
+        mixxx::audio::SampleRate memberSampleRate,
+        double offsetSeconds) const {
+    QList<CuePointer> overlayCues;
+    overlayCues.reserve(canonicalCues.size());
+    for (const auto& pCanonicalCue : canonicalCues) {
+        // Cue::getCueInfo() already converts frames -> milliseconds using
+        // the sample rate passed in (see cue.cpp, positionFramesToMillis())
+        // -- so working in CueInfo's millisecond fields is sample-rate
+        // independent, and the +offsetSeconds*1000 shift below needs no
+        // rescaling regardless of canonical vs. member sample rate.
+        mixxx::CueInfo info = pCanonicalCue->getCueInfo(canonicalSampleRate);
+        const auto shiftedStartMillis = info.getStartPositionMillis()
+                ? std::make_optional(*info.getStartPositionMillis() + offsetSeconds * 1000.0)
+                : std::nullopt;
+        const auto shiftedEndMillis = info.getEndPositionMillis()
+                ? std::make_optional(*info.getEndPositionMillis() + offsetSeconds * 1000.0)
+                : std::nullopt;
+        const mixxx::CueInfo shiftedInfo(info.getType(),
+                shiftedStartMillis,
+                shiftedEndMillis,
+                info.getHotCueIndex(),
+                info.getLabel(),
+                info.getColor());
+        // Roundtrip constructor -- same one used for Serato/tag-import cue
+        // roundtrips (see Cue::Cue(const CueInfo&, SampleRate, bool) in
+        // cue.cpp) -- converts millis back to memberSampleRate's frames.
+        overlayCues.append(CuePointer(
+                new Cue(shiftedInfo, memberSampleRate, /*setDirty*/ false)));
+    }
+    return overlayCues;
+}

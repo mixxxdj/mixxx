@@ -124,3 +124,63 @@ const ConfigKey mixxx::library::prefs::kSidebarHoverExpandDelayConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("sidebar_hover_expand_delay")};
+
+const ConfigKey mixxx::library::prefs::kFingerprintAnalysisEnabledConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("FingerprintAnalysisEnabled")};
+
+const ConfigKey mixxx::library::prefs::kAcoustIdUserApiKeyConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("AcoustIdUserApiKey")};
+
+const ConfigKey mixxx::library::prefs::kAcoustIdAutoSubmitConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("AcoustIdAutoSubmit")};
+
+const ConfigKey mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CmrtAutoGroupingEnabled")};
+
+const ConfigKey mixxx::library::prefs::kCmrtMatchThresholdConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CmrtMatchThreshold")};
+
+const double mixxx::library::prefs::kCmrtMatchThresholdDefault = 0.80;
+
+const ConfigKey mixxx::library::prefs::kCmrtAllowStemCanonicalConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("CmrtAllowStemCanonical")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnShowArtistConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnShowArtist")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnShowTitleConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnShowTitle")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnShowGroupIdConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnShowGroupId")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnShowOffsetConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnShowOffset")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnShowMatchScoreConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnShowMatchScore")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnGroupIdPositionConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnGroupIdPosition")};
+
+const ConfigKey mixxx::library::prefs::kCmrtColumnDelimiterConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup, QStringLiteral("CmrtColumnDelimiter")};

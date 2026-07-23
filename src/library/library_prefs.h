@@ -64,6 +64,34 @@ const int kSidebarHoverExpandDelayDefault = 500; // ms
 
 extern const ConfigKey kSidebarHoverExpandDelayConfigKey;
 
+extern const ConfigKey kFingerprintAnalysisEnabledConfigKey;
+
+extern const ConfigKey kAcoustIdUserApiKeyConfigKey;
+
+extern const ConfigKey kAcoustIdAutoSubmitConfigKey;
+
+extern const ConfigKey kCmrtAutoGroupingEnabledConfigKey;
+
+extern const ConfigKey kCmrtMatchThresholdConfigKey;
+
+extern const double kCmrtMatchThresholdDefault;
+
+extern const ConfigKey kCmrtAllowStemCanonicalConfigKey;
+
+extern const ConfigKey kCmrtColumnShowArtistConfigKey;
+
+extern const ConfigKey kCmrtColumnShowTitleConfigKey;
+
+extern const ConfigKey kCmrtColumnShowGroupIdConfigKey;
+
+extern const ConfigKey kCmrtColumnShowOffsetConfigKey;
+
+extern const ConfigKey kCmrtColumnShowMatchScoreConfigKey;
+
+extern const ConfigKey kCmrtColumnGroupIdPositionConfigKey;
+
+extern const ConfigKey kCmrtColumnDelimiterConfigKey;
+
 } // namespace prefs
 
 } // namespace library
