@@ -141,6 +141,7 @@
                       <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skins:LateNight/controls/button_xfader_deck.xml">
                         <SetVariable name="Group">[Channel1]</SetVariable>
+                        <SetVariable name="DeckGroup">Deck</SetVariable>
                         <SetVariable name="xfaderLeft">default</SetVariable>
                         <SetVariable name="xfaderRight">warning</SetVariable>
                       </Template>
