@@ -1943,6 +1943,8 @@ bool TrackDAO::detectMovedTracks(
                 << "Looking for substitute of missing track location"
                 << oldTrackLocation;
 
+        emit mixxx::thisAsNonConst(this)->progressLookingForSubstituteTracks(oldTrackLocation);
+
         newTrackQuery.bindValue(":filename", filename);
         newTrackQuery.bindValue(":duration", duration);
         if (!newTrackQuery.exec()) {

@@ -124,6 +124,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     void progressVerifyTracksOutside(const QString& path);
     void progressCoverArt(const QString& file);
+    void progressLookingForSubstituteTracks(const QString& path);
     void forceModelUpdate();
     void removeTrackRows(const QSet<TrackId>& trackIds);
 
