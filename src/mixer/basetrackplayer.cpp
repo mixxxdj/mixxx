@@ -16,6 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetrackplayer.cpp"
+#include "osc/oscfunctions.h"
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -32,6 +33,8 @@ inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
 }
 } // namespace
+
+extern std::atomic<bool> s_oscEnabled;
 
 BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
         : BasePlayer(pParent, group) {
@@ -1043,6 +1046,11 @@ void BaseTrackPlayerImpl::slotTrackRatingChangeRequestRelative(int change) {
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value == 0 && m_replaygainPending) {
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+    }
+    // OSC send Message when playstate changes to OSC-Clients
+    if (s_oscEnabled.load()) {
+        OscFunctions oscFunctions(m_pConfig);
+        oscFunctions.oscChangedPlayState(getGroup(), (float)value);
     }
 }
 

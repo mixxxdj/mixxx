@@ -33,6 +33,12 @@
     <!-- Persists access permission for files selected with an Open/Save dialog across restarts -->
     <key>com.apple.security.files.bookmarks.app-scope</key>
     <true/>
+    <!-- Allow access to the Local Network -->
+    <key>com.apple.security.device.local-network</key>
+    <true/>
+    <!-- Allow opening incoming network connections -->
+    <key>com.apple.security.network.server</key>
+    <true/>
 
     <!-- HARDENED RUNTIME ENTITLEMENTS
 
