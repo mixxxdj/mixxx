@@ -18,7 +18,7 @@ Variables:
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
-    <NumberStates>4</NumberStates>
+    <NumberStates>5</NumberStates>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
@@ -43,6 +43,13 @@ Variables:
     <State>
       <Number>3</Number>
       <Text><Variable name="state_3_text"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+    </State>
+    <State>
+      <Number>4</Number>
+      <Text><Variable name="state_4_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
       <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
       <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
