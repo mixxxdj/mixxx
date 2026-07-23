@@ -20,7 +20,7 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     DlgAnalysis(WLibrary *parent,
                UserSettingsPointer pConfig,
                Library* pLibrary);
-    ~DlgAnalysis() override = default;
+    ~DlgAnalysis() override;
 
     void onSearch(const QString& text) override;
     void onShow() override;
