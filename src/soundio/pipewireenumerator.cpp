@@ -453,8 +453,8 @@ std::string PipewireEnumerator::openDevice(const SoundDevicePipewire& device,
         auto ports = device.getOutPorts();
 
         if (channelCount == 1) {
-            uint32_t filterPort = channelBase % 2 ? *filterPorts.second : *filterPorts.first;
-            result += createLink(deviceId, ports[channelBase].id, m_filterId, filterPort);
+            result += createLink(deviceId, ports[channelBase].id, m_filterId, *filterPorts.first);
+            result += createLink(deviceId, ports[channelBase].id, m_filterId, *filterPorts.second);
         } else {
             result += createLink(deviceId, ports[channelBase].id, m_filterId, *filterPorts.first);
             result += createLink(deviceId,
@@ -559,48 +559,31 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
         QSharedPointer<SoundDevicePipewire> device = m_soundDevices.at(deviceId);
         QList<AudioInputBuffer> deviceInputs = device->inputs();
         for (const AudioInputBuffer& input : deviceInputs) {
-            ChannelGroup channelGroup = input.getChannelGroup();
-            const int iChannelCount = channelGroup.getChannelCount();
-            const int iChannelBase = channelGroup.getChannelBase();
             CSAMPLE* pInputBuffer = input.getBuffer();
 
             std::pair<uint32_t*, uint32_t*> ports = m_inputs.value(input);
 
-            if (iChannelCount == 1) {
-                void* portData = iChannelBase % 2 ? ports.second : ports.first;
-                const float* buffer = static_cast<const float*>(
-                        pw_filter_get_dsp_buffer(portData, framesPerBuffer));
-                if (buffer) {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        pInputBuffer[i * 2] = buffer[i];
-                        pInputBuffer[i * 2 + 1] = buffer[i];
-                    }
-                } else {
-                    SampleUtil::fill(pInputBuffer, 0, framesPerBuffer * 2);
+            const float* bufferFL = static_cast<const float*>(
+                    pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
+            if (bufferFL) {
+                for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                    pInputBuffer[i * 2] = bufferFL[i];
                 }
             } else {
-                const float* bufferFL = static_cast<const float*>(
-                        pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
-                if (bufferFL) {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        pInputBuffer[iChannelBase + i * 2] = bufferFL[i];
-                    }
-                } else {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        pInputBuffer[iChannelBase + i * 2] = 0;
-                    }
+                for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                    pInputBuffer[i * 2] = 0;
                 }
+            }
 
-                const float* bufferFR = static_cast<const float*>(
-                        pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
-                if (bufferFR) {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        pInputBuffer[iChannelBase + 1 + i * 2] = bufferFR[i];
-                    }
-                } else {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        pInputBuffer[iChannelBase + 1 + i * 2] = 0;
-                    }
+            const float* bufferFR = static_cast<const float*>(
+                    pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
+            if (bufferFR) {
+                for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                    pInputBuffer[i * 2 + 1] = bufferFR[i];
+                }
+            } else {
+                for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                    pInputBuffer[i * 2 + 1] = 0;
                 }
             }
         }
@@ -612,37 +595,23 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
     for (uint32_t deviceId : m_openedDevices) {
         QSharedPointer<SoundDevicePipewire> device = m_soundDevices.at(deviceId);
         for (const AudioOutputBuffer& output : device->outputs()) {
-            ChannelGroup chanGroup = output.getChannelGroup();
-            const int iChannelCount = chanGroup.getChannelCount();
-            const int iChannelBase = chanGroup.getChannelBase();
             const CSAMPLE* pOutputBuffer = output.getBuffer();
 
             std::pair<uint32_t*, uint32_t*> ports = m_outputs.value(output);
 
-            if (iChannelCount == 1) {
-                void* portData = iChannelBase % 2 ? ports.second : ports.first;
-                float* buffer = static_cast<float*>(
-                        pw_filter_get_dsp_buffer(portData, framesPerBuffer));
-                if (buffer) {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        buffer[i] = pOutputBuffer[iChannelBase + i * 2];
-                    }
+            float* bufferFL = static_cast<float*>(
+                    pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
+            if (bufferFL) {
+                for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                    bufferFL[i] = pOutputBuffer[i * 2];
                 }
-            } else {
-                float* bufferFL = static_cast<float*>(
-                        pw_filter_get_dsp_buffer(ports.first, framesPerBuffer));
-                if (bufferFL) {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        bufferFL[i] = pOutputBuffer[iChannelBase + i * 2];
-                    }
-                }
+            }
 
-                float* bufferFR = static_cast<float*>(
-                        pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
-                if (bufferFR) {
-                    for (uint64_t i = 0; i < framesPerBuffer; i++) {
-                        bufferFR[i] = pOutputBuffer[iChannelBase + 1 + i * 2];
-                    }
+            float* bufferFR = static_cast<float*>(
+                    pw_filter_get_dsp_buffer(ports.second, framesPerBuffer));
+            if (bufferFR) {
+                for (uint64_t i = 0; i < framesPerBuffer; i++) {
+                    bufferFR[i] = pOutputBuffer[i * 2 + 1];
                 }
             }
         }
