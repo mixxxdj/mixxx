@@ -1,0 +1,52 @@
+<Template>
+  <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
+<!--
+Eve: All singletons are defined in the regular fx_rack.xml so they don't get inserted more than once
+-->
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[LateNight],sampler_rows" persist="true">
+        <Children>
+
+          <!--4 Samplers -->
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skins:LateNight/samplers/samplers_4decks_4KDual.xml">
+            <SetVariable name="Count">1-4</SetVariable>
+          </Template>
+
+          <!--8 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer trigger="[LateNight],show_8samplers">
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <!--16 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_16samplers" on_hide_select="1">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+              <SingletonContainer>
+                <ObjectName>Samplers_9-16</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
