@@ -1,0 +1,55 @@
+<Template>
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <SizePolicy>min,me</SizePolicy>
+    <Layout>vertical</Layout>
+
+    <Children>
+      <WidgetGroup>
+        <ObjectName>StemExpandBox</ObjectName>
+        <SizePolicy>max,me</SizePolicy>
+        <Layout>stacked</Layout>
+
+        <Children>
+          <PushButton>
+            <TooltipId>expand_stem_controls</TooltipId>
+            <ObjectName>StemExpandOverlay</ObjectName>
+            <Size>16f,36me</Size>
+
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+            </State>
+            <State>
+              <Number>1</Number>
+            </State>
+
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_controls_expanded</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <ObjectName>StemExpand</ObjectName>
+            <Size>16f,36f</Size>
+
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+            </State>
+            <State>
+              <Number>1</Number>
+            </State>
+
+            <Connection>
+              <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_controls_expanded</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

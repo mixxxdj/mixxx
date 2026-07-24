@@ -1,0 +1,174 @@
+<Template>
+  <!--SingletonDefinition>
+    <ObjectName>Stem_Expander_<Variable name="ChanNum"/>_Singleton</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/stem/stem_expand_button.xml">
+        <SetVariable name="ChanNum"><Variable name="ChanNum"/></SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition-->
+
+  <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
+  <SetVariable name="ChanNum"><Variable name="ChanNum"/></SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>StemContainer_<Variable name="ChanNum"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- COLLAPSED VIEW - visible when stem_controls_expanded = 0 -->
+      <WidgetGroup>
+        <ObjectName>StemRowCollapsed</ObjectName>
+        <Layout>horizontal</Layout>
+        <!--SizePolicy>min,60</SizePolicy-->
+        <Size>min,60</Size>
+        <Children>
+          <WidgetGroup>
+            <Size>4f,60min</Size>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed.xml">
+                <SetVariable name="StemNum">1</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed_border.xml">
+                <SetVariable name="StemNum">1</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>4f,60min</Size>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed.xml">
+                <SetVariable name="StemNum">2</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed_border.xml">
+                <SetVariable name="StemNum">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>4f,60min</Size>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed.xml">
+                <SetVariable name="StemNum">3</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed_border.xml">
+                <SetVariable name="StemNum">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>4f,60min</Size>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed.xml">
+                <SetVariable name="StemNum">4</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/stem/stem_channel_collapsed_border.xml">
+                <SetVariable name="StemNum">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_controls_expanded</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- EXPANDED VIEW - visible when stem_controls_expanded = 1 -->
+      <WidgetGroup>
+        <ObjectName>StemRowExpanded</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1min,2me</Size>
+              </WidgetGroup>
+              <Template src="skins:LateNight/stem/stem_channel_expanded.xml">
+                <SetVariable name="StemNum">1</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>1min,3f</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1min,2me</Size>
+              </WidgetGroup>
+              <Template src="skins:LateNight/stem/stem_channel_expanded.xml">
+                <SetVariable name="StemNum">2</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>1min,3f</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1min,2me</Size>
+              </WidgetGroup>
+              <Template src="skins:LateNight/stem/stem_channel_expanded.xml">
+                <SetVariable name="StemNum">3</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>1min,3f</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <Size>1min,2me</Size>
+              </WidgetGroup>
+              <Template src="skins:LateNight/stem/stem_channel_expanded.xml">
+                <SetVariable name="StemNum">4</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <Size>1min,3f</Size>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_controls_expanded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- Expand/Collapse Button on the right -->
+      <SingletonContainer>
+        <ObjectName>Stem_Expander_<Variable name="ChanNum"/>_Singleton</ObjectName>
+      </SingletonContainer>
+
+    </Children>
+
+    <!-- Only show this entire container if stems exist -->
+    <Connection>
+      <ConfigKey persist="true">[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+
+  </WidgetGroup>
+</Template>
