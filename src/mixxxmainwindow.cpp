@@ -7,10 +7,6 @@
 #include <QOpenGLContext>
 #include <QUrl>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QGLFormat>
-#endif
-
 #if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -153,18 +149,12 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
 #ifdef MIXXX_USE_QOPENGL
 void MixxxMainWindow::initializeQOpenGL() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // Qt 6 will nno longer crash if no GL is available and
-    // QGLFormat::hasOpenGL() has been removed.
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-#else
     // With EGLFS there is always exactly one native window and one EGL window surface
     // OpenGL windows cannot be embedded into our QWidgets main window we already have.
     // https://doc.qt.io/qt-6/embedded-linux.html
     bool isEglfs = QGuiApplication::platformName() == "eglfs";
 
     if (!CmdlineArgs::Instance().getSafeMode() && !isEglfs) {
-#endif
         QOpenGLContext context;
         context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
         if (context.create()) {

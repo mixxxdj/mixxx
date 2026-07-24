@@ -23,7 +23,6 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
-#include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 
 // SHOUT_ATTR_F_DEPRECATED was first introduced in libshout-idjc 2.4.6.
@@ -992,7 +991,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return atomicLoadRelaxed(m_threadWaiting);
+    return m_threadWaiting.loadRelaxed();
 }
 
 void ShoutConnection::run() {

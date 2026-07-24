@@ -110,11 +110,7 @@ void MockNetworkReply::SetData(const QByteArray& data) {
 void MockNetworkReply::abort() {
     setAttribute(QNetworkRequest::HttpStatusCodeAttribute, {});
     setError(OperationCanceledError, tr("Operation canceled"));
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    emit error(OperationCanceledError);
-#else
     emit errorOccurred(OperationCanceledError);
-#endif
     emit finished();
 }
 

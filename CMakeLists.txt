@@ -410,11 +410,7 @@ cmake_dependent_option(
   OFF
 )
 
-if(QT6)
-  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
-else()
-  option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
-endif()
+set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
@@ -481,25 +477,13 @@ elseif(APPLE)
         "The target system processor"
       )
     else()
-      if(QT6)
-        # Minimum macOS version supported by Qt 6.5
-        set(
-          CMAKE_OSX_DEPLOYMENT_TARGET
-          11.0
-          CACHE STRING
-          "Minimum macOS version the build will be able to run on"
-        )
-      else()
-        # Minimum macOS version supported by Qt 5.12
-        set(
-          CMAKE_OSX_DEPLOYMENT_TARGET
-          10.12
-          CACHE STRING
-          "Minimum macOS version the build will be able to run on"
-        )
-        # Needed for deployment target < 10.14
-        add_compile_options(-fno-aligned-allocation)
-      endif()
+      # Minimum macOS version supported by Qt 6.5
+      set(
+        CMAKE_OSX_DEPLOYMENT_TARGET
+        11.0
+        CACHE STRING
+        "Minimum macOS version the build will be able to run on"
+      )
     endif()
   elseif(VCPKG_TARGET_TRIPLET MATCHES "^[a-zA-Z0-9]+-ios")
     message(STATUS "Targeting iOS (${VCPKG_TARGET_TRIPLET})")
@@ -1646,7 +1630,6 @@ add_library(
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
-  src/util/colorcomponents.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -1884,10 +1867,6 @@ set(
   src/util/color/colorpalette.h
   src/util/color/predefinedcolorpalettes.h
   src/util/color/rgbcolor.h
-  src/util/colorcomponents.h
-  src/util/compatibility/qatomic.h
-  src/util/compatibility/qbytearray.h
-  src/util/compatibility/qhash.h
   src/util/compatibility/qmutex.h
   src/util/console.h
   src/util/counter.h
@@ -2360,109 +2339,97 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-if(QT6)
-  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
-  # This is the first package form the environment, if this fails give hints how to install the environment
-  if(NOT Qt6_FOUND)
-    fatal_error_missing_env()
-  endif()
-  # qt_add_executable() is the recommended initial call for qt_finalize_target()
-  # below that takes care of the correct object order in the resulting binary
-  # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
-  # builds with Qt < 3.21
-  if(ANDROID)
-    target_compile_definitions(
-      mixxx-lib
-      PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
-    )
-    set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
-    target_compile_definitions(
-      mixxx-lib
-      PUBLIC ANDROID_PACKAGE_NAME="org.mixxx"
-    )
-    qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
-    set_property(
-      TARGET mixxx
-      PROPERTY
-        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/packaging/android"
-    )
-    set_target_properties(mixxx PROPERTIES QT_ANDROID_ABIS "${ANDROID_ABI}")
-    set_target_properties(mixxx PROPERTIES QT_ANDROID_PACKAGE_NAME "org.mixxx")
-    set_target_properties(
-      mixxx
-      PROPERTIES QT_ANDROID_VERSION_NAME "${MIXXX_VERSION}"
-    )
-    set_target_properties(
-      mixxx
-      PROPERTIES
-        QT_ANDROID_APPLICATION_ARGUMENTS "--qml --log-level debug --developer"
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.ACCESS_NETWORK_STATE
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.INTERNET
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.MODIFY_AUDIO_SETTINGS
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.RECORD_AUDIO
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.WRITE_EXTERNAL_STORAGE
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.MANAGE_EXTERNAL_STORAGE
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.WAKE_LOCK
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.USB_PERMISSION
-    )
-    set(
-      CMAKE_LINKER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
-    )
-    set(
-      CMAKE_C_COMPILER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang"
-    )
-    set(
-      CMAKE_CXX_COMPILER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
-    )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
-    set_target_properties(
-      mixxx
-      PROPERTIES
-        QT_ANDROID_EXTRA_LIBS
-          ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/18/lib/linux/aarch64/libomp.so
-    )
-    add_custom_target(
-      copy-resource-android
-      COMMENT "Copy resources folder to Android build asset directory"
-      COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
-        ${CMAKE_CURRENT_BINARY_DIR}/android
-      COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res
-        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets
-      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    )
-    add_dependencies(mixxx copy-resource-android)
-    target_link_libraries(mixxx PUBLIC omp)
-  else()
-    qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
-  endif()
+find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+# This is the first package form the environment, if this fails give hints how to install the environment
+if(NOT Qt6_FOUND)
+  fatal_error_missing_env()
+endif()
+# qt_add_executable() is the recommended initial call for qt_finalize_target()
+# below that takes care of the correct object order in the resulting binary
+# According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
+# builds with Qt < 3.21
+if(ANDROID)
+  target_compile_definitions(
+    mixxx-lib
+    PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
+  )
+  set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
+  target_compile_definitions(mixxx-lib PUBLIC ANDROID_PACKAGE_NAME="org.mixxx")
+  qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
+  set_property(
+    TARGET mixxx
+    PROPERTY
+      QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/packaging/android"
+  )
+  set_target_properties(mixxx PROPERTIES QT_ANDROID_ABIS "${ANDROID_ABI}")
+  set_target_properties(mixxx PROPERTIES QT_ANDROID_PACKAGE_NAME "org.mixxx")
+  set_target_properties(
+    mixxx
+    PROPERTIES QT_ANDROID_VERSION_NAME "${MIXXX_VERSION}"
+  )
+  set_target_properties(
+    mixxx
+    PROPERTIES
+      QT_ANDROID_APPLICATION_ARGUMENTS "--qml --log-level debug --developer"
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.ACCESS_NETWORK_STATE
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.INTERNET
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.MODIFY_AUDIO_SETTINGS
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.RECORD_AUDIO
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.WRITE_EXTERNAL_STORAGE
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.MANAGE_EXTERNAL_STORAGE
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.WAKE_LOCK
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.USB_PERMISSION
+  )
+  set(
+    CMAKE_LINKER
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
+  )
+  set(
+    CMAKE_C_COMPILER
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang"
+  )
+  set(
+    CMAKE_CXX_COMPILER
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
+  )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+  set_target_properties(
+    mixxx
+    PROPERTIES
+      QT_ANDROID_EXTRA_LIBS
+        ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/18/lib/linux/aarch64/libomp.so
+  )
+  add_custom_target(
+    copy-resource-android
+    COMMENT "Copy resources folder to Android build asset directory"
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
+      ${CMAKE_CURRENT_BINARY_DIR}/android
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res
+      ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
+  add_dependencies(mixxx copy-resource-android)
+  target_link_libraries(mixxx PUBLIC omp)
 else()
-  find_package(Qt5 COMPONENTS Core) # For Qt Core cmake functions
-  # This is the first package form the environment, if this fails give hints how to install the environment
-  if(NOT Qt5_FOUND)
-    fatal_error_missing_env()
-  endif()
-  add_executable(mixxx WIN32 src/main.cpp)
+  qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
 endif()
 
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
@@ -2716,25 +2683,6 @@ if(MSVC)
     COMPONENT
       PDB # No spaces allowed
   )
-endif()
-
-if(WIN32 AND NOT QT6)
-  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is on the ignore list.
-  # It does not work with Debug, because the debug version is compiled without the a d suffix
-  find_package(unofficial-angle CONFIG REQUIRED)
-  install(
-    IMPORTED_RUNTIME_ARTIFACTS
-      unofficial::angle::libEGL
-      unofficial::angle::libGLESv2
-      CONFIGURATIONS
-      RelWithDebInfo
-      Release
-      DESTINATION
-      "${MIXXX_INSTALL_BINDIR}"
-      COMPONENT
-      applocal
-  )
-  set(APPLOCAL_COMPONENT_DEFINED true)
 endif()
 
 #
@@ -3798,18 +3746,14 @@ set(
   Xml
 )
 set(QT_EXTRA_COMPONENTS "")
-if(QT6)
-  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
-  list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
-  list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
-  if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
-    # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
-    list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
-    set(QT_NO_PRIVATE_MODULE_WARNING ON)
-  endif()
-else()
-  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
+find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
+list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
+if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
+  # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
+  list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+  set(QT_NO_PRIVATE_MODULE_WARNING ON)
 endif()
 if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "LabsQmlModels")
@@ -5459,52 +5403,38 @@ set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-if(QT6)
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-translations-l10n")
-else()
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qttranslations5-l10n")
-endif()
+set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-translations-l10n")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-open-sans")
 list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-ubuntu")
-if(QT6)
-  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
-  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")
-  if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-svg-plugins")
-  endif()
-  if(QML)
-    list(
-      APPEND
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "qml6-module-qt-labs-folderlistmodel"
-    )
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
-    list(
-      APPEND
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "qml6-module-qt5compat-graphicaleffects"
-    )
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtmultimedia")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-dialogs")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
-  endif()
-else()
-  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite")
-  if(QML)
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls2")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qt-labs-qmlmodels")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-shapes")
-  endif()
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")
+if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-svg-plugins")
+endif()
+if(QML)
+  list(
+    APPEND
+    CPACK_DEBIAN_PACKAGE_DEPENDS
+    "qml6-module-qt-labs-folderlistmodel"
+  )
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
+  list(
+    APPEND
+    CPACK_DEBIAN_PACKAGE_DEPENDS
+    "qml6-module-qt5compat-graphicaleffects"
+  )
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtmultimedia")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-dialogs")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
 endif()
 list(JOIN CPACK_DEBIAN_PACKAGE_DEPENDS ", " CPACK_DEBIAN_PACKAGE_DEPENDS)
 
