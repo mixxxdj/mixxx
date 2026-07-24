@@ -629,17 +629,16 @@ bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
 
     QSqlQuery query(m_database);
     query.prepare(QString(
-            "INSERT INTO %1 "
-            "(group_id, track_id, offset_from_canonical, quality_score, "
-            "match_score, is_fake_lossless, added_at, user_quality_rating, "
-            "use_cmrt_data) "
-            "VALUES (:group_id, :track_id, :offset, :quality_score, "
-            ":match_score, :is_fake_lossless, :added_at, :user_quality_rating, "
-            ":use_cmrt_data)")
+            "UPDATE %1 SET "
+            "group_id=:group_id, offset_from_canonical=:offset, "
+            "quality_score=:quality_score, match_score=:match_score, "
+            "is_fake_lossless=:is_fake_lossless, added_at=:added_at, "
+            "user_quality_rating=:user_quality_rating, use_cmrt_data=:use_cmrt_data "
+            "WHERE track_id=:track_id")
                     .arg(kCmrtMembersTableName));
 
-    query.bindValue(":group_id", member.groupId);
     query.bindValue(":track_id", member.trackId.toVariant());
+    query.bindValue(":group_id", member.groupId);
     query.bindValue(":offset", member.offsetFromCanonical);
     query.bindValue(":quality_score", qualityScoreValue);
     query.bindValue(":match_score", matchScoreValue);
@@ -652,14 +651,52 @@ bool TrackFingerprintDao::addCmrtMember(const CmrtMember& member) const {
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
-                << "couldn't add cmrt_member for track" << member.trackId
+                << "couldn't update cmrt_member for track" << member.trackId
                 << "to group" << member.groupId;
         return false;
     }
 
+    if (query.numRowsAffected() == 0) {
+        if (sDebugTrackFingerprintDao) {
+            qDebug() << "TrackFingerprintDao -> [addCmrtMember] -> "
+                        "no existing row, inserting trackId:"
+                     << member.trackId;
+        }
+
+        query.prepare(QString(
+                "INSERT INTO %1 "
+                "(group_id, track_id, offset_from_canonical, quality_score, "
+                "match_score, is_fake_lossless, added_at, user_quality_rating, "
+                "use_cmrt_data) "
+                "VALUES (:group_id, :track_id, :offset, :quality_score, "
+                ":match_score, :is_fake_lossless, :added_at, :user_quality_rating, "
+                ":use_cmrt_data)")
+                        .arg(kCmrtMembersTableName));
+
+        query.bindValue(":group_id", member.groupId);
+        query.bindValue(":track_id", member.trackId.toVariant());
+        query.bindValue(":offset", member.offsetFromCanonical);
+        query.bindValue(":quality_score", qualityScoreValue);
+        query.bindValue(":match_score", matchScoreValue);
+        query.bindValue(":is_fake_lossless", member.isFakeLossless ? 1 : 0);
+        query.bindValue(":added_at", member.addedAt.toSecsSinceEpoch());
+        query.bindValue(":user_quality_rating", userQualityRatingValue);
+        query.bindValue(":use_cmrt_data", useCmrtDataValue);
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query)
+                    << "couldn't insert cmrt_member for track" << member.trackId
+                    << "to group" << member.groupId;
+            return false;
+        }
+    } else if (sDebugTrackFingerprintDao) {
+        qDebug() << "TrackFingerprintDao -> [addCmrtMember] -> "
+                    "updated existing row for trackId:"
+                 << member.trackId;
+    }
+
     if (sDebugTrackFingerprintDao) {
-        qDebug() << "TrackFingerprintDao -> [addCmrtMember] -> inserted"
-                 << "memberId:" << query.lastInsertId().toInt()
+        qDebug() << "TrackFingerprintDao -> [addCmrtMember] -> done"
                  << "trackId:" << member.trackId
                  << "groupId:" << member.groupId;
     }
