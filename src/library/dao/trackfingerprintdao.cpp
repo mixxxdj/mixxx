@@ -1358,6 +1358,8 @@ bool TrackFingerprintDao::cacheAcoustIdResult(
             "acoustid_id=:acoustid_id, "
             "musicbrainz_recording_id=:mb_recording, "
             "musicbrainz_release_id=:mb_release, "
+            "musicbrainz_track_id=:mb_track, "
+            "musicbrainz_artist_id=:mb_artist, "
             "musicbrainz_metadata=:mb_metadata, "
             "confidence=:confidence, "
             "lookup_timestamp=:lookup_timestamp, "
@@ -1375,6 +1377,14 @@ bool TrackFingerprintDao::cacheAcoustIdResult(
             entry.musicbrainzReleaseId.isEmpty()
                     ? QVariant(QMetaType(QMetaType::QString))
                     : entry.musicbrainzReleaseId);
+    query.bindValue(":mb_track",
+            entry.musicbrainzTrackId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : entry.musicbrainzTrackId);
+    query.bindValue(":mb_artist",
+            entry.musicbrainzArtistId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : entry.musicbrainzArtistId);
     query.bindValue(":mb_metadata",
             entry.musicbrainzMetadata.isEmpty()
                     ? QVariant(QMetaType(QMetaType::QString))
@@ -1412,10 +1422,12 @@ bool TrackFingerprintDao::cacheAcoustIdResult(
         query.prepare(QString(
                 "INSERT INTO %1 "
                 "(chroma_sha256, acoustid_id, musicbrainz_recording_id, "
-                "musicbrainz_release_id, musicbrainz_metadata, confidence, "
+                "musicbrainz_release_id, musicbrainz_track_id, "
+                "musicbrainz_artist_id, musicbrainz_metadata, confidence, "
                 "lookup_timestamp, expires_at) "
                 "VALUES (:sha256, :acoustid_id, :mb_recording, :mb_release, "
-                ":mb_metadata, :confidence, :lookup_timestamp, :expires_at)")
+                ":mb_track, :mb_artist, :mb_metadata, :confidence, "
+                ":lookup_timestamp, :expires_at)")
                         .arg(kAcoustIdCacheTableName));
 
         // Re-bind all values
@@ -1430,6 +1442,14 @@ bool TrackFingerprintDao::cacheAcoustIdResult(
                 entry.musicbrainzReleaseId.isEmpty()
                         ? QVariant(QMetaType(QMetaType::QString))
                         : entry.musicbrainzReleaseId);
+        query.bindValue(":mb_track",
+                entry.musicbrainzTrackId.isEmpty()
+                        ? QVariant(QMetaType(QMetaType::QString))
+                        : entry.musicbrainzTrackId);
+        query.bindValue(":mb_artist",
+                entry.musicbrainzArtistId.isEmpty()
+                        ? QVariant(QMetaType(QMetaType::QString))
+                        : entry.musicbrainzArtistId);
         query.bindValue(":mb_metadata",
                 entry.musicbrainzMetadata.isEmpty()
                         ? QVariant(QMetaType(QMetaType::QString))
@@ -1485,7 +1505,8 @@ std::unique_ptr<AcoustIdCacheEntry> TrackFingerprintDao::lookupAcoustIdCache(
     // timestamp handling in C++, consistent with the rest of this file.
     query.prepare(QString(
             "SELECT acoustid_id, musicbrainz_recording_id, "
-            "musicbrainz_release_id, musicbrainz_metadata, confidence, "
+            "musicbrainz_release_id, musicbrainz_track_id, "
+            "musicbrainz_artist_id, musicbrainz_metadata, confidence, "
             "lookup_timestamp, expires_at "
             "FROM %1 "
             "WHERE chroma_sha256=:sha256 "
@@ -1512,6 +1533,12 @@ std::unique_ptr<AcoustIdCacheEntry> TrackFingerprintDao::lookupAcoustIdCache(
                         .toString();
         entry->musicbrainzReleaseId =
                 query.value(record.indexOf("musicbrainz_release_id"))
+                        .toString();
+        entry->musicbrainzTrackId =
+                query.value(record.indexOf("musicbrainz_track_id"))
+                        .toString();
+        entry->musicbrainzArtistId =
+                query.value(record.indexOf("musicbrainz_artist_id"))
                         .toString();
         entry->musicbrainzMetadata =
                 query.value(record.indexOf("musicbrainz_metadata")).toString();
