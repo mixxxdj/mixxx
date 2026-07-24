@@ -1,5 +1,7 @@
 #include "track/taglib/trackmetadata_ape.h"
 
+#include <optional>
+
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
@@ -47,9 +49,96 @@ void writeItem(
     }
 }
 
+// FMPS Rating - APE item for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+// APE keys must be uppercase to match TagLib's case normalization on save/reload
+const TagLib::String kItemKeyFMPSRating = "FMPS_RATING";
+
+// Rating conversion functions
+// FMPS uses 0.0-1.0 scale, Mixxx uses 0-5 (with 0 meaning unrated)
+
+/// Convert Mixxx rating (0-5) to FMPS rating (0.0-1.0)
+double mixxxRatingToFMPS(int rating) {
+    if (rating <= 0 || rating > 5) {
+        return 0.0;
+    }
+    return rating / 5.0;
+}
+
+/// Convert FMPS rating (0.0-1.0) to Mixxx rating (0-5)
+int fmpsRatingToMixxx(double fmps) {
+    if (fmps < 0.1) {
+        return 0; // Unrated
+    } else if (fmps < 0.3) {
+        return 1;
+    } else if (fmps < 0.5) {
+        return 2;
+    } else if (fmps < 0.7) {
+        return 3;
+    } else if (fmps < 0.9) {
+        return 4;
+    } else {
+        return 5;
+    }
+}
+
 } // anonymous namespace
 
 namespace ape {
+
+std::optional<int> importRatingFromTag(const TagLib::APE::Tag& tag) {
+    QString fmpsRatingStr;
+    if (readItem(tag, kItemKeyFMPSRating, &fmpsRatingStr) &&
+            !fmpsRatingStr.isEmpty()) {
+        bool ok = false;
+        double fmpsValue = fmpsRatingStr.toDouble(&ok);
+        if (ok && fmpsValue >= 0.0 && fmpsValue <= 1.0) {
+            int rating = fmpsRatingToMixxx(fmpsValue);
+            kLogger.debug()
+                    << "Imported FMPS_Rating from APE tag:"
+                    << fmpsValue << "->" << rating;
+            return rating;
+        } else {
+            kLogger.warning()
+                    << "Invalid FMPS_Rating value in APE tag:"
+                    << fmpsRatingStr;
+        }
+    }
+
+    // No rating found
+    return std::nullopt;
+}
+
+bool exportRatingIntoTag(
+        TagLib::APE::Tag* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+
+    // Convert rating to FMPS format and write as APE item
+    if (rating > 0 && rating <= 5) {
+        double fmpsRating = mixxxRatingToFMPS(rating);
+        QString fmpsRatingStr = QString::number(fmpsRating, 'f', 1);
+        writeItem(
+                pTag,
+                kItemKeyFMPSRating,
+                toTString(fmpsRatingStr));
+        kLogger.debug()
+                << "Exported rating to FMPS_Rating APE item:"
+                << rating << "->" << fmpsRatingStr;
+        return true;
+    } else if (rating == 0) {
+        // Remove existing FMPS_Rating item if rating is cleared
+        pTag->removeItem(kItemKeyFMPSRating);
+        kLogger.debug()
+                << "Removed FMPS_Rating APE item (rating cleared)";
+        return true;
+    }
+
+    // Invalid rating
+    kLogger.warning()
+            << "Invalid rating value for export:" << rating;
+    return false;
+}
 
 bool importCoverImageFromTag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     if (!pCoverArt) {

@@ -752,14 +752,43 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         // Only import and merge extra metadata that might be missing
         // in the database.
         DEBUG_ASSERT(!pCoverImg);
+
+        // Import rating from file tags even during partial import,
+        // if enabled. File tags are the source of truth for ratings.
+        bool ratingImported = false;
+        if (syncParams.importRatingFromFile && m_pSoundSource) {
+            auto rating = m_pSoundSource->importRating();
+            if (rating.has_value()) {
+                int newRating = rating.value();
+                int currentRating = m_pTrack->getRating();
+                if (newRating != currentRating) {
+                    m_pTrack->setRating(newRating);
+                    ratingImported = true;
+                    if (kLogger.debugEnabled()) {
+                        kLogger.debug()
+                                << "Imported rating"
+                                << newRating
+                                << "(was" << currentRating << ")"
+                                << "from file"
+                                << getUrl().toString(QUrl::PreferLocalFile);
+                    }
+                }
+            }
+        }
+
         if (metadataImportResult == mixxx::MetadataSource::ImportResult::Succeeded) {
             if (m_pTrack->mergeExtraMetadataFromSource(trackMetadata)) {
+                return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
+            } else if (ratingImported) {
                 return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
             } else {
                 return UpdateTrackFromSourceResult::NotUpdated;
             }
         } else {
             // Nothing to do if no metadata has been imported
+            if (ratingImported) {
+                return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
+            }
             return UpdateTrackFromSourceResult::NotUpdated;
         }
     }
@@ -844,6 +873,27 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             sourceSynchronizedAt);
+
+    // Import rating from file tags if enabled.
+    // File tags are the source of truth for ratings.
+    if (syncParams.importRatingFromFile && m_pSoundSource) {
+        auto rating = m_pSoundSource->importRating();
+        if (rating.has_value()) {
+            int newRating = rating.value();
+            int currentRating = m_pTrack->getRating();
+            if (newRating != currentRating) {
+                m_pTrack->setRating(newRating);
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug()
+                            << "Imported rating"
+                            << newRating
+                            << "(was" << currentRating << ")"
+                            << "from file"
+                            << getUrl().toString(QUrl::PreferLocalFile);
+                }
+            }
+        }
+    }
 
     const bool pendingBeatsImport =
             m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;

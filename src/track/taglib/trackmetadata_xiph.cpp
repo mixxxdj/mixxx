@@ -12,6 +12,7 @@
 #include <flacpicture.h>
 
 #include <array>
+#include <optional>
 
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
@@ -40,6 +41,40 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes{{
 const TagLib::String kCommentFieldKeySeratoBeatGrid = "SERATO_BEATGRID";
 const TagLib::String kCommentFieldKeySeratoMarkers2FLAC = "SERATO_MARKERS_V2";
 const TagLib::String kCommentFieldKeySeratoMarkers2Ogg = "SERATO_MARKERS2";
+
+// FMPS Rating - Vorbis comment field for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+const TagLib::String kCommentFieldKeyFMPSRating = "FMPS_RATING";
+
+// Rating conversion functions
+// FMPS uses 0.0-1.0 scale, Mixxx uses 0-5 (with 0 meaning unrated)
+
+/// Convert Mixxx rating (0-5) to FMPS rating (0.0-1.0)
+/// Returns 0.0 for unrated (0), maps 1-5 to 0.2, 0.4, 0.6, 0.8, 1.0
+double mixxxRatingToFMPS(int rating) {
+    if (rating <= 0 || rating > 5) {
+        return 0.0;
+    }
+    return rating / 5.0;
+}
+
+/// Convert FMPS rating (0.0-1.0) to Mixxx rating (0-5)
+/// Uses symmetric thresholds: 0.1, 0.3, 0.5, 0.7, 0.9
+int fmpsRatingToMixxx(double fmps) {
+    if (fmps < 0.1) {
+        return 0; // Unrated
+    } else if (fmps < 0.3) {
+        return 1;
+    } else if (fmps < 0.5) {
+        return 2;
+    } else if (fmps < 0.7) {
+        return 3;
+    } else if (fmps < 0.9) {
+        return 4;
+    } else {
+        return 5;
+    }
+}
 
 bool readCommentField(
         const TagLib::Ogg::XiphComment& tag,
@@ -126,6 +161,60 @@ inline QImage parseBase64EncodedImage(
 } // anonymous namespace
 
 namespace xiph {
+
+std::optional<int> importRatingFromTag(const TagLib::Ogg::XiphComment& tag) {
+    QString fmpsRatingStr;
+    if (readCommentField(tag, kCommentFieldKeyFMPSRating, &fmpsRatingStr) &&
+            !fmpsRatingStr.isEmpty()) {
+        bool ok = false;
+        double fmpsValue = fmpsRatingStr.toDouble(&ok);
+        if (ok && fmpsValue >= 0.0 && fmpsValue <= 1.0) {
+            int rating = fmpsRatingToMixxx(fmpsValue);
+            kLogger.debug()
+                    << "Imported FMPS_RATING from Vorbis comment:"
+                    << fmpsValue << "->" << rating;
+            return rating;
+        } else {
+            kLogger.warning()
+                    << "Invalid FMPS_RATING value in Vorbis comment:"
+                    << fmpsRatingStr;
+        }
+    }
+
+    // No rating found
+    return std::nullopt;
+}
+
+bool exportRatingIntoTag(
+        TagLib::Ogg::XiphComment* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+
+    // Convert rating to FMPS format and write as comment field
+    if (rating > 0 && rating <= 5) {
+        double fmpsRating = mixxxRatingToFMPS(rating);
+        QString fmpsRatingStr = QString::number(fmpsRating, 'f', 1);
+        writeCommentField(
+                pTag,
+                kCommentFieldKeyFMPSRating,
+                toTString(fmpsRatingStr));
+        kLogger.debug()
+                << "Exported rating to FMPS_RATING Vorbis comment:"
+                << rating << "->" << fmpsRatingStr;
+        return true;
+    } else if (rating == 0) {
+        // Remove existing FMPS_RATING field if rating is cleared
+        pTag->removeFields(kCommentFieldKeyFMPSRating);
+        kLogger.debug()
+                << "Removed FMPS_RATING Vorbis comment (rating cleared)";
+        return true;
+    }
+
+    // Invalid rating
+    kLogger.warning()
+            << "Invalid rating value for export:" << rating;
+    return false;
+}
 
 QImage importCoverImageFromPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
