@@ -19,6 +19,7 @@
 class KeyboardEventFilter;
 class Library;
 class WLibrary;
+class WLibraryPreparationWindow;
 class WLibrarySidebar;
 class QAbstractItemModel;
 
@@ -81,6 +82,10 @@ class LibraryFeature : public QObject {
     // Reimplement this to register custom views with the library widget.
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
+    virtual void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* /* library Widget */,
+            KeyboardEventFilter* /* keyboard */) {
+    }
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
     virtual TreeItemModel* sidebarModel() const = 0;
 
@@ -140,7 +145,9 @@ class LibraryFeature : public QObject {
     }
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
+    void showTrackModelInPreparationWindow(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
+    void switchToViewInPreparationWindow(const QString& view);
     void loadTrack(TrackPointer pTrack);
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
@@ -159,6 +166,7 @@ class LibraryFeature : public QObject {
     void restoreSearch(const QString&);
     void disableSearch();
     void pasteFromSidebar();
+    void pasteFromSidebarInPreparationWindow();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);
