@@ -803,6 +803,10 @@ bool Library::isTrackIdInCurrentLibraryView(const TrackId& trackId) {
     }
 }
 
+QString Library::columnTitle(ColumnCache::Column column) const {
+    return m_pTrackCollectionManager->internalCollection()->getTrackSource()->columnTitle(column);
+}
+
 void Library::slotSaveCurrentViewState() const {
     if (m_pLibraryWidget) {
         return m_pLibraryWidget->saveCurrentViewState();

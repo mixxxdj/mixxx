@@ -115,12 +115,21 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
 }
 
+QList<ColumnCache::Column> BaseTrackTableModel::s_dimColumns =
+        QList<ColumnCache::Column>{};
+
 const QString BaseTrackTableModel::kDateFormatDefault = QString();
 QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefault;
 
+// static
 void BaseTrackTableModel::setDateFormat(const QString& format) {
     s_dateFormat = format;
 }
+
+// static
+void BaseTrackTableModel::setDimColumns(const QList<ColumnCache::Column>& columns) {
+    s_dimColumns = columns;
+};
 
 BaseTrackTableModel::BaseTrackTableModel(
         QObject* parent,
@@ -444,6 +453,14 @@ QVariant BaseTrackTableModel::data(
                 missingRaw.toBool()) {
             return QVariant::fromValue(m_trackMissingColor);
         }
+
+        // Also use the 'played' color to grey out the columns selected in
+        // Library preferences, regardless the track's 'played' state
+        const auto field = mapColumn(index.column());
+        if (s_dimColumns.contains(field)) {
+            return QVariant::fromValue(m_trackPlayedColor);
+        }
+
         if (s_bApplyPlayedTrackColor) {
             // Custom text color for played tracks
             auto playedRaw = rawSiblingValue(
