@@ -283,17 +283,45 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             return;
         }
 
-        m_ports.insert_or_assign(id, Port(node_id));
-        QSharedPointer<SoundDevicePipewire> pSoundDevice = m_soundDevices.at(node_id);
-        pSoundDevice->registerPort(id, pProps);
-        m_pSoundManager->updateDeviceChannels(pSoundDevice);
-
+        const char* portName = spa_dict_lookup(pProps, PW_KEY_PORT_NAME);
+        const char* channel = spa_dict_lookup(pProps, PW_KEY_AUDIO_CHANNEL);
         const char* direction = spa_dict_lookup(pProps, PW_KEY_PORT_DIRECTION);
+        const bool isInput = std::strcmp(direction, "in") == 0;
+
+        QSharedPointer<SoundDevicePipewire> pSoundDevice = m_soundDevices.at(node_id);
+        m_pSoundManager->updateDeviceChannels(pSoundDevice);
+        Node& node = m_nodes.at(node_id);
+        Port port{};
+        port.id = id;
+        port.channel = channel ? channel : (portName ? portName : std::to_string(id).c_str());
+        port.isInput = isInput;
+
+        if (portName && channel) {
+            std::string_view name = portName;
+            const size_t last = name.find_last_of("_:-");
+            const bool nameContainsChannel = last != std::string_view::npos and
+                    port.channel == name.substr(last + 1);
+            port.name = nameContainsChannel ? name.substr(0, last) : portName;
+            port.name += ':';
+        }
+
+        // m_numInputChannels, m_numOutputChannels, m_audioInputs, m_audioOutputs
+        // are with respect to Mixxx and not the SoundDevice
+        if (isInput) {
+            node.inputs.push_back(id);
+            pSoundDevice->setNumOutputs(node.inputs.size());
+        } else {
+            node.outputs.push_back(id);
+            pSoundDevice->setNumInputs(node.outputs.size());
+        }
+
+        m_ports.insert_or_assign(id, std::move(port));
+        m_pSoundManager->updateDeviceChannels(pSoundDevice);
 
         if (node_id == m_filterId) {
             QString name(spa_dict_lookup(pProps, PW_KEY_PORT_NAME));
             QStringList list = name.split(':');
-            if (strcmp(direction, "in") == 0) {
+            if (isInput) {
                 QList<AudioInput> keys = m_inputs.keys();
                 auto it = std::ranges::find(keys, list.at(0), &AudioPath::getString);
                 VERIFY_OR_DEBUG_ASSERT(it != keys.end()) {
@@ -329,12 +357,17 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         const uint32_t out_port = pw_properties_parse_int(
                 spa_dict_lookup(pProps, PW_KEY_LINK_OUTPUT_PORT));
 
+        Port& inputPort = m_ports.at(in_port);
+        Port& outputPort = m_ports.at(out_port);
+
         if (in_node == m_filterId) {
             m_links.insert_or_assign(id, Link(in_port, out_port));
-            m_soundDevices.at(out_node)->registerLink(id, SPA_DIRECTION_OUTPUT);
+            inputPort.links.push_back(id);
+            outputPort.links.push_back(id);
         } else if (out_node == m_filterId) {
             m_links.insert_or_assign(id, Link(in_port, out_port));
-            m_soundDevices.at(in_node)->registerLink(id, SPA_DIRECTION_INPUT);
+            inputPort.links.push_back(id);
+            outputPort.links.push_back(id);
         }
     }
 }
@@ -354,25 +387,30 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         emit deviceRemoved(pDevice);
         m_nodes.erase(id);
     } else if (m_ports.contains(id)) {
-        Port& port = m_ports.at(id);
+        const Port& port = m_ports.at(id);
         VERIFY_OR_DEBUG_ASSERT(m_soundDevices.contains(port.node)) {
             return;
         }
 
         QSharedPointer<SoundDevicePipewire> pSoundDevice = m_soundDevices.at(port.node);
-        pSoundDevice->unregisterPort(id);
+        Node& node = m_nodes.at(port.node);
+
+        if (port.isInput) {
+            std::erase(node.inputs, id);
+            pSoundDevice->setNumOutputs(node.inputs.size());
+        } else {
+            std::erase(node.outputs, id);
+            pSoundDevice->setNumInputs(node.outputs.size());
+        }
+
         m_pSoundManager->updateDeviceChannels(pSoundDevice);
         m_ports.erase(id);
     } else if (m_links.contains(id)) {
-        Link& link = m_links.at(id);
-        Port input = m_ports.at(link.input);
-        Port output = m_ports.at(link.output);
-
-        if (input.node == m_filterId) {
-            m_soundDevices.at(output.node)->unregisterLink(id, SPA_DIRECTION_OUTPUT);
-        } else if (output.node == m_filterId) {
-            m_soundDevices.at(input.node)->unregisterLink(id, SPA_DIRECTION_INPUT);
-        }
+        const Link& link = m_links.at(id);
+        Port& input = m_ports.at(link.input);
+        Port& output = m_ports.at(link.output);
+        std::erase(input.links, id);
+        std::erase(output.links, id);
         m_links.erase(id);
     }
 }
@@ -427,6 +465,7 @@ std::string PipewireEnumerator::openDevice(const SoundDevicePipewire& device,
     }
 
     int deviceId = device.getDeviceId().deviceIndex;
+    const Node& deviceNode = m_nodes.at(deviceId);
 
     VERIFY_OR_DEBUG_ASSERT(std::ranges::find(m_openedDevices, deviceId) == m_openedDevices.end()) {
         qWarning() << "SoundDevicePipewire:" << deviceId << "already open";
@@ -450,15 +489,15 @@ std::string PipewireEnumerator::openDevice(const SoundDevicePipewire& device,
         ChannelGroup channelGroup = input.getChannelGroup();
         unsigned char channelBase = channelGroup.getChannelBase();
         unsigned char channelCount = channelGroup.getChannelCount().value();
-        auto ports = device.getOutPorts();
+        std::span<const uint32_t> ports = deviceNode.outputs;
 
         if (channelCount == 1) {
-            result += createLink(deviceId, ports[channelBase].id, m_filterId, *filterPorts.first);
-            result += createLink(deviceId, ports[channelBase].id, m_filterId, *filterPorts.second);
+            result += createLink(deviceId, ports[channelBase], m_filterId, *filterPorts.first);
+            result += createLink(deviceId, ports[channelBase], m_filterId, *filterPorts.second);
         } else {
-            result += createLink(deviceId, ports[channelBase].id, m_filterId, *filterPorts.first);
+            result += createLink(deviceId, ports[channelBase], m_filterId, *filterPorts.first);
             result += createLink(deviceId,
-                    ports[channelBase + 1].id,
+                    ports[channelBase + 1],
                     m_filterId,
                     *filterPorts.second);
         }
@@ -479,17 +518,17 @@ std::string PipewireEnumerator::openDevice(const SoundDevicePipewire& device,
         ChannelGroup channelGroup = output.getChannelGroup();
         unsigned char channelBase = channelGroup.getChannelBase();
         unsigned char channelCount = channelGroup.getChannelCount().value();
-        auto ports = device.getInPorts();
+        std::span<const uint32_t> ports = deviceNode.inputs;
 
         if (channelCount == 1) {
             uint32_t filterPort = channelBase % 2 ? *filterPorts.second : *filterPorts.first;
-            result += createLink(m_filterId, filterPort, deviceId, ports[channelBase].id);
+            result += createLink(m_filterId, filterPort, deviceId, ports[channelBase]);
         } else {
-            result += createLink(m_filterId, *filterPorts.first, deviceId, ports[channelBase].id);
+            result += createLink(m_filterId, *filterPorts.first, deviceId, ports[channelBase]);
             result += createLink(m_filterId,
                     *filterPorts.second,
                     deviceId,
-                    ports[channelBase + 1].id);
+                    ports[channelBase + 1]);
         }
     }
     pw_thread_loop_unlock(m_pPwThreadLoop);
@@ -511,15 +550,20 @@ void PipewireEnumerator::closeDevice(uint32_t id) {
         return;
     }
 
-    QSharedPointer<SoundDevicePipewire> pDevice = m_soundDevices.at(*deviceId);
+    const Node& node = m_nodes.at(*deviceId);
 
-    // device m_inLinks and m_outLinks are cleared by link registryEventGlobalRemove
-    for (uint32_t link : pDevice->getInLinks()) {
-        destroyLink(link);
+    for (uint32_t portId : node.inputs) {
+        const Port& port = m_ports.at(portId);
+        for (uint32_t linkId : port.links) {
+            destroyLink(linkId);
+        }
     }
 
-    for (uint32_t link : pDevice->getOutLinks()) {
-        destroyLink(link);
+    for (uint32_t portId : node.outputs) {
+        const Port& port = m_ports.at(portId);
+        for (uint32_t linkId : port.links) {
+            destroyLink(linkId);
+        }
     }
 
     m_openedDevices.erase(deviceId);
@@ -810,4 +854,31 @@ void PipewireEnumerator::coreEventError(uint32_t id, int seq, int res, const cha
             deinitialize();
         }
     }
+}
+
+QString PipewireEnumerator::getChannelString(
+        uint32_t id, ChannelGroup channelGroup, bool input) const {
+    unsigned char base = channelGroup.getChannelBase();
+    mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
+
+    const Node& node = m_nodes.at(id);
+
+    std::span<const uint32_t> ports = input ? node.outputs : node.inputs;
+    std::span<const uint32_t> subspan = ports.subspan(base + 1, count - 1);
+
+    // without this 1st port will always take else branch, inserting unnecessary ' '
+    const Port& firstPort = m_ports.at(ports[base]);
+    std::string_view currentCommonSubstr = firstPort.name;
+    std::string channelString = firstPort.name + firstPort.channel;
+
+    for (uint32_t portId : subspan) {
+        const Port& port = m_ports.at(portId);
+        if (!port.name.empty() and port.name == currentCommonSubstr) {
+            channelString = channelString + '/' + port.channel;
+        } else {
+            channelString = channelString + ' ' + port.name + port.channel;
+            currentCommonSubstr = port.name;
+        }
+    }
+    return QString::fromStdString(channelString);
 }

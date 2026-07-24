@@ -45,6 +45,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
         return {SoundManagerConfig::kAPIPipewire};
     }
 
+    QString getChannelString(uint32_t id, ChannelGroup channelGroup, bool input) const;
+
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
@@ -155,9 +157,26 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     struct Port {
         uint32_t node;
+        bool isInput;
+        std::vector<uint32_t> links;
+
+        std::string getDisplayName() const {
+            return name + channel;
+        }
+
+        uint32_t id;
+        // this is port.name after stripping out channel and delimiter,
+        // and appending a ':' to simplify logic
+        std::string name;
+        // in case port had no recognizable channel, entire name is put
+        // here so SoundDevicePipewire::getChannelString logic works fine
+        std::string channel;
     };
 
-    struct Node {};
+    struct Node {
+        std::vector<uint32_t> inputs;
+        std::vector<uint32_t> outputs;
+    };
 
     std::unordered_map<uint32_t, Node> m_nodes;
     std::unordered_map<uint32_t, Port> m_ports;
