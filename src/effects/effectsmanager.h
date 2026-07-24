@@ -13,6 +13,21 @@
 
 class EngineEffectsManager;
 
+// AdoptMetaknobValue determines how metaknobs behave when effects and presets are loaded.
+enum class AdoptMetaknobValue {
+    // When loading effects, never adjust the metaknob positions
+    KEEP_ALL,
+    // When loading effects presets, never adjust the top-most metaknob position.
+    KEEP_TOP,
+    // When loading effects and effect presets, always reset the metaknob positions
+    // to the stored preset value.
+    LOAD_DEFAULT,
+};
+
+const AdoptMetaknobValue defaultAdoptMetaknobValue = AdoptMetaknobValue::KEEP_ALL;
+AdoptMetaknobValue toAdoptMetaknobValue(const QString& v);
+QString toQString(AdoptMetaknobValue v);
+
 /// EffectsManager initializes and shuts down the effects system. It creates and
 /// destroys a fixed set of StandardEffectChains on Mixxx startup/shutdown
 /// and creates a QuickEffectChain and EqualizerEffectChain when
@@ -79,7 +94,7 @@ class EffectsManager {
         return m_registeredOutputChannels;
     }
 
-    bool isAdoptMetaknobSettingEnabled() const;
+    AdoptMetaknobValue adoptMetaknobSetting() const;
 
   private:
     void addStandardEffectChains();
