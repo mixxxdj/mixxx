@@ -81,6 +81,8 @@ struct AcoustIdCacheEntry {
     QString acoustidId;             // AcoustID UUID
     QString musicbrainzRecordingId; // nullable
     QString musicbrainzReleaseId;   // nullable
+    QString musicbrainzTrackId;     // nullable
+    QString musicbrainzArtistId;    // nullable
     QString musicbrainzMetadata;    // full JSON response, nullable
     double confidence{-1.0};        // 0.0–1.0; -1.0 = not set (maps to NULL)
     QDateTime lookupTimestamp;
