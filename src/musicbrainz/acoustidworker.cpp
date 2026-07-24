@@ -274,8 +274,8 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
                 QStringLiteral("completed"),
                 pCached->musicbrainzRecordingId,
                 pCached->musicbrainzReleaseId,
-                QString(),
-                QString());
+                pCached->musicbrainzTrackId,
+                pCached->musicbrainzArtistId);
 
         if (m_pConfig->getValue(mixxx::library::prefs::kCmrtAutoGroupingEnabledConfigKey, true)) {
             m_pGroupingService->processTrack(job.trackId, pCached->musicbrainzRecordingId);
@@ -343,6 +343,8 @@ bool AcoustIdWorker::processJob(const AcoustIdJob& job) {
         cacheEntry.confidence = result.score;
         cacheEntry.musicbrainzRecordingId = mbRecordingId;
         cacheEntry.musicbrainzReleaseId = result.musicbrainzReleaseId;
+        cacheEntry.musicbrainzTrackId = result.musicbrainzTrackId;
+        cacheEntry.musicbrainzArtistId = result.musicbrainzArtistId;
         cacheEntry.lookupTimestamp = QDateTime::currentDateTimeUtc();
         m_pFingerprintDao->cacheAcoustIdResult(cacheEntry);
 
