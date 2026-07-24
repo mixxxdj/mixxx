@@ -1472,40 +1472,19 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group,
     if (indices.isEmpty()) {
         return;
     }
-    bool allowLoadTrackIntoPlayingDeck = false;
-    if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
-        int loadWhenDeckPlaying =
-                m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
-        switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
-        case LoadWhenDeckPlaying::Allow:
-        case LoadWhenDeckPlaying::AllowButStopDeck:
-            allowLoadTrackIntoPlayingDeck = true;
-            break;
-        case LoadWhenDeckPlaying::Reject:
-            break;
-        }
-    } else {
-        // support older version of this flag
-        allowLoadTrackIntoPlayingDeck =
-                m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
-    }
-    // If the track load override is disabled, check to see if a track is
-    // playing before trying to load it.
-    // Always load to preview deck.
-    if (!allowLoadTrackIntoPlayingDeck &&
-            !PlayerManager::isPreviewDeckGroup(group) &&
-            ControlObject::get(ConfigKey(group, "play")) > 0.0) {
-        return;
-    }
     auto index = indices.at(0);
     auto* pTrackModel = getTrackModel();
     TrackPointer pTrack;
     if (pTrackModel && (pTrack = pTrackModel->getTrack(index))) {
+        auto decision = TrackLoader::canLoadTrackIntoPlayingDeck(m_pConfig, group);
+        if (!decision.canLoad) {
+            return;
+        }
 #ifdef __STEM__
         DEBUG_ASSERT(!stemMask || pTrack->hasStem());
-        emit loadTrackToPlayer(pTrack, group, stemMask, play);
+        emit loadTrackToPlayer(pTrack, group, stemMask, decision.continuePlaying);
 #else
-        emit loadTrackToPlayer(pTrack, group, play);
+        emit loadTrackToPlayer(pTrack, group, decision.continuePlaying);
 #endif
     }
 }
