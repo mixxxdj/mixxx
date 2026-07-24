@@ -5,6 +5,7 @@
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
+#include "library/autodj/autofadecontroller.h"
 #include "library/autodj/dlgautodj.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
@@ -13,6 +14,8 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
+#include "mixer/deck.h"
+#include "mixer/playermanager.h"
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -47,6 +50,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
+          m_pAutoFadeController(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
           m_viewName(Library::kAutoDJViewName),
@@ -57,6 +61,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             pPlayerManager,
             pLibrary->trackCollectionManager(),
             m_iAutoDJPlaylistId);
+    m_pAutoFadeController = new AutoFadeController(pPlayerManager->getDeck(1));
 
     // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
     // previous load attempt have been called #10504.
