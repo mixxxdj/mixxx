@@ -3280,6 +3280,18 @@ elseif(SQLite3_FOUND)
   target_link_libraries(mixxx-lib PRIVATE SQLite3::SQLite3)
 endif()
 
+# ICU support for SQLite
+find_package(ICU COMPONENTS uc i18n REQUIRED)
+option(
+  SQLITE_ICU
+  "Enable ICU support in SQLite for Unicode collation and normalization"
+  ON
+)
+if(SQLITE_ICU)
+  target_compile_definitions(mixxx-lib PUBLIC SQLITE_ENABLE_ICU)
+  target_link_libraries(mixxx-lib PRIVATE ICU::uc ICU::i18n)
+endif()
+
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
