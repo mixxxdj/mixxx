@@ -722,6 +722,8 @@ reapplying those migrations.
         acoustid_id varchar(64) NOT NULL,
         musicbrainz_recording_id varchar(64),
         musicbrainz_release_id varchar(64),
+        musicbrainz_track_id varchar(64),
+        musicbrainz_artist_id varchar(64),
         musicbrainz_metadata TEXT,
         confidence REAL,
         lookup_timestamp INTEGER NOT NULL,
