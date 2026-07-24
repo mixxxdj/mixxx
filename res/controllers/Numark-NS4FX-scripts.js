@@ -9,6 +9,14 @@ const defaultPadMode = engine.getSetting("defaultPadMode");
 const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
+const useAutoLoopBeatJump = engine.getSetting("useAutoLoopBeatJump");
+const shiftAutoloopJump = [
+    null,
+    parseInt(engine.getSetting("shiftPad5JumpBeats")),
+    parseInt(engine.getSetting("shiftPad6JumpBeats")),
+    parseInt(engine.getSetting("shiftPad7JumpBeats")),
+    parseInt(engine.getSetting("shiftPad8JumpBeats"))
+]
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -127,6 +135,7 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
         input: function(channel, control, value, status, group) {
             NS4FX.dbg(`Transport pad ${padNumber} on deck ${deck.number} pressed with value ${value}`);
             const isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
+            const isBeatJumpModeForTransport = useAutoLoopBeatJump && deck.padmode_str === "autoloop";
 
             if (isHotcueModeForTransport) {
                 if (NS4FX.shift) {
@@ -137,6 +146,8 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
                     return;
                 }
                 hotcueButton.input(channel, control, value, status, group);
+            } else if (isBeatJumpModeForTransport) {
+                deck.autoloop_buttons[padNumber + 4].input(channel, control, value, status, group)
             } else {
                 if (defaultKey) {
                     if (momentary) {
@@ -1061,6 +1072,47 @@ NS4FX.Deck = function(number, midi_chan) {
                 midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
             },
             number: i // Stores the button number (1-4)
+        });
+
+        this.autoloop_buttons[9 - i] = new components.Button({
+            input: function(channel, control, value, status) {
+                const deckGroup = `[Channel${deck.number}]`; // Deck group based on deck number
+                if (useAutoLoopBeatJump) {
+                    if (value > 0) { // only trigger on press
+                        if (NS4FX.shift) {
+                            NS4FX.dbg(`SHIFT on transport pad ${this.transportPadNumber} on deck ${deck.number}. Jump by ${shiftAutoloopJump[this.transportPadNumber]} beats`);
+                            engine.setValue(deckGroup, "beatjump", shiftAutoloopJump[this.transportPadNumber]);
+                        }
+                        else
+                        {
+                            switch (this.transportPadNumber) {
+                                case 1:   // Jump backward
+                                    engine.setValue(deckGroup, "beatjump_backward", 1);
+                                    break;
+
+                                case 2: { // Decrease beatjump size
+                                    let size = engine.getValue(deckGroup, "beatjump_size");
+                                    size = Math.max(1 / 32, size / 2);
+                                    engine.setValue(deckGroup, "beatjump_size", size);
+                                    break;
+                                }
+
+                                case 3: { // Increase beatjump size
+                                    let size = engine.getValue(deckGroup, "beatjump_size");
+                                    size = Math.min(512, size * 2);
+                                    engine.setValue(deckGroup, "beatjump_size", size);
+                                    break;
+                                }
+
+                                case 4:   // Jump forward
+                                    engine.setValue(deckGroup, "beatjump_forward", 1);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            },
+            transportPadNumber: 5 - i // Stores the transport button number (1-4)
         });
 
         if (!useFadercutsAsStems) {
