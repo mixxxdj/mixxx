@@ -79,6 +79,7 @@ class SoundManager : public QObject {
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
+    void pushInputBuffer(const AudioInput& input, const SINT iFramesPerBuffer);
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                           const SINT iFramesPerBuffer);
 
@@ -119,6 +120,29 @@ class SoundManager : public QObject {
     bool isPipewireSelected();
 #endif
 
+    CSAMPLE* getInputBuffer(const AudioInput& input) {
+        if (!m_inputBuffers.contains(input)) {
+            qWarning() << "getInputBuffer does not have" << input.getString();
+            for (const auto& [input, buffer] : m_inputBuffers.asKeyValueRange()) {
+                qWarning() << "getInputBuffer" << input.getString() << buffer;
+            }
+        }
+        return m_inputBuffers.value(input);
+    }
+
+    const CSAMPLE* getOutputBuffer(const AudioOutput& output) {
+        const float* buffer = m_registeredSources.value(output)->buffer(output).data();
+        if (!buffer) {
+            qWarning() << "getOutputBuffer does not have" << output.getString();
+        }
+        return buffer;
+    }
+
+    void configureInput(const AudioInput& input);
+    void unconfigureInput(const AudioInput& input);
+    void configureOutput(const AudioOutput& output);
+    void unconfigureOutput(const AudioOutput& output);
+
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
@@ -156,7 +180,7 @@ class SoundManager : public QObject {
     EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     QList<SoundDevicePointer> m_devices;
-    QList<CSAMPLE*> m_inputBuffers;
+    QHash<AudioInput, CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
     SoundDevicePointer m_pErrorDevice;

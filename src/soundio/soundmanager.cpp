@@ -1,5 +1,7 @@
 #include "soundio/soundmanager.h"
 
+#include <qlogging.h>
+
 #include <QLibrary>
 #include <QThread>
 #include <QtGlobal>
@@ -103,6 +105,15 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
+
+    const QList<CSAMPLE*> buffers = m_inputBuffers.values();
+    for (CSAMPLE* pBuffer : buffers) {
+        if (pBuffer != nullptr) {
+            SampleUtil::free(pBuffer);
+        }
+    }
+
+    m_inputBuffers.clear();
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
@@ -201,29 +212,14 @@ void SoundManager::completeDevicesClosing() {
         for (const auto& in : pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
-            for (auto it = m_registeredDestinations.constFind(in);
-                 it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
-                it.value()->onInputUnconfigured(in);
-                m_pEngineMixer->onInputDisconnected(in);
-            }
+            unconfigureInput(in);
         }
         for (const auto& out: pDevice->outputs()) {
             // Need to tell all registered AudioSources for this AudioOutput
             // that the output was disconnected.
-            for (auto it = m_registeredSources.constFind(out);
-                 it != m_registeredSources.constEnd() && it.key() == out; ++it) {
-                it.value()->onOutputDisconnected(out);
-            }
+            unconfigureOutput(out);
         }
     }
-
-    while (!m_inputBuffers.isEmpty()) {
-        CSAMPLE* pBuffer = m_inputBuffers.takeLast();
-        if (pBuffer != nullptr) {
-            SampleUtil::free(pBuffer);
-        }
-    }
-    m_inputBuffers.clear();
 
     // Indicate to the rest of Mixxx that sound is disconnected.
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
@@ -338,23 +334,12 @@ SoundDeviceStatus SoundManager::setupDevices() {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
-            AudioInputBuffer aib(in, SampleUtil::alloc(kMaxEngineSamples));
-            status = pDevice->addInput(aib);
+            status = pDevice->addInput(AudioInputBuffer{in, m_inputBuffers.value(in)});
             if (status != SoundDeviceStatus::Ok) {
-                SampleUtil::free(aib.getBuffer());
                 goto closeAndError;
             }
 
-            m_inputBuffers.append(aib.getBuffer());
-
-            // Check if any AudioDestination is registered for this AudioInput
-            // and call the onInputConnected method.
-            for (auto it = m_registeredDestinations.find(in);
-                    it != m_registeredDestinations.end() && it.key() == in;
-                    ++it) {
-                it.value()->onInputConfigured(in);
-                m_pEngineMixer->onInputConnected(in);
-            }
+            configureInput(in);
         }
         QList<AudioOutput> outputs =
                 m_config.getOutputs().values(pDevice->getDeviceId());
@@ -400,13 +385,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 }
             }
 
-            // Check if any AudioSource is registered for this AudioOutput and
-            // call the onOutputConnected method.
-            for (auto it = m_registeredSources.find(out);
-                    it != m_registeredSources.end() && it.key() == out;
-                    ++it) {
-                it.value()->onOutputConnected(out);
-            }
+            configureOutput(out);
         }
 
         if (mode.isInput || mode.isOutput) {
@@ -560,6 +539,14 @@ void SoundManager::onDeviceOutputCallback(const SINT iFramesPerBuffer) {
     m_pEngineMixer->process(iFramesPerBuffer * 2);
 }
 
+void SoundManager::pushInputBuffer(const AudioInput& input, const SINT iFramesPerBuffer) {
+    CSAMPLE* pInputBuffer = m_inputBuffers.value(input);
+    for (auto it = m_registeredDestinations.constFind(input);
+            it != m_registeredDestinations.constEnd() && it.key() == input;
+            ++it) {
+        it.value()->receiveBuffer(input, pInputBuffer, iFramesPerBuffer);
+    }
+}
 void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                                     const SINT iFramesPerBuffer) {
    for (QList<AudioInputBuffer>::ConstIterator i = inputs.begin(),
@@ -605,6 +592,7 @@ void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest
     // passthrough, each with different outputs. So unlike outputs, do not assert
     // that the input has not been registered yet.
     m_registeredDestinations.insert(input, dest);
+    m_inputBuffers.insert(input, SampleUtil::alloc(kMaxEngineSamples));
 
     emit inputRegistered(input, dest);
 }
@@ -670,3 +658,36 @@ bool SoundManager::isPipewireSelected() {
     return CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValue(kPipeWire, false);
 }
 #endif
+
+void SoundManager::configureInput(const AudioInput& input) {
+    // Check if any AudioDestination is registered for this AudioInput
+    // and call the onInputConnected method.
+    qWarning() << "SoundManager::configureInput";
+    auto [first, last] = m_registeredDestinations.equal_range(input);
+
+    for (auto it = first; it != last; ++it) {
+        it.value()->onInputConfigured(input);
+        m_pEngineMixer->onInputConnected(input);
+    }
+}
+
+void SoundManager::unconfigureInput(const AudioInput& input) {
+    qWarning() << "SoundManager::unconfigureInput";
+    auto [first, last] = m_registeredDestinations.equal_range(input);
+    for (auto it = first; it != last; ++it) {
+        it.value()->onInputUnconfigured(input);
+        m_pEngineMixer->onInputDisconnected(input);
+    }
+}
+
+void SoundManager::configureOutput(const AudioOutput& output) {
+    // Check if any AudioSource is registered for this AudioOutput and
+    // call the onOutputConnected method.
+    qWarning() << "SoundManager::configureOutput";
+    m_registeredSources.value(output)->onOutputConnected(output);
+}
+
+void SoundManager::unconfigureOutput(const AudioOutput& output) {
+    qWarning() << "SoundManager::unconfigureOutput";
+    m_registeredSources.value(output)->onOutputDisconnected(output);
+}

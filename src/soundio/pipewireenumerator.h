@@ -56,6 +56,45 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void registerOutput(const AudioOutput& output, AudioSource* src);
 
   private:
+    struct PortPair {
+        struct Port {
+            void* data;
+            uint32_t id;
+        };
+
+        Port left;
+        Port right;
+        std::atomic<bool> active = false;
+    };
+
+    struct Link {
+        uint32_t input;
+        uint32_t output;
+    };
+
+    struct Port {
+        uint32_t node;
+        bool isInput;
+        std::vector<uint32_t> links;
+
+        std::string getDisplayName() const {
+            return name + channel;
+        }
+
+        uint32_t id;
+        // this is port.name after stripping out channel and delimiter,
+        // and appending a ':' to simplify logic
+        std::string name;
+        // in case port had no recognizable channel, entire name is put
+        // here so SoundDevicePipewire::getChannelString logic works fine
+        std::string channel;
+    };
+
+    struct Node {
+        std::vector<uint32_t> inputs;
+        std::vector<uint32_t> outputs;
+    };
+
     static void coreEventError(void* data, uint32_t id, int seq, int res, const char* message) {
         static_cast<PipewireEnumerator*>(data)->coreEventError(id, seq, res, message);
     }
@@ -146,39 +185,13 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     void updateAudioLatencyUsage(const SINT framesPerBuffer);
     void setLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
-    std::pair<uint32_t*, uint32_t*> createInputPorts(const AudioInput& path);
-    std::pair<uint32_t*, uint32_t*> createOutputPorts(const AudioOutput& path);
-    std::pair<uint32_t*, uint32_t*> createPorts(std::string_view name, spa_direction direction);
+
+    void createInputPorts(const AudioInput& path, PortPair& ports);
+    void createOutputPorts(const AudioOutput& path, PortPair& ports);
+    void createPorts(PortPair& ports, std::string_view name, spa_direction direction);
 
     void updateFilterLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
-
-    struct Link {
-        uint32_t input;
-        uint32_t output;
-    };
-
-    struct Port {
-        uint32_t node;
-        bool isInput;
-        std::vector<uint32_t> links;
-
-        std::string getDisplayName() const {
-            return name + channel;
-        }
-
-        uint32_t id;
-        // this is port.name after stripping out channel and delimiter,
-        // and appending a ':' to simplify logic
-        std::string name;
-        // in case port had no recognizable channel, entire name is put
-        // here so SoundDevicePipewire::getChannelString logic works fine
-        std::string channel;
-    };
-
-    struct Node {
-        std::vector<uint32_t> inputs;
-        std::vector<uint32_t> outputs;
-    };
+    bool nodeHasPorts(const Node& node);
 
     std::unordered_map<uint32_t, Node> m_nodes;
     std::unordered_map<uint32_t, Port> m_ports;
@@ -209,12 +222,13 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     mixxx::audio::SampleRate m_sampleRate;
     mixxx::audio::SampleRate m_defaultSampleRate;
 
-    QHash<AudioInput, std::pair<uint32_t*, uint32_t*>> m_inputs;
-    QHash<AudioOutput, std::pair<uint32_t*, uint32_t*>> m_outputs;
+    std::unordered_map<AudioInput, PortPair> m_inputs;
+    std::unordered_map<AudioOutput, PortPair> m_outputs;
 
     PollingControlProxy m_audioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
     uint32_t m_framesPerBuffer;
+    bool m_manageExternalLinks;
 };
