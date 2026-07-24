@@ -1,0 +1,12 @@
+<svg width="7" height="30" enable-background="new" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#666" fill-rule="evenodd">
+    <rect x="2" y="1" width="1" height="28" style="paint-order:markers fill stroke"/>
+    <rect x="4" y="1" width="1" height="28" style="paint-order:markers fill stroke"/>
+    <g fill-opacity=".5">
+      <rect x="2" width="1" height="1" style="paint-order:markers fill stroke"/>
+      <rect x="4" width="1" height="1" style="paint-order:markers fill stroke"/>
+      <rect x="2" y="29" width="1" height="1" style="paint-order:markers fill stroke"/>
+      <rect x="4" y="29" width="1" height="1" style="paint-order:markers fill stroke"/>
+    </g>
+  </g>
+</svg>
