@@ -429,6 +429,18 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
+    // Reloop toggle mode
+    comboBoxReloopToggleMode->clear();
+    comboBoxReloopToggleMode->addItem(tr("Legacy (last active loop)"),
+            static_cast<int>(LoopingControl::ReloopToggleMode::Legacy));
+    comboBoxReloopToggleMode->addItem(tr("Nearest Loop"),
+            static_cast<int>(LoopingControl::ReloopToggleMode::NearestLoop));
+
+    connect(comboBoxReloopToggleMode,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefDeck::slotReloopToggleModeChanged);
+
     slotUpdate();
 }
 
@@ -521,6 +533,11 @@ void DlgPrefDeck::slotUpdate() {
     spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
     spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
+
+    comboBoxReloopToggleMode->setCurrentIndex(static_cast<int>(
+            m_pConfig->getValue<double>(
+                    LoopingControl::reloopToggleModeConfigKey(),
+                    static_cast<double>(LoopingControl::ReloopToggleMode::Legacy))));
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -564,6 +581,9 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+
+    comboBoxReloopToggleMode->setCurrentIndex(
+            static_cast<int>(LoopingControl::ReloopToggleMode::Legacy));
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -792,6 +812,9 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(
             ConfigKey(kControlsGroup, QStringLiteral("RatePermRight")),
             m_dRatePermFine);
+
+    m_pConfig->setValue(LoopingControl::reloopToggleModeConfigKey(),
+            static_cast<double>(m_reloopToggleMode));
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
@@ -867,6 +890,10 @@ void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {
 
 void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
     m_pitchAutoReset = b;
+}
+
+void DlgPrefDeck::slotReloopToggleModeChanged(int index) {
+    m_reloopToggleMode = static_cast<LoopingControl::ReloopToggleMode>(index);
 }
 
 int DlgPrefDeck::cueDefaultIndexByData(int userData) const {

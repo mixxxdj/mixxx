@@ -1,6 +1,7 @@
 #include "engine/controls/loopingcontrol.h"
 
 #include <QtDebug>
+#include <algorithm>
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -1078,29 +1079,93 @@ void LoopingControl::slotReloopToggle(double val) {
         return;
     }
 
-    // If we're looping, stop looping
-    if (m_bLoopingEnabled) {
-        // If loop roll was active, also disable slip.
-        if (m_bLoopRollActive) {
-            m_pSlipEnabled->set(0);
-            m_bLoopRollActive = false;
-            m_activeLoopRolls.clear();
-        }
-        setLoopingEnabled(false);
-        //qDebug() << "reloop_toggle looping off";
-    } else {
-        // If we're not looping, enable the loop. If the loop is ahead of the
-        // current play position, do not jump to it.
-        LoopInfo loopInfo = m_loopInfo.getValue();
-        if (loopInfo.startPosition.isValid() &&
-                loopInfo.endPosition.isValid() &&
-                loopInfo.startPosition <= loopInfo.endPosition) {
-            setLoopingEnabled(true);
-            if (m_currentPosition.getValue() > loopInfo.endPosition) {
-                slotLoopInGoto(1);
+    auto mode = static_cast<ReloopToggleMode>(
+            static_cast<int>(
+                    m_pConfig->getValue<double>(
+                            reloopToggleModeConfigKey(),
+                            static_cast<double>(ReloopToggleMode::Legacy))));
+
+    if (mode == ReloopToggleMode::Legacy) {
+        // Legacy behavior: toggle the last active loop
+        // If we're looping, stop looping
+        if (m_bLoopingEnabled) {
+            // If loop roll was active, also disable slip.
+            if (m_bLoopRollActive) {
+                m_pSlipEnabled->set(0);
+                m_bLoopRollActive = false;
+                m_activeLoopRolls.clear();
+            }
+            setLoopingEnabled(false);
+            // qDebug() << "reloop_toggle looping off";
+        } else {
+            // If we're not looping, enable the loop. If the loop is ahead of the
+            // current play position, do not jump to it.
+            LoopInfo loopInfo = m_loopInfo.getValue();
+            if (loopInfo.startPosition.isValid() &&
+                    loopInfo.endPosition.isValid() &&
+                    loopInfo.startPosition <= loopInfo.endPosition) {
+                setLoopingEnabled(true);
+                if (m_currentPosition.getValue() > loopInfo.endPosition) {
+                    slotLoopInGoto(1);
+                }
             }
         }
-        //qDebug() << "reloop_toggle looping on";
+    } else {
+        // NearestLoop mode: toggle the loop under or ahead of the playhead
+        const auto currentPosition = m_currentPosition.getValue();
+
+        QList<CuePointer> trackCues = m_pTrack->getCuePoints();
+        // Filter to only loop cues with valid positions and a hotcue number
+        trackCues.erase(
+                std::remove_if(trackCues.begin(), trackCues.end(), [](const CuePointer& pCue) {
+                    return pCue->getType() != mixxx::CueType::Loop ||
+                            !pCue->getPosition().isValid() ||
+                            !pCue->getEndPosition().isValid() ||
+                            pCue->getHotCue() == Cue::kNoHotCue;
+                }),
+                trackCues.end());
+
+        struct NearestLoopCandidate {
+            mixxx::audio::FramePos endPosition;
+            CuePointer cue;
+        };
+
+        QList<NearestLoopCandidate> loopCandidates;
+        loopCandidates.reserve(trackCues.size() + 1);
+        for (const auto& pCue : trackCues) {
+            loopCandidates.append({pCue->getEndPosition(), pCue});
+        }
+
+        LoopInfo loopInfo = m_loopInfo.getValue();
+        if (!m_bLoopingEnabled && loopInfo.endPosition.isValid()) {
+            loopCandidates.append({loopInfo.endPosition, CuePointer()});
+        }
+
+        std::sort(loopCandidates.begin(),
+                loopCandidates.end(),
+                [](const NearestLoopCandidate& a,
+                        const NearestLoopCandidate& b) {
+                    return a.endPosition < b.endPosition;
+                });
+
+        // Find the nearest loop ahead by position
+        for (int i = 0; i < loopCandidates.size(); ++i) {
+            if (loopCandidates[i].endPosition >= currentPosition) {
+                CuePointer pCue = loopCandidates[i].cue;
+                if (!pCue) {
+                    // Runtime active loop: positions are already in m_loopInfo
+                    setLoopingEnabled(true);
+                } else if (m_bLoopingEnabled) {
+                    setLoopingEnabled(false);
+                } else {
+                    ConfigKey key(getGroup(),
+                            QStringLiteral("hotcue_%1_cueloop")
+                                    .arg(pCue->getHotCue() + 1));
+                    ControlObject::set(key, 1.0);
+                }
+                return;
+            }
+        }
     }
 }
 
