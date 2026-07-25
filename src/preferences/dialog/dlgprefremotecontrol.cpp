@@ -1,11 +1,34 @@
 #include <QWidget>
 #include <QUrl>
+#include <QHostAddress>
+#include <QNetworkInterface>
+#include <QStringList>
 
 #include "moc_dlgprefremotecontrol.cpp"
 
 #include "preferences/dialog/dlgprefremotecontrol.h"
 
 #include "remote/remote.h"
+
+namespace {
+QString currentNonLoopbackAddresses() {
+    QStringList addresses;
+    const auto allAddresses = QNetworkInterface::allAddresses();
+    for (const QHostAddress& address : allAddresses) {
+        if (address.isLoopback()) {
+            continue;
+        }
+        if (address.protocol() != QAbstractSocket::IPv4Protocol) {
+            continue;
+        }
+        addresses << address.toString();
+    }
+    if (addresses.isEmpty()) {
+        return QObject::tr("none found");
+    }
+    return addresses.join(", ");
+}
+} // namespace
 
 DlgPrefRemoteControl::DlgPrefRemoteControl(QWidget *pParent,UserSettingsPointer  pSettings,
         std::shared_ptr<mixxx::RemoteControl> pRemoteControl) : DlgPreferencePage(pParent){
@@ -18,6 +41,7 @@ DlgPrefRemoteControl::DlgPrefRemoteControl(QWidget *pParent,UserSettingsPointer 
     this->remoteaddr->setText(m_pSettings->get(ConfigKey("[RemoteControl]","host")).value);
     this->remoteport->setText(m_pSettings->get(ConfigKey("[RemoteControl]","port")).value);
     this->remotepass->setText(m_pSettings->get(ConfigKey("[RemoteControl]","pass")).value);
+    this->remotecurrentip->setText(currentNonLoopbackAddresses());
 };
 
 DlgPrefRemoteControl::~DlgPrefRemoteControl(){
@@ -28,7 +52,7 @@ QUrl DlgPrefRemoteControl::helpUrl() const {
 }
 
 void DlgPrefRemoteControl::slotUpdate(){
-          
+    this->remotecurrentip->setText(currentNonLoopbackAddresses());
 }
       
 void DlgPrefRemoteControl::slotApply(){
