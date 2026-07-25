@@ -33,9 +33,6 @@
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
-#ifdef __PIPEWIRE__
-const ConfigKey kPipeWire = ConfigKey(kAppGroup, QStringLiteral("pipewire"));
-#endif
 
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
@@ -74,12 +71,9 @@ SoundManager::SoundManager(
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
 
-#ifdef __PIPEWIRE__
     if (isPipewireSelected()) {
         m_pEnumerator = std::make_unique<PipewireEnumerator>(m_pConfig, this);
-    } else
-#endif
-    {
+    } else {
         m_pEnumerator = std::make_unique<PortAudioEnumerator>(m_pConfig, this);
     }
 
@@ -399,10 +393,15 @@ SoundDeviceStatus SoundManager::setupDevices() {
         SoundDevicePointer pDevice = mode.pDevice;
         m_pErrorDevice = pDevice;
 
+        // Don't use network clock unless forced with PipeWire
+        // as PipeWire callbacks run even without any devices configured
+        const bool isNetworkDevice = pDevice->getDeviceId().name == kNetworkDeviceInternalName;
+        const bool deviceAllowedClockReference = isPipewireSelected() != isNetworkDevice;
+
         // If we have not yet set a clock source then we use the first
         // output pDevice
         if (pNewMainClockRef.isNull() &&
-                (!haveOutput || mode.isOutput)) {
+                (!haveOutput || mode.isOutput) && deviceAllowedClockReference) {
             pNewMainClockRef = pDevice;
             qWarning() << "Output sound device clock reference not set! Using"
                        << pDevice->getDisplayName();
@@ -652,12 +651,6 @@ void SoundManager::removeDevice(SoundDevicePointer pDevice) {
 void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
     emit deviceChannelsUpdated(pDevice);
 }
-
-#ifdef __PIPEWIRE__
-bool SoundManager::isPipewireSelected() {
-    return CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValue(kPipeWire, false);
-}
-#endif
 
 void SoundManager::configureInput(const AudioInput& input) {
     // Check if any AudioDestination is registered for this AudioInput
