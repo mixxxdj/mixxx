@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-slim
 
     steps:
-      - uses: actions/labeler@v6.1.0
+      - uses: actions/labeler@v6.2.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           sync-labels: false

@@ -6,6 +6,7 @@
 #include <spa/utils/result.h>
 
 #include <QList>
+#include <QMessageBox>
 #include <QSharedPointer>
 #include <QStringView>
 #include <string>
@@ -81,7 +82,6 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
           m_pPwRegistry(nullptr),
           m_pPwMetadata(nullptr),
           m_pPwFilter(nullptr),
-          m_initialized(false),
           m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesPerBuffer(0) {
@@ -100,40 +100,17 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
     pw_init(nullptr, nullptr);
 
     m_pPwThreadLoop = pw_thread_loop_new("mixxx_loop", nullptr);
+    spa_zero(m_pwCoreListener);
     spa_zero(m_pwRegistryListener);
     spa_zero(m_pwMetadataListener);
     spa_zero(m_pwFilterListener);
-
-    initialize();
 }
 
 PipewireEnumerator::~PipewireEnumerator() {
-    pw_thread_loop_stop(m_pPwThreadLoop);
-
-    if (m_pPwFilter) {
-        spa_hook_remove(&m_pwFilterListener);
-        pw_filter_destroy(m_pPwFilter);
-    }
-
-    if (m_pPwMetadata) {
-        spa_hook_remove(&m_pwMetadataListener);
-        pw_proxy_destroy((struct pw_proxy*)m_pPwMetadata);
-    }
-
-    if (m_pPwRegistry) {
-        spa_hook_remove(&m_pwRegistryListener);
-        pw_proxy_destroy((struct pw_proxy*)m_pPwRegistry);
-    }
-
-    if (m_pPwCore) {
-        pw_core_disconnect(m_pPwCore);
-    }
-
+    deinitialize();
     if (m_pPwContext) {
         pw_context_destroy(m_pPwContext);
     }
-
-    pw_thread_loop_destroy(m_pPwThreadLoop);
     pw_deinit();
 }
 
@@ -160,6 +137,7 @@ void PipewireEnumerator::initialize() {
                    << spa_strerror(errno);
         return;
     }
+    pw_core_add_listener(m_pPwCore, &m_pwCoreListener, &coreEvents, this);
 
     m_pPwRegistry = pw_core_get_registry(m_pPwCore, PW_VERSION_REGISTRY, 0);
     pw_registry_add_listener(m_pPwRegistry, &m_pwRegistryListener, &registry_events, this);
@@ -209,8 +187,46 @@ void PipewireEnumerator::initialize() {
     m_initialized = true;
 }
 
-QList<mixxx::audio::SampleRate> PipewireEnumerator::getSampleRates() const {
-    return m_samplerates;
+void PipewireEnumerator::deinitialize() {
+    if (!m_initialized) {
+        return;
+    }
+
+    pw_thread_loop_stop(m_pPwThreadLoop);
+
+    // clear everything we get through registry
+    m_openedDevices.clear();
+    m_soundDevices.clear();
+    m_objects.clear();
+
+    // or is it better to m_pSoundManager->removeDevice(device) for every device?
+    emit m_pSoundManager->devicesUpdated();
+
+    if (m_pPwFilter) {
+        spa_hook_remove(&m_pwFilterListener);
+        pw_filter_destroy(m_pPwFilter);
+        m_pPwFilter = nullptr;
+    }
+
+    if (m_pPwMetadata) {
+        spa_hook_remove(&m_pwMetadataListener);
+        pw_proxy_destroy((struct pw_proxy*)m_pPwMetadata);
+        m_pPwMetadata = nullptr;
+    }
+
+    if (m_pPwRegistry) {
+        spa_hook_remove(&m_pwRegistryListener);
+        pw_proxy_destroy((struct pw_proxy*)m_pPwRegistry);
+        m_pPwRegistry = nullptr;
+    }
+
+    if (m_pPwCore) {
+        spa_hook_remove(&m_pwCoreListener);
+        pw_core_disconnect(m_pPwCore);
+        m_pPwCore = nullptr;
+    }
+
+    m_initialized = false;
 }
 
 void PipewireEnumerator::registryEventGlobal(uint32_t id,
@@ -812,5 +828,18 @@ void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int frames
                       "pw_filter_update_properties failed:"
                    << spa_strerror(res);
         qWarning() << "Unable to set requested samplerate";
+    }
+}
+
+void PipewireEnumerator::coreEventError(uint32_t id, int seq, int res, const char* message) {
+    qWarning() << "PipewireEnumerator::coreEventError" << id << seq << res << message;
+    if (id == 0) {
+        if (res == -EPIPE) {
+            qWarning() << "Deinitializing PipeWire due to server disconnect";
+            QMessageBox::information(nullptr,
+                    tr("Information"),
+                    tr("PipeWire server disconnected, query devices to reconnect."));
+            deinitialize();
+        }
     }
 }
