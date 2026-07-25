@@ -109,7 +109,7 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     QDomElement manualPage = info.firstChildElement("manual");
     mapping->setManualPage(manualPage.isNull() ? "" : manualPage.text());
     QDomElement wiki = info.firstChildElement("wiki");
-    mapping->setWikiLink(wiki.isNull() ? "" : wiki.text());
+    mapping->setManualLink(wiki.isNull() ? "" : wiki.text());
 }
 
 void LegacyControllerMappingFileHandler::parseMappingSettings(
@@ -308,8 +308,8 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     if (mapping.forumlink().length() > 0) {
         addTextTag(doc, info, "forums", mapping.forumlink());
     }
-    if (mapping.wikilink().length() > 0) {
-        addTextTag(doc, info, "wiki", mapping.wikilink());
+    if (mapping.manuallink().length() > 0) {
+        addTextTag(doc, info, "wiki", mapping.manuallink());
     }
 
     QDomElement controller = doc.createElement("controller");
