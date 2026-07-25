@@ -71,8 +71,8 @@
      <widget class="QLabel" name="remotecurrentip">
       <property name="styleSheet">
        <string notr="true">QLabel#remotecurrentip {
-    background-color: #f3f8ff;
-    border: 1px solid #b8d6fb;
+    background-color: palette(base);
+    border: 1px solid palette(mid);
     border-radius: 8px;
     padding: 8px 12px;
 }</string>
