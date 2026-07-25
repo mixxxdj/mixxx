@@ -167,6 +167,10 @@ void PipewireEnumerator::initialize() {
                     // from preference page (by using external patchbay)
                     PW_KEY_NODE_MAX_LATENCY,
                     "4096/44100",
+                    // this ensures that audio callback runs even when no link is
+                    // connected, so we don't use network clock unless forced
+                    PW_KEY_NODE_ALWAYS_PROCESS,
+                    "true",
                     nullptr));
 
     pw_filter_add_listener(m_pPwFilter, &m_pwFilterListener, &filter_events, this);

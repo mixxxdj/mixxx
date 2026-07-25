@@ -12,6 +12,7 @@
 #include "engine/enginemixer.h"
 #include "moc_soundmanager.cpp"
 #include "preferences/configobject.h"
+#include "soundio/pipewireenumerator.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -33,9 +34,6 @@
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
-#ifdef __PIPEWIRE__
-const ConfigKey kPipeWire = ConfigKey(kAppGroup, QStringLiteral("pipewire"));
-#endif
 
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
@@ -399,10 +397,15 @@ SoundDeviceStatus SoundManager::setupDevices() {
         SoundDevicePointer pDevice = mode.pDevice;
         m_pErrorDevice = pDevice;
 
+        // Don't use network clock unless forced with PipeWire
+        // as PipeWire callbacks run even without any devices configured
+        const bool isNetworkDevice = pDevice->getDeviceId().name == kNetworkDeviceInternalName;
+        const bool deviceAllowedClockReference = isPipewireSelected() != isNetworkDevice;
+
         // If we have not yet set a clock source then we use the first
         // output pDevice
         if (pNewMainClockRef.isNull() &&
-                (!haveOutput || mode.isOutput)) {
+                (!haveOutput || mode.isOutput) && deviceAllowedClockReference) {
             pNewMainClockRef = pDevice;
             qWarning() << "Output sound device clock reference not set! Using"
                        << pDevice->getDisplayName();
@@ -652,12 +655,6 @@ void SoundManager::removeDevice(SoundDevicePointer pDevice) {
 void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
     emit deviceChannelsUpdated(pDevice);
 }
-
-#ifdef __PIPEWIRE__
-bool SoundManager::isPipewireSelected() {
-    return CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValue(kPipeWire, false);
-}
-#endif
 
 void SoundManager::configureInput(const AudioInput& input) {
     // Check if any AudioDestination is registered for this AudioInput

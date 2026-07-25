@@ -114,18 +114,21 @@ class SoundManager : public QObject {
         m_audioLatencyOverloadCount.set(0);
     }
 
-    // currently only used by pipewire
     void updateDeviceChannels(SoundDevicePointer pDevice);
+    bool isPipewireSelected() {
 #ifdef __PIPEWIRE__
-    bool isPipewireSelected();
+        return CmdlineArgs::Instance().getDeveloper() and
+                m_pConfig->getValue(ConfigKey(QStringLiteral("[App]"),
+                                            QStringLiteral("pipewire")),
+                        false);
+#else
+        return false;
 #endif
+    }
 
     CSAMPLE* getInputBuffer(const AudioInput& input) {
         if (!m_inputBuffers.contains(input)) {
             qWarning() << "getInputBuffer does not have" << input.getString();
-            for (const auto& [input, buffer] : m_inputBuffers.asKeyValueRange()) {
-                qWarning() << "getInputBuffer" << input.getString() << buffer;
-            }
         }
         return m_inputBuffers.value(input);
     }
