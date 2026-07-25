@@ -2549,6 +2549,9 @@ WPushButton#PlayDeck[value="0"] {
 }
 
 /* EQ Kill button icons H / M / L */
+#EQKillButton_SuperHigh[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__eq_kill_super_high.svg) no-repeat center center;
+}
 #EQKillButton_High[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__eq_kill_high.svg) no-repeat center center;
 }
