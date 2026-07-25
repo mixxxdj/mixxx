@@ -74,8 +74,7 @@ void DlgPrefRemoteControl::updateCurrentIpDisplay(){
     const QStringList addresses = currentNonLoopbackAddresses();
     if(addresses.isEmpty()){
         this->remotecurrentip->setText(
-                QStringLiteral("<span style=\"color:#c0392b;\">&#9679; %1</span>")
-                        .arg(tr("none found")));
+                QStringLiteral("&#9679; %1").arg(tr("none found")));
         return;
     }
     const QString port = this->remoteport->text();
@@ -84,9 +83,8 @@ void DlgPrefRemoteControl::updateCurrentIpDisplay(){
         const QString url = QStringLiteral("http://%1:%2").arg(address, port);
         links << QStringLiteral(
                 "<div style=\"margin:3px 0;\">"
-                "<span style=\"color:#2ecc71;\">&#9679;</span>&nbsp;"
-                "<a href=\"%1\" style=\"color:#0066cc; text-decoration:none; "
-                "font-family:monospace;\">%1</a>"
+                "&#9679;&nbsp;"
+                "<a href=\"%1\" style=\"font-family:monospace;\">%1</a>"
                 "</div>")
                        .arg(url);
     }
