@@ -11,7 +11,7 @@
 #include "remote/remote.h"
 
 namespace {
-QString currentNonLoopbackAddresses() {
+QStringList currentNonLoopbackAddresses() {
     QStringList addresses;
     const auto allAddresses = QNetworkInterface::allAddresses();
     for (const QHostAddress& address : allAddresses) {
@@ -23,10 +23,7 @@ QString currentNonLoopbackAddresses() {
         }
         addresses << address.toString();
     }
-    if (addresses.isEmpty()) {
-        return QObject::tr("none found");
-    }
-    return addresses.join(", ");
+    return addresses;
 }
 } // namespace
 
@@ -41,7 +38,8 @@ DlgPrefRemoteControl::DlgPrefRemoteControl(QWidget *pParent,UserSettingsPointer 
     this->remoteaddr->setText(m_pSettings->get(ConfigKey("[RemoteControl]","host")).value);
     this->remoteport->setText(m_pSettings->get(ConfigKey("[RemoteControl]","port")).value);
     this->remotepass->setText(m_pSettings->get(ConfigKey("[RemoteControl]","pass")).value);
-    this->remotecurrentip->setText(currentNonLoopbackAddresses());
+    updateCurrentIpDisplay();
+    connect(this->remoteport, &QLineEdit::textChanged, this, &DlgPrefRemoteControl::updateCurrentIpDisplay);
 };
 
 DlgPrefRemoteControl::~DlgPrefRemoteControl(){
@@ -52,7 +50,7 @@ QUrl DlgPrefRemoteControl::helpUrl() const {
 }
 
 void DlgPrefRemoteControl::slotUpdate(){
-    this->remotecurrentip->setText(currentNonLoopbackAddresses());
+    updateCurrentIpDisplay();
 }
       
 void DlgPrefRemoteControl::slotApply(){
@@ -70,6 +68,20 @@ void DlgPrefRemoteControl::slotApply(){
     if(m_pRemoteControl){
         m_pRemoteControl->reload();
     }
+}
+
+void DlgPrefRemoteControl::updateCurrentIpDisplay(){
+    const QStringList addresses = currentNonLoopbackAddresses();
+    if(addresses.isEmpty()){
+        this->remotecurrentip->setText(tr("none found"));
+        return;
+    }
+    const QString port = this->remoteport->text();
+    QStringList urls;
+    for(const QString& address : addresses){
+        urls << QStringLiteral("http://%1:%2").arg(address, port);
+    }
+    this->remotecurrentip->setText(urls.join(", "));
 }
 
 void DlgPrefRemoteControl::slotResetToDefaults(){
