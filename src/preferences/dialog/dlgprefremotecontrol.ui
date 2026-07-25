@@ -63,12 +63,20 @@
     <item row="4" column="0">
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Current IP address:</string>
+       <string>Reachable:</string>
       </property>
      </widget>
     </item>
     <item row="4" column="1">
      <widget class="QLabel" name="remotecurrentip">
+      <property name="styleSheet">
+       <string notr="true">QLabel#remotecurrentip {
+    background-color: #f3f8ff;
+    border: 1px solid #b8d6fb;
+    border-radius: 8px;
+    padding: 8px 12px;
+}</string>
+      </property>
       <property name="text">
        <string/>
       </property>
