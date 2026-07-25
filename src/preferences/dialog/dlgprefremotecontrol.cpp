@@ -77,11 +77,12 @@ void DlgPrefRemoteControl::updateCurrentIpDisplay(){
         return;
     }
     const QString port = this->remoteport->text();
-    QStringList urls;
+    QStringList links;
     for(const QString& address : addresses){
-        urls << QStringLiteral("http://%1:%2").arg(address, port);
+        const QString url = QStringLiteral("http://%1:%2").arg(address, port);
+        links << QStringLiteral("<a href=\"%1\">%1</a>").arg(url);
     }
-    this->remotecurrentip->setText(urls.join(", "));
+    this->remotecurrentip->setText(links.join(QStringLiteral("<br>")));
 }
 
 void DlgPrefRemoteControl::slotResetToDefaults(){
