@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QHttpServer>
 #include <QHttpServerResponse>
+#include <QJsonArray>
 #include <QJsonValue>
 #include <QJsonDocument>
 #include <QJsonObject>
