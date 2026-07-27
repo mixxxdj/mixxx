@@ -3,13 +3,11 @@
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
-#include "defs_urls.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/parented_ptr.h"
 
@@ -42,14 +40,21 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
+    void addOutputDevice(SoundDevicePointer pDevice);
+    void addInputDevice(SoundDevicePointer pDevice);
+    void removeOutputDevice(SoundDevicePointer pDevice);
+    void removeInputDevice(SoundDevicePointer pDevice);
     void updatingAPI();
     void updatedAPI();
+    void deviceRouteUpdated(const SoundDeviceId& device, const AudioPath* pPath);
+    void deviceChannelsUpdated(SoundDevicePointer devices);
 
   public slots:
     void slotUpdate() override; // called on show
     void slotApply() override;  // called on ok button
     void slotResetToDefaults() override;
     void bufferUnderflow(double count);
+    void slotResetUnderflowCounter();
     void outputLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
     void mainDelaySpinboxChanged(double value);
@@ -82,6 +87,10 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updateKeylockDualThreadingCheckbox();
     void updateKeylockMultithreading(bool enabled);
 #endif
+    void addDevice(SoundDevicePointer pDevice);
+    void removeDevice(SoundDevicePointer pDevice);
+    void updateDeviceChannels(SoundDevicePointer pDevice);
+    void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
 
   private:
     void initializePaths();
@@ -115,4 +124,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bSkipConfigClear;
     bool m_loading;
     bool m_configValid;
+
+#ifdef __PIPEWIRE__
+    parented_ptr<QCheckBox> m_pipewireCheckBox;
+#endif
 };

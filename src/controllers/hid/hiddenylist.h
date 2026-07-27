@@ -13,7 +13,7 @@ struct hid_denylist_t {
 };
 
 /// USB HID device that should not be recognized as controllers
-constexpr static hid_denylist_t hid_denylisted[] = {
+constexpr static hid_denylist_t kHidDenyList[] = {
         {0x1157, 0x300, 0x1, 0x2},                  // EKS Otus mouse pad (OS/X,windows)
         {0x1157, 0x300, kAnyValue, kAnyValue, 0x3}, // EKS Otus mouse pad (linux)
         {0x04f3, 0x2d26, kAnyValue, kAnyValue},     // ELAN2D26:00 Touch screen

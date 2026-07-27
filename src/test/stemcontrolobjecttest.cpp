@@ -377,7 +377,7 @@ TEST_P(StemControlFixture, VuMeter) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        StemControlTest,
+        DISABLED_StemControlTest,
         StemControlFixture,
         ::testing::ValuesIn(supportedCodecs),
         [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {

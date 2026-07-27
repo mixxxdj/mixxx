@@ -27,8 +27,8 @@
 
 namespace {
 
-const QString kTrackLocationTest1 = QStringLiteral("id3-test-data/cover-test-png.mp3");
-const QString kTrackLocationTest2 = QStringLiteral("id3-test-data/cover-test-vbr.mp3");
+const QString kTrackLocationTest1 = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-png.mp3");
+const QString kTrackLocationTest2 = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-vbr.mp3");
 
 void deleteTrack(Track* pTrack) {
     // Delete track objects directly in unit tests with
@@ -99,7 +99,9 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
                 m_pRecordingManager.get());
 
         m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+#ifdef __RUBBERBAND__
         RubberBandWorkerPool::createInstance();
+#endif
     }
 
     void TearDown() override {

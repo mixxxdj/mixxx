@@ -18,7 +18,7 @@ Item {
     property alias metric: fontMetrics
     property bool normalizedWidth: false
     required property list<string> options
-    property string selected: options.length ? options[0] : null
+    property var selected: options.length ? options[0] : null
     property real spacing: 9
     property list<var> tooltips: []
 

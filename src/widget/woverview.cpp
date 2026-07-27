@@ -2,6 +2,7 @@
 
 #include <QBrush>
 #include <QColor>
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
@@ -690,6 +691,18 @@ void WOverview::slotCueMenuPopupAboutToHide() {
 
 void WOverview::leaveEvent(QEvent* pEvent) {
     Q_UNUSED(pEvent);
+    // Reset our dragging only if the left button is not pressed.
+    // This works around a Qt mouse event change after Qt 6.5 which causes
+    // leaveEvents to be emitted when we hover another widget which has set the
+    // acceptDrops() property true (eg. WSpinnyBase) -- even if we explicitly
+    // setMouseTracking(true) and the left button is still pressed.
+    // See https://github.com/mixxxdj/mixxx/issues/16306
+    // We still get another leave event when we release outside WOverview.
+    // Note: casting to QMouseEvent works, but buttons are not reported correctly,
+    // QGuiApplication::mouseButtons() is the way to go here.
+    if (QGuiApplication::mouseButtons() & Qt::LeftButton) {
+        return;
+    }
     if (!m_pCueMenuPopup->isVisible()) {
         m_pHoveredMark.clear();
     }

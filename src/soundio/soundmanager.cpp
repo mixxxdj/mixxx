@@ -1,47 +1,39 @@
 #include "soundio/soundmanager.h"
 
-#include <portaudio.h>
-
 #include <QLibrary>
 #include <QThread>
 #include <QtGlobal>
 #include <cstring> // for memcpy and strcmp
+#include <memory>
 
 #include "control/controlobject.h"
 #include "engine/enginemixer.h"
-#include "engine/sidechain/enginenetworkstream.h"
 #include "moc_soundmanager.cpp"
+#include "preferences/configobject.h"
+#include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceenumerator.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
+#include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/sample.h"
-#include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
-#ifdef Q_OS_IOS
-#include "soundio/soundmanagerios.h"
-#elif defined(Q_OS_ANDROID)
-#include <QtCore/private/qandroidextras_p.h>
-#include <android/api-level.h>
-#include <android/log.h>
-#include <jni.h>
-#include <pa_oboe.h>
-#include <pthread.h>
-#include <sys/syscall.h>
-
-#include <QJniObject>
+#ifdef __PIPEWIRE__
+#include "soundio/pipewireenumerator.h"
 #endif
-
-typedef PaError (*SetJackClientName)(const char *name);
 
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
+#ifdef __PIPEWIRE__
+const ConfigKey kPipeWire = ConfigKey(kAppGroup, QStringLiteral("pipewire"));
+#endif
 
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
@@ -56,17 +48,21 @@ constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
 } // anonymous namespace
 
-SoundManager::SoundManager(UserSettingsPointer pConfig,
-        EngineMixer* pEngineMixer)
+SoundManager::SoundManager(
+        UserSettingsPointer pConfig, EngineMixer* pEngineMixer)
         : m_pEngineMixer(pEngineMixer),
           m_pConfig(pConfig),
-          m_paInitialized(false),
           m_config(this),
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
-          m_audioLatencyOverloadCount(kAppGroup, QStringLiteral("audio_latency_overload_count")),
-          m_audioLatencyOverload(kAppGroup, QStringLiteral("audio_latency_overload")) {
+          m_audioLatencyOverloadCount(
+                  kAppGroup, QStringLiteral("audio_latency_overload_count")),
+          m_audioLatencyOverload(
+                  kAppGroup, QStringLiteral("audio_latency_overload")),
+          m_pNetworkStream(QSharedPointer<EngineNetworkStream>::create(2, 0)),
+          m_pNetworkDevice(QSharedPointer<SoundDeviceNetwork>::create(
+                  pConfig, this, m_pNetworkStream)) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -76,13 +72,14 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
 
-    //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back(mixxx::audio::SampleRate(44100));
-    m_samplerates.push_back(mixxx::audio::SampleRate(48000));
-    m_samplerates.push_back(mixxx::audio::SampleRate(96000));
-
-    m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
-            new EngineNetworkStream(2, 0));
+#ifdef __PIPEWIRE__
+    if (isPipewireSelected()) {
+        m_pEnumerator = std::make_unique<PipewireEnumerator>(m_pConfig, this);
+    } else
+#endif
+    {
+        m_pEnumerator = std::make_unique<PortAudioEnumerator>(m_pConfig, this);
+    }
 
     queryDevices();
 
@@ -101,10 +98,6 @@ SoundManager::~SoundManager() {
     const bool sleepAfterClosing = false;
     clearDeviceList(sleepAfterClosing);
 
-    if (m_paInitialized) {
-        Pa_Terminate();
-        m_paInitialized = false;
-    }
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 
@@ -116,7 +109,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
-    if (filterAPI == SoundManagerConfig::kDefaultAPI) {
+    if (filterAPI == SoundManagerConfig::kAPINone) {
         return QList<SoundDevicePointer>();
     }
 
@@ -124,7 +117,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
     // input/output.
     QList<SoundDevicePointer> filteredDeviceList;
 
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice : m_pEnumerator->queryDevices()) {
         // Skip devices that don't match the API, don't have input channels when
         // we want input devices, or don't have output channels when we want
         // output devices. If searching for both input and output devices,
@@ -132,7 +125,8 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
         const bool hasInputs = pDevice->getNumInputChannels().isValid();
         qDebug() << "SoundManager::getDeviceList" << pDevice->getHostAPI()
-                 << filterAPI << pDevice->getNumOutputChannels()
+                 << pDevice->getDeviceId().debugName() << filterAPI
+                 << pDevice->getNumOutputChannels()
                  << pDevice->getNumInputChannels();
         if (pDevice->getHostAPI() != filterAPI ||
                 (bOutputDevices && !bInputDevices && !hasOutputs) ||
@@ -140,22 +134,15 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
                 (!hasInputs && !hasOutputs)) {
             continue;
         }
+
         filteredDeviceList.push_back(pDevice);
     }
+
     return filteredDeviceList;
 }
 
 QList<QString> SoundManager::getHostAPIList() const {
-    QList<QString> apiList;
-
-    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
-        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
-        if (api && QString(api->name) != "skeleton implementation") {
-            apiList.push_back(api->name);
-        }
-    }
-
-    return apiList;
+    return m_pEnumerator->getAPIs();
 }
 
 void SoundManager::closeDevices(
@@ -166,7 +153,11 @@ void SoundManager::closeDevices(
 #ifdef __LINUX__
     bool closed = false;
 #endif
-    for (const auto& pDevice : std::as_const(m_devices)) {
+    if (m_pNetworkDevice->isOpen()) {
+        m_pNetworkDevice->close();
+    }
+
+    for (const auto& pDevice : m_pEnumerator->queryDevices()) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
@@ -203,8 +194,11 @@ void SoundManager::completeDevicesClosing() {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
-    for (const auto& pDevice : std::as_const(m_devices)) {
-        for (const auto& in: pDevice->inputs()) {
+    std::vector<SoundDevicePointer> devices = m_pEnumerator->queryDevices();
+    devices.push_back(m_pNetworkDevice);
+
+    for (const auto& pDevice : devices) {
+        for (const auto& in : pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
             for (auto it = m_registeredDestinations.constFind(in);
@@ -243,37 +237,38 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     closeDevices(sleepAfterClosing);
 
     // Empty out the list of devices we currently have.
-    m_devices.clear();
     m_pErrorDevice.clear();
 
-    if (m_paInitialized) {
-        Pa_Terminate();
-        m_paInitialized = false;
+    // deinitialize in case of PortAudio so the devices are updated
+#ifdef __PIPEWIRE__
+    if (m_config.getAPI() != SoundManagerConfig::kAPIPipewire)
+#endif
+    {
+        m_pEnumerator->deinitialize();
     }
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
-    if (api == MIXXX_PORTAUDIO_JACK_STRING) {
-        // queryDevices must have been called for this to work, but the
-        // ctor calls it -bkgood
-        QList<mixxx::audio::SampleRate> samplerates;
-        if (m_jackSampleRate.isValid()) {
-            samplerates.append(m_jackSampleRate);
-        }
+    QList<mixxx::audio::SampleRate> samplerates =
+            m_pEnumerator->getSampleRates(api == SoundManagerConfig::kAPIJack);
+    if (!samplerates.empty()) {
         return samplerates;
     }
-    return m_samplerates;
+
+    return QList<mixxx::audio::SampleRate>{
+            mixxx::audio::SampleRate(44100),
+            mixxx::audio::SampleRate(48000),
+            mixxx::audio::SampleRate(96000),
+    };
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
-    return getSampleRates("");
+    return getSampleRates(m_config.getAPI());
 }
 
 void SoundManager::queryDevices() {
     qDebug() << "SoundManager::queryDevices()";
-    queryDevicesPortaudio();
-    queryDevicesMixxx();
-
+    m_pEnumerator->initialize();
     // now tell the prefs that we updated the device list -- bkgood
     emit devicesUpdated();
 }
@@ -282,217 +277,6 @@ void SoundManager::clearAndQueryDevices() {
     const bool sleepAfterClosing = true;
     clearDeviceList(sleepAfterClosing);
     queryDevices();
-}
-
-void SoundManager::queryDevicesPortaudio() {
-    PaError err = paNoError;
-    if (!m_paInitialized) {
-#if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-        setJACKName();
-#endif
-#ifdef Q_OS_IOS
-        mixxx::initializeAVAudioSession();
-#elif defined(Q_OS_ANDROID)
-        QNativeInterface::QAndroidApplication::runOnAndroidMainThread([]() {
-            QJniObject context = QNativeInterface::QAndroidApplication::context();
-            QJniObject AUDIO_SERVICE =
-                    QJniObject::getStaticObjectField(
-                            "android/content/Context",
-                            "AUDIO_SERVICE",
-                            "Ljava/lang/String;");
-            auto audioManager = context.callObjectMethod("getSystemService",
-                    "(Ljava/lang/String;)Ljava/lang/Object;",
-                    AUDIO_SERVICE.object());
-            if (!audioManager.isValid()) {
-                qDebug() << "audioManager invalid";
-                return;
-            }
-            qDebug() << "audioManager valid:" << audioManager.toString();
-
-            jint GET_DEVICES_INPUTS =
-                    QJniObject::getStaticField<jint>(
-                            "android/media/AudioManager",
-                            "GET_DEVICES_INPUTS");
-            jint GET_DEVICES_OUTPUTS =
-                    QJniObject::getStaticField<jint>(
-                            "android/media/AudioManager",
-                            "GET_DEVICES_OUTPUTS");
-
-            auto const isSupported = [](int type) {
-                switch (type) {
-                case 1:  // AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
-                case 2:  // AudioDeviceInfo.TYPE_BUILTIN_SPEAKER
-                case 3:  // AudioDeviceInfo.TYPE_WIRED_HEADSET
-                case 8:  // AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
-                case 11: // AudioDeviceInfo.TYPE_USB_DEVICE
-                case 22: // AudioDeviceInfo.TYPE_USB_HEADSET
-                case 9:  // AudioDeviceInfo.TYPE_HDMI
-                case 10: // AudioDeviceInfo.TYPE_HDMI_ARC
-                case 13: // AudioDeviceInfo.TYPE_DOCK
-                case 15: // AudioDeviceInfo.TYPE_BUILTIN_MIC
-                case 12: // AudioDeviceInfo.TYPE_USB_ACCESSORY
-                case 26: // AudioDeviceInfo.TYPE_BLE_HEADSET
-                case 27: // AudioDeviceInfo.TYPE_BLE_SPEAKER
-                case 23: // AudioDeviceInfo.TYPE_HEARING_AID
-                case 25: // AudioDeviceInfo.TYPE_REMOTE_SUBMIX:
-                    // supported
-                    return true;
-                default:
-                    // unsupported
-                    break;
-                }
-                return false;
-            };
-
-            auto const parse = [isSupported](PaOboe_Direction direction,
-                                       QJniArray<QJniObject>& devices) {
-                for (const auto& device : devices) {
-                    jint type = device->callMethod<jint>("getType");
-                    if (!isSupported(type)) {
-                        continue;
-                    }
-                    QString name = device->callObjectMethod("getProductName",
-                                                 "()Ljava/lang/CharSequence;")
-                                           .toString();
-                    int32_t id = device->callMethod<jint>("getId");
-                    auto channelCounts = device->callMethod<QJniArray<jint>>("getChannelCounts");
-                    int channelCount = *std::max_element(
-                            channelCounts.begin(), channelCounts.end());
-                    auto sampleRates = device->callMethod<QJniArray<jint>>("getSampleRates");
-                    qDebug() << "audioManager - Type:" << type
-                             << "- Name:" << name
-                             << "- ChannelCount:" << channelCount
-                             << channelCounts.size();
-                    if (!sampleRates.isEmpty()) {
-                        int sampleRate = *sampleRates.cbegin();
-                        qDebug() << "audioManager - SampleRates:" << sampleRate;
-                        auto result = PaOboe_RegisterDevice(name.toStdString().c_str(),
-                                id,
-                                direction,
-                                channelCount,
-                                sampleRate);
-                        if (result != paNoError) {
-                            qWarning()
-                                    << "Error registering device to PortAudio:"
-                                    << Pa_GetErrorText(result);
-                        }
-                    }
-                }
-            };
-
-            auto inputDevices =
-                    audioManager.callMethod<QJniArray<QJniObject>>("getDevices",
-                            "(I)[Landroid/media/AudioDeviceInfo;",
-                            GET_DEVICES_INPUTS);
-            qDebug() << "audioManager inputDevices:" << inputDevices.size();
-            parse(PaOboe_Direction::Input, inputDevices);
-
-            auto outputDevices =
-                    audioManager.callMethod<QJniArray<QJniObject>>("getDevices",
-                            "(I)[Landroid/media/AudioDeviceInfo;",
-                            GET_DEVICES_OUTPUTS);
-            qDebug() << "audioManager outputDevices:" << outputDevices.size();
-            parse(PaOboe_Direction::Output, outputDevices);
-
-            QJniObject PROPERTY_OUTPUT_FRAMES_PER_BUFFER =
-                    QJniObject::getStaticField<jstring>(
-                            "android/media/AudioManager",
-                            "PROPERTY_OUTPUT_FRAMES_PER_BUFFER");
-            auto outputFramePerBuffer =
-                    audioManager
-                            .callMethod<jstring>("getProperty",
-                                    "(Ljava/lang/String;)Ljava/lang/String;",
-                                    PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
-                            .toString()
-                            .toUInt();
-            qDebug() << "audioManager outputFramePerBuffer:" << outputFramePerBuffer;
-            PaOboe_SetNativeBufferSize(outputFramePerBuffer);
-        }).waitForFinished();
-        PaOboe_SetNumberOfBuffers(4);
-
-        // The following snippets pins the audio thread to a performance core
-        int32_t thread32 = gettid();
-        uint mask = 0b10000;
-        cpu_set_t cpuset;
-        CPU_ZERO(&cpuset);
-        for (uint32_t i = 0; i < 32; ++i) {
-            if ((mask >> i) & 1) {
-                CPU_SET(i, &cpuset);
-            }
-        }
-        if (sched_setaffinity(thread32, sizeof(cpu_set_t), &cpuset) != 0) {
-            __android_log_print(ANDROID_LOG_WARN, "mixxx", "Error setting CPU affinity: %d", errno);
-        } else {
-            __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "CPU affinity set");
-        }
-#endif
-        err = Pa_Initialize();
-        m_paInitialized = true;
-    }
-    if (err != paNoError) {
-        qDebug() << "Error:" << Pa_GetErrorText(err);
-        m_paInitialized = false;
-        return;
-    }
-
-    int iNumDevices = Pa_GetDeviceCount();
-    if (iNumDevices < 0) {
-        qDebug() << "ERROR: Pa_CountDevices returned" << Pa_GetErrorText(iNumDevices);
-        return;
-    } else if (iNumDevices == 0) {
-        qWarning() << "Pa_CountDevices returned no devices!";
-    } else {
-        qDebug() << "Pa_CountDevices found" << iNumDevices << "devices";
-    }
-    qDebug() << "Pa_GetHostApiCount returns" << Pa_GetHostApiCount();
-
-    // PaDeviceInfo structs have a PaHostApiIndex member, but PortAudio
-    // unfortunately provides no good way to associate this with a persistent,
-    // unique identifier for the API. So, build a QHash to do that and pass
-    // it to the SoundDevicePortAudio constructor.
-    QHash<PaHostApiIndex, PaHostApiTypeId> paApiIndexToTypeId;
-    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
-        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
-        if (api && QString(api->name) != "skeleton implementation") {
-            paApiIndexToTypeId.insert(i, api->type);
-        }
-    }
-
-    const PaDeviceInfo* deviceInfo;
-    for (int i = 0; i < iNumDevices; i++) {
-        deviceInfo = Pa_GetDeviceInfo(i);
-        qDebug() << "Pa_GetDeviceInfo on" << i << deviceInfo;
-        if (!deviceInfo) {
-            continue;
-        }
-        /* deviceInfo fields for quick reference:
-            int     structVersion
-            const char *    name
-            PaHostApiIndex  hostApi
-            int     maxInputChannels
-            int     maxOutputChannels
-            PaTime  defaultLowInputLatency
-            PaTime  defaultLowOutputLatency
-            PaTime  defaultHighInputLatency
-            PaTime  defaultHighOutputLatency
-            double  defaultSampleRate
-         */
-        const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
-        auto currentDevice = SoundDevicePointer(new SoundDevicePortAudio(
-                m_pConfig, this, deviceInfo, deviceTypeId, i));
-        m_devices.push_back(currentDevice);
-        if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
-                    MIXXX_PORTAUDIO_JACK_STRING)) {
-            m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
-                    deviceInfo->defaultSampleRate);
-        }
-    }
-}
-
-void SoundManager::queryDevicesMixxx() {
-    auto currentDevice = SoundDevicePointer(new SoundDeviceNetwork(
-            m_pConfig, this, m_pNetworkStream));
-    m_devices.append(currentDevice);
 }
 
 SoundDeviceStatus SoundManager::setupDevices() {
@@ -539,7 +323,12 @@ SoundDeviceStatus SoundManager::setupDevices() {
     QVector<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
-    for (const auto& pDevice : std::as_const(m_devices)) {
+
+    std::vector<SoundDevicePointer> devices = m_pEnumerator->queryDevices();
+    // here some network device conditions can be separated, currently simply
+    // add it to the list of other devices
+    devices.push_back(m_pNetworkDevice);
+    for (const auto& pDevice : devices) {
         DeviceMode mode = {pDevice, false, false};
         pDevice->clearInputs();
         pDevice->clearOutputs();
@@ -751,7 +540,7 @@ SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
 
 void SoundManager::checkConfig() {
     if (!m_config.checkAPI()) {
-        m_config.setAPI(SoundManagerConfig::kDefaultAPI);
+        m_config.setAPI(SoundManagerConfig::kAPINone);
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
     }
     if (!m_config.checkSampleRate(*this)) {
@@ -778,26 +567,29 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();
         for (auto it = m_registeredDestinations.constFind(in);
-             it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
+                it != m_registeredDestinations.constEnd() && it.key() == in;
+                ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
     }
 }
 
 void SoundManager::writeProcess(SINT framesPerBuffer) const {
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice : m_pEnumerator->queryDevices()) {
         if (pDevice) {
             pDevice->writeProcess(framesPerBuffer);
         }
     }
+    m_pNetworkDevice->writeProcess(framesPerBuffer);
 }
 
 void SoundManager::readProcess(SINT framesPerBuffer) const {
-    for (const auto& pDevice: m_devices) {
+    for (const auto& pDevice : m_pEnumerator->queryDevices()) {
         if (pDevice) {
             pDevice->readProcess(framesPerBuffer);
         }
     }
+    m_pNetworkDevice->readProcess(framesPerBuffer);
 }
 
 void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
@@ -823,31 +615,6 @@ QList<AudioOutput> SoundManager::registeredOutputs() const {
 
 QList<AudioInput> SoundManager::registeredInputs() const {
     return m_registeredDestinations.keys();
-}
-
-void SoundManager::setJACKName() const {
-#ifdef Q_OS_LINUX
-    typedef PaError (*SetJackClientName)(const char *name);
-    QLibrary portaudio("libportaudio.so.2");
-    if (portaudio.load()) {
-        SetJackClientName func(
-            reinterpret_cast<SetJackClientName>(
-                portaudio.resolve("PaJack_SetClientName")));
-        if (func) {
-            // PortAudio does not make a copy of the string we provide it so we
-            // need to make sure it will last forever so we intentionally leak
-            // this string.
-            char* jackNameCopy = strdup(VersionStore::applicationName().toLocal8Bit().constData());
-            if (!func(jackNameCopy)) {
-                qDebug() << "JACK client name set";
-            }
-        } else {
-            qWarning() << "failed to resolve JACK name method";
-        }
-    } else {
-        qWarning() << "failed to load portaudio for JACK rename";
-    }
-#endif
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {
@@ -883,3 +650,23 @@ void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
         --m_underflowUpdateCount;
     }
 }
+
+void SoundManager::addDevice(SoundDevicePointer pDevice) {
+    qDebug() << "SoundManager::addDevice" << pDevice->getDisplayName();
+    emit deviceAdded(pDevice);
+}
+
+void SoundManager::removeDevice(SoundDevicePointer pDevice) {
+    qDebug() << "SoundManager::removeDevice" << pDevice->getDisplayName();
+    emit deviceRemoved(pDevice);
+}
+
+void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
+    emit deviceChannelsUpdated(pDevice);
+}
+
+#ifdef __PIPEWIRE__
+bool SoundManager::isPipewireSelected() {
+    return CmdlineArgs::Instance().getDeveloper() && m_pConfig->getValue(kPipeWire, false);
+}
+#endif

@@ -21,12 +21,12 @@
 #ifndef __ANDROID__
 BulkEnumerator::BulkEnumerator()
         : ControllerEnumerator(),
-          m_context(nullptr) {
+          m_pContext(nullptr) {
     int r;
-    r = libusb_init(&m_context);
+    r = libusb_init(&m_pContext);
     VERIFY_OR_DEBUG_ASSERT(r == 0) {
         qCritical() << "libusb_init failed" << libusb_error_name(r);
-        m_context = nullptr;
+        m_pContext = nullptr;
     }
 }
 #else
@@ -39,8 +39,8 @@ BulkEnumerator::~BulkEnumerator() {
         delete m_devices.takeLast();
     }
 #ifndef __ANDROID__
-    if (m_context) {
-        libusb_exit(m_context);
+    if (m_pContext) {
+        libusb_exit(m_pContext);
     }
 #endif
 }
@@ -80,47 +80,47 @@ QList<Controller*> BulkEnumerator::queryDevices() {
             "found %d USB devices for BULK enumerator",
             deviceList.size());
 
-    for (const auto& usbDevice : deviceList) {
+    for (const auto& pUsbDevice : deviceList) {
         const uint16_t idVendor = static_cast<unsigned short>(
-                usbDevice->callMethod<jint>("getVendorId"));
+                pUsbDevice->callMethod<jint>("getVendorId"));
         ;
         const uint16_t idProduct = static_cast<unsigned short>(
-                usbDevice->callMethod<jint>("getProductId"));
+                pUsbDevice->callMethod<jint>("getProductId"));
         ;
         if (is_interesting(idVendor, idProduct)) {
-            BulkController* currentDevice =
-                    new BulkController(usbDevice);
-            m_devices.push_back(currentDevice);
+            BulkController* pCurrentDevice =
+                    new BulkController(pUsbDevice);
+            m_devices.push_back(pCurrentDevice);
         }
     }
 #else
-    VERIFY_OR_DEBUG_ASSERT(m_context) {
+    VERIFY_OR_DEBUG_ASSERT(m_pContext) {
         return {};
     }
-    libusb_device **list;
-    ssize_t cnt = libusb_get_device_list(m_context, &list);
+    libusb_device** ppList;
+    ssize_t cnt = libusb_get_device_list(m_pContext, &ppList);
     ssize_t i = 0;
     int err = 0;
 
     for (i = 0; i < cnt; i++) {
-        libusb_device *device = list[i];
+        libusb_device* pDevice = ppList[i];
         struct libusb_device_descriptor desc;
 
-        libusb_get_device_descriptor(device, &desc);
+        libusb_get_device_descriptor(pDevice, &desc);
         if (is_interesting(desc.idVendor, desc.idProduct)) {
-            struct libusb_device_handle* handle = nullptr;
-            err = libusb_open(device, &handle);
+            struct libusb_device_handle* pHandle = nullptr;
+            err = libusb_open(pDevice, &pHandle);
             if (err) {
                 qWarning() << "Error opening a device:" << libusb_error_name(err);
                 continue;
             }
 
-            BulkController* currentDevice =
-                    new BulkController(m_context, handle, &desc);
-            m_devices.push_back(currentDevice);
+            BulkController* pCurrentDevice =
+                    new BulkController(m_pContext, pHandle, &desc);
+            m_devices.push_back(pCurrentDevice);
         }
     }
-    libusb_free_device_list(list, 1);
+    libusb_free_device_list(ppList, 1);
 #endif
     return m_devices;
 }

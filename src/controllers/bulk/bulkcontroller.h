@@ -3,6 +3,7 @@
 #include <QAtomicInt>
 #include <QThread>
 #include <optional>
+
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
 #endif
@@ -12,26 +13,49 @@
 
 struct libusb_device_handle;
 struct libusb_context;
+struct libusb_transfer;
 
 /// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:
-    BulkReader(libusb_device_handle *handle, unsigned char in_epaddr);
-    virtual ~BulkReader();
+    BulkReader(libusb_device_handle* pHandle,
+            libusb_context* pContext,
+            std::uint8_t in_epaddr,
+            int length);
+    ~BulkReader() override;
 
+    static void transferFinishedCb(libusb_transfer* pTransfer);
     void stop();
 
   signals:
     void incomingData(const QByteArray& data, mixxx::Duration timestamp);
 
   protected:
-    void run();
+    void run() override;
 
   private:
-    libusb_device_handle* m_phandle;
+    struct bulk_transfer_cb_data {
+        BulkReader* pReader;
+        int completed;
+        std::mutex mutex;
+        std::condition_variable cv;
+    };
+
+    libusb_transfer* transfer_create(libusb_device_handle* pHandle,
+            std::uint8_t epaddr,
+            int length,
+            unsigned int timeout);
+    void transfer_destroy(libusb_transfer** ppTransfer);
+    void handleTransfer(libusb_transfer* pTransfer);
+
     QAtomicInt m_stop;
-    unsigned char m_in_epaddr;
+    libusb_transfer* m_pInTransfer;
+    libusb_context* m_pContext;
+    libusb_device_handle* m_pHandle;
+    bulk_transfer_cb_data m_cb_data;
+    std::uint8_t m_in_epaddr;
+    int m_in_length;
 };
 
 class BulkController : public Controller {
@@ -39,9 +63,9 @@ class BulkController : public Controller {
   public:
 #ifndef Q_OS_ANDROID
     BulkController(
-            libusb_context* context,
-            libusb_device_handle* handle,
-            struct libusb_device_descriptor* desc);
+            libusb_context* pContext,
+            libusb_device_handle* pHandle,
+            struct libusb_device_descriptor* pDesc);
 #else
     BulkController(
             const QJniObject& usbDevice);
@@ -114,8 +138,8 @@ class BulkController : public Controller {
 
     bool matchProductInfo(const ProductInfo& product);
 
-    libusb_context* m_context;
-    libusb_device_handle *m_phandle;
+    libusb_context* m_pContext;
+    libusb_device_handle* m_pHandle;
 #ifdef Q_OS_ANDROID
     QJniObject m_androidUsbDevice;
     QJniObject m_androidConnection;
@@ -126,6 +150,7 @@ class BulkController : public Controller {
     std::uint16_t m_vendorId;
     std::uint16_t m_productId;
     std::uint8_t m_inEndpointAddr;
+    int m_inLength;
     std::uint8_t m_outEndpointAddr;
     std::optional<std::uint8_t> m_interfaceNumber;
 
@@ -133,6 +158,6 @@ class BulkController : public Controller {
     QString m_product;
 
     QString m_sUID;
-    BulkReader* m_pReader;
+    std::unique_ptr<BulkReader> m_pReader;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
 };

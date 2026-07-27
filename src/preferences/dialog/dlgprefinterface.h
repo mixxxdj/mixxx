@@ -19,7 +19,7 @@ class SkinLoader;
 }
 } // namespace mixxx
 
-class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
+class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg {
     Q_OBJECT
   public:
     DlgPrefInterface(
@@ -50,7 +50,9 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   private:
     void notifyRebootNecessary();
+    void notifyExperimentalQmlSkinRestartNecessary();
     void loadTooltipPreferenceFromConfig();
+    void updateScreenMetrics();
 
     // Because the CueDefault list is out of order, we have to set the combo
     // box using the user data, not the index.  Returns the index of the item

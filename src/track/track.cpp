@@ -432,11 +432,6 @@ bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
     return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, false);
 }
 
-bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
-    auto locked = lockMutex(&m_qMutex);
-    return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, true);
-}
-
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     if (m_pBeats == pBeats) {
         return false;
@@ -465,9 +460,10 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
 bool Track::trySetBeatsWhileLocked(
         mixxx::BeatsPointer pBeats,
         bool lockBpmAfterSet) {
-    if (m_pBeats && m_record.getBpmLocked()) {
-        // Track has already a valid and locked beats object, abort.
-        qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
+    if (m_record.getBpmLocked()) {
+        // The BPM is locked, so the beatgrid must not be changed - regardless
+        // of whether one currently exists.
+        qDebug() << "Track is BPM-locked. Discarding new beats";
         return false;
     }
 
@@ -927,7 +923,7 @@ const ConstWaveformPointer& Track::getWaveform() const {
 }
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
+    m_waveform = std::move(pWaveform);
     emit waveformUpdated();
 }
 
@@ -949,12 +945,12 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     }
 
     // Store the cue point as main cue
-    CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
+    CuePointer pMainCue = findCueByType(mixxx::CueType::MainCue);
     if (position.isValid()) {
-        if (pLoadCue) {
-            pLoadCue->setStartPosition(position);
+        if (pMainCue) {
+            pMainCue->setStartPosition(position);
         } else {
-            pLoadCue = CuePointer(new Cue(
+            pMainCue = CuePointer(new Cue(
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
                     position,
@@ -963,16 +959,16 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
-            pLoadCue->moveToThread(thread());
-            connect(pLoadCue.get(),
+            pMainCue->moveToThread(thread());
+            connect(pMainCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
-            m_cuePoints.push_back(pLoadCue);
+            m_cuePoints.push_back(pMainCue);
         }
-    } else if (pLoadCue) {
-        disconnect(pLoadCue.get(), nullptr, this, nullptr);
-        m_cuePoints.removeOne(pLoadCue);
+    } else if (pMainCue) {
+        disconnect(pMainCue.get(), nullptr, this, nullptr);
+        m_cuePoints.removeOne(pMainCue);
     }
 
     markDirtyAndUnlock(&locked);
@@ -1179,11 +1175,11 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
-    // If loop cues are removed, also clear the last active loop
-    if (type == mixxx::CueType::Loop) {
-        emit loopRemove();
-    }
     if (dirty) {
+        // If loop cues have been removed, also clear the last active loop
+        if (type == mixxx::CueType::Loop) {
+            emit loopRemove();
+        }
         markDirtyAndUnlock(&locked);
         emit cuesUpdated();
     }
