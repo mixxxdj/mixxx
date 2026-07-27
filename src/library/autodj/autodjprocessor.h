@@ -273,6 +273,12 @@ class AutoDJProcessor : public QObject {
     double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
+
+    // tryInitiateOverlapTransition checks to see if we are nearing the transition point, and if so,
+    // sets up the other deck to align with this one. The goal is to get a sample-perfect transition
+    // point which enables gapless playback. Returns true if the overlap was initiated and the
+    // this deck has started playing in preroll.
+    bool tryInitiateOverlapTransition(DeckAttributes *thisDeck, DeckAttributes *otherDeck, double thisPlayPosition);
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateTransition(DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,

@@ -790,42 +790,13 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             return;
         }
     }
-
-    // Start the toDeck early so it is already playing (and not cold-starting)
-    // by the time the crossfader transition begins.  We trigger kEarlyPlaySeconds
-    // before fadeBeginPos and seek the toDeck back by however much time actually
-    // remain until fadeBeginPos at that moment.
+    // If we are still playing normally (idle) then we might want to start prerolling the
+    // other deck to get a perfect transition.
     if (m_eState == ADJ_IDLE && thisDeck->isFromDeck && !otherDeck->loading &&
             thisDeckPlaying && !otherDeckPlaying &&
             otherDeck->startPos != kKeepPosition) {
-        const double fromDeckDurationSec = getEndSecond(thisDeck);
-        if (fromDeckDurationSec > 0.0) {
-            constexpr double kEarlyPlaySeconds = 1.0;
-            const double earlyPlayPos =
-                    thisDeck->fadeBeginPos - (kEarlyPlaySeconds / fromDeckDurationSec);
-            if (thisPlayPosition >= earlyPlayPos &&
-                    thisPlayPosition < thisDeck->fadeBeginPos) {
-                const double toDeckDurationSec = getEndSecond(otherDeck);
-                if (toDeckDurationSec > 0.0) {
-                    // Seek the toDeck back by the exact number of seconds remaining
-                    // until fadeBeginPos so that startPos aligns with the fade start,
-                    // regardless of where in the buffer window this callback fired.
-                    const double secondsUntilFade =
-                            (thisDeck->fadeBeginPos - thisPlayPosition) * fromDeckDurationSec;
-                    const double earlyStartPos =
-                            otherDeck->startPos - (secondsUntilFade / toDeckDurationSec);
-                    otherDeck->setPlayPosition(earlyStartPos);
-                    otherDeck->play();
-                    m_eState = ADJ_PREROLLING;
-
-                    if constexpr (sDebug) {
-                        qDebug() << this << "playerPositionChanged"
-                                 << "early play toDeck at" << earlyStartPos
-                                 << "(" << secondsUntilFade << "s before startPos"
-                                 << otherDeck->startPos << ")";
-                    }
-                }
-            }
+        if (tryInitiateOverlapTransition(thisDeck, otherDeck, thisPlayPosition)) {
+            m_eState = ADJ_PREROLLING;
         }
     }
 
@@ -922,6 +893,41 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // step is processed and we can stop the deck.
         }
     }
+}
+
+bool AutoDJProcessor::tryInitiateOverlapTransition(DeckAttributes* thisDeck, DeckAttributes* otherDeck, double thisPlayPosition) {
+    const double fromDeckDurationSec = getEndSecond(thisDeck);
+    const double toDeckDurationSec = getEndSecond(otherDeck);
+    if (fromDeckDurationSec <= 0.0 || toDeckDurationSec <= 0.0) {
+        return false;
+    }
+    constexpr double kEarlyPlaySeconds = 1.0;
+    const double earlyPlayPos =
+            thisDeck->fadeBeginPos - (kEarlyPlaySeconds / fromDeckDurationSec);
+
+    // Don't initiate an overlap transition either if it's too soon, or too late. (If it's too late
+    // we should just immediately start the other deck.)
+    if (thisPlayPosition < earlyPlayPos || thisPlayPosition > thisDeck->fadeBeginPos) {
+        return false;
+    }
+
+    // Seek the toDeck back by the exact number of seconds remaining
+    // until fadeBeginPos so that startPos aligns with the fade start,
+    // regardless of where in the buffer window this callback fired.
+    const double secondsUntilFade =
+            (thisDeck->fadeBeginPos - thisPlayPosition) * fromDeckDurationSec;
+    const double earlyStartPos =
+            otherDeck->startPos - (secondsUntilFade / toDeckDurationSec);
+    otherDeck->setPlayPosition(earlyStartPos);
+    otherDeck->play();
+
+    if constexpr (sDebug) {
+        qDebug() << this << "playerPositionChanged"
+                 << "early play toDeck at" << earlyStartPos
+                 << "(" << secondsUntilFade << "s before startPos"
+                 << otherDeck->startPos << ")";
+    }
+    return true;
 }
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {

@@ -1913,11 +1913,12 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_EarlyPlay_PreRoll) {
 
     // Seek deck1 to the early-play trigger point (fadeBeginPos - 1s = 0.89).
     // Deck2 should now be playing and seeked 1 second before its startPos,
-    // i.e. at -0.01.  State remains IDLE – the crossfader has not moved yet.
+    // i.e. at -0.01.  State is PREROLLING – the crossfader has not moved yet but
+    // the other deck is playing.
     deck1.playposition.set(0.89);
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
     EXPECT_NEAR(-0.01, deck2.playposition.get(), 1e-9);
-    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_EQ(AutoDJProcessor::ADJ_PREROLLING, pProcessor->getState());
     EXPECT_DOUBLE_EQ(-1.0, mixer.crossfader.get());
 
     // Advance deck1 to fadeBeginPos (0.9). The transition starts; deck2 was
