@@ -7,6 +7,7 @@
 #include "library/scanner/importfilestask.h"
 #include "library/scanner/libraryscanner.h"
 #include "moc_recursivescandirectorytask.cpp"
+#include "util/fileinfo.h"
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
@@ -43,6 +44,7 @@ void RecursiveScanDirectoryTask::run() {
     std::list<QFileInfo> filesToImport;
     std::list<QFileInfo> possibleCovers;
     std::list<mixxx::FileInfo> dirsToScan;
+    QStringList presentTrackLocations;
 
     QCryptographicHash hasher(QCryptographicHash::Sha256);
 
@@ -63,6 +65,11 @@ void RecursiveScanDirectoryTask::run() {
             if (supportedExtensionsMatch.hasMatch()) {
                 hasher.addData(currentFile.toUtf8());
                 filesToImport.push_back(currentFileInfo);
+                // Record the canonical track location used by track_locations
+                // so the unchanged-hash path can clear fs_deleted only for
+                // files that are still physically present in this directory.
+                presentTrackLocations.append(
+                        mixxx::FileInfo(currentFileInfo).location());
             } else {
                 const QRegularExpressionMatch supportedCoverExtensionsMatch =
                         supportedCoverExtensionsRegex.match(fileName);
@@ -109,7 +116,7 @@ void RecursiveScanDirectoryTask::run() {
                 emit directoryHashedAndScanned(dirLocation, !prevHashExists, newHash);
             }
         } else {
-            emit directoryUnchanged(dirLocation);
+            emit directoryUnchanged(dirLocation, presentTrackLocations);
         }
     } else {
         m_scannerGlobal->addUnhashedDir(m_dirAccess);

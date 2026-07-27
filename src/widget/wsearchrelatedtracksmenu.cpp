@@ -167,14 +167,14 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             double bpmUpperBound = 0.0;
             std::tie(bpmLowerBound, bpmUpperBound) = pBpmNode->getBpmRange();
             const QString searchQuery =
-                    QStringLiteral("bpm:>=") +
+                    QStringLiteral("bpm:") +
                     QString::number(bpmLowerBound) +
-                    QStringLiteral(" bpm:<=") +
+                    QStringLiteral("-") +
                     QString::number(bpmUpperBound);
             addTriggerSearchAction(&addSeparatorBeforeNextAction,
                     searchQuery,
                     tr("BPM"),
-                    tr("between %1 and %2")
+                    tr("%1 - %2")
                             .arg(QString::number(bpmLowerBound),
                                     QString::number(bpmUpperBound)));
         }

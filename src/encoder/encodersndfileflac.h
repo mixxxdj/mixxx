@@ -20,6 +20,7 @@ class EncoderSndfileFlac : public EncoderWave {
 
     void setEncoderSettings(const EncoderSettings& settings) override;
     void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
+    void flush() override;
 
   protected:
     void initStream() override;

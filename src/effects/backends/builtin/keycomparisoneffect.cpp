@@ -24,6 +24,26 @@ namespace {
 constexpr std::array<int, 13> kKeySemitoneOffset = {
         -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3};
 
+// Semitone intervals added on top of the root for each chord mode.
+// Note: root only. Major: root + major third + fifth. Minor: root + minor third + fifth.
+constexpr std::array<int, 3> kChordIntervalsNote = {0, 0, 0};
+constexpr std::array<int, 3> kChordIntervalsMajor = {0, 4, 7};
+constexpr std::array<int, 3> kChordIntervalsMinor = {0, 3, 7};
+
+int chordSize(int chordMode) {
+    return chordMode == 0 ? 1 : 3;
+}
+
+std::span<const int> chordIntervals(int chordMode) {
+    if (chordMode == 1) {
+        return std::span<const int>(kChordIntervalsMajor);
+    }
+    if (chordMode == 2) {
+        return std::span<const int>(kChordIntervalsMinor);
+    }
+    return std::span<const int>(kChordIntervalsNote.data(), 1);
+}
+
 // Resamples monoSource into monoDest using linear interpolation at pitchRatio.
 // Returns the number of source frames consumed so the caller can resume
 // from the correct position in the next buffer.
@@ -220,6 +240,17 @@ EffectManifestPointer KeyComparisonEffect::getManifest() {
     gain->setNeutralPointOnScale(24.0 / 27.0);
     gain->setRange(-24.0, -5.0, 3.0);
 
+    EffectManifestParameterPointer chord = pManifest->addParameter();
+    chord->setId(QStringLiteral("chord"));
+    chord->setName(QObject::tr("Chord"));
+    chord->setShortName(QObject::tr("Chord"));
+    chord->setDescription(QObject::tr(
+            "0 = single note  1 = major chord  2 = minor chord"));
+    chord->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
+    chord->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    chord->setDefaultLinkType(EffectManifestParameter::LinkType::None);
+    chord->setRange(0.0, 0.0, 2.0);
+
     return pManifest;
 }
 
@@ -231,6 +262,7 @@ void KeyComparisonEffect::loadEngineEffectParameters(
     m_pMeasureParameter = parameters.value(QStringLiteral("measure"));
     m_pSyncParameter = parameters.value(QStringLiteral("sync"));
     m_pGainParameter = parameters.value(QStringLiteral("gain"));
+    m_pChordParameter = parameters.value(QStringLiteral("chord"));
 }
 
 void KeyComparisonEffect::processChannel(
@@ -269,15 +301,15 @@ void KeyComparisonEffect::processChannel(
             const bool justMissedBeat =
                     *groupFeatures.beat_fraction_buffer_end < 0.25;
             pGroupState->m_fireImmediately = justMissedBeat;
-            pGroupState->m_srcFramePos =
-                    static_cast<double>(m_pianoSample.size());
+            pGroupState->m_srcFramePos.fill(
+                    static_cast<double>(m_pianoSample.size()));
             pGroupState->m_framesSinceLastNote = m_pianoSample.size();
         } else {
             // In unsynced mode, fire the first note immediately via
             // m_fireImmediately. Silence the tail path so the note
             // does not play twice on the first buffer.
-            pGroupState->m_srcFramePos =
-                    static_cast<double>(m_pianoSample.size());
+            pGroupState->m_srcFramePos.fill(
+                    static_cast<double>(m_pianoSample.size()));
             pGroupState->m_framesSinceLastNote = 0;
             pGroupState->m_fireImmediately = true;
         }
@@ -304,17 +336,30 @@ void KeyComparisonEffect::processChannel(
     const CSAMPLE_GAIN gain =
             db2ratio(static_cast<float>(m_pGainParameter->value()));
 
+    const int chordMode = std::clamp(
+            static_cast<int>(std::round(m_pChordParameter->value())),
+            0,
+            2);
+    const std::span<const int> intervals = chordIntervals(chordMode);
+    // Scale gain so a chord plays at roughly the same loudness as a single note.
+    const CSAMPLE_GAIN chordGain = gain / static_cast<float>(chordSize(chordMode));
+
     // Continue the note tail from the previous buffer.
-    // m_srcFramePos tracks the source position directly so that changing
-    // pitchRatio mid-note does not cause a position jump and crack.
+    // m_srcFramePos tracks the source position in the root note's pitch space.
+    // Chord notes share the same position and are mixed in at their own pitch ratios.
     {
         const std::size_t tailFrames = output.size() / mixxx::kEngineChannelOutputCount;
         std::span<CSAMPLE> tailMono(pGroupState->m_tempMono.data(), tailFrames);
-        const auto srcOffset = static_cast<std::size_t>(pGroupState->m_srcFramePos);
-        resampleMono(subspanClamped(m_pianoSample, srcOffset), tailMono, pitchRatio);
-        SampleUtil::addMonoToStereoWithGain(gain, pOutput, tailMono.data(), tailFrames);
-        pGroupState->m_srcFramePos +=
-                static_cast<double>(engineParameters.framesPerBuffer()) * pitchRatio;
+        for (std::size_t i = 0; i < static_cast<std::size_t>(intervals.size()); ++i) {
+            const double notePitch = pitchRatio *
+                    std::pow(2.0, static_cast<double>(intervals[i]) / 12.0);
+            const auto srcOffset =
+                    static_cast<std::size_t>(pGroupState->m_srcFramePos[i]);
+            resampleMono(subspanClamped(m_pianoSample, srcOffset), tailMono, notePitch);
+            SampleUtil::addMonoToStereoWithGain(chordGain, pOutput, tailMono.data(), tailFrames);
+            pGroupState->m_srcFramePos[i] +=
+                    static_cast<double>(engineParameters.framesPerBuffer()) * notePitch;
+        }
     }
     pGroupState->m_framesSinceLastNote += engineParameters.framesPerBuffer();
 
@@ -355,12 +400,19 @@ void KeyComparisonEffect::processChannel(
     {
         const std::size_t onsetFrames = noteStart.size() / mixxx::kEngineChannelOutputCount;
         std::span<CSAMPLE> onsetMono(pGroupState->m_tempMono.data(), onsetFrames);
-        const std::size_t srcConsumed =
-                resampleMono(m_pianoSample, onsetMono, pitchRatio);
-        SampleUtil::addMonoToStereoWithGain(
-                gain, noteStart.data(), onsetMono.data(), onsetFrames);
-        // Reset source position and output counter from the onset playback.
-        pGroupState->m_srcFramePos = static_cast<double>(srcConsumed);
-        pGroupState->m_framesSinceLastNote = srcConsumed;
+        std::size_t rootConsumed = 0;
+        for (std::size_t i = 0; i < static_cast<std::size_t>(intervals.size()); ++i) {
+            const double notePitch = pitchRatio *
+                    std::pow(2.0, static_cast<double>(intervals[i]) / 12.0);
+            const std::size_t consumed =
+                    resampleMono(m_pianoSample, onsetMono, notePitch);
+            SampleUtil::addMonoToStereoWithGain(
+                    chordGain, noteStart.data(), onsetMono.data(), onsetFrames);
+            pGroupState->m_srcFramePos[i] = static_cast<double>(consumed);
+            if (i == 0) {
+                rootConsumed = consumed;
+            }
+        }
+        pGroupState->m_framesSinceLastNote = rootConsumed;
     }
 }

@@ -31,8 +31,6 @@ void HiddenTableModel::setTableModel() {
             "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
             " AS SELECT " + columns.join(",") +
             " FROM library "
-            "INNER JOIN track_locations "
-            "ON library.location=track_locations.id "
             "WHERE mixxx_deleted=1");
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();

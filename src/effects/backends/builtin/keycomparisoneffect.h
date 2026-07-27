@@ -28,10 +28,10 @@ class KeyComparisonGroupState final : public EffectState {
     // Temporary mono buffer for the resampling step. Sized to framesPerBuffer
     // in audioParametersChanged so no allocation happens on the audio thread.
     std::vector<CSAMPLE> m_tempMono;
-    // Tracks position in the piano sample in source frames. Stored as double
-    // so that changing pitchRatio mid-note does not cause a position jump and
-    // the resulting crack.
-    double m_srcFramePos = 0.0;
+    // Tracks playback position for each chord note (root, third, fifth).
+    // Stored as double so that changing pitchRatio mid-note does not cause
+    // a position jump and crack. Index 0 = root, 1 = third, 2 = fifth.
+    std::array<double, 3> m_srcFramePos = {0.0, 0.0, 0.0};
     std::size_t m_framesSinceLastNote = 0;
     mixxx::audio::SampleRate m_sampleRate;
     // Counts beats since last note fired, used to implement the Measure knob
@@ -76,6 +76,7 @@ class KeyComparisonEffect
     EngineEffectParameterPointer m_pMeasureParameter;
     EngineEffectParameterPointer m_pSyncParameter;
     EngineEffectParameterPointer m_pGainParameter;
+    EngineEffectParameterPointer m_pChordParameter;
 
     DISALLOW_COPY_AND_ASSIGN(KeyComparisonEffect);
 };

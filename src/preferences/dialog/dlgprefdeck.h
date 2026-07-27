@@ -4,6 +4,7 @@
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/defs_keylock.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "preferences/interface.h"

@@ -229,6 +229,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
 
+    std::unique_ptr<ControlPushButton> m_pStarsOne;
+    std::unique_ptr<ControlPushButton> m_pStarsTwo;
+    std::unique_ptr<ControlPushButton> m_pStarsThree;
+    std::unique_ptr<ControlPushButton> m_pStarsFour;
+    std::unique_ptr<ControlPushButton> m_pStarsFive;
+
     std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
 
     parented_ptr<ControlProxy> m_pReplayGain;
@@ -241,5 +247,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pHighFilterKill;
     parented_ptr<ControlProxy> m_pPreGain;
     parented_ptr<ControlProxy> m_pRateRatio;
+    parented_ptr<ControlProxy> m_pPitch;
     parented_ptr<ControlProxy> m_pPitchAdjust;
+    parented_ptr<ControlProxy> m_pKeylock;
+    parented_ptr<ControlProxy> m_pKeylockMode;
 };

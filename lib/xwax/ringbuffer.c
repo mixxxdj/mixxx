@@ -48,13 +48,8 @@ void rb_free(struct ringbuffer *rb)
     if (!rb)
         return;
 
-    if (rb->data) {
-        free(rb->data);
-        rb->data = NULL;
-    }
-
+    free(rb->data);
     free(rb);
-    rb = NULL;
 }
 
 /*

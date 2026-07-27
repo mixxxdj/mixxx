@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtQuick.Dialogs
 import Qt5Compat.GraphicalEffects
 import Mixxx 1.0 as Mixxx
 import "." as Setting
@@ -65,7 +64,6 @@ Category {
         keyPaletteInput.selected = Mixxx.Config.configKeyColorsEnabled ? "on" : "off";
         keyPaletteComboBox.currentIndex = keyPaletteComboBox.model.indexOf(Mixxx.Config.configKeyColorPalette);
         colorPane.hotcuePaletteColorIndex = Mixxx.Config.controlHotcueDefaultColorIndex;
-        console.log(colorPane.hotcuePaletteColorIndex, Mixxx.Config.controlHotcueDefaultColorIndex);
         if (colorPane.hotcuePaletteColorIndex < 0)
             colorPane.hotcuePaletteColorIndex = colorPane.defaultPalette.length - 1;
         hotcuePaletteInput.currentIndex = colorPane.hotcuePaletteColorIndex;
@@ -88,10 +86,10 @@ Category {
     }
     function saveDeck() {
         Mixxx.Config.controlCueDefault = cueModeInput.currentIndex;
-        Mixxx.Config.controlSetIntroStartAtMainCue = setIntroStartToMainCueInput.enabled;
+        Mixxx.Config.controlSetIntroStartAtMainCue = setIntroStartToMainCueInput.selected === "on";
         Mixxx.Config.controlPositionDisplay = trackTimeDisplayInput.options.indexOf(trackTimeDisplayInput.selected);
         Mixxx.Config.controlTimeFormat = timeMode.currentIndex;
-        Mixxx.Config.controlCloneDeckOnLoadDoubleTap = doublePressLoadToCloneInput.enabled;
+        Mixxx.Config.controlCloneDeckOnLoadDoubleTap = doublePressLoadToCloneInput.selected === "on";
         Mixxx.Config.controlCueRecall = trackLoadPointInput.currentIndex;
         Mixxx.Config.controlLoadWhenDeckPlaying = loadingTrackWhenPlayingInput.options.indexOf(loadingTrackWhenPlayingInput.selected);
         Mixxx.Config.controlSpeedAutoReset = resetOnTrackLoadInput.options.indexOf(resetOnTrackLoadInput.selected);
@@ -121,15 +119,15 @@ Category {
         // layoutInput.value =
         Mixxx.Config.libraryTooltips = tooltipsInput.options.indexOf(tooltipsInput.selected);
         Mixxx.Config.libraryInhibitScreensaver = disableScreensaverInput.options.indexOf(disableScreensaverInput.selected);
-        Mixxx.Config.configStartInFullscreenKey = startFullscreenInput.enabled;
-        Mixxx.Config.libraryHideMenuBar = autoHideMenuBarInput.enabled;
-        Mixxx.Config.libraryEnableSearchCompletions = searchCompletionInput.enabled;
-        Mixxx.Config.libraryEnableSearchHistoryShortcuts = searchHistoryKeyboardInput.enabled;
+        Mixxx.Config.configStartInFullscreenKey = startFullscreenInput.selected === "on";
+        Mixxx.Config.libraryHideMenuBar = autoHideMenuBarInput.selected === "on";
+        Mixxx.Config.libraryEnableSearchCompletions = searchCompletionInput.selected === "on";
+        Mixxx.Config.libraryEnableSearchHistoryShortcuts = searchHistoryKeyboardInput.selected === "on";
         Mixxx.Config.libraryBpmColumnPrecision = bpmPrecisionInput.value;
         Mixxx.Config.libraryRowHeight = libraryRowHeightInput.value;
         Mixxx.Config.configTrackColorPalette = trackPaletteComboBox.model[trackPaletteComboBox.currentIndex];
         Mixxx.Config.configHotcueColorPalette = hotcuePaletteComboBox.model[hotcuePaletteComboBox.currentIndex];
-        Mixxx.Config.configKeyColorsEnabled = keyPaletteInput.enabled;
+        Mixxx.Config.configKeyColorsEnabled = keyPaletteInput.selected === "on";
         Mixxx.Config.configKeyColorPalette = keyPaletteComboBox.model[keyPaletteComboBox.currentIndex];
         // keyPaletteInput.value
         Mixxx.Config.controlHotcueDefaultColorIndex = hotcuePaletteInput.currentIndex;

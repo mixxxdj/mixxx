@@ -1,6 +1,6 @@
 #include "qml/qmlconfigproxy.h"
 
-#include <qglobal.h>
+#include <Qt>
 
 #include "library/basetracktablemodel.h"
 #include "library/library.h"
@@ -16,17 +16,13 @@
                 DEFAULT);                                     \
     }
 
-#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                      \
-    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                   \
-    void QmlConfigProxy::set_##NAME(                                        \
-            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type \
-                    value) {                                                \
-        if (value == DEFAULT) {                                             \
-            m_pConfig->remove(ConfigKey(GROUP, KEY));                       \
-            return;                                                         \
-        }                                                                   \
-        m_pConfig->setValue(ConfigKey(GROUP, KEY), value);                  \
-        emit NAME##Changed();                                               \
+#define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                       \
+    PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                    \
+    void QmlConfigProxy::set_##NAME(                                         \
+            std::conditional_t<(sizeof(TYPE) <= 16), TYPE, const TYPE&>      \
+                    value) {                                                 \
+        setConfigValueAndNotify<TYPE>(                                       \
+                GROUP, KEY, value, DEFAULT, &QmlConfigProxy::NAME##Changed); \
     }
 
 namespace {
@@ -41,17 +37,31 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
 const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlGroup = QStringLiteral("[Control]");
+const QString kWaveformGroup = QStringLiteral("[Waveform]");
+const QString kControlsGroup = QStringLiteral("[Controls]");
 const QString kLibraryGroup = QStringLiteral("[Library]");
 const QString kBpmGroup = QStringLiteral("[BPM]");
 
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 const QString k3DHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 
-const QString kWaveformGroup = QStringLiteral("[Waveform]");
-const QString kWaveformZoomSynchronizationKey = QStringLiteral("ZoomSynchronization");
-const QString kWaveformDefaultZoomKey = QStringLiteral("DefaultZoom");
-const bool kWaveformZoomSynchronizationDefault = true;
-const double kWaveformDefaultZoomDefault = 3.0;
+// Waveform group
+const QString kZoomSynchronizationKey = QStringLiteral("ZoomSynchronization");
+const QString kOverviewNormalizedKey = QStringLiteral("OverviewNormalized");
+const QString kDefaultZoomKey = QStringLiteral("DefaultZoom");
+const QString kPlayMarkerPositionKey = QStringLiteral("PlayMarkerPosition");
+const QString kUntilMarkShowBeatsKey = QStringLiteral("UntilMarkShowBeats");
+const QString kUntilMarkShowTimeKey = QStringLiteral("UntilMarkShowTime");
+const QString kUntilMarkAlignKey = QStringLiteral("UntilMarkAlign");
+const QString kUntilMarkTextPointSizeKey = QStringLiteral("UntilMarkTextPointSize");
+const QString kVisualGainAllKey = QStringLiteral("VisualGain_0");
+const QString kVisualGainLowKey = QStringLiteral("VisualGain_1");
+const QString kVisualGainMediumKey = QStringLiteral("VisualGain_2");
+const QString kVisualGainHighKey = QStringLiteral("VisualGain_3");
+const QString kBeatGridAlphaKey = QStringLiteral("beatGridAlpha");
+const QString kEndOfTrackWarningTimeKey = QStringLiteral("EndOfTrackWarningTime");
+const QString kWaveformTypeKey = QStringLiteral("WaveformType");
+const QString kWaveformOptionsKey = QStringLiteral("waveform_options");
 
 // Library group
 const QString kTooltipsKey = QStringLiteral("Tooltips");
@@ -91,6 +101,8 @@ const QString kTrackColorPaletteKey = QStringLiteral("TrackColorPalette");
 const QString kKeyColorPaletteKey = QStringLiteral("KeyColorPalette");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kKeyColorsEnabledKey = QStringLiteral("key_colors_enabled");
+const QString kSchemeKey = QStringLiteral("Scheme");
+const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 
 // BPM group
 const QString kSyncLockAlgorithmKey = QStringLiteral("sync_lock_algorithm");
@@ -101,8 +113,16 @@ namespace mixxx {
 namespace qml {
 
 QmlConfigProxy::QmlConfigProxy(
-        UserSettingsPointer pConfig, QObject* parent)
-        : QObject(parent), m_pConfig(pConfig) {
+        UserSettingsPointer pConfig, QObject* pParent)
+        : QmlConfigProxyBase(pParent),
+          m_pConfig(pConfig) {
+    QmlConfigProxyBase::s_pInstance = this;
+}
+
+QmlConfigProxy::~QmlConfigProxy() {
+    if (QmlConfigProxyBase::s_pInstance == this) {
+        QmlConfigProxyBase::s_pInstance = nullptr;
+    }
 }
 
 QVariantList QmlConfigProxy::hotcueColorPalette() const {
@@ -192,28 +212,52 @@ void QmlConfigProxy::set_useAcceleration(bool value) {
     emit useAccelerationChanged();
 }
 
-bool QmlConfigProxy::waveformZoomSynchronization() {
-    return m_pConfig->getValue(
-            ConfigKey(kWaveformGroup, kWaveformZoomSynchronizationKey),
-            kWaveformZoomSynchronizationDefault);
-}
-double QmlConfigProxy::waveformDefaultZoom() {
-    return m_pConfig->getValue(
-            ConfigKey(kWaveformGroup, kWaveformDefaultZoomKey),
-            kWaveformDefaultZoomDefault);
+PROPERTY_IMPL(kWaveformGroup, kZoomSynchronizationKey, bool, waveformZoomSynchronization, true);
+PROPERTY_IMPL(kWaveformGroup, kOverviewNormalizedKey, bool, waveformOverviewNormalized, true);
+PROPERTY_IMPL(kWaveformGroup, kDefaultZoomKey, double, waveformDefaultZoom, 3);
+PROPERTY_IMPL(kWaveformGroup, kPlayMarkerPositionKey, double, waveformPlayMarkerPosition, 0.5);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkShowBeatsKey, bool, waveformUntilMarkShowBeats, false);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkShowTimeKey, bool, waveformUntilMarkShowTime, false);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkAlignKey, double, waveformUntilMarkAlign, 1);
+PROPERTY_IMPL(kWaveformGroup, kUntilMarkTextPointSizeKey, int, waveformUntilMarkTextPointSize, 24);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainAllKey, double, waveformVisualGainAll, 1);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainLowKey, double, waveformVisualGainLow, 1);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainMediumKey, double, waveformVisualGainMedium, 1);
+PROPERTY_IMPL(kWaveformGroup, kVisualGainHighKey, double, waveformVisualGainHigh, 1);
+PROPERTY_IMPL(kWaveformGroup, kEndOfTrackWarningTimeKey, int, waveformEndOfTrackWarningTime, 30);
+PROPERTY_IMPL(kWaveformGroup,
+        kWaveformTypeKey,
+        QmlWaveformDisplay::Type,
+        waveformType,
+        QmlWaveformDisplay::Type::RGB);
+PROPERTY_IMPL_GETTER(kWaveformGroup,
+        kWaveformOptionsKey,
+        QmlWaveformDisplay::Options,
+        waveformOptions,
+        QmlWaveformDisplay::Option::None);
+
+void QmlConfigProxy ::set_waveformOptions(QmlWaveformDisplay::Options value) {
+    if (value == QmlWaveformDisplay::Option::None) {
+        m_pConfig->remove(ConfigKey(kWaveformGroup, kWaveformOptionsKey));
+    } else {
+        m_pConfig->setValue(ConfigKey(kWaveformGroup, kWaveformOptionsKey),
+                static_cast<int>(value));
+    }
+    emit waveformOptionsChanged();
 }
 
-PROPERTY_IMPL(kLibraryGroup,
+PROPERTY_IMPL(kWaveformGroup, kBeatGridAlphaKey, double, waveformBeatGridAlpha, 90);
+PROPERTY_IMPL(kControlsGroup,
         kTooltipsKey,
         mixxx::preferences::Tooltips,
         libraryTooltips,
         mixxx::preferences::Tooltips::On);
-PROPERTY_IMPL(kLibraryGroup,
+PROPERTY_IMPL(kConfigGroup,
         kInhibitScreensaverKey,
         mixxx::preferences::ScreenSaver,
         libraryInhibitScreensaver,
         mixxx::preferences::ScreenSaver::On);
-PROPERTY_IMPL(kLibraryGroup, kHideMenuBarKey, bool, libraryHideMenuBar, false);
+PROPERTY_IMPL(kConfigGroup, kHideMenuBarKey, bool, libraryHideMenuBar, false);
 PROPERTY_IMPL(kLibraryGroup,
         kEnableSearchCompletionsKey,
         bool,
@@ -303,7 +347,7 @@ PROPERTY_IMPL(kConfigGroup,
         QString,
         configKeyColorPalette,
         PredefinedColorPalettes::kDefaultKeyColorPalette.getName());
-PROPERTY_IMPL(kControlGroup,
+PROPERTY_IMPL(kConfigGroup,
         kKeyColorsEnabledKey,
         bool,
         configKeyColorsEnabled,
@@ -313,6 +357,16 @@ PROPERTY_IMPL(kConfigGroup,
         bool,
         configStartInFullscreenKey,
         false);
+PROPERTY_IMPL(kConfigGroup,
+        kSchemeKey,
+        QString,
+        configScheme,
+        QStringLiteral("PaleMoon"));
+PROPERTY_IMPL(kConfigGroup,
+        kResizableSkinKey,
+        QString,
+        configSkin,
+        QString());
 PROPERTY_IMPL(kBpmGroup,
         kSyncLockAlgorithmKey,
         EngineSync::SyncLockAlgorithm,

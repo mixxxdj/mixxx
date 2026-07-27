@@ -228,7 +228,6 @@ class CueControl : public EngineControl {
     void quantizeChanged(double v);
     void slotCueModeChanged(double v);
 
-    void cueUpdated();
     void trackAnalyzed();
     void trackCuesUpdated();
     void hotcueSet(HotcueControl* pControl, double v, HotcueSetMode mode);
