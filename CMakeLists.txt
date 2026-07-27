@@ -1250,8 +1250,6 @@ add_library(
   src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
   src/controllers/scripting/legacy/scriptconnection.cpp
   src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
-  src/controllers/scripting/legacy/shareddataconnection.cpp
-  src/controllers/scripting/legacy/shareddataconnectionjsproxy.cpp
   src/controllers/softtakeover.cpp
   src/coreservices.cpp
   src/database/mixxxdb.cpp

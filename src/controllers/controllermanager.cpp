@@ -100,7 +100,6 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
                   std::make_unique<ControllerLearningEventFilter>()),
           m_pollTimer(this),
           m_pThread(std::make_unique<QThread>()),
-          m_pSharedData(std::make_shared<ControllerSharedData>()),
           m_skipPoll(false) {
     qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
             "std::shared_ptr<LegacyControllerMapping>");
@@ -425,9 +424,6 @@ void ControllerManager::openController(Controller* pController) {
     if (pController->isOpen()) {
         pController->close();
     }
-    // Provide the shared data store so that applyMapping() can wire up
-    // namespace-scoped access for the controller's script engine.
-    pController->setSharedData(m_pSharedData);
     int result = pController->open(m_pConfig->getResourcePath());
     pollIfAnyControllersOpen();
 
