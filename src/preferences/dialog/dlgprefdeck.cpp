@@ -227,6 +227,22 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox);
 
+    m_bDisablePreRoll = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("DisablePreRoll")), false);
+    checkBoxDisablePreRoll->setChecked(m_bDisablePreRoll);
+    connect(checkBoxDisablePreRoll,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotDisablePreRollCheckbox);
+
+    m_iPreRollLimitBeats = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("PreRollLimitBeats")), 4);
+    spinBoxPreRollLimitBeats->setValue(m_iPreRollLimitBeats);
+    connect(spinBoxPreRollLimitBeats,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotPreRollLimitBeatsSpinBox);
+
     m_bRateDownIncreasesSpeed = m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RateDir")), kDefaultRateDirectionInverted);
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
@@ -450,6 +466,12 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")), true));
 
+    checkBoxDisablePreRoll->setChecked(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("DisablePreRoll")), false));
+
+    spinBoxPreRollLimitBeats->setValue(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("PreRollLimitBeats")), 4));
+
     double rateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
     if (index == -1) {
@@ -535,6 +557,9 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
+
+    checkBoxDisablePreRoll->setChecked(false);
+    spinBoxPreRollLimitBeats->setValue(4);
 
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
@@ -625,6 +650,14 @@ void DlgPrefDeck::slotCueModeCombobox(int index) {
 
 void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
     m_bCloneDeckOnLoadDoubleTap = checked;
+}
+
+void DlgPrefDeck::slotDisablePreRollCheckbox(bool checked) {
+    m_bDisablePreRoll = checked;
+}
+
+void DlgPrefDeck::slotPreRollLimitBeatsSpinBox(int value) {
+    m_iPreRollLimitBeats = value;
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
@@ -719,6 +752,18 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CueRecall")), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")),
             m_bCloneDeckOnLoadDoubleTap);
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("DisablePreRoll")),
+            m_bDisablePreRoll);
+    for (ControlProxy* pControl : std::as_const(m_disablePreRollControls)) {
+        pControl->set(m_bDisablePreRoll ? 1.0 : 0.0);
+    }
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("PreRollLimitBeats")),
+            m_iPreRollLimitBeats);
+    for (ControlProxy* pControl : std::as_const(m_preRollLimitBeatsControls)) {
+        pControl->set(static_cast<double>(m_iPreRollLimitBeats));
+    }
 
     // Set rate range
     // Set the config value before setting the CO values in setRateRangeForAllDecks()
@@ -817,6 +862,12 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
         m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_disablePreRollControls.push_back(new ControlProxy(
+                group, "disable_preroll"));
+        m_disablePreRollControls.last()->set(m_bDisablePreRoll ? 1.0 : 0.0);
+        m_preRollLimitBeatsControls.push_back(new ControlProxy(
+                group, "preroll_limit_beats"));
+        m_preRollLimitBeatsControls.last()->set(static_cast<double>(m_iPreRollLimitBeats));
     }
 
     m_iNumConfiguredDecks = numdecks;
@@ -850,6 +901,12 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
         m_keyunlockModeControls.push_back(new ControlProxy(
                 group, "keyunlockMode"));
         m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_disablePreRollControls.push_back(new ControlProxy(
+                group, "disable_preroll"));
+        m_disablePreRollControls.last()->set(m_bDisablePreRoll ? 1.0 : 0.0);
+        m_preRollLimitBeatsControls.push_back(new ControlProxy(
+                group, "preroll_limit_beats"));
+        m_preRollLimitBeatsControls.last()->set(static_cast<double>(m_iPreRollLimitBeats));
     }
 
     m_iNumConfiguredSamplers = numsamplers;

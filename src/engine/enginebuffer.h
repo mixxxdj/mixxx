@@ -155,6 +155,7 @@ class EngineBuffer : public EngineObject {
     void ejectTrack();
 
     mixxx::audio::FramePos getExactPlayPos() const;
+    mixxx::audio::FramePos preRollClampPos() const;
     double getVisualPlayPos() const;
     mixxx::audio::FramePos getTrackEndPosition() const;
     void setTrackEndPosition(mixxx::audio::FramePos position);
@@ -422,8 +423,12 @@ class EngineBuffer : public EngineObject {
     ControlPushButton* m_stopButton;
 
     ControlPushButton* m_pSlipButton;
+    ControlPushButton* m_pDisablePreRoll;
+    ControlObject* m_pPreRollLimitBeats;
 
     PollingControlProxy m_quantize;
+    PollingControlProxy m_disablePreRoll;
+    PollingControlProxy m_preRollLimitBeats;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
