@@ -23,7 +23,7 @@ const shiftCueDoubleTapTimer = 300;
 const previewDeckStripSearchPace = 0.02;
 
 
-const NumarkMixtrackGo = {};
+NumarkMixtrackGo = {};
 
 /**
  * Holds all the used midi signals sent by the controller.
