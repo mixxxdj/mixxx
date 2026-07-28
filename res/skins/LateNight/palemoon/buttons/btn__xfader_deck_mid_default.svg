@@ -1,0 +1,11 @@
+<svg version="1.1" viewBox="0 0 66 30" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="a" x1="-11.2589" x2="-1.077" y1="8" y2="8" gradientTransform="matrix(1.7508715,0,0,1.7508908,-20.726439,-34.585698)" gradientUnits="userSpaceOnUse">
+      <stop offset="0"/>
+      <stop stop-color="#fff" stop-opacity="0" offset="1"/>
+    </linearGradient>
+  </defs>
+  <rect x="3.0000799" y="8" width="59.99992" height="16" rx="8" ry="7.766736" fill="#0f0f0f" stroke-width="2"/>
+  <circle transform="scale(-1,1)" cx="-33.000004" cy="16" r="8" fill="#787878" stroke-width="2"/>
+  <ellipse transform="matrix(-.50000716 -.86602127 -.86602958 .49999276 0 0)" cx="-30.356236" cy="-20.578587" rx="7.0034776" ry="7.0035634" fill="none" stroke="url(#a)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.00002"/>
+</svg>
