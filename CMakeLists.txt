@@ -3035,6 +3035,7 @@ if(BUILD_TESTING)
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
         src/test/qmlkeyutilstest.cpp
+        src/test/qmlskincontrolcreatortest.cpp
         src/test/themeqml_test.cpp
     )
   endif()
@@ -3983,6 +3984,7 @@ if(QML)
       src/qml/asyncimageprovider.cpp
       src/qml/qmlapplication.cpp
       src/qml/qmlautoreload.cpp
+      src/qml/qmlbatteryproxy.cpp
       src/qml/qmlbeatsmodel.cpp
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlconfigproxy.cpp
@@ -4002,6 +4004,7 @@ if(QML)
       src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
+      src/qml/qmlrecordingproxy.cpp
       src/qml/qmlsidebarmodelproxy.cpp
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp
@@ -4010,6 +4013,7 @@ if(QML)
       src/qml/qmlwaveformoverview.cpp
       src/qml/qmlwaveformrenderer.cpp
       src/qml/qmlsettingparameter.cpp
+      src/qml/qmlskincontrolcreator.cpp
       src/qml/qmltrackproxy.cpp
       src/qml/qmlsoundmanagerproxy.cpp
       src/qml/qmlpreferencesproxy.cpp
@@ -4435,6 +4439,14 @@ else()
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Window"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # qml6-module-qtquick-effects
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Effects"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Effects"
         COMPONENT applocal
       )
 
@@ -5558,7 +5570,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute stonking)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble resolute stonking)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT
