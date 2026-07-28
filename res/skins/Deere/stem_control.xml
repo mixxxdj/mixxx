@@ -5,10 +5,6 @@
     <SizePolicy>max,me</SizePolicy>
     <Children>
       <WidgetGroup>
-        <Size>0me,1me</Size>
-      </WidgetGroup>
-
-      <WidgetGroup>
         <!-- StemControlsInner -->
         <Layout>horizontal</Layout>
         <Size>260f,min</Size>
@@ -21,6 +17,7 @@
           <WidgetGroup>
             <!-- StemControls 4ch -->
             <Layout>vertical</Layout>
+            <SizePolicy>f,me</SizePolicy>
             <Children>
               <!-- Show controls if stems exist -->
               <WidgetGroup>
@@ -120,10 +117,6 @@
         </Children>
       </WidgetGroup>
       <!-- /StemControlsInner -->
-
-      <WidgetGroup>
-        <Size>1me,1me</Size>
-      </WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
