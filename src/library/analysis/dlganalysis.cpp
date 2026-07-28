@@ -94,6 +94,15 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
     slotAnalysisActive(m_bAnalysisActive);
 }
 
+DlgAnalysis::~DlgAnalysis() {
+    qDebug() << "~DlgAnalysis()";
+
+    // Delete m_pAnalysisLibraryTableView before the table models.
+    // This is because the table view saves the header state using the model
+    // in its destructor.
+    delete m_pAnalysisLibraryTableView;
+}
+
 void DlgAnalysis::onShow() {
     if (!radioButtonRecentlyAdded->isChecked() &&
             !radioButtonAllSongs->isChecked()) {
