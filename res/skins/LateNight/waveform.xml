@@ -26,13 +26,9 @@
         <Size>240f,0me</Size>
         <Children>
           <WidgetGroup>
-            <Size>0me,1me</Size>
-          </WidgetGroup>
-
-          <WidgetGroup>
             <!-- StemControlsInner -->
             <Layout>horizontal</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>f,me</SizePolicy>
             <Children>
 
               <WidgetGroup>
@@ -148,10 +144,6 @@
             </Connection>
           </WidgetGroup>
           <!-- /NoStemLabel -->
-
-          <WidgetGroup>
-            <Size>1me,1me</Size>
-          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>
