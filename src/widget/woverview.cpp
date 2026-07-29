@@ -570,6 +570,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
 void WOverview::leftMouseDragRelease(QPoint pos) {
     unsetCursor();
+    m_bLeftClickDragging = false;
     if (!isPosInAllowedPosDragZone(pos)) {
         // Abort dragging if we are way outside the widget.
         m_iPickupPos = m_iPlayPos;
@@ -581,7 +582,6 @@ void WOverview::leftMouseDragRelease(QPoint pos) {
     double dValue = positionToValue(m_iPlayPos);
     // Do the seek.
     setControlParameterUp(dValue);
-    m_bLeftClickDragging = false;
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
