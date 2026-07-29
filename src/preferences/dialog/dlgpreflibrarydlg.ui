@@ -156,6 +156,17 @@
       </item>
 
       <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_reset_missing_tag_metadata">
+        <property name="toolTip">
+         <string>When reimporting track metadata from file tags, clear library fields that are empty or missing in the file tags instead of keeping the existing value.</string>
+        </property>
+        <property name="text">
+         <string>Reset missing metadata fields when reimporting from file tags</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="3" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_use_relative_path">
         <property name="text">
          <string>Use relative paths for playlist export if possible</string>
