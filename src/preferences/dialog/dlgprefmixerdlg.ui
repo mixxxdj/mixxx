@@ -195,7 +195,7 @@
      <property name="title">
       <string>Deck Equalizers</string>
      </property>
-     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0,0,0,0,0">
       <item>
        <widget class="QCheckBox" name="CheckBoxEqOnly">
         <property name="toolTip">
@@ -651,6 +651,7 @@
   <tabstop>CheckBoxSingleEqEffect</tabstop>
   <tabstop>CheckBoxBypass</tabstop>
   <tabstop>CheckBoxEqAutoReset</tabstop>
+  <tabstop>CheckBoxEqKillAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
   <tabstop>SliderHiEQ</tabstop>
   <tabstop>SliderLoEQ</tabstop>
