@@ -21,6 +21,7 @@
 #include <QWidget>
 #include <QWindow>
 
+#include "control/controlobject.h"
 #include "moc_waveformwidgetfactory.cpp"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
@@ -148,6 +149,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
+    m_pStemSplitTracksControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")));
     m_visualGain[AllBand] = kVisualGainDefault[AllBand];
     m_visualGain[Low] = kVisualGainDefault[Low];
     m_visualGain[Mid] = kVisualGainDefault[Mid];
@@ -1520,9 +1523,7 @@ void WaveformWidgetFactory::setStemSplitTracks(bool value) {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
                 value);
     }
-    ControlObject::set(
-            ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
-            value ? 1.0 : 0.0);
+    m_pStemSplitTracksControl->set(value ? 1.0 : 0.0);
     emit stemSplitTracksChanged(value);
 }
 
