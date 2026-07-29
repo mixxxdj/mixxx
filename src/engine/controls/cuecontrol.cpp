@@ -2638,6 +2638,14 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcuePositionChanged,
             Qt::DirectConnection);
     m_hotcuePosition->set(Cue::kNoPosition);
+    // The position may only be moved by dragging an existing hotcue, so route
+    // write requests through a handler that rejects them unless the hotcue is
+    // set. This also makes the control confirm-required, so engine-side updates
+    // must use setAndConfirm() (see HotcueControl::setPosition()).
+    m_hotcuePosition->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotHotcuePositionChangeRequest,
+            Qt::DirectConnection);
 
     m_hotcueEndPosition = std::make_unique<ControlObject>(
             keyForControl(QStringLiteral("endposition")));
@@ -2837,6 +2845,18 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit hotcuePositionChanged(this, newPosition);
 }
 
+void HotcueControl::slotHotcuePositionChangeRequest(double newPosition) {
+    // Reject the change if no hotcue is set: the position can only be moved by
+    // dragging an existing hotcue, not to create one (see issue #10409).
+    if (!m_pCue) {
+        return;
+    }
+    // Delegate to CueControl::hotcuePositionChanged(), which validates the
+    // position and moves the cue. The resulting cue change syncs the position
+    // control back to the confirmed value via loadCuesFromTrack().
+    emit hotcuePositionChanged(this, newPosition);
+}
+
 void HotcueControl::slotHotcueEndPositionChanged(double newEndPosition) {
     emit hotcueEndPositionChanged(this, newEndPosition);
 }
@@ -2905,7 +2925,10 @@ void HotcueControl::resetCue() {
 }
 
 void HotcueControl::setPosition(mixxx::audio::FramePos position) {
-    m_hotcuePosition->set(position.toEngineSamplePosMaybeInvalid());
+    // Use setAndConfirm() because m_hotcuePosition is confirm-required: a plain
+    // set() would be intercepted as a change request instead of updating the
+    // engine-authoritative value.
+    m_hotcuePosition->setAndConfirm(position.toEngineSamplePosMaybeInvalid());
 }
 
 void HotcueControl::setEndPosition(mixxx::audio::FramePos endPosition) {
