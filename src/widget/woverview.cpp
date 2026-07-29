@@ -562,26 +562,21 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
     }
     // qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPickupPos << ">>" << positionToValue(m_iPickupPos);
 
-    if (e->button() == Qt::LeftButton) {
-        if (m_bLeftClickDragging) {
-            unsetCursor();
-            if (!isPosInAllowedPosDragZone(e->pos())) {
-                // Abort dragging if we are way outside the widget.
-                m_iPickupPos = m_iPlayPos;
-            } else {
-                leftMouseDragRelease(e->pos());
-            }
-        }
+    if (e->button() == Qt::LeftButton && m_bLeftClickDragging) {
+        leftMouseDragRelease(e->pos());
         m_bLeftClickDragging = false;
-        m_bTimeRulerActive = false;
-    } else if (e->button() == Qt::RightButton) {
-        // Do not seek when releasing a right click. This is important to
-        // prevent accidental seeking when trying to right click a hotcue.
-        m_bTimeRulerActive = false;
     }
+    m_bTimeRulerActive = false;
 }
 
 void WOverview::leftMouseDragRelease(QPoint pos) {
+    unsetCursor();
+    if (!isPosInAllowedPosDragZone(pos)) {
+        // Abort dragging if we are way outside the widget.
+        m_iPickupPos = m_iPlayPos;
+        return;
+    }
+
     m_iPickupPos = clampedPickupPos(pos);
     m_iPlayPos = m_iPickupPos;
     double dValue = positionToValue(m_iPlayPos);
