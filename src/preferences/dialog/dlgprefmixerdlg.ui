@@ -300,6 +300,17 @@
       </item>
 
       <item>
+       <widget class="QCheckBox" name="CheckBoxEqKillAutoReset">
+        <property name="toolTip">
+         <string>Resets the EQ kill switches when loading a track. This is always enabled while &quot;Reset equalizers on track load&quot; is active, because resetting the equalizers also resets the kill switches.</string>
+        </property>
+        <property name="text">
+         <string>Reset EQ kill switches on track load</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
         <property name="toolTip">
          <string>Resets the deck gain to unity when loading a track.</string>
