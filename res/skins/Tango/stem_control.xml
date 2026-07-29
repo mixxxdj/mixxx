@@ -14,10 +14,6 @@
           </Template>
           <WidgetGroup>
             <Size>15f,1me</Size>
-            <Connection>
-              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <Size>15f,1me</Size>
@@ -31,10 +27,6 @@
           </Template>
           <WidgetGroup>
             <Size>15f,1me</Size>
-            <Connection>
-              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <Size>15f,1me</Size>
@@ -48,10 +40,6 @@
           </Template>
           <WidgetGroup>
             <Size>15f,1me</Size>
-            <Connection>
-              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <Size>15f,1me</Size>
