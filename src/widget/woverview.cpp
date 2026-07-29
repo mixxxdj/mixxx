@@ -564,7 +564,6 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
     if (e->button() == Qt::LeftButton && m_bLeftClickDragging) {
         leftMouseDragRelease(e->pos());
-        m_bLeftClickDragging = false;
     }
     m_bTimeRulerActive = false;
 }
@@ -582,6 +581,7 @@ void WOverview::leftMouseDragRelease(QPoint pos) {
     double dValue = positionToValue(m_iPlayPos);
     // Do the seek.
     setControlParameterUp(dValue);
+    m_bLeftClickDragging = false;
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
@@ -669,7 +669,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
     // We still get another leave event when we release outside WOverview.
     // Note: casting to QMouseEvent works, but buttons are not reported correctly,
     // QGuiApplication::mouseButtons() is the way to go here.
-    if (QGuiApplication::mouseButtons() & Qt::LeftButton) {
+    if ((QGuiApplication::mouseButtons() & Qt::LeftButton) && m_bLeftClickDragging) {
         leftMouseDragRelease(mapFromGlobal(QCursor::pos()));
     }
     if (!m_pCueMenuPopup->isVisible()) {
