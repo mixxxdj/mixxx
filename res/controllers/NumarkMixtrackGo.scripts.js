@@ -1004,16 +1004,18 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
 
 
 
+    let isTrackLoaded = false;
     let isStemsTrackLoaded = false;
     let isLoadedTrackBeingCheckedForStems = false;
 
     engine.makeConnection(group, "track_loaded", function() {
         if (engine.getValue(group, "track_loaded") === 1) {
+            isTrackLoaded = true;
             isStemsTrackLoaded = false;
+            isLoadedTrackBeingCheckedForStems = true;
             NumarkMixtrackGo.led.setLoadBright(deckIndex);
             NumarkMixtrackGo.led.setPlayShiftBright(deckIndex);
             NumarkMixtrackGo.led.setCueShiftBright(deckIndex);
-            isLoadedTrackBeingCheckedForStems = true;
             engine.beginTimer(
                 50,
                 () => {
@@ -1041,11 +1043,12 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                     isLoadedTrackBeingCheckedForStems = false;
                 },
                 true);
-        } else {
+        } else { // track unloaded
+            isTrackLoaded = false;
+            isStemsTrackLoaded = false;
             NumarkMixtrackGo.led.setLoadDim(deckIndex);
             NumarkMixtrackGo.led.setPlayShiftDim(deckIndex);
             NumarkMixtrackGo.led.setCueShiftDim(deckIndex);
-            isStemsTrackLoaded = false;
             if (currentPadMode === 4) {
                 NumarkMixtrackGo.led.setPad1Off(deckIndex);
                 NumarkMixtrackGo.led.setPad2Off(deckIndex);
@@ -1064,22 +1067,22 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     const voiceStemGroup = `[Channel${deckNumber}_Stem4]`;
 
     engine.makeConnection(drumsStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems) {
+        if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
             NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
     engine.makeConnection(bassStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems) {
+        if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
             NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
     engine.makeConnection(synthsStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems) {
+        if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
             NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
     engine.makeConnection(voiceStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems) {
+        if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
             NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
