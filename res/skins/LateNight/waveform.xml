@@ -26,6 +26,15 @@
         <Size>240f,0me</Size>
         <Children>
           <WidgetGroup>
+            <Size>0me,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
             <!-- StemControlsInner -->
             <Layout>horizontal</Layout>
             <SizePolicy>f,me</SizePolicy>
@@ -144,6 +153,15 @@
             </Connection>
           </WidgetGroup>
           <!-- /NoStemLabel -->
+
+          <WidgetGroup>
+            <Size>1me,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_stem_controls</ConfigKey>

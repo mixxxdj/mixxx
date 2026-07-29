@@ -1510,6 +1510,9 @@ void WaveformWidgetFactory::setStemSplitTracks(bool value) {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
                 value);
     }
+    ControlObject::set(
+            ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
+            value ? 1.0 : 0.0);
     emit stemSplitTracksChanged(value);
 }
 

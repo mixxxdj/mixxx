@@ -14,27 +14,51 @@
           </Template>
           <WidgetGroup>
             <Size>15f,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <Size>15f,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <Template src="skins:Tango/stem_channel.xml">
             <SetVariable name="stemNum">2</SetVariable>
           </Template>
           <WidgetGroup>
             <Size>15f,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <Size>15f,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <Template src="skins:Tango/stem_channel.xml">
             <SetVariable name="stemNum">3</SetVariable>
           </Template>
           <WidgetGroup>
             <Size>15f,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <WidgetGroup>
             <Size>15f,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
           <Template src="skins:Tango/stem_channel.xml">
             <SetVariable name="stemNum">4</SetVariable>
