@@ -46,8 +46,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void previous();
 
   protected:
-    // used to set the maximum size of the cover label
+    /// These two call adjustWidgetSizes() in order to fix some layout
+    /// quirks and set the minimum height of the Comment editor
     void resizeEvent(QResizeEvent* pEvent) override;
+    void showEvent(QShowEvent* pEvent) override;
 
   private slots:
     void slotNextButton();
@@ -95,6 +97,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void saveTrack();
     void clear();
     void init();
+    void adjustWidgetSizes();
 
     void updateKeyText();
     void displayKeyText();
@@ -141,4 +144,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+
+    bool m_widgetSizesFixed;
 };

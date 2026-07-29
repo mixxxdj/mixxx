@@ -117,7 +117,8 @@ DlgTrackInfoMulti::DlgTrackInfoMulti(UserSettingsPointer pUserSettings)
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
                   ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
-                  this)) {
+                  this)),
+          m_widgetSizesFixed(false) {
     init();
 }
 
@@ -614,8 +615,17 @@ void DlgTrackInfoMulti::addValuesToCommentBox(QSet<QString>& comments) {
     txtComment->blockSignals(false);
 }
 
+void DlgTrackInfoMulti::showEvent(QShowEvent* pEvent) {
+    QDialog::showEvent(pEvent);
+    adjustWidgetSizes();
+}
+
 void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
-    Q_UNUSED(pEvent);
+    QDialog::resizeEvent(pEvent);
+    adjustWidgetSizes();
+}
+
+void DlgTrackInfoMulti::adjustWidgetSizes() {
     if (!isVisible()) {
         // Likely one of the resize events before show().
         // Dialog & widgets don't have their final size, yet,
@@ -627,6 +637,12 @@ void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
     // but is still much better than letting the popup expand to screen width,
     // which it would do regrardless if it's actually necessary.
     txtCommentBox->view()->parentWidget()->setMaximumWidth(width());
+
+    if (m_widgetSizesFixed) {
+        return;
+    }
+    // Set this now to avoid re-entrance on multiple resize events in quick succession
+    m_widgetSizesFixed = true;
 
     // Set a maximum size on the cover label so it can use the available space
     // but doesn't force-expand the dialog.
@@ -645,6 +661,15 @@ void DlgTrackInfoMulti::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+
+    // Set fixed height on stars widget so it doesn't make the adjacent
+    // txtAlbumArtist expand vertically
+    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
+
+    // Set the minimum height for the Comment editor to at least 3 line. Let's
+    // use the triple the height of a QLineEdit because they are sized correctly.
+    // The editor can expand vertically when the dialog is resized.
+    txtComment->setMinimumHeight(txtTrackNumber->geometry().height() * 3);
 }
 
 void DlgTrackInfoMulti::saveTracks() {
