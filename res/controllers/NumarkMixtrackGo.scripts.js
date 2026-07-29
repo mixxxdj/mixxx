@@ -669,7 +669,7 @@ let isFadeFxOn = false;
 const padModes = ["hotcue", "loops", "fx", "sampler", "stems"];
 
 // 0 for filter, 1 for low
-let filterLowSwitch = 0;
+let filterLowSwitch = 1;
 
 
 let vinylModeEnabled = true;
