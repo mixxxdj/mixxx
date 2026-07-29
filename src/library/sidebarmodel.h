@@ -49,6 +49,9 @@ class SidebarModel : public QAbstractItemModel {
 
     void clear(const QModelIndex& index);
     void paste(const QModelIndex& index);
+
+    bool indexIsWatchedPathItem(const QModelIndex& index) const;
+
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);
