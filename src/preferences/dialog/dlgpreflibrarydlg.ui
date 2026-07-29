@@ -784,6 +784,7 @@
   <tabstop>checkBox_library_scan_summary</tabstop>
   <tabstop>checkBox_sync_track_metadata</tabstop>
   <tabstop>checkBox_serato_metadata_export</tabstop>
+  <tabstop>checkBox_reset_missing_tag_metadata</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>checkBox_edit_metadata_selected_clicked</tabstop>
   <tabstop>radioButton_dbclick_deck</tabstop>
