@@ -4,6 +4,7 @@
 
 #include "library/basetracktablemodel.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
@@ -15,6 +16,9 @@
                 ConfigKey(GROUP, KEY),                        \
                 DEFAULT);                                     \
     }
+
+#define PROPERTY_IMPL_CONFIGKEY(CONFIGKEY, TYPE, NAME, DEFAULT) \
+    PROPERTY_IMPL(CONFIGKEY.group, CONFIGKEY.item, TYPE, NAME, DEFAULT)
 
 #define PROPERTY_IMPL(GROUP, KEY, TYPE, NAME, DEFAULT)                       \
     PROPERTY_IMPL_GETTER(GROUP, KEY, TYPE, NAME, DEFAULT)                    \
@@ -44,6 +48,14 @@ const QString kBpmGroup = QStringLiteral("[BPM]");
 
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 const QString k3DHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
+
+// Library group
+const QString kRhythmboxEnabled = QStringLiteral("ShowRhythmboxLibrary");
+const QString kBansheeEnabled = QStringLiteral("ShowBansheeLibrary");
+const QString kITunesEnabled = QStringLiteral("ShowITunesLibrary");
+const QString kTraktorEnabled = QStringLiteral("ShowTraktorLibrary");
+const QString kRekordboxEnabled = QStringLiteral("ShowRekordboxLibrary");
+const QString kSeratoEnabled = QStringLiteral("ShowSeratoLibrary");
 
 // Waveform group
 const QString kZoomSynchronizationKey = QStringLiteral("ZoomSynchronization");
@@ -266,14 +278,61 @@ PROPERTY_IMPL(kLibraryGroup,
 PROPERTY_IMPL(kLibraryGroup,
         kEnableSearchHistoryShortcutsKey,
         bool,
+        librarySearchHistoryShortcutsEnable,
+        true);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+        bool,
+        librarySyncTrackMetadataExport,
+        false);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSyncSeratoMetadataConfigKey,
+        bool,
+        librarySeratoMetadataExport,
+        false);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kUseRelativePathOnExportConfigKey,
+        bool,
+        libraryUseRelativePathOnExport,
+        false);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kHistoryMinTracksToKeepConfigKey,
+        int,
+        libraryHistoryMinTracksToKeep,
+        1);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kHistoryTrackDuplicateDistanceConfigKey,
+        int,
+        libraryHistoryTrackDuplicateDistance,
+        6);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSearchBpmFuzzyRangeConfigKey,
+        double,
+        librarySearchBpmFuzzyRange,
+        0.06);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey,
+        int,
+        librarySearchDebouncingTimeout,
+        300);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kEnableSearchCompletionsConfigKey,
+        bool,
+        librarySearchCompletionsEnable,
+        true);
+PROPERTY_IMPL_CONFIGKEY(
+        mixxx::library::prefs::kEnableSearchHistoryShortcutsConfigKey,
+        bool,
         libraryEnableSearchHistoryShortcuts,
         true);
-PROPERTY_IMPL(kLibraryGroup,
-        kBpmColumnPrecisionKey,
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
         int,
         libraryBpmColumnPrecision,
         BaseTrackTableModel::kBpmColumnPrecisionDefault);
 PROPERTY_IMPL(kLibraryGroup, kRowHeightKey, double, libraryRowHeight, Library::kDefaultRowHeightPx);
+PROPERTY_IMPL(kLibraryGroup, kRhythmboxEnabled, bool, libraryRhythmboxEnabled, false);
+PROPERTY_IMPL(kLibraryGroup, kBansheeEnabled, bool, libraryBansheeEnabled, false);
+PROPERTY_IMPL(kLibraryGroup, kITunesEnabled, bool, libraryITunesEnabled, false);
+PROPERTY_IMPL(kLibraryGroup, kTraktorEnabled, bool, libraryTraktorEnabled, false);
+PROPERTY_IMPL(kLibraryGroup, kRekordboxEnabled, bool, libraryRekordboxEnabled, false);
+PROPERTY_IMPL(kLibraryGroup, kSeratoEnabled, bool, librarySeratoEnabled, false);
+
 PROPERTY_IMPL(kControlGroup, kHotcueDefaultColorIndexKey, int, controlHotcueDefaultColorIndex, -1);
 PROPERTY_IMPL(kControlGroup, kLoopDefaultColorIndexKey, double, controlLoopDefaultColorIndex, -1);
 PROPERTY_IMPL(kControlGroup, kCueDefaultKey, CueMode, controlCueDefault, CueMode::Mixxx);
