@@ -101,8 +101,8 @@ NumarkMixtrackGo.led = {
     // [[status, ctrl], [status, ctrl]] holds the left side's pair of codes on the first position and
     // the right side's pair of codes on the second position.
 
-    //unused - there are others but didn't take notes
-    //[0xB0, 0x1F, 0x00] - value from 0 to 5 lights the mode lights and play cumulatively
+    // unused - there are others but didn't take notes
+    // [0xB0, 0x1F, 0x00] - value from 0 to 5 lights the mode lights and play cumulatively
 
     // values
     "off": 0x00,
@@ -653,7 +653,7 @@ NumarkMixtrackGo.led = {
 
 
 // Effect indexes
-// if mixxx devs change the order of the effects, echoEffectIndex needs to be updated.
+// if mixxx devs change the order of the effects, these indexes needs to be updated.
 // if they ever implement methods to set effects by name or some id, a more robust solution should be implemented.
 const reverbEffectIndex = 2;
 const flangerEffectIndex = 12;
@@ -1121,7 +1121,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         lsb: 0,
         input: function(_channel, control, value) {
             if (control === 0x09) { // midi control received for the msb value
-            // this.msb = value;
+                this.msb = value;
             }
             if (control === 0x29) { // midi control received for the lsb value
                 this.lsb = value;
@@ -1285,7 +1285,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                 this.super1StoredValue = engine.getValue(this.quickEffectRackGroup, "super1");
                 this.valueChange = this.super1StoredValue - this.newValue;
 
-                //takeover at 2% distance
+                // takeover at 2% distance
                 if ((this.valueChange < 0.02 && this.valueChange > -0.02)) {
                     this.super1StoredValue = this.newValue;
                     engine.setValue(this.quickEffectRackGroup, "super1", this.newValue);
@@ -1297,7 +1297,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                 this.parameter1StoredValue = engine.getParameter(this.lowEqGroup, "parameter1");
                 this.valueChange = this.parameter1StoredValue - this.newValue;
 
-                //takeover at 2% distance
+                // takeover at 2% distance
                 if ((this.valueChange < 0.02 && this.valueChange > -0.02)) {
                     this.parameter1StoredValue = this.newValue;
                     engine.setParameter(this.lowEqGroup, "parameter1", this.newValue);
@@ -1519,7 +1519,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                             } else {
                                 engine.setValue(this.samplerGroup, "cue_gotoandplay", 1);
                             }
-                        } else { //control = 0x1C or 0x1D or 0x1E or 0x1F
+                        } else { // control = 0x1C or 0x1D or 0x1E or 0x1F
                             engine.setValue(this.samplerGroup, "eject", 1);
                         }
                     }
