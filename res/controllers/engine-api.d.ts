@@ -153,6 +153,17 @@ declare namespace engine {
     function getValue<TGroup extends MixxxControls.Group>(group: TGroup, name: MixxxControls.Ctrl<TGroup>): number;
 
     /**
+     * Gets the current play position of a deck in samples
+     *
+     * This is a convenience helper equivalent to multiplying the relative
+     * "playposition" control by the "track_samples" control.
+     *
+     * @param group Group of the deck e.g. "[Channel1]"
+     * @returns The absolute play position in samples, or 0 if the deck has no track loaded
+     */
+    function getPlaypositionSamples<TGroup extends MixxxControls.Group>(group: TGroup): number;
+
+    /**
      * Sets a control value
      *
      * @param group Group of the control e.g. "[Channel1]"

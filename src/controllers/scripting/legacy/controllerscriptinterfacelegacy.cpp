@@ -151,6 +151,15 @@ double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QSt
     return coScript->get();
 }
 
+double ControllerScriptInterfaceLegacy::getPlaypositionSamples(const QString& group) {
+    // "playposition" is a relative control (0.0 = track start, 1.0 = track end).
+    // Multiplying by "track_samples" yields the absolute sample position, matching
+    // the sample-based position controls (e.g. "loop_end_position"). This spares
+    // mappings from computing the product themselves.
+    return getValue(group, QStringLiteral("playposition")) *
+            getValue(group, QStringLiteral("track_samples"));
+}
+
 void ControllerScriptInterfaceLegacy::setValue(
         const QString& group, const QString& name, double newValue) {
     if (util_isnan(newValue)) {

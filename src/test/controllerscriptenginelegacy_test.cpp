@@ -258,6 +258,21 @@ TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidControl) {
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Nothing]', 'nothing');"));
 }
 
+TEST_F(ControllerScriptEngineLegacyTest, getPlaypositionSamples) {
+    auto playposition = std::make_unique<ControlObject>(ConfigKey("[Test]", "playposition"));
+    auto trackSamples = std::make_unique<ControlObject>(ConfigKey("[Test]", "track_samples"));
+    playposition->set(0.25);
+    trackSamples->set(2000.0);
+    EXPECT_DOUBLE_EQ(500.0, evaluate("engine.getPlaypositionSamples('[Test]');").toNumber());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, getPlaypositionSamples_NoTrackLoaded) {
+    // With no track loaded, track_samples is 0, so the position is 0 too.
+    auto playposition = std::make_unique<ControlObject>(ConfigKey("[Test]", "playposition"));
+    auto trackSamples = std::make_unique<ControlObject>(ConfigKey("[Test]", "track_samples"));
+    EXPECT_DOUBLE_EQ(0.0, evaluate("engine.getPlaypositionSamples('[Test]');").toNumber());
+}
+
 TEST_F(ControllerScriptEngineLegacyTest, setValue_IgnoresNaN) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     co->set(10.0);
