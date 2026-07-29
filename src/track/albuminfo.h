@@ -13,13 +13,13 @@ namespace mixxx {
 class AlbumInfo final {
     // Properties in alphabetical order
     MIXXX_DECL_PROPERTY(QString, artist, Artist)
+    MIXXX_DECL_PROPERTY(QString, recordLabel, RecordLabel)
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, copyright, Copyright)
     MIXXX_DECL_PROPERTY(QString, license, License)
     MIXXX_DECL_PROPERTY(QUuid, musicBrainzArtistId, MusicBrainzArtistId)
     MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseGroupId, MusicBrainzReleaseGroupId)
     MIXXX_DECL_PROPERTY(QUuid, musicBrainzReleaseId, MusicBrainzReleaseId)
-    MIXXX_DECL_PROPERTY(QString, recordLabel, RecordLabel)
     MIXXX_DECL_PROPERTY(ReplayGain, replayGain, ReplayGain)
 #endif // __EXTRA_METADATA__
     MIXXX_DECL_PROPERTY(QString, title, Title)

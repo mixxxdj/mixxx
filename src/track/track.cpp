@@ -531,6 +531,7 @@ void Track::emitChangedSignalsForAllMetadata() {
     emit titleChanged(getTitle());
     emit albumChanged(getAlbum());
     emit albumArtistChanged(getAlbumArtist());
+    emit recordLabelChanged(getRecordLabel());
     emit genreChanged(getGenre());
     emit composerChanged(getComposer());
     emit groupingChanged(getGrouping());
@@ -696,6 +697,22 @@ void Track::setAlbumArtist(const QString& s) {
     if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrArtist(), value)) {
         markDirtyAndUnlock(&locked);
         emit albumArtistChanged(value);
+    }
+}
+
+QString Track::getRecordLabel() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getMetadata().getAlbumInfo().getRecordLabel();
+}
+
+void Track::setRecordLabel(const QString& s) {
+    auto locked = lockMutex(&m_qMutex);
+    const QString value = s.trimmed();
+    if (compareAndSet(
+                m_record.refMetadata().refAlbumInfo().ptrRecordLabel(),
+                value)) {
+        markDirtyAndUnlock(&locked);
+        emit recordLabelChanged(value);
     }
 }
 
