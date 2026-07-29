@@ -15,6 +15,36 @@ const QString kLocationColumn = QStringLiteral("directory");
 
 } // anonymous namespace
 
+void DirectoryDAO::repairDatabase(const QSqlDatabase& database) {
+    // Ensure the `directory` column in `track_locations` table is correct.
+    // Use the directory part of the `location` column
+    const QString repairDirStatemenet = QStringLiteral(
+            "WITH RECURSIVE dir_path_finder AS ("
+            "    SELECT id, location, length(location) AS idx "
+            "    FROM track_locations "
+            "    UNION ALL "
+            // Looking for a /, starting from the end of `location`
+            // Once found, store the position before that / as idx
+            "    SELECT id, location, idx - 1 FROM dir_path_finder "
+            "    WHERE idx > 1 AND substr(location, idx, 1) != '/'"
+            ") "
+            // For all rows where `directory` is not equal the part of `location`
+            // before the last / (idx)
+            // set `directory` to that `location` substring
+            "UPDATE track_locations "
+            "SET directory = substr(dpf.location, 1, dpf.idx - 1) "
+            "FROM dir_path_finder dpf "
+            "WHERE track_locations.id = dpf.id "
+            "  AND substr(dpf.location, dpf.idx, 1) = '/' "
+            "  AND track_locations.directory "
+            "      IS NOT substr(dpf.location, 1, dpf.idx - 1);");
+
+    FwdSqlQuery query(database, repairDirStatemenet);
+    if (!query.execPrepared()) {
+        LOG_FAILED_QUERY(query) << "Failed to execute track_locations directory path repair";
+    }
+}
+
 QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
         bool skipInvalidOrMissing) const {
     DEBUG_ASSERT(m_database.isOpen());

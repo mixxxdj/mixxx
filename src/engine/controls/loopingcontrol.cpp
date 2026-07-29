@@ -727,19 +727,10 @@ void LoopingControl::setLoopInToCurrentPosition() {
                     (nextBeatPosition - position > position - prevBeatPosition)
                     ? prevBeatPosition
                     : nextBeatPosition;
-            if (m_bAdjustingLoopIn) {
-                if (closestBeatPosition == position) {
-                    quantizedBeatPosition = closestBeatPosition;
-                } else {
-                    quantizedBeatPosition = prevBeatPosition;
-                }
-            } else {
-                if (closestBeatPosition > info.trackEndPosition) {
-                    quantizedBeatPosition = prevBeatPosition;
-                } else {
-                    quantizedBeatPosition = closestBeatPosition;
-                }
-            }
+            quantizedBeatPosition =
+                    (closestBeatPosition > info.trackEndPosition)
+                    ? prevBeatPosition
+                    : closestBeatPosition;
             position = quantizedBeatPosition;
         }
     }
@@ -887,23 +878,10 @@ void LoopingControl::setLoopOutToCurrentPosition() {
                     (nextBeatPosition - position > position - prevBeatPosition)
                     ? prevBeatPosition
                     : nextBeatPosition;
-            if (m_bAdjustingLoopOut) {
-                if (closestBeatPosition == position) {
-                    quantizedBeatPosition = closestBeatPosition;
-                } else {
-                    if (nextBeatPosition > info.trackEndPosition) {
-                        quantizedBeatPosition = prevBeatPosition;
-                    } else {
-                        quantizedBeatPosition = nextBeatPosition;
-                    }
-                }
-            } else {
-                if (closestBeatPosition > info.trackEndPosition) {
-                    quantizedBeatPosition = prevBeatPosition;
-                } else {
-                    quantizedBeatPosition = closestBeatPosition;
-                }
-            }
+            quantizedBeatPosition =
+                    (closestBeatPosition > info.trackEndPosition)
+                    ? prevBeatPosition
+                    : closestBeatPosition;
             // Note: with quantize enabled and playpos AFTER an inactive loop,
             // the new loop_out might snap to the exact the same position as before.
             // Then m_oldLoopInfo would be unchanged and process() would not seek back
