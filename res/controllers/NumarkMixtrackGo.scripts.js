@@ -14,6 +14,7 @@ const beatloopPad4Size = 8;
 const beatloopActivePadBlinking = true;
 const beatloopPadBlinkingFast = false;
 const samplerActiveBlinkingFast = false;
+const fadeFxActiveBlinkingFast = false;
 
 const beatloopRollSize = 1;
 
@@ -23,7 +24,9 @@ const shiftCueDoubleTapTimer = 300;
 const previewDeckStripSearchPace = 0.02;
 
 
-NumarkMixtrackGo = {};
+// eslint-disable-next-line no-var
+var NumarkMixtrackGo = {};
+
 
 /**
  * Holds all the used midi signals sent by the controller.
@@ -703,47 +706,19 @@ NumarkMixtrackGo.init = function() {
     // Since we can't catch sysex messages and the controller sends it well under 10ms
     // after we send the Identity request message 50ms is more than enough.
     engine.beginTimer(50, () => {
-        NumarkMixtrackGo.led.setCueDim(0);
-        NumarkMixtrackGo.led.setCueDim(1);
-        NumarkMixtrackGo.led.setPlayDim(0);
-        NumarkMixtrackGo.led.setPlayDim(1);
-        NumarkMixtrackGo.led.setSyncDim(0);
-        NumarkMixtrackGo.led.setSyncDim(1);
-
-        NumarkMixtrackGo.led.setModeHotcueBright(0);
-        NumarkMixtrackGo.led.setModeHotcueBright(1);
-        NumarkMixtrackGo.led.setModeLoopsDim(0);
-        NumarkMixtrackGo.led.setModeLoopsDim(1);
-        NumarkMixtrackGo.led.setModeSamplerDim(0);
-        NumarkMixtrackGo.led.setModeSamplerDim(1);
-        NumarkMixtrackGo.led.setModeStemsDim(0);
-        NumarkMixtrackGo.led.setModeStemsDim(1);
-
-        NumarkMixtrackGo.led.setPflDim(0);
-        NumarkMixtrackGo.led.setPflDim(1);
-        NumarkMixtrackGo.led.setLoadDim(0);
-        NumarkMixtrackGo.led.setLoadDim(1);
-        NumarkMixtrackGo.led.setFadefxDim();
-
-        // setting shift led states
-        NumarkMixtrackGo.led.setLoadShiftBright(0);
-        NumarkMixtrackGo.led.setLoadShiftBright(1);
-        NumarkMixtrackGo.led.setFadefxShiftDim();
-        NumarkMixtrackGo.led.setCueShiftDim(0);
-        NumarkMixtrackGo.led.setCueShiftDim(1);
-        NumarkMixtrackGo.led.setPlayShiftDim(0);
-        NumarkMixtrackGo.led.setPlayShiftDim(1);
-        NumarkMixtrackGo.led.setSyncShiftDim(0);
-        NumarkMixtrackGo.led.setSyncShiftDim(1);
-        NumarkMixtrackGo.led.setPflShiftDim(0);
-        NumarkMixtrackGo.led.setPflShiftDim(1);
+        NumarkMixtrackGo.leftDeck.setDeckStartLeds();
+        NumarkMixtrackGo.rightDeck.setDeckStartLeds();
     }, true);
 
 
     // Fade fx blinking
-    engine.makeConnection("[App]", "indicator_500ms", function() {
+    let fadeFxIndicatorControl = "indicator_500ms";
+    if (fadeFxActiveBlinkingFast) {
+        fadeFxIndicatorControl = "indicator_250ms";
+    }
+    engine.makeConnection("[App]", fadeFxIndicatorControl, function() {
         if (isFadeFxOn) {
-            if (engine.getValue("[App]", "indicator_500ms") === 0) {
+            if (engine.getValue("[App]", fadeFxIndicatorControl) === 0) {
                 NumarkMixtrackGo.led.setFadefxDim();
                 NumarkMixtrackGo.led.setFadefxShiftDim();
             } else {
@@ -879,6 +854,7 @@ NumarkMixtrackGo.crossFader = new components.Pot({
 NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     components.Deck.call(this, deckNumber);
     const group = `[Channel${deckNumber}]`;
+
     const padModesNumber = padModes.length;
     let currentPadMode = 0;
 
@@ -893,7 +869,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     }
 
     // pfl status led control
-    engine.makeConnection(group, "pfl", function() {
+    const pflConnection = engine.makeConnection(group, "pfl", function() {
         if (engine.getValue(group, "pfl") === 1) {
             NumarkMixtrackGo.led.setPflBright(deckIndex);
         } else {
@@ -902,9 +878,10 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     });
 
     // hotcue status led controls
+    this.hotcueConnections = [];
     for (let i = 1; i <= 4; i++) {
         const hotcueStatusControl = `hotcue_${i}_status`;
-        engine.makeConnection(group, hotcueStatusControl, function() {
+        this.hotcueConnections[i] = engine.makeConnection(group, hotcueStatusControl, function() {
             if (currentPadMode === 0) {
                 const hotCueStatus = engine.getValue(group, hotcueStatusControl);
                 if (hotCueStatus === 0) {
@@ -1002,13 +979,11 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         });
     }
 
-
-
     let isTrackLoaded = false;
     let isStemsTrackLoaded = false;
     let isLoadedTrackBeingCheckedForStems = false;
 
-    engine.makeConnection(group, "track_loaded", function() {
+    const trackLoadedConnection = engine.makeConnection(group, "track_loaded", function() {
         if (engine.getValue(group, "track_loaded") === 1) {
             isTrackLoaded = true;
             isStemsTrackLoaded = false;
@@ -1088,7 +1063,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     });
 
     // sync led control
-    engine.makeConnection(group, "sync_enabled", function() {
+    const syncConnection = engine.makeConnection(group, "sync_enabled", function() {
         const syncIndicatorState = engine.getValue(group, "sync_enabled");
         if (syncIndicatorState === 0) {
             NumarkMixtrackGo.led.setSyncDim(deckIndex);
@@ -1097,7 +1072,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     });
     // cue led control
-    engine.makeConnection(group, "cue_indicator", function() {
+    const cueConnection = engine.makeConnection(group, "cue_indicator", function() {
         const cueIndicatorState = engine.getValue(group, "cue_indicator");
         if (cueIndicatorState === 0) {
             NumarkMixtrackGo.led.setCueDim(deckIndex);
@@ -1105,11 +1080,12 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
             NumarkMixtrackGo.led.setCueBright(deckIndex);
         }
     });
-    // play led control - if play stops and fade fx is on, the effects need to be reset (same on serato)
-    engine.makeConnection(group, "play", function() {
+    // play led control
+    const playConnection = engine.makeConnection(group, "play", function() {
         const playState = engine.getValue(group, "play");
         if (playState === 0) {
             NumarkMixtrackGo.led.setPlayDim(deckIndex);
+            //if play stops and fade fx is on, the effects need to be reset (same on serato)
             if (isFadeFxOn) {
                 engine.setValue("[QuickEffectRack1_[Channel1]]", "super1", 0);
                 engine.setValue("[QuickEffectRack1_[Channel2]]", "super1", 0);
@@ -1118,6 +1094,56 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
             NumarkMixtrackGo.led.setPlayBright(deckIndex);
         }
     });
+
+    this.setDeckStartLeds = function() {
+
+        trackLoadedConnection.trigger();
+        playConnection.trigger();
+        cueConnection.trigger();
+        syncConnection.trigger();
+        pflConnection.trigger();
+
+        for (let i = 1; i <= 4; i++) {
+            this.hotcueConnections[i].trigger();
+        }
+
+        // acapel && instru
+        const isDrumStemMuted = engine.getValue(drumsStemGroup, "mute") === 1;
+        const isBassStemMuted = engine.getValue(bassStemGroup, "mute") === 1;
+        const isSynthsStemMuted = engine.getValue(synthsStemGroup, "mute") === 1;
+        const isVoiceStemMuted = engine.getValue(voiceStemGroup, "mute") === 1;
+
+        if (engine.getValue(group, "stem_count") > 0) {
+            if (isDrumStemMuted && isBassStemMuted && isSynthsStemMuted && !isVoiceStemMuted) {
+                NumarkMixtrackGo.led.setAcapelBright(deckIndex);
+                NumarkMixtrackGo.led.setInstruDim(deckIndex);
+            } else if (!isDrumStemMuted && !isBassStemMuted && !isSynthsStemMuted && isVoiceStemMuted) {
+                NumarkMixtrackGo.led.setAcapelDim(deckIndex);
+                NumarkMixtrackGo.led.setInstruBright(deckIndex);
+            } else {
+                NumarkMixtrackGo.led.setAcapelDim(deckIndex);
+                NumarkMixtrackGo.led.setInstruDim(deckIndex);
+            }
+        } else {
+            NumarkMixtrackGo.led.setAcapelOff(deckIndex);
+            NumarkMixtrackGo.led.setInstruOff(deckIndex);
+        }
+
+        // mode leds
+        NumarkMixtrackGo.led.setModeHotcueBright(deckIndex);
+        NumarkMixtrackGo.led.setModeLoopsDim(deckIndex);
+        NumarkMixtrackGo.led.setModeSamplerDim(deckIndex);
+        NumarkMixtrackGo.led.setModeStemsDim(deckIndex);
+
+        // load
+        if (engine.getValue(group, "track_loaded") === 1) {
+            NumarkMixtrackGo.led.setLoadBright(deckIndex);
+        } else {
+            NumarkMixtrackGo.led.setLoadDim(deckIndex);
+        }
+    };
+
+
     // had to implement this because the midi learning tool's reverse wasn't working
     this.tempoFader = new components.Pot({
         msb: 0,
