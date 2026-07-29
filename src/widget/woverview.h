@@ -72,6 +72,14 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotScalingChanged();
 
   private:
+    inline int clampedPickupPos(QPoint pos) {
+        if (m_orientation == Qt::Horizontal) {
+            return math_clamp(pos.x(), 0, width() - 1);
+        }
+        return math_clamp(pos.y(), 0, height() - 1);
+    }
+    // Performs a seek associated with releasing the left mouse button. Clamps position value.
+    void leftMouseDragRelease(QPoint pos);
     // Append the waveform overview pixmap according to available data
     // in waveform
     bool drawNextPixmapPart();
