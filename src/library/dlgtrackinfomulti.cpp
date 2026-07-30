@@ -270,9 +270,6 @@ void DlgTrackInfoMulti::init() {
             &DlgTrackInfoMulti::slotStarRatingChanged);
 
     // Insert the cover widget
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
