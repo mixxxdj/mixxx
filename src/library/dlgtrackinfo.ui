@@ -1132,9 +1132,9 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
   <tabstop>txtKey</tabstop>
   <tabstop>spinTuning</tabstop>
   <tabstop>txtComment</tabstop>
-  <tabstop>btnColorPicker</tabstop>
   <tabstop>btnImportMetadataFromMusicBrainz</tabstop>
   <tabstop>btnImportMetadataFromFile</tabstop>
+  <tabstop>btnColorPicker</tabstop>
   <tabstop>btnOpenFileBrowser</tabstop>
   <tabstop>spinBpm</tabstop>
   <tabstop>bpmConst</tabstop>
