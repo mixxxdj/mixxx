@@ -36,12 +36,27 @@ SoundDevicePipewire::~SoundDevicePipewire() {
 }
 
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
-    m_error = m_pEnumerator->openDevice(*this, m_sampleRate, m_configFramesPerBuffer);
-    if (m_error.empty()) {
-        return SoundDeviceStatus::Ok;
-    } else {
-        return SoundDeviceStatus::Error;
+    std::string error;
+    for (auto& input : m_audioInputs) {
+        error += m_pEnumerator->openDeviceInput(m_deviceId.deviceIndex,
+                input,
+                m_sampleRate,
+                m_configFramesPerBuffer);
     }
+
+    for (auto& output : m_audioOutputs) {
+        error += m_pEnumerator->openDeviceOutput(m_deviceId.deviceIndex,
+                output,
+                m_sampleRate,
+                m_configFramesPerBuffer);
+    }
+
+    if (error.empty()) {
+        return SoundDeviceStatus::Ok;
+    }
+
+    m_error = error;
+    return SoundDeviceStatus::Error;
 }
 
 bool SoundDevicePipewire::isOpen() const {

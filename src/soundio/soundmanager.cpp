@@ -206,12 +206,18 @@ void SoundManager::completeDevicesClosing() {
         for (const auto& in : pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
-            unconfigureInput(in);
+            if (!isPipewireSelected()) {
+                // PipeWire manages input/output configuration itself
+                unconfigureInput(in);
+            }
         }
         for (const auto& out: pDevice->outputs()) {
             // Need to tell all registered AudioSources for this AudioOutput
             // that the output was disconnected.
-            unconfigureOutput(out);
+            if (!isPipewireSelected()) {
+                // PipeWire manages input/output configuration itself
+                unconfigureOutput(out);
+            }
         }
     }
 
@@ -333,7 +339,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
-            configureInput(in);
+            if (!isPipewireSelected()) {
+                // PipeWire manages input/output configuration itself
+                configureInput(in);
+            }
         }
         QList<AudioOutput> outputs =
                 m_config.getOutputs().values(pDevice->getDeviceId());
@@ -379,7 +388,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 }
             }
 
-            configureOutput(out);
+            if (!isPipewireSelected()) {
+                // PipeWire manages input/output configuration itself
+                configureOutput(out);
+            }
         }
 
         if (mode.isInput || mode.isOutput) {
@@ -502,6 +514,11 @@ void SoundManager::closeActiveConfig(bool async) {
     closeDevices(sleepAfterClosing, async);
 }
 
+void SoundManager::updateConfig(const SoundManagerConfig& config) {
+    m_config = config;
+    checkConfig();
+}
+
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     m_config = config;
@@ -557,7 +574,7 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                 ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
-    }
+   }
 }
 
 void SoundManager::writeProcess(SINT framesPerBuffer) const {
@@ -650,6 +667,18 @@ void SoundManager::removeDevice(SoundDevicePointer pDevice) {
 
 void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
     emit deviceChannelsUpdated(pDevice);
+}
+
+void SoundManager::updatePathChannel(const AudioPath& path, ChannelGroup group) {
+    qWarning() << "SoundManager::updatePathChannel" << path.getString()
+               << group.getChannelBase() << group.getChannelCount();
+    emit pathChannelUpdated(&path, group);
+}
+
+void SoundManager::updatePathDevice(const AudioPath& path, const SoundDeviceId& deviceId) {
+    qWarning() << "SoundManager::updatePathDevice" << path.getString()
+               << deviceId.deviceIndex << deviceId.name;
+    emit pathDeviceUpdated(&path, deviceId);
 }
 
 void SoundManager::configureInput(const AudioInput& input) {

@@ -37,6 +37,8 @@ const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
 const ConfigKey kPipeWire =
         ConfigKey(kAppGroup, QStringLiteral("pipewire"));
+const ConfigKey kPipeWirePatchbay =
+        ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -118,6 +120,16 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &SoundManager::deviceChannelsUpdated,
             this,
             &DlgPrefSound::updateDeviceChannels);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::pathChannelUpdated,
+            this,
+            &DlgPrefSound::updatePathChannel);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::pathDeviceUpdated,
+            this,
+            &DlgPrefSound::updatePathDevice);
 
     apiComboBox->clear();
     apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
@@ -236,6 +248,24 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                                    "API selection to take effect."));
                     }
                 });
+    }
+
+    if (m_pSoundManager->isPipewireSelected()) {
+        m_pipewirePatchbayCheckBox = make_parented<QCheckBox>(this);
+        m_pipewirePatchbayCheckBox->setText(tr("Sync with external patchbay"));
+        m_pPipewirePatchbay = make_parented<ControlProxy>(
+                kPipeWirePatchbay.group, kPipeWirePatchbay.item, this);
+        connect(m_pipewirePatchbayCheckBox,
+                &QCheckBox::toggled,
+                this,
+                [this](bool checked) {
+                    m_pSettings->setValue(kPipeWirePatchbay, checked);
+                    m_pPipewirePatchbay->set(checked);
+                });
+
+        bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
+        m_pipewirePatchbayCheckBox->setChecked(checked);
+        verticalLayout_2->addWidget(m_pipewirePatchbayCheckBox.get());
     }
 #endif
 
@@ -557,6 +587,7 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::configuredDeviceNotFound);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
+    connect(this, &DlgPrefSound::writePath, pItem, &DlgPrefSoundItem::updatePath);
     if (pItem->isInput()) {
         connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
         connect(this, &DlgPrefSound::addInputDevice, pItem, &DlgPrefSoundItem::addDevice);
@@ -575,7 +606,8 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::deviceChannelsUpdated,
             pItem,
             &DlgPrefSoundItem::updateDeviceChannels);
-    connect(this, &DlgPrefSound::deviceRouteUpdated, pItem, &DlgPrefSoundItem::updateDeviceRoute);
+    connect(this, &DlgPrefSound::pathChannelUpdated, pItem, &DlgPrefSoundItem::updateChannel);
+    connect(this, &DlgPrefSound::pathDeviceUpdated, pItem, &DlgPrefSoundItem::updateDevice);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -918,6 +950,24 @@ void DlgPrefSound::updateDeviceChannels(SoundDevicePointer pDevice) {
         m_outputDevices.append(pDevice);
         emit addOutputDevice(pDevice);
     }
+}
+
+void DlgPrefSound::updatePathChannel(const AudioPath* pPath, ChannelGroup channelGroup) {
+    emit pathChannelUpdated(pPath, channelGroup);
+    m_config.clearInputs();
+    m_config.clearOutputs();
+    emit writePaths(&m_config);
+
+    m_pSoundManager->updateConfig(m_config);
+}
+
+void DlgPrefSound::updatePathDevice(const AudioPath* pPath, const SoundDeviceId& deviceId) {
+    emit pathDeviceUpdated(pPath, deviceId);
+    m_config.clearInputs();
+    m_config.clearOutputs();
+    emit writePaths(&m_config);
+
+    m_pSoundManager->updateConfig(m_config);
 }
 
 /// Called when any of the combo boxes in this dialog are changed. Enables the
