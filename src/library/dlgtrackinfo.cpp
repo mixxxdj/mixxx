@@ -84,9 +84,6 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("comment", txtComment);
     m_propertyWidgets.insert("color", btnColorPicker);
 
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
 
     starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
