@@ -606,52 +606,6 @@ NumarkMixtrackGo.led = {
     setPad4ShiftBright: function(deckIndex) {
         midi.sendShortMsg(this.pad4_shift[deckIndex][0], this.pad4_shift[deckIndex][1], this.bright);
     },
-
-
-    setStemLeds: function(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup) {
-
-        const isDrumStemMuted = engine.getValue(drumsStemGroup, "mute") === 1;
-        const isBassStemMuted = engine.getValue(bassStemGroup, "mute") === 1;
-        const isSynthsStemMuted = engine.getValue(synthsStemGroup, "mute") === 1;
-        const isVoiceStemMuted = engine.getValue(voiceStemGroup, "mute") === 1;
-
-        if (currentPadMode === 4) {
-            if (isDrumStemMuted) {
-                NumarkMixtrackGo.led.setPad1Off(deckIndex);
-            } else {
-                NumarkMixtrackGo.led.setPad1Bright(deckIndex);
-            }
-
-            if (isBassStemMuted) {
-                NumarkMixtrackGo.led.setPad2Off(deckIndex);
-            } else {
-                NumarkMixtrackGo.led.setPad2Bright(deckIndex);
-            }
-
-            if (isSynthsStemMuted) {
-                NumarkMixtrackGo.led.setPad3Off(deckIndex);
-            } else {
-                NumarkMixtrackGo.led.setPad3Bright(deckIndex);
-            }
-
-            if (isVoiceStemMuted) {
-                NumarkMixtrackGo.led.setPad4Off(deckIndex);
-            } else {
-                NumarkMixtrackGo.led.setPad4Bright(deckIndex);
-            }
-        }
-
-        if (isDrumStemMuted && isBassStemMuted && isSynthsStemMuted && !isVoiceStemMuted) {
-            NumarkMixtrackGo.led.setAcapelBright(deckIndex);
-            NumarkMixtrackGo.led.setInstruDim(deckIndex);
-        } else if (!isDrumStemMuted && !isBassStemMuted && !isSynthsStemMuted && isVoiceStemMuted) {
-            NumarkMixtrackGo.led.setAcapelDim(deckIndex);
-            NumarkMixtrackGo.led.setInstruBright(deckIndex);
-        } else {
-            NumarkMixtrackGo.led.setAcapelDim(deckIndex);
-            NumarkMixtrackGo.led.setInstruDim(deckIndex);
-        }
-    },
 };
 
 
@@ -983,7 +937,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     let isStemsTrackLoaded = false;
     let isLoadedTrackBeingCheckedForStems = false;
 
-    const trackLoadedConnection = engine.makeConnection(group, "track_loaded", function() {
+    engine.makeConnection(group, "track_loaded", function() {
         if (engine.getValue(group, "track_loaded") === 1) {
             isTrackLoaded = true;
             isStemsTrackLoaded = false;
@@ -1041,24 +995,84 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     const synthsStemGroup = `[Channel${deckNumber}_Stem3]`;
     const voiceStemGroup = `[Channel${deckNumber}_Stem4]`;
 
+    const setAcapelAndInstruLed = function(isStemTrackLoaded, isDrumStemMuted, isBassStemMuted, isSynthsStemMuted, isVoiceStemMuted) {
+
+        if (isStemTrackLoaded) {
+            if (isDrumStemMuted && isBassStemMuted && isSynthsStemMuted && !isVoiceStemMuted) {
+                NumarkMixtrackGo.led.setAcapelBright(deckIndex);
+                NumarkMixtrackGo.led.setInstruDim(deckIndex);
+            } else if (!isDrumStemMuted && !isBassStemMuted && !isSynthsStemMuted && isVoiceStemMuted) {
+                NumarkMixtrackGo.led.setAcapelDim(deckIndex);
+                NumarkMixtrackGo.led.setInstruBright(deckIndex);
+            } else {
+                NumarkMixtrackGo.led.setAcapelDim(deckIndex);
+                NumarkMixtrackGo.led.setInstruDim(deckIndex);
+            }
+        } else {
+            NumarkMixtrackGo.led.setAcapelOff(deckIndex);
+            NumarkMixtrackGo.led.setInstruOff(deckIndex);
+        }
+    };
+
+    const setStemLeds = function(currentPadMode, deckIndex, padNumber, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup) {
+        const isDrumStemMuted = engine.getValue(drumsStemGroup, "mute") === 1;
+        const isBassStemMuted = engine.getValue(bassStemGroup, "mute") === 1;
+        const isSynthsStemMuted = engine.getValue(synthsStemGroup, "mute") === 1;
+        const isVoiceStemMuted = engine.getValue(voiceStemGroup, "mute") === 1;
+
+        if (currentPadMode === 4) {
+            switch (padNumber) {
+            case 1:
+                if (isDrumStemMuted) {
+                    NumarkMixtrackGo.led.setPad1Off(deckIndex);
+                } else {
+                    NumarkMixtrackGo.led.setPad1Bright(deckIndex);
+                }
+                break;
+            case 2:
+                if (isBassStemMuted) {
+                    NumarkMixtrackGo.led.setPad2Off(deckIndex);
+                } else {
+                    NumarkMixtrackGo.led.setPad2Bright(deckIndex);
+                }
+                break;
+            case 3:
+                if (isSynthsStemMuted) {
+                    NumarkMixtrackGo.led.setPad3Off(deckIndex);
+                } else {
+                    NumarkMixtrackGo.led.setPad3Bright(deckIndex);
+                }
+                break;
+            case 4:
+                if (isVoiceStemMuted) {
+                    NumarkMixtrackGo.led.setPad4Off(deckIndex);
+                } else {
+                    NumarkMixtrackGo.led.setPad4Bright(deckIndex);
+                }
+                break;
+            }
+        }
+        setAcapelAndInstruLed(true, isDrumStemMuted, isBassStemMuted, isSynthsStemMuted, isVoiceStemMuted);
+    };
+
     engine.makeConnection(drumsStemGroup, "mute", function() {
         if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
-            NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
+            setStemLeds(currentPadMode, deckIndex, 1, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
     engine.makeConnection(bassStemGroup, "mute", function() {
         if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
-            NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
+            setStemLeds(currentPadMode, deckIndex, 2, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
     engine.makeConnection(synthsStemGroup, "mute", function() {
         if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
-            NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
+            setStemLeds(currentPadMode, deckIndex, 3, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
     engine.makeConnection(voiceStemGroup, "mute", function() {
         if (!isLoadedTrackBeingCheckedForStems && isTrackLoaded) {
-            NumarkMixtrackGo.led.setStemLeds(currentPadMode, deckIndex, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
+            setStemLeds(currentPadMode, deckIndex, 4, drumsStemGroup, bassStemGroup, synthsStemGroup, voiceStemGroup);
         }
     });
 
@@ -1097,52 +1111,36 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
 
     this.setDeckStartLeds = function() {
 
-        trackLoadedConnection.trigger();
         playConnection.trigger();
         cueConnection.trigger();
         syncConnection.trigger();
         pflConnection.trigger();
 
+        // hotcues - controller is always started at hotcue mode so only hotcue leds need to be set
         for (let i = 1; i <= 4; i++) {
             this.hotcueConnections[i].trigger();
         }
 
-        // acapel && instru
-        const isDrumStemMuted = engine.getValue(drumsStemGroup, "mute") === 1;
-        const isBassStemMuted = engine.getValue(bassStemGroup, "mute") === 1;
-        const isSynthsStemMuted = engine.getValue(synthsStemGroup, "mute") === 1;
-        const isVoiceStemMuted = engine.getValue(voiceStemGroup, "mute") === 1;
-
-        if (engine.getValue(group, "stem_count") > 0) {
-            if (isDrumStemMuted && isBassStemMuted && isSynthsStemMuted && !isVoiceStemMuted) {
-                NumarkMixtrackGo.led.setAcapelBright(deckIndex);
-                NumarkMixtrackGo.led.setInstruDim(deckIndex);
-            } else if (!isDrumStemMuted && !isBassStemMuted && !isSynthsStemMuted && isVoiceStemMuted) {
-                NumarkMixtrackGo.led.setAcapelDim(deckIndex);
-                NumarkMixtrackGo.led.setInstruBright(deckIndex);
-            } else {
-                NumarkMixtrackGo.led.setAcapelDim(deckIndex);
-                NumarkMixtrackGo.led.setInstruDim(deckIndex);
-            }
+        // acapel, instru, load
+        // can't call trigger() on the track_loaded connection because that make connection sets
+        // stem leds to a state where a track was just loaded and here we just want to see if a track is loaded in order
+        // to set up the acapel and instru leds after a script load
+        if (engine.getValue(group, "track_loaded") === 1) {
+            isTrackLoaded = true;
+            NumarkMixtrackGo.led.setLoadBright(deckIndex);
         } else {
-            NumarkMixtrackGo.led.setAcapelOff(deckIndex);
-            NumarkMixtrackGo.led.setInstruOff(deckIndex);
+            NumarkMixtrackGo.led.setLoadDim(deckIndex);
         }
+        setAcapelAndInstruLed(engine.getValue(group, "stem_count") > 0,
+            engine.getValue(drumsStemGroup, "mute") === 1, engine.getValue(bassStemGroup, "mute") === 1,
+            engine.getValue(synthsStemGroup, "mute") === 1, engine.getValue(voiceStemGroup, "mute") === 1);
 
         // mode leds
         NumarkMixtrackGo.led.setModeHotcueBright(deckIndex);
         NumarkMixtrackGo.led.setModeLoopsDim(deckIndex);
         NumarkMixtrackGo.led.setModeSamplerDim(deckIndex);
         NumarkMixtrackGo.led.setModeStemsDim(deckIndex);
-
-        // load
-        if (engine.getValue(group, "track_loaded") === 1) {
-            NumarkMixtrackGo.led.setLoadBright(deckIndex);
-        } else {
-            NumarkMixtrackGo.led.setLoadDim(deckIndex);
-        }
     };
-
 
     // had to implement this because the midi learning tool's reverse wasn't working
     this.tempoFader = new components.Pot({
