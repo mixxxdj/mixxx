@@ -82,6 +82,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("color", btnColorPicker);
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
