@@ -7,7 +7,6 @@
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/assert.h"
 
 /// Constructs a new preferences sound item, representing an AudioPath and SoundDevice
 /// with a label and two combo boxes.
@@ -71,13 +70,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
 }
 
 void DlgPrefSoundItem::addDevice(const SoundDevicePointer pDevice) {
-    // SoundDeviceId oldDev =
-    // deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
-
-    // int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
-    // deviceComboBox->setCurrentIndex(newIndex);
-
     m_devices.push_back(pDevice);
 }
 
@@ -116,29 +109,33 @@ void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
     }
 }
 
-void DlgPrefSoundItem::updateDeviceRoute(const SoundDeviceId& id, const AudioPath* pPath) {
+void DlgPrefSoundItem::updateChannel(const AudioPath* pPath, ChannelGroup channelGroup) {
     if (pPath->getType() != m_type || pPath->getIndex() != m_index) {
         return;
     }
 
-    // qWarning() << "DlgPrefSoundItem::updateDevice" << id.name;
-    int index = deviceComboBox->findData(QVariant::fromValue(id));
+    qDebug() << "DlgPrefSoundItem::updateChannel" << pPath->getString()
+             << channelGroup.getChannelBase()
+             << channelGroup.getChannelCount();
+    setChannel(channelGroup.getChannelBase(), channelGroup.getChannelCount());
+}
 
-    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+void DlgPrefSoundItem::updateDevice(const AudioPath* pPath, const SoundDeviceId& deviceId) {
+    if (pPath->getType() != m_type || pPath->getIndex() != m_index) {
         return;
     }
 
-    if (index != deviceComboBox->currentIndex()) {
-        deviceComboBox->blockSignals(true);
-        deviceComboBox->setCurrentIndex(index);
-        deviceComboBox->blockSignals(false);
-        deviceChanged(index);
+    qDebug() << "DlgPrefSoundItem::updateDevice" << pPath->getString()
+             << deviceId.deviceIndex << deviceId.name;
+    setDevice(deviceId);
+}
+
+void DlgPrefSoundItem::updatePath(const AudioPath* pPath, SoundManagerConfig* config) const {
+    if (pPath->getType() != m_type || pPath->getIndex() != m_index) {
+        return;
     }
 
-    auto channelGroup = pPath->getChannelGroup();
-    QPoint point = QPoint(channelGroup.getChannelBase(), channelGroup.getChannelCount());
-    int channelIndex = channelComboBox->findData(QVariant::fromValue(point));
-    channelComboBox->setCurrentIndex(channelIndex);
+    writePath(config);
 }
 
 /// Slot called when the device combo box selection changes. Updates the channel
@@ -290,6 +287,7 @@ void DlgPrefSoundItem::reload() {
     int newDevice = deviceComboBox->findData(QVariant::fromValue(m_savedDevice));
     if (newDevice > -1) {
         deviceComboBox->setCurrentIndex(newDevice);
+        qDebug() << "DlgPrefSoundItem::reload deviceComboBox->setCurrentIndex";
     }
     int newChannel = channelComboBox->findData(m_savedChannel);
     if (newChannel > -1) {
@@ -312,6 +310,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     }
     // looks like something became invalid ???
     deviceComboBox->setCurrentIndex(0); // set it to none
+    qDebug() << "DlgPrefSoundItem::getDevice deviceComboBox->setCurrentIndex";
     return SoundDevicePointer();
 }
 
@@ -338,11 +337,17 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
 /// or selects the first channel if the given channel isn't found.
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
                                   unsigned int channels) {
+    qDebug() << "DlgPrefSoundItem::setChannel" << channelBase << channels;
     // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
     // to store the channel info. x is the channel base and y is the channel
     // count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
+    // PipeWire uses unselected checkbox to represent nonstandard routing
+#ifdef __PIPEWIRE__
+    if (false) {
+#else
     if (index == -1) {
+#endif
         // channel(s) not found
         channelComboBox->setCurrentIndex(0); // 1
         emit selectedChannelsChanged();

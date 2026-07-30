@@ -9,6 +9,7 @@
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/parented_ptr.h"
 
 class ControlObject;
@@ -37,6 +38,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 
   signals:
     void loadPaths(const SoundManagerConfig &config);
+    void writePath(const AudioPath* pPath, SoundManagerConfig* config);
     void writePaths(SoundManagerConfig *config);
     void refreshOutputDevices(const QList<SoundDevicePointer>& devices);
     void refreshInputDevices(const QList<SoundDevicePointer>& devices);
@@ -46,7 +48,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void removeInputDevice(SoundDevicePointer pDevice);
     void updatingAPI();
     void updatedAPI();
-    void deviceRouteUpdated(const SoundDeviceId& device, const AudioPath* pPath);
+    void pathChannelUpdated(const AudioPath* path, ChannelGroup channelGroup);
+    void pathDeviceUpdated(const AudioPath* path, const SoundDeviceId& deviceId);
     void deviceChannelsUpdated(SoundDevicePointer devices);
 
   public slots:
@@ -90,6 +93,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
+    void updatePathChannel(const AudioPath* path, ChannelGroup channelGroup);
+    void updatePathDevice(const AudioPath* path, const SoundDeviceId& deviceId);
     void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
 
   private:
@@ -127,5 +132,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 
 #ifdef __PIPEWIRE__
     parented_ptr<QCheckBox> m_pipewireCheckBox;
+    parented_ptr<QCheckBox> m_pipewirePatchbayCheckBox;
+    parented_ptr<ControlProxy> m_pPipewirePatchbay;
 #endif
 };
