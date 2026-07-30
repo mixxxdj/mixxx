@@ -71,9 +71,12 @@ SoundManager::SoundManager(
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
 
+#ifdef __PIPEWIRE__
     if (isPipewireSelected()) {
         m_pEnumerator = std::make_unique<PipewireEnumerator>(m_pConfig, this);
-    } else {
+    } else
+#endif
+    {
         m_pEnumerator = std::make_unique<PortAudioEnumerator>(m_pConfig, this);
     }
 
