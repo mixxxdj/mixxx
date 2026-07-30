@@ -383,18 +383,9 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         outputPort.links.push_back(id);
 
         if (in_node == m_filterId) {
-            bool deviceChanged;
             // device output, mixxx input
             for (auto& [input, ports] : m_inputs) {
-                if (ports.left.id == in_port) {
-                    if (m_manageExternalLinks) {
-                        deviceChanged = ports.addPort(out_node, out_port, true);
-                    }
-                } else if (ports.right.id == in_port) {
-                    if (m_manageExternalLinks) {
-                        deviceChanged = ports.addPort(out_node, out_port, false);
-                    }
-                } else {
+                if (ports.left.id != in_port and ports.right.id != in_port) {
                     continue;
                 }
 
@@ -408,10 +399,12 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                 }
 
                 if (m_manageExternalLinks) {
-                    const SoundDeviceId& deviceId =
-                            m_soundDevices.at(ports.activeDevice)
-                                    ->getDeviceId();
+                    bool deviceChanged = ports.addPort(
+                            out_node, out_port, ports.left.id == in_port);
                     if (deviceChanged) {
+                        const SoundDeviceId& deviceId =
+                                m_soundDevices.at(ports.activeDevice)
+                                        ->getDeviceId();
                         m_pSoundManager->updatePathDevice(input, deviceId);
                     }
                     const Node& deviceNode = m_nodes.at(ports.activeDevice);
@@ -423,18 +416,9 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             }
 
         } else if (out_node == m_filterId) {
-            bool deviceChanged;
             // device input, mixxx output
             for (auto& [output, ports] : m_outputs) {
-                if (ports.left.id == out_port) {
-                    if (m_manageExternalLinks) {
-                        deviceChanged = ports.addPort(in_node, in_port, true);
-                    }
-                } else if (ports.right.id == out_port) {
-                    if (m_manageExternalLinks) {
-                        deviceChanged = ports.addPort(in_node, in_port, false);
-                    }
-                } else {
+                if (ports.left.id != out_port and ports.right.id != out_port) {
                     continue;
                 }
 
@@ -448,6 +432,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                 }
 
                 if (m_manageExternalLinks) {
+                    bool deviceChanged = ports.addPort(in_node, in_port, ports.left.id == out_port);
                     if (deviceChanged) {
                         const SoundDeviceId& deviceId =
                                 m_soundDevices.at(ports.activeDevice)

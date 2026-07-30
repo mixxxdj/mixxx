@@ -12,7 +12,6 @@
 #include "engine/enginemixer.h"
 #include "moc_soundmanager.cpp"
 #include "preferences/configobject.h"
-#include "soundio/pipewireenumerator.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
