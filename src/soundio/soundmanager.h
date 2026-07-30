@@ -133,9 +133,6 @@ class SoundManager : public QObject {
     CSAMPLE* getInputBuffer(const AudioInput& input) {
         if (!m_inputBuffers.contains(input)) {
             qWarning() << "getInputBuffer does not have" << input.getString();
-            for (const auto& [input, buffer] : m_inputBuffers.asKeyValueRange()) {
-                qWarning() << "getInputBuffer" << input.getString() << buffer;
-            }
         }
         return m_inputBuffers.value(input);
     }
