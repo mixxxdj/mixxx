@@ -497,7 +497,6 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtGrouping->setCursorPosition(0);
     txtYear->setCursorPosition(0);
     txtTrackNumber->setCursorPosition(0);
-    txtBpm->setCursorPosition(0);
 
     // Non-editable fields
     txtDuration->setText(
