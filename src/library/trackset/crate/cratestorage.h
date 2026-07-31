@@ -277,6 +277,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
             CrateId id,
             Crate* pCrate = nullptr) const;
     bool readCrateByName(
+            CrateId parent,
             const QString& name,
             Crate* pCrate = nullptr) const;
 

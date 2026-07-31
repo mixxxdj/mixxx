@@ -418,7 +418,7 @@ void CrateFeature::onRightClickChild(
 void CrateFeature::slotCreateCrate() {
     CrateId crateId =
             CrateFeatureHelper(m_pTrackCollection, m_pConfig)
-                    .createEmptyCrate();
+                    .createEmptyCrate(CrateId());
     if (crateId.isValid()) {
         // expand Crates and scroll to new crate
         m_pSidebarWidget->selectChildIndex(indexFromCrateId(crateId), false);
@@ -492,7 +492,7 @@ void CrateFeature::slotRenameCrate() {
                         tr("A crate cannot have a blank name."));
                 continue;
             }
-            if (m_pTrackCollection->crates().readCrateByName(newName)) {
+            if (m_pTrackCollection->crates().readCrateByName(crate.getParentId(), newName)) {
                 QMessageBox::warning(nullptr,
                         tr("Renaming Crate Failed"),
                         tr("A crate by that name already exists."));
@@ -726,7 +726,7 @@ void CrateFeature::slotCreateImportCrate() {
             }
             name = name.trimmed();
             if (!name.isEmpty()) {
-                if (!m_pTrackCollection->crates().readCrateByName(name)) {
+                if (!m_pTrackCollection->crates().readCrateByName(crate.getParentId(), name)) {
                     // unused crate name found
                     crate.setName(std::move(name));
                     DEBUG_ASSERT(crate.hasName());
