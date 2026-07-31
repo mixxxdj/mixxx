@@ -74,7 +74,8 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
 }
 } // namespace
 
-PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
+PipewireEnumerator::PipewireEnumerator(
+        UserSettingsPointer pConfig, SoundManager* pManager)
         : m_pSoundManager(pManager),
           m_pPwThreadLoop(nullptr),
           m_pPwContext(nullptr),
@@ -86,7 +87,9 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_COmanageExternalLinks(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay"))),
           m_framesPerBuffer(0),
-          m_manageExternalLinks(false) {
+          m_manageExternalLinks(static_cast<bool>(pConfig->getValue(
+                  ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay")),
+                  false))) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -414,8 +417,9 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
 
                 break;
             }
+        }
 
-        } else if (out_node == m_filterId) {
+        if (out_node == m_filterId) {
             // device input, mixxx output
             for (auto& [output, ports] : m_outputs) {
                 if (ports.left.id != out_port and ports.right.id != out_port) {
@@ -517,7 +521,9 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
                 }
                 break;
             }
-        } else if (outputPort.node == m_filterId) {
+        }
+
+        if (outputPort.node == m_filterId) {
             for (auto& [output, ports] : m_outputs) {
                 bool deviceChanged;
                 if (ports.left.id == link.output) {
@@ -1113,20 +1119,7 @@ bool PipewireEnumerator::PortPair::addPort(uint32_t deviceId, uint32_t portId, b
         }
     }
 
-    if (connectedDevices.contains(deviceId)) {
-        if (isLeft) {
-            connectedDevices.at(deviceId).leftPorts.push_back(portId);
-        } else {
-            connectedDevices.at(deviceId).rightPorts.push_back(portId);
-        }
-
-        return false;
-    }
-
     auto [it, didEmplace] = connectedDevices.try_emplace(deviceId);
-    if (!didEmplace) {
-        return false;
-    }
 
     if (isLeft) {
         it->second.leftPorts.push_back(portId);
@@ -1134,7 +1127,7 @@ bool PipewireEnumerator::PortPair::addPort(uint32_t deviceId, uint32_t portId, b
         it->second.rightPorts.push_back(portId);
     }
 
-    if (connectedDevices.size() == 1) {
+    if (didEmplace and connectedDevices.size() == 1) {
         // check separately since we preemptively set deviceId when
         // manually opening it
         if (!activeDevice) {
