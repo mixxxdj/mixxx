@@ -33,7 +33,6 @@ esac
 SYS_LIB_DIR="/usr/lib/${MULTIARCH}"
 SYS_QT_PLUGINS_DIR="${SYS_LIB_DIR}/qt6/plugins"
 SYS_QT_QML_DIR="${SYS_LIB_DIR}/qt6/qml"
-SYS_QT_LIB_DIR="${SYS_LIB_DIR}"
 
 APPDIR_LIB_DIR="${APPDIR}/usr/lib"
 APPDIR_PLUGINS_DIR="${APPDIR}/usr/plugins"

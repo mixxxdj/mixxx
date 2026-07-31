@@ -166,8 +166,9 @@ if [ "${INSIDE_MIXXX_BUILDER:-}" = "1" ]; then
 
     # ---- Step 8: Prepare desktop file ----
     echo "=== Preparing desktop file ==="
-    # Desktop file is pre-processed (Exec=mixxx) in packaging/appimage/
-    cp /src/packaging/appimage/org.mixxx.Mixxx.desktop /build/AppDir/org.mixxx.Mixxx.desktop
+    # Modify Exec= line for AppImage (remove pasuspender wrapper)
+    sed 's#Exec=sh -c "pasuspender -- mixxx || mixxx"#Exec=mixxx#' \
+        /src/res/linux/org.mixxx.Mixxx.desktop > /build/AppDir/org.mixxx.Mixxx.desktop
     chmod 644 /build/AppDir/org.mixxx.Mixxx.desktop
 
     # ---- Step 9: Prepare icon ----
