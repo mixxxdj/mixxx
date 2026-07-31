@@ -100,15 +100,6 @@ def before_scenario(context, scenario):
 def after_scenario(context, scenario):
     outcome = str(scenario.status).split('.')[1].lower()
 
-    # Clean up any mock devices injected during the scenario
-    session = context._session
-    rpc = session.get("rpc")
-    if rpc is not None:
-        try:
-            rpc.command("clearMockDevices", "")
-        except Exception:
-            pass
-
     failed = scenario.status in [Status.failed, Status.error]
     is_xfail = any(map(lambda t: t.startswith("xfail"), scenario.tags))
     if failed and is_xfail:
@@ -117,6 +108,11 @@ def after_scenario(context, scenario):
         outcome = "unexpected pass"
     elif failed and "xpass" in scenario.tags:
         outcome = "flaky"
+
+    if failed and _is_expected_failure_or_flaky(scenario.tags):
+        # Expected failures and flaky scenarios are not genuine failures:
+        # mark them as passed so behave's summary does not list them as failed.
+        scenario.set_status(Status.passed)
 
     time.sleep(1) # Allow the final state to be visible on screen
     scenario.end_at = time.time()

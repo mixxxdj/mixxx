@@ -83,6 +83,7 @@ Item {
         anchors.rightMargin: 10
         anchors.verticalCenter: root.verticalCenter
         from: 0
+        objectName: root.objectName ? "Track" : ""
         to: 1
 
         background: Item {
@@ -144,6 +145,7 @@ Item {
         }
         handle: Item {
             height: 14
+            objectName: root.objectName ? "Handler" : ""
             width: 14
             x: control.leftPadding + control.visualPosition * (control.availableWidth - width)
             y: -5
@@ -222,6 +224,7 @@ Item {
                 color: Qt.alpha(acceptableInput ? Theme.white : Theme.warningColor, root.enabled ? 1 : 0.5)
                 focus: true
                 horizontalAlignment: TextInput.AlignRight
+                objectName: root.objectName ? "Value" : ""
                 text: textFromValue(root.value, control.locale)
 
                 validator: DoubleValidator {

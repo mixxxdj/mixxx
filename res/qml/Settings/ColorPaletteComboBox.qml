@@ -48,6 +48,7 @@ Skin.ComboBox {
 
         height: 30
         highlighted: root.highlightedIndex === this.index
+        objectName: root.objectName ? root.objectName + "_option_" + index : ""
         text: root.textAt(this.index)
         width: parent.width
 

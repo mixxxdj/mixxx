@@ -106,7 +106,7 @@ index 6916697..311364b 100644
      utils::AddFunctionToAnyRpc<void(std::string)>(methodManager, "mouseEndDrag",
          "End a drag with the mouse | mouseEndDrag(string path)",
 diff --git a/libs/Core/src/Commands/ClickOnItem.cpp b/libs/Core/src/Commands/ClickOnItem.cpp
-index 26810ea..61ce750 100644
+index 26810ea..b8f26b7 100644
 --- a/libs/Core/src/Commands/ClickOnItem.cpp
 +++ b/libs/Core/src/Commands/ClickOnItem.cpp
 @@ -7,14 +7,22 @@
@@ -133,7 +133,7 @@ index 26810ea..61ce750 100644
  {
  }
  
-@@ -30,8 +38,18 @@ void ClickOnItem::execute(CommandEnvironment& env)
+@@ -30,8 +38,23 @@ void ClickOnItem::execute(CommandEnvironment& env)
  
      auto size = item->size();
      auto mousePoint = m_position.positionForItemSize(size);
@@ -141,10 +141,15 @@ index 26810ea..61ce750 100644
 -    env.scene().events().mouseUp(item.get(), mousePoint, m_mouseButton, m_keyModifier);
 +
 +    // Using a future to time precisely the sequence of events and prevent deadlock on Xcb QPA related to DragHandler
-+    auto future = std::async(std::launch::async, [this, &item, &env, mousePoint] { 
++    auto future = std::async(std::launch::async, [this, &item, &path, &env, mousePoint] { 
 +        qWarning() << "ClickOnItem::ClickOnItem:" << static_cast<int>(m_mouseButton) << static_cast<int>(m_keyModifier) << mousePoint.x << mousePoint.y << m_holdTime;        
 +        env.scene().events().mouseDown(item.get(), mousePoint, m_mouseButton, m_keyModifier);
 +        std::this_thread::sleep_for (std::chrono::milliseconds(m_holdTime));
++        // Click may have mutated the object
++        item = env.scene().itemAtPath(path);
++        if (!item) {
++            return;
++        }           
 +        env.scene().events().mouseUp(item.get(), mousePoint, m_mouseButton, m_keyModifier);
 +    });
 +    for (auto status = future.wait_for(std::chrono::milliseconds(0)); status != std::future_status::ready; status = future.wait_for(std::chrono::milliseconds(5))){
@@ -419,8 +424,8 @@ index fe4b0e9..459baff 100644
 +        QPointF(loc.x, loc.y),
 +        windowLoc,
 +        globalPos,
-+        eventCausingButton,
-+        activeButtons,
++        eventCausingButton, 
++        activeButtons, 
 +        qtmod);
 +    qWarning() << "mouseDown" << event;
      QGuiApplication::postEvent(window, event);
@@ -459,8 +464,8 @@ index fe4b0e9..459baff 100644
 +        QPointF(loc.x, loc.y),
 +        windowLoc,
 +        globalPos,
-+        eventCausingButton,
-+        activeButtons,
++        eventCausingButton, 
++        activeButtons, 
 +        qtmod);
 +    qWarning() << "mouseUp" << event;
      QGuiApplication::postEvent(window, event);
@@ -491,8 +496,8 @@ index fe4b0e9..459baff 100644
 +        QPointF(loc.x, loc.y),
 +        windowLoc,
 +        globalPos,
-+        Qt::MouseButton::NoButton,
-+        activeButtons,
++        Qt::MouseButton::NoButton, 
++        activeButtons, 
 +        Qt::NoModifier);
 +    qWarning() << "mouseMove" << event;
 +    QGuiApplication::postEvent(window, event);

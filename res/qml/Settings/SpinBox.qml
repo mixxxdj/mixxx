@@ -61,10 +61,12 @@ SpinBox {
         }
     }
     down.indicator: Indicator {
+        objectName: "downButton"
         text: "-"
         x: root.mirrored ? parent.width - width : 0
     }
     up.indicator: Indicator {
+        objectName: "upButton"
         text: "+"
         x: root.mirrored ? 0 : parent.width - width
     }
@@ -76,7 +78,7 @@ SpinBox {
     }
 
     onValueChanged: {
-        root.value = value;
+        root.realValue = root.value / root.decimalFactor;
     }
 
     component Indicator: Item {

@@ -138,6 +138,7 @@ ComboBox {
         required property int index
 
         highlighted: root.highlightedIndex === this.index
+        objectName: root.objectName ? root.objectName + "_option_" + index : ""
         padding: 4
         text: root.textAt(this.index)
         verticalPadding: 8

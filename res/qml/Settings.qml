@@ -50,12 +50,17 @@ Popup {
     }
     contentItem: Item {
         objectName: "settingsPopupItem"
+
+        // Used for testing
+        readonly property int activeCategoryIndex: root.activeCategoryIndex
+
         anchors.centerIn: parent
         height: parent.height - 40
         width: parent.width - 40
 
         Rectangle {
             id: categories
+            objectName: "settingsCategories"
 
             border.color: Theme.darkGray3
             border.width: 6
@@ -251,6 +256,7 @@ Popup {
 
                     activeColor: Theme.white
                     checkable: true
+                    objectName: "showCategoriesButton"
                     text: "M"
                     visible: root.width <= root.smallScreenWidth
                 }

@@ -49,7 +49,7 @@ Category {
     }
     function save() {
         const manager = Mixxx.SoundManager;
-        mainEnabled.value = mainMixEnabled.options.indexOf(mainMixEnabled.selected);
+        mainEnabled.value = mainMixEnabled.selected == "on";
         monoMix.value = !mainOutputMode.options.indexOf(mainOutputMode.selected);
         manager.setForceNetworkClock(soundClock.options[1] == soundClock.selected);
         manager.setSampleRate(parseInt(sampleRate.selected));
@@ -207,6 +207,14 @@ Category {
         anchors.fill: parent
         ScrollView {
             id: scrollView
+
+            ScrollBar.vertical: ScrollBar {
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.top: parent.top
+                objectName: "soundSettingsScrollBar"
+                policy: ScrollBar.AsNeeded
+            }
             Layout.fillWidth: true
             Layout.fillHeight: true
 

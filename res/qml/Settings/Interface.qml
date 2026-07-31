@@ -34,7 +34,7 @@ Category {
             sliderRangeInput.currentIndex = sliderRangeInput.model.length - 1;
         }
         syncModeInput.selected = syncModeInput.options[Mixxx.Config.bpmSyncLockAlgorithm];
-        sliderOrientationInput.selected = Mixxx.Config.controlRateDir === -1 ? "down" : "up";
+        sliderOrientationInput.selected = Mixxx.Config.controlRateDir ? "down" : "up";
         keylockModeInput.selected = keylockModeInput.options[Mixxx.Config.controlKeylockMode];
         keyunlockModeInput.selected = keyunlockModeInput.options[Mixxx.Config.controlKeyunlockMode];
         pitchBendBehaviourInput.selected = pitchBendBehaviourInput.options[Mixxx.Config.controlPitchBendBehaviour];
@@ -93,14 +93,14 @@ Category {
         Mixxx.Config.controlLoadWhenDeckPlaying = loadingTrackWhenPlayingInput.options.indexOf(loadingTrackWhenPlayingInput.selected);
         Mixxx.Config.controlSpeedAutoReset = resetOnTrackLoadInput.options.indexOf(resetOnTrackLoadInput.selected);
         for (let i = 0; i < deckRateRange.count; i++) {
-            deckRateRange.objectAt(i).value = sliderRangeInput.values[sliderRangeInput.currentIndex];
+            deckRateRange.objectAt(i).value = sliderRangeInput.values[sliderRangeInput.currentIndex] / 100;
         }
         Mixxx.Config.controlRateRange = sliderRangeInput.values[sliderRangeInput.currentIndex];
         Mixxx.Config.bpmSyncLockAlgorithm = syncModeInput.options.indexOf(syncModeInput.selected);
         for (let i = 0; i < deckRateDirection.count; i++) {
             deckRateDirection.objectAt(i).value = sliderOrientationInput.selected === "down" ? -1 : 1;
         }
-        Mixxx.Config.controlRateDir = sliderOrientationInput.selected === "down" ? -1 : 1;
+        Mixxx.Config.controlRateDir = sliderOrientationInput.selected === "down";
         Mixxx.Config.controlKeylockMode = keylockModeInput.options.indexOf(keylockModeInput.selected);
         Mixxx.Config.controlKeyunlockMode = keyunlockModeInput.options.indexOf(keyunlockModeInput.selected);
         Mixxx.Config.controlPitchBendBehaviour = pitchBendBehaviourInput.options.indexOf(pitchBendBehaviourInput.selected);
@@ -178,6 +178,14 @@ Category {
     }
     ScrollView {
         id: scrollView
+
+        ScrollBar.vertical: ScrollBar {
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.top: parent.top
+            objectName: "interfaceSettingsScrollBar"
+            policy: ScrollBar.AsNeeded
+        }
         anchors.bottom: buttonActions.top
         anchors.bottomMargin: 18
         anchors.left: parent.left
@@ -235,6 +243,7 @@ Category {
                                     id: skinInput
 
                                     model: ["Unnamed"]
+                                    objectName: "setting_skin"
 
                                     onCurrentIndexChanged: themeColorTab.dirty = true
                                 }
@@ -254,6 +263,7 @@ Category {
                                     id: colorInput
 
                                     model: ["Dark", "Light"]
+                                    objectName: "setting_color"
 
                                     onCurrentIndexChanged: themeColorTab.dirty = true
                                 }
@@ -273,6 +283,7 @@ Category {
                                     id: layoutInput
 
                                     model: ["Performance", "Broadcast"]
+                                    objectName: "setting_layout"
 
                                     onCurrentIndexChanged: themeColorTab.dirty = true
                                 }
@@ -291,6 +302,7 @@ Category {
                                 RatioChoice {
                                     id: tooltipsInput
 
+                                    objectName: "setting_toolTips"
                                     options: ["off", "library", "all"]
 
                                     onSelectedChanged: themeColorTab.dirty = true
@@ -310,6 +322,7 @@ Category {
                                 RatioChoice {
                                     id: disableScreensaverInput
 
+                                    objectName: "setting_disableScreenSaver"
                                     options: ["no", "while running", "while playing"]
 
                                     onSelectedChanged: themeColorTab.dirty = true
@@ -331,6 +344,7 @@ Category {
 
                                     readonly property bool enabled: selected == "on"
 
+                                    objectName: "setting_startFullscreen"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: themeColorTab.dirty = true
@@ -366,6 +380,7 @@ Category {
 
                                     readonly property bool enabled: selected == "on"
 
+                                    objectName: "setting_autoHideMenuBar"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: themeColorTab.dirty = true
@@ -461,6 +476,7 @@ Category {
                                             readonly property bool enabled: selected == "on"
 
                                             Layout.fillWidth: true
+                                            objectName: "setting_searchCompletion"
                                             options: ["on", "off"]
 
                                             onSelectedChanged: themeColorTab.dirty = true
@@ -492,6 +508,7 @@ Category {
                                             readonly property bool enabled: selected == "on"
 
                                             Layout.fillWidth: true
+                                            objectName: "setting_searchHistoryKeyboardShortcuts"
                                             options: ["on", "off"]
 
                                             onSelectedChanged: themeColorTab.dirty = true
@@ -525,6 +542,7 @@ Category {
                                             implicitWidth: 180
                                             max: 10
                                             min: 0
+                                            objectName: "setting_bpmDisplayPrecision"
                                             precision: 0
                                             realValue: 1
 
@@ -578,6 +596,7 @@ Category {
                                             markers: [14, 20, 50, 80]
                                             max: 100
                                             min: 14
+                                            objectName: "setting_libraryRowHeight"
                                             suffix: "px"
                                             value: 14
                                             width: 300
@@ -664,6 +683,8 @@ Category {
                                         ColorPaletteComboBox {
                                             id: trackPaletteComboBox
 
+                                            objectName: "setting_trackPalette"
+
                                             onCurrentIndexChanged: themeColorTab.dirty = true
                                         }
                                     }
@@ -701,6 +722,7 @@ Category {
                                                 Layout.alignment: Qt.AlignHCenter
                                                 Layout.preferredWidth: colorPane.defaultPalette.length * 20
                                                 currentIndex: colorPane.hotcuePaletteColorIndex
+                                                objectName: "setting_hotcueDefaultColor"
                                                 palette: colorPane.defaultPalette
 
                                                 onCurrentIndexChanged: themeColorTab.dirty = true
@@ -734,6 +756,7 @@ Category {
 
                                             readonly property bool enabled: selected == "on"
 
+                                            objectName: "setting_keyColor"
                                             options: ["on", "off"]
 
                                             onSelectedChanged: themeColorTab.dirty = true
@@ -743,6 +766,7 @@ Category {
 
                                             enabled: keyPaletteInput.enabled
                                             // model: Mixxx.Config.paletteNames.filter(palette => Mixxx.Config.colorPalette(palette).length == 12)
+                                            objectName: "setting_keyColorPalette"
                                             opacity: enabled ? 1 : 0.4
 
                                             onCurrentIndexChanged: themeColorTab.dirty = true
@@ -782,6 +806,7 @@ Category {
                                                 Layout.alignment: Qt.AlignHCenter
                                                 Layout.preferredWidth: colorPane.defaultPalette.length * 20
                                                 currentIndex: colorPane.loopPaletteColorIndex
+                                                objectName: "setting_loopDefaultColor"
                                                 palette: colorPane.defaultPalette
 
                                                 onCurrentIndexChanged: themeColorTab.dirty = true
@@ -809,6 +834,8 @@ Category {
                                         }
                                         ColorPaletteComboBox {
                                             id: hotcuePaletteComboBox
+
+                                            objectName: "setting_hotcuePalette"
 
                                             onCurrentIndexChanged: themeColorTab.dirty = true
                                         }
@@ -847,6 +874,7 @@ Category {
                                                 Layout.alignment: Qt.AlignHCenter
                                                 Layout.preferredWidth: colorPane.defaultPalette.length * 20
                                                 currentIndex: colorPane.jumpPaletteColorIndex
+                                                objectName: "setting_jumpDefaultColor"
                                                 palette: colorPane.defaultPalette
 
                                                 onCurrentIndexChanged: themeColorTab.dirty = true
@@ -934,6 +962,7 @@ Category {
 
                                 implicitWidth: 200
                                 model: ["Mixxx", "Mixxx (no blinking)", "Pioneer", "Denon", "Numark", "CUP",]
+                                objectName: "setting_cueMode"
 
                                 onCurrentIndexChanged: decksTab.dirty = true
                             }
@@ -961,6 +990,7 @@ Category {
 
                                 Layout.preferredWidth: (deckPane.width - 56) * 0.3
                                 model: [DeckComponents.TrackTime.Mode.Traditional, DeckComponents.TrackTime.Mode.TraditionalCoarse, DeckComponents.TrackTime.Mode.Seconds, DeckComponents.TrackTime.Mode.SecondsLong, DeckComponents.TrackTime.Mode.KiloSeconds, DeckComponents.TrackTime.Mode.HectoSeconds,]
+                                objectName: "setting_timeFormat"
 
                                 contentItem: Content {
                                     anchors.fill: parent
@@ -974,6 +1004,7 @@ Category {
                                     required property int index
 
                                     highlighted: root.highlightedIndex === this.index
+                                    objectName: "setting_timeFormat_option_" + index
                                     text: content.text
                                     width: parent.width
 
@@ -1020,6 +1051,7 @@ Category {
 
                                 readonly property bool enabled: selected == "on"
 
+                                objectName: "setting_introStartToMainCue"
                                 options: ["on", "off"]
 
                                 onSelectedChanged: decksTab.dirty = true
@@ -1047,6 +1079,7 @@ Category {
                                 id: trackTimeDisplayInput
 
                                 maxWidth: deckPane.width * 0.28
+                                objectName: "setting_trackTimeDisplay"
                                 options: ["elapsed", "remaining", "both"]
                                 normalizedWidth: false
 
@@ -1075,6 +1108,7 @@ Category {
                             RatioChoice {
                                 id: doublePressLoadToCloneInput
 
+                                objectName: "setting_doublePressLoadToClone"
                                 options: ["on", "off"]
 
                                 onSelectedChanged: decksTab.dirty = true
@@ -1102,6 +1136,7 @@ Category {
                                 id: trackLoadPointInput
 
                                 model: ["Main cue", "Beginning of track", "First sound", "Intro start", "First hotcue"]
+                                objectName: "setting_trackLoadPoint"
                                 popupWidth: 130
 
                                 onCurrentIndexChanged: decksTab.dirty = true
@@ -1130,6 +1165,7 @@ Category {
                                 id: loadingTrackWhenPlayingInput
                                 maxWidth: deckPane.width * 0.28
 
+                                objectName: "setting_loadingTrackWhenPlaying"
                                 options: ["reject", "allow", "when stopped",]
                                 normalizedWidth: false
 
@@ -1210,6 +1246,7 @@ Category {
                                             id: resetOnTrackLoadInput
 
                                             maxWidth: deckPane.width * 0.38
+                                            objectName: "setting_resetOnTrackLoad"
                                             options: ["none", "key", "both", "tempo",]
 
                                             onSelectedChanged: decksTab.dirty = true
@@ -1238,6 +1275,7 @@ Category {
                                             readonly property list<int> values: [4, 6, 8, 10, 16, 24, 50, 90]
 
                                             model: ["4%", "6% (semitone)", "8% (Technics SL-1210)", "10%", "16%", "24%", "50%", "90%"]
+                                            objectName: "setting_sliderRange"
                                             popupWidth: 150
 
                                             onCurrentIndexChanged: decksTab.dirty = true
@@ -1264,6 +1302,7 @@ Category {
                                             id: syncModeInput
 
                                             maxWidth: deckPane.width * 0.38
+                                            objectName: "setting_syncMode"
                                             options: ["follow soft leader", "use steady"]
                                             normalizedWidth: false
 
@@ -1300,6 +1339,7 @@ Category {
                                             id: sliderOrientationInput
 
                                             maxWidth: deckPane.width * 0.38
+                                            objectName: "setting_sliderOrientation"
                                             options: ["down", "up"]
 
                                             onSelectedChanged: decksTab.dirty = true
@@ -1326,6 +1366,7 @@ Category {
                                             id: keylockModeInput
 
                                             maxWidth: deckPane.width * 0.34
+                                            objectName: "setting_keylockMode"
                                             options: ["original key", "current key"]
                                             normalizedWidth: false
 
@@ -1353,6 +1394,7 @@ Category {
                                             id: keyunlockModeInput
 
                                             maxWidth: deckPane.width * 0.3
+                                            objectName: "setting_keyunlockMode"
                                             options: ["reset key", "keep key"]
 
                                             onSelectedChanged: decksTab.dirty = true
@@ -1379,6 +1421,7 @@ Category {
                                             id: pitchBendBehaviourInput
 
                                             maxWidth: deckPane.width * 0.38
+                                            objectName: "setting_pitchBendBehaviour"
                                             options: ["abrupt jump", "smooth ramping",]
 
                                             onSelectedChanged: decksTab.dirty = true
@@ -1436,6 +1479,7 @@ Category {
                                                 Layout.rightMargin: 20
                                                 max: 10
                                                 min: 0.01
+                                                objectName: "setting_temporaryFineAdjustment"
                                                 precision: 2
                                                 realValue: 2
                                                 suffix: "%"
@@ -1451,6 +1495,7 @@ Category {
                                                 Layout.rightMargin: 20
                                                 max: 10
                                                 min: 0.01
+                                                objectName: "setting_temporaryCoarseAdjustment"
                                                 precision: 2
                                                 realValue: 4
                                                 suffix: "%"
@@ -1473,6 +1518,7 @@ Category {
                                                 Layout.rightMargin: 20
                                                 max: 10
                                                 min: 0.01
+                                                objectName: "setting_permanentFineAdjustment"
                                                 precision: 2
                                                 realValue: 0.05
                                                 suffix: "%"
@@ -1488,6 +1534,7 @@ Category {
                                                 Layout.rightMargin: 20
                                                 max: 10
                                                 min: 0.01
+                                                objectName: "setting_permanentCoarseAdjustment"
                                                 precision: 2
                                                 realValue: 0.5
                                                 suffix: "%"
@@ -1518,6 +1565,7 @@ Category {
 
                                             max: 2500
                                             min: 100
+                                            objectName: "setting_rampingSensitivity"
                                             value: 250
                                             wheelStep: 50
                                             width: 300
@@ -1551,6 +1599,7 @@ Category {
             activeColor: "#999999"
             anchors.left: parent.left
             backgroundColor: "#7D3B3B"
+            objectName: "interfaceResetButton"
             opacity: enabled ? 1.0 : 0.5
             text: "Reset"
 
@@ -1562,7 +1611,7 @@ Category {
                 case 1:
                     root.resetWaveform();
                     break;
-                case 0:
+                case 2:
                     root.resetDeck();
                     break;
                 }
@@ -1584,6 +1633,7 @@ Category {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
                 enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                objectName: "interfaceCancelButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: "Cancel"
 
@@ -1605,6 +1655,7 @@ Category {
                 activeColor: "#999999"
                 backgroundColor: root.hasChanges ? "#3a60be" : "#3F3F3F"
                 enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                objectName: "interfaceSaveButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: "Save"
 

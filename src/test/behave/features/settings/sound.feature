@@ -12,7 +12,6 @@ Feature: Sound Settings
 
 
   # --- Tab Navigation ---
-  # FIXME the tab bar doesn't display
 
   Scenario: Sound hardware tabs are visible
     Then the "engine" tab should be visible
@@ -40,6 +39,7 @@ Feature: Sound Settings
     And the cancel button should not be visible
 
   Scenario: Save and cancel appear when setting changes
+    Given the "Main Mix" setting is "on"
     When I toggle the "Main Mix" setting to "off"
     Then the save button should be enabled
     And the cancel button should be visible

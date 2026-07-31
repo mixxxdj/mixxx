@@ -33,6 +33,7 @@ Item {
 
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 height: width
+                objectName: root.objectName ? root.objectName + "_color_" + index : ""
                 width: root.cellSize
 
                 Rectangle {

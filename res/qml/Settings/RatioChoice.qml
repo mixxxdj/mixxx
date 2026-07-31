@@ -70,7 +70,7 @@ Item {
                 Item {
                     required property int index
                     required property var modelData
-                    objectName: modelData
+                    objectName: root.objectName ? "option" + index : ""
 
                     height: contentList.height
                     implicitWidth: root.normalizedWidth ? root.cellSize : fontMetrics.advanceWidth(modelData) + root.spacing * 2
@@ -190,10 +190,12 @@ Item {
                 }
         }
         down.indicator: Indicator {
+            objectName: root.objectName ? "prevButton" : ""
             text: "<"
             x: contentSpin.mirrored ? parent.width - width : 0
         }
         up.indicator: Indicator {
+            objectName: root.objectName ? "nextButton" : ""
             text: ">"
             x: contentSpin.mirrored ? 0 : parent.width - width
         }

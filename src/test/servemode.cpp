@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QEventLoop>
 #include <QGuiApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -120,6 +121,48 @@ int runServeMode(int argc, char** argv) {
             }
             ControlObject::set(key, value);
             qDebug() << "setControlValue:" << group << item << "=" << value;
+        } else if (command == "getConfigValue") {
+            QString rest = QString::fromStdString(payload);
+            int comma = rest.indexOf(',');
+            if (comma < 0) {
+                qWarning() << "getConfigValue: invalid payload, expected "
+                              "'group,key', got:"
+                           << rest;
+                return;
+            }
+            QString group = rest.left(comma);
+            QString key = rest.mid(comma + 1);
+
+            QString value = pCoreServices->getSettings()->getValueString(
+                    ConfigKey(group, key));
+
+            qDebug() << "getConfigValue:" << group << key << "=" << value;
+
+            auto windows = QGuiApplication::topLevelWindows();
+            for (auto* w : std::as_const(windows)) {
+                w->setProperty("lastConfigValue", value);
+            }
+        } else if (command == "setConfigValue") {
+            QString rest = QString::fromStdString(payload);
+            int firstComma = rest.indexOf(',');
+            if (firstComma < 0) {
+                qWarning() << "setConfigValue: invalid payload, expected "
+                              "'group,key,value', got:"
+                           << rest;
+                return;
+            }
+            int secondComma = rest.indexOf(',', firstComma + 1);
+            if (secondComma < 0) {
+                qWarning() << "setConfigValue: invalid payload, expected "
+                              "'group,key,value', got:"
+                           << rest;
+                return;
+            }
+            QString group = rest.left(firstComma);
+            QString key = rest.mid(firstComma + 1, secondComma - firstComma - 1);
+            QString valueStr = rest.mid(secondComma + 1);
+            pCoreServices->getSettings()->setValue(ConfigKey(group, key), valueStr);
+            qDebug() << "setConfigValue:" << group << key << "=" << valueStr;
         } else if (command == "loadTrack") {
             QString rest = QString::fromStdString(payload);
             int comma = rest.indexOf(',');
@@ -154,8 +197,14 @@ int runServeMode(int argc, char** argv) {
                     return;
                 }
                 if (scan) {
-                    pCoreServices->getTrackCollectionManager()
-                            ->startLibraryScan();
+                    auto* pManager = pCoreServices->getTrackCollectionManager().get();
+                    QEventLoop loop;
+                    QObject::connect(pManager,
+                            &TrackCollectionManager::libraryScanFinished,
+                            &loop,
+                            &QEventLoop::quit);
+                    pManager->startLibraryScan();
+                    loop.exec();
                 }
                 qDebug() << "library: added directory" << path
                          << "scan=" << scan;
@@ -168,8 +217,14 @@ int runServeMode(int argc, char** argv) {
                     return;
                 }
                 if (scan) {
-                    pCoreServices->getTrackCollectionManager()
-                            ->startLibraryScan();
+                    auto* pManager = pCoreServices->getTrackCollectionManager().get();
+                    QEventLoop loop;
+                    QObject::connect(pManager,
+                            &TrackCollectionManager::libraryScanFinished,
+                            &loop,
+                            &QEventLoop::quit);
+                    pManager->startLibraryScan();
+                    loop.exec();
                 }
                 qDebug() << "library: removed directory" << path
                          << "scan=" << scan;

@@ -162,7 +162,10 @@ def _double_click(rpc, path):
 
 def _right_click(rpc, path):
     assert rpc.existsAndVisible(path), f"{path} cannot be clicked as it does not exists"
-    rpc.mouseClickWithButton(path, QT_RIGHT_BUTTON, 0)
+    # Use a short hold rather than a plain click so the synthetic press is
+    # fully delivered before the release, which makes Qt's TapHandler
+    # recognise the right-button tap even under load.
+    rpc.mouseClickAndHold(path, QT_RIGHT_BUTTON, 0, 250)
 
 
 def _long_press(rpc, path, button=QT_LEFT_BUTTON, hold_ms=1000):
@@ -567,40 +570,39 @@ def step_open_and_ready(context):
         )
         context.mixxx.start()
         context.mixxx_rpc = RobustRpcProxy()
-        context._session["mixxx"] = context.mixxx
-        context._session["rpc"] = context.mixxx_rpc
+        session["mixxx"] = context.mixxx
+        session["rpc"] = context.mixxx_rpc
+        # A fresh instance has no mock devices registered; the sync below
+        # must know that to avoid a pointless reload on device-less spawns.
+        session["registered_devices"] = _mock_devices_key(None)
+        _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
         _library_command(context.mixxx_rpc, "addDirectory", tracks_dir, scan=True)
-        time.sleep(1)
 
-    if "_soundMockDevices" not in context or not context._soundMockDevices:
+    # Sync the mock devices with the scenario's device table. Registering or
+    # clearing devices forces a reloadQml (full QML rebuild) because the
+    # sound pages cache the device list and do not always pick up device
+    # changes on their own — even on a freshly spawned instance. That cost
+    # is only justified when the requested device set actually differs from
+    # what the running instance already has registered; same-devices
+    # scenarios reuse the instance untouched.
+    desired_devices = _mock_devices_key(getattr(context, "_soundMockDevices", None))
+    if session.get("registered_devices") != desired_devices:
         context.mixxx_rpc.command("clearMockDevices", "")
-    else:
-        context.mixxx_rpc.command("registerMockDevices", json.dumps({"devices": context._soundMockDevices}))
-        time.sleep(0.5)
+        if getattr(context, "_soundMockDevices", None):
+            context.mixxx_rpc.command(
+                "registerMockDevices",
+                json.dumps({"devices": context._soundMockDevices}),
+            )
+        context.mixxx_rpc.command("reloadQml", "")
+        session["registered_devices"] = desired_devices
+    time.sleep(0.5)
 
-    # FIXME we are forcing the QML reload even on fresh instance because adding a directory on an empty library seems to corrupt the column model on Xcb QP
-    context.mixxx_rpc.command("reloadQml", "")
-    time.sleep(1)
-
-    _wait_for_visible(context.mixxx_rpc, "mainWindow")
-    _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
-    _wait_for_visible(context.mixxx_rpc, "mainWindow/library")
-    context.mixxx_rpc.setStringProperty("mainWindow", "enableDiagnosticClick", "true")
-    time.sleep(0.3)
-
-    if "_column_idx" not in context:
-        context._column_idx = {
-            col: context.mixxx_rpc.getStringProperty(_column_header_path(col), "index")
-            for col in KNOWN_COLUMNS
-        }
-    # if "_default_props" not in context:
-    #     context._default_props = {
-    #         "show4DecksButton": {"checked": "false"},
-    #         "editDeckButton": {"checked": "false"},
-    #         "showPreferencesButton": {"checked": "false"},
-    #     }
     if "_remembered" not in context:
         context._remembered = {}
+
+    _wait_for_visible(context.mixxx_rpc, "mainWindow/library")
+    _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
+    context.mixxx_rpc.setStringProperty("mainWindow", "enableDiagnosticClick", "true")
 
 
 # --- When: window/button steps ---
@@ -722,7 +724,7 @@ def step_toggle_column(context, column):
     index = _column_index(s, column)
     if index < 0:
         raise KeyError(f'column {column} unknown')
-    _get_current_action = lambda: int(context.mixxx_rpc.getStringProperty(COLUMN_PICKER_MENU_PATH, "currentIndex"))
+    _get_current_action = lambda: int(s.getStringProperty(COLUMN_PICKER_MENU_PATH, "currentIndex"))
     # Needed if QPA == xcb
     # if _get_current_action() == -1:
     #     _click(s, COLUMN_PICKER_MENU_PATH)
