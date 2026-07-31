@@ -134,7 +134,7 @@ jobs:
           ostree --repo=repo init --mode=archive-z2
 
           # Hook publish repo to the remote
-          ostree --repo=repo remote add upstream https://downloads.mixxx.org/flatpak/
+          ostree --repo=repo remote --set=gpg-verify=false add upstream https://downloads.mixxx.org/flatpak/
           ostree --repo=repo pull --depth=-1 --mirror "upstream"
 
           for arch in "x86_64" "aarch64"; do
