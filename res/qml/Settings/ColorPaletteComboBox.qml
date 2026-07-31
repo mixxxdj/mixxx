@@ -11,13 +11,14 @@ Skin.ComboBox {
     property bool canDisable: false
     readonly property var currentPalette: Mixxx.Config.colorPalette(root.displayText)
 
-    implicitWidth: Math.max.apply(null, model.map(palette => fontMetrics.advanceWidth(palette) + 30 + Mixxx.Config.colorPalette(palette).length * 8 + indicator.width))
+    implicitWidth: fontMetrics.advanceWidth(root.displayText) + 30 + currentPalette.length * 8 + indicator.width
+    popupWidth: Math.max.apply(null, model.map(palette => fontMetrics.advanceWidth(palette) + 30 + Mixxx.Config.colorPalette(palette).length * 8 + indicator.width))
     model: Mixxx.Config.paletteNames()
 
     contentItem: RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 20
+        anchors.leftMargin: 5
+        anchors.rightMargin: 30
 
         Text {
             Layout.fillWidth: true

@@ -7,7 +7,7 @@ AbstractButton {
     id: root
 
     property color activeColor: Theme.deckActiveColor
-    property color backgroundColor: Theme.darkGray3
+    property color backgroundColor: "#3F3F3F"
     property bool highlight: false
     property color normalColor: Theme.white
     property color pressedColor: activeColor
@@ -15,15 +15,36 @@ AbstractButton {
     implicitHeight: 20
     implicitWidth: 98
 
-    background: Rectangle {
-        id: backgroundImage
-
+    background: Item {
         anchors.fill: parent
-        color: root.backgroundColor
-        radius: 4
-        border {
-            color: '#1C1C1C'
-            width: 1
+
+        Rectangle {
+            id: backgroundImage
+
+            anchors.fill: parent
+            color: root.backgroundColor
+            radius: 4
+            border {
+                color: 'transparent'
+                width: 1
+            }
+        }
+        Rectangle {
+            anchors.fill: parent
+            radius: 4
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.rgba(0, 0, 0, 0.35) }
+                GradientStop { position: 0.25; color: "transparent" }
+                GradientStop { position: 0.75; color: "transparent" }
+                GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.12) }
+            }
+        }
+        MultiEffect {
+            anchors.fill: parent
+            source: backgroundImage
+            shadowEnabled: true
+            shadowColor: "#0E0E0E"
+            shadowBlur: 0.15
         }
     }
     contentItem: Item {
@@ -63,6 +84,7 @@ AbstractButton {
             height: icon.height
             source: icon.source
             width: icon.width
+
             layer.enabled: icon.source != null
             layer.effect: MultiEffect {
                 brightness: 1.0
@@ -83,6 +105,9 @@ AbstractButton {
                 label.color: root.pressedColor
             }
             PropertyChanges {
+                backgroundImage.border.color: '#353535'
+            }
+            PropertyChanges {
                 labelGlow.visible: true
             }
         },
@@ -95,6 +120,9 @@ AbstractButton {
             }
             PropertyChanges {
                 label.color: root.activeColor
+            }
+            PropertyChanges {
+                backgroundImage.border.color: '#353535'
             }
             PropertyChanges {
                 labelGlow.visible: true

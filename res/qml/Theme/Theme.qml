@@ -28,7 +28,7 @@ QtObject {
     property color deckTextColor: lightGray2
     property color effectColor: yellow
     property color effectUnitColor: red
-    property color embeddedBackgroundColor: "#a0000000"
+    property color embeddedBackgroundColor: "#c0000000"
     property color eqFxColor: red
     property color eqHighColor: white
     property color eqLowColor: white

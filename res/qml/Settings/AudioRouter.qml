@@ -640,7 +640,7 @@ Rectangle {
             deckConnections.items.slice(deckConnections.items.indexOf(item), 1);
         }
 
-        delegate: AudioEntity {
+        AudioEntity {
             id: deck
 
             required property int index
