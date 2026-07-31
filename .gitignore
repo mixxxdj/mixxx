@@ -77,3 +77,4 @@ res/qrc_mixxx.cc
 *.AppImage
 *.AppImage.zsync
 build/appimage/
+.claude/
