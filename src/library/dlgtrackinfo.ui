@@ -541,16 +541,34 @@
           <item row="11" column="0" colspan="4">
            <layout class="QHBoxLayout" name="metadata_buttons_layout">
             <item>
-             <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
+             <widget class="WBasicPushButton" name="btnImportMetadataFromMusicBrainz">
               <property name="text">
                <string>Import Metadata from MusicBrainz</string>
+              </property>
+              <property name="elideMode">
+                <enum>Qt::ElideLeft</enum>
+               </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="btnImportMetadataFromFile">
+             <widget class="WBasicPushButton" name="btnImportMetadataFromFile">
               <property name="text">
                <string>Re-Import Metadata from file</string>
+              </property>
+              <property name="elideMode">
+               <enum>Qt::ElideLeft</enum>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
              </widget>
             </item>
@@ -987,7 +1005,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="bpmClear">
+        <widget class="WBasicPushButton" name="bpmClear">
          <property name="text">
           <string>Clear BPM and Beatgrid</string>
          </property>
@@ -1137,6 +1155,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
    <class>WMultiLineTextEdit</class>
    <extends>QLineEdit</extends>
    <header>widget/wmultilinetextedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>WBasicPushButton</class>
+   <extends>QPushButton</extends>
+   <header>widget/wbasicpushbutton.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
