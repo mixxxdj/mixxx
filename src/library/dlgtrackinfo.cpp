@@ -83,6 +83,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("color", btnColorPicker);
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
@@ -95,6 +96,11 @@ void DlgTrackInfo::init() {
     starsLayout->insertWidget(0, m_pWStarRating.get());
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
+
+    // Workaround: Align the baseline of the "Comments" label
+    // with the baseline of the text inside the comments field
+    const int topMargin = txtComment->frameWidth() + int(txtComment->document()->documentMargin());
+    lblTrackComment->setContentsMargins(0, topMargin, 0, 0);
 
     if (m_pTrackModel) {
         connect(btnNext,
@@ -460,36 +466,42 @@ void DlgTrackInfo::replaceTrackRecord(
 }
 
 void DlgTrackInfo::updateTrackMetadataFields() {
+    const auto metadata = m_trackRecord.getMetadata();
+    const auto trackInfo = metadata.getTrackInfo();
+    const auto albumInfo = metadata.getAlbumInfo();
+    const auto signalInfo = metadata.getStreamInfo().getSignalInfo();
+
     // Editable fields
-    txtTitle->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTitle());
-    txtArtist->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getArtist());
-    txtAlbum->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getTitle());
-    txtAlbumArtist->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getComposer());
-    txtGrouping->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
-    txtYear->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getYear());
-    txtTrackNumber->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
-    txtComment->setPlainText(
-            m_trackRecord.getMetadata().getTrackInfo().getComment());
-    txtBpm->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+    txtTitle->setText(trackInfo.getTitle());
+    txtArtist->setText(trackInfo.getArtist());
+    txtAlbum->setText(albumInfo.getTitle());
+    txtAlbumArtist->setText(albumInfo.getArtist());
+    txtGenre->setText(trackInfo.getGenre());
+    txtComposer->setText(trackInfo.getComposer());
+    txtGrouping->setText(trackInfo.getGrouping());
+    txtYear->setText(trackInfo.getYear());
+    txtTrackNumber->setText(trackInfo.getTrackNumber());
+    txtComment->setPlainText(trackInfo.getComment());
+    txtBpm->setText(trackInfo.getBpmText());
     displayKeyText();
     displayTuningFields();
 
+    // Set cursor / scroll position of editable fields (only relevant
+    // when the content's width is larger than the width of the QLineEdit)
+    txtTitle->setCursorPosition(0);
+    txtArtist->setCursorPosition(0);
+    txtAlbum->setCursorPosition(0);
+    txtAlbumArtist->setCursorPosition(0);
+    txtGenre->setCursorPosition(0);
+    txtComposer->setCursorPosition(0);
+    txtGrouping->setCursorPosition(0);
+    txtYear->setCursorPosition(0);
+    txtTrackNumber->setCursorPosition(0);
+
     // Non-editable fields
     txtDuration->setText(
-            m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+            metadata.getDurationText(mixxx::Duration::Precision::SECONDS));
+    QString bitrate = metadata.getBitrateText();
     if (bitrate.isEmpty()) {
         txtBitrate->clear();
     } else {
@@ -497,9 +509,9 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     }
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
-                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+                    trackInfo.getReplayGain().getRatio()));
 
-    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
+    auto samplerate = signalInfo.getSampleRate();
     if (samplerate.isValid()) {
         txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
     } else {
