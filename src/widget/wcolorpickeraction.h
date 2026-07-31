@@ -15,6 +15,7 @@ class WColorPickerAction : public QWidgetAction {
 
     void resetSelectedColor();
     void setSelectedColor(const mixxx::RgbColor::optional_t& color);
+    void setInitialFocus();
 
     /// Set a new color palette for the underlying color picker.
     ///
