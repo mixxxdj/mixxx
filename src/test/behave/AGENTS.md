@@ -757,6 +757,8 @@ LOOP_BUTTONS = {
 | `no track is loaded on deck {deck:d}` | Ejects track via `eject` ControlObject if `track_loaded` is set |
 | `the {prop} on deck {deck:d} is set to {value:f}` | `_set_control_value` to set a ControlObject (Given-only, not for When steps) |
 | `the sync_on deck {deck:d} is {state}` | `_set_control_value` for `sync_enabled` (Given-only) |
+| `the window's width is {width:d}px` | Sets `mainWindow.width` (impersonal Given form of `I resize the window's width to {width:d}px`) |
+| `the window's height is {height:d}px` | Sets `mainWindow.height` (impersonal Given form of `I resize the window's height to {height:d}px`) |
 | `I wait for {second:d} second` | `time.sleep(second)` (also available as @when and @then) |
 
 ### When Steps
@@ -856,6 +858,21 @@ After the last attempt the wrapper:
 4. Use `@given`, `@when`, or `@then` decorator from `behave`
 5. Use helpers: `_rpc()` for spix proxy, `_wait_for_visible` for sync,
    `_get_control_value` for ControlObject reads
+
+### Rules for `Given` steps
+
+- **Always impersonal (state-oriented)** — a `Given` describes a precondition,
+  not a user action. Write `the window's width is 1250px`, NOT
+  `Given I resize the window's width to 1250px`. First-person action phrasing
+  (`I ...`) is reserved for `When` steps.
+- **Do not reuse action steps as `Given`** — if an action needs to be a
+  precondition (e.g. a window already resized), add a separate impersonal
+  `Given` step (`the window's width is {width:d}px`) rather than stacking a
+  `@given` decorator onto the `I ...` action step.
+- **`And` inherits the preceding keyword** — an `And` line is matched as a
+  Given when it follows a `Given` step, so `And I resize the window's width to
+  1250px` after a `Given` is a Given step and must use the impersonal form
+  (`And the window's width is 1250px`).
 
 ### Rules for `When` steps
 

@@ -66,3 +66,11 @@ Feature: Library
     When I right-click the track at row 1
     And I select "Load to" > "Deck" > "Deck 1" on the track menu
     Then a track is loaded on deck 1
+
+  @category/responsiveness
+  Scenario: Library collapses when the window is too short
+    Given the library is not maximized
+    When I resize the window's height to 650px
+    Then the library should not be visible
+    When I resize the window's height to 800px
+    Then the library should be visible

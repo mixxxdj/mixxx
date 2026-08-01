@@ -133,3 +133,39 @@ Feature: Deck
     And I move the selected group in deck 1 after the "rateSlider" component
     And I click the "EDIT" button
     Then the "play" component should appear after the "rateSlider" component in deck 1
+
+  @category/responsiveness
+  Scenario: The spinny is hidden when the deck gets too narrow
+    When I resize the window's width to 1792px
+    Then the "spinny" component should be visible in deck 1
+    When I resize the window's width to 1500px
+    Then the "spinny" component should not be visible in deck 1
+
+  @category/responsiveness
+  Scenario: The beatjump is hidden when the deck gets too narrow
+    When I resize the window's width to 1792px
+    Then the "beatjump" component should be visible in deck 1
+    When I resize the window's width to 1400px
+    Then the "beatjump" component should not be visible in deck 1
+
+  @category/responsiveness
+  Scenario: The hotcue is hidden when the deck gets too narrow
+    When I resize the window's width to 1792px
+    Then the "hotcue" component should be visible in deck 1
+    When I resize the window's width to 1200px
+    Then the "hotcue" component should not be visible in deck 1
+
+  @category/responsiveness
+  Scenario: The tempo is hidden when the deck gets too narrow
+    When I resize the window's width to 1792px
+    Then the "tempo" component should be visible in deck 1
+    When I resize the window's width to 700px
+    Then the "tempo" component should not be visible in deck 1
+    And the "play" component should be visible in deck 1
+
+  @category/responsiveness
+  Scenario: 4 decks button hides when the window is too short
+    When I resize the window's height to 500px
+    Then the "4DECKS" button in the main toolbar should not be visible
+    When I resize the window's height to 600px
+    Then the "4DECKS" button in the main toolbar should be visible

@@ -302,3 +302,20 @@ Feature: Interface Settings
     Then the "slider orientation" setting should be "up"
     And the "slider orientation" should be saved as "up"
     And the "slider orientation" on deck 1 should be "up"
+
+  # --- Responsiveness ------------------------------------------------------------
+  #
+  # On a short window the decks tab content overflows its ScrollView. A setting
+  # below the fold must be reachable: scroll it into the on-screen area, then
+  # prove it is interactable by changing its value.
+
+  @category/responsiveness
+  Scenario: Below-the-fold settings can be scrolled into view on a short window
+    Given the "decks" tab is selected
+    When I resize the window's height to 500px
+    Then the "ramping sensitivity" setting should not be visible on screen
+    When I scroll down in the settings
+    Then the "ramping sensitivity" setting should be visible on screen
+    When I set the "ramping sensitivity" setting to "600" with the spinbox
+    Then the "ramping sensitivity" setting should be "600"
+    When I resize the window's height to 1008px

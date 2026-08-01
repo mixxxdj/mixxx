@@ -921,10 +921,10 @@ def step_search_results_visible(context):
 
 
 def _active_scrollbar(s):
-    active_category_idx = s.getStringProperty(SETTINGS_POPUP_ITEM, "activeCategoryIndex")
-    assert active_category_idx, "Cannot resolve the currently active category"
-    active_category_slug = SETTING_CATEGORY_SLUG[int(active_category_idx)]
-    return CATEGORY_SCROLLBARS_TEMPLATE % (active_category_slug)
+    idx = int(s.getStringProperty(SETTINGS_POPUP_ITEM, "activeCategoryIndex"))
+    bar = CATEGORY_SCROLLBARS.get(idx)
+    assert bar, f"No known vertical scrollbar for active category index {idx}"
+    return bar
 
 
 @then("the settings categories should {assertion} visible")

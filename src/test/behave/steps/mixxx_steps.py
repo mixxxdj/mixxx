@@ -381,16 +381,20 @@ DECK_PROPERTY_MAP = {
 DECK_BUTTON_PATHS = {
     "play": "playButton",
     "cue": "cueButton",
+    "beatjump": "beatjump",
     "beatjump_forward": "beatjumpForwardButton",
     "beatjump_backward": "beatjumpBackwardButton",
+    "hotcue": "hotcueAndStem",
     "loop_in": "loopIn",
     "loop_out": "loopOut",
     "rate": "rateSlider",
     "reloop_toggle": "reloopToggle",
+    "spinny": "spinny",
     "sync": "syncButton",
     "range": "rangeButton",
     "loop_halve": "loopHalve",
     "loop_double": "loopDouble",
+    "tempo": "rateSlider",
 }
 
 LOOP_BUTTONS = {
@@ -607,10 +611,27 @@ def step_open_and_ready(context):
 
 # --- When: window/button steps ---
 
+@given("the window's width is {width:d}px")
+def step_window_width_is(context, width):
+    step_resize_window_width(context, width)
+
+
+@given("the window's height is {height:d}px")
+def step_window_height_is(context, height):
+    step_resize_window_height(context, height)
+
+
 @when("I resize the window's width to {width:d}px")
 def step_resize_window_width(context, width):
     s = context.mixxx_rpc
     _set_property(s, "mainWindow", "width", width)
+    time.sleep(0.5)
+
+
+@when("I resize the window's height to {height:d}px")
+def step_resize_window_height(context, height):
+    s = context.mixxx_rpc
+    _set_property(s, "mainWindow", "height", height)
     time.sleep(0.5)
 
 
@@ -1015,6 +1036,38 @@ def step_deck_visible(context, group, assertion):
         _wait_for_visible(context.mixxx_rpc, DECK_PATH_MAP[group])
     else:
         _wait_for_hidden(context.mixxx_rpc, DECK_PATH_MAP[group])
+
+
+@then('the library should {assertion} visible')
+def step_library_visible(context, assertion):
+    if assertion == "be":
+        _wait_for_visible(context.mixxx_rpc, LIBRARY_CONTENT)
+    else:
+        _wait_for_hidden(context.mixxx_rpc, LIBRARY_CONTENT)
+
+
+@given("the library is not maximized")
+def step_library_not_maximized(context):
+    _set_control_value(context.mixxx_rpc, "[Skin]", "show_maximized_library", 0)
+    time.sleep(0.5)
+
+
+@then('the "{button}" button in the main toolbar should {assertion} visible')
+def step_toolbar_button_visible(context, button, assertion):
+    path = _button_path(button)
+    if assertion == "be":
+        _wait_for_visible(context.mixxx_rpc, path)
+    else:
+        _wait_for_hidden(context.mixxx_rpc, path)
+
+
+@then('the "{component}" component should {assertion} visible in deck {deck:d}')
+def step_deck_component_visible(context, component, assertion, deck):
+    path = _deck_button_path(deck, component)
+    if assertion == "be":
+        _wait_for_visible(context.mixxx_rpc, path)
+    else:
+        _wait_for_hidden(context.mixxx_rpc, path)
 
 
 # --- Then: deck state ---
