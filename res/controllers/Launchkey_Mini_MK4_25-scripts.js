@@ -65,7 +65,7 @@ LaunchkeyJog.handleShift = function(channel, control, value, _status, _group) {
         LaunchkeyJog.activeDeck = deck;
         LaunchkeyJog.lastPosDeck1 = null;
         print(
-            `>>> Shift Deck ${  deck  } attivo: Pitch Strip riassegnata <<<`,
+            `>>> Shift Deck ${  deck  } active: Pitch Strip reassigned <<<`,
         );
     }
 };
@@ -108,7 +108,6 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
         // Play/Pause buttons
     case 0x3d:
     case 0x4e: {
-        // 🔑 Scope bracket added
         if (!isPress) { return; }
         const currentPlay = engine.getValue(groupTarget, "play");
 
@@ -120,7 +119,7 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
 
             const oneBarMs = (60000 / bpm) * 4;
             print(
-                `>>> [SHIFT+PLAY] Pausa quantizzata: stop tra ${
+                `>>> [SHIFT+PLAY] Quantized pause: stopping in ${
                     Math.round(oneBarMs)
                 }ms <<<`,
             );
@@ -137,12 +136,11 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
             engine.setValue(groupTarget, "play", !currentPlay);
         }
         break;
-    } // 🔑 Scope bracket added
+    }
 
     // Hotcue 1
     case 0x3e:
     case 0x45: {
-        // 🔑 Scope bracket added
         const action1 = state.shiftActive ? "clear" : "activate";
         engine.setValue(
             groupTarget,
@@ -150,12 +148,11 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
             isPress ? 1 : 0,
         );
         break;
-    } // 🔑 Scope bracket added
+    }
 
     // Hotcue 2
     case 0x40:
     case 0x47: {
-        // 🔑 Scope bracket added
         const action2 = state.shiftActive ? "clear" : "activate";
         engine.setValue(
             groupTarget,
@@ -163,12 +160,11 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
             isPress ? 1 : 0,
         );
         break;
-    } // 🔑 Scope bracket added
+    }
 
     // Loop Control Left
     case 0x3f:
     case 0x49: {
-        // 🔑 Scope bracket added
         if (!isPress) { return; }
         if (state.shiftActive) {
             engine.setValue(groupTarget, "loop_exit", 1);
@@ -184,12 +180,11 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
             state.inLoop = true;
         }
         break;
-    } // 🔑 Scope bracket added
+    }
 
     // Loop Control Right
     case 0x42:
     case 0x4b: {
-        // 🔑 Scope bracket added
         if (!isPress) { return; }
         if (state.shiftActive) {
             engine.setValue(groupTarget, "loop_exit", 1);
@@ -205,7 +200,7 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
             state.inLoop = true;
         }
         break;
-    } // 🔑 Scope bracket added
+    }
     }
 };
 
@@ -483,7 +478,7 @@ LaunchkeyJog.handleLoadTrack = function(
 
     if (state.shiftActive) {
         engine.setValue(groupTarget, "LoadSelectedTrack", 1);
-        print(`>>> Caricamento traccia su Deck ${  deck  } <<<`);
+        print(`>>> Loading track on Deck ${  deck  } <<<`);
     } else {
         engine.setValue(
             groupTarget,
