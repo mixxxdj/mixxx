@@ -299,7 +299,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 
     const QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
-    if (headerStateString.isNull()) {
+    if (headerStateString.isEmpty()) {
         loadDefaultHeaderState();
     } else {
         // Load the previous header state (stored as serialized protobuf).

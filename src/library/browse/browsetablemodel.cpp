@@ -43,9 +43,10 @@ void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        RecordingManager* pRecordingManager)
+        RecordingManager* pRecordingManager,
+        const char* nameSpace)
         : TrackModel(pTrackCollectionManager->internalCollection()->database(),
-                  "mixxx.db.model.browse"),
+                  nameSpace),
           QStandardItemModel(parent),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pRecordingManager(pRecordingManager),
