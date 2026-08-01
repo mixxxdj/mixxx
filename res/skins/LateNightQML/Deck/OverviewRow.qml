@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -67,9 +69,9 @@ Item {
                 anchors.fill: parent
                 anchors.margins: 1
                 group: root.group
-                colorLow: root.useFilteredOverview ? root.waveformSignalColor : "#0000ff"
-                colorMid: root.useFilteredOverview ? root.waveformSignalColor : "#00ff00"
-                colorHigh: root.useFilteredOverview ? root.waveformSignalColor : "#ff0000"
+                colorLow: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbLowColor
+                colorMid: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbMidColor
+                colorHigh: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbHighColor
                 renderer: root.useFilteredOverview ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.WaveformOverview.Renderer.RGB
             }
 
@@ -139,9 +141,9 @@ Item {
                     key: "show_intro_outro_cues"
                 }
 
-                readonly property string cueColor: LateNightTheme.isPaleMoon ? "#ff7a01" : "#ff001c"
-                readonly property string loopColor: LateNightTheme.isPaleMoon ? "#00b400" : "#00ff00"
-                readonly property string introOutroColor: LateNightTheme.isPaleMoon ? "#2c5c9a" : "#0000ff"
+                readonly property color cueColor: LateNightTheme.waveformCueColor
+                readonly property color loopColor: LateNightTheme.waveformLoopColor
+                readonly property color introOutroColor: LateNightTheme.waveformIntroOutroColor
 
                 function mapX(pos) {
                     if (trackSamplesProxy.value <= 0 || pos < 0) {
@@ -181,7 +183,7 @@ Item {
                             width: 12
                             height: 10
                             text: hotcueMarker.hotcueNumber
-                            color: "#FFFFFF"
+                            color: LateNightTheme.overviewHotcueTextColor(hotcueMarker.markerColor)
                             font.family: "Open Sans"
                             font.pixelSize: 10
                             font.bold: true
@@ -241,7 +243,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 2
                     text: "↻"
-                    color: "#FFFFFF"
+                    color: LateNightTheme.overviewMarkerTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 10
                     font.bold: true
@@ -275,7 +277,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 2
                     text: "C"
-                    color: "#FFFFFF"
+                    color: LateNightTheme.overviewMarkerTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 10
                     font.bold: true
@@ -321,7 +323,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 2
                     text: "◢"
-                    color: "#FFFFFF"
+                    color: LateNightTheme.overviewMarkerTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 10
                     font.bold: true
@@ -367,7 +369,7 @@ Item {
                     anchors.top: parent.top
                     anchors.topMargin: 2
                     text: "◣"
-                    color: "#FFFFFF"
+                    color: LateNightTheme.overviewMarkerTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 10
                     font.bold: true

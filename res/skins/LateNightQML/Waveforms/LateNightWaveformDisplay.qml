@@ -19,13 +19,15 @@ Item {
     readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
 
     readonly property bool isPrimaryDeck: group === "[Channel1]" || group === "[Channel2]"
-    readonly property color waveformBgColor: isPrimaryDeck ? "#0f0f0e" : "#001b23"
+    readonly property color waveformBgColor: isPrimaryDeck
+            ? LateNightTheme.waveformPrimaryBackgroundColor
+            : LateNightTheme.waveformSecondaryBackgroundColor
 
-    readonly property string cueColor: LateNightTheme.isPaleMoon ? "#ff7a01" : "#ff001c"
-    readonly property string loopColor: LateNightTheme.isPaleMoon ? "#00b400" : "#00ff00"
-    readonly property string introOutroColor: LateNightTheme.isPaleMoon ? "#2c5c9a" : "#0000ff"
-    readonly property color playPosColor: LateNightTheme.isPaleMoon ? "#00c6ff" : "#00c8ff"
-    readonly property color beatAxesColor: LateNightTheme.isPaleMoon ? "#999999" : "#ffffff"
+    readonly property color cueColor: LateNightTheme.waveformCueColor
+    readonly property color loopColor: LateNightTheme.waveformLoopColor
+    readonly property color introOutroColor: LateNightTheme.waveformIntroOutroColor
+    readonly property color playPosColor: LateNightTheme.waveformPlayPositionColor
+    readonly property color beatAxesColor: LateNightTheme.waveformBeatAxesColor
 
     MixxxControls.WaveformDisplay {
         anchors.fill: parent
@@ -41,17 +43,17 @@ Item {
         }
 
         Mixxx.WaveformRendererEndOfTrack {
-            color: '#ff8872'
+            color: LateNightTheme.waveformEndOfTrackWarningColor
             endOfTrackWarningTime: 30
         }
         Mixxx.WaveformRendererPreroll {
-            color: '#ff8872'
+            color: LateNightTheme.waveformEndOfTrackWarningColor
         }
         Mixxx.WaveformRendererMarkRange {
             // Loop
             Mixxx.WaveformMarkRange {
                 color: root.loopColor
-                disabledColor: '#FFFFFF'
+                disabledColor: LateNightTheme.waveformDisabledMarkColor
                 disabledOpacity: 0.6
                 enabledControl: "loop_enabled"
                 endControl: "loop_end_position"
@@ -61,7 +63,7 @@ Item {
             // Intro
             Mixxx.WaveformMarkRange {
                 color: root.introOutroColor
-                durationTextColor: '#ffffff'
+                durationTextColor: LateNightTheme.waveformMarkerTextColor
                 durationTextLocation: 'after'
                 startControl: "intro_start_position"
                 endControl: "intro_end_position"
@@ -71,7 +73,7 @@ Item {
             // Outro
             Mixxx.WaveformMarkRange {
                 color: root.introOutroColor
-                durationTextColor: '#ffffff'
+                durationTextColor: LateNightTheme.waveformMarkerTextColor
                 durationTextLocation: 'before'
                 startControl: "outro_start_position"
                 endControl: "outro_end_position"
@@ -85,9 +87,9 @@ Item {
             gainHigh: 1.0
             gainLow: 1.0
             gainMid: 1.0
-            highColor: '#D5C2A2'
-            lowColor: '#2154D7'
-            midColor: '#97632D'
+            highColor: LateNightTheme.waveformFilteredHighColor
+            lowColor: LateNightTheme.waveformFilteredLowColor
+            midColor: LateNightTheme.waveformFilteredMidColor
         }
         Mixxx.WaveformRendererStem {
             gainAll: root.splitStemTracks ? 2.0 : 1.0
@@ -106,11 +108,11 @@ Item {
 
             defaultMark: Mixxx.WaveformMark {
                 align: "bottom|right"
-                color: "#FF0000"
+                color: LateNightTheme.waveformDefaultMarkColor
                 disabledOpacity: 0.25
                 endIcon: Qt.resolvedUrl("../../LateNight/classic/style/mark_jump_%1.svg")
                 text: " %1 "
-                textColor: "#FFFFFF"
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
 
             Mixxx.WaveformMark {
@@ -118,7 +120,7 @@ Item {
                 color: root.cueColor
                 control: "cue_point"
                 text: 'CUE'
-                textColor: '#FFFFFF'
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
                 align: 'top|left'
@@ -126,13 +128,13 @@ Item {
                 control: "loop_start_position"
                 text: '↻'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_loop.svg")
-                textColor: '#FFFFFF'
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
                 align: 'top|right'
                 color: root.loopColor
                 control: "loop_end_position"
-                textColor: '#FFFFFF'
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
                 align: 'top|right'
@@ -141,7 +143,7 @@ Item {
                 text: '◢'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_intro.svg")
                 visibilityControl: "[Skin],show_intro_outro_cues"
-                textColor: '#FFFFFF'
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
                 align: 'top|left'
@@ -150,7 +152,7 @@ Item {
                 text: '◢'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_intro.svg")
                 visibilityControl: "[Skin],show_intro_outro_cues"
-                textColor: '#FFFFFF'
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
                 align: 'top|right'
@@ -159,7 +161,7 @@ Item {
                 text: '◣'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_outro.svg")
                 visibilityControl: "[Skin],show_intro_outro_cues"
-                textColor: '#FFFFFF'
+                textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
                 align: 'top|left'

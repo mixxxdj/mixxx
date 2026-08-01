@@ -55,7 +55,7 @@ RowLayout {
 
         Rectangle {
             anchors.fill: parent
-            color: "#b4151517" // rgba(21, 21, 23, 180)
+            color: LateNightTheme.beatgridDisabledCoverColor
             visible: bpmlockProxy.value > 0
             radius: 2
         }
@@ -110,7 +110,7 @@ RowLayout {
 
         Rectangle {
             anchors.fill: parent
-            color: "#b4151517"
+            color: LateNightTheme.beatgridDisabledCoverColor
             visible: bpmlockProxy.value > 0
             radius: 2
         }
@@ -165,7 +165,7 @@ RowLayout {
 
         Rectangle {
             anchors.fill: parent
-            color: "#b4151517"
+            color: LateNightTheme.beatgridDisabledCoverColor
             visible: bpmlockProxy.value > 0
             radius: 2
         }
@@ -200,7 +200,7 @@ RowLayout {
 
             Rectangle {
                 anchors.fill: parent
-                color: "#b4151517"
+                color: LateNightTheme.beatgridDisabledCoverColor
                 visible: beatsUndoPossibleProxy.value === 0
                 radius: 2
             }

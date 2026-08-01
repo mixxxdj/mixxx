@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Mixxx 1.0 as Mixxx
 import "../LateNightTheme"
@@ -82,8 +84,14 @@ Item {
     }
 
     function applyEditValueAndQuit() {
-        const parsedValue = Number(editInput.text);
-        if (!isFinite(parsedValue)) {
+        const input = editInput.text.trim();
+        if (input.length === 0) {
+            switchMode("listen");
+            return;
+        }
+
+        const parsedValue = Number(input);
+        if (!Number.isFinite(parsedValue)) {
             switchMode("listen");
             return;
         }

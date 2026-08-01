@@ -3973,6 +3973,7 @@ if(QML)
       src/qml/qmlconfigproxybase.cpp
       src/qml/qmlcontrolproxy.cpp
       src/qml/qmlcuesmodel.cpp
+      src/qml/qmldurationformatter.cpp
       src/qml/qmldlgpreferencesproxy.cpp
       src/qml/qmleffectmanifestparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp

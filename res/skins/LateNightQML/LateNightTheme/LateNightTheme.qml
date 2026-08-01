@@ -38,6 +38,8 @@ QtObject {
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
+    readonly property color waveformPrimaryBackgroundColor: "#0f0f0e"
+    readonly property color waveformSecondaryBackgroundColor: "#001b23"
     readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
     readonly property color secondaryDeckTextColor: isClassic ? "#0bd9d1" : "#85bdbb"
     readonly property color secondaryOverviewBackgroundColor: "#001b23"
@@ -84,6 +86,10 @@ QtObject {
     readonly property color bpmTapEditorSelectBorderColor: isPaleMoon ? "#7d350d" : "#5E4507"
     readonly property color bpmTapEditorEditBorderColor: isPaleMoon ? "#257b82" : "#d08e00"
     readonly property color bpmTapEditorButtonColor: "#171719"
+    readonly property color beatgridDisabledCoverColor: "#b4151517"
+    readonly property color trackPropertyHighlightColor: "#151515"
+    readonly property color trackPropertySelectedTextColor: "#111111"
+    readonly property color trackPropertySelectionColor: white
     readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
     readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
     readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
@@ -92,6 +98,24 @@ QtObject {
     readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
     readonly property color vinylCueingActiveColor: "#888888"
     readonly property color passthroughActiveColor: vinylStatusSpeedColor
+    readonly property color waveformCueColor: isPaleMoon ? "#ff7a01" : "#ff001c"
+    readonly property color waveformLoopColor: isPaleMoon ? "#00b400" : "#00ff00"
+    readonly property color waveformIntroOutroColor: isPaleMoon ? "#2c5c9a" : "#0000ff"
+    readonly property color waveformPlayPositionColor: isPaleMoon ? "#00c6ff" : "#00c8ff"
+    readonly property color waveformBeatAxesColor: isPaleMoon ? "#999999" : "#ffffff"
+    readonly property color waveformEndOfTrackWarningColor: "#ff8872"
+    readonly property color waveformDisabledMarkColor: "#ffffff"
+    readonly property color waveformMarkerTextColor: "#ffffff"
+    readonly property color waveformDefaultMarkColor: "#ff0000"
+    readonly property color waveformFilteredHighColor: "#d5c2a2"
+    readonly property color waveformFilteredMidColor: "#97632d"
+    readonly property color waveformFilteredLowColor: "#2154d7"
+    readonly property color overviewRgbLowColor: "#0000ff"
+    readonly property color overviewRgbMidColor: "#00ff00"
+    readonly property color overviewRgbHighColor: "#ff0000"
+    readonly property color overviewMarkerTextColor: "#ffffff"
+    readonly property color overviewHotcueBrightTextColor: "#000000"
+    readonly property int overviewHotcueBrightnessThreshold: 127
     readonly property color white: "#D9D9D9"
 
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
@@ -204,6 +228,16 @@ QtObject {
         default:
             return deckEmbeddedButtonInactiveColor;
         }
+    }
+
+    function overviewHotcueTextColor(hotcueColor) {
+        const red = hotcueColor.r * 255;
+        const green = hotcueColor.g * 255;
+        const blue = hotcueColor.b * 255;
+        const brightness = Math.sqrt(red * red * 0.241 + green * green * 0.691 + blue * blue * 0.068);
+        return brightness <= overviewHotcueBrightnessThreshold
+                ? overviewMarkerTextColor
+                : overviewHotcueBrightTextColor;
     }
 
     function sharedImage(fileName) {

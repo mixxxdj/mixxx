@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -9,8 +11,8 @@ Item {
 
     required property string group
 
-    readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
-    readonly property var currentTrack: deckPlayer?.currentTrack
+    readonly property Mixxx.Player deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property Mixxx.Track currentTrack: root.deckPlayer?.currentTrack
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color loadedDeckTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
@@ -25,16 +27,7 @@ Item {
         if (!Number.isFinite(value) || value <= 0) {
             return "";
         }
-        const totalSeconds = Math.floor(value);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        if (hours > 0) {
-            return hours.toString() + ":" +
-                    minutes.toString().padStart(2, "0") + ":" +
-                    seconds.toString().padStart(2, "0");
-        }
-        return minutes.toString() + ":" + seconds.toString().padStart(2, "0");
+        return Mixxx.DurationFormatter.format(value, Mixxx.DurationFormatter.TraditionalCoarse);
     }
 
     function formatTrackTime(value, mode) {
@@ -43,45 +36,7 @@ Item {
         }
 
         const sign = value < 0 ? "-" : "";
-        const absoluteValue = Math.abs(value);
-
-        switch (mode) {
-        case SharedDeck.TrackTime.Mode.Seconds:
-        case SharedDeck.TrackTime.Mode.SecondsLong:
-            {
-                const seconds = Math.floor(absoluteValue).toString();
-                const centiseconds = Math.floor((absoluteValue % 1) * 100).toString().padStart(2, "0");
-                return sign + seconds.padStart(mode === SharedDeck.TrackTime.Mode.SecondsLong ? 3 : 0, "0") +
-                        "." + centiseconds;
-            }
-        case SharedDeck.TrackTime.Mode.KiloSeconds:
-            {
-                const kilos = Math.floor(absoluteValue / 1000);
-                const seconds = Math.floor(absoluteValue % 1000).toString().padStart(3, "0");
-                const centiseconds = Math.floor((absoluteValue % 1) * 100).toString().padStart(2, "0");
-                return sign + kilos.toString() + "." + seconds + " " + centiseconds;
-            }
-        case SharedDeck.TrackTime.Mode.HectoSeconds:
-            return "???";
-        default:
-            break;
-        }
-
-        const totalSeconds = Math.floor(absoluteValue);
-        const centiseconds = Math.floor((absoluteValue - totalSeconds) * 100);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        let text = durationProxy.value > 3600
-                ? Math.floor(totalSeconds / 3600).toString().padStart(2, "0") + ":" +
-                        minutes.toString().padStart(2, "0") + ":" +
-                        seconds.toString().padStart(2, "0")
-                : minutes.toString() + ":" + seconds.toString().padStart(2, "0");
-
-        if (mode !== SharedDeck.TrackTime.Mode.TraditionalCoarse) {
-            text += "." + centiseconds.toString().padStart(2, "0");
-        }
-        return sign + text;
+        return sign + Mixxx.DurationFormatter.format(Math.abs(value), mode);
     }
 
     function formatPositionTime() {
@@ -141,8 +96,8 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 group: root.group
-                track: currentTrack
-                text: root.isLoaded ? (currentTrack?.title || "Unknown Title") : ""
+                track: root.currentTrack
+                text: root.isLoaded ? (root.currentTrack?.title || "Unknown Title") : ""
                 displayProperty: "titleInfo"
                 editProperty: "title"
                 editable: true
@@ -162,7 +117,7 @@ Item {
                 pixelSize: 16
                 showTrackPropertiesOnDoubleClick: false
                 textColor: root.isLoaded ? LateNightTheme.deckTimeTextColor : LateNightTheme.textColorMuted
-                track: currentTrack
+                track: root.currentTrack
                 text: root.formatPositionTime()
                 visible: root.isLoaded
 
@@ -198,8 +153,8 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 group: root.group
-                track: currentTrack
-                text: root.isLoaded ? (currentTrack?.artist || "Unknown Artist") : ""
+                track: root.currentTrack
+                text: root.isLoaded ? (root.currentTrack?.artist || "Unknown Artist") : ""
                 displayProperty: "artist"
                 editProperty: "artist"
                 editable: true
@@ -211,7 +166,7 @@ Item {
                 id: durationText
                 Layout.fillHeight: true
                 group: root.group
-                track: currentTrack
+                track: root.currentTrack
                 text: root.isLoaded ? root.formatDuration(durationProxy.value) : ""
                 displayProperty: "durationTextSeconds"
                 editable: false
