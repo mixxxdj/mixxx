@@ -303,6 +303,7 @@ bool Track::replaceRecord(
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
     const auto newRating = newRecord.getRating();
+    const bool newBpmLocked = newRecord.getBpmLocked();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -313,6 +314,7 @@ bool Track::replaceRecord(
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
     const auto oldRating = m_record.getRating();
+    const bool oldBpmLocked = m_record.getBpmLocked();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -338,6 +340,9 @@ bool Track::replaceRecord(
 
     if (bpmUpdatedFlag) {
         emit beatsUpdated();
+    }
+    if (oldBpmLocked != newBpmLocked) {
+        emit bpmLockChanged(newBpmLocked);
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
