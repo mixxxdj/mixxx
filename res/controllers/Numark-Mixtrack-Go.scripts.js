@@ -1,31 +1,3 @@
-//TODO need makeConnecton to previewdeck play in case for browse encoder push
-
-// Some variables for ease of access.
-const autoLoadedEchoMetaValue = 0.5;
-const autoLoadedEchoMixValue = 0.5;
-const autoLoadedFlangerMetaValue = 1.0;
-const autoLoadedFlangerMixValue = 0.75;
-const autoLoadedReverbMetaValue = 0.7;
-const autoLoadedReverbMixValue = 0.5;
-
-const beatloopPad1Size = 1;
-const beatloopPad2Size = 2;
-const beatloopPad3Size = 4;
-const beatloopPad4Size = 8;
-
-const beatloopActivePadBlinking = true;
-const beatloopPadBlinkingFast = false;
-const samplerActiveBlinkingFast = false;
-const fadeFxActiveBlinkingFast = false;
-
-const beatloopRollSize = 1;
-
-const shiftCueDoubleTapTimer = 300;
-// modifies the fraction of the duration of the track the encoder moves per detent while rotating
-// default: 0.02  (2%)
-const previewDeckStripSearchPace = 0.02;
-
-
 // eslint-disable-next-line no-var
 var NumarkMixtrackGo = {};
 
@@ -632,8 +604,8 @@ const reverbEffectIndex = 2;
 const flangerEffectIndex = 12;
 const echoEffectIndex = 14;
 
-const beatloopRollControl = `beatlooproll_${beatloopRollSize}_activate`;
-const beatloopPadSizes = [beatloopPad1Size, beatloopPad2Size, beatloopPad3Size, beatloopPad4Size];
+const beatloopRollControl = "beatlooproll_1_activate";
+const beatloopPadSizes = [1, 2, 4, 8];
 
 // Fade FX state
 let isFadeFxOn = false;
@@ -682,9 +654,7 @@ NumarkMixtrackGo.init = function() {
 
     // Fade fx blinking
     let fadeFxIndicatorControl = "indicator_500ms";
-    if (fadeFxActiveBlinkingFast) {
-        fadeFxIndicatorControl = "indicator_250ms";
-    }
+
     engine.makeConnection("[App]", fadeFxIndicatorControl, function() {
         if (isFadeFxOn) {
             if (engine.getValue("[App]", fadeFxIndicatorControl) === 0) {
@@ -699,6 +669,7 @@ NumarkMixtrackGo.init = function() {
             NumarkMixtrackGo.led.setFadefxShiftDim();
         }
     });
+
 };
 
 /**
@@ -711,8 +682,7 @@ NumarkMixtrackGo.shutdown = function() {
 
 
 NumarkMixtrackGo.browseEncoder = new components.Encoder({
-
-    isLibraryScrolling: true,
+    isLibraryScrolling: engine.getValue("[PreviewDeck1]", "play") === 0,
 
     input: function(_channel, control, value, status) {
 
@@ -734,8 +704,8 @@ NumarkMixtrackGo.browseEncoder = new components.Encoder({
 
         if (this.isLibraryScrolling) {
             engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
-        } else { // isStripSearching
-            let newPosition = engine.getValue("[PreviewDeck1]", "playposition") + previewDeckStripSearchPace*rotateValue;
+        } else { // isStripSearching -0.2 modifies the fraction of the duration of the track the encoder moves per detent while rotating
+            let newPosition = engine.getValue("[PreviewDeck1]", "playposition") + 0.2*rotateValue;
             // prevents the trackhead from going past where the GUI can show, as we get the deck in playing status, but hear nothing
             if (newPosition < 0) {
                 newPosition = 0;
@@ -828,16 +798,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     const padModesNumber = padModes.length;
     let currentPadMode = 0;
 
-    let beatloopPadIndicatorControl = "indicator_500ms";
-    if (beatloopPadBlinkingFast) {
-        beatloopPadIndicatorControl = "indicator_250ms";
-    }
-
-    let samplerPadIndicatorControl = "indicator_500ms";
-    if (samplerActiveBlinkingFast) {
-        samplerPadIndicatorControl = "indicator_250ms";
-    }
-
     // pfl status led control
     const pflConnection = engine.makeConnection(group, "pfl", function() {
         if (engine.getValue(group, "pfl") === 1) {
@@ -876,35 +836,20 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     }
 
     // pads beat loop led control
-    if (beatloopActivePadBlinking) {
-        for (let i = 1; i <= 4; i++) {
-            engine.makeConnection("[App]", beatloopPadIndicatorControl, function() {
-                if (currentPadMode === 1) {
-                    if (engine.getValue(group, `beatloop_${beatloopPadSizes[i-1]}_enabled`) === 1) {
-                        if (engine.getValue("[App]", beatloopPadIndicatorControl) === 1) {
-                            NumarkMixtrackGo.led.setPadBright(i, deckIndex);
-                        } else {
-                            NumarkMixtrackGo.led.setPadOff(i, deckIndex);
-                        }
-                    } else {
-                        NumarkMixtrackGo.led.setPadOff(i, deckIndex);
-                    }
-                }
-            });
-        }
-    } else {
-        for (let i = 1; i <= 4; i++) {
-            const beatLoopEnabledControl = `beatloop_${beatloopPadSizes[i-1]}_enabled`;
-            engine.makeConnection(group, beatLoopEnabledControl, function() {
-                if (currentPadMode === 1) {
-                    if (engine.getValue(group, beatLoopEnabledControl) === 1) {
+    for (let i = 1; i <= 4; i++) {
+        engine.makeConnection("[App]", "indicator_500ms", function() {
+            if (currentPadMode === 1) {
+                if (engine.getValue(group, `beatloop_${beatloopPadSizes[i-1]}_enabled`) === 1) {
+                    if (engine.getValue("[App]", "indicator_500ms") === 1) {
                         NumarkMixtrackGo.led.setPadBright(i, deckIndex);
                     } else {
                         NumarkMixtrackGo.led.setPadOff(i, deckIndex);
                     }
+                } else {
+                    NumarkMixtrackGo.led.setPadOff(i, deckIndex);
                 }
-            });
-        }
+            }
+        });
     }
 
     // pads [1-3] fx mode led control
@@ -942,11 +887,11 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                 }
             }
         });
-        engine.makeConnection("[App]", samplerPadIndicatorControl, function() {
+        engine.makeConnection("[App]", "indicator_500ms", function() {
             if (currentPadMode === 3) {
                 if (engine.getValue(samplerGroup, "track_loaded") === 1) {
                     if (engine.getValue(samplerGroup, "play_indicator") === 1) {
-                        if (engine.getValue("[App]", samplerPadIndicatorControl) === 1) {
+                        if (engine.getValue("[App]", "indicator_500ms") === 1) {
                             NumarkMixtrackGo.led.setPadBright(i, deckIndex);
                         } else {
                             NumarkMixtrackGo.led.setPadDim(i, deckIndex);
@@ -1035,33 +980,18 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     };
 
     let isStemsTrackLoaded = false;
-    let isLoadedTrackBeingCheckedForStems = false;
 
-    const deckAndStemsStateConnection = engine.makeConnection(group, "track_loaded", function() {
-        if (engine.getValue(group, "track_loaded") === 1) {
-            isStemsTrackLoaded = false;
-            isLoadedTrackBeingCheckedForStems = true;
-            engine.beginTimer(
-                50,
-                () => {
-                    if (engine.getValue(group, "stem_count") > 0) {
-                        isStemsTrackLoaded = true;
-                        setAllStemPadLeds();
-
-                    } else {
-                        isStemsTrackLoaded = false;
-                    }
-                    isLoadedTrackBeingCheckedForStems = false;
-                    setAcapelAndInstruLed();
-                },
-                true);
-        } else { // track unloaded
+    const stemsStateConnection = engine.makeConnection(group, "stem_count", function() {
+        if (engine.getValue(group, "stem_count") > 0) {
+            isStemsTrackLoaded = true;
+            setAllStemPadLeds();
+        } else {
             isStemsTrackLoaded = false;
             if (currentPadMode === 4) {
                 NumarkMixtrackGo.led.setAllPadsOff(deckIndex);
             }
-            setAcapelAndInstruLed();
         }
+        setAcapelAndInstruLed();
     });
 
     // stem led coordination
@@ -1094,7 +1024,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     };
 
     engine.makeConnection(drumsStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems && isStemsTrackLoaded) {
+        if (isStemsTrackLoaded) {
             if (engine.getValue(drumsStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad1Off(deckIndex);
             } else {
@@ -1104,7 +1034,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     });
     engine.makeConnection(bassStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems && isStemsTrackLoaded) {
+        if (isStemsTrackLoaded) {
             if (engine.getValue(bassStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad2Off(deckIndex);
             } else {
@@ -1114,7 +1044,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     });
     engine.makeConnection(synthsStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems && isStemsTrackLoaded) {
+        if (isStemsTrackLoaded) {
             if (engine.getValue(synthsStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad3Off(deckIndex);
             } else {
@@ -1124,7 +1054,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     });
     engine.makeConnection(voiceStemGroup, "mute", function() {
-        if (!isLoadedTrackBeingCheckedForStems && isStemsTrackLoaded) {
+        if (isStemsTrackLoaded) {
             if (engine.getValue(voiceStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad4Off(deckIndex);
             } else {
@@ -1152,7 +1082,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         playConnection.trigger();
         playAndCueShiftTrackLoadedConnection.trigger();
 
-        deckAndStemsStateConnection.trigger();
+        stemsStateConnection.trigger();
 
         // mode leds - controller always loads in hotcue
         NumarkMixtrackGo.led.setModeHotcueBright(deckIndex);
@@ -1432,7 +1362,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                 if (this.timerFinished) {
                     this.timerFinished = false;
                     script.triggerControl(group, "cue_gotoandplay");
-                    this.timerId = engine.beginTimer(shiftCueDoubleTapTimer, () => {
+                    this.timerId = engine.beginTimer(300, () => {
                         this.timerFinished = true;
                     }, true);
                 } else {
@@ -1515,8 +1445,8 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                                         engine.setValue(this.effectUnitEffect1Group, "next_effect", 1);
                                     }
                                     engine.beginTimer(200, () => {
-                                        engine.setValue(this.effectUnitEffect1Group, "meta", autoLoadedEchoMetaValue);
-                                        engine.setValue(this.effectUnitGroup, "mix", autoLoadedEchoMixValue);
+                                        engine.setValue(this.effectUnitEffect1Group, "meta", 0.5);
+                                        engine.setValue(this.effectUnitGroup, "mix", 0.5);
                                         engine.setValue(this.effectUnitEffect1Group, "enabled", 1);
                                         engine.setValue(this.effectUnitGroup, this.effectEnableControl, 1);
                                     }, true);
@@ -1525,8 +1455,8 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                                         engine.setValue(this.effectUnitEffect1Group, "next_effect", 1);
                                     }
                                     engine.beginTimer(200, () => {
-                                        engine.setValue(this.effectUnitEffect1Group, "meta", autoLoadedFlangerMetaValue);
-                                        engine.setValue(this.effectUnitGroup, "mix", autoLoadedFlangerMixValue);
+                                        engine.setValue(this.effectUnitEffect1Group, "meta", 1.0);
+                                        engine.setValue(this.effectUnitGroup, "mix", 0.75);
                                         engine.setValue(this.effectUnitEffect1Group, "enabled", 1);
                                         engine.setValue(this.effectUnitGroup, this.effectEnableControl, 1);
                                     }, true);
@@ -1535,8 +1465,8 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                                         engine.setValue(this.effectUnitEffect1Group, "next_effect", 1);
                                     }
                                     engine.beginTimer(200, () => {
-                                        engine.setValue(this.effectUnitEffect1Group, "meta", autoLoadedReverbMetaValue);
-                                        engine.setValue(this.effectUnitGroup, "mix", autoLoadedReverbMixValue);
+                                        engine.setValue(this.effectUnitEffect1Group, "meta", 0.7);
+                                        engine.setValue(this.effectUnitGroup, "mix", 0.5);
                                         engine.setValue(this.effectUnitEffect1Group, "enabled", 1);
                                         engine.setValue(this.effectUnitGroup, this.effectEnableControl, 1);
                                     }, true);
