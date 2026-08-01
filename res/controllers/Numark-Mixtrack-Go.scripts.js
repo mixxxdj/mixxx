@@ -1,3 +1,5 @@
+//TODO need makeConnecton to previewdeck play in case for browse encoder push
+
 // Some variables for ease of access.
 const autoLoadedEchoMetaValue = 0.5;
 const autoLoadedEchoMixValue = 0.5;
@@ -718,10 +720,10 @@ NumarkMixtrackGo.browseEncoder = new components.Encoder({
             // also need to check for control because there is a 'browse_encoder_rotate_shift' with a different control
             if (control === NumarkMixtrackGo.controls.browse_encoder_rotate[1]) {
                 if (value === 127) {
-	                this.onEnconderRotateEvent(-1); //rotate right
-	            } else {
-	                this.onEnconderRotateEvent(1); //rotate left
-	            }
+                    this.onEnconderRotateEvent(-1); //rotate right
+                } else {
+                    this.onEnconderRotateEvent(1); //rotate left
+                }
             }
         } else {
             this.onButtonPushEvent();

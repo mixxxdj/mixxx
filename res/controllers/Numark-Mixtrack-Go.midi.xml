@@ -9,7 +9,7 @@
     <scriptfiles>
       <file filename="lodash.mixxx.js" functionprefix=""/>
       <file filename="midi-components-0.0.js" functionprefix=""/>
-      <file filename="NumarkMixtrackGo.scripts.js" functionprefix="NumarkMixtrackGo"/>
+      <file filename="Numark-Mixtrack-Go.scripts.js" functionprefix="NumarkMixtrackGo"/>
     </scriptfiles>
     <controls>
       <!-- Master -->
