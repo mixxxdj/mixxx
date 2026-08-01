@@ -198,6 +198,7 @@
 
       <SetVariable name="AxesColor">#999</SetVariable>
       <SetVariable name="BeatColor">#999</SetVariable>
+      <SetVariable name="DownBeatColor">#ff0000</SetVariable>
       <SetVariable name="PlayPosColor">#00c6ff</SetVariable>
       <SetVariable name="CueColor">#ff7a01</SetVariable>
       <SetVariable name="LoopColor">#00b400</SetVariable>
