@@ -62,6 +62,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     void search(const QString& searchText) override;
     const QString currentSearch() const override;
+    const QList<int>& searchColumns() const override;
 
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) const override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
@@ -99,6 +100,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             QSharedPointer<BaseTrackCache> trackSource);
 
     virtual void initSortColumnMapping();
+    void initSearchColumns();
 
     TrackCollectionManager* const m_pTrackCollectionManager;
 
@@ -169,6 +171,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;
+    QList<int> m_searchColumns;
     QList<SortColumn> m_sortColumns;
     bool m_bInitialized;
     QHash<TrackId, int> m_trackSortOrder;

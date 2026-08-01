@@ -25,18 +25,18 @@
 namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
-    int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
-        int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
-        // If the AutoDJ playlist does not exist yet then create it.
-        if (playlistId < 0) {
-            playlistId = playlistDAO.createPlaylist(
-                    AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
-            VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
-                qWarning() << "Failed to create Auto DJ playlist!";
-            }
+int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
+    int playlistId = playlistDAO.getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the AutoDJ playlist does not exist yet then create it.
+    if (playlistId < 0) {
+        playlistId = playlistDAO.createPlaylist(
+                AUTODJ_TABLE, PlaylistDAO::PLHT_AUTO_DJ);
+        VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
+            qWarning() << "Failed to create Auto DJ playlist!";
         }
-        return playlistId;
     }
+    return playlistId;
+}
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
@@ -192,7 +192,9 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     emit switchToView(m_viewName);
-    emit disableSearch();
+    if (m_pAutoDJView) {
+        emit restoreSearch(m_pAutoDJView->currentSearch());
+    }
     emit enableCoverArtDisplay(true);
 }
 

@@ -65,6 +65,8 @@ class BaseTrackCache : public QObject {
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
     int endFieldIndex() const;
+    const QList<int>& searchColumnsByIndex() const;
+    const QStringList& searchColumnsByName() const;
     virtual void filterAndSort(const QSet<TrackId>& trackIds,
                                const QString& query,
                                const QString& extraFilter,
@@ -114,6 +116,8 @@ class BaseTrackCache : public QObject {
 
     const ColumnCache m_columnCache;
 
+    const QStringList m_searchColumnNames;
+    const QList<int> m_searchColumns;
     const std::unique_ptr<SearchQueryParser> m_pQueryParser;
 
     const mixxx::StringCollator m_collator;
