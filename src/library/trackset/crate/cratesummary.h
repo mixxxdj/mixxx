@@ -42,8 +42,18 @@ class CrateSummary : public Crate {
         m_fullPath = fullPath;
     }
 
+    // The full path of this crate's parent folder,
+    // formatted as "Root crate name / Grandparent crate name / Parent crate name".
+    QString getFolderPath() const {
+        return m_folderPath;
+    }
+    void setFolderPath(const QString& folderPath) {
+        m_folderPath = folderPath;
+    }
+
   private:
     uint m_trackCount;
     double m_trackDuration;
     QString m_fullPath;
+    QString m_folderPath;
 };
