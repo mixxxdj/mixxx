@@ -12,7 +12,6 @@ Item {
     property string mode: "listen"
     property real originalEditValue: 0
     property bool editingBpm: true
-    property real tapModeEnteredAt: 0
 
     readonly property bool listenHovered: listenArea.containsMouse
     readonly property int hoverLeaveTimeout: 2000
@@ -33,7 +32,7 @@ Item {
         } else if (newMode === "edit") {
             startEditMode();
         } else if (newMode === "tap") {
-            root.tapModeEnteredAt = Date.now();
+            tapClickGuardTimer.restart();
             hideTimer.stop();
         } else if (newMode === "listen") {
             editInput.text = "";
@@ -42,7 +41,7 @@ Item {
     }
 
     function handleTapClick(mouse) {
-        if (Date.now() - root.tapModeEnteredAt < root.tapModeClickGuardTimeout) {
+        if (tapClickGuardTimer.running) {
             return;
         }
         root.tapControl(mouse.button === Qt.RightButton ? bpmTapProxy : tempoTapProxy);
@@ -152,6 +151,12 @@ Item {
         interval: root.hoverLeaveTimeout
         repeat: false
         onTriggered: root.switchMode("listen")
+    }
+
+    Timer {
+        id: tapClickGuardTimer
+        interval: root.tapModeClickGuardTimeout
+        repeat: false
     }
 
     MouseArea {

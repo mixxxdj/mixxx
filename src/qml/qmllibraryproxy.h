@@ -1,6 +1,5 @@
 #pragma once
 #include <QObject>
-#include <QPoint>
 #include <QQmlEngine>
 #include <QString>
 #include <Qt>

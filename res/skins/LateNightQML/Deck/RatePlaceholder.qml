@@ -49,12 +49,6 @@ Item {
     }
 
     Mixxx.ControlProxy {
-        id: visualBpmProxy
-        group: root.group
-        key: "visual_bpm"
-    }
-
-    Mixxx.ControlProxy {
         id: rateRatioProxy
         group: root.group
         key: "rate_ratio"
@@ -142,7 +136,7 @@ Item {
                 Text {
                     width: parent.width
                     height: 24
-                    text: visualBpmProxy.value.toFixed(2)
+                    text: bpmProxy.value.toFixed(2)
                     font.family: "Open Sans"
                     font.pixelSize: 20
                     font.bold: true
