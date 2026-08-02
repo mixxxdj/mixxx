@@ -13,6 +13,7 @@
 #include "library/library_prefs.h"
 #include "library/librarytablemodel.h"
 #include "library/searchqueryparser.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
@@ -604,13 +605,28 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* pEvent) {
     showTrackMenu(pEvent->globalPos(), indexAt(pEvent->pos()));
 }
 
+// static
+QModelIndexList WTrackTableView::filterEndMarkers(QModelIndexList indices) {
+    indices.erase(
+            std::remove_if(indices.begin(),
+                    indices.end(),
+                    [](const QModelIndex& idx) {
+                        return TableItemDelegate::isEndMarkerRow(idx);
+                    }),
+            indices.end());
+    return indices;
+}
+
 void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackMenu.get()) {
         return;
     }
     // Update track indices in context menu
-    const QModelIndexList indices = getSelectedRows();
+    QModelIndexList indices = filterEndMarkers(getSelectedRows());
     if (indices.isEmpty()) {
+        auto pMenu = make_parented<QMenu>(this);
+        pMenu->addAction(tr("Remove"), this, &WTrackTableView::removeSelectedTracks);
+        pMenu->exec(pos);
         return;
     }
     m_pTrackMenu->loadTrackModelIndices(indices);
@@ -1231,7 +1247,7 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                             TrackModel::Capability::EditMetadata)) {
                 return;
             }
-            const QModelIndexList indices = getSelectedRows();
+            const QModelIndexList indices = filterEndMarkers(getSelectedRows());
             if (indices.isEmpty()) {
                 return;
             }
