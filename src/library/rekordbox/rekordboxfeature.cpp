@@ -1178,6 +1178,9 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
             TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
     m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LoadedDeck)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK);
+    m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Color)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
     m_columnIndexBySortColumnId[static_cast<int>(
