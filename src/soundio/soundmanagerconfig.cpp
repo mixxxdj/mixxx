@@ -70,17 +70,16 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
  */
 bool SoundManagerConfig::readFromDisk() {
     QFile file(m_configFile.absoluteFilePath());
-    QDomDocument doc;
     QDomElement rootElement;
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    if (!doc.setContent(&file)) {
+    if (!m_doc.setContent(&file)) {
         file.close();
         return false;
     }
     file.close();
-    rootElement = doc.documentElement();
+    rootElement = m_doc.documentElement();
 
     setAPI(rootElement.attribute(xmlAttributeApi));
 
@@ -99,13 +98,25 @@ bool SoundManagerConfig::readFromDisk() {
     setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
                                     QString::number(kDefaultDeckCount))
                          .toUInt());
+
+    return true;
+}
+
+bool SoundManagerConfig::validateDevices() {
     clearOutputs();
     clearInputs();
-    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
+    if (m_doc.isNull()) {
+        return false;
+    }
 
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
+
+    QDomElement rootElement = m_doc.documentElement();
+    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
     const QList<SoundDevicePointer> soundDevices =
             m_pSoundManager->getDeviceList(m_api, true, true);
 

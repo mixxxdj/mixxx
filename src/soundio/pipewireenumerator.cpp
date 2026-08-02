@@ -7,6 +7,7 @@
 
 #include <QList>
 #include <QMessageBox>
+#include <QMetaObject>
 #include <QSharedPointer>
 #include <QStringView>
 #include <ranges>
@@ -200,6 +201,7 @@ void PipewireEnumerator::initialize() {
                  << spa_strerror(res);
     }
 
+    m_coreSyncSeq = pw_core_sync(m_pPwCore, PW_ID_CORE, 0);
     pw_thread_loop_start(m_pPwThreadLoop);
 
     m_initialized = true;
@@ -1046,6 +1048,13 @@ void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int frames
             ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
             m_framesPerBuffer * 1000 / m_sampleRate);
     ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
+}
+
+void PipewireEnumerator::coreEventDone(uint32_t id, int seq) {
+    qDebug() << "PipewireEnumerator::coreEventDone" << id << seq << m_coreSyncSeq;
+    if (id == 0 && seq == m_coreSyncSeq) {
+        QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::devicesEnumerated);
+    }
 }
 
 void PipewireEnumerator::coreEventError(uint32_t id, int seq, int res, const char* message) {
