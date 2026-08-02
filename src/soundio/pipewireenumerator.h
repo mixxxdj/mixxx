@@ -130,6 +130,10 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
         ChannelGroup outputChannel(std::span<const uint32_t> ports);
     };
 
+    static void coreEventDone(void* data, uint32_t id, int seq) {
+        static_cast<PipewireEnumerator*>(data)->coreEventDone(id, seq);
+    }
+
     static void coreEventError(void* data, uint32_t id, int seq, int res, const char* message) {
         static_cast<PipewireEnumerator*>(data)->coreEventError(id, seq, res, message);
     }
@@ -137,7 +141,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     static constexpr pw_core_events coreEvents = {
             .version = PW_VERSION_CORE_EVENTS,
             .info = nullptr,
-            .done = nullptr,
+            .done = coreEventDone,
             .ping = nullptr,
             .error = coreEventError,
             .remove_id = nullptr,
@@ -149,6 +153,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 #endif
     };
 
+    void coreEventDone(uint32_t id, int seq);
     void coreEventError(uint32_t id, int seq, int res, const char* message);
 
     static void registryEventGlobalOuter(void* data,
@@ -272,4 +277,5 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
     bool m_manageExternalLinks;
+    int m_coreSyncSeq;
 };

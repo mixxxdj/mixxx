@@ -83,9 +83,13 @@ SoundManager::SoundManager(
     queryDevices();
 
     if (!m_config.readFromDisk()) {
-        m_config.loadDefaults(this, SoundManagerConfig::ALL);
+        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::OTHER);
     }
-    checkConfig();
+
+    if (!isPipewireSelected()) {
+        devicesEnumerated();
+    }
+
     // Don't write config to disk, yet -- it may be reset to defaults in case
     // previously configured devices were not found.
     // Write new config after MixxxMainWindow::noOutputDlg where the user has
@@ -269,7 +273,9 @@ void SoundManager::queryDevices() {
     qDebug() << "SoundManager::queryDevices()";
     m_pEnumerator->initialize();
     // now tell the prefs that we updated the device list -- bkgood
+#ifndef __PIPEWIRE__
     emit devicesUpdated();
+#endif
 }
 
 void SoundManager::clearAndQueryDevices() {
@@ -715,4 +721,18 @@ void SoundManager::configureOutput(const AudioOutput& output) {
 void SoundManager::unconfigureOutput(const AudioOutput& output) {
     qWarning() << "SoundManager::unconfigureOutput";
     m_registeredSources.value(output)->onOutputDisconnected(output);
+}
+
+void SoundManager::devicesEnumerated() {
+    qDebug() << "SoundManager::devicesEnumerated";
+    for (const auto& device : m_pEnumerator->queryDevices()) {
+        qDebug() << device->getDisplayName();
+    }
+
+    // currently PipeWire has no sane default device options, we need to obtain
+    // it from metadata, and select it in SoundManagerConfig::loadDefaults
+    if (!m_config.validateDevices() && !isPipewireSelected()) {
+        qDebug() << "!m_config.validateDevices()";
+        m_config.loadDefaults(this, SoundManagerConfig::DEVICES);
+    }
 }

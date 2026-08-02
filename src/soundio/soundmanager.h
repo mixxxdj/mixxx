@@ -150,6 +150,7 @@ class SoundManager : public QObject {
     void configureOutput(const AudioOutput& output);
     void unconfigureOutput(const AudioOutput& output);
 
+    void loadConfig();
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
@@ -171,6 +172,7 @@ class SoundManager : public QObject {
   public slots:
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
+    void devicesEnumerated();
 
   private:
     // Closes all the devices and empties the list of devices we have.
