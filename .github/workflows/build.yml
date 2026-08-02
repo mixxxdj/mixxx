@@ -248,6 +248,13 @@ jobs:
           # see: https://cmake.org/cmake/help/latest/cpack_gen/wix.html#variable:CPACK_WIX_VERSION
           cmake-version: "3.30.x"
 
+      - name: "[Android] Set up cmake"
+        uses: jwlawson/actions-setup-cmake@v2.0
+        # CMake 3.31 has compatibility issues with Android NDK's SQLite3 header
+        if: matrix.name == 'Android 15 arm64'
+        with:
+          cmake-version: "3.30.x"
+
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
