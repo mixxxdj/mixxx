@@ -12,7 +12,7 @@
     </scriptfiles>
     <controls>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xB0</status>
         <midino>0x31</midino>
@@ -366,7 +366,7 @@
         </options>
       </control>
       <control> <!-- Headphones Mix -->
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>HerculesMk2.pfl</key>
         <status>0xB0</status>
         <midino>0x24</midino>
@@ -375,7 +375,7 @@
         </options>
       </control>
       <control> <!-- Headphones Split -->
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>HerculesMk2.pfl</key>
         <status>0xB0</status>
         <midino>0x23</midino>

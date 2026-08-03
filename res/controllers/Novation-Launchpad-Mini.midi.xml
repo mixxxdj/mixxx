@@ -13,7 +13,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x68</midino>
@@ -22,7 +22,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x69</midino>
@@ -31,7 +31,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x6A</midino>
@@ -40,7 +40,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x6B</midino>
@@ -49,7 +49,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x6C</midino>
@@ -58,7 +58,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x6D</midino>
@@ -67,7 +67,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x6E</midino>
@@ -76,7 +76,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0xb0</status>
                 <midino>0x6F</midino>
@@ -85,7 +85,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x8</midino>
@@ -94,7 +94,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x18</midino>
@@ -103,7 +103,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x28</midino>
@@ -112,7 +112,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x38</midino>
@@ -121,7 +121,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
@@ -130,7 +130,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x58</midino>
@@ -139,7 +139,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x68</midino>
@@ -148,7 +148,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x78</midino>
@@ -157,7 +157,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x0</midino>
@@ -166,7 +166,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x1</midino>
@@ -175,7 +175,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x2</midino>
@@ -184,7 +184,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x3</midino>
@@ -193,7 +193,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x4</midino>
@@ -202,7 +202,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x5</midino>
@@ -211,7 +211,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x6</midino>
@@ -220,7 +220,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x7</midino>
@@ -229,7 +229,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x10</midino>
@@ -238,7 +238,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x11</midino>
@@ -247,7 +247,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x12</midino>
@@ -256,7 +256,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x13</midino>
@@ -265,7 +265,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x14</midino>
@@ -274,7 +274,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x15</midino>
@@ -283,7 +283,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x16</midino>
@@ -292,7 +292,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x17</midino>
@@ -301,7 +301,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x20</midino>
@@ -310,7 +310,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x21</midino>
@@ -319,7 +319,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x22</midino>
@@ -328,7 +328,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x23</midino>
@@ -337,7 +337,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x24</midino>
@@ -346,7 +346,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x25</midino>
@@ -355,7 +355,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x26</midino>
@@ -364,7 +364,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x27</midino>
@@ -373,7 +373,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x30</midino>
@@ -382,7 +382,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x31</midino>
@@ -391,7 +391,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x32</midino>
@@ -400,7 +400,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x33</midino>
@@ -409,7 +409,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x34</midino>
@@ -418,7 +418,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x35</midino>
@@ -427,7 +427,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x36</midino>
@@ -436,7 +436,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x37</midino>
@@ -445,7 +445,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x40</midino>
@@ -454,7 +454,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
@@ -463,7 +463,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x42</midino>
@@ -472,7 +472,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x43</midino>
@@ -481,7 +481,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x44</midino>
@@ -490,7 +490,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x45</midino>
@@ -499,7 +499,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
@@ -508,7 +508,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
@@ -517,7 +517,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x50</midino>
@@ -526,7 +526,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x51</midino>
@@ -535,7 +535,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x52</midino>
@@ -544,7 +544,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x53</midino>
@@ -553,7 +553,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x54</midino>
@@ -562,7 +562,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x55</midino>
@@ -571,7 +571,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x56</midino>
@@ -580,7 +580,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x57</midino>
@@ -589,7 +589,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x60</midino>
@@ -598,7 +598,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x61</midino>
@@ -607,7 +607,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x62</midino>
@@ -616,7 +616,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x63</midino>
@@ -625,7 +625,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x64</midino>
@@ -634,7 +634,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x65</midino>
@@ -643,7 +643,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x66</midino>
@@ -652,7 +652,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x67</midino>
@@ -661,7 +661,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x70</midino>
@@ -670,7 +670,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x71</midino>
@@ -679,7 +679,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x72</midino>
@@ -688,7 +688,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x73</midino>
@@ -697,7 +697,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x74</midino>
@@ -706,7 +706,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x75</midino>
@@ -715,7 +715,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x76</midino>
@@ -724,7 +724,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>NLM.incomingData</key>
                 <status>0x90</status>
                 <midino>0x77</midino>

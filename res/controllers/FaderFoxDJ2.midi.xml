@@ -9,17 +9,17 @@
   <controller id="FaderFoxDJ2" port="Port">
     <controls>
 
-<!-- MASTER-->
+<!-- MIXER -->
 
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xB0</status>
         <midino>0x03</midino>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headMix</key>
+        <group>[Mixer]</group>
+        <key>headphone_mix</key>
         <status>0xB0</status>
         <midino>0x0c</midino>
       </control>

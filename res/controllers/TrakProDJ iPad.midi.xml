@@ -400,20 +400,20 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0XB0</status>
         <midino>0X07</midino>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headMix</key>
+        <group>[Mixer]</group>
+        <key>headphone_mix</key>
         <status>0XB0</status>
         <midino>0X1B</midino>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headVolume</key>
+        <group>[Mixer]</group>
+        <key>headphone_gain</key>
         <status>0XB1</status>
         <midino>0X1B</midino>
       </control>

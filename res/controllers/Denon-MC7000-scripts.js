@@ -1096,7 +1096,7 @@ MC7000.sortLibrary = function(channel, control, value) {
 };
 
 /* LEDs for VuMeter */
-// VuMeters only for Channel 1-4 / Master is on Hardware
+// VuMeters only for Channel 1-4 / Main is on Hardware
 MC7000.VuMeter = function(value, group) {
     const deckIndex = script.deckFromGroup(group) - 1;
     // sends either peak_indicator or scales value (0..1) to (0..117) while truncating to each LED

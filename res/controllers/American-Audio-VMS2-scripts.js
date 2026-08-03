@@ -68,7 +68,7 @@ VMS2.init = function (id) {    // called when the MIDI device is opened & set up
     //    engine.softTakeover("[Channel1]","filterHigh",true);
     //    engine.softTakeover("[Channel1]","filterMed",true);
     //    engine.softTakeover("[Channel1]","filterLow",true);
-    //    engine.softTakeover("[Master]","crossfader",true);
+    //    engine.softTakeover("[Mixer]","crossfader",true);
     //    engine.softTakeover("[Channel2]","rate",true);
     //    engine.softTakeover("[Channel2]","volume",true);
     //    engine.softTakeover("[Channel2]","pregain",true);

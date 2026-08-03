@@ -44,7 +44,7 @@ if (NK2.numDecks==4){
 
 
 NK2.deckData={};//object to store deck data, like mute vols, etc.
-NK2.deckData["[Master]"]={'muteVol':-1};
+NK2.deckData["[Mixer]"]={"muteVol": -1};
 for (i=1; i<9; i++){//initialize Deck reference objects
     NK2.deckData[NK2.Deck[i]]={};
     NK2.deckData[NK2.Deck[i]]['deckNum']=i;//reverse lookup for deck numbers by name
@@ -985,7 +985,7 @@ NK2.toggleBinaryControlAll
 NK2.Controls[NK2.leftButton["rev"]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.toggleBinaryControlAll("quantize");', "releaseEval":false, "LEDstateType":"off"};
 NK2.Controls[NK2.leftButton["ff"]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.toggleBinaryControlAll("keylock");', "releaseEval":false, "LEDstateType":"off"};
 NK2.Controls[NK2.leftButton["stop"]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.toggleBinaryControlAll("slip_enabled");', "releaseEval":false, "LEDstateType":"off"};
-NK2.Controls[NK2.leftButton["play"]]["N"][0]={"isset":true, "pressEval":'NK2.mutePress("[Master]");', "releaseEval":'NK2.muteRelease("[Master]");', "LEDstateType":"hook", "LEDhookControl":'volume', "LEDhookFunction":'NK2.muteLEDs', "LEDhookGroup":"[Master]"};
+NK2.Controls[NK2.leftButton.play].N[0]={"isset": true, "pressEval": "NK2.mutePress(\"[Mixer]\");", "releaseEval": "NK2.muteRelease(\"[Mixer]\");", "LEDstateType": "hook", "LEDhookControl": "volume", "LEDhookFunction": "NK2.muteLEDs", "LEDhookGroup": "[Mixer]"};
 
 //set common left button controls for S, M, and R modes (these controls can be overridden by resetting them later in the script)
 for (var j=1;j<4;j++){
@@ -1177,8 +1177,8 @@ for (var i=2;i<9;i++){
     };
 
 //master VU meter -
-NK2.Controls[NK2.Sbutton[1]]["N"][NK2.MODcodes["0011"]]={"isset":true, "pressEval":false, "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'VuMeterL', "LEDhookFunction":'NK2.vuMeterL', "LEDhookGroup":"[Master]"};
-NK2.Controls[NK2.Mbutton[1]]["N"][NK2.MODcodes["0011"]]={"isset":true, "pressEval":'NK2.binControlPress("'+NK2.Deck[1]+'", "bpm_tap");', "releaseEval":false, "LEDstateType":"hook", "LEDhookControl":'VuMeterR', "LEDhookFunction":'NK2.vuMeterR', "LEDhookGroup":"[Master]"};
+NK2.Controls[NK2.Sbutton[1]].N[NK2.MODcodes["0011"]]={"isset": true, "pressEval": false, "releaseEval": false, "LEDstateType": "hook", "LEDhookControl": "VuMeterL", "LEDhookFunction": "NK2.vuMeterL", "LEDhookGroup": "[Mixer]"};
+NK2.Controls[NK2.Mbutton[1]].N[NK2.MODcodes["0011"]]={"isset": true, "pressEval": `NK2.binControlPress("${NK2.Deck[1]}", "bpm_tap");`, "releaseEval": false, "LEDstateType": "hook", "LEDhookControl": "VuMeterR", "LEDhookFunction": "NK2.vuMeterR", "LEDhookGroup": "[Mixer]"};
 
 for (var i=2;i<9;i++){
     NK2.Controls[NK2.Sbutton[i]]["N"][NK2.MODcodes["0011"]]={"isset":true, "pressEval":false, "releaseEval":false, "LEDstateType":"off"};
@@ -1193,10 +1193,10 @@ for (var i=1;i<9;i++){
 //############# KNOBS
 //N mode
 NK2.Controls[NK2.Knob[1]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.wavezoomAll(value);', "LEDstateType":"off"};
-NK2.Controls[NK2.Knob[2]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.logKnobAdjust("[Master]", "headVolume", value, 0, 5);', "LEDstateType":"off"};
-NK2.Controls[NK2.Knob[3]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Master]", "headMix", value, -1, 1);', "LEDstateType":"off"};
-NK2.Controls[NK2.Knob[4]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Master]", "balance", value, -1, 1);', "LEDstateType":"off"};
-NK2.Controls[NK2.Knob[5]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.logKnobAdjust("[Master]", "volume", value, 0, 5);', "LEDstateType":"off"};
+NK2.Controls[NK2.Knob[2]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.logKnobAdjust("[Mixer]", "headphone_gain", value, 0, 5);', "LEDstateType":"off"};
+NK2.Controls[NK2.Knob[3]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Mixer]", "headphone_mix", value, -1, 1);', "LEDstateType":"off"};
+NK2.Controls[NK2.Knob[4]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Mixer]", "balance", value, -1, 1);', "LEDstateType":"off"};
+NK2.Controls[NK2.Knob[5]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.logKnobAdjust("[Mixer]", "main_gain", value, 0, 5);', "LEDstateType":"off"};
 NK2.Controls[NK2.Knob[6]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Flanger]", "lfoPeriod", value, 50000, 2000000);', "LEDstateType":"off"};
 NK2.Controls[NK2.Knob[7]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Flanger]", "lfoDepth", value, 0, 1);', "LEDstateType":"off"};
 NK2.Controls[NK2.Knob[8]]["N"][NK2.MODcodes["0000"]]={"isset":true, "pressEval":'NK2.knobAdjust("[Flanger]", "lfoDelay", value, 50, 10000);', "LEDstateType":"off"};

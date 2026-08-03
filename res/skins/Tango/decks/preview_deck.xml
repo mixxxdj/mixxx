@@ -36,7 +36,7 @@ Variables:
           <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],headEnabled</ConfigKey>
+          <ConfigKey>[Mixer],headphones_enabled</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>

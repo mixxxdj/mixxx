@@ -120,10 +120,10 @@ StantonSCS1d.knobSignals = [  [ ["CurrentChannel", "filterLow", "StantonSCS1d.en
                                 ["[Flanger]", "lfoPeriod", "StantonSCS1d.FXPeriodLEDs"],
                                 ["CurrentChannel", "pregain", "StantonSCS1d.encoder4EQLEDs"]
                               ],
-                              [ ["[Master]", "headMix", "StantonSCS1d.encoder1BalanceLEDs"],
-                                ["[Master]", "headVolume", "StantonSCS1d.encoder2MVolumeLEDs"],
-                                ["[Master]", "balance", "StantonSCS1d.encoder3BalanceLEDs"],
-                                ["[Master]", "volume", "StantonSCS1d.encoder4MVolumeLEDs"]
+                              [["[Mixer]", "headphone_mix", "StantonSCS1d.encoder1BalanceLEDs"],
+                                ["[Mixer]", "headphone_gain", "StantonSCS1d.encoder2MVolumeLEDs"],
+                                ["[Mixer]", "balance", "StantonSCS1d.encoder3BalanceLEDs"],
+                                ["[Mixer]", "main_gain", "StantonSCS1d.encoder4MVolumeLEDs"]
                               ]
                            ];
 StantonSCS1d.padSignals = [    [],    // Bank 0 (non-existent)
@@ -631,7 +631,7 @@ StantonSCS1d.rangeButton = function (channel, control, value, status) {
         if (StantonSCS1d.crossFader) {
             // Move to cross-fader position
             StantonSCS1d.pitchRangeLEDs(0); // darken range LEDs
-            var xfader = engine.getValue("[Master]","crossfader")*63+64;
+            const xfader = engine.getValue("[Mixer]", "crossfader")*63+64;
             if (StantonSCS1d.debug) print ("Moving slider to "+xfader+" for cross-fader");
             midi.sendShortMsg(0xB0+StantonSCS1d.channel,0x00,xfader);
             StantonSCS1d.state["crossfaderAdjusted"]=false;
@@ -671,7 +671,7 @@ StantonSCS1d.pitchReset = function (channel, control, value, status) {
     else {
         midi.sendShortMsg(0x80+StantonSCS1d.channel,control,0); // Darken button LED
         if (StantonSCS1d.modifier["pitchRange"]==1) {
-            engine.setValue("[Master]","crossfader",0);
+            engine.setValue("[Mixer]", "crossfader", 0);
             StantonSCS1d.state["crossfaderAdjusted"]=true;
         }
         else engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",0);
@@ -1120,7 +1120,7 @@ StantonSCS1d.encoder3 = function (channel, control, value, status) {
                     break;
             }
             break;
-        case 3: // Master Balance
+        case 3: // Main Balance
             switch (status & 0xF0) {
                 case 0x90:  // Reset
                     StantonSCS1d.encoderSetAbs(knobMode,3,0);
@@ -1155,7 +1155,7 @@ StantonSCS1d.display3button = function (channel, control, value, status) {
             break;
         case 2: // Flanger period
             break;
-        case 3: // Master Balance
+        case 3: // Main Balance
             switch (status & 0xF0) {
                 case 0x90:  // Full right
                     midi.sendShortMsg(0x90+channel,control,1);
@@ -1200,7 +1200,7 @@ StantonSCS1d.encoder4 = function (channel, control, value, status) {
                     break;
             }
             break;
-        case 3: // Master volume
+        case 3: // Main volume
             switch (status & 0xF0) {
                 case 0x90:  // Reset
                     StantonSCS1d.encoderSetAbs(knobMode,4,1);
@@ -1240,7 +1240,7 @@ StantonSCS1d.display4button = function (channel, control, value, status) {
                     break;
             }
             break;
-        case 3: // Master volume momentary kill
+        case 3: // Main volume momentary kill
             switch (status & 0xF0) {
                 case 0x90:
                     midi.sendShortMsg(0x90+channel,control,1);
@@ -1289,7 +1289,7 @@ StantonSCS1d.pitchSlider = function (channel, control, value) {
     if (newValue>1) newValue=1.0;
     StantonSCS1d.state["dontMove"]=new Date();
     if (StantonSCS1d.crossFader && StantonSCS1d.modifier["pitchRange"]==1) {
-        engine.setValue("[Master]","crossfader",newValue);
+        engine.setValue("[Mixer]", "crossfader", newValue);
         StantonSCS1d.state["crossfaderAdjusted"]=true;
     }
     else engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",newValue);
@@ -1433,13 +1433,12 @@ StantonSCS1d.EnterButton = function (channel, control, value, status) {
     if ((status & 0xF0) == 0x90) {    // If button down
         // If the deck is playing and the cross-fader is not completely toward the other deck...
         if (engine.getValue("[Channel"+StantonSCS1d.deck+"]","play")==1 &&
-        ((StantonSCS1d.deck==1 && engine.getValue("[Master]","crossfader")<1.0) ||
-        (StantonSCS1d.deck==2 && engine.getValue("[Master]","crossfader")>-1.0))) {
+            ((StantonSCS1d.deck==1 && engine.getValue("[Mixer]", "crossfader")<1.0) ||
+            (StantonSCS1d.deck==2 && engine.getValue("[Mixer]", "crossfader")>-1.0))) {
             // ...light the button red to show acknowledgement of the press but don't load
             StantonSCS1d.buttonLED(value,control,64,0);
-            print ("StantonSCS1d: Not loading into deck "+StantonSCS1d.deck+" because it's playing to the Master output.");
-        }
-        else {
+            print(`StantonSCS1d: Not loading into deck ${StantonSCS1d.deck} because it's playing to the Main output.`);
+        } else {
             engine.setValue("[Channel"+StantonSCS1d.deck+"]","LoadSelectedTrack",1);
         }
     }

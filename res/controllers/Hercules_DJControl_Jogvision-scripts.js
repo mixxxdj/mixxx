@@ -76,7 +76,7 @@ var DJCJV = {
         "track": 0x45,
         "vinylMode": 0x46,
         "headCue": 0x4C,
-        "headMix": 0x4D,
+        "headphone_mix": 0x4D,
         "outerJog": 0x60,
         "innerJog": 0x61,
         "vuMeter": 0x44,
@@ -165,16 +165,16 @@ var DJCJV = {
         midi.sendShortMsg(DJCJV.led.master, DJCJV.led.vinylMode, DJCJV.other.on);
 
         // Set Headphone CUE/MIX LED state
-        if (engine.getValue("[Master]", "headMix") > 0.5) {
+        if (engine.getValue("[Mixer]", "headphone_mix") > 0.5) {
             midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headCue, DJCJV.other.on); // headset "Mix" button LED
-            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headMix, DJCJV.other.off);
+            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headphone_mix, DJCJV.other.off);
         } else {
             midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headCue, DJCJV.other.off);
-            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headMix, DJCJV.other.on); // headset "Cue" button LED
+            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headphone_mix, DJCJV.other.on); // headset "Cue" button LED
         }
 
         // Enable Soft takeover
-        engine.softTakeover("[Master]", "crossfader", true);
+        engine.softTakeover("[Mixer]", "crossfader", true);
         engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
         engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
 
@@ -186,8 +186,8 @@ var DJCJV = {
             engine.setParameter("[EffectRack1_EffectUnit2_Effect1]", "meta", CFG.user.initUpdateEffects); // Deck B, Effect 1 initial value
             engine.setParameter("[EffectRack1_EffectUnit2_Effect2]", "meta", CFG.user.initUpdateEffects); // Deck B, Effect 2 initial value
             engine.setParameter("[EffectRack1_EffectUnit2_Effect3]", "meta", CFG.user.initUpdateEffects); // Deck B, Effect 3 initial value
-            engine.setParameter("[EffectRack1_EffectUnit1]", "mix", CFG.user.initUpdateEffects / 2); // Deck A, Effect Master mixer value
-            engine.setParameter("[EffectRack1_EffectUnit2]", "mix", CFG.user.initUpdateEffects / 2); // Deck A, Effect Master mixer value
+            engine.setParameter("[EffectRack1_EffectUnit1]", "mix", CFG.user.initUpdateEffects / 2); // Deck A, Effect Main mixer value
+            engine.setParameter("[EffectRack1_EffectUnit2]", "mix", CFG.user.initUpdateEffects / 2); // Deck A, Effect Main mixer value
             engine.setParameter("[QuickEffectRack1_[Channel1]]", "super1", 0.5); // High/low filter Deck A (mapped to AIR FX)
             engine.setParameter("[QuickEffectRack1_[Channel2]]", "super1", 0.5); // High/low filter Deck B (mapped to AIR FX)
         }
@@ -367,18 +367,18 @@ var DJCJV = {
     },
     // Headphone CUE button
     "headCue": function(midino, control, value, status, group) {
-        if (engine.getValue(group, "headMix") === 0) {
-            engine.setValue(group, "headMix", -1.0);
+        if (engine.getValue(group, "headphone_mix") === 0) {
+            engine.setValue(group, "headphone_mix", -1.0);
             midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headCue, DJCJV.other.off);
-            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headMix, DJCJV.other.on);
+            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headphone_mix, DJCJV.other.on);
         }
     },
     // Headphone MIX button
-    "headMix": function(midino, control, value, status, group) {
-        if (engine.getValue(group, "headMix") !== 1) {
-            engine.setValue(group, "headMix", 0);
+    "headphone_mix": function(midino, control, value, status, group) {
+        if (engine.getValue(group, "headphone_mix") !== 1) {
+            engine.setValue(group, "headphone_mix", 0);
             midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headCue, DJCJV.other.on);
-            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headMix, DJCJV.other.off);
+            midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headphone_mix, DJCJV.other.off);
         }
     },
     // Filter (AIR FX)

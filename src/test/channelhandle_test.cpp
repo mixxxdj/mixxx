@@ -16,7 +16,7 @@ TEST(ChannelHandleTest, BasicUsage) {
     EXPECT_FALSE(nullHandle.valid());
 
     EXPECT_FALSE(factory.handleForGroup(group).valid());
-    // The ChannelHandleFactory constructor creates handles for [Master] and [Headphone]
+    // The ChannelHandleFactory constructor creates handles for [Main] and [Headphone]
     EXPECT_EQ(0, factory.getOrCreateHandle(group));
     EXPECT_EQ(0, factory.getOrCreateHandle(group));
     ChannelHandle testHandle = factory.handleForGroup(group);

@@ -716,7 +716,7 @@
 
             <!-- Headphone split cue switch-->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>MC4000.headphoneSplit</key>
                 <status>0x9F</status>
                 <midino>0x1C</midino>
@@ -1134,7 +1134,7 @@
             </control>
             <!-- Crossfader -->
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xBF</status>
                 <midino>0x08</midino>
@@ -1144,8 +1144,8 @@
             </control>
             <!-- Headphone gain -->
             <control>
-                <group>[Master]</group>
-                <key>headGain</key>
+                <group>[Mixer]</group>
+                <key>headphone_gain</key>
                 <status>0xBF</status>
                 <midino>0x0C</midino>
                 <options>
@@ -1154,8 +1154,8 @@
             </control>
             <!-- Headphone mix -->
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xBF</status>
                 <midino>0x0D</midino>
                 <options>

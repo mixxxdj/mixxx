@@ -273,7 +273,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0xd</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description></description>
                 <options>

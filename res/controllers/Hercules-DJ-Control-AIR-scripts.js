@@ -25,7 +25,7 @@ HerculesAir.init = function(id) {
     midi.sendShortMsg(0x90, 0x3B, 0x7f) // headset volume "-" button LED (always on)
     midi.sendShortMsg(0x90, 0x3C, 0x7f) // headset volume "+" button LED (always on)
 
-    if(engine.getValue("[Master]", "headMix") > 0.5) {
+    if (engine.getValue("[Mixer]", "headphone_mix") > 0.5) {
         midi.sendShortMsg(0x90, 0x39, 0x7f) // headset "Mix" button LED
     } else {
         midi.sendShortMsg(0x90, 0x3A, 0x7f) // headset "Cue" button LED
@@ -43,7 +43,7 @@ HerculesAir.init = function(id) {
         engine.softTakeover("[Channel"+i+"]","filterLow",true);
     }
 
-    engine.softTakeover("[Master]","crossfader",true);
+    engine.softTakeover("[Mixer]", "crossfader", true);
 
     engine.connectControl("[Channel1]", "beat_active", "HerculesAir.beatProgressDeckA")
     engine.connectControl("[Channel1]", "play", "HerculesAir.playDeckA")
@@ -111,16 +111,16 @@ HerculesAir.beatProgressDeckB = function() {
 }
 
 HerculesAir.headCue = function(midino, control, value, status, group) {
-    if(engine.getValue(group, "headMix") == 0) {
-        engine.setValue(group, "headMix", -1.0);
+    if (engine.getValue(group, "headphone_mix") == 0) {
+        engine.setValue(group, "headphone_mix", -1.0);
         midi.sendShortMsg(0x90, 0x39, 0x00);
         midi.sendShortMsg(0x90, 0x3A, 0x7f);
     }
 };
 
-HerculesAir.headMix = function(midino, control, value, status, group) {
-    if(engine.getValue(group, "headMix") != 1) {
-        engine.setValue(group, "headMix", 0);
+HerculesAir.headphone_mix = function(midino, control, value, status, group) {
+    if (engine.getValue(group, "headphone_mix") != 1) {
+        engine.setValue(group, "headphone_mix", 0);
         midi.sendShortMsg(0x90, 0x39, 0x7f);
         midi.sendShortMsg(0x90, 0x3A, 0x00);
     }

@@ -12,7 +12,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.shiftActivate</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
@@ -61,7 +61,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx1ToggleButton1</key>
                 <status>0x9C</status>
                 <midino>0x01</midino>
@@ -70,7 +70,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx2ToggleButton1</key>
                 <status>0x9D</status>
                 <midino>0x01</midino>
@@ -157,7 +157,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx1ToggleButton2</key>
                 <status>0x9C</status>
                 <midino>0x02</midino>
@@ -166,7 +166,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx2ToggleButton2</key>
                 <status>0x9D</status>
                 <midino>0x02</midino>
@@ -253,7 +253,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx1ToggleButton3</key>
                 <status>0x9C</status>
                 <midino>0x03</midino>
@@ -262,7 +262,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx2ToggleButton3</key>
                 <status>0x9D</status>
                 <midino>0x03</midino>
@@ -331,7 +331,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx1ToggleButton4</key>
                 <status>0x9C</status>
                 <midino>0x04</midino>
@@ -340,7 +340,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>VestaxVCI400.fx2ToggleButton4</key>
                 <status>0x9D</status>
                 <midino>0x04</midino>
@@ -1274,7 +1274,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x14</midino>
@@ -1878,8 +1878,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xBE</status>
                 <midino>0x2A</midino>
                 <options>
@@ -1887,8 +1887,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>volume</key>
+                <group>[Mixer]</group>
+                <key>main_gain</key>
                 <description>MIDI Learned from 928 messages.</description>
                 <status>0xBE</status>
                 <midino>0x2B</midino>

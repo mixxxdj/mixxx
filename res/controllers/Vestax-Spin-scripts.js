@@ -5,7 +5,7 @@
 // move vu's to script? or fix bug in midi output saving
 
 VestaxSpin = new function() {
-    this.group = "[Master]";
+    this.group = "[Mixer]";
     this.decks = [];
     this.buttons = [];
     this.controls = [];

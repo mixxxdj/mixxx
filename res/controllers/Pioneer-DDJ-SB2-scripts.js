@@ -25,8 +25,8 @@ PioneerDDJSB2.jogwheelShiftMultiplier = 100;
 // Time per step (in ms) for pitch speed fade to normal
 PioneerDDJSB2.speedRateToNormalTime = 200;
 
-// If true Level-Meter shows VU-Master left & right. If false shows level of active deck.
-PioneerDDJSB2.showVumeterMaster = false;
+// If true Level-Meter shows VU-Main left & right. If false shows level of active deck.
+PioneerDDJSB2.showVumeterMain = false;
 
 // If true VU-Level twinkle if AutoDJ is ON.
 PioneerDDJSB2.twinkleVumeterAutodjOn = true;
@@ -532,7 +532,7 @@ PioneerDDJSB2.bindNonDeckControlConnections = function(isUnbinding) {
         PioneerDDJSB2.bindSamplerControlConnections("[Sampler" + samplerIndex + "]", isUnbinding);
     }
 
-    if (PioneerDDJSB2.showVumeterMaster) {
+    if (PioneerDDJSB2.showVumeterMain) {
         engine.connectControl("[Main]", "vu_meter_left", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
         engine.connectControl("[Main]", "vu_meter_right", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
     } else {
@@ -926,7 +926,7 @@ PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
 
     if (!(PioneerDDJSB2.twinkleVumeterAutodjOn && engine.getValue("[AutoDJ]", "enabled"))) {
         var midiChannel;
-        if (PioneerDDJSB2.showVumeterMaster) {
+        if (PioneerDDJSB2.showVumeterMain) {
             if (control === "vu_meter_left") {
                 midiChannel = 0;
             } else if (control === "vu_meter_right") {
@@ -941,7 +941,7 @@ PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
             midi.sendShortMsg(0xB0 + midiChannel, 2, value);
         }
     } else {
-        if (group === "[Master]") {
+        if (group === "[Mixer]") {
             if (control === "vu_meter_left") {
                 PioneerDDJSB2.valueVuMeter["[Channel1]_current"] = value;
                 PioneerDDJSB2.valueVuMeter["[Channel3]_current"] = value;

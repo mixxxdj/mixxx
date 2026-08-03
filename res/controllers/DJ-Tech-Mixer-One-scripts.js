@@ -49,13 +49,13 @@ MIXER1.mute = function mute(channel, control, value){
     //mute master
     if (value==127){
         //button was pressed
-        if (engine.getValue("[Master]", "volume")>0){MIXER1.mutestoredvol=engine.getValue("[Master]", "volume");}
-        engine.setValue("[Master]", "volume", 0);
+        if (engine.getValue("[Mixer]", "main_gain")>0) { MIXER1.mutestoredvol=engine.getValue("[Mixer]", "main_gain"); }
+        engine.setValue("[Mixer]", "main_gain", 0);
         midi.sendShortMsg(0x97, 0x05, 127);//light Inverse LED
         midi.sendShortMsg(0x95, 0x05, 127);//light Inverse LED
         }else{
         //button was released
-        engine.setValue("[Master]", "volume", MIXER1.mutestoredvol);
+        engine.setValue("[Mixer]", "main_gain", MIXER1.mutestoredvol);
         midi.sendShortMsg(0x97, 0x05, 0);//turn off Inverse LED
         midi.sendShortMsg(0x95, 0x05, 0);//turn off Inverse LED
         }

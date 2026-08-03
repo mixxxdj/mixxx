@@ -419,7 +419,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
@@ -734,8 +734,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headMix</key>
+                <group>[Mixer]</group>
+                <key>headphone_mix</key>
                 <status>0xB0</status>
                 <midino>0x43</midino>
                 <options>
@@ -1760,7 +1760,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x17</midino>
@@ -2035,8 +2035,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>headGain</key>
+                <group>[Mixer]</group>
+                <key>headphone_gain</key>
                 <status>0xB0</status>
                 <midino>0x44</midino>
                 <options>

@@ -12,31 +12,31 @@
     </scriptfiles>
     <controls>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xB0</status>
         <midino>0x08</midino>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>volume</key>
+        <group>[Mixer]</group>
+        <key>main_gain</key>
         <status>0xB0</status>
         <midino>0x07</midino>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headVolume</key>
+        <group>[Mixer]</group>
+        <key>headphone_gain</key>
         <status>0xB0</status>
         <midino>0x58</midino>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>headMix</key>
+        <group>[Mixer]</group>
+        <key>headphone_mix</key>
         <status>0xB0</status>
         <midino>0x59</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>balance</key>
         <status>0xB0</status>
         <midino>0x1f</midino>
@@ -44,7 +44,7 @@
 
       <!-- Loop & Hotcues -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>VestaxVCI100.key1</key>
         <status>0x90</status>
         <midino>0x62</midino>
@@ -53,7 +53,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>VestaxVCI100.key1</key>
         <status>0x80</status>
         <midino>0x62</midino>
@@ -62,7 +62,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>VestaxVCI100.key2</key>
         <status>0x90</status>
         <midino>0x63</midino>
@@ -71,7 +71,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>VestaxVCI100.key2</key>
         <status>0x80</status>
         <midino>0x63</midino>
@@ -80,7 +80,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>VestaxVCI100.key3</key>
         <status>0x90</status>
         <midino>0x64</midino>
@@ -89,7 +89,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>VestaxVCI100.key3</key>
         <status>0x80</status>
         <midino>0x64</midino>

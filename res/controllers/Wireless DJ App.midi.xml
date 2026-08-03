@@ -368,7 +368,7 @@
                 <status>0xb0</status>
                 <midino>0x1b</midino>
                 <group>[Master]</group>
-                <key>headMix</key>
+                <key>headphone_mix</key>
                 <options>
                     <normal/>
                 </options>
