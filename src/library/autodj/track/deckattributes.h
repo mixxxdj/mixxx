@@ -8,6 +8,7 @@
 
 class BaseTrackPlayer;
 
+/// Exposes the attributes of the track loaded in a certain player deck.
 class DeckAttributes : public QObject {
     Q_OBJECT
   public:
