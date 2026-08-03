@@ -14,6 +14,7 @@ const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
 constexpr double kKeepPosition = -1.0;
+constexpr double kSkipToNextTrack = -2.0;
 
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
@@ -1289,6 +1290,15 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                  << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
                  << pToDeck->startPos;
     }
+
+    if (pToDeck->startPos == kSkipToNextTrack) {
+        // This is a safety measure to handle tracks that are too short.
+        // Immediately skip to the next track instead. Note that this
+        // will trigger the playerTrackLoaded slot, which will call
+        // calculateTransition() again.
+        loadNextTrackFromQueue(*pToDeck, false);
+        return;
+    }
 }
 
 void AutoDJProcessor::calculateTransitionImpl(
@@ -1319,10 +1329,11 @@ void AutoDJProcessor::calculateTransitionImpl(
         // This signal is received before the track pointer becomes null.
         return;
     }
+
     VERIFY_OR_DEBUG_ASSERT(toDeckDuration >= kMinimumTrackDurationSec) {
         // Track has no duration or is too short. This should not happen, because short
         // tracks are skipped after load. Immediately pick next track from queue.
-        loadNextTrackFromQueue(*pToDeck, false);
+        pToDeck->startPos = kSkipToNextTrack;
         return;
     }
 
