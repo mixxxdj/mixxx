@@ -11,6 +11,15 @@
 class TrackOrDeckAttributes : public QObject {
     Q_OBJECT
   public:
+    /// Special value for startPos that indicates the deck
+    /// should start playing from its current position.
+    static constexpr double kKeepPosition = -1.0;
+
+    /// Special value for startPos that indicates a track
+    /// should be skipped because it is too short.
+    static constexpr double kSkipToNextTrack = -2.0;
+
+    TrackOrDeckAttributes();
     virtual ~TrackOrDeckAttributes();
 
     virtual mixxx::audio::FramePos introStartPosition() const = 0;
@@ -27,4 +36,9 @@ class TrackOrDeckAttributes : public QObject {
     inline bool isEmpty() const {
         return !getLoadedTrack();
     }
+
+    double startPos;     // Set for toDeck
+    double fadeBeginPos; // Set for fromDeck
+    double fadeEndPos;   // Set for fromDeck
+    bool isFromDeck;
 };

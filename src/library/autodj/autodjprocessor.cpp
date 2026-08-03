@@ -13,7 +13,7 @@ const QString kControlGroup = QStringLiteral("[AutoDJ]");
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
-constexpr double kKeepPosition = DeckAttributes::kKeepPosition;
+constexpr double kKeepPosition = TrackOrDeckAttributes::kKeepPosition;
 
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
