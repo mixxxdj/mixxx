@@ -339,7 +339,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         }
 
         if (majorGlVersion != 0) {
-            m_openGLVersion = QString::number(majorGlVersion) + "." + QString::number(minorGlVersion);
+            m_openGLVersion = QString::number(majorGlVersion) + "." +
+                    QString::number(minorGlVersion);
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
             if (majorGlVersion * 100 + minorGlVersion >= 201) {
@@ -714,7 +715,9 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
 }
 
 void WaveformWidgetFactory::setDefaultZoom(double zoom) {
-    m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom, WaveformWidgetRenderer::s_waveformMaxZoom);
+    m_defaultZoom = math_clamp(zoom,
+            WaveformWidgetRenderer::s_waveformMinZoom,
+            WaveformWidgetRenderer::s_waveformMaxZoom);
     if (m_config) {
         m_config->setValue(kDefaultZoomKey, m_defaultZoom);
     }
