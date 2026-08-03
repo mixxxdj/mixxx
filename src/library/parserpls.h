@@ -15,6 +15,7 @@
 #include <QString>
 #include <QTextStream>
 
+#include "library/library_decl.h"
 #include "library/parser.h"
 
 class ParserPls : public Parser {
@@ -22,5 +23,7 @@ class ParserPls : public Parser {
     static bool isPlaylistFilenameSupported(const QString& fileName);
     static QList<QString> parseAllLocations(const QString& playlistFile);
     /// Playlist Export
-    static bool writePLSFile(const QString &file, const QList<QString> &items, bool useRelativePath);
+    static bool writePLSFile(const QString& file,
+            const QList<QString>& items,
+            PlaylistExportFilePathMode filePathMode);
 };
