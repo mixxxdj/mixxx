@@ -10,6 +10,7 @@
 #include "control/controlpushbutton.h"
 #include "control/pollingcontrolproxy.h"
 #include "library/autodj/track/deckattributes.h"
+#include "library/autodj/track/trackattributes.h"
 #include "library/autodj/track/trackordeckattributes.h"
 #include "library/playlisttablemodel.h"
 #include "preferences/usersettings.h"

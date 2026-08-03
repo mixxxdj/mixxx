@@ -1389,6 +1389,7 @@ add_library(
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
   src/library/autodj/track/deckattributes.cpp
+  src/library/autodj/track/trackattributes.cpp
   src/library/autodj/track/trackordeckattributes.cpp
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
