@@ -118,6 +118,10 @@ class SoundManager : public QObject {
 #ifdef __PIPEWIRE__
     bool isPipewireSelected();
 #endif
+    void addHardwareVolume(QString name, uint32_t newRoute, uint32_t previousRoute);
+    void addHardwareDevice(QString name, uint32_t id);
+    void removeHardwareDevice(uint32_t id);
+    std::vector<std::pair<uint32_t, QString>> queryHardwareDevices();
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
@@ -131,6 +135,9 @@ class SoundManager : public QObject {
     void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
+    void hardwareVolumeAdded(QString name, uint32_t newRoute, uint32_t previousRoute);
+    void hardwareDeviceAdded(QString name, uint32_t id);
+    void hardwareDeviceRemoved(uint32_t id);
 
   private slots:
     void completeDevicesClosing();

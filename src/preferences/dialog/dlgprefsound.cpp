@@ -1,11 +1,14 @@
 #include "preferences/dialog/dlgprefsound.h"
 
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
 #include <vector>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "engine/enginebuffer.h"
@@ -20,6 +23,7 @@
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
+#include "util/parented_ptr.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
 
@@ -214,6 +218,22 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
 #ifdef __PIPEWIRE__
     if (CmdlineArgs::Instance().getDeveloper()) {
+        connect(m_pSoundManager.get(),
+                &SoundManager::hardwareDeviceAdded,
+                this,
+                [this](QString name, uint32_t id) {
+                    qWarning() << "SoundManager::hardwareDeviceAdded";
+                    m_volumeDevice->addItem(name, id);
+                });
+        connect(m_pSoundManager.get(),
+                &SoundManager::hardwareDeviceRemoved,
+                this,
+                [this](uint32_t id) {
+                    qWarning() << "SoundManager::hardwareDeviceRemoved";
+                    int removeIndex = m_volumeDevice->findData(id);
+                    m_volumeDevice->removeItem(removeIndex);
+                });
+
         m_pipewireCheckBox = make_parented<QCheckBox>(this);
         m_pipewireCheckBox->setText(tr("Use PipeWire API"));
 
@@ -236,6 +256,91 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                                    "API selection to take effect."));
                     }
                 });
+        auto groupBox = make_parented<QGroupBox>(this);
+        groupBox->setTitle("Hardware Volume");
+        auto grid = make_parented<QGridLayout>(groupBox);
+        grid->addWidget(new QLabel("Inputs"), 1, 0);
+        grid->addWidget(new QLabel("Outputs"), 2, 0);
+
+        m_volumeDevice = make_parented<QComboBox>(groupBox);
+        grid->addWidget(m_volumeDevice, 0, 1);
+        const ConfigKey kVolumeDevice{kAppGroup, "hardware_volume_device"};
+        m_pHardwareDevice = make_parented<ControlProxy>(kAppGroup, "hardware_volume_device", this);
+        connect(m_volumeDevice,
+                &QComboBox::currentIndexChanged,
+                this,
+                [this, kVolumeDevice](int value) {
+                    // the checkbox selection needs to immediately take effect
+                    // so this setting is stored and broadcasted at same time
+                    uint32_t id = m_volumeDevice->itemData(value).toUInt();
+                    m_pHardwareDevice->set(id);
+                    m_pSettings->setValue(kVolumeDevice, id);
+                });
+
+        constexpr unsigned int sliderRange = 100;
+
+        m_pInputVolumeSlider = make_parented<QSlider>(groupBox);
+        m_pOutputVolumeSlider = make_parented<QSlider>(groupBox);
+        m_pInputVolumeSlider->setOrientation(Qt::Horizontal);
+        m_pOutputVolumeSlider->setOrientation(Qt::Horizontal);
+        m_pInputVolumeSlider->setRange(0, sliderRange);
+        m_pOutputVolumeSlider->setRange(0, sliderRange);
+
+        grid->addWidget(m_pInputVolumeSlider, 1, 1);
+        grid->addWidget(m_pOutputVolumeSlider, 2, 1);
+
+        m_pInputVolume = make_parented<ControlProxy>(
+                ConfigKey(kAppGroup, "hardware_input_volume"), this);
+        m_pOutputVolume = make_parented<ControlProxy>(
+                ConfigKey(kAppGroup, "hardware_output_volume"), this);
+        bool connected;
+        connected = connect(m_pInputVolumeSlider,
+                &QSlider::valueChanged,
+                m_pInputVolume.get(),
+                [this](float value) {
+                    m_pInputVolume->set(value / sliderRange);
+                    qWarning() << "m_pInputVolume->set(" << value / sliderRange
+                               << ")";
+                });
+        if (!connected) {
+            qWarning() << "connection failed m_pInputVolumeSlider";
+        }
+        connected = connect(m_pOutputVolumeSlider,
+                &QSlider::valueChanged,
+                m_pOutputVolume.get(),
+                [this](float value) {
+                    m_pOutputVolume->set(value / sliderRange);
+                    qDebug() << "m_pOutputVolume->set(" << value / sliderRange
+                             << ")";
+                });
+        if (!connected) {
+            qDebug() << "connection failed m_pOutputVolumeSlider";
+        }
+        connected = connect(m_pInputVolume.get(),
+                &ControlProxy::valueChanged,
+                m_pInputVolumeSlider.get(),
+                [this](double value) {
+                    int sliderValue = static_cast<int>(value * sliderRange);
+                    m_pInputVolumeSlider->setValue(sliderValue);
+                    qDebug() << "m_pInputVolumeSlider->setValue" << sliderValue;
+                });
+        if (!connected) {
+            qDebug() << "connection failed m_pInputVolume";
+        }
+        connected = connect(m_pOutputVolume.get(),
+                &ControlProxy::valueChanged,
+                m_pOutputVolumeSlider.get(),
+                [this](double value) {
+                    int sliderValue = static_cast<int>(value * sliderRange);
+                    m_pOutputVolumeSlider->setValue(sliderValue);
+                    qDebug()
+                            << "m_pOutputVolumeSlider->setValue" << sliderValue;
+                });
+        if (!connected) {
+            qDebug() << "connection failed m_pOutputVolume";
+        }
+
+        verticalLayout_2->addWidget(groupBox);
     }
 #endif
 
@@ -862,6 +967,12 @@ void DlgPrefSound::refreshDevices() {
     }
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);
+
+#ifdef __PIPEWIRE__
+    for (auto [id, deviceName] : m_pSoundManager->queryHardwareDevices()) {
+        m_volumeDevice->addItem(deviceName, id);
+    }
+#endif
 }
 
 void DlgPrefSound::addDevice(SoundDevicePointer pDevice) {
@@ -875,6 +986,10 @@ void DlgPrefSound::addDevice(SoundDevicePointer pDevice) {
     if (hasOutputs) {
         m_outputDevices.append(pDevice);
         emit addOutputDevice(pDevice);
+    }
+
+    if (hasInputs or hasOutputs) {
+        emit loadPaths(m_config);
     }
 }
 
