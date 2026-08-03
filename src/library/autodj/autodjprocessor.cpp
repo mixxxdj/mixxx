@@ -1377,6 +1377,19 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
+    calculateTransitionImpl(pFromDeck, pToDeck, seekToStartPoint);
+
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "calculateTransition" << pFromDeck->group
+                        << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
+                        << pToDeck->startPos;
+    }
+}
+
+void AutoDJProcessor::calculateTransitionImpl(
+        DeckAttributes* pFromDeck,
+        DeckAttributes* pToDeck,
+        bool seekToStartPoint) {
     const double fromDeckEndPosition = getEndSecond(pFromDeck);
     const double toDeckEndPosition = getEndSecond(pToDeck);
     // Since the end position is measured in seconds from 0:00 it is also
@@ -1621,12 +1634,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     VERIFY_OR_DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1) {
         pFromDeck->fadeBeginPos = 1;
-    }
-
-    if (kLogger.debugEnabled()) {
-        kLogger.debug() << "calculateTransition" << pFromDeck->group
-                        << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
-                        << pToDeck->startPos;
     }
 }
 
