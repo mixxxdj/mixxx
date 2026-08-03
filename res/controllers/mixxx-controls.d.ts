@@ -3146,6 +3146,16 @@ declare namespace MixxxControls {
         | 'search_history_selector'
 
         /**
+         * Set the beatgrid/BPM lock state of the selected track(s).
+         *
+         * @groups [Library]
+         * @range binary
+         * @feedback The lock icon of the selected track(s) is activated/deactivated.
+         * @since New in version 2.6.0.
+         */
+        | 'set_bpmlock'
+
+        /**
          * Toggle the track context menu for all tracks selected in the current library view.
          * The control value is 1 if there is already a menu shown for the current view.
          * Note that the control is not aware of other track menus, for example those opened
@@ -3234,6 +3244,26 @@ declare namespace MixxxControls {
          * @since New in version 2.3.0.
          */
         | 'sort_order'
+
+        /**
+         * Decrease the rating of the currently selected track(s).
+         *
+         * @groups [Library]
+         * @range binary
+         * @feedback Star count is decreased in the library’s Rating column and in star widgets of deckswhere the selected track is loaded.
+         * @since New in version 2.6.0.
+         */
+        | 'stars_down'
+
+        /**
+         * Increase the rating of the currently selected track(s).
+         *
+         * @groups [Library]
+         * @range binary
+         * @feedback Star count is increased in the library’s Rating column and in star widgets of deckswhere the selected track is loaded.
+         * @since New in version 2.6.0.
+         */
+        | 'stars_up'
 
         /**
          * Set color of selected track to next color in palette.
