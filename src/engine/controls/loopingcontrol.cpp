@@ -4,7 +4,6 @@
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
@@ -17,11 +16,6 @@
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
-
-// returns true if a is valid and is fairly close to target (within +/- 1 frame).
-bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
-    return a.isValid() && a > target - 1 && a < target + 1;
-}
 } // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
@@ -1384,7 +1378,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) co
     const auto loopEndPosition = pBeats->findNBeatsFromPosition(
             loopInfo.startPosition, m_pCOBeatLoopSize->get());
 
-    return positionNear(loopInfo.endPosition, loopEndPosition);
+    return loopEndPosition.isNear(loopInfo.endPosition);
 }
 
 bool LoopingControl::quantizeEnabledAndHasTrueTrackBeats() const {
@@ -1407,7 +1401,9 @@ double LoopingControl::findBeatloopSizeForLoop(
             }
         }
     }
-    return -1;
+
+    // No hit. Calculate the fractional beat length
+    return pBeats->numFractionalBeatsInRange(startPosition, endPosition);
 }
 
 void LoopingControl::updateBeatLoopingControls() {
@@ -1630,8 +1626,8 @@ void LoopingControl::slotBeatLoop(double beats,
         // or if the endpoints are nearly the same, do not seek forward into the adjusted loop.
         if (!keepSetPoint ||
                 !(enable || m_bLoopingEnabled) ||
-                (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
-                        positionNear(newloopInfo.endPosition, loopInfo.endPosition))) {
+                (newloopInfo.startPosition.isNear(loopInfo.startPosition) &&
+                        newloopInfo.endPosition.isNear(loopInfo.endPosition))) {
             newloopInfo.seekMode = LoopSeekMode::MovedOut;
         } else {
             newloopInfo.seekMode = LoopSeekMode::Changed;
@@ -1809,7 +1805,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 
     FrameInfo info = frameInfo();
-    if (BpmControl::getBeatContext(pBeats,
+    if (pBeats->getContext(
                 info.currentPosition,
                 nullptr,
                 nullptr,
