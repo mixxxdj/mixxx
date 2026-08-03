@@ -10,16 +10,7 @@ class BaseTrackPlayer;
 class DeckAttributes : public TrackOrDeckAttributes {
     Q_OBJECT
   public:
-    /// Special value for startPos that indicates the deck
-    /// should start playing from its current position.
-    static constexpr double kKeepPosition = -1.0;
-
-    /// Special value for startPos that indicates a track
-    /// should be skipped because it is too short.
-    static constexpr double kSkipToNextTrack = -2.0;
-
-    DeckAttributes(int index,
-            BaseTrackPlayer* pPlayer);
+    DeckAttributes(int index, BaseTrackPlayer* pPlayer);
     virtual ~DeckAttributes();
 
     bool isLeft() const {
@@ -117,10 +108,6 @@ class DeckAttributes : public TrackOrDeckAttributes {
   public:
     int index;
     QString group;
-    double startPos;     // Set in toDeck nature
-    double fadeBeginPos; // set in fromDeck nature
-    double fadeEndPos;   // set in fromDeck nature
-    bool isFromDeck;
     bool loading; // The data is inconsistent during loading a deck
 
   private:
