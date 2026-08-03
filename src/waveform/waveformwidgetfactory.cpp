@@ -3,7 +3,6 @@
 #include "waveform/waveform.h"
 
 #ifdef MIXXX_USE_QOPENGL
-#include <QGuiApplication>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
 #else
@@ -1390,13 +1389,18 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConf
             ? pConfig->getValue(kVSyncKey, VSyncThread::ST_DEFAULT)
             : VSyncThread::ST_DEFAULT;
 
-#ifdef MIXXX_USE_QOPENGL
     // QOpenGLWindow inside createWindowContainer causes synchronous Wayland
     // compositor buffer reallocation on every resize event, making splitter
     // drag and UI resizing extremely slow. This affects both waveforms and spinny
     // widgets. Running under XWayland (QT_QPA_PLATFORM=xcb) avoids this issue.
-    // See https://github.com/mixxxdj/mixxx/issues/16013 and #14492
-    if (QGuiApplication::platformName().startsWith(QLatin1String("wayland"))) {
+    // See https://github.com/mixxxdj/mixxx/issues/16013,
+    // https://github.com/mixxxdj/mixxx/issues/14492 and
+    // https://github.com/mixxxdj/mixxx/issues/13814
+    // This function is called per OpenGLWindow, so warn only once.
+    static bool waylandWarningShown = false;
+    if (!waylandWarningShown &&
+            QGuiApplication::platformName().startsWith(QLatin1String("wayland"))) {
+        waylandWarningShown = true;
         qWarning() << "Wayland detected with OpenGL waveforms: waveforms and "
                       "spinnies may suffer from rendering issues (slow resize, "
                       "sticky mouse). Set QT_QPA_PLATFORM=xcb to use XWayland."
@@ -1404,7 +1408,6 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConf
                       " https://github.com/mixxxdj/mixxx/issues/14492 for"
                       " details.";
     }
-#endif
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
