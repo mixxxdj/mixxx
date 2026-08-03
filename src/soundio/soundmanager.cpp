@@ -730,3 +730,21 @@ void SoundManager::invalidateConfig() {
     qDebug() << "SoundManager::invalidateConfig";
     emit configInvalidated();
 }
+
+void SoundManager::addHardwareVolume(QString name, uint32_t newRoute, uint32_t previousRoute) {
+    qWarning() << "SoundManager::addHardwareVolume";
+    emit hardwareVolumeAdded(name, newRoute, previousRoute);
+}
+
+void SoundManager::addHardwareDevice(QString name, uint32_t id) {
+    qWarning() << "SoundManager::addHardwareDevice";
+    emit hardwareDeviceAdded(name, id);
+}
+
+void SoundManager::removeHardwareDevice(uint32_t id) {
+    emit hardwareDeviceRemoved(id);
+}
+
+std::vector<std::pair<uint32_t, QString>> SoundManager::queryHardwareDevices() {
+    return m_pEnumerator->queryHardwareDevices();
+}

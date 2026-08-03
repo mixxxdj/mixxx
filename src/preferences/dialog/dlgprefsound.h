@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QSlider>
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
@@ -137,5 +138,11 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<ControlProxy> m_cpBufferSize;
     parented_ptr<ControlProxy> m_cpLatencyParamsMismatch;
     QLabel* m_latencyParamsMismatchText;
+    parented_ptr<ControlProxy> m_pInputVolume;
+    parented_ptr<ControlProxy> m_pOutputVolume;
+    parented_ptr<ControlProxy> m_pHardwareDevice;
+    parented_ptr<QComboBox> m_volumeDevice;
+    parented_ptr<QSlider> m_pInputVolumeSlider;
+    parented_ptr<QSlider> m_pOutputVolumeSlider;
 #endif
 };

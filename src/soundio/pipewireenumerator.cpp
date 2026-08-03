@@ -1,12 +1,17 @@
 #include "soundio/pipewireenumerator.h"
 
 #include <pipewire/pipewire.h>
-#include <qendian.h>
-#include <qlogging.h>
-#include <qobject.h>
+#include <spa/param/param.h>
+#include <spa/param/props.h>
+#if PW_CHECK_VERSION(0, 3, 65)
+#include <spa/param/route.h>
+#endif
+#include <spa/pod/builder.h>
+#include <spa/pod/parser.h>
 #include <spa/utils/defs.h>
 #include <spa/utils/dict.h>
 #include <spa/utils/result.h>
+#include <spa/utils/string.h>
 
 #include <QList>
 #include <QMessageBox>
@@ -106,7 +111,9 @@ PipewireEnumerator::PipewireEnumerator(
           m_forceQuantum(false),
           m_forceSamplerate(false),
           m_samplerate(48000),
-          m_bufferSize(kDefaultBufferSize) {
+          m_bufferSize(kDefaultBufferSize),
+          m_coVolumeDevice(ConfigKey(kAppGroup, "hardware_volume_device")),
+          m_volumeDeviceIndex(0) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -118,6 +125,35 @@ PipewireEnumerator::PipewireEnumerator(
 
     connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
     connect(this, &PipewireEnumerator::deviceRemoved, m_pSoundManager, &SoundManager::removeDevice);
+
+    bool connected;
+
+    connected = connect(&m_coVolumeDevice,
+            &ControlObject::valueChanged,
+            this,
+            [this](double index) {
+                m_volumeDeviceIndex = static_cast<uint32_t>(index);
+            });
+    if (!connected) {
+        qWarning() << "connection failed m_COVolumeDevice";
+    }
+
+    connected = connect(&m_coInputVolume,
+            &ControlObject::valueChanged,
+            this,
+            [this](double gain) { setHardwareGain(static_cast<float>(gain), true); });
+    if (!connected) {
+        qWarning() << "connection failed m_coInputVolume";
+    }
+    // connected = connect(&m_coOutputVolume, &ControlObject::valueChanged,
+    // this, [this](double gain) {
+    connected = connect(&m_coOutputVolume,
+            &ControlObject::valueChanged,
+            this,
+            [this](double gain) { setHardwareGain(gain, false); });
+    if (!connected) {
+        qWarning() << "connection failed m_coOutputVolume";
+    }
 
     pw_init(nullptr, nullptr);
 
@@ -162,7 +198,7 @@ void PipewireEnumerator::initialize() {
     pw_core_add_listener(m_pPwCore, &m_pwCoreListener, &coreEvents, this);
 
     m_pPwRegistry = pw_core_get_registry(m_pPwCore, PW_VERSION_REGISTRY, 0);
-    pw_registry_add_listener(m_pPwRegistry, &m_pwRegistryListener, &registry_events, this);
+    pw_registry_add_listener(m_pPwRegistry, &m_pwRegistryListener, &registryEvents, this);
 
     // see https://docs.pipewire.org/page_man_pipewire-props_7.html
     // and pipewire/keys.h header
@@ -193,7 +229,7 @@ void PipewireEnumerator::initialize() {
                     "true",
                     nullptr));
 
-    pw_filter_add_listener(m_pPwFilter, &m_pwFilterListener, &filter_events, this);
+    pw_filter_add_listener(m_pPwFilter, &m_pwFilterListener, &filterEvents, this);
 
     for (auto& [input, ports] : m_inputs) {
         createInputPorts(input, ports);
@@ -234,6 +270,7 @@ void PipewireEnumerator::deinitialize() {
     m_nodes.clear();
     m_ports.clear();
     m_links.clear();
+    m_devices.clear();
 
     // or is it better to m_pSoundManager->removeDevice(device) for every device?
     emit m_pSoundManager->devicesUpdated();
@@ -270,7 +307,42 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         const char* pType,
         uint32_t,
         const struct spa_dict* pProps) {
-    if (strcmp(pType, PW_TYPE_INTERFACE_Metadata) == 0) {
+    if (strcmp(pType, PW_TYPE_INTERFACE_Device) == 0) {
+        const char* deviceType = spa_dict_lookup(pProps, PW_KEY_MEDIA_CLASS);
+        if (!deviceType or strcmp(deviceType, "Audio/Device")) {
+            // non sound device
+            return;
+        }
+        static const char* deviceNameKeys[] = {
+                PW_KEY_DEVICE_DESCRIPTION,
+                PW_KEY_DEVICE_NICK,
+                PW_KEY_DEVICE_PRODUCT_NAME,
+                // alsa specific keys
+                "alsa.card_name",
+                "alsa.mixer_name",
+                PW_KEY_DEVICE_NAME,
+        };
+
+        const char* name;
+        for (const char* key : deviceNameKeys) {
+            name = spa_dict_lookup(pProps, key);
+            if (name) {
+                break;
+            }
+        }
+        void* pProxy = pw_registry_bind(m_pPwRegistry,
+                id,
+                PW_TYPE_INTERFACE_Device,
+                PW_VERSION_DEVICE,
+                0);
+        m_devices.insert_or_assign(id, Device{
+                                               static_cast<pw_device*>(pProxy),
+                                               name,
+                                       });
+        Device& device = m_devices.at(id);
+        pw_device_add_listener(device.device, &device.listener, &deviceEvents, this);
+        m_pSoundManager->addHardwareDevice(name, id);
+    } else if (strcmp(pType, PW_TYPE_INTERFACE_Metadata) == 0) {
         const char* name = spa_dict_lookup(pProps, PW_KEY_METADATA_NAME);
         if (strcmp(name, "settings") != 0) {
             return;
@@ -528,6 +600,11 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         }
 
         m_links.erase(id);
+    } else if (m_devices.contains(id)) {
+        Device& device = m_devices.at(id);
+        m_pSoundManager->removeHardwareDevice(id);
+        spa_hook_remove(&device.listener);
+        m_devices.erase(id);
     }
 }
 
@@ -541,11 +618,9 @@ std::vector<SoundDevicePointer> PipewireEnumerator::queryDevices() const {
 }
 
 int PipewireEnumerator::metadataProperty(
-        void* data, uint32_t, const char* key, const char*, const char* value) {
-    PipewireEnumerator* pEnumerator = static_cast<PipewireEnumerator*>(data);
-
+        uint32_t, const char* key, const char*, const char* value) {
     if (strcmp(key, "clock.rate") == 0) {
-        pEnumerator->m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
+        m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
     }
 
     return 0;
@@ -900,7 +975,8 @@ std::string PipewireEnumerator::createLink(uint32_t outNodeId,
 }
 
 void PipewireEnumerator::registerInput(const AudioInput& input, AudioDestination*) {
-    if (input.isHidden()) {
+    if (m_inputs.contains(input) or input.isHidden()) {
+        // duplicate VinylControl signal
         return;
     }
 
@@ -914,6 +990,7 @@ void PipewireEnumerator::registerInput(const AudioInput& input, AudioDestination
 }
 
 void PipewireEnumerator::registerOutput(const AudioOutput& output, AudioSource*) {
+    qWarning() << "PipewireEnumerator::registerOutput" << output.getString();
     if (output.isHidden()) {
         return;
     }
@@ -1066,4 +1143,172 @@ bool PipewireEnumerator::nodeHasPorts(const Node& node) {
     }
 
     return false;
+}
+
+void PipewireEnumerator::setHardwareGain(float gain, bool isInput) {
+    float volumes[] = {gain, gain};
+
+    Device& device = m_devices.at(m_volumeDeviceIndex);
+    uint32_t routeIndex = isInput ? device.inRouteIndex : device.outRouteIndex;
+    uint32_t routeDevice = isInput ? device.inRouteDevice : device.outRouteDevice;
+
+    qDebug() << "PipewireEnumerator::setHardwareGain device"
+             << m_volumeDeviceIndex << isInput << gain << routeIndex;
+
+    uint8_t buffer[1024];
+    spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
+
+    const void* inner = spa_pod_builder_add_object(&b,
+            SPA_TYPE_OBJECT_Props,
+            SPA_PARAM_Props,
+            SPA_PROP_channelVolumes,
+            SPA_POD_Array(sizeof(float), SPA_TYPE_Float, 2, volumes));
+    const void* outer = spa_pod_builder_add_object(&b,
+            SPA_TYPE_OBJECT_ParamRoute,
+            SPA_PARAM_Route,
+            SPA_PARAM_ROUTE_index,
+            SPA_POD_Int(routeIndex),
+            SPA_PARAM_ROUTE_device,
+            SPA_POD_Int(routeDevice),
+            SPA_PARAM_ROUTE_props,
+            SPA_POD_PodObject(inner));
+
+    pw_thread_loop_lock(m_pPwThreadLoop);
+    pw_device_set_param(device.device, SPA_PARAM_Route, 0, static_cast<const spa_pod*>(outer));
+    pw_thread_loop_unlock(m_pPwThreadLoop);
+}
+
+void PipewireEnumerator::nodeEventInfo(const struct pw_node_info* info) {
+    const char* driverId = spa_dict_lookup(info->props, PW_KEY_NODE_DRIVER);
+    Node& node = m_nodes.at(info->id);
+
+    VERIFY_OR_DEBUG_ASSERT(driverId and spa_atou32(driverId, &node.driver, 10)) {
+        node.driver = 0;
+    }
+}
+
+void PipewireEnumerator::deviceEventInfo(const struct pw_device_info* info) {
+    qDebug() << "PipewireEnumerator::deviceEventInfo device_event_info changed:"
+             << info->change_mask << "n_params:" << info->n_params;
+
+    uint32_t deviceId = info->id;
+    Device& device = m_devices.at(deviceId);
+
+    for (uint i = 0; i < info->n_params; i++) {
+        uint32_t param_id = info->params[i].id;
+        bool serialFlag = info->params[i].flags & SPA_PARAM_INFO_SERIAL;
+        bool enumerate = false;
+        switch (param_id) {
+        case SPA_PARAM_Route:
+            enumerate = serialFlag != device.serialFlag;
+            device.serialFlag = serialFlag;
+            break;
+        }
+
+        if (enumerate) {
+            // it is not ideal to store the enum_param device id in a single variable,
+            // as in theory multiple devices can be enum_param'd, so we need synchronization
+            // for each device, either by pw_core_sync or pw_proxy_sync. Especially for the
+            // case where volumes of multiple pw_devices is changed together
+            m_enumParamDeviceId = deviceId;
+            pw_device_enum_params(device.device, 0, param_id, 0, UINT32_MAX, nullptr);
+        }
+    }
+}
+
+void PipewireEnumerator::deviceEventParam(int seq,
+        uint32_t id,
+        uint32_t index,
+        uint32_t next,
+        const struct spa_pod* param) {
+    qDebug() << "PipewireEnumerator::deviceEventParam" << seq << id << index << next << param;
+    if (!m_enumParamDeviceId) {
+        qWarning() << "PipewireEnumerator::deviceEventParam !m_enumParamDeviceId" << seq;
+        return;
+    }
+    if (id == SPA_PARAM_Route) {
+        uint32_t routeIndex;
+        uint32_t routeDevice;
+        uint32_t direction;
+        const char* description;
+        spa_pod* props;
+        int res = spa_pod_parse_object(param,
+                SPA_TYPE_OBJECT_ParamRoute,
+                nullptr,
+                SPA_PARAM_ROUTE_index,
+                SPA_POD_Int(&routeIndex),
+                SPA_PARAM_ROUTE_direction,
+                SPA_POD_Id(&direction),
+                SPA_PARAM_ROUTE_description,
+                SPA_POD_String(&description),
+                SPA_PARAM_ROUTE_device,
+                SPA_POD_Int(&routeDevice),
+                SPA_PARAM_ROUTE_props,
+                SPA_POD_PodObject(&props));
+
+        VERIFY_OR_DEBUG_ASSERT(res > 0) {
+            qWarning() << "spa_pod_parse_object failed";
+            return;
+        }
+
+        const float* volumes;
+        uint32_t arraySize;
+        uint32_t childType;
+        uint32_t childSize;
+
+        res = spa_pod_parse_object(props,
+                SPA_TYPE_OBJECT_Props,
+                nullptr,
+                SPA_PROP_channelVolumes,
+                SPA_POD_Array(&childSize, &childType, &arraySize, &volumes));
+
+        VERIFY_OR_DEBUG_ASSERT(res > 0) {
+            qWarning() << "spa_pod_parse_object failed";
+            return;
+        }
+
+        qDebug() << "spa_pod_parse_object res" << res << "direction"
+                 << direction << "route_index" << routeIndex << "routeDevice"
+                 << routeDevice << "childSize" << childSize << "childType"
+                 << childType << "arraySize" << arraySize;
+
+        Device& device = m_devices.at(m_enumParamDeviceId);
+
+        float averageVolume = 0;
+        for (uint32_t i = 0; i < arraySize; i++) {
+            averageVolume += volumes[i];
+        }
+        averageVolume /= arraySize;
+
+        if (direction == SPA_DIRECTION_INPUT) {
+            if (device.inRouteIndex != routeIndex) {
+                m_pSoundManager->addHardwareVolume(description, routeIndex, device.inRouteIndex);
+                device.inRouteIndex = routeIndex;
+            }
+            qWarning() << "PipewireEnumerator::deviceEventParam" << direction
+                       << routeIndex << device.inRouteIndex;
+            device.inRouteDevice = routeDevice;
+            m_coInputVolume.set(averageVolume);
+        } else {
+            if (device.outRouteIndex != routeIndex) {
+                m_pSoundManager->addHardwareVolume(description, routeIndex, device.outRouteIndex);
+                device.outRouteIndex = routeIndex;
+            }
+            qWarning() << "PipewireEnumerator::deviceEventParam" << direction
+                       << routeIndex << device.outRouteIndex;
+            device.outRouteDevice = routeDevice;
+            m_coOutputVolume.set(averageVolume);
+        }
+        device.volumes[0] = volumes[0];
+        device.volumes[1] = volumes[1];
+    }
+}
+
+std::vector<std::pair<uint32_t, QString>> PipewireEnumerator::queryHardwareDevices() {
+    std::vector<std::pair<uint32_t, QString>> devices;
+
+    for (const auto& [id, device] : m_devices) {
+        devices.emplace_back(id, device.name.c_str());
+    }
+    return devices;
 }
