@@ -35,7 +35,5 @@ enum class WaveformWidgetBackend {
     None = 0,
     GL,
     GLSL,
-#ifdef MIXXX_USE_QOPENGL
     AllShader,
-#endif
 };
