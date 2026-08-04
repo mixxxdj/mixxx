@@ -1149,11 +1149,6 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
             // This forces the other deck to be the fromDeck.
             thisDeck->startPos = kKeepPosition;
             calculateTransition(otherDeck, thisDeck, true);
-            if (thisDeck->startPos != kKeepPosition) {
-                // Note: this seek will trigger the playerPositionChanged slot
-                // which may calls the calculateTransition() again without seek = true;
-                thisDeck->setPlayPosition(thisDeck->startPos);
-            }
         }
     }
 }
@@ -1393,6 +1388,12 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // calculateTransition() again.
         loadNextTrackFromQueue(*pToDeck, false);
         return;
+    }
+
+    if (seekToStartPoint && pToDeck->startPos != kKeepPosition) {
+        // Note: This seek will trigger the playerPositionChanged slot
+        // which may call calculateTransition() again, but without seekToPosition = true.
+        pToDeck->setPlayPosition(pToDeck->startPos);
     }
 }
 
@@ -1739,11 +1740,6 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         }
         pDeck->startPos = kKeepPosition;
         calculateTransition(fromDeck, pDeck, true);
-        if (pDeck->startPos != kKeepPosition) {
-            // Note: this seek will trigger the playerPositionChanged slot
-            // which may call the calculateTransition() again without seek = true;
-            pDeck->setPlayPosition(pDeck->startPos);
-        }
         // we are here in the relative domain 0..1
         if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
             // repeat a probably missed update
@@ -1906,11 +1902,6 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
     if (pLeftDeck->isPlaying() && !pRightDeck->isPlaying()) {
         calculateTransition(pLeftDeck, pRightDeck, true);
-        if (pRightDeck->startPos != kKeepPosition) {
-            // Note: this seek will trigger the playerPositionChanged slot
-            // which may calls the calculateTransition() again without seek = true;
-            pRightDeck->setPlayPosition(pRightDeck->startPos);
-        }
     } else if (pRightDeck->isPlaying() && pLeftDeck->isPlaying()) {
         calculateTransition(pRightDeck, pLeftDeck, true);
         if (pLeftDeck->startPos != kKeepPosition) {
