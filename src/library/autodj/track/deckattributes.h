@@ -11,6 +11,10 @@ class BaseTrackPlayer;
 class DeckAttributes : public QObject {
     Q_OBJECT
   public:
+    /// Special value for startPos that indicates the deck
+    /// should start playing from its current position.
+    static constexpr double kKeepPosition = -1.0;
+
     DeckAttributes(int index,
             BaseTrackPlayer* pPlayer);
     virtual ~DeckAttributes();

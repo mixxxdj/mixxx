@@ -3,15 +3,11 @@
 #include "mixer/basetrackplayer.h"
 #include "moc_deckattributes.cpp"
 
-namespace {
-constexpr double kKeepPosition = -1.0;
-} // anonymous namespace
-
 DeckAttributes::DeckAttributes(int index,
         BaseTrackPlayer* pPlayer)
         : index(index),
           group(pPlayer->getGroup()),
-          startPos(kKeepPosition),
+          startPos(DeckAttributes::kKeepPosition),
           fadeBeginPos(1.0),
           fadeEndPos(1.0),
           isFromDeck(false),
