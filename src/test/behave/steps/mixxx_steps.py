@@ -294,6 +294,7 @@ BUTTON_PATHS = {
     "LIBRARY": "mainWindow/library",
     "4DECKS": "mainWindow/show4DecksButton",
     "EDIT": "mainWindow/editDeckButton",
+    "PREFERENCES": "mainWindow/showPreferencesButton",
 }
 
 LIBRARY_CONTENT = "mainWindow/libraryContent"
@@ -554,12 +555,8 @@ def step_new_empty_profile(context):
 @given("Mixxx is open and ready to operate")
 def step_open_and_ready(context):
     tracks_dir = context.config.userdata["tracks_dir"]
-    if not _mixxx_running(context):
-        if _mixxx_process_alive(context):
-            # A live instance whose RPC probe failed (stuck startup, hung
-            # RPC) is the one holding port 9000; reap it before spawning a
-            # replacement or the replacement's start() will time out.
-            _stop_mixxx(context)
+    is_running = _mixxx_running(context)
+    if not is_running:
         binary = context.config.userdata["binary"]
         if "profile_dir" not in context:
             _ensure_profile(context, "empty")
@@ -573,6 +570,13 @@ def step_open_and_ready(context):
         context._session["mixxx"] = context.mixxx
         context._session["rpc"] = context.mixxx_rpc
         _library_command(context.mixxx_rpc, "addDirectory", tracks_dir, scan=True)
+        time.sleep(1)
+
+    if "_soundMockDevices" not in context or not context._soundMockDevices:
+        context.mixxx_rpc.command("clearMockDevices", "")
+    else:
+        context.mixxx_rpc.command("registerMockDevices", json.dumps({"devices": context._soundMockDevices}))
+        time.sleep(0.5)
 
     # FIXME we are forcing the QML reload even on fresh instance because adding a directory on an empty library seems to corrupt the column model on Xcb QP
     context.mixxx_rpc.command("reloadQml", "")
@@ -589,11 +593,12 @@ def step_open_and_ready(context):
             col: context.mixxx_rpc.getStringProperty(_column_header_path(col), "index")
             for col in KNOWN_COLUMNS
         }
-    if "_default_props" not in context:
-        context._default_props = {
-            "show4DecksButton": {"checked": "false"},
-            "editDeckButton": {"checked": "false"},
-        }
+    # if "_default_props" not in context:
+    #     context._default_props = {
+    #         "show4DecksButton": {"checked": "false"},
+    #         "editDeckButton": {"checked": "false"},
+    #         "showPreferencesButton": {"checked": "false"},
+    #     }
     if "_remembered" not in context:
         context._remembered = {}
 
@@ -718,11 +723,11 @@ def step_toggle_column(context, column):
     if index < 0:
         raise KeyError(f'column {column} unknown')
     _get_current_action = lambda: int(context.mixxx_rpc.getStringProperty(COLUMN_PICKER_MENU_PATH, "currentIndex"))
-    if sys.platform != "win32":
-        if _get_current_action() == -1:
-            _click(s, COLUMN_PICKER_MENU_PATH)
-            time.sleep(0.3)
-        assert _is_visible(s, COLUMN_PICKER_MENU_PATH), "Context menu disappear"
+    # Needed if QPA == xcb
+    # if _get_current_action() == -1:
+    #     _click(s, COLUMN_PICKER_MENU_PATH)
+    #     time.sleep(0.3)
+    # assert _is_visible(s, COLUMN_PICKER_MENU_PATH), "Context menu disappear"
     if _get_current_action() == -1:
         s.enterKey("mainWindow", QT_KEY_DOWN, 0)
         time.sleep(0.3)

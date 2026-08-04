@@ -14,6 +14,7 @@ Item {
     property alias handleSource: handleSourceEdge
     property var metaType: null
     required property string name
+    objectName: "entity_" + name.replace('/','') // '/' is used as separator on Spix
 
     signal connect(var entity)
     signal disconnect(var entity)
@@ -70,6 +71,7 @@ Item {
 
                 Repeater {
                     id: node
+                    objectName: "node"
 
                     readonly property string address: root.gateways[index].address || root.gateways[index].name
                     readonly property bool advanced: root.gateways[index].advanced || false
@@ -103,12 +105,14 @@ Item {
 
                     model: node.channels.length / 2 * instances
 
-                    Component.onCompleted: {
-                        root.gatewayReady(address, node);
-                    }
-
                     Item {
                         id: channel
+
+                        Component.onCompleted: {
+                            if (channel.index === 0) {
+                                root.gatewayReady(address, node);
+                            }
+                        }
 
                         property bool counted: channel.index == 0
                         property alias edgeItem: edge
@@ -171,6 +175,12 @@ Item {
                         }
                         Rectangle {
                             id: edge
+                            objectName: "edge_" + node.address + index
+
+                            // Used for testing
+                            function connectionObjectName(){
+                                return edge.connection?.objectName
+                            }
 
                             property var address: node.address
                             property var advanced: node.advanced
@@ -200,10 +210,6 @@ Item {
 
                             states: [
                                 State {
-                                    name: "idle"
-                                    when: !edge.connecting && !edge.connection
-                                },
-                                State {
                                     name: "warning"
                                     when: (!edge.connection && node.required) || (edge.connection && edge.connection.state == "warning")
 
@@ -211,6 +217,10 @@ Item {
                                         edge.color: Theme.warningColor
                                         edge.width: 20
                                     }
+                                },
+                                State {
+                                    name: "idle"
+                                    when: !edge.connecting && !edge.connection
                                 },
                                 State {
                                     name: "hidden"
@@ -228,6 +238,10 @@ Item {
                                         edge.color: Theme.accentColor
                                         edge.width: 15
                                     }
+                                },
+                                State {
+                                    name: "existing"
+                                    when: edge.connection && edge.connection.existing
                                 },
                                 State {
                                     name: "creating"

@@ -106,6 +106,8 @@ Item {
         }
     }
     onSinkPositionChanged: {
+        if (!sourcePosition || !sinkPosition)
+            return;
         scale.xScale = sourcePosition.x > sinkPosition.x ? -1 : 1;
         scale.yScale = sourcePosition.y > sinkPosition.y ? -1 : 1;
     }
@@ -132,11 +134,13 @@ Item {
         }
     }
     onSourcePositionChanged: {
+        if (!sourcePosition || !sinkPosition)
+            return;
         scale.xScale = sourcePosition.x > sinkPosition.x ? -1 : 1;
         scale.yScale = sourcePosition.y > sinkPosition.y ? -1 : 1;
     }
     onTargetChanged: {
-        if (!source)
+        if (!source || !sourcePosition || !sinkPosition)
             return;
         scale.xScale = sourcePosition.x > sinkPosition.x ? -1 : 1;
         scale.yScale = sourcePosition.y > sinkPosition.y ? -1 : 1;

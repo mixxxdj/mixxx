@@ -836,10 +836,12 @@ void CoreServices::initializeQMLSingletons() {
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
+#ifndef Q_OS_MACOS
     // Currently, it is required to enforce QQuickWindow RHI backend to use
     // OpenGL on all platforms to allow offscreen rendering to function as
     // expected
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
 #endif
 }
 

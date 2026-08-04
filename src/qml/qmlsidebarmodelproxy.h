@@ -19,7 +19,7 @@ namespace qml {
 
 class QmlLibraryAbstractSource;
 
-class QmlSidebarModelProxy : public SidebarModel {
+class QmlSidebarModelProxy : public ::SidebarModel {
     Q_OBJECT
     Q_PROPERTY(QmlLibraryTrackListModel* tracklist READ tracklist NOTIFY tracklistChanged)
     QML_ANONYMOUS

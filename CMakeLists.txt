@@ -1596,6 +1596,7 @@ add_library(
   src/soundio/soundmanager.cpp
   src/soundio/soundmanagerconfig.cpp
   src/soundio/soundmanagerutil.cpp
+  src/soundio/sounddevicemock.cpp
   src/sources/audiosource.cpp
   src/sources/audiosourcestereoproxy.cpp
   src/sources/metadatasource.cpp
@@ -2786,6 +2787,11 @@ if(BUILD_UI_TEST)
       -DCMAKE_INSTALL_PREFIX=${ANYRPC_INSTALL_DIR} -DBUILD_EXAMPLES=OFF
       -DBUILD_PROTOCOL_MESSAGEPACK=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5
       -DANYRPC_LIB_BUILD_SHARED=OFF
+      -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+      -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+      -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
     BUILD_BYPRODUCTS <INSTALL_DIR>/${ANYRPC_LIBRARY}
     EXCLUDE_FROM_ALL TRUE
   )
@@ -2836,6 +2842,11 @@ if(BUILD_UI_TEST)
       -DQt6Gui_DIR=${Qt6Gui_DIR} -DQt6_DIR=${Qt6_DIR}
       -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
       -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH} ${SPIX_CXX_FLAGS}
+      -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+      -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+      -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+      -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
     BUILD_BYPRODUCTS
       <INSTALL_DIR>/${SPIX_QTQUICK_LIBRARY}
       <INSTALL_DIR>/${SPIX_CORE_LIBRARY}
@@ -3135,10 +3146,7 @@ if(BUILD_TESTING)
   if(BUILD_UI_TEST)
     add_compile_definitions(USE_TEST_UI)
     add_dependencies(mixxx-test libspix)
-    target_sources(
-      mixxx-test
-      PRIVATE src/test/qml/servertest.cpp src/test/qml/basic_test.cpp
-    )
+    target_sources(mixxx-test PRIVATE src/test/servemode.cpp)
     target_include_directories(
       mixxx-test
       PUBLIC ${CMAKE_CURRENT_BINARY_DIR}/lib/libspix-install/
@@ -3251,6 +3259,7 @@ if(BUILD_TESTING)
     file(
       GLOB BEHAVE_FEATURE_FILES
       "${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/features/*.feature"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/test/behave/features/**/*.feature"
     )
     # TODO add option to control these args via CMake
     default_option(MIXXX_BEHAVE_HEADLESS "Run the UI test in headless mode. On non-Linux platform, headless is incompatible with recording." "LINUX")
@@ -3285,7 +3294,14 @@ if(BUILD_TESTING)
     list(APPEND MIXXX_BEHAVE_ARGS "--retry" "${MIXXX_BEHAVE_RETRY}")
     list(JOIN MIXXX_BEHAVE_ARGS " " MIXXX_BEHAVE_ARGS_JOINED)
     foreach(FEATURE_FILE ${BEHAVE_FEATURE_FILES})
-      get_filename_component(FEATURE_NAME ${FEATURE_FILE} NAME_WE)
+      string(
+        REGEX REPLACE
+        ".+src\/test\/behave\/features\/(.+)\.feature$"
+        "\\1"
+        FEATURE_RAW_NAME
+        ${FEATURE_FILE}
+      )
+      string(REPLACE "/" "-" FEATURE_NAME ${FEATURE_RAW_NAME})
       add_test(
         NAME "mixxx-behave-${FEATURE_NAME}"
         COMMAND

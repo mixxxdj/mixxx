@@ -78,6 +78,7 @@ Rectangle {
     function addExistingConnection(node, connections) {
         if (!connections)
             return;
+        let connectionIdx = 0
         for (let connection of connections) {
             let typeDef = audioTypeMap[connection.type];
             let source = root.system[typeDef.entity].gateways[typeDef.channel][connection.index].edgeItem;
@@ -90,7 +91,8 @@ Rectangle {
                 "existing": true,
                 "router": root,
                 "source": source,
-                "sink": node.itemAt(availableEdge).edgeItem
+                "sink": node.itemAt(availableEdge).edgeItem,
+                "objectName": "connection" + (connectionIdx++)
             });
             root.connections.add(connectionItem);
             node.channelAssignation[availableEdge] = connection.channelGroup / 2;
@@ -115,7 +117,8 @@ Rectangle {
         } else {
             root.newConnection = connectionEdge.createObject(root, {
                 "router": root,
-                "source": edge
+                "source": edge,
+                "objectName": "newConnection"
             });
             root.newConnection.source.connecting = true;
         }
@@ -317,7 +320,7 @@ Rectangle {
         console.log(`Using sound api: ${api} ${typeof api}`);
         root.inputs = generateDeviceList(api, manager.availableInputDevices(api), root.inputs);
         root.outputs = generateDeviceList(api, manager.availableOutputDevices(api), root.outputs);
-        root.loadConnections();
+        Qt.callLater(root.loadConnections);
     }
     function updateHiddenConnectionCount() {
         root.hiddenConnections = 0;
@@ -371,6 +374,7 @@ Rectangle {
             Layout.fillHeight: true
             Layout.maximumWidth: 220
             Layout.minimumWidth: 200
+            objectName: "inputColumn"
             visible: root.mode == AudioRouter.Mode.Advanced
 
             Text {
@@ -382,6 +386,7 @@ Rectangle {
             }
             ListView {
                 id: inputList
+                objectName: "inputList"
 
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -398,7 +403,10 @@ Rectangle {
                 delegate: AudioEntity {
                     id: inputEntity
 
+                    required property int index
                     required property var modelData
+
+                    objectName: `entity_${index}`
 
                     advanced: root.mode == AudioRouter.Mode.Advanced
                     gateways: {
@@ -473,6 +481,7 @@ Rectangle {
                 }
                 RatioChoice {
                     id: modeChoice
+                    objectName: "routerMode"
 
                     options: ["simple", !root.hiddenConnections ? "advanced" : "advanced (!)", "legacy"]
                     tooltips: !root.hiddenConnections ? [] : [null, `${root.hiddenConnections} connection${root.hiddenConnections > 1 ? 's' : ''} hidden\nUse the advanced mode to view them`, null]
@@ -492,6 +501,7 @@ Rectangle {
 
                 RatioChoice {
                     id: multiSoundcardChoice
+                    objectName: "multiSoundcard"
 
                     maxWidth: mainCanvas.width < 560 ? 200 : 400
                     normalizedWidth: false
@@ -526,6 +536,7 @@ Rectangle {
             Layout.fillHeight: true
             Layout.maximumWidth: 220
             Layout.minimumWidth: 200
+            objectName: "outputColumn"
             visible: root.mode != AudioRouter.Mode.Legacy
 
             Text {
@@ -537,6 +548,7 @@ Rectangle {
             }
             ListView {
                 id: outputList
+                objectName: "outputList"
 
                 Layout.fillHeight: true
                 Layout.fillWidth: true
@@ -554,7 +566,10 @@ Rectangle {
                 delegate: AudioEntity {
                     id: outputEntity
 
+                    required property int index
                     required property var modelData
+
+                    objectName: `output${index}`
 
                     gateways: {
                         let channels = [];
@@ -625,7 +640,7 @@ Rectangle {
             deckConnections.items.slice(deckConnections.items.indexOf(item), 1);
         }
 
-        AudioEntity {
+        delegate: AudioEntity {
             id: deck
 
             required property int index

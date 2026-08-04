@@ -10,6 +10,7 @@ import "Settings" as Settings
 
 Popup {
     id: root
+    objectName: "settingsPopup"
 
     onOpened: {
         Mixxx.Core.addOpenedPopup(this)
@@ -26,11 +27,16 @@ Popup {
     // FIXME change to `final` when supported
     readonly property real smallScreenWidth: 1200
 
+    // Used to show click interaction on the Window. Mainly relevant on automated testing
+    property bool enableDiagnosticClick: false
+
     function updateActiveCategory() {
         root.activeCategory?.deactivated();
         root.activeCategory = managerItem.data[categoryList.currentIndex] ?? null;
         root.activeCategory?.activated();
     }
+
+    Component.onCompleted: updateActiveCategory()
 
     horizontalPadding: 20
     verticalPadding: 20
@@ -43,6 +49,7 @@ Popup {
         radius: 8
     }
     contentItem: Item {
+        objectName: "settingsPopupItem"
         anchors.centerIn: parent
         height: parent.height - 40
         width: parent.width - 40
@@ -69,6 +76,7 @@ Popup {
 
                 Rectangle {
                     id: searchSetting
+                    objectName: "searchSetting"
 
                     property bool active: false
                     property alias input: searchInput
@@ -87,6 +95,7 @@ Popup {
                     }
                     TextInput {
                         id: searchInput
+                        objectName: "searchInput"
 
                         anchors.verticalCenter: parent.verticalCenter
                         visible: parent.active
@@ -108,6 +117,7 @@ Popup {
                 }
                 ListView {
                     id: categoryList
+                    objectName: "categoryList"
 
                     Layout.fillHeight: true
                     Layout.fillWidth: true
@@ -120,6 +130,7 @@ Popup {
                     delegate: Rectangle {
                         required property int index
                         required property var label
+                        objectName: "category_" + label
 
                         color: ListView.isCurrentItem ? Theme.darkGray3 : Theme.darkGray2
                         height: 38
@@ -254,8 +265,8 @@ Popup {
                 }
                 Skin.Button {
                     activeColor: Theme.white
+                    objectName: "settingsCloseButton"
                     text: "X"
-                    visible: root.width <= root.smallScreenWidth
 
                     onPressed: {
                         root.close();
@@ -264,6 +275,7 @@ Popup {
             }
             Rectangle {
                 id: tabBar
+                objectName: "tabBar"
 
                 readonly property int selectedIndex: root.activeCategory?.selectedIndex ?? 0
                 readonly property var tabs: root.activeCategory?.tabs ?? []
@@ -282,6 +294,7 @@ Popup {
                         Skin.Button {
                             required property int index
                             required property string modelData
+                            objectName: "tab_" + modelData
 
                             Layout.alignment: Qt.AlignHCenter
                             Layout.preferredHeight: 22
@@ -362,5 +375,41 @@ Popup {
     ListModel {
         id: sectionProperties
 
+    }
+    // Testing automation resources
+    Rectangle {
+        id: click
+        color: clickDetector.clicked ? 'red' : 'green'
+        radius: width / 2
+        visible: opacity != 0 && root.enableDiagnosticClick
+
+        NumberAnimation on width {
+            running: clickDetector.clicked
+            from: 20; to: 0
+        }
+        NumberAnimation on height {
+            running: clickDetector.clicked
+            from: 20; to: 0
+        }
+        NumberAnimation on opacity {
+            running: clickDetector.clicked
+            from: 1; to: 0
+        }
+    }
+    MouseArea {
+        property bool clicked: false
+        enabled: root.enableDiagnosticClick
+        id: clickDetector
+        anchors.fill: parent
+        onPressed: (mouse)=> {
+            clicked = false
+            click.width = 20
+            click.height = 20
+            click.opacity = 1
+            click.x = Qt.binding(() => mouse.x - click.width / 2);
+            click.y = Qt.binding(() => mouse.y - click.height / 2);
+            clicked = true
+            mouse.accepted = false
+        }
     }
 }

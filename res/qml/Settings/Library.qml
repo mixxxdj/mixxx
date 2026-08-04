@@ -3,7 +3,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt.labs.qmlmodels
-import QtCore
 import Qt5Compat.GraphicalEffects
 import Mixxx 1.0 as Mixxx
 import "." as Setting

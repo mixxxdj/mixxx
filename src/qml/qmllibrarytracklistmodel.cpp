@@ -10,8 +10,10 @@
 
 #include "library/basetracktablemodel.h"
 #include "library/columncache.h"
+#include "library/library.h"
 #include "moc_qmllibrarytracklistmodel.cpp"
 #include "qml/asyncimageprovider.h"
+#include "qml/qmllibraryproxy.h"
 #include "qml/qmllibrarytracklistcolumn.h"
 #include "qmltrackproxy.h"
 #include "track/track.h"
@@ -122,6 +124,15 @@ QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role)
             location = pTrack->getCoverInfo().coverLocation;
         }
         if (location.isEmpty()) {
+            return {};
+        }
+        Library* pLibrary = QmlLibraryProxy::get();
+        VERIFY_OR_DEBUG_ASSERT(pLibrary) {
+            return AsyncImageProvider::trackLocationToCoverArtUrl(location);
+        }
+        auto coverInfo = pLibrary->trackCollectionManager()->getCoverInfoForTrackLocation(
+                location);
+        if (!coverInfo.hasImage()) {
             return {};
         }
 

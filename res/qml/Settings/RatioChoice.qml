@@ -70,6 +70,7 @@ Item {
                 Item {
                     required property int index
                     required property var modelData
+                    objectName: modelData
 
                     height: contentList.height
                     implicitWidth: root.normalizedWidth ? root.cellSize : fontMetrics.advanceWidth(modelData) + root.spacing * 2

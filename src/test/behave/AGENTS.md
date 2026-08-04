@@ -33,11 +33,21 @@ src/test/behave/.venv/bin/python \
 ### Single feature, offscreen (no display needed)
 
 ```bash
-# Using --headless flag (preferred — uses Xvfb virtual display on Linux)
+# Using --headless flag (preferred — picks a headless display backend automatically)
 src/test/behave/.venv/bin/python \
   src/test/behave/mixxx_test_runner.py \
   --binary build/mixxx-test \
   --headless \
+  src/test/behave/features/library.feature
+
+# Force a specific backend: --display-backend {auto,xvfb,xwayland}
+#   xvfb     -> Xvfb + ffmpeg x11grab recorder
+#   xwayland -> cage (Xwayland-capable nested wlroots compositor) + wf-recorder
+#   auto     -> xwayland if cage+wf-recorder are installed, else xvfb, else offscreen
+src/test/behave/.venv/bin/python \
+  src/test/behave/mixxx_test_runner.py \
+  --binary build/mixxx-test \
+  --headless --display-backend=xwayland \
   src/test/behave/features/library.feature
 
 # Or via QPA env var (equivalent, but no video recording)
@@ -81,8 +91,11 @@ src/test/behave/.venv/bin/python \
 # Headed (local dev, uses existing display)
 ctest -R mixxx-behave- --output-on-failure
 
-# Headless (CI — sets MIXXX_TEST_HEADLESS=1 for Xvfb+ffmpeg)
-MIXXX_TEST_HEADLESS=1 ctest -R mixxx-behave- --output-on-failure
+# Headless (CI — uses the xwayland backend via cage+wf-recorder by default)
+MIXXX_TEST_HEADLESS=1 MIXXX_TEST_DISPLAY_BACKEND=xwayland ctest -R mixxx-behave- --output-on-failure
+
+# Falling back to Xvfb (only when cage / wf-recorder are unavailable)
+MIXXX_TEST_HEADLESS=1 MIXXX_TEST_DISPLAY_BACKEND=xvfb ctest -R mixxx-behave- --output-on-failure
 
 # Custom retry count (default: 3)
 MIXXX_BEHAVE_RETRY=5 ctest -R mixxx-behave- --output-on-failure
@@ -100,8 +113,10 @@ MIXXX_BEHAVE_RETRY=5 ctest -R mixxx-behave- --output-on-failure
   the full file. On Windows the launcher's stream additionally mirrors the
   same output — see the Debugging section.
 - **Video recording**: When `--record` is passed (or `MIXXX_TEST_RECORD=1`),
-  ffmpeg records the X display. Chapter metadata is embedded into the video
-  from behave's scenario lifecycle hooks.
+  the active display backend's recorder captures the screen: ffmpeg `x11grab`
+  for the `xvfb` backend, `wf-recorder` (libavcodec) for the `xwayland` backend
+  (cage). Chapter metadata is embedded into the video from behave's scenario
+  lifecycle hooks (ffmpeg is still used for chapter muxing on both backends).
 - **Session reuse**: scenarios sharing the same `Background` profile type reuse
   the same `mixxx-test` process — only the first scenario pays startup cost.
 - After editing QML or `main.cpp`, rebuild:
@@ -447,7 +462,8 @@ step definitions, add `objectName`s in QML, rebuild `mixxx-test`. Specifically:
    each as `mixxx-behave-<name>`.
 2. `mixxx_test_runner.py` sets up a global tracks
    cache at `/tmp/mixxx-test-tracks/` (downloading if needed), optionally
-   starts Xvfb+ffmpeg for headless CI, then invokes `behave` with the feature
+   starts a headless display + recorder (Xvfb+ffmpeg, or cage+wf-recorder for
+   the Xwayland backend) for CI, then invokes `behave` with the feature
    file.
 3. behave invokes `environment.py` hooks, then matches step definitions in
    `steps/mixxx_steps.py`.
@@ -473,7 +489,7 @@ The `mixxx-test` binary built with `USE_TEST_UI=ON` supports `--serve` flag:
 ## Custom spix Command: `getControlValue`
 
 The `--serve` mode registers a custom handler via
-`server.setGenericCommandHandler(...)` in `src/test/main.cpp`.
+`server.setGenericCommandHandler(...)` in `src/test/servemode.cpp`.
 
 | Command           | Payload               | Result                                                                 | How to read result                                        |
 |-------------------|-----------------------|------------------------------------------------------------------------|-----------------------------------------------------------|
@@ -526,7 +542,7 @@ def _set_control_value(rpc, group, key, value):
 
 ### Adding new custom commands
 
-To add a new C++ command, extend the lambda in `src/test/main.cpp`:
+To add a new C++ command, extend the lambda in `src/test/servemode.cpp`:
 
 ```cpp
 if (command == "myCommand") {

@@ -42,7 +42,9 @@ ApplicationWindow {
         active: Mixxx.Core.ready
         asynchronous: true
         sourceComponent: Component {
-            MainWindow { }
+            MainWindow {
+                enableDiagnosticClick: root.enableDiagnosticClick
+            }
         }
 
     }

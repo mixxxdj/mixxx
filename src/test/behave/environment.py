@@ -29,7 +29,7 @@ def patch_scenario_with_autoretry(context, scenario, max_attempts=3):
         attempts = []
         for attempt in range(1, max_attempts+1):
             failed = scenario_run(*args, **kwargs)
-            if _is_expected_failure_or_flaky(scenario.tags):
+            if any(t.startswith("xfail") for t in scenario.tags):
                 return False    # -- NOT-FAILED = EXPECTED FAILURE
             if not failed:
                 if attempt > 1:
@@ -39,6 +39,15 @@ def patch_scenario_with_autoretry(context, scenario, max_attempts=3):
             # -- SCENARIO FAILED:
             if attempt < max_attempts:
                 print(u"AUTO-RETRY SCENARIO (attempt {0})".format(attempt))
+                try:
+                    context._session["rpc"].quit()
+                    time.sleep(1)
+                except Exception:
+                    pass
+                if context._session["mixxx"]:
+                    context._session["mixxx"].stop()
+                context._session["mixxx"] = None
+                context._session["rpc"] = None
         if _is_expected_failure_or_flaky(scenario.tags):
             return False    # -- NOT-FAILED = EXPECTED FAILURE
         message = u"AUTO-RETRY SCENARIO FAILED (after {0} attempts)"
@@ -89,27 +98,59 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
-    outcome = str(scenario.status).split('.')[1].upper()
+    outcome = str(scenario.status).split('.')[1].lower()
 
-    if any(map(lambda t: t.startswith("xfail"), scenario.tags)):
-        outcome = "EXPECTED FAILURE" if scenario.status == Status.failed else "UNEXPECTED PASS"
-    # Flaky test
-    elif scenario.status == Status.failed and "xpass" in scenario.tags:
-        outcome = "FLAKY"
+    # Clean up any mock devices injected during the scenario
+    session = context._session
+    rpc = session.get("rpc")
+    if rpc is not None:
+        try:
+            rpc.command("clearMockDevices", "")
+        except Exception:
+            pass
+
+    failed = scenario.status in [Status.failed, Status.error]
+    is_xfail = any(map(lambda t: t.startswith("xfail"), scenario.tags))
+    if failed and is_xfail:
+        outcome = "expected failure"
+    elif is_xfail:
+        outcome = "unexpected pass"
+    elif failed and "xpass" in scenario.tags:
+        outcome = "flaky"
 
     time.sleep(1) # Allow the final state to be visible on screen
     scenario.end_at = time.time()
     scenario.outcome = outcome
 
+    # Collect the actual exception line from each failing step's error
+    # message. Behave stores the full traceback in step.error_message, so the
+    # meaningful line (e.g. "AssertionError: ...", "RuntimeError: ...") is the
+    # last non-empty line, not the "Traceback (most recent call last):" header.
+    # Successes and expected failures are omitted.
+    errors = []
+    for step in scenario.steps:
+        if step.status not in (Status.failed, Status.error):
+            continue
+        msg = (getattr(step, "error_message", "") or "").strip()
+        if not msg:
+            continue
+        error_line = next(
+            (line.strip() for line in reversed(msg.splitlines()) if line.strip()),
+            None,
+        )
+        if error_line:
+            errors.append(error_line)
+
     context.results.append({
-        "title": f"{scenario.feature.name} > {scenario.name} [{getattr(scenario, 'outcome', 'SKIPPED')}]",
+        "title": f"{scenario.feature.name} > {scenario.name} [{getattr(scenario, 'outcome', 'skipped')}]",
         "feature": scenario.feature.name,
         "name": scenario.name,
         "outcome": outcome,
         "tags": list(scenario.tags),
         "gh_issue": _parse_gh_issue(scenario.tags),
         "start_time": scenario.start_at,
-        "end_time": time.time()
+        "end_time": time.time(),
+        "error": " / ".join(errors),
     })
 
 

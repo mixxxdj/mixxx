@@ -128,9 +128,14 @@ The test runtime has three layers:
    spix. `environment.py` hooks manage session state across scenarios.
 
 3. **Test runner** (`mixxx_test_runner.py`) -- Orchestrates everything: sets up
-   a headless virtual display (Xvfb or offscreen QPA) when no monitor is available,
-   optionally records the display via ffmpeg, downloads test audio tracks on first
-   run, and invokes behave.
+   a headless virtual display (Xvfb, or cage plus wf-recorder for the Xwayland
+   backend), or offscreen QPA when no monitor is available, optionally records
+   the display via ffmpeg or wf-recorder, downloads test audio tracks on first
+   run, and invokes behave. Pass `--headless` to enable a virtual display and
+   `--display-backend={auto,xvfb,xwayland}` to pick which one (`auto` prefers
+   `xwayland` when `cage` and `wf-recorder` are available, then falls back to
+   Xvfb, then offscreen). Linux CI runs with `MIXXX_TEST_DISPLAY_BACKEND=xwayland`
+   by default; install `cage` and `wf-recorder` to use it locally.
 
 **Audio dataset**: `test_tracks.json` contains metadata for 141 Creative
 Commons tracks (from Pixabay). On first run, up to 20 tracks are downloaded to

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QHash>
+#include <QJsonArray>
 #include <QList>
 #include <QObject>
 #include <QSharedPointer>
@@ -13,7 +14,6 @@
 #include "preferences/usersettings.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
-#include "soundio/sounddeviceenumerator.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
@@ -115,9 +115,6 @@ class SoundManager : public QObject {
 
     // currently only used by pipewire
     void updateDeviceChannels(SoundDevicePointer pDevice);
-#ifdef __PIPEWIRE__
-    bool isPipewireSelected();
-#endif
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
@@ -138,6 +135,16 @@ class SoundManager : public QObject {
   public slots:
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
+
+#ifdef USE_TEST_UI
+    // Injects mock devices from a JSON array for UI testing.
+    // Each element: { "name": "...", "api": "...", "outputChannels": N, "inputChannels": N }
+    void registerMockDevices(const QJsonArray& devices);
+    void clearMockDevices();
+
+  private:
+    bool m_testMockingMode{false};
+#endif
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -170,7 +177,11 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
 
-    std::unique_ptr<SoundDeviceEnumerator> m_pEnumerator;
+    std::unique_ptr<PortAudioEnumerator> m_pPaEnumerator;
+
+#ifdef __PIPEWIRE__
+    std::unique_ptr<PipewireEnumerator> m_pPipewireEnumerator;
+#endif
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;

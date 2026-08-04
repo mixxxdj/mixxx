@@ -28,11 +28,8 @@ Item {
 
     readonly property bool _showLibrary: maximizeLibrary || height - mixer.height >= 400
 
-    // color: Theme.backgroundColor
-    // height: isMobile ? Screen.height : designHeight
-    // visible: true
-    // width: isMobile ? Screen.width : designWidth
-    // visibility: Mixxx.Config.configStartInFullscreenKey || isMobile ? Window.FullScreen : Window.Windowed
+    // Used to show click interaction on the Window. Mainly relevant on automated testing
+    property bool enableDiagnosticClick: false
 
 
     Mixxx.ControlProxy {
@@ -178,6 +175,7 @@ Item {
                 }
                 Skin.Button {
                     id: showPreferencesButton
+                    objectName: "showPreferencesButton"
 
                     activeColor: Theme.white
                     checked: settingsPopup.opened
@@ -681,6 +679,7 @@ Item {
         width: Math.min(1400, parent.width)
         x: Math.round((parent.width - width) / 2)
         y: Math.round((parent.height - height) / 2)
+        enableDiagnosticClick: parent.enableDiagnosticClick
 
         Overlay.modal: Rectangle {
             id: overlayModal
