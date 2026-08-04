@@ -77,6 +77,24 @@ void ReverbEffect::loadEngineEffectParameters(
     m_pSendParameter = parameters.value("send_amount");
 }
 
+namespace {
+
+// -60 dB, same threshold as used in analyzersilence.cpp
+constexpr CSAMPLE kSilenceThreshold = 0.001f;
+
+bool isReverbTailSilent(const CSAMPLE* pInput,
+        const CSAMPLE* pOutput,
+        SINT numSamples) {
+    for (SINT i = 0; i < numSamples; ++i) {
+        if (std::abs(pOutput[i] - pInput[i]) >= kSilenceThreshold) {
+            return false;
+        }
+    }
+    return true;
+}
+
+}
+
 void ReverbEffect::processChannel(
         ReverbGroupState* pState,
         const CSAMPLE* pInput,
@@ -89,11 +107,14 @@ void ReverbEffect::processChannel(
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
     const auto bandwidth = static_cast<sample_t>(m_pBandWidthParameter->value());
     const auto damping = static_cast<sample_t>(m_pDampingParameter->value());
-    const auto sendCurrent = static_cast<sample_t>(m_pSendParameter->value());
+    const auto sendCurrent = enableState == EffectEnableState::Disabling
+            ? 0
+            : static_cast<sample_t>(m_pSendParameter->value());
 
     if (pState->sampleRate != engineParameters.sampleRate()) {
         pState->reverb.setSamplerate(engineParameters.sampleRate());
         pState->sampleRate = engineParameters.sampleRate();
+        m_isReadyForDisable = false;
     }
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
@@ -111,13 +132,11 @@ void ReverbEffect::processChannel(
             sendCurrent,
             pState->sendPrevious);
 
-    // The ramping of the send parameter handles ramping when enabling, so
-    // this effect must handle ramping to dry when disabling itself (instead
-    // of being handled by EngineEffect::process).
+    pState->sendPrevious = sendCurrent;
+
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
-        pState->sendPrevious = 0;
-    } else {
-        pState->sendPrevious = sendCurrent;
+        if (isReverbTailSilent(pInput, pOutput, engineParameters.samplesPerBuffer())) {
+            m_isReadyForDisable = true;
+        }
     }
 }
