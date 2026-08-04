@@ -24,4 +24,5 @@ TEST_F(KeyFactoryTest, MakePreferredKeys) {
     EXPECT_EQ(track_keys.getGlobalKey(), mixxx::track::io::key::B_MAJOR);
     EXPECT_EQ(track_keys.getGlobalKeyText().toStdString(), "B");
     EXPECT_EQ(track_keys.getSubVersion().toStdString(), "a=b");
+    EXPECT_DOUBLE_EQ(track_keys.getGlobalTuningFrequencyHz(), 440.0);
 }
