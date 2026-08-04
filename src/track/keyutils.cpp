@@ -668,7 +668,7 @@ KeyChange KeyUtils::calculateGlobalKey(
         if (it.value().framePos.value() > max_delta) {
             max_key = it.value();
             max_delta = it.value().framePos.value();
-            // Calculate the average Tunig Frequency weighted by duration
+            // Calculate the average Tuning Frequency weighted by duration
             max_key.tuningFrequencyHz /= max_delta;
         }
     }
