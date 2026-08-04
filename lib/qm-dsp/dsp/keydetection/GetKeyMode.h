@@ -48,8 +48,9 @@ public:
      * getBlockSize(). Successive calls should provide overlapped data
      * with an advance of getHopSize() between frames.
      *
-     * Return a key index in the range 0-24, where 0 indicates no key
-     * detected, 1 is C major, and 13 is C minor.
+     * Return a fractional key value for tuning offsets in the range 0 or 
+     * 0.5 - 24.4999, where 0 indicates no key detected, 1 is C major, and 13 
+     * is C minor.
      */
     double process(double *pcmData);
 
