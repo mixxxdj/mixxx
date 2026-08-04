@@ -1,5 +1,8 @@
 #include <dsp/keydetection/GetKeyMode.h>
 
+#include <cmath>
+#include <numeric>
+
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarykey.h"

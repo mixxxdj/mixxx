@@ -24,6 +24,7 @@
 #include "base/Pitch.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 
 #include <cstring>
@@ -211,10 +212,10 @@ GetKeyMode::GetKeyMode(Config config) :
     }
 
     m_medianFilterBuffer = new double[ m_medianWinSize ];
-    memset( m_medianFilterBuffer, 0, sizeof(int)*m_medianWinSize);
+    memset( m_medianFilterBuffer, 0, sizeof(double)*m_medianWinSize);
     
     m_sortedBuffer = new double[ m_medianWinSize ];
-    memset( m_sortedBuffer, 0, sizeof(int)*m_medianWinSize);
+    memset( m_sortedBuffer, 0, sizeof(double)*m_medianWinSize);
     
     m_decimator = new Decimator( m_chromaFrameSize * m_decimationFactor,
                                  m_decimationFactor );
