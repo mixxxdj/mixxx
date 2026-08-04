@@ -46,7 +46,7 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
     m_lDts = 0;
     m_lPts = 0;
     m_lRecordedBytes = 0;
-
+    m_pStream = nullptr;
 }
 
 // Destructor  //call flush before any encoder gets deleted
@@ -70,7 +70,7 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
 
 
     if (m_pStream != NULL) {
-        avcodec_close(m_pStream->codec);
+        avcodec_free_context(&m_pStream->codec);
     }
 
     if (m_pEncodeFormatCtx != NULL) {
@@ -432,8 +432,8 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
 
 
 void EncoderFfmpegCore::closeAudio(AVStream *stream) {
-    avcodec_close(stream->codec);
-    av_free(m_pSamples);
+    avcodec_free_context(&stream->codec);
+    av_freep(&m_pSamples);
 }
 
 int EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {

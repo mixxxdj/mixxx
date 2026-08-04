@@ -24,7 +24,7 @@ XoneK2.deckBottomButtonLayers = [
     { name: 'hotcue', layerButtonNoteNumber: XoneK2.layerButtonColors.red },
     { name: 'loop', layerButtonNoteNumber: XoneK2.layerButtonColors.green }, ];
 
-// Multiple K2s/K1s can be connected via X-Link and plugged in with one USB
+// Multiple K1s/K2s/K3s can be connected via X-Link and plugged in with one USB
 // cable. The MIDI messages of the controllers can be distinguished by setting
 // each one to its own MIDI channel. The XoneK2.controllers array maintains state
 // for each controller. This also allows the same mapping to  be loaded for

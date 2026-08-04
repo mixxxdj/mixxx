@@ -202,9 +202,9 @@ void DlgPrefColors::slotResetToDefaults() {
             qPrintable(mixxx::PredefinedColorPalettes::kDefaultKeyColorPalette
                                .getName())));
     comboBoxHotcueDefaultColor->setCurrentIndex(
-            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size());
+            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette.size());
     comboBoxLoopDefaultColor->setCurrentIndex(
-            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette.size() - 1);
+            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette.size() - 1);
     checkboxKeyColorsEnabled->setChecked(BaseTrackTableModel::kKeyColorsEnabledDefault);
 }
 

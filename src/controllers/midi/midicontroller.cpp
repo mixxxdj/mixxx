@@ -643,7 +643,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 QJSValue MidiController::makeInputHandler(unsigned char status,
         unsigned char control,
         const QJSValue& scriptCode) {
-    auto pJsEngine = getScriptEngine()->jsEngine();
+    auto pEngine = getScriptEngine();
+    if (pEngine == nullptr) {
+        return QJSValue();
+    }
+    auto pJsEngine = pEngine->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }

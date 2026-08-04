@@ -94,6 +94,7 @@ void AudioUnitManager::instantiateAudioUnitAsync(
             qWarning() << "Could not instantiate Audio Unit"
                        << pManager->m_name << ":" << error
                        << "(Check https://www.osstatus.com for a description)";
+            dispatch_group_leave(pManager->m_instantiationGroup);
             return;
         }
 

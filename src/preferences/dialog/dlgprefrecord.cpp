@@ -206,9 +206,11 @@ void DlgPrefRecord::slotResetToDefaults() {
 
 void DlgPrefRecord::slotBrowseRecordingsDir() {
     QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Choose recordings directory"),
+            this,
+            tr("Choose recordings directory"),
             m_pConfig->getValueString(
-                    ConfigKey(RECORDING_PREF_KEY,"Directory")));
+                    ConfigKey(RECORDING_PREF_KEY, "Directory")),
+            QFileDialog::ShowDirsOnly);
 
     if (fd != "") {
         // The user has picked a new directory via a file dialog. This means the
@@ -267,7 +269,7 @@ void DlgPrefRecord::setupEncoderUI() {
         // >> buttongroup->addButton(radioButtonNoFFT);
         // >> buttongroup->addButton(radioButtonFFT);
 
-        EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
+        EncoderSettings::OptionsGroup group = settings->getOptionGroups().constFirst();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
         for (const QString& name : std::as_const(group.controlNames)) {
@@ -312,7 +314,7 @@ void DlgPrefRecord::updateTextQuality() {
     // I don't have a clean way to do it
     bool isVbr = false;
     if (m_selFormat.internalName == ENCODING_MP3) {
-        EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
+        EncoderSettings::OptionsGroup group = settings->getOptionGroups().constFirst();
         for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
@@ -415,7 +417,7 @@ void DlgPrefRecord::saveEncoding() {
     if (!settings->getOptionGroups().isEmpty()) {
         // TODO (XXX): Right now i am supporting just one optiongroup.
         // The concept is already there for multiple groups
-        EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
+        EncoderSettings::OptionsGroup group = settings->getOptionGroups().constFirst();
         int i=0;
         for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {

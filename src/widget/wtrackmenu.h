@@ -106,6 +106,7 @@ class WTrackMenu : public QMenu {
         m_trackProperty = property;
     }
 
+    void updateMenus();
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
@@ -230,7 +231,6 @@ class WTrackMenu : public QMenu {
     void createMenus();
     void createActions();
     void setupActions();
-    void updateMenus();
 
     void generateTrackLoadMenu(const QString& group,
             const QString& label,
@@ -393,6 +393,8 @@ class WTrackMenu : public QMenu {
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
+    bool m_bSearchRelatedMenuLoaded;
+    bool m_bFindOnWebMenuLoaded;
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 

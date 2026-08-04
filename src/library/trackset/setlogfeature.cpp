@@ -218,6 +218,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
         }
         menu.addSeparator();
         menu.addAction(m_pExportPlaylistAction);
+        menu.addAction(m_pExportTrackFilesAction);
     }
 
     menu.exec(globalPos);

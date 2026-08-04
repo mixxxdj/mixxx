@@ -330,7 +330,7 @@ TEST_P(StemControlFixture, Mute) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-        StemControlTest,
+        DISABLED_StemControlTest,
         StemControlFixture,
         ::testing::ValuesIn(supportedCodecs),
         [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {

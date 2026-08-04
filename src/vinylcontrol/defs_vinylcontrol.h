@@ -60,7 +60,8 @@ constexpr int VINYL_STATUS_ERROR = 3;
 
 #define MIXXX_VC_DEFAULT_LEADINTIME 0
 
-#define MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS 66
+// Period for updating the vinyl quality scopes, ~15 Hz
+#define MIXXX_VINYL_SCOPE_UPDATE_PERIOD_MS 66
 #define MIXXX_VINYL_SCOPE_SIZE 100
 
 constexpr int kMaximumVinylControlInputs = 4;
