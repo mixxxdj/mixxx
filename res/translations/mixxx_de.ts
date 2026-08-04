@@ -6461,7 +6461,7 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="621"/>
         <source>ExtraBold</source>
-        <translation>ExtraFett</translation>
+        <translation>Extrafett</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="623"/>
@@ -6471,7 +6471,7 @@ und ermöglicht es Ihnen die Tonhöhe für harmonisches Mixen anzupassen.</trans
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="626"/>
         <source>SemiBold</source>
-        <translation>HalbFett</translation>
+        <translation>Halbfett</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="628"/>

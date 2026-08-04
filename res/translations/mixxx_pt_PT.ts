@@ -15011,7 +15011,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="43"/>
         <source>Label...</source>
-        <translation type="unfinished"/>
+        <translation>Etiqueta...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="58"/>
@@ -16549,7 +16549,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/coreservices.cpp" line="498"/>
         <source>audio interface</source>
-        <translation type="unfinished"/>
+        <translation>interface de áudio</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="518"/>
@@ -16613,7 +16613,7 @@ Clique OK para sair.</translation>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="102"/>
         <source>Database version</source>
-        <translation type="unfinished"/>
+        <translation>banco de dados version</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="106"/>
