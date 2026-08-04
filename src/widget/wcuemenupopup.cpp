@@ -78,17 +78,17 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     setAttribute(Qt::WA_StyledBackground);
     setObjectName("WCueMenuPopup");
 
-    m_pCueNumber = std::make_unique<QLabel>(this);
+    m_pCueNumber = make_parented<QLabel>(this);
     m_pCueNumber->setToolTip(tr("Cue number"));
     m_pCueNumber->setObjectName("CueNumberLabel");
     m_pCueNumber->setAlignment(Qt::AlignLeft);
 
-    m_pCuePosition = std::make_unique<QLabel>(this);
+    m_pCuePosition = make_parented<QLabel>(this);
     m_pCuePosition->setToolTip(tr("Cue position"));
     m_pCuePosition->setObjectName("CuePositionLabel");
     m_pCuePosition->setAlignment(Qt::AlignRight);
 
-    m_pEditLabel = std::make_unique<QLineEdit>(this);
+    m_pEditLabel = make_parented<QLineEdit>(this);
     m_pEditLabel->setToolTip(tr("Edit cue label"));
     m_pEditLabel->setObjectName("CueLabelEdit");
     m_pEditLabel->setPlaceholderText(tr("Label..."));
@@ -96,7 +96,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     connect(m_pEditLabel.get(), &QLineEdit::returnPressed, this, &WCueMenuPopup::hide);
 
     m_pColorPicker =
-            std::make_unique<WColorPicker>(WColorPicker::Option::NoOptions,
+            make_parented<WColorPicker>(WColorPicker::Option::NoOptions,
                     m_colorPaletteSettings.getHotcueColorPalette(),
                     this);
     m_pColorPicker->setObjectName("CueColorPicker");
@@ -105,12 +105,12 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotChangeCueColor);
 
-    m_pDeleteCue = std::make_unique<CueMenuPushButton>(this);
+    m_pDeleteCue = make_parented<CueMenuPushButton>(this);
     m_pDeleteCue->setToolTip(tr("Delete this cue"));
     m_pDeleteCue->setObjectName("CueDeleteButton");
     connect(m_pDeleteCue.get(), &QPushButton::clicked, this, &WCueMenuPopup::slotDeleteCue);
 
-    m_pStandardCue = std::make_unique<CueMenuPushButton>(this);
+    m_pStandardCue = make_parented<CueMenuPushButton>(this);
     m_pStandardCue->setToolTip(
             tr("Turn this cue into a regular hotcue"));
     m_pStandardCue->setObjectName("CueStandardButton");
@@ -120,7 +120,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotStandardCue);
 
-    m_pSavedLoopCue = std::make_unique<CueMenuPushButton>(this);
+    m_pSavedLoopCue = make_parented<CueMenuPushButton>(this);
     m_pSavedLoopCue->setToolTip(tr("Turn this cue into a saved loop") + "\n\n" +
             tr("Left-click: Use the old size if known or the current beatloop "
                "size as the loop size") +
@@ -138,7 +138,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedLoopCueManual);
 
-    m_pSavedJumpCue = std::make_unique<CueMenuPushButton>(this);
+    m_pSavedJumpCue = make_parented<CueMenuPushButton>(this);
     m_pSavedJumpCue->setObjectName("CueSavedJumpButton");
     m_pSavedJumpCue->setCheckable(true);
     connect(m_pSavedJumpCue.get(),
@@ -150,6 +150,47 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedJumpCueManual);
 
+    m_pShiftCueEarlier = make_parented<CueMenuPushButton>(this);
+    m_pShiftCueEarlier->setToolTip(tr(
+            "Shift this cue backwards by %1 milliseconds.\n"
+            "Right-click to shift this cue backwards by %2 milliseconds.\n"
+            "If quantize is enabled shift this cue to the previous beat.")
+                    .arg(QString::number(Cue::kShiftCuesOffsetMillis),
+                            QString::number(Cue::kShiftCuesOffsetMillisSmall)));
+    m_pShiftCueEarlier->setObjectName("CueShiftEarlier");
+    connect(m_pShiftCueEarlier.get(),
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                shiftCue(-1);
+            });
+    connect(m_pShiftCueEarlier.get(),
+            &CueMenuPushButton::rightClicked,
+            this,
+            [this]() {
+                shiftCueSmall(-1);
+            });
+    m_pShiftCueLater = make_parented<CueMenuPushButton>(this);
+    m_pShiftCueLater->setToolTip(tr(
+            "Shift this cue forwards by %1 milliseconds.\n"
+            "Right-click to shift this cue forwards by %2 milliseconds.\n"
+            "If quantize is enabled shift this cue to the next beat.")
+                    .arg(QString::number(Cue::kShiftCuesOffsetMillis),
+                            QString::number(Cue::kShiftCuesOffsetMillisSmall)));
+    m_pShiftCueLater->setObjectName("CueShiftLater");
+    connect(m_pShiftCueLater.get(),
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                shiftCue(1);
+            });
+    connect(m_pShiftCueLater.get(),
+            &CueMenuPushButton::rightClicked,
+            this,
+            [this]() {
+                shiftCueSmall(1);
+            });
+
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber.get());
     pLabelLayout->addStretch(1);
@@ -160,8 +201,16 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pLeftLayout->addWidget(m_pEditLabel.get());
     pLeftLayout->addWidget(m_pColorPicker.get());
 
+    QHBoxLayout* pShiftLayout = new QHBoxLayout();
+    pShiftLayout->setObjectName("CueMenuShiftLayout");
+    pShiftLayout->addWidget(m_pShiftCueEarlier.get());
+    pShiftLayout->addWidget(m_pShiftCueLater.get());
+    // no margin, make it look like the beatjump button grid
+    pShiftLayout->setSpacing(0);
+
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pDeleteCue.get());
+    pRightLayout->addLayout(pShiftLayout);
     pRightLayout->addWidget(m_pStandardCue.get());
     pRightLayout->addStretch(1);
     pRightLayout->addWidget(m_pSavedLoopCue.get());
@@ -173,7 +222,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pMainLayout->addSpacing(5);
     pMainLayout->addLayout(pRightLayout);
     setLayout(pMainLayout);
-    // we need to update the the layout here since the size is used to
+    // we need to update the layout here since the size is used to
     // calculate the positioning later
     layout()->update();
     layout()->activate();
@@ -333,6 +382,46 @@ void WCueMenuPopup::slotDeleteCue() {
     }
     m_pTrack->removeCue(m_pCue);
     hide();
+}
+
+void WCueMenuPopup::shiftCue(int direction) {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    if (direction == 0) {
+        return;
+    }
+    direction = direction > 0 ? 1 : -1;
+
+    if (m_pQuantizeEnabled.toBool()) {
+        m_pTrack->shiftHotcuePositionBeats(m_pCue->getHotCue(), direction);
+    } else {
+        m_pTrack->shiftHotcuePositionMillis(
+                m_pCue->getHotCue(), Cue::kShiftCuesOffsetMillis * direction);
+    }
+}
+
+void WCueMenuPopup::shiftCueSmall(int direction) {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    if (direction == 0) {
+        return;
+    }
+    direction = direction > 0 ? 1 : -1;
+
+    if (m_pQuantizeEnabled.toBool()) {
+        m_pTrack->shiftHotcuePositionBeats(m_pCue->getHotCue(), direction);
+    } else {
+        m_pTrack->shiftHotcuePositionMillis(m_pCue->getHotCue(),
+                Cue::kShiftCuesOffsetMillisSmall * direction);
+    }
 }
 
 void WCueMenuPopup::slotStandardCue() {
