@@ -170,7 +170,10 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+            << QStringLiteral("CASE WHEN library.location = '%1' THEN 1 ELSE 0 END AS %2")
+                       .arg(LIBRARYTABLE_AUTODJ_TRANSITION_LOCATION,
+                               LIBRARYTABLE_IS_AUTODJ_END_MARKER);
 
     QString queryString = QString(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -190,6 +193,7 @@ void PlaylistTableModel::selectPlaylist(int playlistId) {
     // columns[2] = PLAYLISTTRACKSTABLE_DATETIMEADDED from above
     columns[3] = LIBRARYTABLE_PREVIEW;
     columns[4] = LIBRARYTABLE_COVERART;
+    columns[5] = LIBRARYTABLE_IS_AUTODJ_END_MARKER;
     setTable(playlistTableName,
             LIBRARYTABLE_ID,
             columns,
@@ -389,8 +393,52 @@ mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indi
     return mixxx::Duration::fromSeconds(durationTotal);
 }
 
+bool PlaylistTableModel::isEndMarker(const QModelIndex& index) const {
+    int col = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_IS_AUTODJ_END_MARKER);
+    if (col < 0) {
+        return false;
+    }
+    // Look up is_autodj_end_marker on the same row as `index` (caller may pass any column).
+    // Use Qt::EditRole to get the raw stored integer, not display-formatted text.
+    return index.sibling(index.row(), col).data(Qt::EditRole).toInt() == 1;
+}
+
+void PlaylistTableModel::insertEndMarker(int afterRow) {
+    int position;
+    const int posCol = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    if (afterRow >= 0 && afterRow < rowCount() && posCol >= 0) {
+        position = index(afterRow, posCol).data().toInt() + 1;
+    } else {
+        position = rowCount() + 1;
+    }
+    m_pTrackCollectionManager->internalCollection()
+            ->getPlaylistDAO()
+            .insertEndMarkerIntoPlaylist(m_iPlaylistId, position);
+}
+
+QVariant PlaylistTableModel::rawValue(const QModelIndex& index) const {
+    if (!index.isValid()) {
+        return BaseSqlTableModel::rawValue(index);
+    }
+    // Show a custom title for end marker rows
+    const int titleCol = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
+    if (titleCol >= 0 && index.column() == titleCol && isEndMarker(index)) {
+        return tr("\u23F9 Stop");
+    }
+    return BaseSqlTableModel::rawValue(index);
+}
+
+Qt::ItemFlags PlaylistTableModel::flags(const QModelIndex& index) const {
+    Qt::ItemFlags f = BaseTrackTableModel::flags(index);
+    if (index.isValid() && isEndMarker(index)) {
+        f &= ~(Qt::ItemIsEditable | Qt::ItemIsUserCheckable);
+    }
+    return f;
+}
+
 bool PlaylistTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_IS_AUTODJ_END_MARKER) ||
             TrackSetTableModel::isColumnInternal(column);
 }
 
