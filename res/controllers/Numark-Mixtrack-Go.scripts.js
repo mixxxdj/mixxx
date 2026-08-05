@@ -596,7 +596,6 @@ NumarkMixtrackGo.led = {
     },
 };
 
-
 // Effect indexes
 // if mixxx devs change the order of the effects, these indexes needs to be updated.
 // if they ever implement methods to set effects by name or some id, a more robust solution should be implemented.
@@ -704,8 +703,9 @@ NumarkMixtrackGo.browseEncoder = new components.Encoder({
 
         if (this.isLibraryScrolling) {
             engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
-        } else { // isStripSearching -0.2 modifies the fraction of the duration of the track the encoder moves per detent while rotating
-            let newPosition = engine.getValue("[PreviewDeck1]", "playposition") + 0.2*rotateValue;
+        } else { // isStripSearching - 0.05 modifies the fraction of the duration of the track the encoder moves per detent while rotating
+            const currentPosition = engine.getValue("[PreviewDeck1]", "playposition");
+            let newPosition = currentPosition + currentPosition*0.05*rotateValue;
             // prevents the trackhead from going past where the GUI can show, as we get the deck in playing status, but hear nothing
             if (newPosition < 0) {
                 newPosition = 0;
@@ -751,7 +751,7 @@ NumarkMixtrackGo.fadeFx = new components.Button({
     },
 });
 
-// TODO should eventually be reviewed to get at least a better fader curve and/or
+// should eventually be reviewed to get at least a better fader curve and/or
 // implement a better solution than using quick effects
 NumarkMixtrackGo.crossFader = new components.Pot({
     input: function(_channel, _control, value) {
