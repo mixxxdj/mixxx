@@ -21,29 +21,35 @@ const LedColors = {
     white: 68,
 };
 
-const LedColorMap = {
-    0xCC0000: LedColors.red,
-    0xCC5E00: LedColors.carrot,
-    0xCC7800: LedColors.orange,
-    0xCC9200: LedColors.honey,
+// Ordered [colorValue, ledColor] pairs preserved in insertion order.
+// LedColorMap is derived from this to avoid maintaining two lists.
+const LedColorEntries = [
+    [0xCC0000, LedColors.red],
+    [0xCC5E00, LedColors.carrot],
+    [0xCC7800, LedColors.orange],
+    [0xCC9200, LedColors.honey],
 
-    0xCCCC00: LedColors.yellow,
-    0x81CC00: LedColors.lime,
-    0x00CC00: LedColors.green,
-    0x00CC49: LedColors.aqua,
+    [0xCCCC00, LedColors.yellow],
+    [0x81CC00, LedColors.lime],
+    [0x00CC00, LedColors.green],
+    [0x00CC49, LedColors.aqua],
 
-    0x00CCCC: LedColors.celeste,
-    0x0091CC: LedColors.sky,
-    0x0000CC: LedColors.blue,
-    0xCC00CC: LedColors.purple,
+    [0x00CCCC, LedColors.celeste],
+    [0x0091CC, LedColors.sky],
+    [0x0000CC, LedColors.blue],
+    [0xCC00CC, LedColors.purple],
 
-    0xAD65FF: LedColors.fuscia,
-    0xCC0079: LedColors.magenta,
-    0xCC477E: LedColors.azalea,
-    0xCC4761: LedColors.salmon,
+    [0xAD65FF, LedColors.fuscia],
+    [0xCC0079, LedColors.magenta],
+    [0xCC477E, LedColors.azalea],
+    [0xCC4761, LedColors.salmon],
 
-    0xCCCCCC: LedColors.white,
-};
+    [0xCCCCCC, LedColors.white],
+];
+const LedColorMap = {};
+for (const [colorValue, ledColor] of LedColorEntries) {
+    LedColorMap[colorValue] = ledColor;
+}
 
 
 // This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
@@ -2366,16 +2372,17 @@ class S4Mk3Deck extends Deck {
                     if (this.deck.selectedHotcue === null) {
                         return;
                     }
-                    const currentColor = Button.prototype.colorMap.getValueForNearestColor(engine.getValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`));
-                    let currentColorIdx = Object.keys(LedColorMap).indexOf(Object.keys(LedColorMap).find(key => LedColorMap[key] === currentColor));
-                    currentColorIdx = Math.max(
-                        Math.min(
-                            Object.keys(LedColorMap).length - 2, // Last color is reserved for loop hotcue
-                            currentColorIdx + (right ? 1:-1)
-                        ),
-                        0
-                    );
-                    engine.setValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`, Object.keys(LedColorMap)[currentColorIdx]);
+                    const colorKey = `hotcue_${this.deck.selectedHotcue}_color`;
+                    const currentColor = Button.prototype.colorMap.getValueForNearestColor(
+                        engine.getValue(this.deck.group, colorKey));
+                    const currentColorIdx = LedColorEntries.findIndex(([color]) => LedColorMap[color] === currentColor);
+                    if (currentColorIdx < 0) {
+                        return;
+                    }
+                    const numColors = LedColorEntries.length - 1; // Last color is reserved for loop hotcue
+                    // wrap around
+                    const newColorIdx = (currentColorIdx + (right ? 1 : -1) + numColors) % numColors;
+                    engine.setValue(this.deck.group, colorKey, LedColorEntries[newColorIdx][0]);
                     break;
                 }
                 default:
