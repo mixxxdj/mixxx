@@ -4442,6 +4442,14 @@ else()
         COMPONENT applocal
       )
 
+      # qml6-module-qtquick-effects
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Effects"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Effects"
+        COMPONENT applocal
+      )
+
       # install qml6-module-qt-labs-qmlmodels
       install(
         DIRECTORY
