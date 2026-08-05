@@ -66,50 +66,53 @@ class TestEngineMixer : public EngineMixer {
 
 class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
-    BaseSignalPathTest() {
+    BaseSignalPathTest()
+            : m_playerInfoGuard{nullptr, nullptr} {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey(
+        m_pNumDecks = std::make_unique<ControlObject>(ConfigKey(
                 QStringLiteral("[App]"), QStringLiteral("num_decks")));
-        m_pNumSamplers = new ControlObject(ConfigKey(
+        m_pNumSamplers = std::make_unique<ControlObject>(ConfigKey(
                 QStringLiteral("[App]"), QStringLiteral("num_samplers")));
-        m_pNumPreviewDecks = new ControlObject(ConfigKey(
+        m_pNumPreviewDecks = std::make_unique<ControlObject>(ConfigKey(
                 QStringLiteral("[App]"), QStringLiteral("num_preview_decks")));
-        m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
-        m_pEngineMixer = new TestEngineMixer(m_pConfig,
+
+        m_pEffectsManager = std::make_unique<EffectsManager>(config(), m_pChannelHandleFactory);
+        m_pEngineMixer = std::make_unique<TestEngineMixer>(m_pConfig,
                 m_sMainGroup,
-                m_pEffectsManager,
+                m_pEffectsManager.get(),
                 m_pChannelHandleFactory,
                 false);
 
-        m_pMixerDeck1 = new Deck(nullptr,
+        m_pMixerDeck1 = std::make_unique<Deck>(nullptr,
                 m_pConfig,
-                m_pEngineMixer,
-                m_pEffectsManager,
+                m_pEngineMixer.get(),
+                m_pEffectsManager.get(),
                 EngineChannel::CENTER,
                 m_pEngineMixer->registerChannelGroup(m_sGroup1));
-        m_pMixerDeck2 = new Deck(nullptr,
+        m_pMixerDeck2 = std::make_unique<Deck>(nullptr,
                 m_pConfig,
-                m_pEngineMixer,
-                m_pEffectsManager,
+                m_pEngineMixer.get(),
+                m_pEffectsManager.get(),
                 EngineChannel::CENTER,
                 m_pEngineMixer->registerChannelGroup(m_sGroup2));
-        m_pMixerDeck3 = new Deck(nullptr,
+        m_pMixerDeck3 = std::make_unique<Deck>(nullptr,
                 m_pConfig,
-                m_pEngineMixer,
-                m_pEffectsManager,
+                m_pEngineMixer.get(),
+                m_pEffectsManager.get(),
                 EngineChannel::CENTER,
                 m_pEngineMixer->registerChannelGroup(m_sGroup3));
+        m_pPreview1 = std::make_unique<PreviewDeck>(nullptr,
+                m_pConfig,
+                m_pEngineMixer.get(),
+                m_pEffectsManager.get(),
+                EngineChannel::CENTER,
+                m_pEngineMixer->registerChannelGroup(m_sPreviewGroup));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
-        m_pPreview1 = new PreviewDeck(nullptr,
-                m_pConfig,
-                m_pEngineMixer,
-                m_pEffectsManager,
-                EngineChannel::CENTER,
-                m_pEngineMixer->registerChannelGroup(m_sPreviewGroup));
+
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
@@ -127,26 +130,12 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         ControlObject::set(ConfigKey(m_sMainGroup, "enabled"), 1.0);
 
         PlayerInfo::create();
+        m_playerInfoGuard = std::unique_ptr<PlayerInfo, void (*)(PlayerInfo*)>(
+                &PlayerInfo::instance(),
+                [](PlayerInfo*) { PlayerInfo::destroy(); });
     }
 
-    ~BaseSignalPathTest() override {
-        delete m_pMixerDeck1;
-        delete m_pMixerDeck2;
-        delete m_pMixerDeck3;
-        m_pChannel1 = NULL;
-        m_pChannel2 = NULL;
-        m_pChannel3 = NULL;
-        m_pEngineSync = NULL;
-        delete m_pPreview1;
-
-        // Deletes all EngineChannels added to it.
-        delete m_pEngineMixer;
-        delete m_pEffectsManager;
-        delete m_pNumDecks;
-        delete m_pNumSamplers;
-        delete m_pNumPreviewDecks;
-        PlayerInfo::destroy();
-    }
+    ~BaseSignalPathTest() override = default;
 
     void addDeck(EngineDeck* pDeck) {
         ControlObject::set(ConfigKey(pDeck->getGroup(), "main_mix"), 1.0);
@@ -243,17 +232,22 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pEngineMixer->process(kProcessBufferSize);
     }
 
-    ChannelHandleFactoryPointer m_pChannelHandleFactory;
-    ControlObject* m_pNumDecks;
-    ControlObject* m_pNumSamplers;
-    ControlObject* m_pNumPreviewDecks;
+    std::unique_ptr<PlayerInfo, void (*)(PlayerInfo*)> m_playerInfoGuard;
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
-    EffectsManager* m_pEffectsManager;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
+    std::unique_ptr<ControlObject> m_pNumDecks;
+    std::unique_ptr<ControlObject> m_pNumSamplers;
+    std::unique_ptr<ControlObject> m_pNumPreviewDecks;
+    std::unique_ptr<EffectsManager> m_pEffectsManager;
+    std::unique_ptr<TestEngineMixer> m_pEngineMixer;
+    std::unique_ptr<Deck> m_pMixerDeck1;
+    std::unique_ptr<Deck> m_pMixerDeck2;
+    std::unique_ptr<Deck> m_pMixerDeck3;
+    std::unique_ptr<PreviewDeck> m_pPreview1;
+    EngineDeck* m_pChannel1;
+    EngineDeck* m_pChannel2;
+    EngineDeck* m_pChannel3;
     EngineSync* m_pEngineSync;
-    TestEngineMixer* m_pEngineMixer;
-    Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
-    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
-    PreviewDeck* m_pPreview1;
 
     static const QString m_sMainGroup;
     static const QString m_sInternalClockGroup;
@@ -274,8 +268,8 @@ class SignalPathTest : public BaseSignalPathTest {
         const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
-        loadTrack(m_pMixerDeck1, pTrack);
-        loadTrack(m_pMixerDeck2, pTrack);
-        loadTrack(m_pMixerDeck3, pTrack);
+        loadTrack(m_pMixerDeck1.get(), pTrack);
+        loadTrack(m_pMixerDeck2.get(), pTrack);
+        loadTrack(m_pMixerDeck3.get(), pTrack);
     }
 };
