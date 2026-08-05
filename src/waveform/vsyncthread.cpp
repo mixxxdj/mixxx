@@ -311,15 +311,15 @@ void VSyncThread::updatePLL() {
         m_pllPhaseOut = pllPhaseIn;
         m_pllInitSum += delta;
         m_pllInitCnt++;
-        m_pllInitAvg = m_pllInitSum / static_cast<double>(m_pllInitCnt);
-        if (std::abs(delta - m_pllInitAvg) > 2000.0) {
+        double pllInitAvg = m_pllInitSum / static_cast<double>(m_pllInitCnt);
+        if (std::abs(delta - pllInitAvg) > 2000.0) {
             // The current delta is too different from the current
             // average so we reset the init process.
             m_pllInitSum = 0.0;
             m_pllInitCnt = 0;
         }
         if (m_pllInitCnt == kNumStableDeltasRequired) {
-            m_pllDeltaOut = m_pllInitAvg;
+            m_pllDeltaOut = pllInitAvg;
         }
         return;
     }
