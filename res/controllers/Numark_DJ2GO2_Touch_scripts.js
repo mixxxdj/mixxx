@@ -21,11 +21,14 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
     previewSeekEnabled: false,
     onKnobEvent: function(rotateValue) {
         if (rotateValue !== 0) {
-            if (this.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
+            if (this.previewSeekEnabled) {
                 var oldPos = engine.getValue("[PreviewDeck1]", "playposition");
                 var newPos = Math.max(0, oldPos + (0.05 * rotateValue));
                 engine.setValue("[PreviewDeck1]", "playposition", newPos);
-            } else if (!this.previewSeekEnabled) {
+                if (engine.getValue("[PreviewDeck1]", "play") === 0) {
+                    engine.setValue("[PreviewDeck1]", "play", 1);
+                }
+            } else {
                 engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
             }
         }
