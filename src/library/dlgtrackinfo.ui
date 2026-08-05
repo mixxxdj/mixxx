@@ -101,8 +101,14 @@
              <property name="spacing">
               <number>0</number>
              </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
              <property name="sizeConstraint">
               <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
              </property>
             </layout>
            </widget>
