@@ -306,7 +306,7 @@ ca,de,fr,it,nl,pl,sv,es*	Intro
 cs,de,fr,sl,sv	Formant
 da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL,zh_CN	Auto DJ
 da,fr,nb,nl,nn	Type
-de,nl,pl,sv	Status
+de,nl,pl,sv,nb	Status
 da,de,it,nl	Computer
 da,lb,nl	USB Controller
 da,de,id,nl,sk,sl,sv	Parameter
