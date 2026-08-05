@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QPointer>
 #include <QUrl>
 #include <QVariant>
 
@@ -12,6 +13,7 @@
 #include "util/parented_ptr.h"
 
 class DlgAnalysis;
+class WLibrarySidebar;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
@@ -28,6 +30,7 @@ class AnalysisFeature : public LibraryFeature {
     bool dragMoveAccept(const QList<QUrl>& urls) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
     void refreshLibraryModels();
@@ -38,6 +41,8 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate() override;
+    void onRightClick(const QPoint& globalPos) override;
+
     void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
 
     void suspendAnalysis();
@@ -61,6 +66,9 @@ class AnalysisFeature : public LibraryFeature {
     const QString m_baseTitle;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
+
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
+    parented_ptr<QAction> m_pStopAction;
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAnalysis* m_pAnalysisView;
