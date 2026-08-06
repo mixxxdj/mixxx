@@ -28,6 +28,7 @@ const QList<MidiOption> kMidiOptions = {
         MidiOption::Switch,
         MidiOption::Spread64,
         MidiOption::HercJog,
+        MidiOption::HercJogFast,
         MidiOption::SelectKnob,
         MidiOption::SoftTakeover,
         MidiOption::Script,
