@@ -103,6 +103,8 @@ class SoundManagerConfig {
     void addInput(const SoundDeviceId& device, const AudioInput& in);
     QMultiHash<SoundDeviceId, AudioOutput> getOutputs() const;
     QMultiHash<SoundDeviceId, AudioInput> getInputs() const;
+    QMultiHash<SoundDeviceId, AudioOutput>& getOutputsRef();
+    QMultiHash<SoundDeviceId, AudioInput>& getInputsRef();
     void clearOutputs();
     void clearInputs();
     bool hasMicInputs();

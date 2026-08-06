@@ -8,6 +8,7 @@
 #include <cstring> // for memcpy and strcmp
 #include <memory>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "engine/enginemixer.h"
 #include "moc_soundmanager.cpp"
@@ -678,15 +679,81 @@ void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
     emit deviceChannelsUpdated(pDevice);
 }
 
-void SoundManager::updatePathChannel(const AudioPath& path, ChannelGroup group) {
+void SoundManager::updatePathChannel(const AudioPath& path, ChannelGroup group, bool isInput) {
     qWarning() << "SoundManager::updatePathChannel" << path.getString()
                << group.getChannelBase() << group.getChannelCount();
+
+    if (isInput) {
+        QMultiHash<SoundDeviceId, AudioInput>& inputs = m_config.getInputsRef();
+        for (auto it = inputs.begin(); it != inputs.end(); ++it) {
+            if (it.value() == path) {
+                it.value() = AudioInput(path.getType(),
+                        group.getChannelBase(),
+                        group.getChannelCount(),
+                        path.getIndex());
+                break;
+            }
+        }
+    } else {
+        QMultiHash<SoundDeviceId, AudioOutput>& outputs = m_config.getOutputsRef();
+        for (auto it = outputs.begin(); it != outputs.end(); ++it) {
+            if (it.value() == path) {
+                it.value() = AudioOutput(path.getType(),
+                        group.getChannelBase(),
+                        group.getChannelCount(),
+                        path.getIndex());
+                break;
+            }
+        }
+    }
+
+    m_config.writeToDisk();
     emit pathChannelUpdated(&path, group);
 }
 
-void SoundManager::updatePathDevice(const AudioPath& path, const SoundDeviceId& deviceId) {
+// this sets the given device to open on an AudioPath with null ChannelGroup
+// ChannelGroup will be updated in subsequent calls to SoundManager::updatePathChannel
+// therefore we don't write config here
+void SoundManager::updatePathDevice(
+        const AudioPath& path, const SoundDeviceId& deviceId, bool isInput) {
     qWarning() << "SoundManager::updatePathDevice" << path.getString()
                << deviceId.deviceIndex << deviceId.name;
+
+    if (isInput) {
+        auto& inputs = m_config.getInputsRef();
+        for (auto it = inputs.begin(); it != inputs.end(); ++it) {
+            if (it.value() == path) {
+                inputs.erase(it);
+                break;
+            }
+        }
+        if (deviceId != SoundDeviceId{}) {
+            // AudioInput will be updated in subsequent call to updatePathChannel
+            // but we still try to keep somewhat valid state
+            const AudioInput input(path.getType(),
+                    0,
+                    mixxx::audio::ChannelCount(),
+                    path.getIndex());
+            inputs.insert(deviceId, input);
+        }
+    } else {
+        auto& outputs = m_config.getOutputsRef();
+        for (auto it = outputs.begin(); it != outputs.end(); ++it) {
+            if (it.value() == path) {
+                outputs.erase(it);
+                break;
+            }
+        }
+        if (deviceId != SoundDeviceId{}) {
+            // AudioOutput will be updated in subsequent call to updatePathChannel
+            // but we still try to keep somewhat valid state
+            const AudioOutput output(path.getType(),
+                    0,
+                    mixxx::audio::ChannelCount(),
+                    path.getIndex());
+            outputs.insert(deviceId, output);
+        }
+    }
     emit pathDeviceUpdated(&path, deviceId);
 }
 

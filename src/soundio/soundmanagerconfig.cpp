@@ -479,6 +479,14 @@ QMultiHash<SoundDeviceId, AudioInput> SoundManagerConfig::getInputs() const {
     return m_inputs;
 }
 
+QMultiHash<SoundDeviceId, AudioOutput>& SoundManagerConfig::getOutputsRef() {
+    return m_outputs;
+}
+
+QMultiHash<SoundDeviceId, AudioInput>& SoundManagerConfig::getInputsRef() {
+    return m_inputs;
+}
+
 void SoundManagerConfig::clearOutputs() {
     m_outputs.clear();
 }

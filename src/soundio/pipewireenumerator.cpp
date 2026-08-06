@@ -412,11 +412,11 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                         const SoundDeviceId& deviceId =
                                 m_soundDevices.at(ports.activeDevice)
                                         ->getDeviceId();
-                        m_pSoundManager->updatePathDevice(input, deviceId);
+                        m_pSoundManager->updatePathDevice(input, deviceId, true);
                     }
                     const Node& deviceNode = m_nodes.at(ports.activeDevice);
                     m_pSoundManager->updatePathChannel(
-                            input, ports.inputChannel(deviceNode.outputs));
+                            input, ports.inputChannel(deviceNode.outputs), true);
                 }
 
                 break;
@@ -445,11 +445,11 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                         const SoundDeviceId& deviceId =
                                 m_soundDevices.at(ports.activeDevice)
                                         ->getDeviceId();
-                        m_pSoundManager->updatePathDevice(output, deviceId);
+                        m_pSoundManager->updatePathDevice(output, deviceId, false);
                     }
                     const Node& deviceNode = m_nodes.at(ports.activeDevice);
                     m_pSoundManager->updatePathChannel(
-                            output, ports.outputChannel(deviceNode.inputs));
+                            output, ports.outputChannel(deviceNode.inputs), false);
                 }
                 break;
             }
@@ -508,20 +508,22 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
 
                 if (m_manageExternalLinks and deviceChanged) {
                     if (ports.connectedDevices.empty()) {
-                        m_pSoundManager->updatePathDevice(input, SoundDeviceId{});
+                        m_pSoundManager->updatePathDevice(input, SoundDeviceId{}, true);
                         ports.active.store(false);
                         m_pSoundManager->unconfigureInput(input);
                     } else {
                         m_pSoundManager->updatePathDevice(input,
                                 m_soundDevices.at(ports.activeDevice)
-                                        ->getDeviceId());
+                                        ->getDeviceId(),
+                                true);
                     }
                 }
 
                 if (m_manageExternalLinks and ports.activeDevice) {
                     const Node& activeDeviceNode = m_nodes.at(ports.activeDevice);
                     m_pSoundManager->updatePathChannel(input,
-                            ports.inputChannel(activeDeviceNode.outputs));
+                            ports.inputChannel(activeDeviceNode.outputs),
+                            true);
                 }
                 break;
             }
@@ -540,19 +542,21 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
 
                 if (m_manageExternalLinks and deviceChanged) {
                     if (ports.connectedDevices.empty()) {
-                        m_pSoundManager->updatePathDevice(output, SoundDeviceId{});
+                        m_pSoundManager->updatePathDevice(output, SoundDeviceId{}, false);
                         ports.active.store(false);
                         m_pSoundManager->unconfigureOutput(output);
                     } else {
                         m_pSoundManager->updatePathDevice(output,
                                 m_soundDevices.at(ports.activeDevice)
-                                        ->getDeviceId());
+                                        ->getDeviceId(),
+                                false);
                     }
                 }
                 if (m_manageExternalLinks and ports.activeDevice) {
                     m_pSoundManager->updatePathChannel(output,
                             ports.outputChannel(
-                                    m_nodes.at(ports.activeDevice).inputs));
+                                    m_nodes.at(ports.activeDevice).inputs),
+                            false);
                 }
                 break;
             }
