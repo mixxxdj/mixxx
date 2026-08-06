@@ -72,3 +72,9 @@ src/mixxx.rc.include
 src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
+
+# AppImage build artifacts
+*.AppImage
+*.AppImage.zsync
+build/appimage/
+.claude/
