@@ -117,8 +117,8 @@ class SoundManager : public QObject {
     }
 
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void updatePathChannel(const AudioPath& path, ChannelGroup group);
-    void updatePathDevice(const AudioPath& path, const SoundDeviceId& pDevice);
+    void updatePathChannel(const AudioPath& path, ChannelGroup group, bool isInput);
+    void updatePathDevice(const AudioPath& path, const SoundDeviceId& pDevice, bool isInput);
     bool isPipewireSelected() {
 #ifdef __PIPEWIRE__
         return CmdlineArgs::Instance().getDeveloper() and
