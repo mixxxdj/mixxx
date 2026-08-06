@@ -502,7 +502,7 @@ double MidiController::computeValue(
     }
 
     if (options.testFlag(MidiOption::Invert)) {
-        return 127. - newmidivalue;
+        newmidivalue = 127. - newmidivalue;
     }
 
     if (options & (MidiOption::Rot64 | MidiOption::Rot64Invert)) {
