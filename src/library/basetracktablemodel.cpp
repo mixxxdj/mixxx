@@ -12,6 +12,7 @@
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/checkboxdelegate.h"
+#include "library/tabledelegates/cmrtdelegate.h"
 #include "library/tabledelegates/colordelegate.h"
 #include "library/tabledelegates/coverartdelegate.h"
 #include "library/tabledelegates/defaultdelegate.h"
@@ -118,8 +119,58 @@ void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
 const QString BaseTrackTableModel::kDateFormatDefault = QString();
 QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefault;
 
+bool BaseTrackTableModel::s_cmrtColumnShowArtist =
+        BaseTrackTableModel::kCmrtColumnShowArtistDefault;
+bool BaseTrackTableModel::s_cmrtColumnShowTitle =
+        BaseTrackTableModel::kCmrtColumnShowTitleDefault;
+bool BaseTrackTableModel::s_cmrtColumnShowGroupId =
+        BaseTrackTableModel::kCmrtColumnShowGroupIdDefault;
+bool BaseTrackTableModel::s_cmrtColumnShowOffset =
+        BaseTrackTableModel::kCmrtColumnShowOffsetDefault;
+bool BaseTrackTableModel::s_cmrtColumnShowMatchScore =
+        BaseTrackTableModel::kCmrtColumnShowMatchScoreDefault;
+bool BaseTrackTableModel::s_cmrtColumnGroupIdAppend =
+        BaseTrackTableModel::kCmrtColumnGroupIdAppendDefault;
+QString BaseTrackTableModel::s_cmrtColumnDelimiter =
+        BaseTrackTableModel::kCmrtColumnDelimiterDefault;
+
 void BaseTrackTableModel::setDateFormat(const QString& format) {
     s_dateFormat = format;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnShowArtist(bool show) {
+    s_cmrtColumnShowArtist = show;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnShowTitle(bool show) {
+    s_cmrtColumnShowTitle = show;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnShowGroupId(bool show) {
+    s_cmrtColumnShowGroupId = show;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnShowOffset(bool show) {
+    s_cmrtColumnShowOffset = show;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnShowMatchScore(bool show) {
+    s_cmrtColumnShowMatchScore = show;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnGroupIdAppend(bool append) {
+    s_cmrtColumnGroupIdAppend = append;
+}
+
+// static
+void BaseTrackTableModel::setCmrtColumnDelimiter(const QString& delimiter) {
+    s_cmrtColumnDelimiter = delimiter;
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
@@ -326,6 +377,7 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
@@ -392,6 +444,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return pCoverArtDelegate;
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         return new KeyDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT)) {
+        return new CmrtDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_WAVESUMMARYHEX)) {
         auto* pOverviewDelegate = new OverviewDelegate(pTableView);
         connect(pOverviewDelegate,
@@ -602,7 +656,13 @@ QVariant BaseTrackTableModel::roleValue(
         int role) const {
     const auto field = mapColumn(index.column());
     if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
-        return rawValue;
+        if (role == Qt::DisplayRole ||
+                role == Qt::ToolTipRole ||
+                role == Qt::EditRole ||
+                role == kDataExportRole) {
+            return rawValue;
+        }
+        return QVariant();
     }
     switch (role) {
     case Qt::ToolTipRole:
@@ -617,6 +677,51 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
         case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return rawValue;
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT: {
+            if (role == kDataExportRole) {
+                // CSV/library export wants the same "GroupId - Artist -
+                // Title" text shown in the cell (or nothing, if ungrouped),
+                return rawValue;
+            }
+            if (rawValue.isNull()) {
+                // Cell shows "--" -- explain why, since it's not obvious
+                // whether "--" means "not analyzed yet" or "no duplicates
+                // exist" without this.
+                return tr(
+                        "This track isn't linked to a CMRT group yet. "
+                        "Either fingerprint analysis or AcoustID lookup "
+                        "hasn't run on it, or it's currently the only "
+                        "copy of its mastering Mixxx has found in your "
+                        "collection");
+            }
+            const bool isCanonical = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL)
+                                             .toBool();
+            const QVariant qualityScoreValue = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_QUALITY_SCORE);
+            // Written for canonical tracks too, not just members -- see
+            // CmrtGroupingService::createNewGroup()/replaceCanonical() --
+            // so this is available on every grouped row. Still guard the
+            // null case: a row can be grouped before scoring finishes.
+            const QString qualityScoreText = qualityScoreValue.isNull()
+                    ? tr("not yet scored")
+                    : QString::number(qualityScoreValue.toDouble(), 'f', 1);
+            if (isCanonical) {
+                return tr(
+                        "This is the CMRT (canonical track) for its group.\n"
+                        "Quality score: %1")
+                        .arg(qualityScoreText);
+            }
+            const double offsetSeconds = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET)
+                                                 .toDouble();
+            const QString offsetText =
+                    QString::number(offsetSeconds, 'f', 2)
+                            .prepend(offsetSeconds >= 0 ? QStringLiteral("+")
+                                                        : QString());
+            return tr("%1s from CMRT\nQuality score: %2")
+                    .arg(offsetText, qualityScoreText);
+        }
         default:
             // Same value as for Qt::DisplayRole (see below)
             break;
@@ -838,6 +943,84 @@ QVariant BaseTrackTableModel::roleValue(
             // Not yet supported
             DEBUG_ASSERT(rawValue.isNull());
             break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT: {
+            // rawValue here is cmrt_track_name (fused "Artist - Title"),
+            // kept only as the "does this row have a CMRT group" null-check --
+            // the actual display text below is built from the separate raw
+            // fields so each one can be toggled independently.
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+
+            const bool isCanonical = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL)
+                                             .toBool();
+
+            QString groupIdTag;
+            if (s_cmrtColumnShowGroupId) {
+                const QVariant groupIdValue = rawSiblingValue(
+                        index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_GROUP_ID);
+                if (!groupIdValue.isNull()) {
+                    groupIdTag = QStringLiteral("(#%1)").arg(groupIdValue.toInt());
+                }
+            }
+
+            QStringList segments;
+            // Prepend/append only differ when Artist or Title also renders --
+            // see the class comment on kCmrtColumnGroupIdAppendDefault. When both
+            // are off, inserting the tag at "position 1" vs "position 4" of this
+            // list produces the same joined string either way, since positions
+            // 2/3 are skipped -- so no branch is needed here to special-case that;
+            // the list construction already makes it a no-op.
+            if (!groupIdTag.isEmpty() && !s_cmrtColumnGroupIdAppend) {
+                segments << groupIdTag;
+            }
+            if (s_cmrtColumnShowArtist) {
+                const QString artist = rawSiblingValue(
+                        index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL_ARTIST)
+                                               .toString();
+                if (!artist.isEmpty()) {
+                    segments << artist;
+                }
+            }
+            if (s_cmrtColumnShowTitle) {
+                const QString title = rawSiblingValue(
+                        index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL_TITLE)
+                                              .toString();
+                if (!title.isEmpty()) {
+                    segments << title;
+                }
+            }
+            if (!groupIdTag.isEmpty() && s_cmrtColumnGroupIdAppend) {
+                segments << groupIdTag;
+            }
+            // Offset and match % are only meaningful for a track being compared
+            // against something else -- the canonical row IS the reference point,
+            // so it has no offset from itself and was never "matched" against
+            // itself. Same rule applies to the offset tooltip.
+            if (s_cmrtColumnShowOffset && !isCanonical) {
+                const double offsetSeconds = rawSiblingValue(
+                        index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_OFFSET)
+                                                     .toDouble();
+                const QString sign = offsetSeconds >= 0 ? QStringLiteral("+") : QString();
+                segments << QStringLiteral("%1%2s").arg(
+                        sign,
+                        QString::number(offsetSeconds, 'f', 2));
+            }
+            if (s_cmrtColumnShowMatchScore && !isCanonical) {
+                const QVariant matchScoreValue = rawSiblingValue(
+                        index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_MATCH_SCORE);
+                if (!matchScoreValue.isNull()) {
+                    segments << QStringLiteral("%1%")
+                                        .arg(qRound(matchScoreValue.toDouble() * 100.0));
+                }
+            }
+
+            if (segments.isEmpty()) {
+                return QStringLiteral("--");
+            }
+            return segments.join(s_cmrtColumnDelimiter);
+        }
         default:
             // Otherwise, just use the column value
             break;
@@ -977,6 +1160,17 @@ QVariant BaseTrackTableModel::roleValue(
             }
 
             return colorRect;
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_CMRT: {
+            if (rawValue.isNull()) {
+                // No CMRT group, or the group has only one member --
+                // CmrtDelegate treats a null QVariant here as "no swatch".
+                return QVariant();
+            }
+            QVariantMap decoration;
+            decoration["isCanonical"] = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_CMRT_CANONICAL);
+            return decoration;
         }
         default:
             return QVariant();
