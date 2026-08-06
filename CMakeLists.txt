@@ -1174,6 +1174,7 @@ add_library(
   STATIC
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
+  src/analyzer/analyzerchromaprint.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
@@ -1414,6 +1415,7 @@ add_library(
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/dao/trackfingerprintdao.cpp
   src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
@@ -1520,6 +1522,7 @@ add_library(
   src/musicbrainz/musicbrainzxml.cpp
   src/musicbrainz/tagfetcher.cpp
   src/musicbrainz/web/acoustidlookuptask.cpp
+  src/musicbrainz/acoustidworker.cpp
   src/musicbrainz/web/coverartarchiveimagetask.cpp
   src/musicbrainz/web/coverartarchivelinkstask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
@@ -1548,6 +1551,8 @@ add_library(
   src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
+  src/preferences/dialog/dlgpreffingerprint.cpp
+  src/preferences/dialog/dlgpreffingerprint.ui
   src/preferences/dialog/dlgprefinterface.cpp
   src/preferences/dialog/dlgprefinterfacedlg.ui
   src/preferences/dialog/dlgprefkey.cpp
