@@ -44,6 +44,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
     size_t m_currentFrame;
     KeyChangeList m_resultKeys;
     mixxx::track::io::key::ChromaticKey m_prevKey;
+    std::vector<double> m_tuningFrequenciesHz;
 };
 
 } // namespace mixxx

@@ -12,9 +12,9 @@ class KeyFactoryTest : public testing::Test {
 
 TEST_F(KeyFactoryTest, MakePreferredKeys) {
     KeyChangeList key_changes = {
-            {mixxx::track::io::key::B_MAJOR, 1.0},
-            {mixxx::track::io::key::B_MINOR, 2.0},
-            {mixxx::track::io::key::B_MAJOR, 3.0},
+            {mixxx::track::io::key::B_MAJOR, 440.0, mixxx::audio::FramePos(1.0)},
+            {mixxx::track::io::key::B_MINOR, 440.0, mixxx::audio::FramePos(2.0)},
+            {mixxx::track::io::key::B_MAJOR, 440.0, mixxx::audio::FramePos(3.0)},
     };
     QHash<QString, QString> extraVersionInfo = {{QStringLiteral("a"), QStringLiteral("b")}};
 
@@ -24,4 +24,5 @@ TEST_F(KeyFactoryTest, MakePreferredKeys) {
     EXPECT_EQ(track_keys.getGlobalKey(), mixxx::track::io::key::B_MAJOR);
     EXPECT_EQ(track_keys.getGlobalKeyText().toStdString(), "B");
     EXPECT_EQ(track_keys.getSubVersion().toStdString(), "a=b");
+    EXPECT_DOUBLE_EQ(track_keys.getGlobalTuningFrequencyHz(), 440.0);
 }
