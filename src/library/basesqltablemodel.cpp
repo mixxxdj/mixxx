@@ -137,6 +137,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::CmrtGroup)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CMRT);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
