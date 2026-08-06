@@ -28,6 +28,7 @@
 namespace {
 
 constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
+constexpr int kPatchbayWaitTime = 3;    // wait for patchbay to connect inputs
 const QString kAppGroup = QStringLiteral("[App]");
 
 static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
@@ -1056,10 +1057,37 @@ void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int frames
     ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
 }
 
+bool PipewireEnumerator::portsEmpty() {
+    for (auto& portPair : std::views::values(m_outputs)) {
+        if (portPair.active.load()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void PipewireEnumerator::patchbayWaitTimer() {
+    pw_loop* loop = pw_thread_loop_get_loop(m_pPwThreadLoop);
+    pw_loop_destroy_source(loop, m_patchbayWaitTimer);
+    m_patchbayWaitTimer = nullptr;
+    if (portsEmpty()) {
+        // patchbay didn't connect any ports, load config
+        QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::devicesEnumerated);
+    }
+}
+
 void PipewireEnumerator::coreEventDone(uint32_t id, int seq) {
     qDebug() << "PipewireEnumerator::coreEventDone" << id << seq << m_coreSyncSeq;
     if (id == 0 && seq == m_coreSyncSeq) {
-        QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::devicesEnumerated);
+        if (portsEmpty()) {
+            // No device open till now, wait for 2 seconds for any external
+            // patchbay to open devices, and then check again
+            pw_loop* loop = pw_thread_loop_get_loop(m_pPwThreadLoop);
+            m_patchbayWaitTimer = pw_loop_add_timer(loop, patchbayWaitTimer, this);
+            struct timespec when = {.tv_sec = kPatchbayWaitTime, .tv_nsec = 0};
+            pw_loop_update_timer(loop, m_patchbayWaitTimer, &when, nullptr, false);
+        }
     }
 }
 

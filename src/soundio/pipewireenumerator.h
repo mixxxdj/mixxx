@@ -54,6 +54,9 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     }
 
     QString getChannelString(uint32_t id, ChannelGroup channelGroup, bool input) const;
+    static void patchbayWaitTimer(void* data, [[maybe_unused]] uint64_t expirations) {
+        static_cast<PipewireEnumerator*>(data)->patchbayWaitTimer();
+    }
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
@@ -64,6 +67,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void registerOutput(const AudioOutput& output, AudioSource* src);
 
   private:
+    void patchbayWaitTimer();
     struct Link {
         uint32_t input;
         uint32_t output;
@@ -233,6 +237,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     void updateFilterLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
     bool nodeHasPorts(const Node& node);
+    bool portsEmpty();
 
     std::unordered_map<uint32_t, Node> m_nodes;
     std::unordered_map<uint32_t, Port> m_ports;
@@ -278,4 +283,5 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // the ones made with external patchbay
     bool m_manageExternalLinks;
     int m_coreSyncSeq;
+    spa_source* m_patchbayWaitTimer;
 };
