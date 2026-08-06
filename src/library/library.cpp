@@ -69,7 +69,7 @@ Library::Library(
           m_pConfig(pConfig),
           m_pDbConnectionPool(std::move(pDbConnectionPool)),
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_pSidebarModel(make_parented<SidebarModel>(this)),
+          m_pSidebarModel(make_parented<SidebarModel>(pConfig, this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
           m_pKeyNotation(std::make_unique<ControlObject>(
@@ -612,8 +612,11 @@ void Library::slotCreateCrate() {
 }
 
 void Library::onSkinLoadFinished() {
-    // Enable the default selection when a new skin is loaded.
-    m_pSidebarModel->activateDefaultSelection();
+    // Try to restore last selection, fall back to default if not found
+    if (!m_pSidebarModel->restoreLastSelection()) {
+        // Enable the default selection when a new skin is loaded.
+        m_pSidebarModel->activateDefaultSelection();
+    }
 }
 
 bool Library::requestAddDir(const QString& dir) {
