@@ -493,7 +493,7 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
                                    "0 as %7 FROM %2 ORDER BY %8")
                             .arg(
                                     CRATE_TRACKS_TABLE,
-                                    CRATE_TABLE,
+                                    CRATE_SUMMARY_VIEW,
                                     CRATETABLE_ID,
                                     CRATETRACKSTABLE_CRATEID,
                                     CRATETRACKSTABLE_TRACKID,
