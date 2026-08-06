@@ -49,7 +49,26 @@ class DbId {
     // This function should be used for value binding in DB queries
     // with bindValue().
     QVariant toVariant() const {
+        // TODO: Check with DEBUG_ASSERT(isValid())?
         return QVariant(m_value);
+    }
+
+    // This function should be used for value binding in DB queries
+    // with bindValue() when invalid DbId values should be passed as NULL.
+    //
+    // Special handling is needed to make sure comparisons against NULL work as
+    // expected. Instead of "SELECT ... WHERE myfield=:parameter", one has to do
+    // something like "SELECT ... WHERE CASE WHEN :parameter IS NULL THEN
+    // myfield IS NULL ELSE myfield=:parameter END".
+    QVariant toVariantOrNull() const {
+        if (isValid()) {
+            return QVariant(m_value);
+        }
+
+        // https://doc.qt.io/qt-6/qsqlquery.html#bindValue:
+        // "To bind a NULL value, use a null QVariant; for example,
+        //  use QVariant(QMetaType::fromType<QString>()) if you are binding a string."
+        return QVariant(QMetaType::fromType<int>());
     }
 
     QString toString() const {
@@ -124,6 +143,9 @@ private:
         int value = variant.toInt(&ok);
         if (ok && isValidValue(value)) {
             return value;
+        }
+        if (variant.isNull()) {
+            return kInvalidValue;
         }
         qCritical() << "Invalid database identifier value:"
                     << variant;
