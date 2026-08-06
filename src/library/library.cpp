@@ -45,6 +45,9 @@ namespace {
 
 const mixxx::Logger kLogger("Library");
 
+const ConfigKey kLastSelectedTrackIdConfigKey =
+        ConfigKey(QStringLiteral("[Library]"), QStringLiteral("last_selected_track_id"));
+
 } // namespace
 
 using namespace mixxx::library::prefs;
@@ -80,6 +83,12 @@ Library::Library(
             &TrackCollectionManager::libraryScanFinished,
             this,
             &Library::slotRefreshLibraryModels);
+
+    // Save the selected track ID on exit so the latest selection is persisted
+    connect(QCoreApplication::instance(),
+            &QCoreApplication::aboutToQuit,
+            this,
+            &Library::slotSaveSelectedTrackId);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -366,6 +375,10 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::expanded,
             m_pSidebarModel,
             &SidebarModel::doubleClicked);
+    connect(m_pSidebarModel,
+            &SidebarModel::selectionSaved,
+            this,
+            &Library::slotSaveSelectedTrackId);
 
     connect(pSidebarWidget,
             &WLibrarySidebar::rightClicked,
@@ -617,6 +630,11 @@ void Library::onSkinLoadFinished() {
         // Enable the default selection when a new skin is loaded.
         m_pSidebarModel->activateDefaultSelection();
     }
+
+    // Restore the selected track after the track model has had time to load.
+    // The track model populates asynchronously after activateChild is called,
+    // and a model reset clears the selection. We retry with increasing delays.
+    QTimer::singleShot(1000, this, &Library::slotRestoreSelectedTrackId);
 }
 
 bool Library::requestAddDir(const QString& dir) {
@@ -824,4 +842,63 @@ LibraryTableModel* Library::trackTableModel() const {
     }
 
     return m_pMixxxLibraryFeature->trackTableModel();
+}
+
+void Library::slotSaveSelectedTrackId() {
+    if (!m_pConfig || !m_pLibraryWidget) {
+        return;
+    }
+    WTrackTableView* pView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pView) {
+        TrackId trackId = pView->getCurrentTrackId();
+        if (trackId.isValid()) {
+            m_pConfig->set(kLastSelectedTrackIdConfigKey,
+                    ConfigValue(trackId.toVariant().toString()));
+        } else {
+            m_pConfig->set(kLastSelectedTrackIdConfigKey, ConfigValue());
+        }
+    }
+}
+
+void Library::slotRestoreSelectedTrackId() {
+    if (!m_pConfig || !m_pLibraryWidget) {
+        return;
+    }
+    QString trackIdStr = m_pConfig->getValue(kLastSelectedTrackIdConfigKey);
+    if (trackIdStr.isEmpty()) {
+        return;
+    }
+    TrackId trackId{QVariant(trackIdStr)};
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    // setCurrentTrackId calls selectRow then setCurrentIndex with SelectCurrent,
+    // which clears the row selection. Re-select the row after it succeeds.
+    auto selectAndReselect = [](WTrackTableView* pView, const TrackId& id) {
+        if (pView->setCurrentTrackId(id, 0, true)) {
+            QModelIndex idx = pView->currentIndex();
+            if (idx.isValid()) {
+                pView->selectRow(idx.row());
+            }
+            return true;
+        }
+        return false;
+    };
+
+    WTrackTableView* pView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pView) {
+        if (!selectAndReselect(pView, trackId)) {
+            qDebug() << "Library: track" << trackId
+                     << "not in current view, will retry in 1s";
+            QTimer::singleShot(1000, this, [this, trackId, selectAndReselect]() {
+                if (m_pLibraryWidget) {
+                    WTrackTableView* pView = m_pLibraryWidget->getCurrentTrackTableView();
+                    if (pView) {
+                        selectAndReselect(pView, trackId);
+                    }
+                }
+            });
+        }
+    }
 }
