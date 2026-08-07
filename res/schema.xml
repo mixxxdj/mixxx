@@ -593,4 +593,28 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
+  <revision version="41" min_compatible="3">
+    <description>
+      Extend track_locations to support multiple physical files per logical track.
+      Adds track_id (N-to-1 reference back to library for future 1-to-N mapping),
+      offset_samples (sub-sample codec offset vs the primary location, required for
+      beatgrid/cue sync across different encodings of the same track),
+      quality_indicator (integer rank for automatic best-quality file selection),
+      and fingerprint_hash (32-bit SimHash from chromaprint_hash_fingerprint for
+      fast candidate lookup).
+    </description>
+    <sql>
+      ALTER TABLE track_locations ADD COLUMN track_id INTEGER REFERENCES library(id);
+      ALTER TABLE track_locations ADD COLUMN offset_samples REAL DEFAULT 0.0;
+      ALTER TABLE track_locations ADD COLUMN quality_indicator INTEGER DEFAULT 0;
+      ALTER TABLE track_locations ADD COLUMN fingerprint_hash INTEGER DEFAULT NULL;
+
+      CREATE INDEX IF NOT EXISTS idx_track_locations_track_id
+          ON track_locations(track_id);
+
+      CREATE INDEX IF NOT EXISTS idx_track_locations_fingerprint
+          ON track_locations(fingerprint_hash)
+          WHERE fingerprint_hash IS NOT NULL;
+    </sql>
+  </revision>
 </schema>

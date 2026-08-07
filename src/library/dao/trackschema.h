@@ -62,6 +62,11 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = QStringLiteral("directory");
 const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
 const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
+// Added in schema revision 41: CMRT / stem-linking support columns
+const QString TRACKLOCATIONSTABLE_TRACK_ID = QStringLiteral("track_id");
+const QString TRACKLOCATIONSTABLE_OFFSET_SAMPLES = QStringLiteral("offset_samples");
+const QString TRACKLOCATIONSTABLE_QUALITY_INDICATOR = QStringLiteral("quality_indicator");
+const QString TRACKLOCATIONSTABLE_FINGERPRINT_HASH = QStringLiteral("fingerprint_hash");
 
 const QString TRACK_ID = QStringLiteral("track_id");
 const QString LOCATION_ID = QStringLiteral("location_id");
