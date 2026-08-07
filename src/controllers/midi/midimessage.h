@@ -139,6 +139,22 @@ Q_DECLARE_FLAGS(MidiOptions, MidiOption);
 Q_DECLARE_OPERATORS_FOR_FLAGS(MidiOptions);
 Q_DECLARE_METATYPE(MidiOptions);
 
+inline bool midiOptionIsModifier(MidiOption option) {
+    // Actually the same as !midiOptionIsExclusive() but kept separate
+    // for now to allow extension
+    return option == MidiOption::Invert || option == MidiOption::SoftTakeover;
+}
+
+inline bool midiOptionIsExclusive(MidiOption option) {
+    switch (option) {
+    case MidiOption::Invert:
+    case MidiOption::SoftTakeover:
+        return false;
+    default:
+        return true;
+    }
+}
+
 struct MidiOutput {
     MidiOutput()
             : message(0) {
