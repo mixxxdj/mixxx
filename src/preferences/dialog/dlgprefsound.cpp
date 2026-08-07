@@ -221,7 +221,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
         connect(m_pSoundManager.get(),
                 &SoundManager::hardwareDeviceAdded,
                 this,
-                [this](QString name, uint32_t id) {
+                [this](const QString& name, uint32_t id) {
                     qWarning() << "SoundManager::hardwareDeviceAdded";
                     m_volumeDevice->addItem(name, id);
                 });

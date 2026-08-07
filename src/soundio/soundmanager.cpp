@@ -671,12 +671,13 @@ bool SoundManager::isPipewireSelected() {
 }
 #endif
 
-void SoundManager::addHardwareVolume(QString name, uint32_t newRoute, uint32_t previousRoute) {
+void SoundManager::addHardwareVolume(
+        const QString& name, uint32_t newRoute, uint32_t previousRoute) {
     qWarning() << "SoundManager::addHardwareVolume";
     emit hardwareVolumeAdded(name, newRoute, previousRoute);
 }
 
-void SoundManager::addHardwareDevice(QString name, uint32_t id) {
+void SoundManager::addHardwareDevice(const QString& name, uint32_t id) {
     qWarning() << "SoundManager::addHardwareDevice";
     emit hardwareDeviceAdded(name, id);
 }

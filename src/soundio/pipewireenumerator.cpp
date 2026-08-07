@@ -3,7 +3,9 @@
 #include <pipewire/pipewire.h>
 #include <spa/param/param.h>
 #include <spa/param/props.h>
+#if PW_CHECK_VERSION(0, 3, 65)
 #include <spa/param/route.h>
+#endif
 #include <spa/pod/builder.h>
 #include <spa/pod/parser.h>
 #include <spa/utils/defs.h>
@@ -124,7 +126,7 @@ PipewireEnumerator::PipewireEnumerator(
     connected = connect(m_COInputVolume.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double gain) { setHardwareGain(gain, true); });
+            [this](double gain) { setHardwareGain(static_cast<float>(gain), true); });
     if (!connected) {
         qWarning() << "connection failed m_COInputVolume";
     }
@@ -958,11 +960,9 @@ void PipewireEnumerator::setHardwareGain(float gain, bool isInput) {
             SPA_PARAM_ROUTE_props,
             SPA_POD_PodObject(inner));
 
-    // NOTE(pri-yan-shu) in between commits locking/unlocking started
-    // resulting in freezes, investigate
-    // pw_thread_loop_lock(m_pPwThreadLoop);
+    pw_thread_loop_lock(m_pPwThreadLoop);
     pw_device_set_param(device.device, SPA_PARAM_Route, 0, static_cast<const spa_pod*>(outer));
-    // pw_thread_loop_unlock(m_pPwThreadLoop);
+    pw_thread_loop_unlock(m_pPwThreadLoop);
 
     qDebug() << "PipewireEnumerator::setHardwareGain complete";
 }
@@ -1034,30 +1034,32 @@ void PipewireEnumerator::deviceEventParam(int seq,
                 SPA_POD_Int(&routeDevice),
                 SPA_PARAM_ROUTE_props,
                 SPA_POD_PodObject(&props));
+
+        VERIFY_OR_DEBUG_ASSERT(res > 0) {
+            qWarning() << "spa_pod_parse_object failed";
+            return;
+        }
+
         const float* volumes;
         uint32_t arraySize;
         uint32_t childType;
         uint32_t childSize;
-
-        VERIFY_OR_DEBUG_ASSERT(res > 0) {
-            return;
-        }
 
         res = spa_pod_parse_object(props,
                 SPA_TYPE_OBJECT_Props,
                 nullptr,
                 SPA_PROP_channelVolumes,
                 SPA_POD_Array(&childSize, &childType, &arraySize, &volumes));
+
+        VERIFY_OR_DEBUG_ASSERT(res > 0) {
+            qWarning() << "spa_pod_parse_object failed";
+            return;
+        }
+
         qDebug() << "spa_pod_parse_object res" << res << "direction"
                  << direction << "route_index" << routeIndex << "routeDevice"
                  << routeDevice << "childSize" << childSize << "childType"
                  << childType << "arraySize" << arraySize;
-
-        VERIFY_OR_DEBUG_ASSERT(res > 0 && childType == SPA_TYPE_Float) {
-            qWarning() << "PipewireEnumerator::deviceEventParam return" << res
-                       << arraySize << childType << childSize;
-            return;
-        }
 
         Device& device = m_devices.at(m_enumParamDeviceId);
 

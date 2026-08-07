@@ -118,8 +118,8 @@ class SoundManager : public QObject {
 #ifdef __PIPEWIRE__
     bool isPipewireSelected();
 #endif
-    void addHardwareVolume(QString name, uint32_t newRoute, uint32_t previousRoute);
-    void addHardwareDevice(QString name, uint32_t id);
+    void addHardwareVolume(const QString& name, uint32_t newRoute, uint32_t previousRoute);
+    void addHardwareDevice(const QString& name, uint32_t id);
     void removeHardwareDevice(uint32_t id);
     std::vector<std::pair<uint32_t, QString>> queryHardwareDevices();
 
