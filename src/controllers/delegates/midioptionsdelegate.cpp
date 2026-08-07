@@ -19,7 +19,11 @@ const QList<MidiOption> kMidiOptions = {
         // Furthermore, the mapping list is cleaner without it, mappings that
         // have options set are much easier to spot.
         // MidiOption::None,
+        MidiOption::Script,
         MidiOption::Invert,
+        MidiOption::SoftTakeover,
+        MidiOption::FourteenBitMSB,
+        MidiOption::FourteenBitLSB,
         MidiOption::Rot64,
         MidiOption::Rot64Invert,
         MidiOption::Rot64Fast,
@@ -28,11 +32,8 @@ const QList<MidiOption> kMidiOptions = {
         MidiOption::Switch,
         MidiOption::Spread64,
         MidiOption::HercJog,
+        MidiOption::HercJogFast,
         MidiOption::SelectKnob,
-        MidiOption::SoftTakeover,
-        MidiOption::Script,
-        MidiOption::FourteenBitMSB,
-        MidiOption::FourteenBitLSB,
 };
 
 } // namespace
