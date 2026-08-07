@@ -1739,6 +1739,54 @@ WPushButton#BpmLockToggle[value="1"] {
   #Hotcue8 WPushButton[type="loop"] {
     image: url(skins:LateNight/classic/buttons/btn__8_loop.svg) no-repeat center center;
   }
+#Hotcue9 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__9.svg) no-repeat center center;
+  }
+  #Hotcue9 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__9_loop.svg) no-repeat center center;
+  }
+#Hotcue10 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__10.svg) no-repeat center center;
+  }
+  #Hotcue10 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__10_loop.svg) no-repeat center center;
+  }
+#Hotcue11 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__11.svg) no-repeat center center;
+  }
+  #Hotcue11 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__11_loop.svg) no-repeat center center;
+  }
+#Hotcue12 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__12.svg) no-repeat center center;
+  }
+  #Hotcue12 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__12_loop.svg) no-repeat center center;
+  }
+#Hotcue13 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__13.svg) no-repeat center center;
+  }
+  #Hotcue13 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__13_loop.svg) no-repeat center center;
+  }
+#Hotcue14 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__14.svg) no-repeat center center;
+  }
+  #Hotcue14 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__14_loop.svg) no-repeat center center;
+  }
+#Hotcue15 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__15.svg) no-repeat center center;
+  }
+  #Hotcue15 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__15_loop.svg) no-repeat center center;
+  }
+#Hotcue16 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__16.svg) no-repeat center center;
+  }
+  #Hotcue16 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__16_loop.svg) no-repeat center center;
+  }
 
 #SpecialCueButton_intro_start WPushButton {
   image: url(skins:LateNight/classic/buttons/btn__intro_start.svg) no-repeat center center;

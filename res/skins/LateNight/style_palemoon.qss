@@ -2093,6 +2093,166 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__8_loop_dark.svg) no-repeat center center;
   }
 
+#Hotcue9 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__9.svg) no-repeat center center;
+  }
+  #Hotcue9 WPushButton[displayValue="1"],
+  #Hotcue9 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__9_active.svg) no-repeat center center;
+  }
+  #Hotcue9 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue9 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__9_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue9 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue9 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__9_loop.svg) no-repeat center center;
+  }
+  #Hotcue9 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue9 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__9_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue10 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__10.svg) no-repeat center center;
+  }
+  #Hotcue10 WPushButton[displayValue="1"],
+  #Hotcue10 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__10_active.svg) no-repeat center center;
+  }
+  #Hotcue10 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue10 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__10_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue10 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue10 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__10_loop.svg) no-repeat center center;
+  }
+  #Hotcue10 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue10 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__10_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue11 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__11.svg) no-repeat center center;
+  }
+  #Hotcue11 WPushButton[displayValue="1"],
+  #Hotcue11 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__11_active.svg) no-repeat center center;
+  }
+  #Hotcue11 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue11 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__11_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue11 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue11 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__11_loop.svg) no-repeat center center;
+  }
+  #Hotcue11 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue11 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__11_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue12 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__12.svg) no-repeat center center;
+  }
+  #Hotcue12 WPushButton[displayValue="1"],
+  #Hotcue12 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__12_active.svg) no-repeat center center;
+  }
+  #Hotcue12 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue12 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__12_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue12 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue12 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__12_loop.svg) no-repeat center center;
+  }
+  #Hotcue12 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue12 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__12_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue13 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__13.svg) no-repeat center center;
+  }
+  #Hotcue13 WPushButton[displayValue="1"],
+  #Hotcue13 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__13_active.svg) no-repeat center center;
+  }
+  #Hotcue13 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue13 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__13_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue13 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue13 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__13_loop.svg) no-repeat center center;
+  }
+  #Hotcue13 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue13 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__13_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue14 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__14.svg) no-repeat center center;
+  }
+  #Hotcue14 WPushButton[displayValue="1"],
+  #Hotcue14 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__14_active.svg) no-repeat center center;
+  }
+  #Hotcue14 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue14 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__14_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue14 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue14 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__14_loop.svg) no-repeat center center;
+  }
+  #Hotcue14 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue14 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__14_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue15 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__15.svg) no-repeat center center;
+  }
+  #Hotcue15 WPushButton[displayValue="1"],
+  #Hotcue15 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__15_active.svg) no-repeat center center;
+  }
+  #Hotcue15 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue15 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__15_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue15 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue15 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__15_loop.svg) no-repeat center center;
+  }
+  #Hotcue15 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue15 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__15_loop_dark.svg) no-repeat center center;
+  }
+
+#Hotcue16 WPushButton[displayValue="0"] {
+  image: url(skins:LateNight/palemoon/buttons/btn__16.svg) no-repeat center center;
+  }
+  #Hotcue16 WPushButton[displayValue="1"],
+  #Hotcue16 WPushButton[displayValue="2"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__16_active.svg) no-repeat center center;
+  }
+  #Hotcue16 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue16 WPushButton[displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__16_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue16 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue16 WPushButton[type="loop"][displayValue="2"][dark="false"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__16_loop.svg) no-repeat center center;
+  }
+  #Hotcue16 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue16 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__16_loop_dark.svg) no-repeat center center;
+  }
+
 #SpecialCueButton_intro_start WPushButton[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__intro_start.svg) no-repeat center center;
   }
