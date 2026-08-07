@@ -93,6 +93,14 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(group, "boothDelay"))),
           m_pLatencyCompensationDelay(std::make_unique<EngineDelay>(
                   ConfigKey(group, "microphoneLatencyCompensation"))),
+          m_pExternalSyncLatencyCompensation(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, "externalSyncLatencyCompensation"),
+                  -100.0, // min
+                  100.0,  // max
+                  true,   // allowOutOfBounds
+                  true,   // bIgnoreNops
+                  false,  // bTrack
+                  true)), // bPersist
           m_pVumeter(std::make_unique<EngineVuMeter>(kMainGroup, kLegacyGroup)),
           // Starts a thread for recording and broadcast
           m_pEngineSideChain(bEnableSidechain
@@ -230,9 +238,10 @@ std::span<const CSAMPLE> EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.span();
 }
 
-void EngineMixer::processChannels(std::size_t bufferSize) {
+void EngineMixer::processChannels(std::size_t bufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachsDac) {
     // Update internal sync lock rate.
-    m_pEngineSync->onCallbackStart(m_sampleRate, bufferSize);
+    m_pEngineSync->onCallbackStart(m_sampleRate, bufferSize, absTimeWhenPrevOutputBufferReachsDac);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -349,7 +358,7 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
 
     // After local bpms are updated, trigger the rest of the post-processing
     // which ensures that all channels are updating certain values at the
-    // same point in time. This prevents sync from failing depending on
+    // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
     std::for_each(m_activeChannels.cbegin() + activeChannelsStartIndex,
             m_activeChannels.cend(),
@@ -358,9 +367,9 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
             });
 }
 
-void EngineMixer::process(const std::size_t bufferSize) {
+void EngineMixer::process(const std::size_t bufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachsDac) {
     DEBUG_ASSERT(bufferSize <= static_cast<int>(kMaxEngineSamples));
-
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
@@ -382,7 +391,7 @@ void EngineMixer::process(const std::size_t bufferSize) {
     }
 
     // Prepare all channels for output
-    processChannels(bufferSize);
+    processChannels(bufferSize, absTimeWhenPrevOutputBufferReachsDac);
 
     // Compute headphone mix
     // Head phone left/right mix
