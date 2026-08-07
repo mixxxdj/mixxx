@@ -1,0 +1,90 @@
+<Template>
+<!--
+Eve: All singletons are defined in the regular fx_rack.xml so they don't get inserted more than once
+-->
+  <!-- <SingletonDefinition>
+    <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
+    <Children>
+      <Template src="skins:LateNight/samplers/sampler_expand_button.xml">
+      </Template>
+    </Children>
+  </SingletonDefinition> -->
+
+  <WidgetGroup>
+    <ObjectName>SamplerContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <!-- Select between big or small samplers -->
+      <WidgetStack currentpage="[LateNight],expand_samplers_1-4">
+        <Children>
+
+          <!-- 4 small Samplers -->
+          <WidgetGroup>
+            <ObjectName>SamplerRow</ObjectName>
+		        <Layout>horizontal</Layout>
+		        <SizePolicy>min,min</SizePolicy>
+		        <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini1_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini2_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini3_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerMini4_Singleton</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+          <!-- /4 small Samplers -->
+
+          <!-- 4 big Samplers -->
+          <WidgetGroup trigger="[LateNight],expand_samplers_1-4" on_hide_select="0">
+            <ObjectName>SamplerRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>Sampler1_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>Sampler2_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>Sampler3_Singleton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>Sampler4_Singleton</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+          <!-- /4 big Samplers -->
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+</Template>
