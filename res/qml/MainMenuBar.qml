@@ -316,7 +316,9 @@ MenuBar {
             onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/chapters/controlling_mixxx.html#using-a-keyboard")
         }
         Action {
-            text: qsTr("&Settings directory")
+            // Qt Quick Controls does not expose native menu roles. Prevent
+            // macOS from treating this action as the application Preferences action.
+            text: qsTr("&Settings directory") + "\u200c"
 
             onTriggered: Qt.openUrlExternally(Mixxx.Application.settingsDirectoryUrl)
         }
