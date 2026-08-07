@@ -13,6 +13,9 @@
 #include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/fmpsrating.h"
+#include "track/trackrecord.h"
+
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
@@ -468,55 +471,6 @@ int removeUserTextIdentificationFrames(
     return count;
 }
 
-// Rating conversion functions
-// FMPS uses 0.0-1.0 scale, Mixxx uses 0-5 (with 0 meaning unrated)
-// POPM uses 0-255 scale with specific thresholds for 1-5 star ratings
-
-/// Convert Mixxx rating (0-5) to FMPS rating (0.0-1.0)
-/// Returns 0.0 for unrated (0), maps 1-5 to 0.2, 0.4, 0.6, 0.8, 1.0
-double mixxxRatingToFMPS(int rating) {
-    if (rating <= 0 || rating > 5) {
-        return 0.0;
-    }
-    return rating / 5.0;
-}
-
-/// Convert FMPS rating (0.0-1.0) to Mixxx rating (0-5)
-/// Uses symmetric thresholds: 0.1, 0.3, 0.5, 0.7, 0.9
-int fmpsRatingToMixxx(double fmps) {
-    if (fmps < 0.1) {
-        return 0; // Unrated
-    } else if (fmps < 0.3) {
-        return 1;
-    } else if (fmps < 0.5) {
-        return 2;
-    } else if (fmps < 0.7) {
-        return 3;
-    } else if (fmps < 0.9) {
-        return 4;
-    } else {
-        return 5;
-    }
-}
-
-/// Convert POPM rating (0-255) to Mixxx rating (0-5)
-/// Based on common POPM thresholds used by media players
-int popmRatingToMixxx(int popm) {
-    if (popm == 0) {
-        return 0; // Unrated
-    } else if (popm <= 31) {
-        return 1; // 1 star: 1-31
-    } else if (popm <= 95) {
-        return 2; // 2 stars: 32-95
-    } else if (popm <= 159) {
-        return 3; // 3 stars: 96-159
-    } else if (popm <= 223) {
-        return 4; // 4 stars: 160-223
-    } else {
-        return 5; // 5 stars: 224-255
-    }
-}
-
 /// Find the first POPM (Popularimeter) frame in the tag
 TagLib::ID3v2::PopularimeterFrame* findFirstPopularimeterFrame(
         const TagLib::ID3v2::Tag& tag) {
@@ -668,38 +622,26 @@ inline QString formatBpmInteger(
 namespace id3v2 {
 
 std::optional<int> importRatingFromTag(const TagLib::ID3v2::Tag& tag) {
-    // First try FMPS_Rating TXXX frame (preferred, more precise)
-    const QString fmpsRatingStr = readFirstUserTextIdentificationFrame(
+    // Prefer the FMPS_Rating TXXX frame, which is more precise than POPM
+    const QString fmpsRating = readFirstUserTextIdentificationFrame(
             tag, kFMPSRatingDescription);
-    if (!fmpsRatingStr.isEmpty()) {
-        bool ok = false;
-        double fmpsValue = fmpsRatingStr.toDouble(&ok);
-        if (ok && fmpsValue >= 0.0 && fmpsValue <= 1.0) {
-            int rating = fmpsRatingToMixxx(fmpsValue);
-            kLogger.debug()
-                    << "Imported FMPS_Rating from TXXX frame:"
-                    << fmpsValue << "->" << rating;
+    if (!fmpsRating.isEmpty()) {
+        const std::optional<int> rating = parseFmpsRating(fmpsRating);
+        if (rating) {
             return rating;
-        } else {
-            kLogger.warning()
-                    << "Invalid FMPS_Rating value in TXXX frame:"
-                    << fmpsRatingStr;
         }
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Rating value in TXXX frame:"
+                << fmpsRating;
+        // Fall through to the POPM frame
     }
 
-    // Fallback: try POPM frame
     const TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
             findFirstPopularimeterFrame(tag);
     if (pPopmFrame) {
-        int popmRating = pPopmFrame->rating();
-        int rating = popmRatingToMixxx(popmRating);
-        kLogger.debug()
-                << "Imported rating from POPM frame:"
-                << popmRating << "->" << rating;
-        return rating;
+        return ratingFromPopm(pPopmFrame->rating());
     }
 
-    // No rating found
     return std::nullopt;
 }
 
@@ -707,34 +649,37 @@ bool exportRatingIntoTag(
         TagLib::ID3v2::Tag* pTag,
         int rating) {
     DEBUG_ASSERT(pTag);
-
-    // Convert rating to FMPS format and write as TXXX frame
-    if (rating > 0 && rating <= 5) {
-        double fmpsRating = mixxxRatingToFMPS(rating);
-        QString fmpsRatingStr = QString::number(fmpsRating, 'f', 1);
-        writeUserTextIdentificationFrame(
-                pTag,
-                kFMPSRatingDescription,
-                fmpsRatingStr,
-                true); // isNumericOrURL = true
-        kLogger.debug()
-                << "Exported rating to FMPS_Rating TXXX frame:"
-                << rating << "->" << fmpsRatingStr;
-        return true;
-    } else if (rating == 0) {
-        // Remove existing FMPS_Rating frame if rating is cleared
-        int removed = removeUserTextIdentificationFrames(pTag, kFMPSRatingDescription);
-        if (removed > 0) {
-            kLogger.debug()
-                    << "Removed FMPS_Rating TXXX frame (rating cleared)";
+    // Keep an existing POPM frame written by another application in
+    // sync with the exported FMPS_Rating. Otherwise the two frames
+    // would contradict each other and a cleared rating would be
+    // resurrected by the POPM import fallback. Only the rating byte
+    // is updated: the identifier and the play counter are preserved,
+    // and no POPM frame is created if none exists.
+    TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(*pTag);
+    if (rating == TrackRecord::kNoRating) {
+        // Remove any existing FMPS_Rating frame if the rating is cleared
+        removeUserTextIdentificationFrames(pTag, kFMPSRatingDescription);
+        if (pPopmFrame) {
+            pPopmFrame->setRating(popmFromRating(rating));
         }
         return true;
     }
-
-    // Invalid rating
-    kLogger.warning()
-            << "Invalid rating value for export:" << rating;
-    return false;
+    const std::optional<QString> fmpsRating = formatFmpsRating(rating);
+    if (!fmpsRating) {
+        kLogger.warning()
+                << "Invalid rating value for export:" << rating;
+        return false;
+    }
+    writeUserTextIdentificationFrame(
+            pTag,
+            kFMPSRatingDescription,
+            *fmpsRating,
+            true); // isNumericOrURL = true
+    if (pPopmFrame) {
+        pPopmFrame->setRating(popmFromRating(rating));
+    }
+    return true;
 }
 
 bool importCoverImageFromTag(

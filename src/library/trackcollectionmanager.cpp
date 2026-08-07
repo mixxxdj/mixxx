@@ -311,14 +311,13 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
     // stamp on the track object!
     if (pTrack->isMarkedForMetadataExport() ||
             (pTrack->isDirty() && m_pConfig &&
-                    (m_pConfig->getValueString(
-                                      mixxx::library::prefs::
-                                              kSyncTrackMetadataConfigKey)
-                                            .toInt() == 1 ||
-                            m_pConfig->getValueString(
-                                             mixxx::library::prefs::
-                                                     kExportRatingToFileTagsConfigKey)
-                                            .toInt() == 1))) {
+                    (m_pConfig->getValue(
+                             mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+                             false) ||
+                            m_pConfig->getValue(
+                                    mixxx::library::prefs::
+                                            kExportRatingToFileTagsConfigKey,
+                                    false)))) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {
             // Export track metadata now by saving as file tags.

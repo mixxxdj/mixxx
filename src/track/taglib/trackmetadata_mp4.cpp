@@ -11,8 +11,10 @@
 
 #include <optional>
 
+#include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
+#include "track/trackrecord.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -47,34 +49,6 @@ const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
 // https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
 // Using org.freedesktop.FMPS namespace for compatibility
 const TagLib::String kAtomKeyFMPSRating = "----:org.freedesktop.FMPS:FMPS_Rating";
-
-// Rating conversion functions
-// FMPS uses 0.0-1.0 scale, Mixxx uses 0-5 (with 0 meaning unrated)
-
-/// Convert Mixxx rating (0-5) to FMPS rating (0.0-1.0)
-double mixxxRatingToFMPS(int rating) {
-    if (rating <= 0 || rating > 5) {
-        return 0.0;
-    }
-    return rating / 5.0;
-}
-
-/// Convert FMPS rating (0.0-1.0) to Mixxx rating (0-5)
-int fmpsRatingToMixxx(double fmps) {
-    if (fmps < 0.1) {
-        return 0; // Unrated
-    } else if (fmps < 0.3) {
-        return 1;
-    } else if (fmps < 0.5) {
-        return 2;
-    } else if (fmps < 0.7) {
-        return 3;
-    } else if (fmps < 0.9) {
-        return 4;
-    } else {
-        return 5;
-    }
-}
 
 bool readAtom(
         const TagLib::MP4::Tag& tag,
@@ -136,57 +110,40 @@ inline void updateAtom(
 namespace mp4 {
 
 std::optional<int> importRatingFromTag(const TagLib::MP4::Tag& tag) {
-    QString fmpsRatingStr;
-    if (readAtom(tag, kAtomKeyFMPSRating, &fmpsRatingStr) &&
-            !fmpsRatingStr.isEmpty()) {
-        bool ok = false;
-        double fmpsValue = fmpsRatingStr.toDouble(&ok);
-        if (ok && fmpsValue >= 0.0 && fmpsValue <= 1.0) {
-            int rating = fmpsRatingToMixxx(fmpsValue);
-            kLogger.debug()
-                    << "Imported FMPS_Rating from MP4 atom:"
-                    << fmpsValue << "->" << rating;
-            return rating;
-        } else {
-            kLogger.warning()
-                    << "Invalid FMPS_Rating value in MP4 atom:"
-                    << fmpsRatingStr;
-        }
+    QString fmpsRating;
+    if (!readAtom(tag, kAtomKeyFMPSRating, &fmpsRating) ||
+            fmpsRating.isEmpty()) {
+        return std::nullopt;
     }
-
-    // No rating found
-    return std::nullopt;
+    const std::optional<int> rating = parseFmpsRating(fmpsRating);
+    if (!rating) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Rating value in MP4 atom:"
+                << fmpsRating;
+    }
+    return rating;
 }
 
 bool exportRatingIntoTag(
         TagLib::MP4::Tag* pTag,
         int rating) {
     DEBUG_ASSERT(pTag);
-
-    // Convert rating to FMPS format and write as freeform atom
-    if (rating > 0 && rating <= 5) {
-        double fmpsRating = mixxxRatingToFMPS(rating);
-        QString fmpsRatingStr = QString::number(fmpsRating, 'f', 1);
-        writeAtom(
-                pTag,
-                kAtomKeyFMPSRating,
-                toTString(fmpsRatingStr));
-        kLogger.debug()
-                << "Exported rating to FMPS_Rating MP4 atom:"
-                << rating << "->" << fmpsRatingStr;
-        return true;
-    } else if (rating == 0) {
-        // Remove existing FMPS_Rating atom if rating is cleared
+    if (rating == TrackRecord::kNoRating) {
+        // Remove any existing FMPS_Rating atom if the rating is cleared
         pTag->removeItem(kAtomKeyFMPSRating);
-        kLogger.debug()
-                << "Removed FMPS_Rating MP4 atom (rating cleared)";
         return true;
     }
-
-    // Invalid rating
-    kLogger.warning()
-            << "Invalid rating value for export:" << rating;
-    return false;
+    const std::optional<QString> fmpsRating = formatFmpsRating(rating);
+    if (!fmpsRating) {
+        kLogger.warning()
+                << "Invalid rating value for export:" << rating;
+        return false;
+    }
+    writeAtom(
+            pTag,
+            kAtomKeyFMPSRating,
+            toTString(*fmpsRating));
+    return true;
 }
 
 bool importCoverImageFromTag(
