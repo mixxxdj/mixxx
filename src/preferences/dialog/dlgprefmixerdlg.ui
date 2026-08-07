@@ -195,7 +195,7 @@
      <property name="title">
       <string>Deck Equalizers</string>
      </property>
-     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0,0,0,0">
+     <layout class="QVBoxLayout" name="DeckEqualizerCheckboxes" stretch="0,0,0,0,0,0,0,0">
       <item>
        <widget class="QCheckBox" name="CheckBoxEqOnly">
         <property name="toolTip">
@@ -295,6 +295,17 @@
         </property>
         <property name="text">
          <string>Reset equalizers on track load</string>
+        </property>
+       </widget>
+      </item>
+
+      <item>
+       <widget class="QCheckBox" name="CheckBoxEqKillAutoReset">
+        <property name="toolTip">
+         <string>Resets the EQ kill switches when loading a track. This is always enabled while &quot;Reset equalizers on track load&quot; is active, because resetting the equalizers also resets the kill switches.</string>
+        </property>
+        <property name="text">
+         <string>Reset EQ kill switches on track load</string>
         </property>
        </widget>
       </item>
@@ -640,6 +651,7 @@
   <tabstop>CheckBoxSingleEqEffect</tabstop>
   <tabstop>CheckBoxBypass</tabstop>
   <tabstop>CheckBoxEqAutoReset</tabstop>
+  <tabstop>CheckBoxEqKillAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
   <tabstop>SliderHiEQ</tabstop>
   <tabstop>SliderLoEQ</tabstop>
