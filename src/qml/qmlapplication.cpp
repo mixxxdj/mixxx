@@ -1,10 +1,6 @@
 #include "qmlapplication.h"
 
-#include <QAction>
 #include <QCoreApplication>
-#include <QKeySequence>
-#include <QMenu>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
@@ -19,6 +15,7 @@
 #include "moc_qmlapplication.cpp"
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
+#include "qml/qmlapplicationproxy.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
 #include "soundio/soundmanager.h"
@@ -180,16 +177,10 @@ QmlApplication::QmlApplication(
     QmlDlgPreferencesProxy::s_pInstance =
             std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
     QmlRecordingProxy::s_pRecordingManager = m_pCoreServices->getRecordingManager();
-
-    m_pMenuBar = std::make_unique<QMenuBar>();
-    QMenu* pApplicationMenu = m_pMenuBar->addMenu(QCoreApplication::applicationName());
-    QAction* pPreferencesAction = pApplicationMenu->addAction(tr("&Preferences"));
-    pPreferencesAction->setMenuRole(QAction::PreferencesRole);
-    pPreferencesAction->setShortcut(QKeySequence::Preferences);
-    connect(pPreferencesAction, &QAction::triggered, this, [pDlgPreferences]() {
-        pDlgPreferences->show();
-        pDlgPreferences->raise();
-        pDlgPreferences->activateWindow();
+    QmlApplicationProxy::registerReloadCallback([this]() {
+        QTimer::singleShot(0, this, [this]() {
+            loadQml(m_mainFilePath);
+        });
     });
 
     const QStringList visualGroups =
@@ -267,6 +258,7 @@ void QmlApplication::slotFrameSwapped() {
 }
 
 QmlApplication::~QmlApplication() {
+    QmlApplicationProxy::registerReloadCallback({});
     // Delete all the QML singletons in order to prevent leak detection in CoreService
     QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
