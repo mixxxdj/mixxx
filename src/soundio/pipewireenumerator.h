@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "audio/types.h"
+#include "preferences/dialog/dlgprefsound.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -23,6 +24,12 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     QList<mixxx::audio::SampleRate> getSampleRates(
             [[maybe_unused]] bool jackSampleRates) const override {
+        if (m_pConfig->getValue(DlgPrefSound::kPipeWireForceQuantumRate, false)) {
+            // this is required even though DlgPrefSound updates samplerates to default
+            // in case of forcing quantum/rate because SoundManager::checkConfig matches
+            // the requested rate with what this function returns
+            return {};
+        }
         return m_samplerates;
     }
 
@@ -148,6 +155,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::pair<uint32_t*, uint32_t*> createOutputPorts(const AudioOutput& path);
     std::pair<uint32_t*, uint32_t*> createPorts(std::string_view name, spa_direction direction);
 
+    void updateFilterLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
+
     struct Link {
         uint32_t input;
         uint32_t output;
@@ -195,4 +204,5 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
     uint32_t m_framesPerBuffer;
+    bool m_forceQuantumRate;
 };

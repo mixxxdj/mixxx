@@ -37,6 +37,8 @@ const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
 const ConfigKey kPipeWire =
         ConfigKey(kAppGroup, QStringLiteral("pipewire"));
+const ConfigKey kPipeWireForceQuantumRate =
+        ConfigKey(kAppGroup, QStringLiteral("pipewire_force_quantum_rate"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -216,13 +218,21 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     if (CmdlineArgs::Instance().getDeveloper()) {
         m_pipewireCheckBox = make_parented<QCheckBox>(this);
         m_pipewireCheckBox->setText(tr("Use PipeWire API"));
+        m_pipewireForceQuantumRate = make_parented<QCheckBox>(this);
+        m_pipewireForceQuantumRate->setText(tr("Force PipeWire Quantum/Rate"));
+        m_pipewireForceQuantumRate->setChecked(
+                m_pSettings->getValue(kPipeWireForceQuantumRate, false));
 
         bool checked = m_pSoundManager->isPipewireSelected();
         m_pipewireCheckBox->setChecked(checked);
         apiComboBox->setDisabled(checked);
+        m_pipewireForceQuantumRate->setDisabled(!checked);
 
         m_pipewireCheckBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
+        m_pipewireForceQuantumRate->setSizePolicy(
+                QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
         apiHBox->addWidget(m_pipewireCheckBox.get());
+        apiHBox->addWidget(m_pipewireForceQuantumRate.get());
 
         connect(m_pipewireCheckBox,
                 &QCheckBox::toggled,
@@ -236,6 +246,17 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                                    "API selection to take effect."));
                     }
                 });
+        connect(m_pipewireForceQuantumRate, &QCheckBox::toggled, this, [this](bool checked) {
+            m_settingsModified = true;
+            // this makes the checkBox state persist even if preference page is cancelled
+            // but this is required as this key is queried within single preference page session
+            m_pSettings->set(kPipeWireForceQuantumRate,
+                    ConfigValue(m_pipewireForceQuantumRate->isChecked()));
+            auto samplerates = checked
+                    ? m_pSoundManager->getDefaultSampleRates()
+                    : m_pSoundManager->getSampleRates();
+            updateSampleRates(samplerates);
+        });
     }
 #endif
 
@@ -702,6 +723,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
 #ifdef __PIPEWIRE__
     if (CmdlineArgs::Instance().getDeveloper()) {
         m_pipewireCheckBox->setChecked(m_pSoundManager->isPipewireSelected());
+        m_pipewireForceQuantumRate->setChecked(
+                m_pSettings->getValue(kPipeWireForceQuantumRate, false));
     }
 #endif
 
@@ -1224,6 +1247,10 @@ bool DlgPrefSound::okayToClose() const {
 }
 
 void DlgPrefSound::updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates) {
+    int currentIndex = sampleRateComboBox->currentIndex();
+    mixxx::audio::SampleRate selectedRate =
+            sampleRateComboBox->itemData(currentIndex)
+                    .value<mixxx::audio::SampleRate>();
     sampleRateComboBox->clear();
     for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {
@@ -1232,5 +1259,9 @@ void DlgPrefSound::updateSampleRates(const QList<mixxx::audio::SampleRate>& samp
             sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
                     QVariant::fromValue(sampleRate));
         }
+    }
+    auto newIndex = sampleRateComboBox->findData(QVariant::fromValue(selectedRate));
+    if (newIndex >= 0) {
+        sampleRateComboBox->setCurrentIndex(newIndex);
     }
 }

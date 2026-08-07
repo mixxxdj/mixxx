@@ -58,6 +58,7 @@ class SoundManager : public QObject {
     QString getLastErrorMessage(SoundDeviceStatus status) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
+    QList<mixxx::audio::SampleRate> getDefaultSampleRates() const;
     QList<mixxx::audio::SampleRate> getSampleRates(const QString& api) const;
 
     // Convenience overload for SoundManager::getSampleRates(QString)

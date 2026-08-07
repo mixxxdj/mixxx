@@ -35,6 +35,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     QUrl helpUrl() const override;
     bool okayToClose() const override;
 
+    inline static const ConfigKey kPipeWireForceQuantumRate =
+            ConfigKey("[App]", QStringLiteral("pipewire_force_quantum_rate"));
   signals:
     void loadPaths(const SoundManagerConfig &config);
     void writePaths(SoundManagerConfig *config);
@@ -127,5 +129,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 
 #ifdef __PIPEWIRE__
     parented_ptr<QCheckBox> m_pipewireCheckBox;
+    parented_ptr<QCheckBox> m_pipewireForceQuantumRate;
 #endif
 };

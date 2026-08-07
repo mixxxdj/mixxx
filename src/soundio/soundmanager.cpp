@@ -248,6 +248,14 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     }
 }
 
+QList<mixxx::audio::SampleRate> SoundManager::getDefaultSampleRates() const {
+    return {
+            mixxx::audio::SampleRate(44100),
+            mixxx::audio::SampleRate(48000),
+            mixxx::audio::SampleRate(96000),
+    };
+}
+
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
     QList<mixxx::audio::SampleRate> samplerates =
             m_pEnumerator->getSampleRates(api == SoundManagerConfig::kAPIJack);
@@ -255,11 +263,7 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api)
         return samplerates;
     }
 
-    return QList<mixxx::audio::SampleRate>{
-            mixxx::audio::SampleRate(44100),
-            mixxx::audio::SampleRate(48000),
-            mixxx::audio::SampleRate(96000),
-    };
+    return getDefaultSampleRates();
 }
 
 QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
