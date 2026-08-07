@@ -33,6 +33,7 @@ KeyControl::KeyControl(const QString& group,
                   ConfigKey(group, "reset_key"))),
           m_keylockMode(std::make_unique<ControlPushButton>(ConfigKey(group, "keylockMode"))),
           m_keyunlockMode(std::make_unique<ControlPushButton>(ConfigKey(group, "keyunlockMode"))),
+          m_pKeyHighlight(std::make_unique<ControlPushButton>(ConfigKey(group, "key_highlight"))),
           m_pFileKey(std::make_unique<ControlObject>(ConfigKey(group, "file_key"))),
           m_pEngineKey(std::make_unique<ControlObject>(ConfigKey(group, "key"))),
           m_pEngineKeyDistance(std::make_unique<ControlPotmeter>(
@@ -55,6 +56,8 @@ KeyControl::KeyControl(const QString& group,
     m_keylockMode->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_keyunlockMode->setButtonMode(mixxx::control::ButtonMode::Toggle);
+
+    m_pKeyHighlight->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     connect(m_pPitch.get(),
             &ControlObject::valueChanged,

@@ -20,6 +20,9 @@ class TrackModel {
     static constexpr int kDataExportRole = Qt::UserRole + 2;
     // This role provides the tuning frequency in Hz
     static constexpr int kTuningFrequencyRole = Qt::UserRole + 3;
+    // This role provides the harmonic key-highlight transpose direction for the
+    // Key column as a KeyUtils::YellowShift cast to int (0 == None).
+    static constexpr int kKeyShiftDirectionRole = Qt::UserRole + 4;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)
