@@ -753,25 +753,27 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         // in the database.
         DEBUG_ASSERT(!pCoverImg);
 
-        // Import rating from file tags even during partial import,
-        // if enabled. File tags are the source of truth for ratings.
+        // During a partial import the file has not changed since the
+        // last synchronization, so an existing rating in Mixxx is newer
+        // than the value in the file tags and must not be overwritten.
+        // Only fill in a missing rating, e.g. after the import option
+        // has been enabled for an existing library. Changed files are
+        // handled by the full import below, where file tags take
+        // precedence.
         bool ratingImported = false;
-        if (syncParams.importRatingFromFile && m_pSoundSource) {
-            auto rating = m_pSoundSource->importRating();
-            if (rating.has_value()) {
-                int newRating = rating.value();
-                int currentRating = m_pTrack->getRating();
-                if (newRating != currentRating) {
-                    m_pTrack->setRating(newRating);
-                    ratingImported = true;
-                    if (kLogger.debugEnabled()) {
-                        kLogger.debug()
-                                << "Imported rating"
-                                << newRating
-                                << "(was" << currentRating << ")"
-                                << "from file"
-                                << getUrl().toString(QUrl::PreferLocalFile);
-                    }
+        if (syncParams.importRatingFromFile && m_pSoundSource &&
+                m_pTrack->getRating() == mixxx::TrackRecord::kNoRating) {
+            const auto rating = m_pSoundSource->importRating();
+            const int newRating = rating.value_or(mixxx::TrackRecord::kNoRating);
+            if (newRating != mixxx::TrackRecord::kNoRating) {
+                m_pTrack->setRating(newRating);
+                ratingImported = true;
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug()
+                            << "Imported missing rating"
+                            << newRating
+                            << "from file"
+                            << getUrl().toString(QUrl::PreferLocalFile);
                 }
             }
         }
@@ -874,8 +876,10 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
             std::move(trackMetadata),
             sourceSynchronizedAt);
 
-    // Import rating from file tags if enabled.
-    // File tags are the source of truth for ratings.
+    // Import the rating from file tags if enabled. The file is either
+    // being imported for the first time or has changed since the last
+    // synchronization, so the file tags take precedence over the value
+    // stored in Mixxx.
     if (syncParams.importRatingFromFile && m_pSoundSource) {
         auto rating = m_pSoundSource->importRating();
         if (rating.has_value()) {

@@ -1,6 +1,7 @@
 #include <QtDebug>
 
 #include "library/coverart.h"
+#include "sources/metadatasourcetaglib.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "test/soundsourceproviderregistration.h"
@@ -145,6 +146,75 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     EXPECT_TRUE(pTrack->isDirty());
     EXPECT_NE(trackMetadataBefore, trackMetadataAfter);
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
+}
+
+TEST_F(TrackUpdateTest, partialImportKeepsExistingMixxxRating) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("rated.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportRating(2));
+    }
+
+    SyncTrackMetadataParams params;
+    params.importRatingFromFile = true;
+
+    // First import: the file's rating is imported
+    auto pTrack = Track::newTemporary(trackPath);
+    ASSERT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    params));
+    ASSERT_EQ(pTrack->getRating(), 2);
+    pTrack->markClean();
+
+    // The user rates the track in Mixxx. The file has not changed since
+    // the last synchronization, so a repeated partial import must not
+    // overwrite the user's rating with the older value from the file.
+    pTrack->setRating(4);
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            params);
+    EXPECT_EQ(pTrack->getRating(), 4);
+}
+
+TEST_F(TrackUpdateTest, partialImportFillsMissingRating) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("rated.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportRating(2));
+    }
+
+    // First import without rating import enabled
+    auto pTrack = Track::newTemporary(trackPath);
+    ASSERT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
+    ASSERT_EQ(pTrack->getRating(), 0);
+    pTrack->markClean();
+
+    // Enabling rating import later must fill the missing rating from
+    // the file during a partial import
+    SyncTrackMetadataParams params;
+    params.importRatingFromFile = true;
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            params);
+    EXPECT_EQ(pTrack->getRating(), 2);
 }
 
 // TODO: Add tests for SoundSourceProxy::UpdateTrackFromSourceMode::Newer

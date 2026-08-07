@@ -804,10 +804,31 @@ bool MetadataSourceTagLib::exportRating(int rating) const {
     case taglib::FileType::MPEG: {
         TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
         if (file.isOpen()) {
-            // Export to ID3v2 (preferred)
+            // Export into ID3v2 (preferred)
+            int modifiedTags = TagLib::MPEG::File::ID3v2;
             TagLib::ID3v2::Tag* pTag = file.ID3v2Tag(true);
             if (pTag && taglib::id3v2::exportRatingIntoTag(pTag, rating)) {
-                success = file.save(TagLib::MPEG::File::ID3v2);
+                // Keep the FMPS_RATING item of an existing APE tag in
+                // sync, because the import falls back to the APE tag.
+                // No APE tag is created if none exists.
+                if (taglib::hasAPETag(file)) {
+                    TagLib::APE::Tag* pApeTag = file.APETag();
+                    if (pApeTag &&
+                            taglib::ape::exportRatingIntoTag(pApeTag, rating)) {
+                        modifiedTags |= TagLib::MPEG::File::APE;
+                    }
+                }
+                // Keep an ID3v1 tag synchronized if it already exists
+                // and never strip any of the other tags from the file
+                // (see MpegTagSaver::saveModifiedTags() above)
+                const auto duplicateTags = file.hasID3v1Tag()
+                        ? TagLib::File::DuplicateTags::Duplicate
+                        : TagLib::File::DuplicateTags::DoNotDuplicate;
+                success = file.save(
+                        modifiedTags,
+                        TagLib::File::StripTags::StripNone,
+                        TagLib::ID3v2::Version::v4,
+                        duplicateTags);
             }
         }
         break;
@@ -826,6 +847,15 @@ bool MetadataSourceTagLib::exportRating(int rating) const {
         if (file.isOpen()) {
             TagLib::Ogg::XiphComment* pTag = file.xiphComment(true);
             if (pTag && taglib::xiph::exportRatingIntoTag(pTag, rating)) {
+                // Keep the FMPS_Rating frame of an existing ID3v2 tag
+                // in sync, because the import prefers the ID3v2 tag.
+                // No ID3v2 tag is created if none exists.
+                if (file.hasID3v2Tag()) {
+                    TagLib::ID3v2::Tag* pId3v2Tag = file.ID3v2Tag();
+                    if (pId3v2Tag) {
+                        taglib::id3v2::exportRatingIntoTag(pId3v2Tag, rating);
+                    }
+                }
                 success = file.save();
             }
         }

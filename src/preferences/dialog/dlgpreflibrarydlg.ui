@@ -158,7 +158,7 @@
       <item row="2" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_rating_export">
         <property name="toolTip">
-         <string>Export star ratings to file tags using the FMPS_Rating standard when saving track metadata.&lt;br/&gt;This allows ratings to be shared with other media players that support FMPS (e.g., Strawberry, Clementine).</string>
+         <string>Write star ratings into file tags using the FMPS_Rating standard whenever the rating of a track has changed.&lt;br/&gt;Only the rating tag is written; other file tags are not touched unless metadata synchronization is also enabled.&lt;br/&gt;This allows ratings to be shared with other media players that support FMPS (e.g., Strawberry, Clementine).</string>
         </property>
         <property name="text">
          <string>Export star ratings to file tags (FMPS_Rating)</string>
@@ -169,10 +169,10 @@
       <item row="3" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_rating_import">
         <property name="toolTip">
-         <string>Import star ratings from file tags during library scan.&lt;br/&gt;Reads FMPS_Rating (and POPM for MP3 files) from file tags.&lt;br/&gt;Only imports if the track doesn't already have a rating in Mixxx.</string>
+         <string>Import star ratings from file tags when tracks are loaded or scanned.&lt;br/&gt;Reads FMPS_Rating (and POPM for MP3 files) from file tags.&lt;br/&gt;If the file has changed since Mixxx last synchronized it, the rating from the file replaces the rating stored in Mixxx. Otherwise an existing rating in Mixxx is kept and only missing ratings are filled in.</string>
         </property>
         <property name="text">
-         <string>Import star ratings from file tags on library scan</string>
+         <string>Import star ratings from file tags</string>
         </property>
        </widget>
       </item>
