@@ -70,26 +70,23 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
  */
 bool SoundManagerConfig::readFromDisk() {
     QFile file(m_configFile.absoluteFilePath());
-    QDomDocument doc;
     QDomElement rootElement;
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    if (!doc.setContent(&file)) {
+    if (!m_doc.setContent(&file)) {
         file.close();
         return false;
     }
     file.close();
-    rootElement = doc.documentElement();
+    rootElement = m_doc.documentElement();
 
     setAPI(rootElement.attribute(xmlAttributeApi));
 
-#ifdef __PIPEWIRE__
     if (m_pSoundManager->isPipewireSelected() and m_api != SoundManagerConfig::kAPIPipewire) {
         // PipeWire check box just changed, current config is useless
         return false;
     }
-#endif
 
     setSampleRate(mixxx::audio::SampleRate(
             rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
@@ -101,13 +98,25 @@ bool SoundManagerConfig::readFromDisk() {
     setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
                                     QString::number(kDefaultDeckCount))
                          .toUInt());
+
+    return true;
+}
+
+bool SoundManagerConfig::validateDevices() {
     clearOutputs();
     clearInputs();
-    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
+    if (m_doc.isNull()) {
+        return false;
+    }
 
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
+
+    QDomElement rootElement = m_doc.documentElement();
+    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
     const QList<SoundDevicePointer> soundDevices =
             m_pSoundManager->getDeviceList(m_api, true, true);
 
@@ -470,6 +479,14 @@ QMultiHash<SoundDeviceId, AudioInput> SoundManagerConfig::getInputs() const {
     return m_inputs;
 }
 
+QMultiHash<SoundDeviceId, AudioOutput>& SoundManagerConfig::getOutputsRef() {
+    return m_outputs;
+}
+
+QMultiHash<SoundDeviceId, AudioInput>& SoundManagerConfig::getInputsRef() {
+    return m_inputs;
+}
+
 void SoundManagerConfig::clearOutputs() {
     m_outputs.clear();
 }
@@ -501,17 +518,14 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         if (!apiList.isEmpty()) {
 #ifdef __LINUX__
             // Check if PipeWire checkbox selected
-#ifdef __PIPEWIRE__
             if (m_pSoundManager->isPipewireSelected()) {
                 m_api = SoundManagerConfig::kAPIPipewire;
-            } else
-#endif
                 // Check for JACK and use that if it's available, otherwise use ALSA
-                if (apiList.contains(SoundManagerConfig::kAPIJack)) {
-                    m_api = SoundManagerConfig::kAPIJack;
-                } else {
-                    m_api = SoundManagerConfig::kAPIAlsa;
-                }
+            } else if (apiList.contains(SoundManagerConfig::kAPIJack)) {
+                m_api = SoundManagerConfig::kAPIJack;
+            } else {
+                m_api = SoundManagerConfig::kAPIAlsa;
+            }
 #endif
 #ifdef __WINDOWS__
             //Existence of ASIO doesn't necessarily mean you've got ASIO devices
