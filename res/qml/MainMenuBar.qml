@@ -10,11 +10,19 @@ MenuBar {
 
     required property ApplicationWindow applicationWindow
     required property var commands
+    property Menu developerMenu: null
     property int numberOfDecks: 4
 
     signal focusLibrarySearchRequested
 
     visible: Qt.platform.os === "osx"
+
+    Component.onCompleted: {
+        if (Mixxx.Application.developerMode) {
+            developerMenu = developerMenuComponent.createObject(root);
+            root.insertMenu(root.count - 1, developerMenu);
+        }
+    }
 
     Menu {
         title: qsTr("&File")
@@ -245,46 +253,48 @@ MenuBar {
             onTriggered: Mixxx.PreferencesDialog.show()
         }
     }
-    Menu {
-        title: qsTr("&Developer")
-        visible: Mixxx.Application.developerMode
+    Component {
+        id: developerMenuComponent
 
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_ReloadSkin", "Ctrl+Shift+R")
-            text: qsTr("&Reload Skin")
+        Menu {
+            title: qsTr("&Developer")
 
-            onTriggered: Mixxx.Application.reloadSkin()
-        }
+            Action {
+                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_ReloadSkin", "Ctrl+Shift+R")
+                text: qsTr("&Reload Skin")
 
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperTools", "Ctrl+Shift+T")
-            text: qsTr("Developer &Tools")
+                onTriggered: Mixxx.Application.reloadSkin()
+            }
+            Action {
+                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperTools", "Ctrl+Shift+T")
+                text: qsTr("Developer &Tools")
 
-            onTriggered: root.commands.showDeveloperToolsRequested()
-        }
-        Action {
-            checkable: true
-            checked: Mixxx.Application.experimentStatsEnabled
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsExperiment", "Ctrl+Shift+E")
-            text: qsTr("Stats: &Experiment Bucket")
+                onTriggered: root.commands.showDeveloperToolsRequested()
+            }
+            Action {
+                checkable: true
+                checked: Mixxx.Application.experimentStatsEnabled
+                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsExperiment", "Ctrl+Shift+E")
+                text: qsTr("Stats: &Experiment Bucket")
 
-            onTriggered: Mixxx.Application.setExperimentStatsEnabled(!Mixxx.Application.experimentStatsEnabled)
-        }
-        Action {
-            checkable: true
-            checked: Mixxx.Application.baseStatsEnabled
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsBase", "Ctrl+Shift+B")
-            text: qsTr("Stats: &Base Bucket")
+                onTriggered: Mixxx.Application.setExperimentStatsEnabled(!Mixxx.Application.experimentStatsEnabled)
+            }
+            Action {
+                checkable: true
+                checked: Mixxx.Application.baseStatsEnabled
+                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsBase", "Ctrl+Shift+B")
+                text: qsTr("Stats: &Base Bucket")
 
-            onTriggered: Mixxx.Application.setBaseStatsEnabled(!Mixxx.Application.baseStatsEnabled)
-        }
-        Action {
-            checkable: true
-            checked: Mixxx.Application.debuggerEnabled
-            shortcut: Mixxx.Application.menuShortcut("DeveloperMenu_EnableDebugger", "Ctrl+Shift+D")
-            text: qsTr("Deb&ugger Enabled")
+                onTriggered: Mixxx.Application.setBaseStatsEnabled(!Mixxx.Application.baseStatsEnabled)
+            }
+            Action {
+                checkable: true
+                checked: Mixxx.Application.debuggerEnabled
+                shortcut: Mixxx.Application.menuShortcut("DeveloperMenu_EnableDebugger", "Ctrl+Shift+D")
+                text: qsTr("Deb&ugger Enabled")
 
-            onTriggered: Mixxx.Application.debuggerEnabled = !Mixxx.Application.debuggerEnabled
+                onTriggered: Mixxx.Application.debuggerEnabled = !Mixxx.Application.debuggerEnabled
+            }
         }
     }
     Menu {
