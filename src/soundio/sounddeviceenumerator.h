@@ -15,6 +15,9 @@ class SoundDeviceEnumerator : public QObject {
     virtual QList<QString> getAPIs() const = 0;
     virtual void initialize() = 0;
     virtual void deinitialize() = 0;
+    virtual std::vector<std::pair<uint32_t, QString>> queryHardwareDevices() {
+        return {};
+    }
 
     bool initialized() const {
         return m_initialized;
