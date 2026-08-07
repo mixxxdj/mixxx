@@ -262,6 +262,48 @@ TEST_F(HotcueControlTest, SetCueManual) {
                          .isValid());
 }
 
+TEST_F(HotcueControlTest, PositionChangeRequestRejectedWhenUnset) {
+    createAndLoadFakeTrack();
+
+    // With no hotcue set the position control must reject write requests and
+    // stay unset instead of storing a bogus value (issue #10409).
+    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_pHotcue1Position->get())
+                    .isValid());
+
+    m_pHotcue1Position->set(mixxx::audio::FramePos(100).toEngineSamplePos());
+    ProcessBuffer();
+
+    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_pHotcue1Position->get())
+                    .isValid());
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty),
+            m_pHotcue1Status->get());
+}
+
+TEST_F(HotcueControlTest, PositionChangeRequestMovesSetHotcue) {
+    createAndLoadFakeTrack();
+
+    constexpr mixxx::audio::FramePos hotcuePosition(100);
+    constexpr mixxx::audio::FramePos movedPosition(200);
+
+    m_pQuantizeEnabled->set(0);
+    setCurrentFramePosition(hotcuePosition);
+    m_pHotcue1SetCue->set(1);
+    m_pHotcue1SetCue->set(0);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set),
+            m_pHotcue1Status->get());
+    EXPECT_FRAMEPOS_EQ_CONTROL(hotcuePosition, m_pHotcue1Position);
+
+    // Writing to the position control of a set hotcue moves it.
+    m_pHotcue1Position->set(movedPosition.toEngineSamplePos());
+    ProcessBuffer();
+
+    EXPECT_FRAMEPOS_EQ_CONTROL(movedPosition, m_pHotcue1Position);
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Set),
+            m_pHotcue1Status->get());
+}
+
 TEST_F(HotcueControlTest, SetLoopAutoNoRedundantLoopCue) {
     createAndLoadFakeTrack();
 
