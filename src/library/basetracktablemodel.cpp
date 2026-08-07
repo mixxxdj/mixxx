@@ -6,6 +6,9 @@
 #include <QScreen>
 #include <QtGlobal>
 
+#include <cmath>
+#include <utility>
+
 #include "base/Pitch.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
@@ -46,6 +49,46 @@ constexpr double kRelativeHeightOfCoverartToolTip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
 constexpr int kReplayGainPrecision = 2;
+
+// Tracks within this relative BPM tolerance (also checked at half/double
+// tempo) are considered an easy tempo match with a loaded deck track.
+constexpr double kMixBpmToleranceRatio = 0.06;
+
+// Subtle translucent highlight for Key/BPM cells that are compatible with a
+// track currently loaded on a deck. Kept translucent so it composes with the
+// regular row/track colors and selection highlighting.
+const QColor kMixCompatibleHighlightColor = QColor(76, 175, 80, 50);
+
+// Recomputes the harmonic-key and BPM reference values from the tracks that
+// are currently loaded on decks (using PlayerInfo, which is updated whenever
+// a deck loads/unloads a track) and publishes them to BaseTrackTableModel so
+// every visible library table can highlight compatible Key/BPM cells.
+void recomputeMixCompatibilityReference() {
+    QSet<int> compatibleKeyValues;
+    QList<double> referenceBpmValues;
+    const QMap<QString, TrackPointer> loadedTracks = PlayerInfo::instance().getLoadedTracks();
+    for (auto it = loadedTracks.constBegin(); it != loadedTracks.constEnd(); ++it) {
+        if (!PlayerManager::isDeckGroup(it.key())) {
+            continue;
+        }
+        const TrackPointer& pTrack = it.value();
+        if (!pTrack) {
+            continue;
+        }
+        const auto key = pTrack->getKey();
+        if (key != mixxx::track::io::key::INVALID) {
+            const auto compatibleKeys = KeyUtils::getCompatibleKeys(key);
+            for (const auto compatibleKey : compatibleKeys) {
+                compatibleKeyValues.insert(static_cast<int>(compatibleKey));
+            }
+        }
+        const double bpmValue = pTrack->getBpm();
+        if (bpmValue > 0) {
+            referenceBpmValues.append(bpmValue);
+        }
+    }
+    BaseTrackTableModel::setMixCompatibilityReference(compatibleKeyValues, referenceBpmValues);
+}
 
 inline QSqlDatabase cloneDatabase(
         const QSqlDatabase& prototype) {
@@ -120,6 +163,47 @@ QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefa
 
 void BaseTrackTableModel::setDateFormat(const QString& format) {
     s_dateFormat = format;
+}
+
+QSet<int> BaseTrackTableModel::s_mixCompatibleKeyValues;
+QList<double> BaseTrackTableModel::s_mixReferenceBpmValues;
+
+// static
+void BaseTrackTableModel::setMixCompatibilityReference(
+        const QSet<int>& compatibleKeyValues,
+        const QList<double>& referenceBpmValues) {
+    s_mixCompatibleKeyValues = compatibleKeyValues;
+    s_mixReferenceBpmValues = referenceBpmValues;
+}
+
+// static
+bool BaseTrackTableModel::isKeyCompatibleWithLoadedDecks(int keyValue) {
+    if (keyValue == static_cast<int>(mixxx::track::io::key::INVALID)) {
+        return false;
+    }
+    return s_mixCompatibleKeyValues.contains(keyValue);
+}
+
+// static
+bool BaseTrackTableModel::isBpmCompatibleWithLoadedDecks(double bpmValue) {
+    if (bpmValue <= 0.0) {
+        return false;
+    }
+    for (const double referenceBpm : std::as_const(s_mixReferenceBpmValues)) {
+        if (referenceBpm <= 0.0) {
+            continue;
+        }
+        // Also check half/double tempo, since DJs commonly mix tracks at
+        // double or half the tempo of the reference track.
+        for (const double scale : {0.5, 1.0, 2.0}) {
+            const double scaledReference = referenceBpm * scale;
+            const double diffRatio = std::fabs(bpmValue - scaledReference) / scaledReference;
+            if (diffRatio <= kMixBpmToleranceRatio) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
@@ -419,15 +503,39 @@ QVariant BaseTrackTableModel::data(
                 index,
                 ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
         const auto rgbColor = mixxx::RgbColor::fromQVariant(rgbColorValue);
-        if (!rgbColor) {
-            return QVariant();
+        if (rgbColor) {
+            auto bgColor = mixxx::RgbColor::toQColor(rgbColor);
+            DEBUG_ASSERT(bgColor.isValid());
+            DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
+            DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
+            bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
+            return QBrush(bgColor);
         }
-        auto bgColor = mixxx::RgbColor::toQColor(rgbColor);
-        DEBUG_ASSERT(bgColor.isValid());
-        DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
-        DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
-        bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
-        return QBrush(bgColor);
+        // No manually assigned track color: highlight the Key/BPM cell if
+        // this track is an easy harmonic/tempo match for a track currently
+        // loaded on a deck.
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            const QVariant keyCodeValue = rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            bool ok = false;
+            const int keyValue = keyCodeValue.toInt(&ok);
+            if (ok && isKeyCompatibleWithLoadedDecks(keyValue)) {
+                return QBrush(kMixCompatibleHighlightColor);
+            }
+        } else if (field == ColumnCache::COLUMN_LIBRARYTABLE_BPM) {
+            const QVariant bpmRawValue = rawValue(index);
+            double bpmValue = -1.0;
+            if (bpmRawValue.canConvert<mixxx::Bpm>()) {
+                bpmValue = bpmRawValue.value<mixxx::Bpm>().valueOr(-1.0);
+            } else if (bpmRawValue.canConvert<double>()) {
+                bpmValue = bpmRawValue.toDouble();
+            }
+            if (bpmValue > 0 && isBpmCompatibleWithLoadedDecks(bpmValue)) {
+                return QBrush(kMixCompatibleHighlightColor);
+            }
+        }
+        return QVariant();
     } else if (role == Qt::ForegroundRole) {
         // Custom text color for missing tracks
         // Visible in playlists, crates and Missing feature.
@@ -1117,6 +1225,22 @@ void BaseTrackTableModel::slotTrackChanged(
             }
         }
         m_previewDeckTrackId = doGetTrackId(pNewTrack);
+    }
+    if (PlayerManager::isDeckGroup(group)) {
+        recomputeMixCompatibilityReference();
+        // Repaint the Key/BPM columns of all rows so the highlight for
+        // mix-compatible tracks reflects the newly loaded/unloaded track.
+        const int keyColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+        const int bpmColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+        const int lastRow = rowCount() - 1;
+        if (lastRow >= 0) {
+            if (keyColumn >= 0) {
+                emit dataChanged(index(0, keyColumn), index(lastRow, keyColumn));
+            }
+            if (bpmColumn >= 0) {
+                emit dataChanged(index(0, bpmColumn), index(lastRow, bpmColumn));
+            }
+        }
     }
 }
 
