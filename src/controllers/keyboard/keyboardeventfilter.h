@@ -4,6 +4,7 @@
 #include <QLocale>
 #include <QMultiHash>
 #include <QObject>
+#include <QPointer>
 
 #include "control/controlobject.h"
 #include "preferences/configobject.h"
@@ -123,7 +124,7 @@ class KeyboardEventFilter : public QObject {
     // Widgets that have mappable connections, registered by LegacySkinParser
     // during skin construction.
     QList<WBaseWidget*> m_widgets;
-    WSearchLineEdit* m_pSearchBar;
+    QPointer<WSearchLineEdit> m_pSearchBar;
 
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
