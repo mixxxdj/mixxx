@@ -1676,7 +1676,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
                 m_pCrateMenu);
         // Use a custom QCheckBox with fixed hover behavior.
         auto pCheckBox = make_parented<WMenuCheckBox>(
-                mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
+                mixxx::escapeTextPropertyWithoutShortcuts(crate.getFullPath()),
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
