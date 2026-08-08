@@ -806,13 +806,22 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             return;
         }
     }
+    // If we are still playing normally (idle) then we might want to start prerolling the
+    // other deck to get a perfect transition.
+    if (m_eState == ADJ_IDLE && thisDeck->isFromDeck && !otherDeck->loading &&
+            thisDeckPlaying && !otherDeckPlaying &&
+            otherDeck->startPos != kKeepPosition) {
+        if (tryInitiateOverlapTransition(thisDeck, otherDeck, thisPlayPosition)) {
+            m_eState = ADJ_PREROLLING;
+        }
+    }
 
     // If we are past this deck's posThreshold then:
     // - transition into fading mode, play the other deck and fade to it.
     // - check if fading is done and stop the deck
     // - update the crossfader
     if (thisPlayPosition >= thisDeck->fadeBeginPos && thisDeck->isFromDeck && !otherDeck->loading) {
-        if (m_eState == ADJ_IDLE) {
+        if (m_eState == ADJ_PREROLLING || m_eState == ADJ_IDLE) {
             if (thisDeckPlaying || thisPlayPosition >= 1.0) {
                 // Set the state as FADING.
                 m_eState = thisDeck->isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
@@ -833,6 +842,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
 
+                // There's a chance the user loaded a track during the preroll -- just start it now,
+                // it's not worth trying to recover the correct preroll position.
                 if (!otherDeckPlaying) {
                     otherDeck->play();
                 }
@@ -898,6 +909,41 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // step is processed and we can stop the deck.
         }
     }
+}
+
+bool AutoDJProcessor::tryInitiateOverlapTransition(DeckAttributes* thisDeck, DeckAttributes* otherDeck, double thisPlayPosition) {
+    const double fromDeckDurationSec = getEndSecond(thisDeck);
+    const double toDeckDurationSec = getEndSecond(otherDeck);
+    if (fromDeckDurationSec <= 0.0 || toDeckDurationSec <= 0.0) {
+        return false;
+    }
+    constexpr double kEarlyPlaySeconds = 1.0;
+    const double earlyPlayPos =
+            thisDeck->fadeBeginPos - (kEarlyPlaySeconds / fromDeckDurationSec);
+
+    // Don't initiate an overlap transition either if it's too soon, or too late. (If it's too late
+    // we should just immediately start the other deck.)
+    if (thisPlayPosition < earlyPlayPos || thisPlayPosition > thisDeck->fadeBeginPos) {
+        return false;
+    }
+
+    // Seek the toDeck back by the exact number of seconds remaining
+    // until fadeBeginPos so that startPos aligns with the fade start,
+    // regardless of where in the buffer window this callback fired.
+    const double secondsUntilFade =
+            (thisDeck->fadeBeginPos - thisPlayPosition) * fromDeckDurationSec;
+    const double earlyStartPos =
+            otherDeck->startPos - (secondsUntilFade / toDeckDurationSec);
+    otherDeck->setPlayPosition(earlyStartPos);
+    otherDeck->play();
+
+    if constexpr (sDebug) {
+        qDebug() << this << "playerPositionChanged"
+                 << "early play toDeck at" << earlyStartPos
+                 << "(" << secondsUntilFade << "s before startPos"
+                 << otherDeck->startPos << ")";
+    }
+    return true;
 }
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
@@ -1639,6 +1685,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
             pDeck->play();
         }
     }
+    // If the state is prerolling, playerPositionChanged will tell the other deck to start playing
+    // at the correct fade time.
 }
 
 void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
