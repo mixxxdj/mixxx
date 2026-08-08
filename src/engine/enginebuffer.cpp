@@ -1619,7 +1619,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 }
 
 bool EngineBuffer::isTrackLoaded() const {
-    return (m_pCurrentTrack && atomicLoadAcquire(m_iTrackLoading) == 0);
+    return (m_pCurrentTrack && m_iTrackLoading.loadAcquire() == 0);
 }
 
 TrackPointer EngineBuffer::getLoadedTrack() const {
