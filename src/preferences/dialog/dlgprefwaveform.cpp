@@ -36,6 +36,7 @@ DlgPrefWaveform::DlgPrefWaveform(
     setupUi(this);
 
     // Waveform overview init
+    waveformOverviewComboBox->addItem(tr("Simple"), QVariant::fromValue(OverviewType::Simple));
     waveformOverviewComboBox->addItem(
             tr("Filtered"), QVariant::fromValue(OverviewType::Filtered));
     waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(OverviewType::HSV));
@@ -49,15 +50,16 @@ DlgPrefWaveform::DlgPrefWaveform(
     int cfgTypeIndex = waveformOverviewComboBox->findData(QVariant::fromValue(overviewType));
     if (cfgTypeIndex == -1) {
         // Invalid config value, set default type RGB and write it to config
+        overviewType = OverviewType::RGB;
         cfgTypeIndex = waveformOverviewComboBox->findData(
-                QVariant::fromValue(OverviewType::RGB));
+                QVariant::fromValue(overviewType));
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
-        m_pConfig->setValue(kOverviewTypeCfgKey, cfgTypeIndex);
+        m_pConfig->setValue(kOverviewTypeCfgKey, overviewType);
     } else {
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
     }
     // Set the control used by WOverview
-    m_pTypeControl->forceSet(cfgTypeIndex);
+    m_pTypeControl->forceSet(static_cast<double>(overviewType));
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -71,8 +73,15 @@ DlgPrefWaveform::DlgPrefWaveform(
         }
         waveformTypeComboBox->addItem(types[i].getDisplayName(), types[i].getType());
     }
-    // Sort the combobox items alphabetically
+    // Sort the combobox items alphabetically, then move Simple to the top
     waveformTypeComboBox->model()->sort(0);
+    int simpleIdx = waveformTypeComboBox->findData(WaveformWidgetType::Simple);
+    if (simpleIdx > 0) {
+        QString simpleName = waveformTypeComboBox->itemText(simpleIdx);
+        QVariant simpleData = waveformTypeComboBox->itemData(simpleIdx);
+        waveformTypeComboBox->removeItem(simpleIdx);
+        waveformTypeComboBox->insertItem(0, simpleName, simpleData);
+    }
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
