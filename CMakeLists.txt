@@ -3035,7 +3035,6 @@ if(BUILD_TESTING)
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
         src/test/qmlkeyutilstest.cpp
-        src/test/qmlskincontrolcreatortest.cpp
         src/test/themeqml_test.cpp
     )
   endif()
@@ -3984,7 +3983,6 @@ if(QML)
       src/qml/asyncimageprovider.cpp
       src/qml/qmlapplication.cpp
       src/qml/qmlautoreload.cpp
-      src/qml/qmlbatteryproxy.cpp
       src/qml/qmlbeatsmodel.cpp
       src/qml/qmlchainpresetmodel.cpp
       src/qml/qmlconfigproxy.cpp
@@ -4013,7 +4011,6 @@ if(QML)
       src/qml/qmlwaveformoverview.cpp
       src/qml/qmlwaveformrenderer.cpp
       src/qml/qmlsettingparameter.cpp
-      src/qml/qmlskincontrolcreator.cpp
       src/qml/qmltrackproxy.cpp
       src/qml/qmlsoundmanagerproxy.cpp
       src/qml/qmlpreferencesproxy.cpp
