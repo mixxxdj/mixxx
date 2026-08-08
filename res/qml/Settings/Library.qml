@@ -222,7 +222,7 @@ Category {
                                         sourceListView.model = model;
                                     }
                                 }
-                                SettingComponents.FormButton {
+                                Skin.FormButton {
                                     activeColor: "#999999"
                                     backgroundColor: "#3F3F3F"
                                     opacity: enabled ? 1.0 : 0.5
@@ -310,7 +310,7 @@ Category {
                                                     sourceListView.model = model;
                                                 }
                                             }
-                                            SettingComponents.FormButton {
+                                            Skin.FormButton {
                                                 id: relinkButton
 
                                                 activeColor: "#999999"
@@ -338,7 +338,7 @@ Category {
                                                     }
                                                 }
 
-                                                SettingComponents.FormButton {
+                                                Skin.FormButton {
                                                     id: actionButton
 
                                                     activeColor: "#999999"
@@ -446,7 +446,7 @@ Category {
                                     target: Mixxx.Library.scanner
                                 }
                             }
-                            SettingComponents.FormButton {
+                            Skin.FormButton {
                                 activeColor: "#999999"
                                 backgroundColor: Mixxx.Library.scanner.cancelling ? "#999999" : "#3a60be"
                                 enabled: !Mixxx.Library.scanner.cancelling
@@ -945,7 +945,7 @@ Category {
         anchors.right: parent.right
         height: 20
 
-        SettingComponents.FormButton {
+        Skin.FormButton {
             activeColor: "#999999"
             anchors.left: parent.left
             backgroundColor: "#7D3B3B"
@@ -968,7 +968,7 @@ Category {
                 color: "#7D3B3B"
                 text: ""
             }
-            SettingComponents.FormButton {
+            Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
                 opacity: enabled ? 1.0 : 0.5
@@ -979,7 +979,7 @@ Category {
                     root.load();
                 }
             }
-            SettingComponents.FormButton {
+            Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: root.dirty ? "#3a60be" : "#3F3F3F"
                 enabled: root.dirty
