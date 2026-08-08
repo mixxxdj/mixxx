@@ -51,7 +51,6 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(this)),
           m_pColorPicker(make_parented<WColorPickerAction>(
                   WColorPicker::Option::AllowNoColor |
                           // TODO(xxx) remove this once the preferences are themed via QSS
@@ -76,6 +75,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
     m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("rating", starRating);
     m_propertyWidgets.insert("year", txtYear);
     m_propertyWidgets.insert(kBpmPropertyName, spinBpm);
     m_propertyWidgets.insert("tracknumber", txtTrackNumber);
@@ -85,13 +85,6 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("color", btnColorPicker);
 
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
-
-    starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    starsLayout->setSpacing(0);
-    starsLayout->setContentsMargins(0, 0, 0, 0);
-    starsLayout->insertWidget(0, m_pWStarRating.get());
-    // This is necessary to pass on mouseMove events to WStarRating
-    m_pWStarRating->setMouseTracking(true);
 
     if (m_pTrackModel) {
         connect(btnNext,
@@ -300,7 +293,7 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 
-    connect(m_pWStarRating,
+    connect(starRating,
             &WStarRating::ratingChangeRequest,
             this,
             &DlgTrackInfo::slotRatingChanged);
@@ -389,7 +382,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_pWStarRating->slotSetRating(m_pLoadedTrack->getRating());
+    starRating->slotSetRating(m_pLoadedTrack->getRating());
 }
 
 void DlgTrackInfo::replaceTrackRecord(
@@ -701,7 +694,7 @@ void DlgTrackInfo::clear() {
 
     txtLocation->setText("");
 
-    m_pWStarRating->slotSetRating(0);
+    starRating->slotSetRating(0);
 }
 
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
@@ -900,7 +893,7 @@ void DlgTrackInfo::slotRatingChanged(int rating) {
     }
     if (m_trackRecord.isValidRating(rating) &&
             rating != m_trackRecord.getRating()) {
-        m_pWStarRating->slotSetRating(rating);
+        starRating->slotSetRating(rating);
         m_trackRecord.setRating(rating);
     }
 }
@@ -1052,7 +1045,7 @@ void DlgTrackInfo::adjustWidgetSizes() {
 
     // Set fixed height on stars widget so it doesn't make the adjacent
     // txtAlbumArtist expand vertically
-    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
+    starRating->setFixedHeight(txtAlbumArtist->height());
 
     // Set the minimum height for the Comment editor to at least 3 line. Let's
     // use the triple the height of a QLineEdit because they are sized correctly.
