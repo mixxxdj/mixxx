@@ -21,7 +21,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT
     Q_FLAGS(Channels)
     Q_PROPERTY(mixxx::qml::QmlTrackProxy* track READ getTrack WRITE setTrack
-                    NOTIFY trackChanged REQUIRED)
+                    NOTIFY trackChanged)
     Q_PROPERTY(mixxx::qml::QmlWaveformOverview::Channels channels READ
                     getChannels WRITE setChannels NOTIFY channelsChanged)
     Q_PROPERTY(QUrl trackUrl READ trackUrl WRITE setTrackUrl NOTIFY trackUrlChanged)
