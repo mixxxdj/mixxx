@@ -114,13 +114,25 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
-    menu.addAction(m_pAnalyzePlaylistAction);
-    menu.addSeparator();
-    menu.addAction(m_pImportPlaylistAction);
-    menu.addAction(m_pExportPlaylistAction);
-    menu.addAction(m_pExportTrackFilesAction);
+
+    QMenu* moreMenu;
+    bool showMoreMenu = true;
+    if (showMoreMenu) {
+        moreMenu = new QMenu(&menu);
+        moreMenu->setTitle(tr("More"));
+        moreMenu->setObjectName("MoreMenu");
+        menu.addMenu(moreMenu);
+    } else {
+        moreMenu = &menu;
+    }
+
+    moreMenu->addAction(m_pAnalyzePlaylistAction);
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_pImportPlaylistAction);
+    moreMenu->addAction(m_pExportPlaylistAction);
+    moreMenu->addAction(m_pExportTrackFilesAction);
 #ifdef __ENGINEPRIME__
-    menu.addAction(m_pExportPlaylistToEngineAction);
+    moreMenu->addAction(m_pExportPlaylistToEngineAction);
 #endif
     menu.exec(globalPos);
 }
