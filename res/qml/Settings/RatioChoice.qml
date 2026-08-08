@@ -28,7 +28,7 @@ Item {
         let minimumSize = options.reduce((acc, option) => acc + fontMetrics.advanceWidth(option) + root.spacing * 2, 0);
         let normalizedSize = root.cellSize * root.options.length;
         let size = root.normalizedWidth ? normalizedSize : minimumSize;
-        if (root.maxWidth > size) {
+        if (root.maxWidth && root.maxWidth > size) {
             return size + root.spacing;
         } else {
             return contentSpin.implicitWidth;
