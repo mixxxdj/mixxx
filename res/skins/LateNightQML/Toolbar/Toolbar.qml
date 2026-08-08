@@ -40,6 +40,177 @@ Rectangle {
 
     signal focusLibrarySearchRequested
 
+    function focusActiveAppMenuTab() {
+        switch (root.activeAppMenuSection) {
+        case "Library":
+            libraryAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "View":
+            viewAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "Options":
+            optionsAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "Developer":
+            developerAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "Help":
+            helpAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        default:
+            fileAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        }
+    }
+    function focusFirstMenuItem(container) {
+        for (let index = 0; index < container.children.length; ++index) {
+            const item = container.children[index];
+            if (item.menuFocusable === true && item.visible && item.enabled) {
+                item.forceActiveFocus(Qt.MenuBarFocusReason);
+                return;
+            }
+        }
+    }
+    function focusNextMenuItem(container, currentItem, offset) {
+        const focusableItems = [];
+        for (let index = 0; index < container.children.length; ++index) {
+            const item = container.children[index];
+            if (item.menuFocusable === true && item.visible && item.enabled) {
+                focusableItems.push(item);
+            }
+        }
+        if (focusableItems.length === 0) {
+            return;
+        }
+        const currentIndex = focusableItems.indexOf(currentItem);
+        const nextIndex = (currentIndex + offset + focusableItems.length) % focusableItems.length;
+        focusableItems[nextIndex].forceActiveFocus(Qt.MenuBarFocusReason);
+    }
+    function focusParentMenuForAction(action) {
+        if (action.parent === appVinylActionsColumn) {
+            root.closingApplicationMenu = true;
+            appVinylPopup.close();
+            root.hoveredAppMenuSubmenu = "";
+            root.pinnedAppMenuSubmenu = "";
+            root.closingApplicationMenu = false;
+            vinylControlMenuAction.forceActiveFocus(Qt.MenuBarFocusReason);
+            return;
+        }
+        root.closingApplicationMenu = true;
+        appSectionPopup.close();
+        root.closingApplicationMenu = false;
+        root.focusActiveAppMenuTab();
+    }
+    function openApplicationMenuFromKeyboard() {
+        if (Qt.platform.os === "osx") {
+            return;
+        }
+        if (appMenuPopup.visible) {
+            root.dismissApplicationMenu();
+            return;
+        }
+        root.openPopupForButton(appMenuPopup, appMenuButton);
+        Qt.callLater(function() {
+            fileAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+        });
+    }
+    function triggerApplicationMenuShortcut(command) {
+        root.dismissApplicationMenu();
+        switch (command) {
+        case "FileMenu_LoadDeck1":
+            root.applicationMenuCommands.loadTrackToDeck(1);
+            break;
+        case "FileMenu_LoadDeck2":
+            root.applicationMenuCommands.loadTrackToDeck(2);
+            break;
+        case "FileMenu_Quit":
+            Qt.quit();
+            break;
+        case "LibraryMenu_Rescan":
+            if (!Mixxx.Library.libraryScanActive) {
+                Mixxx.Library.rescanLibrary();
+            }
+            break;
+        case "LibraryMenu_SearchInCurrentView":
+            Mixxx.Library.searchInCurrentView();
+            root.focusLibrarySearchRequested();
+            break;
+        case "LibraryMenu_SearchInAllTracks":
+            Mixxx.Library.searchInTracksLibrary();
+            root.focusLibrarySearchRequested();
+            break;
+        case "LibraryMenu_NewPlaylist":
+            Mixxx.Library.createPlaylist();
+            break;
+        case "LibraryMenu_NewCrate":
+            Mixxx.Library.createCrate();
+            break;
+        case "ViewMenu_ShowMicrophone":
+            showMicAuxControl.value = showMicAuxControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowVinylControl":
+            showVinylControlsControl.value = showVinylControlsControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowPreviewDeck":
+            showPreviewDecksControl.value = showPreviewDecksControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowCoverArt":
+            showLibraryCoverArtControl.value = showLibraryCoverArtControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowKeywheel":
+            root.applicationMenuCommands.showKeywheel();
+            break;
+        case "ViewMenu_MaximizeLibrary":
+            showMaximizedLibraryControl.value = maximizeLibraryButton.checked ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowAutoDJ":
+            Mixxx.Library.showAutoDJ();
+            break;
+        case "ViewMenu_FullScreen":
+            root.applicationMenuCommands.toggleFullScreen();
+            break;
+        case "OptionsMenu_EnableVinyl1":
+            vinylDeck1Control.value = vinylDeck1Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableVinyl2":
+            vinylDeck2Control.value = vinylDeck2Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableVinyl3":
+            vinylDeck3Control.value = vinylDeck3Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableVinyl4":
+            vinylDeck4Control.value = vinylDeck4Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_RecordMix":
+            recordingToggleControl.trigger();
+            break;
+        case "OptionsMenu_EnableLiveBroadcasting":
+            broadcastEnabledControl.value = broadcastEnabledControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableShortcuts":
+            Mixxx.Application.keyboardShortcutsEnabled = !Mixxx.Application.keyboardShortcutsEnabled;
+            break;
+        case "OptionsMenu_Preferences":
+            Mixxx.PreferencesDialog.show();
+            break;
+        case "OptionsMenu_ReloadSkin":
+            Mixxx.Application.reloadSkin();
+            break;
+        case "OptionsMenu_DeveloperTools":
+            root.applicationMenuCommands.showDeveloperToolsRequested();
+            break;
+        case "OptionsMenu_DeveloperStatsExperiment":
+            Mixxx.Application.setExperimentStatsEnabled(!Mixxx.Application.experimentStatsEnabled);
+            break;
+        case "OptionsMenu_DeveloperStatsBase":
+            Mixxx.Application.setBaseStatsEnabled(!Mixxx.Application.baseStatsEnabled);
+            break;
+        case "DeveloperMenu_EnableDebugger":
+            Mixxx.Application.debuggerEnabled = !Mixxx.Application.debuggerEnabled;
+            break;
+        }
+    }
+
     function formatTime(date) {
         const hours = date.getHours();
         const displayHour = hours % 12 || 12;
@@ -591,6 +762,10 @@ Rectangle {
 
         property real opacity: 1.0
     }
+    ApplicationMenuShortcuts {
+        onApplicationMenuRequested: root.openApplicationMenuFromKeyboard()
+        onShortcutTriggered: command => root.triggerApplicationMenuShortcut(command)
+    }
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 2
@@ -868,12 +1043,16 @@ Rectangle {
     ToolbarSettingsPopup {
         id: appMenuPopup
 
+        focus: true
         minimumWidth: 0
 
         onOpened: {
             root.hoveredAppMenuSection = "";
             root.selectedAppMenuSection = "";
             root.clearAppMenuSubmenu();
+            Qt.callLater(function() {
+                fileAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            });
         }
         onClosed: {
             if (!root.closingApplicationMenu) {
@@ -886,11 +1065,15 @@ Rectangle {
             spacing: 0
 
             ColumnLayout {
+                id: appMenuTabsColumn
+
                 Layout.alignment: Qt.AlignTop
                 Layout.preferredWidth: Mixxx.Application.developerMode ? 72 : 58
                 spacing: 0
 
                 ToolbarAppMenuTab {
+                    id: fileAppMenuTab
+
                     selected: root.activeAppMenuSection === "File"
                     text: "File"
 
@@ -899,6 +1082,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: libraryAppMenuTab
+
                     selected: root.activeAppMenuSection === "Library"
                     text: "Library"
 
@@ -907,6 +1092,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: viewAppMenuTab
+
                     selected: root.activeAppMenuSection === "View"
                     text: "View"
 
@@ -915,6 +1102,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: optionsAppMenuTab
+
                     selected: root.activeAppMenuSection === "Options"
                     text: "Options"
 
@@ -923,6 +1112,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: developerAppMenuTab
+
                     selected: root.activeAppMenuSection === "Developer"
                     text: "Developer"
                     visible: Mixxx.Application.developerMode
@@ -932,6 +1123,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: helpAppMenuTab
+
                     selected: root.activeAppMenuSection === "Help"
                     text: "Help"
 
@@ -946,9 +1139,15 @@ Rectangle {
         id: appSectionPopup
 
         closePolicy: Popup.CloseOnEscape
+        focus: true
         minimumWidth: 0
         parent: appMenuPopup.contentItem
 
+        onOpened: {
+            Qt.callLater(function() {
+                root.focusFirstMenuItem(appMenuActionsColumn);
+            });
+        }
         onClosed: {
             if (!root.closingApplicationMenu) {
                 root.dismissApplicationMenu();
@@ -956,6 +1155,8 @@ Rectangle {
         }
 
         ColumnLayout {
+            id: appMenuActionsColumn
+
             Layout.alignment: Qt.AlignTop
             spacing: 0
 
@@ -1234,7 +1435,6 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuAction {
-                    globalShortcutEnabled: Mixxx.Application.developerMode
                     shortcut: Mixxx.Application.menuShortcut("OptionsMenu_ReloadSkin", "Ctrl+Shift+R")
                     text: "Reload Skin"
                     visible: root.activeAppMenuSection === "Developer"
@@ -1244,7 +1444,6 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuAction {
-                    globalShortcutEnabled: Mixxx.Application.developerMode
                     shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperTools", "Ctrl+Shift+T")
                     text: "Developer Tools"
                     visible: root.activeAppMenuSection === "Developer"
@@ -1256,7 +1455,6 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: Mixxx.Application.experimentStatsEnabled
-                    globalShortcutEnabled: Mixxx.Application.developerMode
                     shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsExperiment", "Ctrl+Shift+E")
                     text: "Stats: Experiment Bucket"
                     visible: root.activeAppMenuSection === "Developer"
@@ -1268,7 +1466,6 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: Mixxx.Application.baseStatsEnabled
-                    globalShortcutEnabled: Mixxx.Application.developerMode
                     shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsBase", "Ctrl+Shift+B")
                     text: "Stats: Base Bucket"
                     visible: root.activeAppMenuSection === "Developer"
@@ -1280,7 +1477,6 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: Mixxx.Application.debuggerEnabled
-                    globalShortcutEnabled: Mixxx.Application.developerMode
                     shortcut: Mixxx.Application.menuShortcut("DeveloperMenu_EnableDebugger", "Ctrl+Shift+D")
                     text: "Debugger Enabled"
                     visible: root.activeAppMenuSection === "Developer"
@@ -1346,9 +1542,15 @@ Rectangle {
         id: appVinylPopup
 
         closePolicy: Popup.CloseOnEscape
+        focus: true
         minimumWidth: 0
         parent: appSectionPopup.contentItem
 
+        onOpened: {
+            Qt.callLater(function() {
+                root.focusFirstMenuItem(appVinylActionsColumn);
+            });
+        }
         onClosed: {
             if (!root.closingApplicationMenu) {
                 root.dismissApplicationMenu();
@@ -1356,6 +1558,8 @@ Rectangle {
         }
 
         ColumnLayout {
+            id: appVinylActionsColumn
+
             Layout.alignment: Qt.AlignTop
             spacing: 0
 
@@ -2226,9 +2430,10 @@ Rectangle {
             }
         }
     }
-    component ToolbarAppMenuTab: Item {
+    component ToolbarAppMenuTab: FocusScope {
         id: appMenuTab
 
+        readonly property bool menuFocusable: true
         property bool selected: false
         property string text: ""
 
@@ -2237,12 +2442,32 @@ Rectangle {
         Layout.fillWidth: true
         Accessible.name: appMenuTab.text
         Accessible.role: Accessible.MenuItem
+        activeFocusOnTab: true
         implicitHeight: 17
         implicitWidth: appMenuTabText.implicitWidth + 10
 
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Up) {
+                root.focusNextMenuItem(appMenuTab.parent, appMenuTab, -1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Down) {
+                root.focusNextMenuItem(appMenuTab.parent, appMenuTab, 1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Enter || event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
+                root.showAppMenuSection(appMenuTab.text, appMenuTab, true);
+                appMenuTab.triggered();
+                Qt.callLater(function() {
+                    root.focusFirstMenuItem(appMenuActionsColumn);
+                });
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Escape) {
+                root.dismissApplicationMenu();
+                event.accepted = true;
+            }
+        }
         Rectangle {
             anchors.fill: parent
-            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected ? LateNightTheme.toolbarMenuHoverColor : "transparent"
+            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected || appMenuTab.activeFocus ? LateNightTheme.toolbarMenuHoverColor : "transparent"
         }
         MouseArea {
             id: appMenuTabMouseArea
@@ -2255,8 +2480,12 @@ Rectangle {
                 root.showAppMenuSection(appMenuTab.text, appMenuTab, false);
             }
             onClicked: {
+                appMenuTab.forceActiveFocus(Qt.MouseFocusReason);
                 root.showAppMenuSection(appMenuTab.text, appMenuTab, true);
                 appMenuTab.triggered();
+                Qt.callLater(function() {
+                    root.focusFirstMenuItem(appMenuActionsColumn);
+                });
             }
         }
         Text {
@@ -2265,7 +2494,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
-            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected || appMenuTab.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 12
@@ -2280,12 +2509,12 @@ Rectangle {
         Layout.preferredHeight: 1
         color: LateNightTheme.toolbarPopupBorderColor
     }
-    component ToolbarAppMenuAction: Item {
+    component ToolbarAppMenuAction: FocusScope {
         id: appMenuAction
 
+        readonly property bool menuFocusable: true
         property bool checkable: false
         property bool checked: false
-        property bool globalShortcutEnabled: true
         property bool hasSubmenu: false
         property bool selected: false
         property string shortcut: ""
@@ -2299,23 +2528,41 @@ Rectangle {
         Accessible.checked: appMenuAction.checked
         Accessible.name: appMenuAction.text
         Accessible.role: Accessible.MenuItem
+        activeFocusOnTab: true
         implicitHeight: 17
         implicitWidth: appMenuActionText.implicitWidth + appMenuShortcutText.implicitWidth + (appMenuAction.checkable ? 36 : 20)
         opacity: enabled ? 1.0 : 0.45
 
-        Shortcut {
-            context: Qt.ApplicationShortcut
-            enabled: Qt.platform.os !== "osx" && appMenuAction.enabled && appMenuAction.globalShortcutEnabled && appMenuAction.shortcut.length > 0
-            sequence: appMenuAction.shortcut
-
-            onActivated: {
-                root.dismissApplicationMenu();
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Up) {
+                root.focusNextMenuItem(appMenuAction.parent, appMenuAction, -1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Down) {
+                root.focusNextMenuItem(appMenuAction.parent, appMenuAction, 1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Left) {
+                root.focusParentMenuForAction(appMenuAction);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Right && appMenuAction.hasSubmenu) {
                 appMenuAction.triggered();
+                Qt.callLater(function() {
+                    root.focusFirstMenuItem(appVinylActionsColumn);
+                });
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
+                appMenuAction.triggered();
+                if (!appMenuAction.hasSubmenu) {
+                    root.dismissApplicationMenu();
+                }
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Escape) {
+                root.dismissApplicationMenu();
+                event.accepted = true;
             }
         }
         Rectangle {
             anchors.fill: parent
-            color: root.menuHoverColor(appMenuActionMouseArea.containsMouse || appMenuAction.selected, appMenuAction.enabled)
+            color: root.menuHoverColor(appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus, appMenuAction.enabled)
         }
         MouseArea {
             id: appMenuActionMouseArea
@@ -2331,6 +2578,7 @@ Rectangle {
             }
             onClicked: {
                 if (appMenuAction.enabled) {
+                    appMenuAction.forceActiveFocus(Qt.MouseFocusReason);
                     appMenuAction.triggered();
                     if (!appMenuAction.hasSubmenu) {
                         root.dismissApplicationMenu();
@@ -2344,7 +2592,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             fillMode: Image.PreserveAspectFit
             height: 14
-            source: appMenuAction.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            source: appMenuAction.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
             visible: appMenuAction.checkable
             width: 14
         }
@@ -2356,7 +2604,7 @@ Rectangle {
             anchors.right: appMenuShortcutText.left
             anchors.rightMargin: 8
             anchors.verticalCenter: parent.verticalCenter
-            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 12
@@ -2368,7 +2616,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.rightMargin: 6
             anchors.verticalCenter: parent.verticalCenter
-            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             font.family: "Open Sans"
             font.pixelSize: 10
             text: appMenuAction.shortcut
