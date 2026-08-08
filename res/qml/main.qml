@@ -24,12 +24,37 @@ ApplicationWindow {
 
     color: Theme.backgroundColor
     height: 1008
+    menuBar: nativeApplicationMenuLoader.item
     minimumHeight: 300
     minimumWidth: 680
     visible: true
     visibility: Mixxx.Config.configStartInFullscreenKey ? Window.FullScreen : Window.Windowed
     width: 1792
 
+    Loader {
+        id: nativeApplicationMenuLoader
+
+        active: Qt.platform.os === "osx"
+
+        sourceComponent: Skin.MainMenuBar {
+            applicationWindow: root
+            commands: applicationMenuCommands
+            numberOfDecks: root.numDecks
+        }
+    }
+    Skin.ApplicationMenuCommands {
+        id: applicationMenuCommands
+
+        applicationWindow: root
+
+        onShowDeveloperToolsRequested: {
+            devToolsWindow.show();
+            devToolsWindow.raise();
+            devToolsWindow.requestActivate();
+        }
+    }
+    Skin.LibraryScanSummaryDialog {
+    }
     Mixxx.ControlProxy {
         group: "[App]"
         key: "num_decks"

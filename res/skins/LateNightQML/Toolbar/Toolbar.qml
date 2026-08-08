@@ -17,6 +17,7 @@ Rectangle {
     }
 
     property bool editDeck: false
+    property var applicationMenuCommands: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property bool show4decksAvailable: true
@@ -31,10 +32,184 @@ Rectangle {
     property string hoveredAppMenuSection: ""
     property string hoveredAppMenuSubmenu: ""
     property string pinnedAppMenuSubmenu: ""
-    property string selectedAppMenuSection: "Options"
+    property string selectedAppMenuSection: ""
+    property bool closingApplicationMenu: false
     property ToolbarSettingsPopup recentlyClosedPopup: null
     property MouseArea recentlyClosedPopupButton: null
     property double recentlyClosedPopupTimestamp: 0
+
+    signal focusLibrarySearchRequested
+
+    function focusActiveAppMenuTab() {
+        switch (root.activeAppMenuSection) {
+        case "Library":
+            libraryAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "View":
+            viewAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "Options":
+            optionsAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "Developer":
+            developerAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        case "Help":
+            helpAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        default:
+            fileAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            break;
+        }
+    }
+    function focusFirstMenuItem(container) {
+        for (let index = 0; index < container.children.length; ++index) {
+            const item = container.children[index];
+            if (item.menuFocusable === true && item.visible && item.enabled) {
+                item.forceActiveFocus(Qt.MenuBarFocusReason);
+                return;
+            }
+        }
+    }
+    function focusNextMenuItem(container, currentItem, offset) {
+        const focusableItems = [];
+        for (let index = 0; index < container.children.length; ++index) {
+            const item = container.children[index];
+            if (item.menuFocusable === true && item.visible && item.enabled) {
+                focusableItems.push(item);
+            }
+        }
+        if (focusableItems.length === 0) {
+            return;
+        }
+        const currentIndex = focusableItems.indexOf(currentItem);
+        const nextIndex = (currentIndex + offset + focusableItems.length) % focusableItems.length;
+        focusableItems[nextIndex].forceActiveFocus(Qt.MenuBarFocusReason);
+    }
+    function focusParentMenuForAction(action) {
+        if (action.parent === appVinylActionsColumn) {
+            root.closingApplicationMenu = true;
+            appVinylPopup.close();
+            root.hoveredAppMenuSubmenu = "";
+            root.pinnedAppMenuSubmenu = "";
+            root.closingApplicationMenu = false;
+            vinylControlMenuAction.forceActiveFocus(Qt.MenuBarFocusReason);
+            return;
+        }
+        root.closingApplicationMenu = true;
+        appSectionPopup.close();
+        root.closingApplicationMenu = false;
+        root.focusActiveAppMenuTab();
+    }
+    function openApplicationMenuFromKeyboard() {
+        if (Qt.platform.os === "osx") {
+            return;
+        }
+        if (appMenuPopup.visible) {
+            root.dismissApplicationMenu();
+            return;
+        }
+        root.openPopupForButton(appMenuPopup, appMenuButton);
+        Qt.callLater(function() {
+            fileAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+        });
+    }
+    function triggerApplicationMenuShortcut(command) {
+        root.dismissApplicationMenu();
+        switch (command) {
+        case "FileMenu_LoadDeck1":
+            root.applicationMenuCommands.loadTrackToDeck(1);
+            break;
+        case "FileMenu_LoadDeck2":
+            root.applicationMenuCommands.loadTrackToDeck(2);
+            break;
+        case "FileMenu_Quit":
+            Qt.quit();
+            break;
+        case "LibraryMenu_Rescan":
+            if (!Mixxx.Library.libraryScanActive) {
+                Mixxx.Library.rescanLibrary();
+            }
+            break;
+        case "LibraryMenu_SearchInCurrentView":
+            Mixxx.Library.searchInCurrentView();
+            root.focusLibrarySearchRequested();
+            break;
+        case "LibraryMenu_SearchInAllTracks":
+            Mixxx.Library.searchInTracksLibrary();
+            root.focusLibrarySearchRequested();
+            break;
+        case "LibraryMenu_NewPlaylist":
+            Mixxx.Library.createPlaylist();
+            break;
+        case "LibraryMenu_NewCrate":
+            Mixxx.Library.createCrate();
+            break;
+        case "ViewMenu_ShowMicrophone":
+            showMicAuxControl.value = showMicAuxControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowVinylControl":
+            showVinylControlsControl.value = showVinylControlsControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowPreviewDeck":
+            showPreviewDecksControl.value = showPreviewDecksControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowCoverArt":
+            showLibraryCoverArtControl.value = showLibraryCoverArtControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowKeywheel":
+            root.applicationMenuCommands.showKeywheel();
+            break;
+        case "ViewMenu_MaximizeLibrary":
+            showMaximizedLibraryControl.value = maximizeLibraryButton.checked ? 0.0 : 1.0;
+            break;
+        case "ViewMenu_ShowAutoDJ":
+            Mixxx.Library.showAutoDJ();
+            break;
+        case "ViewMenu_FullScreen":
+            root.applicationMenuCommands.toggleFullScreen();
+            break;
+        case "OptionsMenu_EnableVinyl1":
+            vinylDeck1Control.value = vinylDeck1Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableVinyl2":
+            vinylDeck2Control.value = vinylDeck2Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableVinyl3":
+            vinylDeck3Control.value = vinylDeck3Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableVinyl4":
+            vinylDeck4Control.value = vinylDeck4Control.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_RecordMix":
+            recordingToggleControl.trigger();
+            break;
+        case "OptionsMenu_EnableLiveBroadcasting":
+            broadcastEnabledControl.value = broadcastEnabledControl.value > 0 ? 0.0 : 1.0;
+            break;
+        case "OptionsMenu_EnableShortcuts":
+            Mixxx.Application.keyboardShortcutsEnabled = !Mixxx.Application.keyboardShortcutsEnabled;
+            break;
+        case "OptionsMenu_Preferences":
+            Mixxx.PreferencesDialog.show();
+            break;
+        case "OptionsMenu_ReloadSkin":
+            Mixxx.Application.reloadSkin();
+            break;
+        case "OptionsMenu_DeveloperTools":
+            root.applicationMenuCommands.showDeveloperToolsRequested();
+            break;
+        case "OptionsMenu_DeveloperStatsExperiment":
+            Mixxx.Application.setExperimentStatsEnabled(!Mixxx.Application.experimentStatsEnabled);
+            break;
+        case "OptionsMenu_DeveloperStatsBase":
+            Mixxx.Application.setBaseStatsEnabled(!Mixxx.Application.baseStatsEnabled);
+            break;
+        case "DeveloperMenu_EnableDebugger":
+            Mixxx.Application.debuggerEnabled = !Mixxx.Application.debuggerEnabled;
+            break;
+        }
+    }
 
     function formatTime(date) {
         const hours = date.getHours();
@@ -61,7 +236,7 @@ Rectangle {
         toolbarDefaultsControl.value = 1.0;
     }
     function closeSettingsPopups() {
-        appMenuPopup.close();
+        dismissApplicationMenu();
         deckSettingsPopup.close();
         effectSettingsPopup.close();
         librarySettingsPopup.close();
@@ -72,6 +247,47 @@ Rectangle {
     function clearAppMenuSubmenu() {
         hoveredAppMenuSubmenu = "";
         pinnedAppMenuSubmenu = "";
+        if (appVinylPopup.visible) {
+            closingApplicationMenu = true;
+            appVinylPopup.close();
+            closingApplicationMenu = false;
+        }
+    }
+    function dismissApplicationMenu() {
+        closingApplicationMenu = true;
+        appVinylPopup.close();
+        appSectionPopup.close();
+        appMenuPopup.close();
+        hoveredAppMenuSection = "";
+        selectedAppMenuSection = "";
+        hoveredAppMenuSubmenu = "";
+        pinnedAppMenuSubmenu = "";
+        closingApplicationMenu = false;
+    }
+    function showAppMenuSection(section, row, pinned) {
+        clearAppMenuSubmenu();
+        hoveredAppMenuSection = pinned ? "" : section;
+        if (pinned) {
+            selectedAppMenuSection = section;
+        }
+        const mapped = row.mapToItem(appMenuPopup.contentItem, row.width, 0);
+        appSectionPopup.x = mapped.x + 2;
+        appSectionPopup.y = mapped.y - appSectionPopup.topPadding;
+        if (!appSectionPopup.visible) {
+            appSectionPopup.open();
+        }
+    }
+    function showVinylSubmenu(row, pinned) {
+        hoveredAppMenuSubmenu = pinned ? "" : "Vinyl Control";
+        if (pinned) {
+            pinnedAppMenuSubmenu = "Vinyl Control";
+        }
+        const mapped = row.mapToItem(appSectionPopup.contentItem, row.width, 0);
+        appVinylPopup.x = mapped.x + 2;
+        appVinylPopup.y = mapped.y - appVinylPopup.topPadding;
+        if (!appVinylPopup.visible) {
+            appVinylPopup.open();
+        }
     }
     function positionPopupForButton(popup, button) {
         const anchorButton = button.popupAnchor ? button.popupAnchor : button;
@@ -481,30 +697,6 @@ Rectangle {
         key: "status"
     }
     Mixxx.ControlProxy {
-        id: loadSelectedTrackDeck1Control
-
-        group: "[Channel1]"
-        key: "LoadSelectedTrack"
-    }
-    Mixxx.ControlProxy {
-        id: loadSelectedTrackDeck2Control
-
-        group: "[Channel2]"
-        key: "LoadSelectedTrack"
-    }
-    Mixxx.ControlProxy {
-        id: loadSelectedTrackDeck3Control
-
-        group: "[Channel3]"
-        key: "LoadSelectedTrack"
-    }
-    Mixxx.ControlProxy {
-        id: loadSelectedTrackDeck4Control
-
-        group: "[Channel4]"
-        key: "LoadSelectedTrack"
-    }
-    Mixxx.ControlProxy {
         id: vinylDeck1Control
 
         group: "[Channel1]"
@@ -570,6 +762,10 @@ Rectangle {
 
         property real opacity: 1.0
     }
+    ApplicationMenuShortcuts {
+        onApplicationMenuRequested: root.openApplicationMenuFromKeyboard()
+        onShortcutTriggered: command => root.triggerApplicationMenuShortcut(command)
+    }
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 2
@@ -580,6 +776,7 @@ Rectangle {
             id: appMenuButton
 
             popup: appMenuPopup
+            visible: Qt.platform.os !== "osx"
 
             onClicked: {
                 root.openPopupForButton(appMenuPopup, this);
@@ -846,18 +1043,37 @@ Rectangle {
     ToolbarSettingsPopup {
         id: appMenuPopup
 
-        minimumWidth: 260
+        focus: true
+        minimumWidth: 0
+
+        onOpened: {
+            root.hoveredAppMenuSection = "";
+            root.selectedAppMenuSection = "";
+            root.clearAppMenuSubmenu();
+            Qt.callLater(function() {
+                fileAppMenuTab.forceActiveFocus(Qt.MenuBarFocusReason);
+            });
+        }
+        onClosed: {
+            if (!root.closingApplicationMenu) {
+                root.dismissApplicationMenu();
+            }
+        }
 
         RowLayout {
             Layout.fillWidth: true
             spacing: 0
 
             ColumnLayout {
+                id: appMenuTabsColumn
+
                 Layout.alignment: Qt.AlignTop
-                Layout.preferredWidth: 58
+                Layout.preferredWidth: Mixxx.Application.developerMode ? 72 : 58
                 spacing: 0
 
                 ToolbarAppMenuTab {
+                    id: fileAppMenuTab
+
                     selected: root.activeAppMenuSection === "File"
                     text: "File"
 
@@ -866,6 +1082,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: libraryAppMenuTab
+
                     selected: root.activeAppMenuSection === "Library"
                     text: "Library"
 
@@ -874,6 +1092,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: viewAppMenuTab
+
                     selected: root.activeAppMenuSection === "View"
                     text: "View"
 
@@ -882,6 +1102,8 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: optionsAppMenuTab
+
                     selected: root.activeAppMenuSection === "Options"
                     text: "Options"
 
@@ -890,6 +1112,19 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuTab {
+                    id: developerAppMenuTab
+
+                    selected: root.activeAppMenuSection === "Developer"
+                    text: "Developer"
+                    visible: Mixxx.Application.developerMode
+
+                    onTriggered: {
+                        root.selectedAppMenuSection = "Developer";
+                    }
+                }
+                ToolbarAppMenuTab {
+                    id: helpAppMenuTab
+
                     selected: root.activeAppMenuSection === "Help"
                     text: "Help"
 
@@ -898,101 +1133,145 @@ Rectangle {
                     }
                 }
             }
-            Rectangle {
-                Layout.fillHeight: true
-                Layout.preferredWidth: 1
-                color: LateNightTheme.toolbarPopupBorderColor
+        }
+    }
+    ToolbarSettingsPopup {
+        id: appSectionPopup
+
+        closePolicy: Popup.CloseOnEscape
+        focus: true
+        minimumWidth: 0
+        parent: appMenuPopup.contentItem
+
+        onOpened: {
+            Qt.callLater(function() {
+                root.focusFirstMenuItem(appMenuActionsColumn);
+            });
+        }
+        onClosed: {
+            if (!root.closingApplicationMenu) {
+                root.dismissApplicationMenu();
             }
-            ColumnLayout {
-                Layout.alignment: Qt.AlignTop
-                Layout.minimumWidth: 180
-                spacing: 0
+        }
+
+        ColumnLayout {
+            id: appMenuActionsColumn
+
+            Layout.alignment: Qt.AlignTop
+            spacing: 0
 
                 ToolbarAppMenuAction {
-                    shortcut: "Ctrl+O"
+                    shortcut: Mixxx.Application.menuShortcut("FileMenu_LoadDeck1", "Ctrl+O")
                     text: "Load Track to Deck 1"
                     visible: root.activeAppMenuSection === "File"
 
                     onTriggered: {
-                        loadSelectedTrackDeck1Control.trigger();
+                        root.applicationMenuCommands.loadTrackToDeck(1);
                     }
                 }
                 ToolbarAppMenuAction {
-                    shortcut: "Ctrl+Shift+O"
+                    shortcut: Mixxx.Application.menuShortcut("FileMenu_LoadDeck2", "Ctrl+Shift+O")
                     text: "Load Track to Deck 2"
                     visible: root.activeAppMenuSection === "File"
 
                     onTriggered: {
-                        loadSelectedTrackDeck2Control.trigger();
+                        root.applicationMenuCommands.loadTrackToDeck(2);
                     }
                 }
                 ToolbarAppMenuAction {
-                    enabled: show4DecksButton.checked
                     text: "Load Track to Deck 3"
                     visible: root.activeAppMenuSection === "File"
 
                     onTriggered: {
-                        loadSelectedTrackDeck3Control.trigger();
+                        root.applicationMenuCommands.loadTrackToDeck(3);
                     }
                 }
                 ToolbarAppMenuAction {
-                    enabled: show4DecksButton.checked
                     text: "Load Track to Deck 4"
                     visible: root.activeAppMenuSection === "File"
 
                     onTriggered: {
-                        loadSelectedTrackDeck4Control.trigger();
+                        root.applicationMenuCommands.loadTrackToDeck(4);
                     }
                 }
                 ToolbarAppMenuSeparator {
                     visible: root.activeAppMenuSection === "File"
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+Q"
+                    shortcut: Mixxx.Application.menuShortcut("FileMenu_Quit", "Ctrl+Q")
                     text: "Exit"
                     visible: root.activeAppMenuSection === "File"
+
+                    onTriggered: {
+                        Qt.quit();
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+Shift+L"
+                    enabled: !Mixxx.Library.libraryScanActive
+                    shortcut: Mixxx.Application.menuShortcut("LibraryMenu_Rescan", "Ctrl+Shift+L")
                     text: "Rescan Library"
                     visible: root.activeAppMenuSection === "Library"
+
+                    onTriggered: {
+                        Mixxx.Library.rescanLibrary();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    text: "Export Library to Engine DJ"
+                    visible: root.activeAppMenuSection === "Library" && Mixxx.Library.enginePrimeExportAvailable
+
+                    onTriggered: {
+                        Mixxx.Library.exportLibrary();
+                    }
                 }
                 ToolbarAppMenuSeparator {
                     visible: root.activeAppMenuSection === "Library"
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+F"
+                    shortcut: Mixxx.Application.menuShortcut("LibraryMenu_SearchInCurrentView", "Ctrl+F")
                     text: "Search in Current View..."
                     visible: root.activeAppMenuSection === "Library"
+
+                    onTriggered: {
+                        Mixxx.Library.searchInCurrentView();
+                        root.focusLibrarySearchRequested();
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+Shift+F"
+                    shortcut: Mixxx.Application.menuShortcut("LibraryMenu_SearchInAllTracks", "Ctrl+Shift+F")
                     text: "Search in Tracks Library..."
                     visible: root.activeAppMenuSection === "Library"
+
+                    onTriggered: {
+                        Mixxx.Library.searchInTracksLibrary();
+                        root.focusLibrarySearchRequested();
+                    }
                 }
                 ToolbarAppMenuSeparator {
                     visible: root.activeAppMenuSection === "Library"
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+N"
+                    shortcut: Mixxx.Application.menuShortcut("LibraryMenu_NewPlaylist", "Ctrl+N")
                     text: "Create New Playlist"
                     visible: root.activeAppMenuSection === "Library"
+
+                    onTriggered: {
+                        Mixxx.Library.createPlaylist();
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+Shift+N"
+                    shortcut: Mixxx.Application.menuShortcut("LibraryMenu_NewCrate", "Ctrl+Shift+N")
                     text: "Create New Crate"
                     visible: root.activeAppMenuSection === "Library"
+
+                    onTriggered: {
+                        Mixxx.Library.createCrate();
+                    }
                 }
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: showMicAuxControl.value > 0
-                    shortcut: "Ctrl+2"
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowMicrophone", "Ctrl+2")
                     text: "Show Microphone Section"
                     visible: root.activeAppMenuSection === "View"
 
@@ -1003,7 +1282,7 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: showVinylControlsControl.value > 0
-                    shortcut: "Ctrl+3"
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowVinylControl", "Ctrl+3")
                     text: "Show Vinyl Control Section"
                     visible: root.activeAppMenuSection === "View"
 
@@ -1014,15 +1293,18 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: showPreviewDecksControl.value > 0
-                    enabled: false
-                    shortcut: "Ctrl+4"
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowPreviewDeck", "Ctrl+4")
                     text: "Show Preview Deck"
                     visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        showPreviewDecksControl.value = showPreviewDecksControl.value > 0 ? 0.0 : 1.0;
+                    }
                 }
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: showLibraryCoverArtControl.value > 0
-                    shortcut: "Ctrl+6"
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowCoverArt", "Ctrl+6")
                     text: "Show Cover Art"
                     visible: root.activeAppMenuSection === "View"
 
@@ -1031,9 +1313,18 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuAction {
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowKeywheel", "F12")
+                    text: "Show Keywheel"
+                    visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        root.applicationMenuCommands.showKeywheel();
+                    }
+                }
+                ToolbarAppMenuAction {
                     checkable: true
                     checked: maximizeLibraryButton.checked
-                    shortcut: "Space"
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_MaximizeLibrary", "Space")
                     text: "Maximize Library"
                     visible: root.activeAppMenuSection === "View"
 
@@ -1045,29 +1336,38 @@ Rectangle {
                     visible: root.activeAppMenuSection === "View"
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
-                    shortcut: "Ctrl+9"
+                    shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowAutoDJ", "Ctrl+9")
                     text: "Show Auto DJ"
                     visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        Mixxx.Library.showAutoDJ();
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
+                    checkable: true
+                    checked: root.applicationMenuCommands.fullScreen
                     shortcut: "F11"
                     text: "Full Screen"
                     visible: root.activeAppMenuSection === "View"
+
+                    onTriggered: {
+                        root.applicationMenuCommands.toggleFullScreen();
+                    }
                 }
                 ToolbarAppMenuAction {
+                    id: vinylControlMenuAction
+
                     hasSubmenu: true
                     selected: root.activeAppMenuSubmenu === "Vinyl Control"
                     text: "Vinyl Control"
                     visible: root.activeAppMenuSection === "Options"
 
                     onHovered: {
-                        root.hoveredAppMenuSubmenu = "Vinyl Control";
+                        root.showVinylSubmenu(vinylControlMenuAction, false);
                     }
                     onTriggered: {
-                        root.hoveredAppMenuSubmenu = "";
-                        root.pinnedAppMenuSubmenu = root.pinnedAppMenuSubmenu === "Vinyl Control" ? "" : "Vinyl Control";
+                        root.showVinylSubmenu(vinylControlMenuAction, true);
                     }
                 }
                 ToolbarAppMenuSeparator {
@@ -1076,12 +1376,12 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: recordingStatusControl.value > 0
-                    shortcut: "Ctrl+R"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_RecordMix", "Ctrl+R")
                     text: "Record Mix"
                     visible: root.activeAppMenuSection === "Options"
 
                     onHovered: {
-                        root.hoveredAppMenuSubmenu = "";
+                        root.clearAppMenuSubmenu();
                     }
                     onTriggered: {
                         recordingToggleControl.trigger();
@@ -1090,12 +1390,12 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: broadcastEnabledControl.value > 0
-                    shortcut: "Ctrl+L"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableLiveBroadcasting", "Ctrl+L")
                     text: "Enable Live Broadcasting"
                     visible: root.activeAppMenuSection === "Options"
 
                     onHovered: {
-                        root.hoveredAppMenuSubmenu = "";
+                        root.clearAppMenuSubmenu();
                     }
                     onTriggered: {
                         broadcastEnabledControl.value = broadcastEnabledControl.value > 0 ? 0.0 : 1.0;
@@ -1105,27 +1405,29 @@ Rectangle {
                     visible: root.activeAppMenuSection === "Options"
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
                     checkable: true
-                    checked: true
-                    shortcut: "Ctrl+`"
+                    checked: Mixxx.Application.keyboardShortcutsEnabled
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableShortcuts", "Ctrl+`")
                     text: "Enable Keyboard Shortcuts"
                     visible: root.activeAppMenuSection === "Options"
 
                     onHovered: {
-                        root.hoveredAppMenuSubmenu = "";
+                        root.clearAppMenuSubmenu();
+                    }
+                    onTriggered: {
+                        Mixxx.Application.keyboardShortcutsEnabled = !Mixxx.Application.keyboardShortcutsEnabled;
                     }
                 }
                 ToolbarAppMenuSeparator {
                     visible: root.activeAppMenuSection === "Options"
                 }
                 ToolbarAppMenuAction {
-                    shortcut: "Ctrl+P"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_Preferences", "Ctrl+P")
                     text: "Preferences"
                     visible: root.activeAppMenuSection === "Options"
 
                     onHovered: {
-                        root.hoveredAppMenuSubmenu = "";
+                        root.clearAppMenuSubmenu();
                     }
                     onTriggered: {
                         Mixxx.PreferencesDialog.show();
@@ -1133,55 +1435,138 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_ReloadSkin", "Ctrl+Shift+R")
+                    text: "Reload Skin"
+                    visible: root.activeAppMenuSection === "Developer"
+
+                    onTriggered: {
+                        Mixxx.Application.reloadSkin();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperTools", "Ctrl+Shift+T")
+                    text: "Developer Tools"
+                    visible: root.activeAppMenuSection === "Developer"
+
+                    onTriggered: {
+                        root.applicationMenuCommands.showDeveloperToolsRequested();
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: Mixxx.Application.experimentStatsEnabled
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsExperiment", "Ctrl+Shift+E")
+                    text: "Stats: Experiment Bucket"
+                    visible: root.activeAppMenuSection === "Developer"
+
+                    onTriggered: {
+                        Mixxx.Application.setExperimentStatsEnabled(!Mixxx.Application.experimentStatsEnabled);
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: Mixxx.Application.baseStatsEnabled
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsBase", "Ctrl+Shift+B")
+                    text: "Stats: Base Bucket"
+                    visible: root.activeAppMenuSection === "Developer"
+
+                    onTriggered: {
+                        Mixxx.Application.setBaseStatsEnabled(!Mixxx.Application.baseStatsEnabled);
+                    }
+                }
+                ToolbarAppMenuAction {
+                    checkable: true
+                    checked: Mixxx.Application.debuggerEnabled
+                    shortcut: Mixxx.Application.menuShortcut("DeveloperMenu_EnableDebugger", "Ctrl+Shift+D")
+                    text: "Debugger Enabled"
+                    visible: root.activeAppMenuSection === "Developer"
+
+                    onTriggered: {
+                        Mixxx.Application.debuggerEnabled = !Mixxx.Application.debuggerEnabled;
+                    }
+                }
+                ToolbarAppMenuAction {
                     text: "Community Support"
                     visible: root.activeAppMenuSection === "Help"
+
+                    onTriggered: {
+                        Qt.openUrlExternally("https://www.mixxx.org/support/");
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
                     text: "User Manual"
                     visible: root.activeAppMenuSection === "Help"
+
+                    onTriggered: {
+                        Qt.openUrlExternally("https://manual.mixxx.org/2.7/");
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
                     text: "Keyboard Shortcuts"
                     visible: root.activeAppMenuSection === "Help"
+
+                    onTriggered: {
+                        Qt.openUrlExternally("https://manual.mixxx.org/2.7/chapters/controlling_mixxx.html#using-a-keyboard");
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
                     text: "Settings directory"
                     visible: root.activeAppMenuSection === "Help"
+
+                    onTriggered: {
+                        Qt.openUrlExternally(Mixxx.Application.settingsDirectoryUrl);
+                    }
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
                     text: "Translate This Application"
                     visible: root.activeAppMenuSection === "Help"
+
+                    onTriggered: {
+                        Qt.openUrlExternally("https://explore.transifex.com/mixxx-dj-software/");
+                    }
                 }
                 ToolbarAppMenuSeparator {
                     visible: root.activeAppMenuSection === "Help"
                 }
                 ToolbarAppMenuAction {
-                    enabled: false
                     text: "About"
                     visible: root.activeAppMenuSection === "Help"
-                }
-            }
-            Rectangle {
-                Layout.fillHeight: true
-                Layout.preferredWidth: 1
-                color: LateNightTheme.toolbarPopupBorderColor
-                visible: root.activeAppMenuSection === "Options" && root.activeAppMenuSubmenu === "Vinyl Control"
-            }
-            ColumnLayout {
-                Layout.alignment: Qt.AlignTop
-                Layout.minimumWidth: 180
-                spacing: 0
-                visible: root.activeAppMenuSection === "Options" && root.activeAppMenuSubmenu === "Vinyl Control"
 
-                ToolbarAppMenuAction {
+                    onTriggered: {
+                        root.applicationMenuCommands.showAbout();
+                    }
+                }
+        }
+    }
+    ToolbarSettingsPopup {
+        id: appVinylPopup
+
+        closePolicy: Popup.CloseOnEscape
+        focus: true
+        minimumWidth: 0
+        parent: appSectionPopup.contentItem
+
+        onOpened: {
+            Qt.callLater(function() {
+                root.focusFirstMenuItem(appVinylActionsColumn);
+            });
+        }
+        onClosed: {
+            if (!root.closingApplicationMenu) {
+                root.dismissApplicationMenu();
+            }
+        }
+
+        ColumnLayout {
+            id: appVinylActionsColumn
+
+            Layout.alignment: Qt.AlignTop
+            spacing: 0
+
+            ToolbarAppMenuAction {
                     checkable: true
                     checked: vinylDeck1Control.value > 0
-                    shortcut: "Ctrl+T"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl1", "Ctrl+T")
                     text: "Enable Vinyl Control 1"
 
                     onTriggered: {
@@ -1191,7 +1576,7 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: vinylDeck2Control.value > 0
-                    shortcut: "Ctrl+Y"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl2", "Ctrl+Y")
                     text: "Enable Vinyl Control 2"
 
                     onTriggered: {
@@ -1201,7 +1586,7 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: vinylDeck3Control.value > 0
-                    shortcut: "Ctrl+U"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl3", "Ctrl+U")
                     text: "Enable Vinyl Control 3"
 
                     onTriggered: {
@@ -1211,13 +1596,12 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: vinylDeck4Control.value > 0
-                    shortcut: "Ctrl+I"
+                    shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl4", "Ctrl+I")
                     text: "Enable Vinyl Control 4"
 
                     onTriggered: {
                         vinylDeck4Control.value = vinylDeck4Control.value > 0 ? 0.0 : 1.0;
                     }
-                }
             }
         }
     }
@@ -2046,21 +2430,44 @@ Rectangle {
             }
         }
     }
-    component ToolbarAppMenuTab: Item {
+    component ToolbarAppMenuTab: FocusScope {
         id: appMenuTab
 
+        readonly property bool menuFocusable: true
         property bool selected: false
         property string text: ""
 
         signal triggered
 
         Layout.fillWidth: true
+        Accessible.name: appMenuTab.text
+        Accessible.role: Accessible.MenuItem
+        activeFocusOnTab: true
         implicitHeight: 17
-        implicitWidth: appMenuTabText.implicitWidth + 8
+        implicitWidth: appMenuTabText.implicitWidth + 10
 
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Up) {
+                root.focusNextMenuItem(appMenuTab.parent, appMenuTab, -1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Down) {
+                root.focusNextMenuItem(appMenuTab.parent, appMenuTab, 1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Enter || event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
+                root.showAppMenuSection(appMenuTab.text, appMenuTab, true);
+                appMenuTab.triggered();
+                Qt.callLater(function() {
+                    root.focusFirstMenuItem(appMenuActionsColumn);
+                });
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Escape) {
+                root.dismissApplicationMenu();
+                event.accepted = true;
+            }
+        }
         Rectangle {
             anchors.fill: parent
-            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected ? LateNightTheme.toolbarMenuHoverColor : "transparent"
+            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected || appMenuTab.activeFocus ? LateNightTheme.toolbarMenuHoverColor : "transparent"
         }
         MouseArea {
             id: appMenuTabMouseArea
@@ -2070,13 +2477,15 @@ Rectangle {
             hoverEnabled: true
 
             onEntered: {
-                root.hoveredAppMenuSection = appMenuTab.text;
-                root.clearAppMenuSubmenu();
+                root.showAppMenuSection(appMenuTab.text, appMenuTab, false);
             }
             onClicked: {
-                root.hoveredAppMenuSection = "";
-                root.clearAppMenuSubmenu();
+                appMenuTab.forceActiveFocus(Qt.MouseFocusReason);
+                root.showAppMenuSection(appMenuTab.text, appMenuTab, true);
                 appMenuTab.triggered();
+                Qt.callLater(function() {
+                    root.focusFirstMenuItem(appMenuActionsColumn);
+                });
             }
         }
         Text {
@@ -2085,7 +2494,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: 5
             anchors.verticalCenter: parent.verticalCenter
-            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: appMenuTabMouseArea.containsMouse || appMenuTab.selected || appMenuTab.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 12
@@ -2100,9 +2509,10 @@ Rectangle {
         Layout.preferredHeight: 1
         color: LateNightTheme.toolbarPopupBorderColor
     }
-    component ToolbarAppMenuAction: Item {
+    component ToolbarAppMenuAction: FocusScope {
         id: appMenuAction
 
+        readonly property bool menuFocusable: true
         property bool checkable: false
         property bool checked: false
         property bool hasSubmenu: false
@@ -2114,13 +2524,45 @@ Rectangle {
         signal triggered
 
         Layout.fillWidth: true
+        Accessible.checkable: appMenuAction.checkable
+        Accessible.checked: appMenuAction.checked
+        Accessible.name: appMenuAction.text
+        Accessible.role: Accessible.MenuItem
+        activeFocusOnTab: true
         implicitHeight: 17
-        implicitWidth: appMenuActionText.implicitWidth + appMenuShortcutText.implicitWidth + 42
+        implicitWidth: appMenuActionText.implicitWidth + appMenuShortcutText.implicitWidth + (appMenuAction.checkable ? 36 : 20)
         opacity: enabled ? 1.0 : 0.45
 
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Up) {
+                root.focusNextMenuItem(appMenuAction.parent, appMenuAction, -1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Down) {
+                root.focusNextMenuItem(appMenuAction.parent, appMenuAction, 1);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Left) {
+                root.focusParentMenuForAction(appMenuAction);
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Right && appMenuAction.hasSubmenu) {
+                appMenuAction.triggered();
+                Qt.callLater(function() {
+                    root.focusFirstMenuItem(appVinylActionsColumn);
+                });
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return || event.key === Qt.Key_Space) {
+                appMenuAction.triggered();
+                if (!appMenuAction.hasSubmenu) {
+                    root.dismissApplicationMenu();
+                }
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Escape) {
+                root.dismissApplicationMenu();
+                event.accepted = true;
+            }
+        }
         Rectangle {
             anchors.fill: parent
-            color: root.menuHoverColor(appMenuActionMouseArea.containsMouse || appMenuAction.selected, appMenuAction.enabled)
+            color: root.menuHoverColor(appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus, appMenuAction.enabled)
         }
         MouseArea {
             id: appMenuActionMouseArea
@@ -2136,7 +2578,11 @@ Rectangle {
             }
             onClicked: {
                 if (appMenuAction.enabled) {
+                    appMenuAction.forceActiveFocus(Qt.MouseFocusReason);
                     appMenuAction.triggered();
+                    if (!appMenuAction.hasSubmenu) {
+                        root.dismissApplicationMenu();
+                    }
                 }
             }
         }
@@ -2146,7 +2592,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             fillMode: Image.PreserveAspectFit
             height: 14
-            source: appMenuAction.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            source: appMenuAction.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
             visible: appMenuAction.checkable
             width: 14
         }
@@ -2158,35 +2604,23 @@ Rectangle {
             anchors.right: appMenuShortcutText.left
             anchors.rightMargin: 8
             anchors.verticalCenter: parent.verticalCenter
-            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
-            font.pixelSize: 11
+            font.pixelSize: 12
             text: appMenuAction.text
         }
         Text {
             id: appMenuShortcutText
 
-            anchors.right: appMenuArrowText.left
-            anchors.rightMargin: 8
+            anchors.right: parent.right
+            anchors.rightMargin: 6
             anchors.verticalCenter: parent.verticalCenter
-            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             font.family: "Open Sans"
             font.pixelSize: 10
             text: appMenuAction.shortcut
             visible: text.length > 0
-        }
-        Text {
-            id: appMenuArrowText
-
-            anchors.right: parent.right
-            anchors.rightMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
-            color: appMenuActionMouseArea.containsMouse || appMenuAction.selected ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
-            font.family: "Open Sans"
-            font.pixelSize: 11
-            text: appMenuAction.hasSubmenu ? ">" : ""
-            width: 8
         }
     }
     component ToolbarMenuInlineChoice: Item {
