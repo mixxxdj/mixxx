@@ -57,7 +57,8 @@ DlgTrackInfo::DlgTrackInfo(
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
                   ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
-                  this)) {
+                  this)),
+          m_widgetSizesFixed(false) {
     init();
 }
 
@@ -81,10 +82,8 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("color", btnColorPicker);
 
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
 
     starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -425,36 +424,30 @@ void DlgTrackInfo::replaceTrackRecord(
 }
 
 void DlgTrackInfo::updateTrackMetadataFields() {
+    const auto metadata = m_trackRecord.getMetadata();
+    const auto trackInfo = metadata.getTrackInfo();
+    const auto albumInfo = metadata.getAlbumInfo();
+    const auto signalInfo = metadata.getStreamInfo().getSignalInfo();
+
     // Editable fields
-    txtTitle->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTitle());
-    txtArtist->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getArtist());
-    txtAlbum->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getTitle());
-    txtAlbumArtist->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getComposer());
-    txtGrouping->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
-    txtYear->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getYear());
-    txtTrackNumber->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
-    txtComment->setPlainText(
-            m_trackRecord.getMetadata().getTrackInfo().getComment());
-    txtBpm->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+    txtTitle->setText(trackInfo.getTitle());
+    txtArtist->setText(trackInfo.getArtist());
+    txtAlbum->setText(albumInfo.getTitle());
+    txtAlbumArtist->setText(albumInfo.getArtist());
+    txtGenre->setText(trackInfo.getGenre());
+    txtComposer->setText(trackInfo.getComposer());
+    txtGrouping->setText(trackInfo.getGrouping());
+    txtYear->setText(trackInfo.getYear());
+    txtTrackNumber->setText(trackInfo.getTrackNumber());
+    txtComment->setPlainText(trackInfo.getComment());
+    txtBpm->setText(trackInfo.getBpmText());
     displayKeyText();
     displayTuningFields();
 
     // Non-editable fields
     txtDuration->setText(
-            m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+            metadata.getDurationText(mixxx::Duration::Precision::SECONDS));
+    QString bitrate = metadata.getBitrateText();
     if (bitrate.isEmpty()) {
         txtBitrate->clear();
     } else {
@@ -462,9 +455,9 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     }
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
-                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+                    trackInfo.getReplayGain().getRatio()));
 
-    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
+    auto samplerate = signalInfo.getSampleRate();
     if (samplerate.isValid()) {
         txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
     } else {
@@ -1015,16 +1008,29 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     }
     m_pDlgTagFetcher->show();
 }
+void DlgTrackInfo::showEvent(QShowEvent* pEvent) {
+    QDialog::showEvent(pEvent);
+    adjustWidgetSizes();
+}
 
 void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     QDialog::resizeEvent(pEvent);
+    adjustWidgetSizes();
+}
 
+void DlgTrackInfo::adjustWidgetSizes() {
     if (!isVisible()) {
         // Likely one of the resize events before show().
         // Widgets don't have their final size, yet, so it
         // makes no sense to resize the cover label.
         return;
     }
+
+    if (m_widgetSizesFixed) {
+        return;
+    }
+    // Set this now to avoid re-entrance on multiple resize events in quick succession
+    m_widgetSizesFixed = true;
 
     // Set a maximum size on the cover label so it can use the available space
     // but doesn't force-expand the dialog.
@@ -1043,4 +1049,13 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+
+    // Set fixed height on stars widget so it doesn't make the adjacent
+    // txtAlbumArtist expand vertically
+    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
+
+    // Set the minimum height for the Comment editor to at least 3 line. Let's
+    // use the triple the height of a QLineEdit because they are sized correctly.
+    // The editor can expand vertically when the dialog is resized.
+    txtComment->setMinimumHeight(txtTrackNumber->geometry().height() * 3);
 }

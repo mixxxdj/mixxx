@@ -1,6 +1,6 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick 2
 import QtQuick.Layouts
 import QtQuick.Shapes
 import QtQuick.Controls 2.12
@@ -121,6 +121,16 @@ Rectangle {
         }
     }
     RowLayout {
+        WheelHandler {
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => {
+                if (event.angleDelta.y < 0) {
+                    loopSizeRepeater.adjustSelectedIndex(-1)
+                } else if (event.angleDelta.y > 0) {
+                    loopSizeRepeater.adjustSelectedIndex(1)
+                }
+            }
+        }
         anchors {
             bottom: parent.bottom
             bottomMargin: 6
@@ -177,7 +187,7 @@ Rectangle {
                     if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
                         loopHalve.trigger();
                     }
-                    loopSizeRepeater.selectedIndex = Math.max(0, loopSizeRepeater.selectedIndex - 1);
+                    loopSizeRepeater.adjustSelectedIndex(-1);
                 }
             }
         }
@@ -187,6 +197,11 @@ Rectangle {
             property int selectedIndex: 0
             property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56) / 40)), 4)
             property list<double> values: beatloopSize.beatSizes
+
+
+            function adjustSelectedIndex(delta){
+                loopSizeRepeater.selectedIndex = Math.min(Math.max(0, loopSizeRepeater.selectedIndex + delta), loopSizeRepeater.values.length - 1)
+            }
 
             function update() {
                 let values = [this.values[selectedIndex]];
@@ -307,7 +322,7 @@ Rectangle {
                     if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
                         loopDouble.trigger();
                     }
-                    loopSizeRepeater.selectedIndex = Math.min(loopSizeRepeater.values.length - 1, loopSizeRepeater.selectedIndex + 1);
+                    loopSizeRepeater.adjustSelectedIndex(1);
                 }
             }
         }

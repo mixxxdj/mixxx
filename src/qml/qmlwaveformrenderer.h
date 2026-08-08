@@ -515,7 +515,7 @@ class QmlWaveformRendererMarkRange
             const override;
 
   private:
-    QList<QmlWaveformMarkRange*> m_ranges;
+    QList<mixxx::qml::QmlWaveformMarkRange*> m_ranges;
 };
 
 class QmlWaveformRendererStem
@@ -594,15 +594,15 @@ class QmlWaveformRendererMark
     void playMarkerColorChanged(const QColor&);
     void playMarkerBackgroundChanged(const QColor&);
     void playMarkerPositionChanged(double);
-    void defaultMarkChanged(mixxx::qml::QmlWaveformMark*);
+    void defaultMarkChanged();
 
   private:
     QColor m_playMarkerColor;
     QColor m_playMarkerBackground;
     double m_playMarkerPosition;
-    QList<QmlWaveformMark*> m_marks;
-    QmlWaveformMark* m_defaultMark;
-    std::unique_ptr<QmlWaveformUntilMark> m_untilMark;
+    QList<mixxx::qml::QmlWaveformMark*> m_marks;
+    mixxx::qml::QmlWaveformMark* m_defaultMark;
+    std::unique_ptr<mixxx::qml::QmlWaveformUntilMark> m_untilMark;
 };
 
 } // namespace qml

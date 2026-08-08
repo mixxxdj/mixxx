@@ -20,13 +20,19 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
         const std::string_view name)
         : SoundDevice(pConfig, pManager),
           m_pEnumerator(pEnumerator) {
-    m_hostAPI = QStringLiteral("PipeWire");
+    m_hostAPI = SoundManagerConfig::kAPIPipewire;
     m_deviceId.name = name.data();
     m_deviceId.deviceIndex = id;
     m_strDisplayName = QString::fromUtf8(name);
     m_numInputChannels = mixxx::audio::ChannelCount(0);
     m_numOutputChannels = mixxx::audio::ChannelCount(0);
     m_sampleRate = getDefaultSampleRate();
+}
+
+SoundDevicePipewire::~SoundDevicePipewire() {
+    if (isOpen()) {
+        close();
+    }
 }
 
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {

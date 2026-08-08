@@ -165,6 +165,9 @@ class QmlControllerSettingGroup : public QmlControllerSettingElement {
 };
 
 class QmlControllerDeviceProxy;
+
+using QmlControllerScreenElementList = QList<QmlControllerScreenElement*>;
+
 class QmlControllerMappingProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name READ getName CONSTANT)
@@ -327,6 +330,8 @@ class QmlControllerDeviceProxy : public QObject {
 
     QHash<QString, std::shared_ptr<LegacyControllerMapping>> m_mappingInstance;
 };
+
+using QmlControllerMappingProxyList = QList<QmlControllerMappingProxy*>;
 
 class QmlControllerManagerProxy : public QObject {
     Q_OBJECT

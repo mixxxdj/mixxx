@@ -22,8 +22,10 @@ namespace qml {
 class QmlSoundManagerProxy;
 class QmlSoundDeviceConnection;
 class QmlSoundDeviceProxy;
+
 using QmlSoundDeviceConnectionList = QList<QmlSoundDeviceConnection*>;
 using QmlSoundDeviceProxyList = QList<QmlSoundDeviceProxy*>;
+
 class QmlSoundDeviceProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString displayName READ getDisplayName CONSTANT)

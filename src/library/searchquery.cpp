@@ -664,9 +664,15 @@ BpmFilterNode::BpmFilterNode(
         std::tie(m_rangeLower, m_rangeUpper) = rangeFromTrailingDecimal(bpm);
         break;
     }
-    case MatchMode::Fuzzy: {
-        m_rangeLower = floor((1 - s_relativeRange) * bpm);
-        m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
+    case MatchMode::Fuzzy: {                               // 100
+        m_rangeLower = floor((1 - s_relativeRange) * bpm); // 94
+        m_rangeUpper = ceil((1 + s_relativeRange) * bpm);  // 106
+        // Also add fuzzy half/double ranges
+        m_bpmHalfLower = floor((1 - s_relativeRange) * bpm / 2);   // 47
+        m_bpmHalfUpper = ceil((1 + s_relativeRange) * bpm / 2);    // 53
+        m_bpmDoubleLower = floor((1 - s_relativeRange) * bpm * 2); // 188
+        m_bpmDoubleUpper = ceil((1 + s_relativeRange) * bpm * 2);  // 212
+        qWarning() << toSql();
         break;
     }
     case MatchMode::HalveDouble: {
@@ -732,10 +738,10 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
         return value >= m_rangeLower && value < m_rangeUpper;
     }
     case MatchMode::ExplicitStrict:
-    case MatchMode::Fuzzy:
     case MatchMode::Range: {
         return value >= m_rangeLower && value <= m_rangeUpper;
     }
+    case MatchMode::Fuzzy:
     case MatchMode::HalveDouble: {
         return (value >= m_rangeLower && value <= m_rangeUpper) ||
                 (value >= m_bpmHalfLower && value <= m_bpmHalfUpper) ||
@@ -783,10 +789,10 @@ QString BpmFilterNode::toSql() const {
                         QString::number(m_rangeUpper));
     }
     case MatchMode::ExplicitStrict:
-    case MatchMode::Fuzzy:
     case MatchMode::Range: {
         return rangeSqlString(m_rangeLower, m_rangeUpper);
     }
+    case MatchMode::Fuzzy:
     case MatchMode::HalveDouble: {
         QStringList searchClauses;
         searchClauses << rangeUpperExclusiveSqlString(m_rangeLower, m_rangeUpper);
@@ -799,6 +805,7 @@ QString BpmFilterNode::toSql() const {
         searchClauses << rangeSqlString(m_rangeLower, m_rangeUpper);
         searchClauses << rangeSqlString(m_bpmHalfLower, m_bpmHalfUpper);
         searchClauses << rangeSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
+        // qDebug() << "BpmFilterNode:" << concatSqlClauses(searchClauses, "OR");
         return concatSqlClauses(searchClauses, "OR");
     }
     case MatchMode::Operator: {

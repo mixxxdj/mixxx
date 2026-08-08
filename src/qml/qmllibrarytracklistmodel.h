@@ -55,7 +55,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
             QObject* pParent = nullptr);
     ~QmlLibraryTrackListModel() = default;
 
-    QQmlListProperty<QmlLibraryTrackListColumn> columns() {
+    QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns() {
         return {this,
                 &m_columns,
                 parent_qlist_append,

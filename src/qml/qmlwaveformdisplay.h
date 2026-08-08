@@ -109,14 +109,16 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     void componentComplete() override;
 
-    QQmlListProperty<QmlWaveformRendererFactory> renderers();
+    QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers();
     static void renderers_append(
-            QQmlListProperty<QmlWaveformRendererFactory>* property,
-            QmlWaveformRendererFactory* value);
-    static qsizetype renderers_count(QQmlListProperty<QmlWaveformRendererFactory>* property);
-    static QmlWaveformRendererFactory* renderers_at(
-            QQmlListProperty<QmlWaveformRendererFactory>* property, qsizetype index);
-    static void renderers_clear(QQmlListProperty<QmlWaveformRendererFactory>* property);
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property,
+            mixxx::qml::QmlWaveformRendererFactory* value);
+    static qsizetype renderers_count(
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property);
+    static mixxx::qml::QmlWaveformRendererFactory* renderers_at(
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property, qsizetype index);
+    static void renderers_clear(
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property);
 
     WaveformRendererSignalBaseOptions options() const {
         return m_options;
