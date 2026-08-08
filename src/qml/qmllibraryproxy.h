@@ -93,27 +93,15 @@ class QmlLibraryProxy : public QObject {
     QML_SINGLETON
 
   public:
-    enum class AddResult {
+    enum class Result {
         Ok,
+        NotFound,
         AlreadyWatching,
         InvalidOrMissingDirectory,
         UnreadableDirectory,
         SqlError,
     };
-    Q_ENUM(AddResult);
-    enum class RemoveResult {
-        Ok,
-        NotFound,
-        SqlError,
-    };
-    Q_ENUM(RemoveResult);
-    enum class RelocateResult {
-        Ok,
-        InvalidOrMissingDirectory,
-        UnreadableDirectory,
-        SqlError,
-    };
-    Q_ENUM(RelocateResult);
+    Q_ENUM(Result);
     enum class SourceRemovalType {
         KeepTracks,
         HideTracks,
@@ -133,7 +121,7 @@ class QmlLibraryProxy : public QObject {
         return s_pLibrary.get();
     }
 
-    QQmlListProperty<QmlLibrarySource> sources() {
+    QQmlListProperty<mixxx::qml::QmlLibrarySource> sources() {
         return {this,
                 nullptr,
                 nullptr,
@@ -142,9 +130,9 @@ class QmlLibraryProxy : public QObject {
                 &QmlLibraryProxy::sources_clear};
     }
 
-    Q_INVOKABLE AddResult addSource(const QUrl& newPath);
-    Q_INVOKABLE RemoveResult removeSource(const QUrl& oldPath, SourceRemovalType type);
-    Q_INVOKABLE RelocateResult relinkSource(const QUrl& oldPath, const QUrl& newPath);
+    Q_INVOKABLE Result addSource(const QUrl& newPath);
+    Q_INVOKABLE Result removeSource(const QUrl& oldPath, SourceRemovalType type);
+    Q_INVOKABLE Result relinkSource(const QUrl& oldPath, const QUrl& newPath);
 
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);

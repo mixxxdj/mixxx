@@ -74,47 +74,36 @@ Category {
         let changed = false;
 
         for (let source of requestedDirs) {
+            let result;
             if (source.trackCount === undefined) {
                 // Handle addition
-                switch (Mixxx.Library.addSource(source.path)) {
-                case Mixxx.Library.AddResult.AlreadyWatching:
-                    errorMessage.text = qsTr("This or a parent directory is already in your library.");
-                    return;
-                case Mixxx.Library.AddResult.InvalidOrMissingDirectory:
-                    errorMessage.text = qsTr("This or a listed directory does not exist or is inaccessible.\nAborting the operation to avoid library inconsistencies");
-                    return;
-                case Mixxx.Library.AddResult.UnreadableDirectory:
-                    errorMessage.text = qsTr("This directory can not be read.");
-                    return;
-                case Mixxx.Library.AddResult.SqlError:
-                    errorMessage.text = qsTr("An unknown error occurred.\nAborting the operation to avoid library inconsistencies");
-                    return;
-                }
+                result = Mixxx.Library.addSource(source.path);
             } else if (source.deleting !== undefined) {
                 // Handle removal
-                switch (Mixxx.Library.removeSource(source.path, source.deleting)) {
-                case Mixxx.Library.RemoveResult.NotFound:
-                    errorMessage.text = qsTr("This directory can not be found.");
-                    return;
-                case Mixxx.Library.RemoveResult.SqlError:
-                    errorMessage.text = qsTr("An unknown error occurred.\nAborting the operation to avoid library inconsistencies");
-                    return;
-                }
+                result = Mixxx.Library.removeSource(source.path, source.deleting);
             } else if (source.relink) {
                 // Handle relinking
-                switch (Mixxx.Library.relinkSource(source.path, source.relink)) {
-                case Mixxx.Library.RelocateResult.InvalidOrMissingDirectory:
-                    errorMessage.text = qsTr("This or a listed directory does not exist or is inaccessible.\nAborting the operation to avoid library inconsistencies");
-                    return;
-                case Mixxx.Library.RelocateResult.UnreadableDirectory:
-                    errorMessage.text = qsTr("This directory can not be read.");
-                    return;
-                case Mixxx.Library.RelocateResult.SqlError:
-                    errorMessage.text = qsTr("An unknown error occurred.\nAborting the operation to avoid library inconsistencies");
-                    return;
-                }
+                result = Mixxx.Library.relinkSource(source.path, source.relink);
             } else {
                 continue;
+            }
+            // Handle addition
+            switch (result) {
+            case Mixxx.Library.Result.AlreadyWatching:
+                errorMessage.text = qsTr("This or a parent directory is already in your library.");
+                return;
+            case Mixxx.Library.Result.SqlError:
+                errorMessage.text = qsTr("An unknown error occurred.\nAborting the operation to avoid library inconsistencies");
+                return;
+            case Mixxx.Library.Result.NotFound:
+                errorMessage.text = qsTr("This directory can not be found.");
+                return;
+            case Mixxx.Library.Result.InvalidOrMissingDirectory:
+                errorMessage.text = qsTr("This or a listed directory does not exist or is inaccessible.\nAborting the operation to avoid library inconsistencies");
+                return;
+            case Mixxx.Library.Result.UnreadableDirectory:
+                errorMessage.text = qsTr("This directory can not be read.");
+                return;
             }
             changed = true;
         }

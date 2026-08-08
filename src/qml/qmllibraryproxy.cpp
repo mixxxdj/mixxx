@@ -317,31 +317,42 @@ QmlLibraryProxy* QmlLibraryProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsE
     return new QmlLibraryProxy(s_pLibrary, pQmlEngine);
 }
 
-QmlLibraryProxy::AddResult QmlLibraryProxy::addSource(
+QmlLibraryProxy::Result QmlLibraryProxy::addSource(
         const QUrl& newPath) {
     VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
         qWarning() << "Library hasn't been registered yet!";
-        return QmlLibraryProxy::AddResult::InvalidOrMissingDirectory;
+        return QmlLibraryProxy::Result::InvalidOrMissingDirectory;
     }
     QDir directory(newPath.toLocalFile());
     Sandbox::createSecurityTokenForDir(directory);
-    return static_cast<QmlLibraryProxy::AddResult>(
-            s_pLibrary->trackCollectionManager()->addDirectory(
-                    mixxx::FileInfo(newPath.toLocalFile())));
+    auto result = s_pLibrary->trackCollectionManager()->addDirectory(
+            mixxx::FileInfo(newPath.toLocalFile()));
+    switch (result) {
+    case DirectoryDAO::AddResult::Ok:
+        return Result::Ok;
+    case DirectoryDAO::AddResult::AlreadyWatching:
+        return Result::AlreadyWatching;
+    case DirectoryDAO::AddResult::InvalidOrMissingDirectory:
+        return Result::InvalidOrMissingDirectory;
+    case DirectoryDAO::AddResult::UnreadableDirectory:
+        return Result::UnreadableDirectory;
+    case DirectoryDAO::AddResult::SqlError:
+        return Result::SqlError;
+    }
 }
 
-QmlLibraryProxy::RemoveResult QmlLibraryProxy::removeSource(
+QmlLibraryProxy::Result QmlLibraryProxy::removeSource(
         const QUrl& oldPath, SourceRemovalType removalType) {
     VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
         qWarning() << "Library hasn't been registered yet!";
-        return QmlLibraryProxy::RemoveResult::NotFound;
+        return QmlLibraryProxy::Result::NotFound;
     }
 
     DirectoryDAO::RemoveResult result =
             s_pLibrary->trackCollectionManager()->removeDirectory(
                     mixxx::FileInfo(oldPath.toLocalFile()));
     if (result != DirectoryDAO::RemoveResult::Ok) {
-        return static_cast<QmlLibraryProxy::RemoveResult>(result);
+        return static_cast<QmlLibraryProxy::Result>(result);
     }
 
     switch (removalType) {
@@ -359,18 +370,36 @@ QmlLibraryProxy::RemoveResult QmlLibraryProxy::removeSource(
     default:
         DEBUG_ASSERT(!"unreachable");
     }
-    return static_cast<QmlLibraryProxy::RemoveResult>(result);
+
+    switch (result) {
+    case DirectoryDAO::RemoveResult::Ok:
+        return Result::Ok;
+    case DirectoryDAO::RemoveResult::NotFound:
+        return Result::NotFound;
+    case DirectoryDAO::RemoveResult::SqlError:
+        return Result::SqlError;
+    }
 }
 
-QmlLibraryProxy::RelocateResult QmlLibraryProxy::relinkSource(
+QmlLibraryProxy::Result QmlLibraryProxy::relinkSource(
         const QUrl& oldPath, const QUrl& newPath) {
     VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
         qWarning() << "Library hasn't been registered yet!";
-        return QmlLibraryProxy::RelocateResult::SqlError;
+        return QmlLibraryProxy::Result::SqlError;
     }
-    return static_cast<QmlLibraryProxy::RelocateResult>(
-            s_pLibrary->trackCollectionManager()->relocateDirectory(
-                    oldPath.toLocalFile(), newPath.toLocalFile()));
+    auto result = s_pLibrary->trackCollectionManager()->relocateDirectory(
+            oldPath.toLocalFile(), newPath.toLocalFile());
+
+    switch (result) {
+    case DirectoryDAO::RelocateResult::Ok:
+        return Result::Ok;
+    case DirectoryDAO::RelocateResult::InvalidOrMissingDirectory:
+        return Result::InvalidOrMissingDirectory;
+    case DirectoryDAO::RelocateResult::UnreadableDirectory:
+        return Result::UnreadableDirectory;
+    case DirectoryDAO::RelocateResult::SqlError:
+        return Result::SqlError;
+    }
 }
 
 // Static
