@@ -307,7 +307,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
     // redesign of the AutoDJ feature has been reached. The main
     // ideas of the new design should be documented for verification
     // before starting to code.
-    CrateSelectResult selectAutoDjCrates(bool autoDjSource = true) const;
+    CrateSummarySelectResult selectAutoDjCrates(bool autoDjSource = true) const;
 
     // Crate content, i.e. the crate's tracks referenced by id
     uint countCrateTracks(CrateId crateId) const;
