@@ -212,7 +212,7 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 
         // Retrieving the file's name after opening it is required to actually
         // create a named file on Linux.
-        const auto tmpFileName = tmpFile.fileName();
+        const auto tmpFileName = QDir::current().absoluteFilePath(tmpFile.fileName());
         ASSERT_TRUE(!tmpFileName.isEmpty());
 
         tmpFile.close();
