@@ -474,19 +474,21 @@ CrateSelectResult CrateStorage::selectCratesByIds(
     }
 }
 
-CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
+CrateSummarySelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
     FwdSqlQuery query(m_database,
             mixxx::DbConnection::collateLexicographically(
-                    QStringLiteral("SELECT * FROM %1 WHERE %2=:autoDjSource "
-                                   "ORDER BY %3")
-                            .arg(CRATE_TABLE,
+                    QStringLiteral(
+                            "SELECT * FROM %1 WHERE %2=:autoDjSource "
+                            "ORDER BY %3")
+                            .arg(
+                                    CRATE_SUMMARY_VIEW,
                                     CRATETABLE_AUTODJ_SOURCE,
-                                    CRATETABLE_NAME)));
+                                    CRATESUMMARY_FULL_PATH)));
     query.bindValue(":autoDjSource", QVariant(autoDjSource));
     if (query.execPrepared()) {
-        return CrateSelectResult(std::move(query));
+        return CrateSummarySelectResult(std::move(query));
     } else {
-        return CrateSelectResult();
+        return CrateSummarySelectResult();
     }
 }
 
