@@ -98,13 +98,26 @@ void PlaylistFeature::onRightClickChild(
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
+
+    QMenu* moreMenu;
+    bool showMoreMenu = true;
+    if (showMoreMenu) {
+        moreMenu = new QMenu(&menu);
+        moreMenu->setTitle(tr("More"));
+        moreMenu->setObjectName("MoreMenu");
+    } else {
+        moreMenu = &menu;
+    }
+
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
+
     // TODO If playlist is selected and has more than one track selected
     // show "Shuffle selected tracks", else show "Shuffle playlist"?
-    menu.addAction(m_pShufflePlaylistAction);
-    menu.addAction(m_pOrderByCurrentPosAction);
-    menu.addSeparator();
+    moreMenu->addAction(m_pShufflePlaylistAction);
+    moreMenu->addAction(m_pOrderByCurrentPosAction);
+    moreMenu->addSeparator();
+
     menu.addAction(m_pRenamePlaylistAction);
     menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
@@ -115,15 +128,8 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pAddToAutoDJReplaceAction);
     menu.addSeparator();
 
-    QMenu* moreMenu;
-    bool showMoreMenu = true;
     if (showMoreMenu) {
-        moreMenu = new QMenu(&menu);
-        moreMenu->setTitle(tr("More"));
-        moreMenu->setObjectName("MoreMenu");
         menu.addMenu(moreMenu);
-    } else {
-        moreMenu = &menu;
     }
 
     moreMenu->addAction(m_pAnalyzePlaylistAction);
