@@ -55,6 +55,9 @@ class CmdlineArgs final {
     }
 #endif
     bool getSafeMode() const { return m_safeMode; }
+    bool getRepairDatabase() const {
+        return m_repairDatabase;
+    }
     bool useColors() const {
         return m_useColors;
     }
@@ -112,6 +115,7 @@ class CmdlineArgs final {
     bool m_awareOfRisk;
 #endif
     bool m_safeMode;
+    bool m_repairDatabase;
     bool m_useLegacyVuMeter;
     bool m_useLegacySpinny;
     bool m_debugAssertBreak;
