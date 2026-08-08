@@ -64,6 +64,7 @@ class QmlApplicationProxy : public QObject {
     }
 
   signals:
+    void applicationMenuRequested();
     void keyboardShortcutsEnabledChanged();
     void statsModeChanged();
     void debuggerEnabledChanged();
