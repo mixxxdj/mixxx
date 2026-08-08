@@ -65,6 +65,7 @@ Category {
                 totalMinute: Math.round(source.totalSecond / 60)
             });
         }
+        print(`loadSources: ${JSON.stringify(rootDirs)}`)
         sourceListView.model = rootDirs;
     }
     function reset() {
@@ -165,8 +166,7 @@ Category {
             }
             Mixxx.SettingGroup {
                 Layout.bottomMargin: 6
-                anchors.left: parent.left
-                anchors.right: parent.right
+                implicitWidth: scrollView.width
                 implicitHeight: sources.implicitHeight
                 label: qsTr("Sources")
 
@@ -179,8 +179,6 @@ Category {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        // anchors.left: parent.left
-                        // anchors.right: parent.right
                         Layout.minimumWidth: sourcePane.implicitWidth
                         color: '#0E0E0E'
                         implicitHeight: sourcePane.implicitHeight + 20
@@ -239,12 +237,6 @@ Category {
                                 clip: true
                                 focus: true
                                 model: []
-
-                                // anchors.fill: parent
-                                // anchors.topMargin: 10
-                                // anchors.bottomMargin: 10
-                                // anchors.leftMargin: 17
-                                // anchors.rightMargin: 17
 
                                 delegate: MouseArea {
                                     id: mouse
@@ -370,6 +362,7 @@ Category {
                                                     visible: removeButton.confirming
 
                                                     onSelectedChanged: {
+                                                        if (!removeButton.confirming) return;
                                                         let model = sourceListView.model;
                                                         switch (options.indexOf(selected)) {
                                                         case 0:
@@ -467,8 +460,6 @@ Category {
                     ColumnLayout {
                         Rectangle {
                             Layout.preferredWidth: root.width * (sources.columns == 2 ? 0.35 : 1)
-                            anchors.left: parent.left
-                            anchors.right: parent.right
                             color: Theme.darkGray2
                             implicitHeight: integrationPane.implicitHeight + 20
 
@@ -527,8 +518,7 @@ Category {
             Mixxx.SettingGroup {
                 Layout.bottomMargin: 6
                 Layout.topMargin: 40
-                anchors.left: parent.left
-                anchors.right: parent.right
+                implicitWidth: scrollView.width
                 implicitHeight: metadataColumn.height
                 label: qsTr("Metadata")
 
@@ -661,8 +651,7 @@ Category {
             Mixxx.SettingGroup {
                 Layout.bottomMargin: 6
                 Layout.topMargin: 40
-                anchors.left: parent.left
-                anchors.right: parent.right
+                implicitWidth: scrollView.width
                 implicitHeight: historyColumn.height
                 label: qsTr("History")
 
@@ -772,8 +761,7 @@ Category {
             Mixxx.SettingGroup {
                 Layout.bottomMargin: 6
                 Layout.topMargin: 40
-                anchors.left: parent.left
-                anchors.right: parent.right
+                implicitWidth: scrollView.width
                 implicitHeight: searchColumn.height
                 label: qsTr("Search")
 
