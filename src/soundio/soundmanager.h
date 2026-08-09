@@ -17,7 +17,6 @@
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
-#include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
@@ -67,7 +66,6 @@ class SoundManager : public QObject {
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
     SoundManagerConfig getConfig() const;
-    void updateConfig(const SoundManagerConfig& config);
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
     // Due to a bug in in PulseAudio, we must give at least 5 seconds of cool
     // down before performing further audio related operation. This sleep
@@ -117,8 +115,6 @@ class SoundManager : public QObject {
     }
 
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void updatePathChannel(const AudioPath& path, ChannelGroup group, bool isInput);
-    void updatePathDevice(const AudioPath& path, const SoundDeviceId& pDevice, bool isInput);
     bool isPipewireSelected() {
 #ifdef __PIPEWIRE__
         return CmdlineArgs::Instance().getDeveloper() and
@@ -128,6 +124,14 @@ class SoundManager : public QObject {
 #else
         return false;
 #endif
+    }
+
+    bool pipewireSkipConfig() {
+        return isPipewireSelected() &&
+                m_pConfig->getValue(
+                        ConfigKey("[App]",
+                                QStringLiteral("pipewire_patchbay_sync")),
+                        false);
     }
 
     CSAMPLE* getInputBuffer(const AudioInput& input) {
@@ -151,12 +155,11 @@ class SoundManager : public QObject {
     void unconfigureOutput(const AudioOutput& output);
 
     void loadConfig();
+    void invalidateConfig();
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
     void deviceChannelsUpdated(SoundDevicePointer pDevice);
-    void pathChannelUpdated(const AudioPath* path, ChannelGroup channelGroup);
-    void pathDeviceUpdated(const AudioPath* path, const SoundDeviceId& deviceId);
     void deviceConnected(const SoundDeviceId& pDevice, const AudioPath* pPath);
     void deviceDisconnected(const AudioPath* pPath);
 
@@ -165,6 +168,7 @@ class SoundManager : public QObject {
     void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
+    void configInvalidated();
 
   private slots:
     void completeDevicesClosing();

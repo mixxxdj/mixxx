@@ -43,7 +43,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             const AudioOutput& output,
             mixxx::audio::SampleRate sampleRate,
             SINT framesPerBuffer);
-    void closeDevice(uint32_t id);
+    void closeDeviceInput(uint32_t id, const AudioInput& input);
+    void closeDeviceOutput(uint32_t id, const AudioOutput& output);
 
     mixxx::audio::SampleRate getDefaultSampleRate() const {
         return m_defaultSampleRate;
@@ -54,9 +55,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     }
 
     QString getChannelString(uint32_t id, ChannelGroup channelGroup, bool input) const;
-    static void patchbayWaitTimer(void* data, [[maybe_unused]] uint64_t expirations) {
-        static_cast<PipewireEnumerator*>(data)->patchbayWaitTimer();
-    }
 
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
@@ -67,7 +65,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void registerOutput(const AudioOutput& output, AudioSource* src);
 
   private:
-    void patchbayWaitTimer();
     struct Link {
         uint32_t input;
         uint32_t output;
@@ -101,37 +98,10 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             uint32_t id;
         };
 
-        struct ConnectedDevice {
-            std::vector<uint32_t> leftPorts;
-            std::vector<uint32_t> rightPorts;
-        };
-
-        // Registry for all connections to a PortPair, including devices which
-        // are not shown on Preference page, but might become "visible" after
-        // the visible device is removed
-        std::unordered_map<uint32_t, ConnectedDevice> connectedDevices;
-        // the visible device of the registry, what is shown on deviceComboBox
-        uint32_t activeDevice = 0;
-
         Port left;
         Port right;
+        uint32_t activeDevice = 0;
         std::atomic<bool> active = false;
-
-        // add/remove port and return if visible device might have changed
-        bool addPort(uint32_t deviceId, uint32_t portId, bool isLeft);
-        bool removePort(uint32_t deviceId, uint32_t portId, bool isLeft);
-
-        // Compute if current connections have a presentable device/channel representation
-        // Blank channelComboBox represents non presentable config (non contiguous connections
-        // or multiple devices).
-
-        // These are separate functions because we consider different conditions
-        // for mono connections. For inputs, mono connection is one device output
-        // port connected to both left and right input ports, while for outputs,
-        // mono connection is one L/R output port connected to same L/R input
-        // device port
-        ChannelGroup inputChannel(std::span<const uint32_t> ports);
-        ChannelGroup outputChannel(std::span<const uint32_t> ports);
     };
 
     static void coreEventDone(void* data, uint32_t id, int seq) {
@@ -233,11 +203,10 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void createInputPorts(const AudioInput& path, PortPair& ports);
     void createOutputPorts(const AudioOutput& path, PortPair& ports);
     void createPorts(PortPair& ports, std::string_view name, spa_direction direction);
-    void closePorts(PortPair& ports, bool isInput);
+    void closePorts(PortPair& ports);
 
     void updateFilterLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
     bool nodeHasPorts(const Node& node);
-    bool portsEmpty();
 
     std::unordered_map<uint32_t, Node> m_nodes;
     std::unordered_map<uint32_t, Port> m_ports;
@@ -283,5 +252,4 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // the ones made with external patchbay
     bool m_manageExternalLinks;
     int m_coreSyncSeq;
-    spa_source* m_patchbayWaitTimer;
 };

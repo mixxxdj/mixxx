@@ -48,8 +48,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void removeInputDevice(SoundDevicePointer pDevice);
     void updatingAPI();
     void updatedAPI();
-    void pathChannelUpdated(const AudioPath* path, ChannelGroup channelGroup);
-    void pathDeviceUpdated(const AudioPath* path, const SoundDeviceId& deviceId);
     void deviceChannelsUpdated(SoundDevicePointer devices);
 
   public slots:
@@ -93,9 +91,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void updatePathChannel(const AudioPath* path, ChannelGroup channelGroup);
-    void updatePathDevice(const AudioPath* path, const SoundDeviceId& deviceId);
     void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
+    void invalidateConfig();
 
   private:
     void initializePaths();

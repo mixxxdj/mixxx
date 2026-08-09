@@ -91,6 +91,8 @@ SoundManager::SoundManager(
         devicesEnumerated();
     }
 
+    checkConfig();
+
     // Don't write config to disk, yet -- it may be reset to defaults in case
     // previously configured devices were not found.
     // Write new config after MixxxMainWindow::noOutputDlg where the user has
@@ -466,7 +468,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                     SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
 
     // returns OK if we were able to open all the devices the user wanted
-    if (devicesNotFound.isEmpty()) {
+    if (devicesNotFound.isEmpty() || pipewireSkipConfig()) {
         emit devicesSetup();
         return SoundDeviceStatus::Ok;
     }
@@ -522,11 +524,6 @@ void SoundManager::closeActiveConfig(bool async) {
     // SoundDevices are closed. closeDevices() blocks and can take a while.
     const bool sleepAfterClosing = true;
     closeDevices(sleepAfterClosing, async);
-}
-
-void SoundManager::updateConfig(const SoundManagerConfig& config) {
-    m_config = config;
-    checkConfig();
 }
 
 SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
@@ -618,7 +615,10 @@ void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest
     // passthrough, each with different outputs. So unlike outputs, do not assert
     // that the input has not been registered yet.
     m_registeredDestinations.insert(input, dest);
-    m_inputBuffers.insert(input, SampleUtil::alloc(kMaxEngineSamples));
+
+    if (!m_inputBuffers.contains(input)) {
+        m_inputBuffers.insert(input, SampleUtil::alloc(kMaxEngineSamples));
+    }
 
     emit inputRegistered(input, dest);
 }
@@ -679,84 +679,6 @@ void SoundManager::updateDeviceChannels(SoundDevicePointer pDevice) {
     emit deviceChannelsUpdated(pDevice);
 }
 
-void SoundManager::updatePathChannel(const AudioPath& path, ChannelGroup group, bool isInput) {
-    qWarning() << "SoundManager::updatePathChannel" << path.getString()
-               << group.getChannelBase() << group.getChannelCount();
-
-    if (isInput) {
-        QMultiHash<SoundDeviceId, AudioInput>& inputs = m_config.getInputsRef();
-        for (auto it = inputs.begin(); it != inputs.end(); ++it) {
-            if (it.value() == path) {
-                it.value() = AudioInput(path.getType(),
-                        group.getChannelBase(),
-                        group.getChannelCount(),
-                        path.getIndex());
-                break;
-            }
-        }
-    } else {
-        QMultiHash<SoundDeviceId, AudioOutput>& outputs = m_config.getOutputsRef();
-        for (auto it = outputs.begin(); it != outputs.end(); ++it) {
-            if (it.value() == path) {
-                it.value() = AudioOutput(path.getType(),
-                        group.getChannelBase(),
-                        group.getChannelCount(),
-                        path.getIndex());
-                break;
-            }
-        }
-    }
-
-    m_config.writeToDisk();
-    emit pathChannelUpdated(&path, group);
-}
-
-// this sets the given device to open on an AudioPath with null ChannelGroup
-// ChannelGroup will be updated in subsequent calls to SoundManager::updatePathChannel
-// therefore we don't write config here
-void SoundManager::updatePathDevice(
-        const AudioPath& path, const SoundDeviceId& deviceId, bool isInput) {
-    qWarning() << "SoundManager::updatePathDevice" << path.getString()
-               << deviceId.deviceIndex << deviceId.name;
-
-    if (isInput) {
-        auto& inputs = m_config.getInputsRef();
-        for (auto it = inputs.begin(); it != inputs.end(); ++it) {
-            if (it.value() == path) {
-                inputs.erase(it);
-                break;
-            }
-        }
-        if (deviceId != SoundDeviceId{}) {
-            // AudioInput will be updated in subsequent call to updatePathChannel
-            // but we still try to keep somewhat valid state
-            const AudioInput input(path.getType(),
-                    0,
-                    mixxx::audio::ChannelCount(),
-                    path.getIndex());
-            inputs.insert(deviceId, input);
-        }
-    } else {
-        auto& outputs = m_config.getOutputsRef();
-        for (auto it = outputs.begin(); it != outputs.end(); ++it) {
-            if (it.value() == path) {
-                outputs.erase(it);
-                break;
-            }
-        }
-        if (deviceId != SoundDeviceId{}) {
-            // AudioOutput will be updated in subsequent call to updatePathChannel
-            // but we still try to keep somewhat valid state
-            const AudioOutput output(path.getType(),
-                    0,
-                    mixxx::audio::ChannelCount(),
-                    path.getIndex());
-            outputs.insert(deviceId, output);
-        }
-    }
-    emit pathDeviceUpdated(&path, deviceId);
-}
-
 void SoundManager::configureInput(const AudioInput& input) {
     // Check if any AudioDestination is registered for this AudioInput
     // and call the onInputConnected method.
@@ -802,4 +724,9 @@ void SoundManager::devicesEnumerated() {
         qDebug() << "!m_config.validateDevices()";
         m_config.loadDefaults(this, SoundManagerConfig::DEVICES);
     }
+}
+
+void SoundManager::invalidateConfig() {
+    qDebug() << "SoundManager::invalidateConfig";
+    emit configInvalidated();
 }

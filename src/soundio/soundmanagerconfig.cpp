@@ -85,6 +85,7 @@ bool SoundManagerConfig::readFromDisk() {
 
     if (m_pSoundManager->isPipewireSelected() and m_api != SoundManagerConfig::kAPIPipewire) {
         // PipeWire check box just changed, current config is useless
+        m_doc.clear();
         return false;
     }
 

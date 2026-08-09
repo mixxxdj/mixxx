@@ -38,7 +38,7 @@ const ConfigKey kKeylockMultiThreadingCfgkey =
 const ConfigKey kPipeWire =
         ConfigKey(kAppGroup, QStringLiteral("pipewire"));
 const ConfigKey kPipeWirePatchbay =
-        ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay"));
+        ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -122,14 +122,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::updateDeviceChannels);
 
     connect(m_pSoundManager.get(),
-            &SoundManager::pathChannelUpdated,
+            &SoundManager::configInvalidated,
             this,
-            &DlgPrefSound::updatePathChannel);
-
-    connect(m_pSoundManager.get(),
-            &SoundManager::pathDeviceUpdated,
-            this,
-            &DlgPrefSound::updatePathDevice);
+            &DlgPrefSound::invalidateConfig);
 
     apiComboBox->clear();
     apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
@@ -261,6 +256,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 [this](bool checked) {
                     m_pSettings->setValue(kPipeWirePatchbay, checked);
                     m_pPipewirePatchbay->set(checked);
+                    ioTabs->setDisabled(checked);
+                    m_settingsModified = true;
                 });
 
         bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
@@ -587,7 +584,6 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::configuredDeviceNotFound);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
-    connect(this, &DlgPrefSound::writePath, pItem, &DlgPrefSoundItem::updatePath);
     if (pItem->isInput()) {
         connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
         connect(this, &DlgPrefSound::addInputDevice, pItem, &DlgPrefSoundItem::addDevice);
@@ -606,8 +602,6 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::deviceChannelsUpdated,
             pItem,
             &DlgPrefSoundItem::updateDeviceChannels);
-    connect(this, &DlgPrefSound::pathChannelUpdated, pItem, &DlgPrefSoundItem::updateChannel);
-    connect(this, &DlgPrefSound::pathDeviceUpdated, pItem, &DlgPrefSoundItem::updateDevice);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -952,24 +946,6 @@ void DlgPrefSound::updateDeviceChannels(SoundDevicePointer pDevice) {
     }
 }
 
-void DlgPrefSound::updatePathChannel(const AudioPath* pPath, ChannelGroup channelGroup) {
-    emit pathChannelUpdated(pPath, channelGroup);
-    m_config.clearInputs();
-    m_config.clearOutputs();
-    emit writePaths(&m_config);
-
-    m_pSoundManager->updateConfig(m_config);
-}
-
-void DlgPrefSound::updatePathDevice(const AudioPath* pPath, const SoundDeviceId& deviceId) {
-    emit pathDeviceUpdated(pPath, deviceId);
-    m_config.clearInputs();
-    m_config.clearOutputs();
-    emit writePaths(&m_config);
-
-    m_pSoundManager->updateConfig(m_config);
-}
-
 /// Called when any of the combo boxes in this dialog are changed. Enables the
 /// apply button and marks that settings have been changed so that
 /// DlgPrefSound::slotApply knows to apply them.
@@ -1283,4 +1259,8 @@ void DlgPrefSound::updateSampleRates(const QList<mixxx::audio::SampleRate>& samp
                     QVariant::fromValue(sampleRate));
         }
     }
+}
+
+void DlgPrefSound::invalidateConfig() {
+    m_settingsModified = true;
 }

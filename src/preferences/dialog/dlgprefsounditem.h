@@ -44,15 +44,12 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void deviceChanged(int index);
     void channelChanged();
     void loadPath(const SoundManagerConfig& config);
-    void updatePath(const AudioPath* pPath, SoundManagerConfig* config) const;
     void writePath(SoundManagerConfig *config) const;
     void save();
     void reload();
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void updateChannel(const AudioPath* pPath, ChannelGroup channelGroup);
-    void updateDevice(const AudioPath* pPath, const SoundDeviceId& deviceId);
 
   private:
     SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
