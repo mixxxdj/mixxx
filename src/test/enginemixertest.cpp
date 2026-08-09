@@ -62,7 +62,7 @@ TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
     const QString testName = "SingleChannelOutputWorks";
 
     EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -106,7 +106,7 @@ TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
     const QString testName = "SingleChannelPFLOutputWorks";
 
     EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -150,10 +150,10 @@ TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
     const QString testName = "TwoChannelOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -221,10 +221,10 @@ TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
     const QString testName = "TwoChannelPFLOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -292,13 +292,13 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
     const QString testName = "ThreeChannelOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel2);
     EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test3]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
@@ -389,13 +389,13 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
     const QString testName = "ThreeChannelPFLOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel2);
     EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMixer);
+            "[Test3]", EngineChannel::CENTER, m_pEngineMixer.get());
     m_pEngineMixer->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
