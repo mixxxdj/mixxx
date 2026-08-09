@@ -16,6 +16,10 @@ class DeckAttributes : public QObject {
     /// should start playing from its current position.
     static constexpr double kKeepPosition = -1.0;
 
+    /// Special value for startPos that indicates a track
+    /// should be skipped because it is too short.
+    static constexpr double kSkipToNextTrack = -2.0;
+
     DeckAttributes(int index,
             BaseTrackPlayer* pPlayer);
     virtual ~DeckAttributes();
