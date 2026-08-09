@@ -150,7 +150,11 @@ Item {
         id: hideTimer
         interval: root.hoverLeaveTimeout
         repeat: false
-        onTriggered: root.switchMode("listen")
+        onTriggered: {
+            if (root.mode !== "edit") {
+                root.switchMode("listen");
+            }
+        }
     }
 
     Timer {
@@ -193,8 +197,10 @@ Item {
                 hoverEnabled: true
                 onEntered: hideTimer.stop()
                 onExited: {
-                    hideTimer.interval = root.hoverLeaveTimeout;
-                    hideTimer.restart();
+                    if (root.mode === "select") {
+                        hideTimer.interval = root.hoverLeaveTimeout;
+                        hideTimer.restart();
+                    }
                 }
                 onClicked: root.switchMode("tap")
                 onDoubleClicked: root.switchMode("tap")
@@ -219,8 +225,10 @@ Item {
                 hoverEnabled: true
                 onEntered: hideTimer.stop()
                 onExited: {
-                    hideTimer.interval = root.hoverLeaveTimeout;
-                    hideTimer.restart();
+                    if (root.mode === "select") {
+                        hideTimer.interval = root.hoverLeaveTimeout;
+                        hideTimer.restart();
+                    }
                 }
                 onClicked: root.switchMode("edit")
                 onDoubleClicked: root.switchMode("edit")
@@ -275,11 +283,6 @@ Item {
             verticalAlignment: TextInput.AlignVCenter
             inputMethodHints: Qt.ImhFormattedNumbersOnly
             selectByMouse: true
-            onActiveFocusChanged: {
-                if (!activeFocus && root.mode === "edit") {
-                    root.switchMode("listen");
-                }
-            }
 
             Keys.onReturnPressed: root.applyEditValueAndQuit()
             Keys.onEnterPressed: root.applyEditValueAndQuit()
