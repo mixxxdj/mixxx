@@ -15,6 +15,7 @@
 #include "library/playlisttablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
@@ -126,6 +127,8 @@ class AutoDJProcessor : public QObject {
     void playlistFirstTrackChanged();
 
     void playlistTracksChanged();
+    void tracksChanged(const QSet<TrackId>& tracks);
+    void multipleTracksChanged();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
