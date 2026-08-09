@@ -46,20 +46,19 @@ class DbId {
         return dbid.hash();
     }
 
-    // This function should be used for value binding in DB queries
-    // with bindValue().
+    /// This function should be used for value binding in DB queries
+    /// with bindValue().
     QVariant toVariant() const {
         // TODO: Check with DEBUG_ASSERT(isValid())?
         return QVariant(m_value);
     }
 
-    // This function should be used for value binding in DB queries
-    // with bindValue() when invalid DbId values should be passed as NULL.
-    //
-    // Special handling is needed to make sure comparisons against NULL work as
-    // expected. Instead of "SELECT ... WHERE myfield=:parameter", one has to do
-    // something like "SELECT ... WHERE CASE WHEN :parameter IS NULL THEN
-    // myfield IS NULL ELSE myfield=:parameter END".
+    /// This function should be used for value binding in DB queries
+    /// with bindValue() when invalid DbId values should be passed as NULL.
+    ///
+    /// Special care is needed to make sure comparisons against NULL work as
+    /// expected. Instead of "SELECT ... WHERE myfield=:parameter", one has to do
+    /// "SELECT ... WHERE myfield IS :parameter".
     QVariant toVariantOrNull() const {
         if (isValid()) {
             return QVariant(m_value);
