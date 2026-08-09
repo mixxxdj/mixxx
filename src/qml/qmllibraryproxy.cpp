@@ -339,6 +339,7 @@ QmlLibraryProxy::Result QmlLibraryProxy::addSource(
     case DirectoryDAO::AddResult::SqlError:
         return Result::SqlError;
     }
+    return Result::Unknown;
 }
 
 QmlLibraryProxy::Result QmlLibraryProxy::removeSource(
@@ -379,6 +380,7 @@ QmlLibraryProxy::Result QmlLibraryProxy::removeSource(
     case DirectoryDAO::RemoveResult::SqlError:
         return Result::SqlError;
     }
+    return Result::Unknown;
 }
 
 QmlLibraryProxy::Result QmlLibraryProxy::relinkSource(
@@ -400,6 +402,7 @@ QmlLibraryProxy::Result QmlLibraryProxy::relinkSource(
     case DirectoryDAO::RelocateResult::SqlError:
         return Result::SqlError;
     }
+    return Result::Unknown;
 }
 
 // Static
