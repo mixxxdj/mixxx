@@ -87,7 +87,7 @@ class QmlLibraryScannerProxy : public QObject {
 class QmlLibraryProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(mixxx::qml::QmlLibraryTrackListModel* model MEMBER m_pModelProperty CONSTANT)
-    Q_PROPERTY(QQmlListProperty<QmlLibrarySource> sources READ sources CONSTANT)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibrarySource> sources READ sources CONSTANT)
     Q_PROPERTY(mixxx::qml::QmlLibraryScannerProxy* scanner MEMBER m_pScanner CONSTANT)
     QML_NAMED_ELEMENT(Library)
     QML_SINGLETON
@@ -100,6 +100,7 @@ class QmlLibraryProxy : public QObject {
         InvalidOrMissingDirectory,
         UnreadableDirectory,
         SqlError,
+        Unknown
     };
     Q_ENUM(Result);
     enum class SourceRemovalType {
@@ -130,9 +131,12 @@ class QmlLibraryProxy : public QObject {
                 &QmlLibraryProxy::sources_clear};
     }
 
-    Q_INVOKABLE Result addSource(const QUrl& newPath);
-    Q_INVOKABLE Result removeSource(const QUrl& oldPath, SourceRemovalType type);
-    Q_INVOKABLE Result relinkSource(const QUrl& oldPath, const QUrl& newPath);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::Result addSource(const QUrl& newPath);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::Result removeSource(
+            const QUrl& oldPath,
+            mixxx::qml::QmlLibraryProxy::SourceRemovalType type);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::Result relinkSource(
+            const QUrl& oldPath, const QUrl& newPath);
 
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);
