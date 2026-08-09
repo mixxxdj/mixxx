@@ -16,8 +16,8 @@ Item {
     LateNightControls.Fader {
         anchors.centerIn: parent
         backgroundSource: root.compact ? LateNightTheme.assetMixerCrossfaderSmallBackground : LateNightTheme.assetMixerCrossfaderBackground
-        barMargin: 7
-        barStart: 0.5
+        bar.margin: 7
+        bar.start: 0.5
         centeredBar: true
         centeredBarAxis: 19
         group: "[Master]"

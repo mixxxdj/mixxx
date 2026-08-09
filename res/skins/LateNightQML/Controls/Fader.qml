@@ -12,10 +12,10 @@ Skin.ControlFader {
     property alias handleSource: handleImage.source
     property color valueLineColor: LateNightTheme.mixerSliderBarColor
 
-    bar: !centeredBar
-    barColor: valueLineColor
-    barMargin: 8
-    barWidth: 2
+    bar.color: valueLineColor
+    bar.enabled: !centeredBar
+    bar.margin: 8
+    bar.width: 2
     implicitHeight: backgroundImage.implicitHeight + (backgroundMargin * 2)
     implicitWidth: backgroundImage.implicitWidth + (backgroundMargin * 2)
     showDefaultHandle: false
@@ -42,7 +42,7 @@ Skin.ControlFader {
         readonly property real start: root.width / 2
 
         color: root.valueLineColor
-        height: root.barWidth
+        height: root.bar.width
         radius: height / 2
         visible: root.centeredBar && root.horizontal && width > 0
         width: Math.abs(handleCenter - start)
