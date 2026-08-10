@@ -147,20 +147,18 @@ QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner, Q
             });
 }
 
-QmlLibraryProxy::QmlLibraryProxy(
-        std::shared_ptr<Library> pLibrary, QObject* parent)
+QmlLibraryProxy::QmlLibraryProxy(QObject* parent)
         : QObject(parent),
-          m_pLibrary(pLibrary),
           m_pModelProperty(new QmlLibraryTrackListModel(
-                  QList<QmlLibraryTrackListColumn*>{}, m_pLibrary->trackTableModel(), this)),
+                  QList<QmlLibraryTrackListColumn*>{}, s_pLibrary->trackTableModel(), this)),
           m_pScanner(new QmlLibraryScannerProxy(
-                  m_pLibrary->trackCollectionManager()->scanner(), this)) {
+                  s_pLibrary->trackCollectionManager()->scanner(), this)) {
     connect(m_pScanner,
             &QmlLibraryScannerProxy::stateChanged,
             this,
             &QmlLibraryProxy::libraryScanActiveChanged);
     TrackCollectionManager* pTrackCollectionManager =
-            m_pLibrary->trackCollectionManager();
+            s_pLibrary->trackCollectionManager();
     VERIFY_OR_DEBUG_ASSERT(pTrackCollectionManager) {
         return;
     }
@@ -223,16 +221,16 @@ QmlLibraryProxy::QmlLibraryProxy(
                 emit libraryScanSummaryAvailable(title, text, details.join(QLatin1Char('\n')));
             });
 #ifdef __ENGINEPRIME__
-    m_pLibraryExporter = m_pLibrary->makeLibraryExporter(nullptr);
-    connect(m_pLibrary.get(),
+    m_pLibraryExporter = s_pLibrary->makeLibraryExporter(nullptr);
+    connect(s_pLibrary.get(),
             &Library::exportLibrary,
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExport);
-    connect(m_pLibrary.get(),
+    connect(s_pLibrary.get(),
             &Library::exportCrate,
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
-    connect(m_pLibrary.get(),
+    connect(s_pLibrary.get(),
             &Library::exportPlaylist,
             m_pLibraryExporter.get(),
             &mixxx::LibraryExporter::slotRequestExportWithInitialPlaylist);
@@ -468,7 +466,7 @@ QmlLibraryProxy* QmlLibraryProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsE
         qWarning() << "Library hasn't been registered yet";
         return nullptr;
     }
-    return new QmlLibraryProxy(s_pLibrary, pQmlEngine);
+    return new QmlLibraryProxy(pQmlEngine);
 }
 
 QmlLibraryProxy::AddResult QmlLibraryProxy::addSource(
@@ -529,11 +527,10 @@ QmlLibraryProxy::RelocateResult QmlLibraryProxy::relinkSource(
 
 // Static
 qsizetype QmlLibraryProxy::sources_count(QQmlListProperty<QmlLibrarySource>* pList) {
-    QmlLibraryProxy* pLibrary = static_cast<QmlLibraryProxy*>(pList->object);
-    VERIFY_OR_DEBUG_ASSERT(pLibrary) {
+    VERIFY_OR_DEBUG_ASSERT(pList && pList->object && s_pLibrary) {
         return 0;
     }
-    return pLibrary->m_pLibrary->trackCollectionManager()
+    return s_pLibrary->trackCollectionManager()
             ->internalCollection()
             ->getRootDirectories()
             .size();
@@ -545,12 +542,11 @@ QmlLibrarySource* QmlLibraryProxy::sources_at(
     VERIFY_OR_DEBUG_ASSERT(pList && pList->object) {
         return nullptr;
     }
-    QmlLibraryProxy* pLibrary = static_cast<QmlLibraryProxy*>(pList->object);
-    VERIFY_OR_DEBUG_ASSERT(pLibrary) {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
         return nullptr;
     }
     return make_qml_owned<QmlLibrarySource>(
-            pLibrary->m_pLibrary->trackCollectionManager()
+            s_pLibrary->trackCollectionManager()
                     ->internalCollection()
                     ->getRootDirectories()
                     .at(index));

@@ -124,7 +124,7 @@ class QmlLibraryProxy : public QObject {
     };
     Q_ENUM(SourceRemovalType);
 
-    explicit QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent = nullptr);
+    explicit QmlLibraryProxy(QObject* parent = nullptr);
     ~QmlLibraryProxy() override;
 
     static QmlLibraryProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
@@ -199,8 +199,6 @@ class QmlLibraryProxy : public QObject {
 
   private:
     static inline std::shared_ptr<Library> s_pLibrary;
-
-    std::shared_ptr<Library> m_pLibrary;
 
     /// This needs to be a plain pointer because it's used as a `Q_PROPERTY` member variable.
     QmlLibraryTrackListModel* m_pModelProperty;

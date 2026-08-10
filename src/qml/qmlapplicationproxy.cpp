@@ -5,6 +5,7 @@
 #include "preferences/configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/experiment.h"
+#include "util/menubarhelper.h"
 #include "util/versionstore.h"
 
 namespace {
@@ -81,6 +82,10 @@ QString QmlApplicationProxy::version() const {
 
 QString QmlApplicationProxy::platform() const {
     return VersionStore::platform();
+}
+
+bool QmlApplicationProxy::supportsGlobalMenuBar() const {
+    return desktopSupportsGlobalMenuBar();
 }
 
 void QmlApplicationProxy::setExperimentStatsEnabled(bool enabled) {

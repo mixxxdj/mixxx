@@ -15,8 +15,6 @@ MenuBar {
 
     signal focusLibrarySearchRequested
 
-    visible: Qt.platform.os === "osx"
-
     Component.onCompleted: {
         if (Mixxx.Application.developerMode) {
             developerMenu = developerMenuComponent.createObject(root);
@@ -204,6 +202,7 @@ MenuBar {
             Action {
                 checkable: true
                 checked: vinylDeck3Control.value > 0
+                enabled: root.numberOfDecks >= 3
                 shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl3", "Ctrl+U")
                 text: qsTr("Enable Vinyl Control 3")
 
@@ -212,6 +211,7 @@ MenuBar {
             Action {
                 checkable: true
                 checked: vinylDeck4Control.value > 0
+                enabled: root.numberOfDecks >= 4
                 shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl4", "Ctrl+I")
                 text: qsTr("Enable Vinyl Control 4")
 

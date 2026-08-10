@@ -34,7 +34,7 @@ ApplicationWindow {
     Loader {
         id: nativeApplicationMenuLoader
 
-        active: Qt.platform.os === "osx"
+        active: Qt.platform.os === "osx" || (Mixxx.Application.supportsGlobalMenuBar && root.visibility !== Window.FullScreen)
 
         sourceComponent: Skin.MainMenuBar {
             applicationWindow: root

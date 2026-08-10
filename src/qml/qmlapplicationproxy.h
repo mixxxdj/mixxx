@@ -27,6 +27,7 @@ class QmlApplicationProxy : public QObject {
     Q_PROPERTY(QString applicationName READ applicationName CONSTANT)
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString platform READ platform CONSTANT)
+    Q_PROPERTY(bool supportsGlobalMenuBar READ supportsGlobalMenuBar CONSTANT)
     QML_NAMED_ELEMENT(Application)
     QML_SINGLETON
 
@@ -44,6 +45,7 @@ class QmlApplicationProxy : public QObject {
     QString applicationName() const;
     QString version() const;
     QString platform() const;
+    bool supportsGlobalMenuBar() const;
 
     Q_INVOKABLE void setExperimentStatsEnabled(bool enabled);
     Q_INVOKABLE void setBaseStatsEnabled(bool enabled);
