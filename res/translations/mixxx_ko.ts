@@ -554,74 +554,74 @@
 <context>
     <name>BrowseFeature</name>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="72"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="76"/>
         <source>Add to Quick Links</source>
         <translation>퀵 링크에 추가</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="78"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="82"/>
         <source>Remove from Quick Links</source>
         <translation>퀵 링크에서 제거</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="84"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="88"/>
         <source>Add to Library</source>
         <translation>라이브러리에 추가</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="90"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="94"/>
         <source>Refresh directory tree</source>
         <translation>디렉터리 트리 새로고침</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="107"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="111"/>
         <source>Quick Links</source>
         <translation>퀵 링크</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="111"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="136"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="115"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="140"/>
         <source>Devices</source>
         <translation>장치</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="139"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="143"/>
         <source>Removable Devices</source>
         <translation>이동식 장치</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="173"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="513"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="177"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="517"/>
         <source>Computer</source>
         <translation>컴퓨터</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="210"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="214"/>
         <source>Music Directory Added</source>
         <translation>음악 디렉터리 추가됨</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="211"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="215"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>하나 이상의 음악 디렉터리를 추가했습니다. 이 디렉터리의 트랙은 라이브러리를 다시 스캔할 때까지 사용할 수 없습니다. 지금 다시 스캔하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="215"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="219"/>
         <source>Scan</source>
         <translation>스캔</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="514"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="518"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
         <translation>&quot;컴퓨터&quot;에서는 하드 디스크 및 외부 장치의 폴더에서 트랙을 탐색, 확인 및 불러올 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="517"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="521"/>
         <source>It shows the data from the file tags, not track data from your Mixxx library like other track views.</source>
         <translation>다른 트랙 보기와 달리 Mixxx 라이브러리의 트랙 데이터가 아닌 파일 태그의 데이터를 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="521"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="525"/>
         <source>If you load a track file from here, it will be added to your library.</source>
         <translation>여기서 트랙 파일을 불러오면 라이브러리에 추가됩니다.</translation>
     </message>
@@ -629,117 +629,117 @@
 <context>
     <name>BrowseTableModel</name>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="56"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
         <source>Preview</source>
         <translation>미리듣기</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
         <source>Filename</source>
         <translation>파일명</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
         <source>Artist</source>
         <translation>아티스트</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
         <source>Title</source>
         <translation>제목</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
         <source>Album</source>
         <translation>앨범</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="62"/>
         <source>Track #</source>
         <translation>트랙 #</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="62"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="63"/>
         <source>Year</source>
         <translation>연도</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="63"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="64"/>
         <source>Genre</source>
         <translation>장르</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="64"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="65"/>
         <source>Composer</source>
         <translation>작곡가</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="65"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
         <source>Comment</source>
         <translation>코맨트</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
         <source>Duration</source>
         <translation>길이</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
         <source>Key</source>
         <translation>키</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
         <source>Type</source>
         <translation>유형</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
         <source>Bitrate</source>
         <translation>비트레이트</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="76"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="77"/>
         <source>ReplayGain</source>
         <translation>리플레이게인</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="72"/>
         <source>Location</source>
         <translation>위치</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="72"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
         <source>Album Artist</source>
         <translation>앨범 아티스트</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
         <source>Grouping</source>
         <translation>그룹핑</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>
         <source>File Modified</source>
         <translation>파일 수정일</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="76"/>
         <source>File Created</source>
         <translation>파일 생성일</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="225"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="228"/>
         <source>Mixxx Library</source>
         <translation>Mixxx 라이브러리</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="226"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="229"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Mixxx 또는 다른 프로그램에 의해 사용 중이어서 다음 파일을 불러올 수 없었습니다.</translation>
     </message>
@@ -4042,7 +4042,7 @@ trace - 위 + 프로파일링 메시지</translation>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="14"/>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="98"/>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="161"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="170"/>
         <source>Analyze</source>
         <translation>분석</translation>
     </message>
@@ -4087,17 +4087,17 @@ trace - 위 + 프로파일링 메시지</translation>
         <translation>선택한 트랙에 대해 비트그리드, 키, 리플레이게인 감지를 실행합니다. 디스크 공간을 절약하기 위해 파형은 생성하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="156"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="165"/>
         <source>Stop Analysis</source>
         <translation>분석 중지</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="175"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="184"/>
         <source>Analyzing %1% %2/%3</source>
         <translation>%1% %2/%3 분석 중</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="181"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="190"/>
         <source>Analyzing %1/%2</source>
         <translation>%1/%2 분석 중</translation>
     </message>
@@ -4888,68 +4888,68 @@ Note: This can for example be invisible linebreaks when using copy/paste.</sourc
 참고: 복사/붙여넣기 시 보이지 않는 줄 바꿈이 포함될 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="341"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="617"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="652"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="340"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="616"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="651"/>
         <source>Action failed</source>
         <translation>작업 실패함</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="342"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="341"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation>소스 연결은 %1개 이상 만들 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="355"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="354"/>
         <source>Source connection %1</source>
         <translation>소스 연결 %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="437"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="436"/>
         <source>Settings for %1</source>
         <extracomment>Settings for broadcast profile, %1 is the profile name placeholder</extracomment>
         <translation>%1 설정</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="617"/>
         <source>At least one source connection is required.</source>
         <translation>최소 하나의 소스 연결이 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="663"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="662"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation>모든 활성 소스 연결을 해제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="624"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="662"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="661"/>
         <source>Confirmation required</source>
         <translation>확인 필요</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="261"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="260"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
         <translation>&apos;%1&apos;(은)는 &apos;%2&apos;와 동일한 Icecast 마운트포인트를 사용합니다.
 같은 서버에 동일한 마운트포인트를 가진 두 소스 연결은 동시에 활성화할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="625"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="624"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation>&apos;%1&apos;(을)를 삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="640"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="639"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation>&apos;%1&apos; 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="641"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="640"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation>&apos;%1&apos;의 새 이름:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="653"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="652"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation>&apos;%1&apos;(을)를 &apos;%2&apos;(으)로 이름을 변경할 수 없습니다: 이미 사용 중인 이름입니다</translation>
     </message>
@@ -8096,17 +8096,27 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>전체 파형 뷰어</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="293"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="96"/>
+        <source>Overlapping</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="97"/>
+        <source>Stacked</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="300"/>
         <source>OpenGL not available</source>
         <translation>OpenGL 사용 불가</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="712"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="724"/>
         <source>dropped frames</source>
         <translation>드롭된 프레임</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="783"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="799"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation type="unfinished"/>
     </message>
@@ -8124,17 +8134,17 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>프레임 레이트</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="823"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="843"/>
         <source>OpenGL Status</source>
         <translation>OpenGL 상태</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="835"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="855"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>현재 플랫폼에서 지원되는 OpenGL 버전을 표시합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="854"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="874"/>
         <source>Average frame rate</source>
         <translation>평균 프레임 레이트</translation>
     </message>
@@ -8150,7 +8160,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>기본 확대/축소 수준</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="864"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="884"/>
         <source>Displays the actual frame rate.</source>
         <translation>실제 프레임 레이트를 표시합니다.</translation>
     </message>
@@ -8185,7 +8195,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>낮음</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="723"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="743"/>
         <source>Show minute markers on waveform overview</source>
         <translation>파형 개요에 분 표시 표시</translation>
     </message>
@@ -8230,7 +8240,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>전체 시각적 게인</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="714"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="734"/>
         <source>The waveform overview shows the waveform envelope of the entire track.
 Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
         <translation>파형 개요는 전체 트랙의 파형 엔벨로프를 표시합니다.
@@ -8299,22 +8309,22 @@ Select from different types of displays for the waveform, which differ primarily
         <translation> pt</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="766"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="786"/>
         <source>Caching</source>
         <translation>캐싱</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="786"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="806"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>Mixxx는 트랙을 처음 불러올 때 트랙의 파형을 디스크에 캐시합니다. 라이브 재생 시 CPU 사용량을 줄이지만 추가 디스크 공간이 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="772"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="792"/>
         <source>Enable waveform caching</source>
         <translation>파형 캐싱 활성화</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="779"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="799"/>
         <source>Generate waveforms when analyzing library</source>
         <translation>라이브러리 분석 시 파형 생성</translation>
     </message>
@@ -8330,7 +8340,7 @@ Select from different types of displays for the waveform, which differ primarily
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="45"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="707"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="727"/>
         <source>Type</source>
         <translation>유형</translation>
     </message>
@@ -8375,43 +8385,53 @@ Select from different types of displays for the waveform, which differ primarily
         <translation>채널 불투명도 (외곽선)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="637"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="636"/>
+        <source>Display mode</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="650"/>
         <source>Main stem opacity</source>
         <translation>메인 스템 불투명도</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="656"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="669"/>
         <source>Outline stem opacity</source>
         <translation>외곽선 스템 불투명도</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="675"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="688"/>
+        <source>Select the display layout for stem waveforms</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="695"/>
         <source>Move channel to foreground when volume is adjusted</source>
         <translation>볼륨 조정 시 채널을 전면으로 이동</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="697"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="717"/>
         <source>Overview Waveforms</source>
         <translation>개요 파형</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="734"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="754"/>
         <source>Gain</source>
         <translation>게인</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="741"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="761"/>
         <source>Normalize to peak</source>
         <translation>피크로 정규화</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="751"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="771"/>
         <source>Use Waveform &quot;Global&quot; gain and ReplayGain (if enabled)</source>
         <extracomment>'Global' refers to the 'Global' visual gain in the scrolling waveform settings</extracomment>
         <translation>파형 &quot;전체&quot; 게인 및 리플레이게인(활성화된 경우) 사용</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="812"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="832"/>
         <source>Clear Cached Waveforms</source>
         <translation>캐시된 파형 지우기</translation>
     </message>
@@ -8419,122 +8439,122 @@ Select from different types of displays for the waveform, which differ primarily
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="106"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="110"/>
         <source>Sound Hardware</source>
         <translation>사운드 하드웨어</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="125"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="129"/>
         <source>Controllers</source>
         <translation>컨트롤러</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="116"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="120"/>
         <source>Library</source>
         <translation>라이브러리</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="159"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="163"/>
         <source>Interface</source>
         <translation>인터페이스</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="167"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="171"/>
         <source>Waveforms</source>
         <translation>파형</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="190"/>
         <source>Mixer</source>
         <translation>믹서</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="198"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="202"/>
         <source>Auto DJ</source>
         <translation>오토 DJ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="180"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="184"/>
         <source>Decks</source>
         <translation>데크</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="174"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="178"/>
         <source>Colors</source>
         <translation>색상</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="69"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
         <source>&amp;Help</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>도움말(&amp;H)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
         <source>&amp;Restore Defaults</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>기본값 복원(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
         <source>&amp;Apply</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>적용(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="79"/>
         <source>&amp;Cancel</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>취소(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="81"/>
         <source>&amp;Ok</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>확인(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="192"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="196"/>
         <source>Effects</source>
         <translation>이펙트</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="212"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="216"/>
         <source>Recording</source>
         <translation>녹음</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="218"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="222"/>
         <source>Beat Detection</source>
         <translation>비트 감지</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="224"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="228"/>
         <source>Key Detection</source>
         <translation>키 감지</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="233"/>
         <source>Normalization</source>
         <translation>정규화</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="253"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="257"/>
         <source>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;일부 환경설정 페이지에 오류가 있습니다. 변경 사항을 적용하려면 먼저 문제를 해결하세요.&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="138"/>
         <source>Vinyl Control</source>
         <translation>바이닐 컨트롤</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="205"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="209"/>
         <source>Live Broadcasting</source>
         <translation>라이브 방송</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="240"/>
         <source>Modplug Decoder</source>
         <translation>Modplug 디코더</translation>
     </message>
@@ -8567,22 +8587,22 @@ Select from different types of displays for the waveform, which differ primarily
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="56"/>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="140"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="146"/>
         <source>Start Recording</source>
         <translation>녹음 시작</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="95"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="96"/>
         <source>Recording to file:</source>
         <translation>파일에 녹음 중:</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="134"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="140"/>
         <source>Stop Recording</source>
         <translation>녹음 중지</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="165"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="171"/>
         <source>%1 MiB written in %2</source>
         <translation type="unfinished"/>
     </message>
@@ -8918,27 +8938,27 @@ This can not be undone!</source>
         <translation>주석</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="708"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="692"/>
         <source>BPM</source>
         <translation>BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="810"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="794"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>BPM을 현재 값의 75%로 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="813"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="797"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="778"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="762"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>BPM을 현재 값의 50%로 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="725"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="709"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>선택한 트랙의 BPM을 표시합니다.</translation>
     </message>
@@ -8998,44 +9018,44 @@ This can not be undone!</source>
         <translation>리플레이게인:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="762"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="746"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>BPM을 현재 값의 200%로 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="765"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="749"/>
         <source>Double BPM</source>
         <translation>BPM x2</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="781"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="765"/>
         <source>Halve BPM</source>
         <translation>BPM 1/2</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="885"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="869"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>BPM 및 비트그리드 지우기</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="930"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="914"/>
         <source>Move to the previous item.</source>
         <extracomment>&quot;Previous&quot; button</extracomment>
         <translation>이전 항목으로 이동합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="933"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="917"/>
         <source>&amp;Previous</source>
         <translation>이전(&amp;P)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="946"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="930"/>
         <source>Move to the next item.</source>
         <extracomment>&quot;Next&quot; button</extracomment>
         <translation>다음 항목으로 이동합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="949"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="933"/>
         <source>&amp;Next</source>
         <translation>다음(&amp;N)</translation>
     </message>
@@ -9075,12 +9095,12 @@ This can not be undone!</source>
         <translation>샘플레이트:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="718"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="702"/>
         <source>Track BPM: </source>
         <translation>트랙 BPM: </translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="741"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="725"/>
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
@@ -9089,90 +9109,90 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 일반적으로 더 높은 품질의 비트그리드를 생성하지만, 템포가 변하는 트랙에는 적합하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="749"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="733"/>
         <source>Assume constant tempo</source>
         <translation>일정한 템포로 가정</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="794"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="778"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>BPM을 현재 값의 66%로 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="797"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="781"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="826"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="810"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation>BPM을 현재 값의 150%로 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="829"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="813"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="842"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="826"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation>BPM을 현재 값의 133%로 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="845"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="829"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="864"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="848"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>비트에 맞게 탭하여 탭 속도에 따라 BPM을 지정합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="851"/>
         <source>Tap to Beat</source>
         <translation>비트 탭</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="892"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="876"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>힌트: 라이브러리 분석 보기를 사용하여 BPM 감지를 실행하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1013"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="997"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
         <translation>변경 사항을 저장하고 창을 닫습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1016"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1000"/>
         <source>&amp;OK</source>
         <translation>확인(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="975"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="959"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>변경 사항을 취소하고 창을 닫습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="994"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="978"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>변경 사항을 저장하고 창을 열어 둡니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="997"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="981"/>
         <source>&amp;Apply</source>
         <translation>적용(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="978"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="962"/>
         <source>&amp;Cancel</source>
         <translation>취소(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="595"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="596"/>
         <source>(no color)</source>
         <translation>(색상 없음)</translation>
     </message>
@@ -9285,51 +9305,51 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>파일 탐색기에서 열기</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="655"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="641"/>
         <source>Discard changes and reload saved values.</source>
         <extracomment>&quot;Reset&quot; button</extracomment>
         <translation>변경 사항을 취소하고 저장된 값을 다시 불러옵니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="658"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="644"/>
         <source>&amp;Reset</source>
         <translation>초기화(&amp;R)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="684"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="670"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>변경 사항을 취소하고 창을 닫습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="687"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="673"/>
         <source>&amp;Cancel</source>
         <translation>취소(&amp;C)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="703"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="689"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>변경 사항을 저장하고 창을 열어 둡니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="706"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="692"/>
         <source>&amp;Apply</source>
         <translation>적용(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="722"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="708"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
         <translation>변경 사항을 저장하고 창을 닫습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="725"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="711"/>
         <source>&amp;OK</source>
         <translation>확인(&amp;O)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1038"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1063"/>
         <source>(no color)</source>
         <translation>(색상 없음)</translation>
     </message>
@@ -9531,29 +9551,34 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="174"/>
-        <source>Soundtouch (faster)</source>
-        <translation>SoundTouch (빠름)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="176"/>
+        <source>Soundtouch (fastest, low quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="177"/>
-        <source>Rubberband (better)</source>
-        <translation>Rubberband (우수)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="179"/>
+        <source>Rubberband (fast, medium quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="180"/>
-        <source>Rubberband R3 (near-hi-fi quality)</source>
-        <translation>Rubberband R3 (하이파이에 근접한 품질)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="182"/>
+        <source>Rubberband R3 MW (slow, highest quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="186"/>
-        <source>Unknown, using Rubberband (better)</source>
-        <translation>알 수 없음, Rubberband(우수) 사용</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="187"/>
+        <source>Rubberband R3 SW (fast, high quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="188"/>
-        <source>Unknown, using Soundtouch</source>
-        <translation>알 수 없음, SoundTouch 사용</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="193"/>
+        <source>Unknown, using Rubberband (fast, medium quality)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/enginebuffer.h" line="195"/>
+        <source>Unknown, using Soundtouch (fastest, low quality)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -9968,6 +9993,11 @@ Do you really want to overwrite it?</source>
         <source>Scanning cover art (safe to cancel)</source>
         <translation>커버 아트 스캔 중 (취소 가능)</translation>
     </message>
+    <message>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="145"/>
+        <source>Looking for substitute for</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>LibraryTableModel</name>
@@ -10076,7 +10106,7 @@ Do you really want to overwrite it?</source>
         <translation>Engine DJ로 내보내기</translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="155"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="169"/>
         <source>Tracks</source>
         <translation>트랙</translation>
     </message>
@@ -10512,59 +10542,59 @@ Do you want to select an input device?</source>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="639"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="645"/>
         <source>Upgrading Mixxx</source>
         <translation>Mixxx 업그레이드 중</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="640"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="646"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Mixxx가 이제 커버 아트 표시를 지원합니다.
 지금 라이브러리에서 커버 아트 파일을 스캔하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="643"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="649"/>
         <source>Scan</source>
         <translation>스캔</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="644"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="650"/>
         <source>Later</source>
         <translation>나중에</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="653"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="659"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Mixxx를 v1.9.x/1.10.x에서 업그레이드 중입니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="655"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="661"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Mixxx에 새롭고 개선된 비트 감지기가 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="656"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="662"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation>트랙을 불러올 때 Mixxx가 다시 분석하여 새롭고 더 정확한 비트그리드를 생성할 수 있습니다. 이렇게 하면 자동 비트 싱크와 루핑이 더 안정적으로 작동합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="660"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="666"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>이것은 저장된 큐, 핫큐, 재생목록 또는 크레이트에는 영향을 주지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="662"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="668"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Mixxx가 트랙을 다시 분석하지 않으려면 &quot;현재 비트그리드 유지&quot;를 선택하세요. 이 설정은 환경설정의 &quot;비트 감지&quot; 섹션에서 언제든지 변경할 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="666"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="672"/>
         <source>Keep Current Beatgrids</source>
         <translation>현재 비트그리드 유지</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="667"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="673"/>
         <source>Generate New Beatgrids</source>
         <translation>새 비트그리드 생성</translation>
     </message>
@@ -12262,42 +12292,42 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <translation>스템 #%1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1361"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1368"/>
         <source>Empty</source>
         <translation>없음</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1363"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1370"/>
         <source>Simple</source>
         <translation>단순</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1365"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1372"/>
         <source>Filtered</source>
         <translation>필터링됨</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1367"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1374"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1369"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1376"/>
         <source>VSyncTest</source>
         <translation>VSyncTest</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1371"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1378"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1373"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1380"/>
         <source>Stacked</source>
         <translation>스택형</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1375"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1382"/>
         <source>Unknown</source>
         <translation>알 수 없음</translation>
     </message>
@@ -15434,12 +15464,12 @@ EQ 및 필터 이펙트로 이펙트가 적용된(웻) 신호만 변경할 때 �
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="309"/>
+        <location filename="../../src/library/trackcollection.cpp" line="310"/>
         <source>Hiding tracks</source>
         <translation>트랙 숨기기</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="310"/>
+        <location filename="../../src/library/trackcollection.cpp" line="311"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation>선택한 트랙이 다음 재생목록에 있습니다:%1숨기면 이러한 재생목록에서 제거됩니다. 계속하시겠습니까?</translation>
     </message>
@@ -16302,8 +16332,8 @@ This can not be undone!</source>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="177"/>
-        <source>between %1 and %2</source>
-        <translation>%1과(와) %2 사이</translation>
+        <source>%1 - %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="207"/>
@@ -16359,650 +16389,650 @@ This can not be undone!</source>
 <context>
     <name>WTrackMenu</name>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="173"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="175"/>
         <source>Load to</source>
         <translation>다음에 불러오기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="175"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="177"/>
         <source>Deck</source>
         <translation>데크</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="177"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="179"/>
         <source>Sampler</source>
         <translation>샘플러</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="182"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="184"/>
         <source>Add to Playlist</source>
         <translation>재생목록에 추가</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="188"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="190"/>
         <source>Crates</source>
         <translation>크레이트</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="195"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="197"/>
         <source>Metadata</source>
         <translation>메타데이터</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="198"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="200"/>
         <source>Update external collections</source>
         <translation>외부 컬렉션 업데이트</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="201"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="203"/>
         <source>Cover Art</source>
         <translation>커버 아트</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="214"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="216"/>
         <source>Adjust BPM</source>
         <translation>BPM 조정</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="219"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="221"/>
         <source>Select Color</source>
         <translation>색상 선택</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="233"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="559"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="235"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="565"/>
         <source>Analyze</source>
         <translation>분석</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="294"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2561"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="300"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2557"/>
         <source>Delete Track Files</source>
         <translation>트랙 파일 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="306"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="312"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>오토 DJ 대기열에 추가 (아래)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="309"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="315"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>오토 DJ 대기열에 추가 (위)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="312"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="318"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>오토 DJ 대기열에 추가 (교체)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1080"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1084"/>
         <source>Preview Deck</source>
         <translation>미리듣기 데크</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="319"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="325"/>
         <source>Remove</source>
         <translation>제거</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="323"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="329"/>
         <source>Remove from Playlist</source>
         <translation>재생목록에서 제거</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="327"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="333"/>
         <source>Remove from Crate</source>
         <translation>크레이트에서 제거</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="333"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="339"/>
         <source>Hide from Library</source>
         <translation>라이브러리에서 숨기기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="342"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="348"/>
         <source>Unhide from Library</source>
         <translation>라이브러리에서 숨김 해제</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="345"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>
         <source>Purge from Library</source>
         <translation>라이브러리에서 완전 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="357"/>
         <source>Move Track File(s) to Trash</source>
         <translation>트랙 파일을 휴지통으로 이동</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="354"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="360"/>
         <source>Delete Files from Disk</source>
         <translation>디스크에서 파일 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="372"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="378"/>
         <source>Properties</source>
         <translation>속성</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="387"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="393"/>
         <source>Open in File Browser</source>
         <translation>파일 탐색기에서 열기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="392"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="398"/>
         <source>Select in Library</source>
         <translation>라이브러리에서 선택</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="398"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="404"/>
         <source>Import From File Tags</source>
         <translation>파일 태그에서 가져오기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="405"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="411"/>
         <source>Import From MusicBrainz</source>
         <translation>MusicBrainz에서 가져오기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="412"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="418"/>
         <source>Export To File Tags</source>
         <translation>파일 태그로 내보내기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="440"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="446"/>
         <source>BPM and Beatgrid</source>
         <translation>BPM 및 비트 그리드</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="443"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
         <source>Play Count</source>
         <translation>재생 횟수</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="446"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
         <source>Rating</source>
         <translation>별점</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
         <source>Cue Point</source>
         <translation>큐 포인트</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="223"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="225"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
         <source>Hotcues</source>
         <translation>핫큐</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
         <source>Intro</source>
         <translation>인트로</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
         <source>Outro</source>
         <translation>아웃트로</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="470"/>
         <source>Key</source>
         <translation>키</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
         <source>ReplayGain</source>
         <translation>리플레이게인</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="470"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
         <source>Waveform</source>
         <translation>파형</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="479"/>
         <source>Comment</source>
         <translation>코맨트</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="482"/>
         <source>All</source>
         <translation>전체</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="480"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="486"/>
         <source>Sort hotcues by position (remove offsets)</source>
         <translation>핫큐를 위치 순으로 정렬 (오프셋 제거)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="488"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="494"/>
         <source>Sort hotcues by position</source>
         <translation>핫큐를 위치 순으로 정렬</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="504"/>
         <source>Lock BPM</source>
         <translation>BPM 잠금</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="499"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="505"/>
         <source>Unlock BPM</source>
         <translation>BPM 잠금 해제</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="504"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="510"/>
         <source>Double BPM</source>
         <translation>BPM x2</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="506"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="512"/>
         <source>Halve BPM</source>
         <translation>BPM 1/2</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="508"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="514"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="510"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="516"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="512"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="518"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="514"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="520"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="550"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="556"/>
         <source>Shift Beatgrid Half Beat</source>
         <translation>비트 그리드를 하프 비트만큼 이동</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="562"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="568"/>
         <source>Reanalyze</source>
         <translation>다시 분석</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="565"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="571"/>
         <source>Reanalyze (constant BPM)</source>
         <translation>다시 분석 (고정 BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="571"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="577"/>
         <source>Reanalyze (variable BPM)</source>
         <translation>다시 분석 (가변 BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="583"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="589"/>
         <source>Update ReplayGain from Deck Gain</source>
         <translation>데크 게인에서 리플레이게인 업데이트</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1035"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1040"/>
         <source>Deck %1</source>
         <translation>데크 %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1404"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1400"/>
         <source>Open Many Files in File Browser</source>
         <translation>파일 탐색기에서 여러 파일 열기</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1405"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1401"/>
         <source>You are about to open %n files in the file browser. This may slow down or hang your system. Are you sure you want to continue?</source>
         <translation><numerusform>파일 탐색기에서 %n개의 파일을 열려고 합니다. 시스템이 느려지거나 멈출 수 있습니다. 계속하시겠습니까?</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1490"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1486"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation><numerusform>%n개 트랙의 메타데이터를 파일 태그에서 가져오는 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1522"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1518"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation><numerusform>%n개 트랙의 메타데이터를 파일 태그로 내보내도록 표시하는 중</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1573"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1597"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1569"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1593"/>
         <source>Create New Playlist</source>
         <translation>새 재생목록 만들기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1598"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1594"/>
         <source>Enter name for new playlist:</source>
         <translation>새 재생목록의 이름을 입력하세요:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1600"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1596"/>
         <source>New Playlist</source>
         <translation>새 재생목록</translation>
     </message>
     <message>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1604"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1608"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1612"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1621"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1617"/>
         <source>Playlist Creation Failed</source>
         <translation>재생목록 생성 실패함</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1609"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1605"/>
         <source>A playlist by that name already exists.</source>
         <translation>해당 이름의 재생목록이 이미 존재합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1613"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1609"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>재생목록의 이름은 비워둘 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1622"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1618"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>재생목록을 생성하는 중 알 수 없는 오류가 발생했습니다: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1699"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1695"/>
         <source>Add to New Crate</source>
         <translation>새 크레이트에 추가</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1842"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1838"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 BPM 스케일링 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1871"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1867"/>
         <source>Undo BPM/beats change of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 BPM/비트 변경 실행 취소 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1915"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1911"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 BPM 잠금 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1916"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1912"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 BPM 잠금 해제 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1949"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1945"/>
         <source>Setting rating of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 별점 설정 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1980"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1976"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 색상 설정 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2039"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2035"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 재생 횟수 초기화 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2061"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2057"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 비트 초기화 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2088"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2084"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 별점 지우는 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2111"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2107"/>
         <source>Clearing comment of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 코맨트 지우는 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2216"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2212"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>%n개 트랙에서 메인 큐 제거 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2226"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2222"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>%n개 트랙에서 아웃트로 큐 제거 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2236"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2232"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>%n개 트랙에서 인트로 큐 제거 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2246"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2242"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>%n개 트랙에서 루프 큐 제거 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2256"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2252"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>%n개 트랙에서 핫큐 제거 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2268"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2264"/>
         <source>Sorting hotcues of %n track(s) by position (remove offsets)</source>
         <translation><numerusform>%n개 트랙의 핫큐를 위치 순으로 정렬 중 (오프셋 제거)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2275"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2271"/>
         <source>Sorting hotcues of %n track(s) by position</source>
         <translation><numerusform>%n개 트랙의 핫큐를 위치 순으로 정렬 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2299"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2295"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 키 초기화 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2321"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2317"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 리플레이게인 초기화 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2356"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2352"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 파형 초기화 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2412"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2408"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 모든 성능 메타데이터 초기화 중</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2510"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2506"/>
         <source>Move these files to the trash bin?</source>
         <translation>이 파일들을 휴지통으로 이동하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2506"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2502"/>
         <source>Permanently delete these files from disk?</source>
         <translation>이 파일들을 디스크에서 영구적으로 삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2508"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2517"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2504"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2513"/>
         <source>This can not be undone!</source>
         <translation>이 작업은 되돌릴 수 없습니다!</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2542"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2538"/>
         <source>Cancel</source>
         <translation>취소</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2546"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2542"/>
         <source>Delete Files</source>
         <translation>파일 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2548"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
         <source>Okay</source>
         <translation>확인</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2563"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2559"/>
         <source>Move Track File(s) to Trash?</source>
         <translation>트랙 파일을 휴지통으로 이동하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2621"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2617"/>
         <source>Track Files Deleted</source>
         <translation>트랙 파일 삭제됨</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2623"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2619"/>
         <source>Track Files Moved To Trash</source>
         <translation>트랙 파일이 휴지통으로 이동됨</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2630"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2626"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
         <translation>%1개의 트랙 파일이 휴지통으로 이동되고 Mixxx 데이터베이스에서 제거되었습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2627"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2623"/>
         <source>%1 track files were deleted from disk and purged from the Mixxx database.</source>
         <translation>%1개의 트랙 파일이 디스크에서 삭제되고 Mixxx 데이터베이스에서 제거되었습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2639"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2635"/>
         <source>Track File Deleted</source>
         <translation>트랙 파일 삭제됨</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2640"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2636"/>
         <source>Track file was deleted from disk and purged from the Mixxx database.</source>
         <translation>트랙 파일이 디스크에서 삭제되고 Mixxx 데이터베이스에서 제거되었습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2682"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2678"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
         <translation>다음 %1개의 파일을 디스크에서 삭제할 수 없었습니다</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2690"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2686"/>
         <source>This track file could not be deleted from disk</source>
         <translation>이 트랙 파일을 디스크에서 삭제할 수 없었습니다</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2714"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2710"/>
         <source>Remaining Track File(s)</source>
         <translation>남은 트랙 파일</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2705"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2701"/>
         <source>Close</source>
         <translation>닫기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="228"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="230"/>
         <source>Clear</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
         <source>Loops</source>
         <translation>루프</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="536"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="542"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>BPM 및 비트 그리드 지우기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="542"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="548"/>
         <source>Undo last BPM/beats change</source>
         <translation>마지막 BPM/비트 변경 실행 취소</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2519"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2515"/>
         <source>Move this track file to the trash bin?</source>
         <translation>이 트랙 파일을 휴지통으로 이동하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2515"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2511"/>
         <source>Permanently delete this track file from disk?</source>
         <translation>이 트랙 파일을 디스크에서 영구적으로 삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2524"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2520"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
         <translation>이 트랙이 불러오기된 모든 데크이 중지되고 트랙이 꺼내집니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2528"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2524"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
         <translation>이 트랙이 불러오기된 모든 데크이 중지되고 트랙이 꺼내집니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2595"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2591"/>
         <source>Removing %n track file(s) from disk...</source>
         <translation>디스크에서 %n개 트랙 파일 제거 중...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2635"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2631"/>
         <source>Note: if you are in the Computer or Recording view you need to click the current view again to see changes.</source>
         <translation>참고: 컴퓨터 또는 녹음 보기에 있는 경우 변경 사항을 보려면 현재 보기를 다시 클릭해야 합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2644"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2640"/>
         <source>Track File Moved To Trash</source>
         <translation>트랙 파일이 휴지통으로 이동됨</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2645"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2641"/>
         <source>Track file was moved to trash and purged from the Mixxx database.</source>
         <translation>트랙 파일이 휴지통으로 이동되고 Mixxx 데이터베이스에서 제거되었습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2650"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
         <source>Don&apos;t show again during this session</source>
         <translation>이 세션 동안 다시 표시하지 않기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2684"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2680"/>
         <source>The following %1 file(s) could not be moved to trash</source>
         <translation>다음 %1개의 파일을 휴지통으로 이동할 수 없었습니다</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2692"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2688"/>
         <source>This track file could not be moved to trash</source>
         <translation>이 트랙 파일을 휴지통으로 이동할 수 없었습니다</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2839"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2835"/>
         <source>Replace current Auto DJ queue?</source>
         <translation>현재 오토 DJ 대기열을 교체하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2841"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2837"/>
         <source>Do you want to replace the entire Auto DJ queue with the selected tracks?</source>
         <translation>선택한 트랙으로 전체 오토 DJ 대기열을 교체하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2844"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2840"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>이 세션 동안 다시 묻지 않기</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2885"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2881"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 커버 아트 설정 중</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2909"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2905"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>%n개 트랙의 커버 아트 다시 불러오는 중</numerusform></translation>
     </message>
@@ -17056,37 +17086,37 @@ This can not be undone!</source>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1395"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1431"/>
         <source>Confirm track hide</source>
         <translation>트랙 숨기기 확인</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1396"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1432"/>
         <source>Are you sure you want to hide the selected tracks?</source>
         <translation>선택한 트랙을 숨기시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1402"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1438"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
         <translation>선택한 트랙을 오토 DJ 대기열에서 제거하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1406"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1442"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
         <translation>선택한 트랙을 이 크레이트에서 제거하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1410"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1446"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
         <translation>선택한 트랙을 이 재생목록에서 제거하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1419"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1455"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>이 세션 동안 다시 묻지 않기</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1398"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1434"/>
         <source>Confirm track removal</source>
         <translation>트랙 제거 확인</translation>
     </message>
@@ -17107,7 +17137,7 @@ This can not be undone!</source>
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="205"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="209"/>
         <source>None</source>
         <extracomment>This refers to a missing openGL version</extracomment>
         <translation type="unfinished"/>
