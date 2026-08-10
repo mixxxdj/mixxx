@@ -5,24 +5,27 @@ import "../LateNightTheme"
 Item {
     id: root
 
-    property string activeStyle: "default"
     required property string group
-    required property string label
-    required property int side
-    readonly property string stateName: {
-        if (Math.round(orientationControl.value) !== root.side) {
-            return "off";
+    property string leftStyle: "default"
+    property string rightStyle: "default"
+    readonly property int state: Math.max(0, Math.min(2, Math.round(orientationControl.value)))
+    readonly property string stateLabel: ["left", "mid", "right"][state]
+    readonly property string stateStyle: {
+        if (state === 0) {
+            return root.leftStyle;
+        } else if (state === 2) {
+            return root.rightStyle;
         }
-        return root.activeStyle;
+        return "warning";
     }
 
     implicitHeight: 15
-    implicitWidth: 11
+    implicitWidth: 33
 
     Image {
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        source: LateNightTheme.lateNightAsset("buttons", "btn__xfader_deck_" + root.label + "_" + root.stateName + ".svg")
+        source: LateNightTheme.lateNightAsset("buttons", "btn__xfader_deck_" + root.stateLabel + "_" + root.stateStyle + ".svg")
     }
     MouseArea {
         anchors.fill: parent

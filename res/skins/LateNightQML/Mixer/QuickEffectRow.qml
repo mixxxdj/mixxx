@@ -26,11 +26,12 @@ Item {
         id: statusDot
 
         height: 9
-        source: enableButton.enabledValue > 0 ? LateNightTheme.assetMixerEqKillDotActiveGreen : LateNightTheme.assetMixerEqKillDotOff
-        visible: !root.showEqKillButtons
+        source: enableButton.enabledValue > 0 ? LateNightTheme.optionalMixerEqKillDotActiveGreen : LateNightTheme.optionalMixerEqKillDotOff
+        visible: LateNightTheme.isPaleMoon && !root.showEqKillButtons
         width: 9
         x: root.mirror ? quickEffectKnob.x + 32 : quickEffectKnob.x
         y: 27
+        z: 1
 
         MouseArea {
             anchors.fill: parent

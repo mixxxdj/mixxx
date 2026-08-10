@@ -40,5 +40,6 @@ Column {
         group: root.group
         mirror: root.alignRight
         showEqKillButtons: root.showEqKillButtons
+        visible: root.showEqKnobs
     }
 }

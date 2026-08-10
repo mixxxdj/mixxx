@@ -9,9 +9,10 @@ Item {
     property bool mirror: false
     property bool showEqKillButtons: true
     property bool showEqKnobs: true
+    property bool showXfader: true
 
     implicitHeight: 203
-    implicitWidth: root.showEqKillButtons ? 109 : 91
+    implicitWidth: root.showEqKnobs ? (root.showEqKillButtons ? 109 : 91) : 42
 
     Item {
         anchors.left: root.mirror ? parent.left : undefined
@@ -48,29 +49,13 @@ Item {
             x: root.mirror ? 42 : (root.showEqKillButtons ? 5 : 18)
             y: 156
         }
-        Row {
-            visible: root.showEqKnobs
-            x: root.mirror ? 46 : 22
+        CrossfaderAssignButton {
+            group: root.group
+            leftStyle: root.mirror ? "warning" : "default"
+            rightStyle: root.mirror ? "default" : "warning"
+            visible: root.showXfader
+            x: root.showEqKnobs ? (root.mirror ? 46 : 22) : (root.mirror ? 18 : 57)
             y: 180
-
-            CrossfaderAssignButton {
-                activeStyle: root.mirror ? "warning" : "default"
-                group: root.group
-                label: "left"
-                side: 0
-            }
-            CrossfaderAssignButton {
-                activeStyle: "warning"
-                group: root.group
-                label: "mid"
-                side: 1
-            }
-            CrossfaderAssignButton {
-                activeStyle: root.mirror ? "default" : "warning"
-                group: root.group
-                label: "right"
-                side: 2
-            }
         }
     }
 }

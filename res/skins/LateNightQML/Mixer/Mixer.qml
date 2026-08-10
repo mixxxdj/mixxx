@@ -8,7 +8,7 @@ Item {
     required property var groups
     property bool show4decks: false
 
-    implicitHeight: decks.implicitHeight
+    implicitHeight: Math.max(decks.implicitHeight, showMainHeadMixerControl.value > 0 ? mainHeadphonePanel.implicitHeight : 0)
     implicitWidth: decks.implicitWidth + (showMainHeadMixerControl.value > 0 ? 98 : 0)
 
     Rectangle {
@@ -25,6 +25,7 @@ Item {
         id: decks
 
         groups: root.groups
+        height: root.implicitHeight
         show4decks: root.show4decks
         showEqKillButtons: showEqKillButtonsControl.value > 0
         showEqKnobs: showEqKnobsControl.value > 0
@@ -32,25 +33,29 @@ Item {
         x: 0
         y: 0
     }
-    Rectangle {
+    Item {
         height: parent.height
         visible: showMainHeadMixerControl.value > 0
         width: 2
         x: decks.implicitWidth
 
-        gradient: Gradient {
-            GradientStop {
-                color: LateNightTheme.mixerPanelBorderDark
-                position: 0
-            }
-            GradientStop {
-                color: LateNightTheme.mixerPanelBorderLight
-                position: 1
-            }
+        Rectangle {
+            anchors.left: parent.left
+            color: LateNightTheme.mixerMainSeparatorDarkColor
+            height: parent.height
+            width: 1
+        }
+        Rectangle {
+            anchors.right: parent.right
+            color: LateNightTheme.mixerMainSeparatorLightColor
+            height: parent.height
+            width: 1
         }
     }
     MainHeadphonePanel {
-        height: decks.implicitHeight
+        id: mainHeadphonePanel
+
+        height: root.implicitHeight
         show4decks: root.show4decks
         visible: showMainHeadMixerControl.value > 0
         width: 96

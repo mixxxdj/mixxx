@@ -10,9 +10,11 @@ Item {
     property string rightStyle: "default"
     property bool showEqKillButtons: true
     property bool showEqKnobs: true
+    property bool showXfader: true
+    readonly property int volumeY: root.showEqKnobs ? 237 : 75
 
-    implicitHeight: 405
-    implicitWidth: root.showEqKillButtons ? 62 : 44
+    implicitHeight: root.volumeY + 107 + (root.showXfader ? 15 : 0)
+    implicitWidth: 62
 
     Item {
         anchors.right: parent.right
@@ -67,6 +69,8 @@ Item {
         }
         QuickEffectRow {
             group: root.group
+            showEqKillButtons: root.showEqKillButtons
+            visible: root.showEqKnobs
             width: 58
             x: 0
             y: 154
@@ -81,14 +85,14 @@ Item {
         PflButton {
             group: root.group
             x: 28
-            y: 210
+            y: root.showEqKnobs ? 210 : 49
         }
         LateNightControls.ImageVuMeter {
             group: root.group
             height: 96
             width: 20
             x: 0
-            y: 237
+            y: root.volumeY
         }
         LateNightControls.Fader {
             backgroundSource: LateNightTheme.assetMixerVolumeSliderBackground
@@ -99,31 +103,15 @@ Item {
             orientation: Qt.Vertical
             width: 42
             x: 20
-            y: 237
+            y: root.volumeY
         }
         CrossfaderAssignButton {
-            activeStyle: root.leftStyle
             group: root.group
-            label: "left"
-            side: 0
+            leftStyle: root.leftStyle
+            rightStyle: root.rightStyle
+            visible: root.showXfader
             x: 14
-            y: 344
-        }
-        CrossfaderAssignButton {
-            activeStyle: "warning"
-            group: root.group
-            label: "mid"
-            side: 1
-            x: 25
-            y: 344
-        }
-        CrossfaderAssignButton {
-            activeStyle: root.rightStyle
-            group: root.group
-            label: "right"
-            side: 2
-            x: 36
-            y: 344
+            y: root.volumeY + 107
         }
     }
 }
