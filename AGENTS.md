@@ -68,3 +68,10 @@ full technical reference:
 - QML objectName path map
 - Step DSL reference and how to add steps/features
 - Known limitations (TapHandler, Menu overlay, drag-and-drop, layout)
+
+On Windows, run them through `tools/Run-BehaveScenariosOnWindows.ps1` (a GUI
+`mixxx-test` cannot start from an SSH session); see
+[Running the Tests on Windows](src/test/behave/AGENTS.md#running-the-tests-on-windows).
+To drive a Windows test machine from a Linux checkout, use the
+`tools/win_ssh_run.py` bridge (run/put/get/sync over SSH); see
+[Driving a Windows host from Linux](src/test/behave/AGENTS.md#driving-a-windows-host-from-linux).

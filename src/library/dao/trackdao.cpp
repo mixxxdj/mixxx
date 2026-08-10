@@ -2118,8 +2118,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
             "SELECT library.id FROM library INNER JOIN track_locations "
             "ON library.location=track_locations.id "
             "WHERE "
-            "INSTR(track_locations.location,:locationPathPrefix)=1"
-            "locationPathPrefix"));
+            "INSTR(track_locations.location,:locationPathPrefix)=1"));
     query.bindValue(":locationPathPrefix", locationPathPrefix);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
@@ -2127,7 +2126,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
     }
 
     QStringList trackIds;
-    const int idColumn = query.record().indexOf(LIBRARYTABLE_MIXXXDELETED);
+    const int idColumn = query.record().indexOf(LIBRARYTABLE_ID);
     while (query.next()) {
         trackIds.append(TrackId(query.value(idColumn)).toString());
     }

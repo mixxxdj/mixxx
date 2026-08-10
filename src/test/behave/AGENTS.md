@@ -119,6 +119,9 @@ MIXXX_BEHAVE_RETRY=5 ctest -R mixxx-behave- --output-on-failure
   lifecycle hooks (ffmpeg is still used for chapter muxing on both backends).
 - **Session reuse**: scenarios sharing the same `Background` profile type reuse
   the same `mixxx-test` process — only the first scenario pays startup cost.
+  `a fresh ... profile` opts out: it force-kills the running process and
+  spawns a new genuinely empty (no config, no DB, no tracks) or library-ready profile every
+  scenario.
 - After editing QML or `main.cpp`, rebuild:
   `cmake --build build --target mixxx-test -j$(nproc)`
 - After editing Python (`steps/`, `environment.py`, `mixxx_profile.py`, runner), no
@@ -461,7 +464,7 @@ step definitions, add `objectName`s in QML, rebuild `mixxx-test`. Specifically:
 1. **CMake** finds `python3` + `behave`, globs `features/*.feature`, registers
    each as `mixxx-behave-<name>`.
 2. `mixxx_test_runner.py` sets up a global tracks
-   cache at `/tmp/mixxx-test-tracks/` (downloading if needed), optionally
+   cache at `<tempdir>/mixxx-test-tracks/` (downloading if needed), optionally
    starts a headless display + recorder (Xvfb+ffmpeg, or cage+wf-recorder for
    the Xwayland backend) for CI, then invokes `behave` with the feature
    file.
@@ -598,8 +601,11 @@ result = rpc.getStringProperty("mainWindow", "myResult")
 - Manifest in `test_tracks.json` — each entry has `url`, `title`, `artist`,
   `tags`, `bpm`, `first_beat`, `samplerate`, and optionally `artwork` (URL to
   cover image)
-- Downloaded on first run to `/tmp/mixxx-test-tracks/` (global cache, shared
-  across all CTest invocations)
+- Downloaded on first run to `os.path.join(tempfile.gettempdir(),
+  "mixxx-test-tracks")` — a global cache, shared across all CTest invocations.
+  On Linux that is `/tmp/mixxx-test-tracks`, on Windows
+  `%TEMP%\mixxx-test-tracks`. Set `MIXXX_TEST_TRACKS_DIR` to relocate it (e.g.
+  to a pre-seeded directory on a machine without outbound network).
 
 ## Spix RPC API (`TestServer.h`)
 
@@ -751,6 +757,8 @@ LOOP_BUTTONS = {
 | Pattern | Implementation |
 | --- | --- |
 | `a new empty profile` | `_ensure_profile(context, "empty")` |
+| `a [fresh] new empty profile` | `_ensure_profile(context, "empty", force=..)` — kills the running process and respawns a genuinely empty profile |
+| `a [fresh] new library-ready profile` | `_ensure_profile(context, "library-ready", force=..)` — populated with the tracks dir (`addDirectory` runs at open/ready) |
 | `Mixxx is open and ready to operate` | Starts Mixxx, waits for mainWindow, waits for splash to hide, caches `_column_idx` and `_default_props` |
 | `the 4 decks view is enabled` | Sets `show4DecksButton.checked = true` |
 | `a track is loaded on deck {deck:d}` | Picks random track from `MIXXX_TEST_TRACKS_DIR`, calls `loadTrack` C++ command |
@@ -782,6 +790,7 @@ LOOP_BUTTONS = {
 | `I open the column picker menu` | Right-clicks on Title column header, waits for menu |
 | `I toggle the column "{column}" in the column picker` | Use the keyboard to choose the nth item, based on column index |
 | `I {action} the track at row {row:d}` | Looks up in `TRACK_ACTIONS` dict (`click`, `double-click`, `right-click`, `long-press`) |
+| `I click a track below the fold` | Picks the last row via `_last_track_row` (from `contentHeight`), remembers it, scrolls and clicks it — keeps the scenario independent of the track count |
 | `I select {path} on the track menu` | Keyboard-navigates context menu using `enterKey` |
 | `I move the "{component}" component in deck {deck:d} after the "{target}" component` | `mouseDrag` from component to target position |
 | `I move the selected group in deck {deck:d} after the "{target}" component` | `mouseDrag` from selected group overlay to target position |
@@ -798,6 +807,7 @@ LOOP_BUTTONS = {
 | `the column "{column}" should appear before the column "{other}"` | Compares `x` positions of headers |
 | `the results should be sorted by "{column}" in "{order}" order` | Reads `sortingColumn`/`sortingOrder` from `columnHeader` |
 | `the track at row {row:d} should be selected` | Reads `selected` property from Cell |
+| `the track below the fold should be visible on screen` | Reuses `_track_row_is_on_screen` on the row remembered by `I click a track below the fold` |
 | `the track context menu should be visible` | `existsAndVisible` on `trackContextMenu` path |
 | `the deck for "{group}" should {assertion} visible` | `_wait_for_visible`/`_wait_for_hidden` on `DECK_PATH_MAP` |
 | `the deck {deck:d} should be {playing\|stopped}` | Reads `play` CO via `_get_control_value` |

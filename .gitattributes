@@ -29,3 +29,6 @@
 
 # Windows batch scripts will always have CRLF line endings.
 *.bat text eol=crlf
+
+# PowerShell scripts only ever run on Windows, so keep CRLF on checkout.
+*.ps1 text eol=crlf

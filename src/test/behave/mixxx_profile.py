@@ -283,6 +283,7 @@ class MixxxProcess:
             "--log-level",
             "debug",
         ]
+        RPC_PORT = 9000
         self.process = subprocess.Popen(
             args,
             env=env,
@@ -324,7 +325,7 @@ class MixxxProcess:
             try:
                 s = socket.socket()
                 s.settimeout(1)
-                s.connect(("localhost", 9000))
+                s.connect(("localhost", RPC_PORT))
                 s.close()
                 return
             except (OSError, ConnectionRefusedError):

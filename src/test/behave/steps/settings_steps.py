@@ -1,5 +1,11 @@
+import glob
 import json
+import os
+import re
+import shutil
 import time
+from pathlib import Path
+
 from behave import given, when, then
 from mixxx_steps import _get_library_state, _library_command
 from spix_helpers import (
@@ -30,6 +36,19 @@ SHOW_CATEGORIES_BUTTON = f"{SETTINGS_POPUP_ITEM}/showCategoriesButton"
 SETTING_CATEGORY_SLUG = ["sound","library","controller", "interface"]
 CATEGORY_SCROLLBARS_TEMPLATE = "mainWindow/%sSettingsScrollBar"
 ACTION_BUTTON_TEMPLATE = "mainWindow/%s%sButton"
+CATEGORY_SCROLLBARS = {
+    index: CATEGORY_SCROLLBARS_TEMPLATE % slug
+    for index, slug in enumerate(SETTING_CATEGORY_SLUG)
+}
+MUSIC_DIRECTORY_LIST = "mainWindow/librarySourceList"
+MUSIC_DIRECTORY_ROW = "mainWindow/sourceRow_%d"
+SOURCE_REMOVE_BUTTON = "mainWindow/sourceRemoveButton_%d"
+SOURCE_REMOVE_MODE_SELECTOR = "mainWindow/sourceRemoveModeSelector_%d"
+SOURCE_REMOVE_MODE_OPTIONS = ["keep", "hide", "purge"]
+SOURCE_RELINK_BUTTON = "mainWindow/sourceRelinkButton_%d"
+ADD_SOURCE_BUTTON = "mainWindow/addSourceButton"
+ADD_FOLDER_DIALOG_TEST = "mainWindow/addFolderDialogTest"
+MUSIC_DIRECTORY_DEFAULT_TRACK_COUNT = 1
 COMMITTING_OVERLAY = "mainWindow/committingOverlay"
 ENGINE_SECTION = "mainWindow/engineSection"
 DELAYS_SECTION = "mainWindow/delaysSection"
@@ -112,6 +131,25 @@ SETTING_MAP = {
     "permanent coarse adjustment": {"path": "mainWindow/setting_permanentCoarseAdjustment", "kind": "spinbox", "precision": 2},
     "permanent fine adjustment": {"path": "mainWindow/setting_permanentFineAdjustment", "kind": "spinbox", "precision": 2},
     "ramping sensitivity": {"path": "mainWindow/setting_rampingSensitivity", "kind": "slider", "min": 100, "max": 2500, "markers": []},
+    # Library category — sources & integrations
+    "Rhythmbox integration": {"path": "mainWindow/setting_integration0", "kind": "ratio", "options": ["on", "off"]},
+    "Banshee integration": {"path": "mainWindow/setting_integration1", "kind": "ratio", "options": ["on", "off"]},
+    "iTunes integration": {"path": "mainWindow/setting_integration2", "kind": "ratio", "options": ["on", "off"]},
+    "Traktor integration": {"path": "mainWindow/setting_integration3", "kind": "ratio", "options": ["on", "off"]},
+    "Rekordbox integration": {"path": "mainWindow/setting_integration4", "kind": "ratio", "options": ["on", "off"]},
+    "Serato integration": {"path": "mainWindow/setting_integration5", "kind": "ratio", "options": ["on", "off"]},
+    # Library category — metadata
+    "synchronise metadata with file": {"path": "mainWindow/setting_metadataSync", "kind": "ratio", "options": ["on", "off"]},
+    "synchronise metadata with Serato library": {"path": "mainWindow/setting_seratoMetadataSync", "kind": "ratio", "options": ["on", "off"]},
+    "prefer relative path on playlist export": {"path": "mainWindow/setting_relativePathOnExport", "kind": "ratio", "options": ["on", "off"]},
+    # Library category — history
+    "track duplicate distance": {"path": "mainWindow/setting_historyDuplicateDistance", "kind": "spinbox", "precision": 0},
+    "delete history playlist with less than": {"path": "mainWindow/setting_historyMinTracksToKeep", "kind": "spinbox", "precision": 0},
+    # Library category — search
+    "library search completion": {"path": "mainWindow/setting_librarySearchCompletion", "kind": "ratio", "options": ["on", "off"]},
+    "library search history keyboard shortcuts": {"path": "mainWindow/setting_librarySearchHistoryShortcuts", "kind": "ratio", "options": ["on", "off"]},
+    "search-as-you-type timeout": {"path": "mainWindow/setting_searchTimeout", "kind": "slider", "min": 0.1, "max": 10, "markers": [0.1, 0.5, 1, 5, 10]},
+    "pitch slider for fuzz BPM search": {"path": "mainWindow/setting_searchFuzzBpm", "kind": "slider", "min": 0, "max": 100, "markers": [0, 25, 50, 75, 100]},
 }
 
 # Config keys written by saveInterface()/saveDeck() (see QmlConfigProxy).
@@ -137,6 +175,13 @@ CONFIG_SAVE_MAP = {
         "expected": {"down": "", "up": "0"},
     },
     "track palette": {"group": "[Config]", "key": "TrackColorPalette"},
+    # Library category — see Library.qml save() and QmlConfigProxy
+    "Serato integration": {"group": "[Library]", "key": "ShowSeratoLibrary", "expected": {"on": "1", "off": "0"}},
+    "synchronise metadata with file": {"group": "[Library]", "key": "SyncTrackMetadataExport", "expected": {"on": "1", "off": "0"}},
+    "prefer relative path on playlist export": {"group": "[Library]", "key": "UseRelativePathOnExport", "expected": {"on": "1", "off": "0"}},
+    "track duplicate distance": {"group": "[Library]", "key": "history_track_duplicate_distance", "expected": lambda value: str(int(float(value)))},
+    "delete history playlist with less than": {"group": "[Library]", "key": "history_min_tracks_to_keep", "expected": lambda value: str(int(float(value)))},
+    "search-as-you-type timeout": {"group": "[Library]", "key": "SearchDebouncingTimeoutMillis", "expected": lambda value: str(int(float(value) * 1000))},
 }
 
 # ControlObject side-effects of saveDeck().
@@ -288,6 +333,10 @@ def _wait_for_hidden(rpc, path, timeout=10):
     return _wait_hidden_impl(rpc, path, timeout)
 
 
+def _wait_for_clickable(rpc, path, timeout=5):
+    return _wait_clickable_impl(rpc, path, timeout)
+
+
 def _click(rpc, path):
     rpc.mouseClick(path)
 
@@ -387,6 +436,71 @@ def step_register_mock_devices(context):
         })
 
 
+def _create_music_directory(context, dir_id, tracks, permission, dirname):
+    """Create a folder under the profile's Music dir and register it."""
+    parent = os.path.join(context.profile_dir, "Music")
+    path = os.path.join(parent, dirname)
+    os.makedirs(path, exist_ok=True)
+    if permission == "no-read":
+        os.chmod(path, 0o000)
+    elif permission != "read":
+        raise ValueError(f"Unknown directory permission '{permission}'")
+    if tracks:
+        tracks_dir = context.config.userdata["tracks_dir"]
+        sources = glob.glob(os.path.join(tracks_dir, "*.mp3"))
+        if len(sources) < tracks:
+            raise RuntimeError(
+                f"Not enough tracks in tracks_dir: need {tracks}, have {len(sources)}"
+            )
+        for track in sources[:tracks]:
+            shutil.copy2(track, path)
+    context.music_dirs[dir_id] = path
+    context.current_music_dir = path
+
+
+@given("a music directory")
+@given("the following music directories")
+def step_create_music_directory(context):
+    context.music_dirs = {}
+    if context.table:
+        for row in context.table:
+            _create_music_directory(
+                context,
+                row["id"],
+                int(row.get("tracks", MUSIC_DIRECTORY_DEFAULT_TRACK_COUNT)),
+                row.get("permission", "read"),
+                row.get("dir", f"MusicDir{row['id']}"),
+            )
+    else:
+        _create_music_directory(
+            context, "0", MUSIC_DIRECTORY_DEFAULT_TRACK_COUNT, "read", "MusicDir0"
+        )
+
+
+@given("the library contains {count:d} music directories")
+def step_library_contains_music_directories(context, count):
+    s = _rpc(context)
+    assert count >= 0, "A library cannot contain a negative number of music directories"
+    if count == 0:
+        return
+    parent = os.path.join(context.profile_dir, "Music")
+    os.makedirs(parent, exist_ok=True)
+    for index in range(count):
+        path = os.path.join(parent, f"MusicDir{index + 1}")
+        os.makedirs(path, exist_ok=True)
+        # The last add runs a blocking scan, which also refreshes the sources
+        # list in the already-open settings popup via the scanner's
+        # onRunningChanged -> loadSources() connection.
+        _library_command(s, "addDirectory", path, scan=(index == count - 1))
+
+
+@given("the tracks directory is in the library")
+def step_tracks_directory_in_library(context):
+    s = _rpc(context)
+    tracks_dir = context.config.userdata["tracks_dir"]
+    _library_command(s, "addDirectory", tracks_dir, scan=True)
+
+
 # --- When steps ---
 
 @when("I click the settings close button")
@@ -423,6 +537,7 @@ def step_set_setting(context, setting, value, method=None):
     s = _rpc(context)
     spec = _setting_spec(setting)
     path = spec["path"]
+    _scroll_setting_into_view(s, path)
     kind = spec["kind"]
     if kind == "ratio":
         options = spec.get("options")
@@ -514,6 +629,75 @@ def step_click_action(context, button):
     assert _is_visible(s, path), f"{button.title()} ({path}) button not visible"
     _click(s, path)
     time.sleep(0.5)
+
+
+@when("I select the music directory at row {row:d}")
+def step_select_music_directory(context, row):
+    s = _rpc(context)
+    path = MUSIC_DIRECTORY_ROW % row
+    assert _wait_for_clickable(s, path), f"Music directory row {row} is not visible"
+    _click(s, path)
+    time.sleep(0.3)
+
+
+@when("I click the remove button for the music directory at row {row:d}")
+def step_click_remove_music_directory(context, row):
+    s = _rpc(context)
+    path = SOURCE_REMOVE_BUTTON % row
+    assert _wait_for_clickable(s, path), (
+        f"Remove button for music directory row {row} is not visible"
+    )
+    _click(s, path)
+    time.sleep(0.5)
+
+
+@when("I choose to {action} the tracks of the music directory at row {row:d}")
+def step_choose_track_handling(context, action, row):
+    s = _rpc(context)
+    try:
+        option_index = SOURCE_REMOVE_MODE_OPTIONS.index(action)
+    except ValueError:
+        raise ValueError(f"Unknown track handling action '{action}'")
+    path = f"{SOURCE_REMOVE_MODE_SELECTOR % row}/option{option_index}"
+    assert _wait_for_clickable(s, path), (
+        f"Track handling option '{action}' for music directory row {row} is not visible"
+    )
+    _click(s, path)
+    time.sleep(0.3)
+
+
+@when("I add the test music directory {directory_id}")
+def step_add_test_music_directory(context, directory_id):
+    s = _rpc(context)
+    path = context.music_dirs[directory_id]
+    before = int(s.getStringProperty(MUSIC_DIRECTORY_LIST, "count"))
+    # Route the "Add" button to the test dialog mock and inject the folder,
+    # emulating a real folder picker selection. selectedFolder is a QML `url`
+    # property and the QML model steps carry urls end-to-end, so we must bind
+    # a real file URL: constructing one by string concatenation ("file://" +
+    # path) is rejected by Qt on Windows (backslashes and only two slashes)
+    # and silently yields an empty url. Path.as_uri() produces the correct,
+    # percent-encoded file:// URL on every platform.
+    s.setStringProperty(ADD_FOLDER_DIALOG_TEST, "testMode", "true")
+    s.setStringProperty(
+        ADD_FOLDER_DIALOG_TEST, "selectedFolder", Path(path).as_uri()
+    )
+    _click(s, ADD_SOURCE_BUTTON)
+    deadline = time.time() + 10
+    while time.time() < deadline:
+        try:
+            if int(s.getStringProperty(ADD_FOLDER_DIALOG_TEST, "openCount")) >= 1:
+                break
+        except Exception:
+            pass
+        time.sleep(0.3)
+    else:
+        raise AssertionError("The Add button did not open the dialog")
+    ok, actual = _wait_for_music_directory_count(s, before + 1)
+    assert ok, (
+        f"Music directory '{directory_id}' did not appear in the list "
+        f"(count stayed at {actual}, expected {before + 1})"
+    )
 
 
 @when('I set the router mode to "{mode}"')
@@ -927,6 +1111,32 @@ def _active_scrollbar(s):
     return bar
 
 
+def _scroll_setting_into_view(s, path):
+    """Scroll the active settings category so that the item at ``path`` is
+    fully inside the visible scroll viewport, mirroring a user scrolling to
+    reach a below-the-fold setting."""
+    bar = _active_scrollbar(s)
+    try:
+        size = float(s.getStringProperty(bar, "size") or 0)
+    except ValueError:
+        size = 0
+    if size >= 1.0:
+        return
+    max_value = 1.0 - size
+    deadline = time.time() + 8
+    while time.time() < deadline:
+        try:
+            x, y, w, h = s.getBoundingBox(path)
+            bx, by, bw, bh = s.getBoundingBox(bar)
+        except Exception:
+            return
+        if y >= by and y + h <= by + bh:
+            return
+        target = max_value if y + h > by + bh else 0.0
+        s.setStringProperty(bar, "position", str(target))
+        time.sleep(0.3)
+
+
 @then("the settings categories should {assertion} visible")
 def step_settings_categories_visible(context, assertion):
     s = _rpc(context)
@@ -966,6 +1176,109 @@ def step_setting_expanded(context, setting):
     spec = _setting_spec(setting)
     assert _wait_for_visible(s, f"{spec['path']}/option0"), (
         f"Setting '{setting}' should be expanded but its option pills are not visible"
+    )
+
+
+LIBRARY_GRIDS = {
+    "sources": "mainWindow/librarySourcesGrid",
+    "integrations": "mainWindow/libraryIntegrationsGrid",
+    "metadata": "mainWindow/libraryMetadataGrid",
+    "history": "mainWindow/libraryHistoryGrid",
+}
+
+
+@then('the "{grid}" grid should be displayed in {columns:d} columns')
+@then('the "{grid}" grid should be displayed in {columns:d} column')
+def step_grid_columns(context, grid, columns):
+    s = _rpc(context)
+    path = LIBRARY_GRIDS.get(grid, f"mainWindow/{grid}")
+    assert _wait_for_visible(s, path), f"Grid '{grid}' is not visible"
+    actual = int(s.getStringProperty(path, "columns"))
+    assert actual == columns, (
+        f"Grid '{grid}' should be displayed in {columns} columns but has {actual}"
+    )
+
+
+SPATIAL_ITEM_PATHS = {
+    "integrations grid": "mainWindow/libraryIntegrationsGrid",
+    "library source pane": "mainWindow/librarySourcePane",
+}
+
+
+@then('the "{item}" should be below the "{target}"')
+def step_below(context, item, target):
+    s = _rpc(context)
+    item_path = SPATIAL_ITEM_PATHS[item]
+    target_path = SPATIAL_ITEM_PATHS[target]
+    # Hidden or zero-sized items make the geometric comparison below vacuous
+    # (e.g. a 0x0 box trivially lies "below" anything), so require both to be
+    # really on screen first.
+    assert _is_visible(s, item_path), f"'{item}' is not visible"
+    assert _is_visible(s, target_path), f"'{target}' is not visible"
+    item_bb = s.getBoundingBox(item_path)
+    target_bb = s.getBoundingBox(target_path)
+    assert item_bb[1] >= target_bb[1] + target_bb[3], (
+        f"'{item}' is not below '{target}' "
+        f"(item_top={item_bb[1]}, target_bottom={target_bb[1] + target_bb[3]})"
+    )
+
+
+@then('the "{item}" should not overlap the "{target}"')
+def step_not_overlap(context, item, target):
+    s = _rpc(context)
+    item_path = SPATIAL_ITEM_PATHS[item]
+    target_path = SPATIAL_ITEM_PATHS[target]
+    assert _is_visible(s, item_path), f"'{item}' is not visible"
+    assert _is_visible(s, target_path), f"'{target}' is not visible"
+    a = s.getBoundingBox(item_path)
+    b = s.getBoundingBox(target_path)
+    overlap_x = a[0] < b[0] + b[2] and a[0] + a[2] > b[0]
+    overlap_y = a[1] < b[1] + b[3] and a[1] + a[3] > b[1]
+    assert not (overlap_x and overlap_y), (
+        f"'{item}' overlaps '{target}' "
+        f"(item=({a[0]},{a[1]},{a[2]},{a[3]}), target=({b[0]},{b[1]},{b[2]},{b[3]}))"
+    )
+
+
+@then("the music directory list should be empty")
+def step_music_directory_list_empty(context):
+    s = _rpc(context)
+    ok, actual = _wait_for_music_directory_count(s, 0)
+    assert ok, (
+        f"The music directory list should be empty but contains {actual}"
+    )
+
+
+@then("the music directory list should contain {count:d} source")
+@then("the music directory list should contain {count:d} sources")
+def step_music_directory_list_count(context, count):
+    s = _rpc(context)
+    ok, actual = _wait_for_music_directory_count(s, count)
+    assert ok, (
+        f"The music directory list should contain {count} sources but "
+        f"contains {actual}"
+    )
+
+
+@then("the library state should match the following")
+def step_library_state_matches(context):
+    s = _rpc(context)
+    expected = {}
+    for row in context.table:
+        expected[row["key"]] = _parse_library_state_expectation(row["value"])
+    matched, last_state = _wait_for_library_state(s, expected)
+    assert matched, (
+        f"The library state should match {expected} but the last observed "
+        f"state is {last_state}"
+    )
+
+
+@then("the {button} button of the music directory at row {row:d} should be visible")
+def step_source_button_visible(context, button, row):
+    s = _rpc(context)
+    path = SOURCE_REMOVE_BUTTON % row if button == "remove" else SOURCE_RELINK_BUTTON % row
+    assert _wait_for_clickable(s, path), (
+        f"The {button} button for music directory row {row} is not visible"
     )
 
 
@@ -1156,6 +1469,29 @@ def _combo_select_keyboard(s, path, index):
     time.sleep(0.3)
     s.enterKey("mainWindow", QT_KEY_ENTER, 0)
     time.sleep(0.3)
+
+
+def _click_until_value_moves(s, path, button, value_prop):
+    """Click ``button`` and poll ``value_prop`` on ``path`` until it moves.
+
+    spix's synthetic clicks are occasionally dropped when the machine is under
+    load (for instance a CI runner that is also capturing video), leaving the
+    control on its previous value. Poll after the click and re-click once when
+    the value has not changed, so a single dropped event does not fail the
+    scenario.
+    """
+    for _ in range(2):
+        before = s.getStringProperty(path, value_prop)
+        _click(s, button)
+        deadline = time.time() + 2
+        while time.time() < deadline:
+            try:
+                if s.getStringProperty(path, value_prop) != before:
+                    return
+            except Exception:
+                pass
+            time.sleep(0.1)
+        time.sleep(0.2)
 
 
 def _read_setting_value(s, spec):

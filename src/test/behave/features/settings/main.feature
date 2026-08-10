@@ -27,6 +27,47 @@ Feature: Settings
     When I search for "Sample Rate"
     Then the search results should be visible
 
+  # --- Save / Cancel buttons (shared component behavior) ----------------------
+  # The popup opens on the default "Sound hardware" category. Saving the sound
+  # category touches the audio config, so mock devices are registered per
+  # scenario where a save/cancel is involved (the Background stays device-free).
+
+  Scenario: Save button is disabled when no changes
+    Given the settings popup is open
+    Then the save button should be disabled
+    And the cancel button should not be visible
+
+  Scenario: Save and cancel enable when a setting changes
+    Given the settings popup is open
+    And I have the following sound devices
+      | name           | api  | outputChannels | inputChannels |
+      | Built-in Audio | Mock | 4              | 4             |
+    And the "Main Mix" setting is "on"
+    When I toggle the "Main Mix" setting to "off"
+    Then the save button should be enabled
+    And the cancel button should be visible
+
+  Scenario: Cancel reverts changes
+    Given the settings popup is open
+    And I have the following sound devices
+      | name           | api  | outputChannels | inputChannels |
+      | Built-in Audio | Mock | 4              | 4             |
+    And the "Main Mix" setting is "on"
+    When I toggle the "Main Mix" setting to "off"
+    And I click the cancel button
+    Then the "Main Mix" setting should be "on"
+    And the save button should be disabled
+
+  Scenario: Save applies changes
+    Given the settings popup is open
+    And I have the following sound devices
+      | name           | api  | outputChannels | inputChannels |
+      | Built-in Audio | Mock | 4              | 4             |
+    When I toggle the "Main Mix" setting to "off"
+    And I click the save button
+    Then the save button should be disabled
+    And the cancel button should not be visible
+
   # --- Responsiveness -----------------------------------------------------------
   #
   # The settings popup collapses its category sidebar below `smallScreenWidth`

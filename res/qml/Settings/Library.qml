@@ -15,6 +15,42 @@ Category {
 
     property bool dirty: false
 
+    // In test mode the "Add" button drives the testDialog mock instead of the
+    // native folder picker, so that tests can inject a folder and verify that
+    // the dialog was opened.
+    property var addDialog: testDialog.testMode ? testDialog : nativeFolderDialog
+    // Invisible stand-in for the native folder picker. spix can only address
+    // QQuickItems, so this is an Item (never rendered) rather than a QtObject.
+    // It emulates the FolderDialog interface (open(), selectedFolder).
+    Item {
+        id: testDialog
+
+        objectName: "addFolderDialogTest"
+        visible: false
+        width: 0
+        height: 0
+        property int openCount: 0
+        property url selectedFolder: ""
+        property bool testMode: false
+
+        function accept() {
+            if (selectedFolder.toString().length > 0) {
+                accepted();
+            }
+        }
+        function open() {
+            openCount++;
+            if (testMode) {
+                accept();
+            } else {
+                nativeFolderDialog.open();
+            }
+        }
+
+        signal accepted()
+        onAccepted: root.addSourceFromFolder(selectedFolder)
+    }
+
     function load() {
         loadSources();
         integrationRepeater.model = [
@@ -55,18 +91,25 @@ Category {
         root.dirty = false;
         errorMessage.text = "";
     }
+    function addSourceFromFolder(folderUrl) {
+        let model = sourceListView.model;
+        model.push({
+            url: folderUrl
+        });
+        root.dirty = true;
+        sourceListView.model = model;
+    }
     function loadSources() {
         let rootDirs = [];
         const sourceCount = Mixxx.Library.sources.length;
         for (let i = 0; i < sourceCount; i++) {
             const source = Mixxx.Library.sources[i];
             rootDirs.push({
-                path: source.path,
+                url: source.url,
                 trackCount: source.trackCount,
                 totalMinute: Math.round(source.totalSecond / 60)
             });
         }
-        print(`loadSources: ${JSON.stringify(rootDirs)}`);
         sourceListView.model = rootDirs;
         root.dirty = false;
     }
@@ -79,14 +122,15 @@ Category {
         for (let source of requestedDirs) {
             let result;
             if (source.trackCount === undefined) {
-                // Handle addition
-                result = Mixxx.Library.addSource("file://" + source.path);
+                // Handle addition (rows loaded from the C++ source carry a
+                // trackCount; test dialog additions only carry the url)
+                result = Mixxx.Library.addSource(source.url);
             } else if (source.deleting !== undefined) {
                 // Handle removal
-                result = Mixxx.Library.removeSource("file://" + source.path, source.deleting);
+                result = Mixxx.Library.removeSource(source.url, source.deleting);
             } else if (source.relink) {
                 // Handle relinking
-                result = Mixxx.Library.relinkSource("file://" + source.path, "file://" + source.relink);
+                result = Mixxx.Library.relinkSource(source.url, source.relink);
             } else {
                 continue;
             }
@@ -146,6 +190,13 @@ Category {
     ScrollView {
         id: scrollView
 
+        ScrollBar.vertical: ScrollBar {
+            anchors.bottom: parent.bottom
+            anchors.right: parent.right
+            anchors.top: parent.top
+            objectName: "librarySettingsScrollBar"
+            policy: ScrollBar.AsNeeded
+        }
         anchors.bottom: buttonActions.top
         anchors.bottomMargin: 18
         anchors.left: parent.left
@@ -177,11 +228,13 @@ Category {
 
                     columnSpacing: 20
                     columns: width > 800 ? 2 : 1
+                    objectName: "librarySourcesGrid"
                     width: parent.width
 
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.minimumWidth: sourcePane.implicitWidth
+                        objectName: "librarySourcePane"
                         color: '#0E0E0E'
                         implicitHeight: sourcePane.implicitHeight + 20
 
@@ -206,25 +259,17 @@ Category {
                                     text: qsTr('Music Directory')
                                 }
                                 FolderDialog {
-                                    id: addDialog
+                                    id: nativeFolderDialog
 
                                     currentFolder: StandardPaths.writableLocation(StandardPaths.MusicLocation)
                                     title: qsTr("Choose a music directory")
 
-                                    onAccepted: {
-                                        let model = sourceListView.model;
-                                        let path = addDialog.selectedFolder.toString();
-                                        path = path.replace(/^file:\/{2,3}/, ""); // FIXME does this work on Windows ?
-                                        model.push({
-                                            path: decodeURIComponent(path)
-                                        });
-                                        root.dirty = true;
-                                        sourceListView.model = model;
-                                    }
+                                    onAccepted: root.addSourceFromFolder(selectedFolder)
                                 }
                                 Skin.FormButton {
                                     activeColor: "#999999"
                                     backgroundColor: "#3F3F3F"
+                                    objectName: "addSourceButton"
                                     opacity: enabled ? 1.0 : 0.5
                                     text: qsTr("Add")
 
@@ -249,9 +294,9 @@ Category {
                                     root.dirty = true;
                                     sourceListView.model = model;
                                 }
-                                function relinkSourceAt(index, path) {
+                                function relinkSourceAt(index, folderUrl) {
                                     let model = sourceListView.model;
-                                    model[index].relink = path;
+                                    model[index].relink = folderUrl;
                                     root.dirty = true;
                                     sourceListView.model = model;
                                 }
@@ -261,6 +306,7 @@ Category {
                                 clip: true
                                 focus: true
                                 model: []
+                                objectName: "librarySourceList"
 
                                 delegate: MouseArea {
                                     id: mouse
@@ -271,6 +317,7 @@ Category {
 
                                     height: 34
                                     hoverEnabled: true
+                                    objectName: "sourceRow_" + index
                                     width: ListView.view.width
 
                                     onPressed: {
@@ -309,8 +356,9 @@ Category {
                                                 color: Theme.white
                                                 font.pixelSize: 14
                                                 font.weight: Font.Medium
+                                                objectName: "sourcePath_" + index
                                                 opacity: modelData.deleting !== undefined ? 0.4 : 1
-                                                text: modelData.path
+                                                text: Mixxx.Library.urlToLocalPath(modelData.url)
                                             }
                                             FolderDialog {
                                                 id: relinkDialog
@@ -319,8 +367,7 @@ Category {
                                                 title: qsTr("Relink music directory to new location")
 
                                                 onAccepted: {
-                                                    let path = selectedFolder.toString().replace(/^(file:\/\/)/, ""); // FIXME does this work on Windows ?
-                                                    sourceListView.relinkSourceAt(mouse.index, decodeURIComponent(path));
+                                                    sourceListView.relinkSourceAt(mouse.index, selectedFolder);
                                                 }
                                             }
                                             Skin.FormButton {
@@ -328,6 +375,7 @@ Category {
 
                                                 activeColor: "#999999"
                                                 backgroundColor: "#3F3F3F"
+                                                objectName: "sourceRelinkButton_" + index
                                                 opacity: enabled ? 1.0 : 0.5
                                                 text: modelData.relink ? qsTr("Save to proceed") : qsTr("Relink")
                                                 visible: selected && modelData.trackCount !== undefined && !Mixxx.Library.scanner.running
@@ -357,6 +405,7 @@ Category {
                                                     activeColor: "#999999"
                                                     anchors.centerIn: parent
                                                     backgroundColor: "#7D3B3B"
+                                                    objectName: "sourceRemoveButton_" + index
                                                     opacity: enabled ? 1.0 : 0.5
                                                     text: qsTr("Remove")
                                                     visible: !removeButton.confirming
@@ -375,6 +424,7 @@ Category {
                                                     anchors.centerIn: parent
                                                     inactiveColor: Theme.darkGray4
                                                     normalizedWidth: false
+                                                    objectName: "sourceRemoveModeSelector_" + index
                                                     options: ["keep tracks", "hide tracks", "purge tracks"]
                                                     selected: null
                                                     visible: removeButton.confirming
@@ -432,6 +482,7 @@ Category {
                         Rectangle {
                             anchors.fill: parent
                             color: Qt.alpha('black', 0.4)
+                            objectName: "libraryScanOverlay"
                             visible: Mixxx.Library.scanner.running
 
                             MouseArea {
@@ -484,6 +535,7 @@ Category {
                             GridLayout {
                                 id: integrationPane
 
+                                objectName: "libraryIntegrationsGrid"
                                 anchors.bottomMargin: 10
                                 anchors.fill: parent
                                 anchors.leftMargin: 17
@@ -527,6 +579,7 @@ Category {
 
                                             inactiveColor: Theme.darkGray4
                                             maxWidth: parent.width * 0.5
+                                            objectName: "setting_integration" + index
                                             options: ["on", "off"]
                                             selected: modelData.enabled ? "on" : "off"
 
@@ -586,6 +639,7 @@ Category {
                             anchors.topMargin: 10
                             columnSpacing: 20
                             columns: metadataColumn.width < 850 ? 1 : 2
+                            objectName: "libraryMetadataGrid"
                             rowSpacing: 15
 
                             RowLayout {
@@ -612,6 +666,7 @@ Category {
 
                                     inactiveColor: Theme.darkGray4
                                     maxWidth: parent.width * 0.5
+                                    objectName: "setting_metadataSync"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: root.dirty = true
@@ -641,6 +696,7 @@ Category {
 
                                     inactiveColor: Theme.darkGray4
                                     maxWidth: parent.width * 0.5
+                                    objectName: "setting_seratoMetadataSync"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: root.dirty = true
@@ -670,6 +726,7 @@ Category {
 
                                     inactiveColor: Theme.darkGray4
                                     maxWidth: parent.width * 0.5
+                                    objectName: "setting_relativePathOnExport"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: root.dirty = true
@@ -719,6 +776,7 @@ Category {
                             anchors.topMargin: 10
                             columnSpacing: 20
                             columns: historyColumn.width < 800 ? 1 : 2
+                            objectName: "libraryHistoryGrid"
                             rowSpacing: 15
 
                             RowLayout {
@@ -746,6 +804,7 @@ Category {
                                     Layout.rightMargin: 20
                                     max: 1000
                                     min: 1
+                                    objectName: "setting_historyDuplicateDistance"
                                     precision: 0
                                     realValue: 2
                                     suffix: value > 1 ? qsTr(" tracks") : qsTr(" track")
@@ -778,6 +837,7 @@ Category {
                                     Layout.rightMargin: 20
                                     max: 1000
                                     min: 1
+                                    objectName: "setting_historyMinTracksToKeep"
                                     precision: 0
                                     realValue: 2
                                     suffix: value > 1 ? qsTr(" tracks") : qsTr(" track")
@@ -855,6 +915,7 @@ Category {
 
                                     inactiveColor: Theme.darkGray4
                                     maxWidth: parent.width * 0.5
+                                    objectName: "setting_librarySearchCompletion"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: root.dirty = true
@@ -884,6 +945,7 @@ Category {
 
                                     inactiveColor: Theme.darkGray4
                                     maxWidth: parent.width * 0.5
+                                    objectName: "setting_librarySearchHistoryShortcuts"
                                     options: ["on", "off"]
 
                                     onSelectedChanged: root.dirty = true
@@ -914,6 +976,7 @@ Category {
                                     markers: [0.1, 0.5, 1, 5, 10]
                                     max: 10
                                     min: 0.1
+                                    objectName: "setting_searchTimeout"
                                     suffix: qsTr("sec")
                                     value: 0.3
 
@@ -944,6 +1007,7 @@ Category {
                                     markers: [0, 25, 50, 75, 100]
                                     max: 100
                                     min: 0
+                                    objectName: "setting_searchFuzzBpm"
                                     suffix: "%"
                                     value: 8
 
@@ -968,6 +1032,7 @@ Category {
             activeColor: "#999999"
             anchors.left: parent.left
             backgroundColor: "#7D3B3B"
+            objectName: "libraryResetButton"
             opacity: enabled ? 1.0 : 0.5
             text: qsTr("Reset")
 
@@ -990,6 +1055,7 @@ Category {
             Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
+                objectName: "libraryCancelButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: qsTr("Cancel")
                 visible: root.dirty
@@ -1002,6 +1068,7 @@ Category {
                 activeColor: "#999999"
                 backgroundColor: root.dirty ? "#3a60be" : "#3F3F3F"
                 enabled: root.dirty
+                objectName: "librarySaveButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: qsTr("Save")
 

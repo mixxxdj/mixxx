@@ -115,6 +115,17 @@ def after_scenario(context, scenario):
         scenario.set_status(Status.passed)
 
     time.sleep(1) # Allow the final state to be visible on screen
+
+    # Reset transient state that a scenario may have left behind (e.g. a
+    # maximized library) so the next scenario reusing this Mixxx instance
+    # starts from the defaults rather than inheriting it.
+    rpc = context._session.get("rpc")
+    if rpc is not None:
+        try:
+            rpc.command("setControlValue", "[Skin],show_maximized_library,0")
+        except Exception:
+            pass
+
     scenario.end_at = time.time()
     scenario.outcome = outcome
 

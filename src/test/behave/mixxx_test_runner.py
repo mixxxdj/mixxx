@@ -31,6 +31,8 @@ from behave.formatter.pretty import PrettyFormatter
 # not set, in which case the formatter behaves like its parent.
 RECORDING_START = None
 
+LIBRARY_TRACK_COUNT = 50
+
 
 def _format_timecode(seconds):
     if seconds is None or seconds < 0:
@@ -643,7 +645,7 @@ def main():
     os.makedirs(tracks_cache, exist_ok=True)
 
     # Download tracks if not already cached
-    profile.ensure_tracks_downloaded(tracks_cache)
+    profile.ensure_tracks_downloaded(tracks_cache, nb_tracks=LIBRARY_TRACK_COUNT)
 
     artifacts = args.artifacts_dir
     if not artifacts:

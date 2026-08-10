@@ -255,15 +255,26 @@ def _track_row_is_on_screen(rpc, row):
     viewport = float(rpc.getStringProperty(TRACK_TABLE_PATH, "height")) or 0
     if viewport <= 0:
         return False
-    columnWidth = float(rpc.invokeMethod(TRACK_TABLE_PATH, "columnWidth", [index]) or 0)
-    return columnWidth > 0
+    if height <= viewport:
+        return True
+    target = row * _ROW_HEIGHT
+    return y <= target and y + viewport >= target + _ROW_HEIGHT
 
 
-def _get_bb(rpc, path):
-    bb = rpc.getBoundingBox(path)
-    if isinstance(bb, (list, tuple)):
-        return {"x": bb[0], "y": bb[1], "width": bb[2], "height": bb[3]}
-    return bb
+def _last_track_row(rpc, timeout=5):
+    """Index of the last row in the track table, derived from its content height.
+
+    Keeps the "below the fold" scenario independent of the number of tracks
+    that happen to be in the database.
+    """
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        height = float(rpc.getStringProperty(TRACK_TABLE_PATH, "contentHeight"))
+        row = int(height // _ROW_HEIGHT) - 1
+        if row >= 0:
+            return row
+        time.sleep(0.3)
+    raise AssertionError("The track table has no rows")
 
 
 def _set_property(rpc, path, prop, value):
@@ -286,9 +297,46 @@ def _load_track(rpc, deck, filepath):
     rpc.command("loadTrack", f"{deck},{filepath}")
 
 
+def _get_library_state(rpc):
+    rpc.command("getLibraryState", "")
+    return json.loads(rpc.getStringProperty("mainWindow", "lastLibraryState"))
+
+
+def _wait_for_library_scan(rpc, scan_generation, timeout=60):
+    """Wait for a library scan triggered after ``scan_generation`` to finish.
+
+    The ``library`` command starts the scan asynchronously and returns
+    immediately (running a nested event loop while the library models are
+    mutated crashes the QML delegate model). The ``getLibraryState`` command
+    exposes a monotonically increasing ``scanGeneration`` counter and a
+    ``scanInProgress`` flag so tests can wait without blocking the app's main
+    thread.
+    """
+    deadline = time.time() + timeout
+    last_state = None
+    while time.time() < deadline:
+        try:
+            last_state = _get_library_state(rpc)
+            if (last_state.get("scanGeneration", 0) > scan_generation and
+                    not last_state.get("scanInProgress", False)):
+                return
+        except Exception as e:
+            last_state = e
+        time.sleep(0.2)
+    raise AssertionError(
+        f"Timed out waiting for the library scan to finish "
+        f"(last state: {last_state})"
+    )
+
+
 def _library_command(rpc, action, path, scan=False):
     payload = json.dumps({"action": action, "path": path, "scan": scan})
+    scan_generation = None
+    if scan:
+        scan_generation = _get_library_state(rpc).get("scanGeneration", 0)
     rpc.command("library", payload)
+    if scan:
+        _wait_for_library_scan(rpc, scan_generation)
 
 
 # --- Path resolution ---
@@ -456,87 +504,9 @@ def _mixxx_running(context):
     return False
 
 
-def _mixxx_process_alive(context):
-    """True when a Mixxx process this session owns is still running, RPC or not.
-
-    Unlike :func:`_mixxx_running` this deliberately ignores the RPC probe: an
-    instance that is stuck starting up, or whose RPC server never came up, is
-    exactly the one holding port 9000. Treating the failed RPC probe as "not
-    running" used to let such instances leak, and every later fresh-profile
-    spawn of the run then timed out against the port they held.
-    """
-    session = context._session
-    for mixxx in (session.get("mixxx"), getattr(context, "mixxx", None)):
-        if mixxx is not None and mixxx.process is not None and mixxx.process.poll() is None:
-            return True
-    return False
-
-
-def _stop_mixxx(context):
-    """Stop every Mixxx process this session owns, RPC-responsive or not.
-
-    The session instance and ``context.mixxx`` can diverge after a failed
-    ``start()`` (context then holds the never-ready process), so both are
-    reaped. A graceful quit is attempted first when the RPC still answers;
-    ``MixxxProcess.stop()`` escalates to SIGKILL, which reliably frees
-    port 9000.
-    """
-    session = context._session
-    quit_attempted = False
-    for mixxx in (session.get("mixxx"), getattr(context, "mixxx", None)):
-        if mixxx is None:
-            continue
-        if not quit_attempted and mixxx.process is not None and mixxx.process.poll() is None:
-            quit_attempted = True
-            try:
-                rpc = getattr(context, "mixxx_rpc", None)
-                if rpc is not None:
-                    rpc.quit()
-                    time.sleep(1)
-            except Exception:
-                pass
-        mixxx.stop()
-    session["mixxx"] = None
-    session["rpc"] = None
-    session["ready_key"] = None
-    session["registered_devices"] = None
-    context.mixxx = None
-    context.mixxx_rpc = None
-
-
-def _device_signature(context):
-    devices = getattr(context, "_soundMockDevices", None)
-    if not devices:
-        return None
-    return tuple(
-        sorted(
-            (
-                d["name"],
-                d.get("api", "Mock"),
-                d.get("outputChannels", 0),
-                d.get("inputChannels", 0),
-            )
-            for d in devices
-        )
-    )
-
-
-def _mock_devices_key(devices):
-    """Canonical form of a scenario's mock-device table, for change detection.
-
-    ``None`` and ``[]`` both normalize to "no devices" so a device-less
-    scenario compares equal to an instance with nothing registered.
-    """
-    return json.dumps(devices or [], sort_keys=True)
-
-
-def _session_key(context):
-    return (getattr(context, "profile_dir", None), _device_signature(context))
-
-
 def _ensure_profile(context, profile_type, force=False):
     session = context._session
-    if session.get("active_profile_type") == profile_type and _mixxx_running(context):
+    if not force and session.get("active_profile_type") == profile_type and _mixxx_running(context):
         return
     if _mixxx_process_alive(context):
         # Reap whatever instance we still own before abandoning its profile.
@@ -554,16 +524,29 @@ def _ensure_profile(context, profile_type, force=False):
 
 # --- Given steps ---
 
-@given("a new empty profile")
-def step_new_empty_profile(context):
-    _ensure_profile(context, "empty")
+@given("a {profile_type} profile")
+def step_new_empty_profile(context, profile_type):
+    # The Gherkin text is "a fresh new empty profile", so {profile_type} binds
+    # to "fresh new empty" -- the leading "a " belongs to the pattern, not the
+    # capture. Testing for "a fresh" here could therefore never match, which
+    # silently disabled the fresh-profile opt-out and made every scenario
+    # reuse the first scenario's profile and library.
+    _ensure_profile(
+        context,
+        profile_type.split(" ")[-1],
+        force=profile_type.startswith("fresh"),
+    )
 
 
 @given("Mixxx is open and ready to operate")
 def step_open_and_ready(context):
     tracks_dir = context.config.userdata["tracks_dir"]
-    is_running = _mixxx_running(context)
-    if not is_running:
+    if not _mixxx_running(context):
+        if _mixxx_process_alive(context):
+            # A live instance whose RPC probe failed (stuck startup, hung
+            # RPC) is the one holding port 9000; reap it before spawning a
+            # replacement or the replacement's start() will time out.
+            _stop_mixxx(context)
         binary = context.config.userdata["binary"]
         if "profile_dir" not in context:
             _ensure_profile(context, "empty")
@@ -580,7 +563,8 @@ def step_open_and_ready(context):
         # must know that to avoid a pointless reload on device-less spawns.
         session["registered_devices"] = _mock_devices_key(None)
         _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
-        _library_command(context.mixxx_rpc, "addDirectory", tracks_dir, scan=True)
+        if context.active_profile_type == "library-ready":
+            _library_command(context.mixxx_rpc, "addDirectory", tracks_dir, scan=True)
 
     # Sync the mock devices with the scenario's device table. Registering or
     # clearing devices forces a reloadQml (full QML rebuild) because the
@@ -823,8 +807,14 @@ def _perform_track_action(context, action, row):
 
 @when("I {action} the track at row {row:d}")
 def step_track_action(context, action, row):
-    TRACK_ACTIONS[action](context.mixxx_rpc, _track_row_path(row))
-    time.sleep(0.3)
+    _perform_track_action(context, action, row)
+
+
+@when("I click a track below the fold")
+def step_click_track_below_fold(context):
+    row = _last_track_row(context.mixxx_rpc)
+    context._fold_track_row = row
+    _perform_track_action(context, "click", row)
 
 @when('I select {path} on the track menu')
 def step_select_track_menu(context, path):
@@ -1022,6 +1012,24 @@ def step_track_selected(context, row):
     assert selected == "true", f"Track at row {row} is not selected (selected={selected})"
 
 
+@then("the track at row {row:d} should be visible on screen")
+def step_track_on_screen(context, row):
+    s = context.mixxx_rpc
+    assert _track_row_is_on_screen(s, row), (
+        f"Track at row {row} was not scrolled into the visible viewport"
+    )
+
+
+@then("the track below the fold should be visible on screen")
+def step_fold_track_on_screen(context):
+    row = getattr(context, "_fold_track_row", None)
+    assert row is not None, "No track below the fold was clicked"
+    s = context.mixxx_rpc
+    assert _track_row_is_on_screen(s, row), (
+        f"Track at row {row} was not scrolled into the visible viewport"
+    )
+
+
 @then("the track context menu should be visible")
 def step_track_context_menu_visible(context):
     s = context.mixxx_rpc
@@ -1050,6 +1058,12 @@ def step_library_visible(context, assertion):
 def step_library_not_maximized(context):
     _set_control_value(context.mixxx_rpc, "[Skin]", "show_maximized_library", 0)
     time.sleep(0.5)
+
+
+@given("the library is maximized")
+def step_library_maximized(context):
+    _set_control_value(context.mixxx_rpc, "[Skin]", "show_maximized_library", 1)
+    _wait_for_visible(context.mixxx_rpc, LIBRARY_CONTENT)
 
 
 @then('the "{button}" button in the main toolbar should {assertion} visible')

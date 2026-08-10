@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QString>
+#include <QUrl>
 #include <Qt>
 #include <memory>
 
@@ -22,19 +23,19 @@ namespace qml {
 
 class QmlLibrarySource : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString path MEMBER m_path CONSTANT)
+    Q_PROPERTY(QUrl url MEMBER m_url CONSTANT)
     Q_PROPERTY(uint totalSecond MEMBER m_totalSecond CONSTANT)
     Q_PROPERTY(uint trackCount MEMBER m_trackCount CONSTANT)
     QML_NAMED_ELEMENT(LibrarySource)
   public:
     QmlLibrarySource(const DirectoryDAO::RootDirectoryInfo& record)
-            : m_path(record.path),
+            : m_url(QUrl::fromLocalFile(record.path)),
               m_totalSecond(record.totalSecond),
               m_trackCount(record.trackCount) {
     }
 
   private:
-    QString m_path;
+    QUrl m_url;
     uint m_totalSecond;
     uint m_trackCount;
 };
@@ -137,6 +138,13 @@ class QmlLibraryProxy : public QObject {
             mixxx::qml::QmlLibraryProxy::SourceRemovalType type);
     Q_INVOKABLE mixxx::qml::QmlLibraryProxy::Result relinkSource(
             const QUrl& oldPath, const QUrl& newPath);
+
+    /// Converts a file URL to a local path for display purposes. The only
+    /// sanctioned url <-> path conversion in QML; all library operations
+    /// receive and store QUrls.
+    Q_INVOKABLE static QString urlToLocalPath(const QUrl& url) {
+        return url.toLocalFile();
+    }
 
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);

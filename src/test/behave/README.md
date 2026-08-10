@@ -138,8 +138,11 @@ The test runtime has three layers:
    by default; install `cage` and `wf-recorder` to use it locally.
 
 **Audio dataset**: `test_tracks.json` contains metadata for 141 Creative
-Commons tracks (from Pixabay). On first run, up to 20 tracks are downloaded to
-`/tmp/mixxx-test-tracks/` and cached across runs.
+Commons tracks (from Pixabay). The runner downloads the first
+`LIBRARY_TRACK_COUNT` (50) of them on first run, into a
+`mixxx-test-tracks` folder inside the platform temp directory (`/tmp` on Linux,
+`%TEMP%` on Windows), and reuses that cache on later runs. Set
+`MIXXX_TEST_TRACKS_DIR` to point at a pre-seeded cache instead.
 
 **CMake integration**: At configure time, CMake creates a Python venv, installs
 behave, globs `features/*.feature`, and registers each as a `mixxx-behave-*`
@@ -155,6 +158,13 @@ src/test/behave/.venv/bin/python \
   --binary build/mixxx-test \
   src/test/behave/features/deck.feature
 ```
+
+On Windows, use `tools/Run-BehaveScenariosOnWindows.ps1` instead — a GUI
+`mixxx-test` cannot start from an SSH session, so the script routes it through
+`Start-InteractiveProcessOnWindows.ps1` and onto the logged-on user's desktop.
+See
+[AGENTS.md](AGENTS.md#running-the-tests-on-windows) for prerequisites, the
+quoting rules, and how to read the results.
 
 ## CI Video Output
 
