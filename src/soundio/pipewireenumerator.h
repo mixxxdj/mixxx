@@ -43,8 +43,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             const AudioOutput& output,
             mixxx::audio::SampleRate sampleRate,
             SINT framesPerBuffer);
-    void closeDeviceInput(uint32_t id, const AudioInput& input);
-    void closeDeviceOutput(uint32_t id, const AudioOutput& output);
+    void closeDevices();
 
     mixxx::audio::SampleRate getDefaultSampleRate() const {
         return m_defaultSampleRate;

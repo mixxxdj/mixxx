@@ -64,13 +64,7 @@ bool SoundDevicePipewire::isOpen() const {
 }
 
 SoundDeviceStatus SoundDevicePipewire::close() {
-    for (auto& input : m_audioInputs) {
-        m_pEnumerator->closeDeviceInput(m_deviceId.deviceIndex, input);
-    }
-
-    for (auto& output : m_audioOutputs) {
-        m_pEnumerator->closeDeviceOutput(m_deviceId.deviceIndex, output);
-    }
+    m_pEnumerator->closeDevices();
     return SoundDeviceStatus::Ok;
 }
 

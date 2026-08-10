@@ -592,6 +592,10 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
     PortPair& ports = m_inputs.at(input);
     ports.activeDevice = deviceId;
 
+    if (ports.active.load()) {
+        closePorts(ports);
+    }
+
     ChannelGroup channelGroup = input.getChannelGroup();
     unsigned char channelBase = channelGroup.getChannelBase();
     unsigned char channelCount = channelGroup.getChannelCount().value();
@@ -637,6 +641,10 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId,
     PortPair& ports = m_outputs.at(output);
     ports.activeDevice = deviceId;
 
+    if (ports.active.load()) {
+        closePorts(ports);
+    }
+
     ChannelGroup channelGroup = output.getChannelGroup();
     unsigned char channelBase = channelGroup.getChannelBase();
     unsigned char channelCount = channelGroup.getChannelCount().value();
@@ -664,40 +672,34 @@ void PipewireEnumerator::closePorts(PortPair& ports) {
     const Port& left = m_ports.at(ports.left.id);
     const Port& right = m_ports.at(ports.right.id);
 
+    qDebug() << "PipewireEnumerator::closePorts" << left.links.size() << right.links.size();
+
     for (uint32_t link : left.links) {
         destroyLink(link);
-        qDebug() << "PipewireEnumerator::closePath left" << link;
+        qDebug() << "PipewireEnumerator::closePorts" << link;
     }
 
     for (uint32_t link : right.links) {
         destroyLink(link);
-        qDebug() << "PipewireEnumerator::closePath right" << link;
+        qDebug() << "PipewireEnumerator::closePorts" << link;
     }
     ports.activeDevice = 0;
 }
 
-void PipewireEnumerator::closeDeviceInput(uint32_t deviceId, const AudioInput& input) {
-    qDebug() << "PipewireEnumerator::closeDevice" << deviceId;
-    VERIFY_OR_DEBUG_ASSERT(m_initialized) {
-        qDebug() << "PipewireEnumerator::closePath called when "
-                    "uninitialized, this should not happen";
-        return;
+void PipewireEnumerator::closeDevices() {
+    for (auto& [path, ports] : m_inputs) {
+        if (ports.active.load()) {
+            qDebug() << "PipewireEnumerator::closeDevices" << path.getString();
+            closePorts(ports);
+        }
     }
 
-    PortPair& ports = m_inputs.at(input);
-    closePorts(ports);
-}
-
-void PipewireEnumerator::closeDeviceOutput(uint32_t deviceId, const AudioOutput& output) {
-    qDebug() << "PipewireEnumerator::closeDevice" << deviceId;
-    VERIFY_OR_DEBUG_ASSERT(m_initialized) {
-        qDebug() << "PipewireEnumerator::closePath called when "
-                    "uninitialized, this should not happen";
-        return;
+    for (auto& [path, ports] : m_outputs) {
+        if (ports.active.load()) {
+            qDebug() << "PipewireEnumerator::closeDevices" << path.getString();
+            closePorts(ports);
+        }
     }
-
-    PortPair& ports = m_outputs.at(output);
-    closePorts(ports);
 }
 
 void PipewireEnumerator::callback(const spa_io_position* pos) {
