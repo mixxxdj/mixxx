@@ -109,7 +109,7 @@ bool isUnrecoverableError(mad_error error) {
     return (MAD_ERROR_NONE != error) && !MAD_RECOVERABLE(error);
 }
 
-bool hasUnrecoverableError(const mad_stream* pMadStream) {
+[[maybe_unused]] bool hasUnrecoverableError(const mad_stream* pMadStream) {
     if (pMadStream) {
         return isUnrecoverableError(pMadStream->error);
     }
