@@ -1,5 +1,7 @@
 #include "library/dao/trackdao.h"
 
+#include <qhashfunctions.h>
+
 #include <QChar>
 #include <QDir>
 #include <QFileInfo>
@@ -1785,64 +1787,79 @@ std::optional<RelocatedTrack> TrackDAO::relocateTrack(
         const TrackId trackId, const mixxx::FileInfo& newLocation) {
     DEBUG_ASSERT(trackId.isValid());
 
-    const auto updatedTrackRef = TrackRef::fromFileInfo(newLocation, trackId);
-    TrackRef deletedTrackRef = TrackRef();
+    const QString oldLocation = getTrackLocation(trackId);
+
     kLogger.debug() << "Relocating track" << trackId
-                    << "to" << newLocation;
+                    << "to" << newLocation
+                    << "from" << oldLocation;
 
     SqlTransaction transaction(m_database);
 
-    DbId newTrackLocationId;
-    TrackId newTrackId;
-    FwdSqlQuery queryNewTrackLocation(m_database,
+    // Check for a duplicate track location. This happens if the new location
+    // is inside mixxx library folder because it is automatically added to
+    // library. If there is no duplicate, the track is outside mixxx library folder.
+    DbId duplicateLocationId;
+    TrackId duplicateLocationTrackId;
+    FwdSqlQuery queryDuplicateLocation(m_database,
             "SELECT track_locations.id, library.id "
             "FROM track_locations "
             "LEFT JOIN library ON library.location = track_locations.id "
             "WHERE track_locations.location = :location "
-            "AND library.id != :trackId OR library.id IS NULL");
-    queryNewTrackLocation.bindValue(":location", newLocation.location());
-    queryNewTrackLocation.bindValue(":trackId", trackId.toVariant());
-    if (!queryNewTrackLocation.execPrepared()) {
+            "AND (library.id != :trackId OR library.id IS NULL)");
+    queryDuplicateLocation.bindValue(":location", newLocation.location());
+    queryDuplicateLocation.bindValue(":trackId", trackId.toVariant());
+    if (!queryDuplicateLocation.execPrepared()) {
         return std::nullopt;
     }
-    if (queryNewTrackLocation.next()) {
-        newTrackLocationId = DbId(queryNewTrackLocation.fieldValue(0));
-        newTrackId = TrackId(queryNewTrackLocation.fieldValue(1));
+    if (queryDuplicateLocation.next()) {
+        duplicateLocationId = DbId(queryDuplicateLocation.fieldValue(0));
+        duplicateLocationTrackId = TrackId(queryDuplicateLocation.fieldValue(1));
     }
-    if (newTrackLocationId.isValid()) {
-        deletedTrackRef = TrackRef::fromFileInfo(newLocation, newTrackId);
-        DbId trackLocationId;
-        FwdSqlQuery queryTrackLocationId(m_database,
+    if (duplicateLocationId.isValid()) {
+        kLogger.debug() << "New track location already exist in db (location id: "
+                        << duplicateLocationId
+                        << "). Deleting duplicate track and linking new location to current track.";
+
+        // Fetch current track oprhaned location id.
+        DbId orphanedLocationId;
+        FwdSqlQuery queryOprhanedLocationId(m_database,
                 "SELECT location FROM library WHERE id = :trackId");
-        queryTrackLocationId.bindValue(":trackId", trackId.toVariant());
-        if (!queryTrackLocationId.execPrepared()) {
+        queryOprhanedLocationId.bindValue(":trackId", trackId.toVariant());
+        if (!queryOprhanedLocationId.execPrepared()) {
             return std::nullopt;
         }
-        if (queryTrackLocationId.next()) {
-            trackLocationId = DbId(queryTrackLocationId.fieldValue(0));
+        if (queryOprhanedLocationId.next()) {
+            orphanedLocationId = DbId(queryOprhanedLocationId.fieldValue(0));
         }
 
+        // Delete duplicate track.
         FwdSqlQuery queryDeleteDuplicate(m_database,
                 "DELETE FROM library WHERE id = :newTrackId");
-        queryDeleteDuplicate.bindValue(":newTrackId", newTrackId.toVariant());
+        queryDeleteDuplicate.bindValue(":newTrackId",
+                duplicateLocationTrackId.toVariant());
         if (!queryDeleteDuplicate.execPrepared()) {
             return std::nullopt;
         }
 
-        FwdSqlQuery queryUpdateLocationInLibrary(m_database,
+        // Update current track location to new location (duplicate location database entry).
+        FwdSqlQuery queryUpdateLocation(m_database,
                 "UPDATE library SET location = :loc WHERE id = :trackId");
-        queryUpdateLocationInLibrary.bindValue(":loc", newTrackLocationId.toVariant());
-        queryUpdateLocationInLibrary.bindValue(":trackId", trackId.toVariant());
-        if (!queryUpdateLocationInLibrary.execPrepared()) {
+        queryUpdateLocation.bindValue(":loc", duplicateLocationId.toVariant());
+        queryUpdateLocation.bindValue(":trackId", trackId.toVariant());
+        if (!queryUpdateLocation.execPrepared()) {
             return std::nullopt;
         }
 
+        // Delete orphaned location.
         FwdSqlQuery queryDeleteOrphanedLocation(m_database,
                 "DELETE FROM track_locations WHERE id = :id");
-        queryDeleteOrphanedLocation.bindValue(":id", trackLocationId.toVariant());
+        queryDeleteOrphanedLocation.bindValue(":id",
+                orphanedLocationId.toVariant());
         queryDeleteOrphanedLocation.execPrepared();
     } else {
-        FwdSqlQuery query(m_database,
+        // Directly update orphaned location with new data since
+        // there is no duplicate.
+        FwdSqlQuery queryUpdateNoDuplicate(m_database,
                 "UPDATE track_locations SET "
                 "location = :location,"
                 "directory = :directory,"
@@ -1851,23 +1868,31 @@ std::optional<RelocatedTrack> TrackDAO::relocateTrack(
                 "fs_deleted = 0,"
                 "needs_verification = 0 "
                 "WHERE id=(SELECT location FROM library WHERE id =:trackId)");
-        query.bindValue(":location", newLocation.location());
-        query.bindValue(":directory", newLocation.locationPath());
-        query.bindValue(":filename", newLocation.fileName());
-        query.bindValue(":filesize", QVariant::fromValue(newLocation.sizeInBytes()));
-        query.bindValue(":trackId", trackId.toVariant());
+        queryUpdateNoDuplicate.bindValue(":location", newLocation.location());
+        queryUpdateNoDuplicate.bindValue(":directory", newLocation.locationPath());
+        queryUpdateNoDuplicate.bindValue(":filename", newLocation.fileName());
+        queryUpdateNoDuplicate.bindValue(":filesize",
+                QVariant::fromValue(newLocation.sizeInBytes()));
+        queryUpdateNoDuplicate.bindValue(":trackId", trackId.toVariant());
 
-        if (!query.execPrepared()) {
+        if (!queryUpdateNoDuplicate.execPrepared()) {
             return std::nullopt;
         }
-        if (query.numRowsAffected() == 0) {
+        if (queryUpdateNoDuplicate.numRowsAffected() == 0) {
             kLogger.warning() << "relocateTrack had no effect: trackId " << trackId << "invalid.";
             return std::nullopt;
         }
     }
     transaction.commit();
 
-    return RelocatedTrack(updatedTrackRef, deletedTrackRef);
+    const auto missingTrackRef = TrackRef::fromFilePath(oldLocation, trackId);
+    TrackRef duplicateTrackRef = TrackRef();
+    if (duplicateLocationId.isValid()) {
+        duplicateTrackRef = TrackRef::fromFileInfo(newLocation, duplicateLocationTrackId);
+    } else {
+        duplicateTrackRef = TrackRef::fromFileInfo(newLocation);
+    }
+    return RelocatedTrack(missingTrackRef, duplicateTrackRef);
 }
 
 // Make sure that `directory` in in track_locations table is indeed a
