@@ -2530,7 +2530,7 @@ Rectangle {
         Accessible.role: Accessible.MenuItem
         activeFocusOnTab: true
         implicitHeight: 17
-        implicitWidth: appMenuActionText.implicitWidth + appMenuShortcutText.implicitWidth + (appMenuAction.checkable ? 36 : 20)
+        implicitWidth: Math.ceil(appMenuActionText.implicitWidth) + Math.ceil(appMenuShortcutText.implicitWidth) + (appMenuAction.checkable ? 48 : 32)
         opacity: enabled ? 1.0 : 0.45
 
         Keys.onPressed: event => {
