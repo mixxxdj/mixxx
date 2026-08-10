@@ -7,13 +7,11 @@ Skin.ControlFader {
 
     property int backgroundMargin: 0
     property alias backgroundSource: backgroundImage.source
-    property bool centeredBar: false
-    property real centeredBarAxis: height / 2
     property alias handleSource: handleImage.source
     property color valueLineColor: LateNightTheme.mixerSliderBarColor
 
     bar.color: valueLineColor
-    bar.enabled: !centeredBar
+    bar.enabled: true
     bar.margin: 8
     bar.width: 2
     implicitHeight: backgroundImage.implicitHeight + (backgroundMargin * 2)
@@ -35,19 +33,5 @@ Skin.ControlFader {
         width: implicitWidth
         x: root.horizontal ? root.visualPosition * (root.width - width) : (root.width - width) / 2
         y: root.vertical ? root.visualPosition * (root.height - height) : (root.height - height) / 2
-    }
-
-    Rectangle {
-        readonly property real handleCenter: handleImage.x + handleImage.width / 2
-        readonly property real start: root.width / 2
-
-        color: root.valueLineColor
-        height: root.bar.width
-        radius: height / 2
-        visible: root.centeredBar && root.horizontal && width > 0
-        width: Math.abs(handleCenter - start)
-        x: Math.min(start, handleCenter)
-        y: root.centeredBarAxis - height / 2
-        z: 1
     }
 }

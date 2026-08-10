@@ -5,20 +5,22 @@ import "../LateNightTheme"
 Item {
     id: root
 
+    readonly property int fourDeckChannelHeight: root.showEqKnobs ? (root.showXfader ? 359 : 344) : (root.showXfader ? 197 : 182)
     required property var groups
     property bool show4decks: false
     property bool showEqKillButtons: true
     property bool showEqKnobs: true
     property bool showXfader: true
 
-    implicitHeight: show4decks ? 405 : 203
-    implicitWidth: show4decks ? (showEqKillButtons ? 278 : 206) : (showEqKillButtons ? 278 : 242)
+    implicitHeight: root.show4decks ? (root.showXfader ? 405 : root.fourDeckChannelHeight + 8) : (root.showXfader ? 203 : (root.showEqKnobs ? 182 : 164))
+    implicitWidth: root.show4decks ? 278 : (root.showEqKnobs ? (root.showEqKillButtons ? 278 : 242) : (root.showXfader ? 163 : 151))
 
     Item {
         anchors.horizontalCenter: parent.horizontalCenter
         height: parent.height
         visible: !root.show4decks
         width: 278
+        y: root.showXfader ? 0 : Math.max(0, (parent.height - (root.showEqKnobs ? 174 : 156)) / 2)
 
         MixerChannel2Deck {
             anchors.right: parent.horizontalCenter
@@ -26,6 +28,7 @@ Item {
             group: root.groups[0]
             showEqKillButtons: root.showEqKillButtons
             showEqKnobs: root.showEqKnobs
+            showXfader: root.showXfader
         }
         MixerChannel2Deck {
             anchors.left: parent.horizontalCenter
@@ -34,6 +37,7 @@ Item {
             mirror: true
             showEqKillButtons: root.showEqKillButtons
             showEqKnobs: root.showEqKnobs
+            showXfader: root.showXfader
         }
         PflButton {
             group: root.groups[0]
@@ -121,11 +125,11 @@ Item {
             y: 55
         }
         Crossfader {
+            anchors.horizontalCenter: parent.horizontalCenter
             compact: !root.showEqKnobs
             groups: [root.groups[0], root.groups[1]]
             showAssignments: false
             visible: root.showXfader
-            x: root.showEqKnobs ? 82 : 90
             y: 155
         }
     }
@@ -143,6 +147,7 @@ Item {
                 rightStyle: "warning"
                 showEqKillButtons: root.showEqKillButtons
                 showEqKnobs: root.showEqKnobs
+                showXfader: root.showXfader
             }
             MixerChannel4Deck {
                 group: root.groups[0]
@@ -150,6 +155,7 @@ Item {
                 rightStyle: "warning"
                 showEqKillButtons: root.showEqKillButtons
                 showEqKnobs: root.showEqKnobs
+                showXfader: root.showXfader
             }
             MixerChannel4Deck {
                 group: root.groups[1]
@@ -157,6 +163,7 @@ Item {
                 rightStyle: "default"
                 showEqKillButtons: root.showEqKillButtons
                 showEqKnobs: root.showEqKnobs
+                showXfader: root.showXfader
             }
             MixerChannel4Deck {
                 group: root.groups[3]
@@ -164,6 +171,7 @@ Item {
                 rightStyle: "default"
                 showEqKillButtons: root.showEqKillButtons
                 showEqKnobs: root.showEqKnobs
+                showXfader: root.showXfader
             }
         }
         Crossfader {
@@ -171,7 +179,7 @@ Item {
             groups: root.groups
             showAssignments: false
             visible: root.showXfader
-            y: 365
+            y: root.fourDeckChannelHeight + Math.max(0, (parent.height - root.fourDeckChannelHeight - height) / 2)
         }
     }
 }

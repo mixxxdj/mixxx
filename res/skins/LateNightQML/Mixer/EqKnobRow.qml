@@ -52,11 +52,12 @@ Item {
         id: statusDot
 
         height: 9
-        source: eqKillButton.value > 0 ? LateNightTheme.assetMixerEqKillDotActiveRed : LateNightTheme.assetMixerEqKillDotOff
-        visible: !root.showKill && root.visible
+        source: eqKillButton.value > 0 ? LateNightTheme.optionalMixerEqKillDotActiveRed : LateNightTheme.optionalMixerEqKillDotOff
+        visible: LateNightTheme.isPaleMoon && !root.showKill && root.visible
         width: 9
         x: root.mirror ? eqKnob.x + 32 : eqKnob.x
         y: 27
+        z: 1
 
         MouseArea {
             anchors.fill: parent
