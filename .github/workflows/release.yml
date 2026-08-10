@@ -32,6 +32,7 @@ jobs:
       publish: true
       branch: ${{ github.head_ref || github.ref_name }}
       ref: ${{ github.ref }}
+      save_cache: true
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
