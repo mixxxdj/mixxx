@@ -1295,6 +1295,10 @@ void AutoDJProcessor::calculateTransitionImpl(
         DeckAttributes* pFromDeck,
         DeckAttributes* pToDeck,
         bool seekToStartPoint) {
+    // ===================================
+    // Check for tracks that are too short
+    // ===================================
+
     const double fromDeckEndPosition = getEndSecond(pFromDeck);
     const double toDeckEndPosition = getEndSecond(pToDeck);
     // Since the end position is measured in seconds from 0:00 it is also
@@ -1303,24 +1307,28 @@ void AutoDJProcessor::calculateTransitionImpl(
     const double toDeckDuration = toDeckEndPosition;
 
     VERIFY_OR_DEBUG_ASSERT(fromDeckDuration >= kMinimumTrackDurationSec) {
-        // Track has no duration or too short. This should not happen, because short
-        // tracks are skipped after load. Play ToDeck immediately.
+        // Track has no duration or is too short. This should not happen,
+        // because short tracks are skipped after load. Play ToDeck immediately.
         pFromDeck->fadeBeginPos = 0;
         pFromDeck->fadeEndPos = 0;
         pToDeck->startPos = kKeepPosition;
         return;
     }
     if (toDeckDuration == 0) {
-        // This is a seek call to zero after ejecting the track
-        // this signal is received before the track pointer becomes null
+        // This is a seek call to zero after ejecting the track.
+        // This signal is received before the track pointer becomes null.
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(toDeckDuration >= kMinimumTrackDurationSec) {
-        // Track has no duration or too short. This should not happen, because short
-        // tracks are skipped after load.
+        // Track has no duration or is too short. This should not happen, because short
+        // tracks are skipped after load. Immediately pick next track from queue.
         loadNextTrackFromQueue(*pToDeck, false);
         return;
     }
+
+    // ========================
+    // Handle intros and outros
+    // ========================
 
     // Within this function, the outro refers to the outro of the currently
     // playing track and the intro refers to the intro of the next track.
@@ -1527,7 +1535,7 @@ void AutoDJProcessor::calculateTransitionImpl(
         }
     }
 
-    // These are expected to be a fraction of the track length.
+    // The positions are expected to be a fraction of the track length.
     pFromDeck->fadeBeginPos /= fromDeckDuration;
     pFromDeck->fadeEndPos /= fromDeckDuration;
     pToDeck->startPos /= toDeckDuration;
