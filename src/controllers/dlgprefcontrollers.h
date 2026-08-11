@@ -41,6 +41,11 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   private slots:
     void rescanControllers();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    void slotHideDisabledChanged(Qt::CheckState state);
+#else
+    void slotHideDisabledChanged(bool checked);
+#endif
 #ifdef __PORTMIDI__
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     void slotMidiThroughChanged(Qt::CheckState state);
@@ -53,6 +58,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
   private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
+    void updateControllerVisibility();
     void openLocalFile(const QString& file);
 
     DlgPreferences* m_pDlgPreferences;
