@@ -28,7 +28,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
     ~MixxxLibraryFeature() override = default;
 
     QVariant title() override;
-    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dropAccept(const QList<QUrl>& urls) override;
     bool dragMoveAccept(const QList<QUrl>& urls) override;
     TreeItemModel* sidebarModel() const override;
     void bindLibraryWidget(WLibrary* pLibrary,
