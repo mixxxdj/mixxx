@@ -158,6 +158,10 @@ class AutoDJProcessor : public QObject {
     void calculateTransition(DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
+    void calculateTransitionImpl(
+            DeckAttributes* pFromDeck,
+            DeckAttributes* pToDeck,
+            bool seekToStartPoint);
     void useFixedFadeTime(
             DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
