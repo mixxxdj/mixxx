@@ -74,6 +74,15 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
+    /// Gets the total remaining duration of tracks in the AutoDJ playlist,
+    /// excluding the track that is currently playing already.
+    mixxx::Duration getQueueDuration() const {
+        return m_queueDuration;
+    }
+
+    /// Gets the number of tracks remaining in the Auto DJ queue.
+    int getQueueTrackCount() const;
+
     bool nextTrackLoaded();
 
     void setTransitionTime(int seconds);
@@ -96,6 +105,7 @@ class AutoDJProcessor : public QObject {
 #endif
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void autoDJError(AutoDJProcessor::AutoDJError error);
+    void queueDurationChanged(int numTracks, mixxx::Duration duration);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
@@ -113,6 +123,8 @@ class AutoDJProcessor : public QObject {
     void playerRateChanged(DeckAttributes* pDeck);
     void playerOrientationChanged(DeckAttributes* pDeck);
     void playlistFirstTrackChanged();
+
+    void playlistTracksChanged();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
@@ -201,6 +213,10 @@ class AutoDJProcessor : public QObject {
     ControlPushButton m_addRandomTrack;
     ControlPushButton m_fadeNow;
     ControlPushButton m_enabledAutoDJ;
+
+    ControlObject m_queueRemainingTracks;
+    ControlObject m_queueRemainingDuration;
+    mixxx::Duration m_queueDuration;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
