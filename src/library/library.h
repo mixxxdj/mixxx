@@ -114,6 +114,9 @@ class Library: public QObject {
     bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
 
+    void importPlaylistFromFile(const QString& playlistFile,
+            bool activatePlaylist = true);
+
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
 #endif
