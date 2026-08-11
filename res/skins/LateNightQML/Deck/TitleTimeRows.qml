@@ -12,7 +12,7 @@ Item {
     required property string group
 
     readonly property Mixxx.Player deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
-    readonly property Mixxx.Track currentTrack: root.deckPlayer?.currentTrack
+    readonly property Mixxx.Track currentTrack: root.deckPlayer?.currentTrack ?? null
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color loadedDeckTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor

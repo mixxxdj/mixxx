@@ -263,30 +263,37 @@ Item {
         anchors.fill: parent
         visible: root.mode === "edit"
         color: LateNightTheme.bpmTapEditorBackgroundColor
-        border.width: 1
-        border.color: LateNightTheme.bpmTapEditorEditBorderColor
-        radius: 2
+        radius: 1
 
-        TextInput {
-            id: editInput
-            x: 1
-            y: 1
-            width: parent.width - 2
-            height: parent.height - 17
-            color: LateNightTheme.textColor
-            selectedTextColor: LateNightTheme.deckActiveButtonTextColor
-            selectionColor: LateNightTheme.textColor
-            font.family: "Open Sans"
-            font.pixelSize: 14
-            font.weight: Font.Medium
-            horizontalAlignment: TextInput.AlignHCenter
-            verticalAlignment: TextInput.AlignVCenter
-            inputMethodHints: Qt.ImhFormattedNumbersOnly
-            selectByMouse: true
+        Rectangle {
+            x: 0
+            y: 0
+            width: parent.width
+            height: parent.height - 16
+            color: LateNightTheme.bpmTapEditorBackgroundColor
+            border.width: 1
+            border.color: LateNightTheme.bpmTapEditorEditBorderColor
+            radius: 1
 
-            Keys.onReturnPressed: root.applyEditValueAndQuit()
-            Keys.onEnterPressed: root.applyEditValueAndQuit()
-            Keys.onEscapePressed: root.switchMode("listen")
+            TextInput {
+                id: editInput
+                anchors.fill: parent
+                anchors.margins: 1
+                color: LateNightTheme.textColor
+                selectedTextColor: LateNightTheme.deckActiveButtonTextColor
+                selectionColor: LateNightTheme.textColor
+                font.family: "Open Sans"
+                font.pixelSize: 14
+                font.weight: Font.Medium
+                horizontalAlignment: TextInput.AlignHCenter
+                verticalAlignment: TextInput.AlignVCenter
+                inputMethodHints: Qt.ImhFormattedNumbersOnly
+                selectByMouse: true
+
+                Keys.onReturnPressed: root.applyEditValueAndQuit()
+                Keys.onEnterPressed: root.applyEditValueAndQuit()
+                Keys.onEscapePressed: root.switchMode("listen")
+            }
         }
 
         Rectangle {
@@ -297,7 +304,7 @@ Item {
             color: LateNightTheme.bpmTapEditorButtonColor
 
             Image {
-                anchors.centerIn: parent
+                anchors.fill: parent
                 source: decreaseArea.pressed ? LateNightTheme.assetDeckBpmSpinboxMinusPressedButton : LateNightTheme.assetDeckBpmSpinboxMinusButton
                 fillMode: Image.PreserveAspectFit
             }
@@ -317,7 +324,7 @@ Item {
             color: LateNightTheme.bpmTapEditorButtonColor
 
             Image {
-                anchors.centerIn: parent
+                anchors.fill: parent
                 source: increaseArea.pressed ? LateNightTheme.assetDeckBpmSpinboxPlusPressedButton : LateNightTheme.assetDeckBpmSpinboxPlusButton
                 fillMode: Image.PreserveAspectFit
             }
