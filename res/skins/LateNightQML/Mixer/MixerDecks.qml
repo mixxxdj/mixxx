@@ -85,14 +85,14 @@ Item {
             group: root.groups[0]
             height: 96
             width: 8
-            x: 115
+            x: 118
             y: 55
         }
         Rectangle {
             color: "#040404"
             height: 96
             width: 14
-            x: 130
+            x: 133
             y: 55
         }
         LateNightControls.ImageVuMeter {
@@ -103,7 +103,7 @@ Item {
             levelKey: "vu_meter_left"
             peakKey: "peak_indicator_left"
             width: 6
-            x: 131
+            x: 134
             y: 55
         }
         LateNightControls.ImageVuMeter {
@@ -114,14 +114,14 @@ Item {
             levelKey: "vu_meter_right"
             peakKey: "peak_indicator_right"
             width: 6
-            x: 137
+            x: 140
             y: 55
         }
         LateNightControls.ImageVuMeter {
             group: root.groups[1]
             height: 96
             width: 8
-            x: 151
+            x: 154
             y: 55
         }
         Crossfader {

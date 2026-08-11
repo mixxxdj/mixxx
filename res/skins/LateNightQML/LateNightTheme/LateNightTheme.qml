@@ -120,8 +120,12 @@ QtObject {
     readonly property color mixerEqKillActiveColor: isClassic ? "#db0000" : "#a80000"
     readonly property color mixerMainSeparatorDarkColor: isPaleMoon ? "#0c0c0c" : mixerPanelBorderDark
     readonly property color mixerMainSeparatorLightColor: isPaleMoon ? "#222222" : mixerPanelBorderLight
+    readonly property color mixerPanelBorderBottom: isPaleMoon ? "#0c0c0c" : "#0a0a0a"
     readonly property color mixerPanelBorderDark: "#080808"
+    readonly property color mixerPanelBorderLeft: isPaleMoon ? "#282828" : "#333333"
     readonly property color mixerPanelBorderLight: "#343434"
+    readonly property color mixerPanelBorderRight: isPaleMoon ? "#181818" : "#0a0a0a"
+    readonly property color mixerPanelBorderTop: "#333333"
     readonly property color mixerPanelColor: "#1d1d1f"
     readonly property color mixerPflActiveFillColor: isClassic ? "#db0000" : "#666666"
     readonly property color mixerQuickEffectActiveColor: isClassic ? "#659f08" : "#236b00"
@@ -135,6 +139,7 @@ QtObject {
     readonly property url optionalMixerEqKillDotActiveGreen: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_active_green.svg") : ""
     readonly property url optionalMixerEqKillDotActiveRed: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_active_red.svg") : ""
     readonly property url optionalMixerEqKillDotOff: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_off.svg") : ""
+    readonly property url optionalMixerQuickEffectActiveIcon: isPaleMoon ? lateNightAsset("buttons", "btn__star_active.svg") : ""
     readonly property color overviewBorderBottomColor: "#2a2a2a"
     readonly property color overviewBorderLeftColor: "#121212"
     readonly property color overviewBorderRightColor: "#252525"

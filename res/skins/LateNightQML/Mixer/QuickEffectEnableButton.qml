@@ -25,8 +25,8 @@ Item {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
         height: 18
-        source: LateNightTheme.assetMixerQuickEffectIcon
-        visible: enabledControl.value <= 0
+        source: enabledControl.value > 0 ? LateNightTheme.optionalMixerQuickEffectActiveIcon : LateNightTheme.assetMixerQuickEffectIcon
+        visible: enabledControl.value <= 0 || LateNightTheme.isPaleMoon
         width: 18
     }
     MouseArea {

@@ -307,15 +307,6 @@ ApplicationWindow {
                     visible: root.showMixer && !root.maximizeLibrary
                     width: visible ? implicitWidth : 0
 
-                    Behavior on height {
-                        SpringAnimation {
-                            id: mixerHeightAnimation
-
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
-                    }
                     states: [
                         State {
                             when: root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
@@ -381,6 +372,15 @@ ApplicationWindow {
                     }
                     Skin.FadeBehavior on visible {
                         fadeTarget: mixer
+                    }
+                    Behavior on width {
+                        SpringAnimation {
+                            id: mixerWidthAnimation
+
+                            damping: 0.2
+                            duration: 500
+                            spring: 2
+                        }
                     }
                 }
                 LateNightDeck.Deck {

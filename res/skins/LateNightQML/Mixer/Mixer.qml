@@ -16,10 +16,26 @@ Item {
         color: LateNightTheme.mixerPanelColor
     }
     Rectangle {
-        anchors.fill: parent
-        border.color: LateNightTheme.mixerPanelBorderLight
-        border.width: 1
-        color: "transparent"
+        color: LateNightTheme.mixerPanelBorderTop
+        height: 1
+        width: parent.width
+    }
+    Rectangle {
+        color: LateNightTheme.mixerPanelBorderLeft
+        height: parent.height
+        width: 1
+    }
+    Rectangle {
+        anchors.bottom: parent.bottom
+        color: LateNightTheme.mixerPanelBorderBottom
+        height: 1
+        width: parent.width
+    }
+    Rectangle {
+        anchors.right: parent.right
+        color: LateNightTheme.mixerPanelBorderRight
+        height: parent.height
+        width: 1
     }
     MixerDecks {
         id: decks

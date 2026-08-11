@@ -27,7 +27,7 @@ Item {
             group: root.group
             showEqKillButtons: root.showEqKillButtons
             showEqKnobs: root.showEqKnobs
-            x: root.mirror ? 42 : 0
+            x: root.mirror ? 51 : 0
             y: 10
         }
         LateNightControls.Fader {
