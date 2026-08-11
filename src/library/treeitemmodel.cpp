@@ -55,6 +55,8 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         return item->getData();
     case kBoldRole:
         return item->isBold();
+    case kUrlRole:
+        return item->getUrl();
     default:
         return QVariant();
     }
