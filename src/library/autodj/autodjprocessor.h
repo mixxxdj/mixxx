@@ -16,6 +16,7 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/class.h"
+#include "util/duration.h"
 #include "util/parented_ptr.h"
 
 class TrackCollectionManager;
@@ -184,6 +185,13 @@ class AutoDJProcessor : public QObject {
     DeckAttributes* getRightDeck();
     DeckAttributes* getOtherDeck(const DeckAttributes* pThisDeck);
     DeckAttributes* getFromDeck();
+
+    /// Calculates the total remaining duration of tracks in the AutoDJ playlist,
+    /// excluding the track that is currently playing already.
+    mixxx::Duration calculateQueueDuration();
+
+    /// Update the queue duration by running calculateQueueDuration.
+    void updateQueueDuration();
 
     // Removes the track loaded to the player group from the top of the AutoDJ
     // queue if it is present.

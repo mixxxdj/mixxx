@@ -40,5 +40,6 @@ class TrackOrDeckAttributes : public QObject {
     double startPos;     // Set for toDeck
     double fadeBeginPos; // Set for fromDeck
     double fadeEndPos;   // Set for fromDeck
+    double adjustDurationSeconds;
     bool isFromDeck;
 };
