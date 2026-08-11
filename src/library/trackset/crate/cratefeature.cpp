@@ -1,5 +1,6 @@
 #include "library/trackset/crate/cratefeature.h"
 
+#include <QActionGroup>
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
@@ -56,6 +57,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
 
     // construct child model
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
+    loadCrateSortSettings();
     rebuildChildModel();
 
     connectLibrary(pLibrary);
@@ -360,10 +362,40 @@ bool CrateFeature::isChildIndexSelectedInSidebar(const QModelIndex& index) {
 }
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
+    qDebug() << "onRightClick called";
     m_lastRightClickedIndex = QModelIndex();
     QMenu menu(m_pSidebarWidget);
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
+
+    auto pSortMenu = make_parented<QMenu>(tr("Sort crates"), &menu);
+
+    auto pSortOrderGroup = make_parented<QActionGroup>(pSortMenu.get());
+    pSortOrderGroup->setExclusive(true);
+
+    QAction* pSortAscending = pSortMenu->addAction(tr("Ascending (A-Z)"));
+    pSortAscending->setCheckable(true);
+    pSortAscending->setChecked(m_sortOrder == CrateSortOrder::Ascending);
+    pSortAscending->setActionGroup(pSortOrderGroup.get());
+    connect(pSortAscending, &QAction::triggered, this, [this]() {
+        m_sortOrder = CrateSortOrder::Ascending;
+        saveCrateSortSettings();
+        rebuildChildModel();
+    });
+
+    QAction* pSortDescending = pSortMenu->addAction(tr("Descending (Z-A)"));
+    pSortDescending->setCheckable(true);
+    pSortDescending->setChecked(m_sortOrder == CrateSortOrder::Descending);
+    pSortDescending->setActionGroup(pSortOrderGroup.get());
+    connect(pSortDescending, &QAction::triggered, this, [this]() {
+        m_sortOrder = CrateSortOrder::Descending;
+        saveCrateSortSettings();
+        rebuildChildModel();
+    });
+
+    menu.addMenu(pSortMenu.get());
+    menu.addSeparator();
+
     menu.addAction(m_pCreateImportPlaylistAction.get());
 #ifdef __ENGINEPRIME__
     menu.addSeparator();
@@ -567,9 +599,25 @@ QModelIndex CrateFeature::rebuildChildModel(CrateId selectedCrateId) {
     CrateSummary crateSummary;
     while (crateSummaries.populateNext(&crateSummary)) {
         modelRows.push_back(newTreeItemForCrateSummary(crateSummary));
-        if (selectedCrateId == crateSummary.getId()) {
-            // save index for selection
-            selectedRow = static_cast<int>(modelRows.size()) - 1;
+    }
+    // Sort the crates by name based on user preference
+    if (m_sortOrder == CrateSortOrder::Descending) {
+        std::sort(modelRows.begin(),
+                modelRows.end(),
+                [](const std::unique_ptr<TreeItem>& a,
+                        const std::unique_ptr<TreeItem>& b) {
+                    return a->getLabel().compare(
+                                   b->getLabel(), Qt::CaseInsensitive) > 0;
+                });
+    }
+    // Ascending is already default from selectCrateSummaries()
+    // Find selected row after sorting
+    for (size_t i = 0; i < modelRows.size(); ++i) {
+        TreeItem* item = modelRows[i].get();
+        if (item && selectedCrateId.isValid() &&
+                CrateId(item->getData()) == selectedCrateId) {
+            selectedRow = static_cast<int>(i);
+            break;
         }
     }
 
@@ -955,4 +1003,17 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
 
 void CrateFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
+}
+
+void CrateFeature::loadCrateSortSettings() {
+    int sortOrderInt = m_pConfig->getValue(
+            ConfigKey("[Library]", "CrateSortOrder"),
+            static_cast<int>(CrateSortOrder::Ascending));
+    m_sortOrder = static_cast<CrateSortOrder>(sortOrderInt);
+}
+
+void CrateFeature::saveCrateSortSettings() {
+    m_pConfig->setValue(
+            ConfigKey("[Library]", "CrateSortOrder"),
+            static_cast<int>(m_sortOrder));
 }
