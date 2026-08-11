@@ -1,6 +1,8 @@
 #include "preferences/dialog/dlgprefsound.h"
 
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
@@ -260,9 +262,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     m_settingsModified = true;
                 });
 
+        auto pipewireGroupBox = make_parented<QGroupBox>("PipeWire Settings", this);
+        auto pipewireSettings = make_parented<QVBoxLayout>(pipewireGroupBox);
+        verticalLayout_2->insertWidget(2, pipewireGroupBox.get());
+
         bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
         m_pipewirePatchbayCheckBox->setChecked(checked);
-        verticalLayout_2->addWidget(m_pipewirePatchbayCheckBox.get());
+        pipewireSettings->addWidget(m_pipewirePatchbayCheckBox.get());
     }
 #endif
 
