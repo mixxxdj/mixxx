@@ -14,6 +14,9 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(QString chainSlotGroup READ getChainSlotGroup CONSTANT)
     Q_PROPERTY(int number READ getNumber CONSTANT)
     Q_PROPERTY(QString group READ getGroup CONSTANT)
+    Q_PROPERTY(bool loaded READ isLoaded NOTIFY effectIdChanged)
+    Q_PROPERTY(QString effectName READ getEffectName NOTIFY effectIdChanged)
+    Q_PROPERTY(QString effectDescription READ getEffectDescription NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
     Q_PROPERTY(mixxx::qml::QmlEffectManifestParametersModel* parametersModel
                     READ getParametersModel NOTIFY parametersModelChanged)
@@ -36,10 +39,17 @@ class QmlEffectSlotProxy : public QObject {
     int getNumber() const;
     QString getGroup() const;
     QString getEffectId() const;
+    bool isLoaded() const;
+    QString getEffectName() const;
+    QString getEffectDescription() const;
     QmlEffectManifestParametersModel* getParametersModel() const;
 
   public slots:
     void setEffectId(const QString& effectId);
+
+  public:
+    Q_INVOKABLE void setParameterVisible(const QString& parameterId, bool visible);
+    Q_INVOKABLE void saveDefaultSnapshot();
 
   signals:
     void effectIdChanged();

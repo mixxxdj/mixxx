@@ -3,30 +3,59 @@
 #include <QModelIndex>
 
 #include "effects/backends/effectmanifest.h"
+#include "effects/effectparameter.h"
+#include "effects/effectslot.h"
 #include "moc_qmleffectmanifestparametersmodel.cpp"
 
 namespace mixxx {
 namespace qml {
 namespace {
 const QHash<int, QByteArray> kRoleNames = {
-        {QmlEffectManifestParametersModel::IdRole, "id"},
+        {QmlEffectManifestParametersModel::IdRole, "parameterId"},
         {QmlEffectManifestParametersModel::NameRole, "name"},
         {QmlEffectManifestParametersModel::ShortNameRole, "shortName"},
         {QmlEffectManifestParametersModel::DescriptionRole, "description"},
         {QmlEffectManifestParametersModel::TypeRole, "type"},
         {QmlEffectManifestParametersModel::ControlKeyRole, "controlKey"},
+        {QmlEffectManifestParametersModel::LoadedRole, "loaded"},
 };
 }
 
 QmlEffectManifestParametersModel::QmlEffectManifestParametersModel(
-        EffectManifestPointer pEffectManifest,
+        EffectSlotPointer pEffectSlot,
         QObject* parent)
-        : QAbstractListModel(parent), m_pEffectManifest(pEffectManifest) {
+        : QAbstractListModel(parent),
+          m_pEffectSlot(std::move(pEffectSlot)) {
+}
+
+EffectParameterPointer QmlEffectManifestParametersModel::loadedParameterForRow(
+        int row, int* pSlotNumber) const {
+    const auto pManifest = m_pEffectSlot->getManifest();
+    if (!pManifest || row < 0 || row >= pManifest->parameters().size()) {
+        return nullptr;
+    }
+    const auto pManifestParameter = pManifest->parameters().at(row);
+    const auto loadedParameters =
+            m_pEffectSlot->getLoadedParameters().value(pManifestParameter->parameterType());
+    for (int index = 0; index < loadedParameters.size(); ++index) {
+        const auto& pParameter = loadedParameters.at(index);
+        if (pParameter->manifest()->id() == pManifestParameter->id()) {
+            if (pSlotNumber) {
+                *pSlotNumber = index + 1;
+            }
+            return pParameter;
+        }
+    }
+    return nullptr;
 }
 
 QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int role) const {
-    const QList<EffectManifestParameterPointer>& parameters = m_pEffectManifest->parameters();
-    if (index.row() >= parameters.size()) {
+    const auto pManifest = m_pEffectSlot->getManifest();
+    if (!pManifest) {
+        return QVariant();
+    }
+    const QList<EffectManifestParameterPointer>& parameters = pManifest->parameters();
+    if (!index.isValid() || index.row() < 0 || index.row() >= parameters.size()) {
         return QVariant();
     }
 
@@ -45,60 +74,28 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
         // Q_ENUM after #2618 has been merged.
         return static_cast<int>(pParameter->parameterType());
     case QmlEffectManifestParametersModel::ControlKeyRole: {
-        // FIXME: Unfortunately our effect parameter controls are messed up.
-        // Even though we only have a single, ordered list of parameters, our
-        // COs splits up this list into two distinct list (`parameter_N` and
-        // `button_parameter_M`), and their indices don't match up with the
-        // original list.
-        //
-        // For example, if you have 4 parameters (A: Knob, B: Button, C: Knob,
-        // D: Knob), one would expect the following control keys:
-        //    parameter1 -> A
-        //    button_parameter2 -> B
-        //    parameter3 -> C
-        //    parameter4 -> D
-        //
-        // But in reality, this will lead to the following control keys:
-        //    parameter1 -> A
-        //    button_parameter1 -> B
-        //    parameter2 -> C
-        //    parameter3 -> D
-        //
-        // This  makes it extremely hard to show the parameters in the correct
-        // order, because you also need to know how many parameters of the same
-        // type are in that list.
-        //
-        // Due to backwards compatibility, we cannot fix this. This attempts to
-        // solve this problem by letting the user fetch the appropriate key
-        // from the model.
+        int keyNumber = 0;
+        if (!loadedParameterForRow(index.row(), &keyNumber)) {
+            return QString();
+        }
         const bool isButton = pParameter->parameterType() ==
                 EffectManifestParameter::ParameterType::Button;
-        int keyNumber = 1;
-        for (int i = 0; i < index.row(); i++) {
-            const EffectManifestParameterPointer pPrevParameter = parameters.at(i);
-            if (isButton ==
-                    (pPrevParameter->parameterType() ==
-                            EffectManifestParameter::ParameterType::Button)) {
-                keyNumber++;
-            }
-        }
-
         return (isButton ? QStringLiteral("button_parameter%1")
                          : QStringLiteral("parameter%1"))
                 .arg(QString::number(keyNumber));
     }
+    case QmlEffectManifestParametersModel::LoadedRole:
+        return static_cast<bool>(loadedParameterForRow(index.row()));
     default:
         return QVariant();
     }
 }
 
 int QmlEffectManifestParametersModel::rowCount(const QModelIndex& parent) const {
-    if (parent.isValid()) {
+    if (parent.isValid() || !m_pEffectSlot->getManifest()) {
         return 0;
     }
-
-    // Add +1 because we also include "no effect" in the model
-    return m_pEffectManifest->parameters().size();
+    return m_pEffectSlot->getManifest()->parameters().size();
 }
 
 QHash<int, QByteArray> QmlEffectManifestParametersModel::roleNames() const {

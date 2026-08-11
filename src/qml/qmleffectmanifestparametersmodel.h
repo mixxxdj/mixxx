@@ -20,11 +20,12 @@ class QmlEffectManifestParametersModel : public QAbstractListModel {
         DescriptionRole,
         TypeRole,
         ControlKeyRole,
+        LoadedRole,
     };
     Q_ENUM(Roles)
 
     explicit QmlEffectManifestParametersModel(
-            EffectManifestPointer pManifest,
+            EffectSlotPointer pEffectSlot,
             QObject* parent = nullptr);
 
     QVariant data(const QModelIndex& index, int role) const override;
@@ -33,7 +34,9 @@ class QmlEffectManifestParametersModel : public QAbstractListModel {
     Q_INVOKABLE QVariant get(int row) const;
 
   private:
-    const EffectManifestPointer m_pEffectManifest;
+    EffectParameterPointer loadedParameterForRow(int row, int* pSlotNumber = nullptr) const;
+
+    const EffectSlotPointer m_pEffectSlot;
 };
 
 } // namespace qml

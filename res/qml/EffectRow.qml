@@ -1,41 +1,62 @@
 import "." as Skin
-import QtQuick 2.12
+import Mixxx 1.0 as Mixxx
+import QtQuick
 
 Item {
     id: root
 
-    width: positioner.width
-    height: positioner.height
+    implicitHeight: columns.height
 
     Row {
-        id: positioner
+        id: columns
 
-        Skin.EffectUnit {
-            id: effectUnit1
+        width: root.width
 
-            width: root.width / 2
-            unitNumber: 1
+        Column {
+            width: parent.width / 2
+
+            Skin.EffectUnit {
+                unitNumber: 1
+                width: parent.width
+            }
+            Skin.EffectUnit {
+                unitNumber: 3
+                visible: showFourUnitsControl.value > 0
+                width: parent.width
+            }
         }
+        Column {
+            width: parent.width / 2
 
-        Skin.EffectUnit {
-            id: effectUnit2
-
-            width: root.width / 2
-            unitNumber: 2
+            Skin.EffectUnit {
+                unitNumber: 2
+                width: parent.width
+            }
+            Skin.EffectUnit {
+                unitNumber: 4
+                visible: showFourUnitsControl.value > 0
+                width: parent.width
+            }
         }
     }
-
     Skin.SectionBackground {
-        anchors.top: parent.top
-        anchors.left: parent.left
         anchors.bottom: parent.bottom
+        anchors.left: parent.left
         anchors.right: parent.horizontalCenter
-    }
-
-    Skin.SectionBackground {
         anchors.top: parent.top
+        z: -1
+    }
+    Skin.SectionBackground {
         anchors.bottom: parent.bottom
         anchors.left: parent.horizontalCenter
         anchors.right: parent.right
+        anchors.top: parent.top
+        z: -1
+    }
+    Mixxx.ControlProxy {
+        id: showFourUnitsControl
+
+        group: "[Skin]"
+        key: "show_4effectunits"
     }
 }

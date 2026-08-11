@@ -1,194 +1,188 @@
+pragma ComponentBehavior: Bound
+
 import "." as Skin
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick
 import "Theme"
 
 Item {
     id: root
 
-    property Mixxx.EffectSlotProxy slot: Mixxx.EffectsManager.getEffectSlot(unitNumber, effectNumber)
-    required property int unitNumber
     required property int effectNumber
+    readonly property string effectUnitGroup: slot.chainSlotGroup
     property bool expanded: false
     readonly property string group: slot.group
     property real maxSelectorWidth: 300
+    property Mixxx.EffectSlotProxy slot: Mixxx.EffectsManager.getEffectSlot(unitNumber, effectNumber)
+    required property int unitNumber
 
     height: 50
 
     Item {
         id: selector
 
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.bottom: parent.bottom
         width: Math.min(root.width, root.maxSelectorWidth)
 
+        Skin.EffectFocusButton {
+            id: focusButton
+
+            anchors.left: parent.left
+            anchors.margins: 5
+            anchors.verticalCenter: parent.verticalCenter
+            effectNumber: root.effectNumber
+            effectUnitGroup: root.effectUnitGroup
+            height: 16
+            width: visible ? 16 : 0
+        }
         Skin.ControlButton {
             id: effectEnableButton
 
-            anchors.left: parent.left
-            anchors.top: parent.top
+            activeColor: Theme.effectColor
             anchors.bottom: parent.bottom
+            anchors.left: focusButton.right
             anchors.margins: 5
-            width: 40
+            anchors.top: parent.top
             group: root.group
             key: "enabled"
-            toggleable: true
             text: "ON"
-            activeColor: Theme.effectColor
+            toggleable: true
+            width: 40
         }
-
-        Skin.ComboBox {
+        Skin.EffectSelector {
             id: effectSelector
 
-            anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: effectEnableButton.right
-            anchors.right: effectMetaKnob.left
             anchors.margins: 5
-            textRole: "display"
-            model: Mixxx.EffectsManager.visibleEffectsModel
-            onActivated: (index) => {
-                const effectId = model.get(index).effectId;
-                if (root.slot.effectId != effectId)
-                    root.slot.effectId = effectId;
-            }
-            Component.onCompleted: root.slot.onEffectIdChanged()
-
-            Connections {
-                function onEffectIdChanged() {
-                    const rowCount = effectSelector.model.rowCount();
-                    // TODO: Consider using an additional QHash in the
-                    // model and provide a more efficient lookup method
-                    for (let i = 0; i < rowCount; i++) {
-                        if (effectSelector.model.get(i).effectId === root.slot.effectId) {
-                            effectSelector.currentIndex = i;
-                            break;
-                        }
-                    }
-                }
-
-                target: root.slot
-            }
+            anchors.right: effectMetaKnob.left
+            anchors.top: parent.top
+            slot: root.slot
         }
-
         Skin.ControlMiniKnob {
             id: effectMetaKnob
 
-            anchors.right: parent.right
-            anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.margins: 5
+            anchors.right: parent.right
+            anchors.top: parent.top
             arcStart: Knob.ArcStart.Minimum
-            width: 40
+            color: Theme.effectColor
             group: root.group
             key: "meta"
-            color: Theme.effectColor
+            width: 40
         }
     }
-
     ListView {
         id: parametersView
 
-        visible: root.expanded
-        anchors.leftMargin: 10
-        anchors.top: parent.top
-        anchors.left: selector.right
-        anchors.right: parent.right
         anchors.bottom: parent.bottom
+        anchors.left: selector.right
+        anchors.leftMargin: 10
+        anchors.right: parent.right
+        anchors.top: parent.top
         clip: true
-        spacing: 5
         model: root.slot.parametersModel
         orientation: ListView.Horizontal
+        spacing: 5
+        visible: root.expanded
 
         delegate: Item {
             id: parameter
 
-            required property int index
-            required property string shortName
-            required property string name
             required property string controlKey
+            required property int index
+            readonly property bool isButton: type === 1
+            readonly property bool isKnob: type === 0
+            readonly property string label: shortName || name
+            required property bool loaded
+            required property string name
+            required property string shortName
+            readonly property bool shown: loaded && slotNumber > 0 && slotNumber <= 8
+            readonly property int slotNumber: {
+                const match = controlKey.match(/(\d+)$/);
+                return match ? Number(match[1]) : 0;
+            }
             required property int type
-            property int number: index + 1
-            // TODO: Use null coalescing when we switch to Qt >= 5.15
-            property string label: shortName ?? name
-            property bool isKnob: type == 0
-            property bool isButton: type == 1
 
-            width: 50
             height: 50
+            visible: shown
+            width: shown ? 55 : 0
 
             EmbeddedText {
                 anchors.fill: parent
-                verticalAlignment: Text.AlignBottom
-                text: parameter.label
                 font.bold: false
+                text: parameter.label
+                verticalAlignment: Text.AlignBottom
             }
-
-            Skin.ControlMiniKnob {
-                id: parameterKnob
-
-                width: 30
+            Loader {
+                active: parameter.shown && parameter.isKnob
+                anchors.horizontalCenter: parent.horizontalCenter
                 height: 30
-                anchors.centerIn: parent
-                arcStart: 0
-                group: root.group
-                key: parameter.controlKey
-                color: Theme.effectColor
-                visible: parameter.isKnob
+                width: 30
 
-                Mixxx.ControlProxy {
-                    id: parameterLoadedControl
-
-                    property bool loaded: value != 0
-
+                sourceComponent: Skin.ControlMiniKnob {
+                    arcStart: 0
+                    color: Theme.effectColor
                     group: root.group
-                    key: parameter.controlKey + "_loaded"
+                    key: parameter.controlKey
                 }
             }
-
-            Skin.ControlButton {
-                id: buttonParameterButton
-
+            Loader {
+                active: parameter.shown && parameter.isButton
+                anchors.horizontalCenter: parent.horizontalCenter
                 height: 22
                 width: parent.width
-                anchors.centerIn: parent
-                group: root.group
-                key: parameter.controlKey
-                activeColor: Theme.effectColor
-                visible: parameter.isButton
-                toggleable: true
-                text: "ON"
 
-                Mixxx.ControlProxy {
-                    id: buttonParameterLoadedControl
-
-                    property bool loaded: value != 0
-
+                sourceComponent: Skin.ControlButton {
+                    activeColor: Theme.effectColor
                     group: root.group
-                    key: parameter.controlKey + "_loaded"
+                    key: parameter.controlKey
+                    text: "ON"
+                    toggleable: true
                 }
             }
-        }
+            Row {
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                height: 8
+                visible: parameter.shown && parameter.isKnob
 
-        populate: Transition {
-            NumberAnimation {
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: 200
+                Skin.ControlButton {
+                    activeColor: Theme.effectColor
+                    group: root.group
+                    height: 8
+                    key: parameter.controlKey + "_link_inverse"
+                    text: "I"
+                    toggleable: true
+                    width: 12
+                }
+                Item {
+                    height: 8
+                    width: 34
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: linkTypeControl.value > 0 ? Theme.effectColor : Theme.knobBackgroundColor
+                    }
+                    Text {
+                        anchors.centerIn: parent
+                        font.pixelSize: 7
+                        text: "LINK " + Math.round(linkTypeControl.value)
+                    }
+                    TapHandler {
+                        onTapped: linkTypeControl.value = (Math.round(linkTypeControl.value) + 1) % 5
+                    }
+                    Mixxx.ControlProxy {
+                        id: linkTypeControl
+
+                        group: root.group
+                        key: parameter.controlKey + "_link_type"
+                    }
+                }
             }
-
-            NumberAnimation {
-                property: "scale"
-                from: 0
-                to: 1
-                duration: 200
-            }
-        }
-
-        Skin.FadeBehavior on opacity {
-            fadeTarget: parametersView
         }
     }
 }
