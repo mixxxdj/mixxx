@@ -411,7 +411,6 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
                 list.append("mkv");
                 list.append("webm");
                 continue;
-            }
 
                 ///////////////////////////////////////////////////////////
                 // Codecs with failing tests
