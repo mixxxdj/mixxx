@@ -1,6 +1,8 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "engine/channels/enginedeck.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
@@ -117,15 +119,94 @@ void AutoDJProcessor::setCrossfader(double value) {
 }
 
 void AutoDJProcessor::playlistTracksChanged() {
-    const int numTracksInQueue = m_pAutoDJTableModel->rowCount();
-    m_queueRemainingTracks.set(numTracksInQueue);
-    m_queueDuration = m_pAutoDJTableModel->getTotalDuration();
-    m_queueRemainingDuration.set(m_queueDuration.toDoubleSeconds());
-    emit queueDurationChanged(numTracksInQueue, m_queueDuration);
+    m_queueRemainingTracks.set(m_pAutoDJTableModel->rowCount());
+    updateQueueDuration();
 }
 
 int AutoDJProcessor::getQueueTrackCount() const {
     return m_pAutoDJTableModel->rowCount();
+}
+
+void AutoDJProcessor::updateQueueDuration() {
+    // The following data points are used as inputs for the "remaining time"
+    // calculation, and should therefore trigger a recalculation:
+    //
+    //     * The list of tracks in the Auto DJ playlist (both
+    //       the set of tracks and their order are important).
+    //
+    //       We subscribe to PlaylistTableModel::tracksChanged
+    //       to receive the relevant notifications.
+    //
+    //     * The AutoDJ transition mode and transition time settings.
+    //       We will be notified via ::setTransitionMode
+    //       and ::setTransitionTime, respectively.
+    //
+    //     * The Intro, Outro & N60dBSound cues of all tracks
+    //       that are contained in the Auto DJ queue.
+    //
+    //       We subscribe to TrackCollection::tracksChanged
+    //       and TrackCollection::multipleTracksChanged to
+    //       receive notifications about possible changes.
+    //
+    //       As of now, we do not filter the notifications,
+    //       and simply trigger a recalculation when ANY
+    //       track has changed.
+    //
+    m_queueDuration = calculateQueueDuration();
+    m_queueRemainingDuration.set(m_queueDuration.toDoubleSeconds());
+    emit queueDurationChanged(getQueueTrackCount(), m_queueDuration);
+}
+
+mixxx::Duration AutoDJProcessor::calculateQueueDuration() {
+    if (m_transitionMode == TransitionMode::FullIntroOutro ||
+            m_transitionMode == TransitionMode::FadeAtOutroStart ||
+            m_transitionMode == TransitionMode::FixedSkipSilence) {
+        // The transition time between two tracks depends on both
+        // tracks for some transition modes
+        TrackPointer previousTrack;
+
+        double durationTotal = 0.0;
+        const int numOfTracks = m_pAutoDJTableModel->rowCount();
+        for (int i = 0; i < numOfTracks; i++) {
+            TrackPointer track = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(i, 0));
+            if (track->getDuration() < kMinimumTrackDurationSec) {
+                // Skip tracks that are too short, and treat them
+                // as if they weren't present in the queue at all.
+                continue;
+            } else if (previousTrack) {
+                TrackAttributes fromTrack(previousTrack);
+                TrackAttributes toTrack(track);
+                calculateTransitionImpl(&fromTrack, &toTrack, true);
+                durationTotal += track->getDuration() + fromTrack.adjustDurationSeconds;
+            } else {
+                // TODO: Take the transition between an already playing deck
+                //       and the top of the Auto DJ queue into account?
+                durationTotal += track->getDuration();
+            }
+            previousTrack = track;
+        }
+
+        return mixxx::Duration::fromSeconds(durationTotal);
+    } else {
+        // This is the simplest case of the tracks' actual play time
+        // being equal to their duration minus the fixed fade time.
+        // No fade time is applied to the last track.
+        //
+        // The calculated play time can be slightly shorter than the
+        // actual play time because we do not account for tracks that
+        // are skipped for being too short (i.e. shorter than 0.2 seconds),
+        // but we are dealing with an edge case anyway.
+        int numTracks = m_pAutoDJTableModel->rowCount();
+        if (numTracks >= 2) {
+            // A negative transition time causes silence to be inserted
+            // between the tracks, which is accurately reflected here
+            // as an increase of the total playtime.
+            return m_pAutoDJTableModel->getTotalDuration() -
+                    mixxx::Duration::fromSeconds((numTracks - 1) * m_transitionTime);
+        } else {
+            return m_pAutoDJTableModel->getTotalDuration();
+        }
+    }
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
@@ -1477,6 +1558,30 @@ void AutoDJProcessor::calculateTransitionImpl(
         useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
         }
     }
+
+    // adjustDurationSeconds is the time that the transition takes up from
+    // (or adds to) the combined total duration of fromDeck+toDeck.
+    //
+    //
+    //                +---+ fromDeck start position
+    //                 |   |
+    //                      +---+ toDeck start position
+    //
+    //
+    // This means that, due to the transition:
+    //   - toDeck is shortened by toDeck.startPos (which may be negative when
+    //     silence is inserted between tracks, in which case it is actually
+    //     elongated).
+    //
+    //   - fromDeck is shortened by the time between fromDeck->fadeBeginPos and
+    //     fromDeck->duration. (the transition duration is already taken into
+    //     account by not subtracting it from toDeck).
+    //
+    //   - The fromDeck->startPos and toDeck->fadeBeginPos/fadeEndPos are not
+    //     accounted for here, but are taken into account by the calculation
+    //     of the previous/next transition, respectively.
+    pFromDeck->adjustDurationSeconds = 0.0 -
+            (fromDeckDuration - pFromDeck->fadeBeginPos) - pToDeck->startPos;
 
     // The positions are expected to be a fraction of the track length.
     pFromDeck->fadeBeginPos /= fromDeckDuration;
