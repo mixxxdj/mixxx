@@ -206,6 +206,44 @@ void WLibrarySidebar::toggleSelectedItem() {
     }
 }
 
+void WLibrarySidebar::setChildIndexExpanded(const QModelIndex& index, bool expand) {
+    // qDebug() << "WLibrarySidebar::setChildIndexExpanded" << index << expand;
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
+        return;
+    }
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        // qDebug() << " >> model() is not SidebarModel";
+        return;
+    }
+    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    if (!translated.isValid()) {
+        // qDebug() << " >> index can't be translated";
+        return;
+    }
+    setExpanded(translated, expand);
+}
+
+bool WLibrarySidebar::isChildIndexExpanded(const QModelIndex& index) {
+    // qDebug() << "WLibrarySidebar::isChildIndexExpanded" << index;
+    QModelIndex selIndex = selectedIndex();
+    if (!selIndex.isValid()) {
+        return false;
+    }
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    VERIFY_OR_DEBUG_ASSERT(sidebarModel) {
+        // qDebug() << " >> model() is not SidebarModel";
+        return false;
+    }
+    QModelIndex translated = sidebarModel->translateChildIndex(index);
+    if (!translated.isValid()) {
+        // qDebug() << " >> index can't be translated";
+        return false;
+    }
+    return isExpanded(translated);
+}
+
 bool WLibrarySidebar::isLeafNodeSelected() {
     QModelIndex index = selectedIndex();
     if (index.isValid()) {
