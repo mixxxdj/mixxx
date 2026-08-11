@@ -60,7 +60,26 @@ QtObject {
     readonly property url assetDeckVinylControl3: lateNightAsset("style", "vinyl_control_3.svg")
     readonly property url assetDeckVolumeSliderBackground: lateNightAsset("sliders", "slider_volume_deck.svg")
     readonly property url assetDeckVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
+    readonly property url assetFxCollapseButton: lateNightAsset("buttons", isClassic ? "btn__collapse.svg" : "btn__collapse_dim.svg")
+    readonly property url assetFxExpandButton: lateNightAsset("buttons", isClassic ? "btn__expand.svg" : "btn__expand_dim.svg")
+    readonly property url assetFxFlowHorizontal: lateNightAsset("style", isClassic ? "fx_separator.svg" : "fx_flow_horizontal.svg")
+    readonly property url assetFxFlowVertical: lateNightAsset("style", isClassic ? "fx_separator.svg" : "fx_flow_vertical.svg")
+    readonly property url assetFxFocusActiveButton: lateNightAsset("buttons", "btn__fx_focus_active.svg")
+    readonly property url assetFxFocusButton: lateNightAsset("buttons", "btn__fx_focus.svg")
     readonly property url assetFxKnobBackground: lateNightAsset("knobs", "knob_bg_fx.svg")
+    readonly property url assetFxMixModeButton: lateNightAsset("buttons", "btn_embedded_mixmode.svg")
+    readonly property url assetFxMixModeDryWetButton: lateNightAsset("buttons", "btn__fx_mixmode_d-w.svg")
+    readonly property url assetFxMixModeDryWetSumButton: lateNightAsset("buttons", "btn__fx_mixmode_d+w.svg")
+    readonly property url assetFxParameterActiveButton: lateNightAsset("buttons", "btn_embedded_fx_parameter_active.svg")
+    readonly property url assetFxParameterButton: lateNightAsset("buttons", "btn_embedded_fx_parameter.svg")
+    readonly property url assetFxSelectorActiveBorder: lateNightAsset("buttons", "btn_embedded_library_active.svg")
+    readonly property url assetFxSelectorBorder: lateNightAsset("buttons", "btn_embedded_library.svg")
+    readonly property url assetFxSelectorDownButton: lateNightAsset("buttons", "btn__fx_selector_down.svg")
+    readonly property url assetFxSettingsButton: lateNightAsset("buttons", "btn__fx_settings.svg")
+    readonly property url assetFxSlotButtonActiveBackground: lateNightAsset("buttons", "btn_embedded_square_active.svg")
+    readonly property url assetFxSlotButtonBackground: lateNightAsset("buttons", "btn_embedded_square.svg")
+    readonly property url assetFxToggleActiveButton: lateNightAsset("buttons", "btn__fx_toggle_active.svg")
+    readonly property url assetFxToggleButton: lateNightAsset("buttons", "btn__fx_toggle.svg")
     readonly property url assetMainKnobBackground: lateNightAsset("knobs", "knob_bg_main.svg")
     readonly property url assetMixerCrossfaderBackground: lateNightAsset("sliders", "slider_crossfader.svg")
     readonly property url assetMixerCrossfaderHandle: lateNightAsset("sliders", "knob_crossfader.svg")
@@ -97,6 +116,26 @@ QtObject {
     readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
     readonly property color deckTimeTextColor: isClassic ? "#f0bb2b" : "#777777"
     readonly property color deckTopRowBackgroundColor: "#181818"
+    readonly property color effectsAssignmentActiveTextColor: isClassic ? "#000000" : "#a7998b"
+    readonly property color effectsAssignmentInactiveColor: isClassic ? "#262626" : "#151517"
+    readonly property color effectsAssignmentInactiveTextColor: isClassic ? "#d2d2d1" : "#555555"
+    readonly property color effectsControllerColor12: isClassic ? "#73b508" : "#518f00"
+    readonly property color effectsControllerColor34: isClassic ? "#0795b5" : "#028392"
+    readonly property color effectsFillerColor: isClassic ? "#171717" : "#151517"
+    readonly property color effectsFocusBorderColor: isClassic ? "#d08e00" : "#257b82"
+    readonly property color effectsHeaderColor: isClassic ? "#1e1e1e" : "#151517"
+    readonly property color effectsMasterButtonInactiveColor: isClassic ? "#262626" : "#1e1e20"
+    readonly property color effectsPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
+    readonly property color effectsParameterActiveColor: "#888888"
+    readonly property color effectsParameterArcColor: "#6d6d6d"
+    readonly property color effectsParameterInactiveColor: isClassic ? "#333333" : "#2a2a2c"
+    readonly property color effectsParameterPanelColor: isClassic ? "#151515" : "#1e1e20"
+    readonly property color effectsRackGutterColor: "#060606"
+    readonly property color effectsSlotToggleInactiveColor: isClassic ? "#262626" : "#121213"
+    readonly property color effectsUnitColor12: isClassic ? "#659f08" : "#438225"
+    readonly property color effectsUnitColor34: isClassic ? "#0895bc" : "#257b82"
+    readonly property color effectsUnitDimColor12: isClassic ? "#426b00" : "#236b00"
+    readonly property color effectsUnitDimColor34: isClassic ? "#00696b" : "#146674"
     readonly property bool isClassic: ColorScheme.name === "classic"
     readonly property bool isPaleMoon: ColorScheme.name === "palemoon"
     readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"

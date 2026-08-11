@@ -5,15 +5,14 @@ import "../LateNightTheme"
 Item {
     id: root
 
-    readonly property int fourDeckChannelHeight: root.showEqKnobs ? (root.showXfader ? 359 : 344) : (root.showXfader ? 197 : 182)
     required property var groups
     property bool show4decks: false
     property bool showEqKillButtons: true
     property bool showEqKnobs: true
     property bool showXfader: true
 
-    implicitHeight: root.show4decks ? (root.showXfader ? 405 : root.fourDeckChannelHeight + 8) : (root.showXfader ? 203 : (root.showEqKnobs ? 182 : 164))
-    implicitWidth: root.show4decks ? 278 : (root.showEqKnobs ? (root.showEqKillButtons ? 278 : 242) : (root.showXfader ? 163 : 151))
+    implicitHeight: root.show4decks ? (root.showXfader ? 405 : 352) : (root.showXfader ? 203 : (root.showEqKnobs ? 182 : 164))
+    implicitWidth: root.show4decks ? ((!root.showEqKnobs || root.showEqKillButtons) ? 278 : 206) : (root.showEqKnobs ? (root.showEqKillButtons ? 278 : 242) : (root.showXfader ? 163 : 151))
 
     Item {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -179,7 +178,7 @@ Item {
             groups: root.groups
             showAssignments: false
             visible: root.showXfader
-            y: root.fourDeckChannelHeight + Math.max(0, (parent.height - root.fourDeckChannelHeight - height) / 2)
+            y: 365
         }
     }
 }
