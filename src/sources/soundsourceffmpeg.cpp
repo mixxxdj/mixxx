@@ -407,6 +407,12 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
             } else if (!strcmp(pavInputFormat->name, "wv")) {
                 list.append("wv");
                 continue;
+            } else if (!strcmp(pavInputFormat->name, "matroska,webm")) {
+                list.append("mkv");
+                list.append("webm");
+                continue;
+            }
+
                 ///////////////////////////////////////////////////////////
                 // Codecs with failing tests
                 ///////////////////////////////////////////////////////////
