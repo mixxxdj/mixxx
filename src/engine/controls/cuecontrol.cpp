@@ -2638,10 +2638,6 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcuePositionChanged,
             Qt::DirectConnection);
     m_hotcuePosition->set(Cue::kNoPosition);
-    // The position may only be moved by dragging an existing hotcue, so route
-    // write requests through a handler that rejects them unless the hotcue is
-    // set. This also makes the control confirm-required, so engine-side updates
-    // must use setAndConfirm() (see HotcueControl::setPosition()).
     m_hotcuePosition->connectValueChangeRequest(
             this,
             &HotcueControl::slotHotcuePositionChangeRequest,
@@ -2655,6 +2651,10 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcueEndPositionChanged,
             Qt::DirectConnection);
     m_hotcueEndPosition->set(Cue::kNoPosition);
+    m_hotcueEndPosition->connectValueChangeRequest(
+            this,
+            &HotcueControl::slotHotcueEndPositionChangeRequest,
+            Qt::DirectConnection);
 
     m_pHotcueStatus = std::make_unique<ControlObject>(keyForControl(QStringLiteral("status")));
     m_pHotcueStatus->setReadOnly();
@@ -2846,18 +2846,22 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcuePositionChangeRequest(double newPosition) {
-    // Reject the change if no hotcue is set: the position can only be moved by
-    // dragging an existing hotcue, not to create one (see issue #10409).
+    // Reject the change if no hotcue is set
     if (!m_pCue) {
         return;
     }
-    // Delegate to CueControl::hotcuePositionChanged(), which validates the
-    // position and moves the cue. The resulting cue change syncs the position
-    // control back to the confirmed value via loadCuesFromTrack().
     emit hotcuePositionChanged(this, newPosition);
 }
 
 void HotcueControl::slotHotcueEndPositionChanged(double newEndPosition) {
+    emit hotcueEndPositionChanged(this, newEndPosition);
+}
+
+void HotcueControl::slotHotcueEndPositionChangeRequest(double newEndPosition) {
+    // Reject the change if no hotcue is set
+    if (!m_pCue) {
+        return;
+    }
     emit hotcueEndPositionChanged(this, newEndPosition);
 }
 
@@ -2925,14 +2929,13 @@ void HotcueControl::resetCue() {
 }
 
 void HotcueControl::setPosition(mixxx::audio::FramePos position) {
-    // Use setAndConfirm() because m_hotcuePosition is confirm-required: a plain
-    // set() would be intercepted as a change request instead of updating the
-    // engine-authoritative value.
+    // setAndConfirm() because m_hotcuePosition is confirm-required.
     m_hotcuePosition->setAndConfirm(position.toEngineSamplePosMaybeInvalid());
 }
 
 void HotcueControl::setEndPosition(mixxx::audio::FramePos endPosition) {
-    m_hotcueEndPosition->set(endPosition.toEngineSamplePosMaybeInvalid());
+    // setAndConfirm() because m_hotcueEndPosition is confirm-required.
+    m_hotcueEndPosition->setAndConfirm(endPosition.toEngineSamplePosMaybeInvalid());
 }
 
 mixxx::CueType HotcueControl::getType() const {

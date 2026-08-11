@@ -139,6 +139,7 @@ class HotcueControl : public QObject {
     void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcuePositionChangeRequest(double newPosition);
+    void slotHotcueEndPositionChangeRequest(double newEndPosition);
     void slotHotcueColorChangeRequest(double newColor);
 
   signals:

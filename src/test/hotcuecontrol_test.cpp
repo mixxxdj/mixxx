@@ -281,6 +281,74 @@ TEST_F(HotcueControlTest, PositionChangeRequestRejectedWhenUnset) {
             m_pHotcue1Status->get());
 }
 
+TEST_F(HotcueControlTest, EndPositionChangeRequestRejectedWhenUnset) {
+    createAndLoadFakeTrack();
+
+    // With no hotcue set the end position control must reject write requests and
+    // stay unset instead of storing a bogus value (issue #10409).
+    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_pHotcue1EndPosition->get())
+                    .isValid());
+
+    m_pHotcue1EndPosition->set(mixxx::audio::FramePos(200).toEngineSamplePos());
+    ProcessBuffer();
+
+    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_pHotcue1EndPosition->get())
+                    .isValid());
+    EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Empty),
+            m_pHotcue1Status->get());
+}
+
+TEST_F(HotcueControlTest, EndPositionChangeRequestMovesSetLoop) {
+    createAndLoadFakeTrack();
+
+    // Create a saved loop hotcue at [100, 200].
+    constexpr mixxx::audio::FramePos loopStartPosition(100);
+    constexpr mixxx::audio::FramePos loopEndPosition(200);
+    m_pChannel1->getEngineBuffer()->setLoop(
+            loopStartPosition, loopEndPosition, true);
+    m_pHotcue1Set->set(1);
+    m_pHotcue1Set->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pHotcue1EndPosition);
+
+    // Writing the end position control of a set loop hotcue must still move the
+    // loop end (the confirm-required guard only rejects writes when unset).
+    constexpr mixxx::audio::FramePos newEndPosition(300);
+    m_pHotcue1EndPosition->set(newEndPosition.toEngineSamplePos());
+    ProcessBuffer();
+
+    EXPECT_FRAMEPOS_EQ_CONTROL(newEndPosition, m_pHotcue1EndPosition);
+}
+
+TEST_F(HotcueControlTest, EndPositionChangeRequestClearsSetLoop) {
+    createAndLoadFakeTrack();
+
+    // Create a saved loop hotcue at [100, 200].
+    constexpr mixxx::audio::FramePos loopStartPosition(100);
+    constexpr mixxx::audio::FramePos loopEndPosition(200);
+    m_pChannel1->getEngineBuffer()->setLoop(
+            loopStartPosition, loopEndPosition, true);
+    m_pHotcue1Set->set(1);
+    m_pHotcue1Set->set(0);
+    EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pHotcue1EndPosition);
+
+    // Writing Cue::kNoPosition to the end position of a set loop hotcue clears
+    // the end and converts the loop back into a plain hotcue. This still routes
+    // through the confirm-required handler because the hotcue is set.
+    ControlProxy hotcueType(m_sGroup1, QStringLiteral("hotcue_1_type"));
+    m_pHotcue1EndPosition->set(Cue::kNoPosition);
+    ProcessBuffer();
+
+    EXPECT_FALSE(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+            m_pHotcue1EndPosition->get())
+                    .isValid());
+    EXPECT_DOUBLE_EQ(static_cast<double>(mixxx::CueType::HotCue),
+            hotcueType.get());
+    // The hotcue itself remains at its start position.
+    EXPECT_FRAMEPOS_EQ_CONTROL(loopStartPosition, m_pHotcue1Position);
+}
+
 TEST_F(HotcueControlTest, PositionChangeRequestMovesSetHotcue) {
     createAndLoadFakeTrack();
 
