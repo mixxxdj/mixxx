@@ -1,27 +1,16 @@
 #pragma once
 
-#include "audio/frame.h"
-#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
-#include "track/track_decl.h"
+#include "library/autodj/track/trackordeckattributes.h"
 
 class BaseTrackPlayer;
 
 /// Exposes the attributes of the track loaded in a certain player deck.
-class DeckAttributes : public QObject {
+class DeckAttributes : public TrackOrDeckAttributes {
     Q_OBJECT
   public:
-    /// Special value for startPos that indicates the deck
-    /// should start playing from its current position.
-    static constexpr double kKeepPosition = -1.0;
-
-    /// Special value for startPos that indicates a track
-    /// should be skipped because it is too short.
-    static constexpr double kSkipToNextTrack = -2.0;
-
-    DeckAttributes(int index,
-            BaseTrackPlayer* pPlayer);
+    DeckAttributes(int index, BaseTrackPlayer* pPlayer);
     virtual ~DeckAttributes();
 
     bool isLeft() const {
@@ -44,7 +33,7 @@ class DeckAttributes : public QObject {
         m_play.set(1.0);
     }
 
-    double playPosition() const {
+    double playPosition() const override {
         return m_playPos.get();
     }
 
@@ -60,35 +49,35 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
-    mixxx::audio::FramePos introStartPosition() const {
+    mixxx::audio::FramePos introStartPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introStartPos.get());
     }
 
-    mixxx::audio::FramePos introEndPosition() const {
+    mixxx::audio::FramePos introEndPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introEndPos.get());
     }
 
-    mixxx::audio::FramePos outroStartPosition() const {
+    mixxx::audio::FramePos outroStartPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroStartPos.get());
     }
 
-    mixxx::audio::FramePos outroEndPosition() const {
+    mixxx::audio::FramePos outroEndPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroEndPos.get());
     }
 
-    mixxx::audio::SampleRate sampleRate() const {
+    mixxx::audio::SampleRate sampleRate() const override {
         return mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
     }
 
-    mixxx::audio::FramePos trackEndPosition() const {
+    mixxx::audio::FramePos trackEndPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_trackSamples.get());
     }
 
-    double rateRatio() const {
+    double rateRatio() const override {
         return m_rateRatio.get();
     }
 
-    TrackPointer getLoadedTrack() const;
+    TrackPointer getLoadedTrack() const override;
 
   signals:
     void playChanged(DeckAttributes* pDeck, bool playing);
@@ -119,10 +108,6 @@ class DeckAttributes : public QObject {
   public:
     int index;
     QString group;
-    double startPos;     // Set in toDeck nature
-    double fadeBeginPos; // set in fromDeck nature
-    double fadeEndPos;   // set in fromDeck nature
-    bool isFromDeck;
     bool loading; // The data is inconsistent during loading a deck
 
   private:
