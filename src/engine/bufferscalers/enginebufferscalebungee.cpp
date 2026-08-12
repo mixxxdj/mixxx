@@ -1,6 +1,7 @@
 #include "engine/bufferscalers/enginebufferscalebungee.h"
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <cstring>
 #include <limits>
@@ -23,6 +24,7 @@ EngineBufferScaleBungee::EngineBufferScaleBungee(ReadAheadManager* pReadAheadMan
           m_remainingOutputFrames(0),
           m_outputChunkConsumed(0),
           m_lastReadFramesProcessed(0.0),
+          m_outputLatencyFrames(0),
           m_inputBufferFrames(0) {
     m_request.position = std::numeric_limits<double>::quiet_NaN();
     m_request.speed = 1.0;
@@ -50,6 +52,7 @@ void EngineBufferScaleBungee::onSignalChanged() {
 
     m_pStretcher.reset();
     m_channelStride = 0;
+    m_outputLatencyFrames = 0;
 
     if (!getOutputSignal().isValid() || channelCount <= 0) {
         m_inputBufferFrames = 2 * kMaxGrainFrames;
@@ -68,6 +71,13 @@ void EngineBufferScaleBungee::onSignalChanged() {
     }
 
     const int sampleRate = static_cast<int>(getOutputSignal().getSampleRate());
+    const int log2SynthesisHop = std::max(
+            0,
+            static_cast<int>(std::bit_width(static_cast<unsigned>(sampleRate))) -
+                    1 -
+                    6);
+    m_outputLatencyFrames = 2 * (SINT{1} << log2SynthesisHop);
+
     Bungee::SampleRates sampleRates;
     sampleRates.input = sampleRate;
     sampleRates.output = sampleRate;
@@ -95,6 +105,11 @@ void EngineBufferScaleBungee::onSignalChanged() {
 
     m_interleavedReadBuffer = mixxx::SampleBuffer(kMaxGrainFrames * channelCount);
     clear();
+}
+
+double EngineBufferScaleBungee::getVisualPlayPositionOffset() const {
+    const double signedRate = m_bBackwards ? -m_effectiveRate : m_effectiveRate;
+    return -signedRate * static_cast<double>(m_outputLatencyFrames);
 }
 
 void EngineBufferScaleBungee::setScaleParameters(double base_rate,

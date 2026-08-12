@@ -1,5 +1,7 @@
 #include "engine/enginebuffer.h"
 
+#include <algorithm>
+
 #include <QtDebug>
 
 #include "control/controllinpotmeter.h"
@@ -754,13 +756,14 @@ void EngineBuffer::seekExact(mixxx::audio::FramePos position) {
     doSeekPlayPos(position, SEEK_EXACT);
 }
 
-double EngineBuffer::fractionalPlayposFromAbsolute(mixxx::audio::FramePos absolutePlaypos) {
+double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     if (!m_trackEndPositionOld.isValid()) {
         return 0.0;
     }
 
-    const auto position = std::min<mixxx::audio::FramePos>(absolutePlaypos, m_trackEndPositionOld);
-    return position.value() / m_trackEndPositionOld.value();
+    const double position = std::clamp(
+            absolutePlaypos, 0.0, m_trackEndPositionOld.value());
+    return position / m_trackEndPositionOld.value();
 }
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
@@ -1512,18 +1515,29 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
     // Increase samplesCalculated by the buffer size
     m_samplesSinceLastIndicatorUpdate += bufferSize;
 
-    const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPos);
-    const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPos);
+    const double trackEndPosition = m_trackEndPositionOld.isValid()
+            ? m_trackEndPositionOld.value()
+            : 0.0;
+    const double visualPlayPosition = std::clamp(
+            m_playPos.value() + m_pScale->getVisualPlayPositionOffset(),
+            0.0,
+            trackEndPosition);
+    const double fFractionalPlaypos =
+            fractionalPlayposFromAbsolute(visualPlayPosition);
+    const double fFractionalSlipPos =
+            fractionalPlayposFromAbsolute(m_slipPos.value());
 
     auto loopInfo = m_pLoopingControl->getLoopInfo();
 
     double fFractionalLoopStartPos = 0.0;
     if (loopInfo.startPosition.isValid()) {
-        fFractionalLoopStartPos = fractionalPlayposFromAbsolute(loopInfo.startPosition);
+        fFractionalLoopStartPos = fractionalPlayposFromAbsolute(
+                loopInfo.startPosition.value());
     }
     double fFractionalLoopEndPos = 0.0;
     if (loopInfo.endPosition.isValid()) {
-        fFractionalLoopEndPos = fractionalPlayposFromAbsolute(loopInfo.endPosition);
+        fFractionalLoopEndPos = fractionalPlayposFromAbsolute(
+                loopInfo.endPosition.value());
     }
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /

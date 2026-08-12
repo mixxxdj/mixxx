@@ -106,6 +106,8 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     double scaleBuffer(CSAMPLE* pOutputBuffer,
             SINT iOutputBufferSize) override;
 
+    double getVisualPlayPositionOffset() const override;
+
     void clear() override;
 
   private:
@@ -176,6 +178,10 @@ class EngineBufferScaleBungee final : public EngineBufferScale {
     SINT m_remainingOutputFrames;
     SINT m_outputChunkConsumed;
     double m_lastReadFramesProcessed;
+
+    // Bungee Basic's lapped output is delayed by two synthesis hops. The
+    // sample-rate-dependent latency is converted into source frames here.
+    SINT m_outputLatencyFrames;
 
     // Maximum number of frames to request from ReadAheadManager in one call.
     static constexpr SINT kMaxGrainFrames = 4096;

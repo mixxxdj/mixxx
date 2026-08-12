@@ -311,7 +311,7 @@ class EngineBuffer : public EngineObject {
 
     void hintReader(const double rate);
 
-    double fractionalPlayposFromAbsolute(mixxx::audio::FramePos position);
+    double fractionalPlayposFromAbsolute(double position);
 
     void doSeekFractional(double fractionalPos, enum SeekRequest seekType);
     void doSeekPlayPos(mixxx::audio::FramePos position, enum SeekRequest seekType);
