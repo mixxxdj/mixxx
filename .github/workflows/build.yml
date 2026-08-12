@@ -194,6 +194,29 @@ jobs:
             compiler_cache_path: /home/runner/.cache/ccache
             crosscompile: true
             arch: arm64
+          - name: AppImage Linux x86_64
+            os: ubuntu-24.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DPKG_CONFIG_EXECUTABLE=/usr/bin/pkg-config
+              -DCMAKE_MODULE_PATH="${GITHUB_WORKSPACE}/packaging/appimage"
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/
+            ctest_args: []
+            cpack_generator: AppImage
+            crosscompile: true
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/linux_appimage_buildenv.sh
+            artifacts_name: AppImage Linux x86_64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage
+            arch: x86_64
 
     env:
       # macOS codesigning
@@ -481,9 +504,13 @@ jobs:
           dotnet.exe tool install --global wix --version 6.0.2
           wix extension add --global WixToolset.UI.wixext/6.0.2
 
+      - name: "[AppImage] Install appimagetool"
+        if: matrix.cpack_generator == 'AppImage'
+        run: packaging/appimage/install-appimagetool.sh ${{ matrix.arch }}
+
       - name: "Package"
         id: package
-        if: matrix.cpack_generator != null
+        if: matrix.cpack_generator != null && matrix.cpack_generator != 'AppImage'
         # Use retry loop to work around a race condition on macOS causing
         # 'Resource busy' errors with 'hdiutil'. See
         # https://github.com/actions/runner-images/issues/7522
@@ -495,6 +522,21 @@ jobs:
           command: |
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
+
+      - name: "[AppImage] Package"
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          GIT_DESC=$(git describe --always --first-parent --dirty=-modified)
+          packaging/appimage/build-appimage.sh build ${{ matrix.arch }}
+          mv build/Mixxx-${{ matrix.arch }}.AppImage "build/Mixxx-${GIT_DESC}-${{ matrix.arch }}.AppImage"
+
+      - name: "[AppImage] Upload AppImage"
+        if: matrix.cpack_generator == 'AppImage'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mixxx-AppImage-${{ matrix.arch }}
+          path: ${{ matrix.artifacts_path }}
+          if-no-files-found: error
 
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'

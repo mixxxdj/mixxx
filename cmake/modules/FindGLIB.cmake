@@ -46,10 +46,24 @@ if(PkgConfig_FOUND)
   pkg_check_modules(PC_GLIB QUIET glib-2.0)
 endif()
 
+# Prefer the system's shared GLib over the vcpkg buildenv's static GLib.
+# The vcpkg static GLib, when linked alongside static FFmpeg via
+# LINK_GROUP:RESCAN, pulls in extra symbols whose constructor ordering
+# crashes on startup. Search the system library dir first.
+# CMAKE_LIBRARY_ARCHITECTURE is set automatically on Debian-based systems.
+if(CMAKE_LIBRARY_ARCHITECTURE)
+  set(_glib_system_libdir "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}")
+else()
+  set(_glib_system_libdir "")
+endif()
 find_library(
   GLIB_LIBRARIES
   NAMES glib-2.0
-  HINTS ${PC_GLIB_LIBDIR} ${PC_GLIB_LIBRARY_DIRS}
+  HINTS
+    ${_glib_system_libdir}
+    ${PC_GLIB_LIBDIR}
+    ${PC_GLIB_LIBRARY_DIRS}
+  NO_CMAKE_FIND_ROOT_PATH
 )
 
 # Files in glib's main include path may include glibconfig.h, which,
@@ -111,13 +125,14 @@ endif()
 # glib ones.
 foreach(component ${GLIB_FIND_COMPONENTS})
   if(${component} STREQUAL "gio")
-    find_library(GLIB_GIO_LIBRARIES NAMES gio-2.0 HINTS ${_GLIB_LIBRARY_DIR})
+    find_library(GLIB_GIO_LIBRARIES NAMES gio-2.0 HINTS ${_GLIB_LIBRARY_DIR} NO_CMAKE_FIND_ROOT_PATH)
     set(ADDITIONAL_REQUIRED_VARS ${ADDITIONAL_REQUIRED_VARS} GLIB_GIO_LIBRARIES)
   elseif(${component} STREQUAL "gobject")
     find_library(
       GLIB_GOBJECT_LIBRARIES
       NAMES gobject-2.0
       HINTS ${_GLIB_LIBRARY_DIR}
+      NO_CMAKE_FIND_ROOT_PATH
     )
     set(
       ADDITIONAL_REQUIRED_VARS
@@ -129,6 +144,7 @@ foreach(component ${GLIB_FIND_COMPONENTS})
       GLIB_GMODULE_LIBRARIES
       NAMES gmodule-2.0
       HINTS ${_GLIB_LIBRARY_DIR}
+      NO_CMAKE_FIND_ROOT_PATH
     )
     set(
       ADDITIONAL_REQUIRED_VARS
@@ -140,6 +156,7 @@ foreach(component ${GLIB_FIND_COMPONENTS})
       GLIB_GTHREAD_LIBRARIES
       NAMES gthread-2.0
       HINTS ${_GLIB_LIBRARY_DIR}
+      NO_CMAKE_FIND_ROOT_PATH
     )
     set(
       ADDITIONAL_REQUIRED_VARS
