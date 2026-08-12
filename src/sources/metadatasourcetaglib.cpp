@@ -108,11 +108,27 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                         << "of type" << fileTypeToString(m_fileType);
     }
 
-    // Rationale: If a file contains different types of tags only
-    // a single type of tag will be read. Tag types are read in a
-    // fixed order. Both track metadata and cover art will be read
-    // from the same tag types. Only the first available tag type
-    // is read and data in subsequent tags is ignored.
+// Rationale: If a file contains different types of tags only
+// a single type of tag will be read. Tag types are read in a
+// fixed order. Both track metadata and cover art will be read
+// from the same tag types. Only the first available tag type
+// is read and data in subsequent tags is ignored.
+
+    // Bypass TagLib for Matroska/WebM files — TagLib does not support
+    // these container formats (returns FileType::Unknown). Duration and
+    // metadata are read from the FFmpeg-based sound source instead
+    // (see soundsource.cpp for the mime-type bypass).
+    if (m_fileType == taglib::FileType::Unknown) {
+        QString fileSuffix = QFileInfo(m_fileName).suffix().toLower();
+        if (fileSuffix == QLatin1String("mkv") || fileSuffix == QLatin1String("webm")) {
+            kLogger.debug()
+                    << "TagLib does not support" << m_fileName
+                    << "— using FFmpeg-based duration/metadata instead";
+            // Return empty metadata; duration will be read from the
+            // sound source's FFmpeg stream info.
+            return afterImport(ImportResult::Unavailable);
+        }
+    }
 
     switch (m_fileType) {
     case taglib::FileType::MPEG: {
