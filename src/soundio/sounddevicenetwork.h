@@ -41,7 +41,7 @@ class SoundDeviceNetwork : public SoundDevice {
 
     // NOTE: This does not take a frames per buffer argument because that is
     //       always equal to the configured buffer size for network streams
-    void callbackProcessClkRef();
+    void callbackProcessTransportDriver();
 
   private:
     void updateCallbackEntryToDacTime(SINT framesPerBuffer);
@@ -67,7 +67,7 @@ class SoundDeviceNetwork : public SoundDevice {
     bool m_denormals;
     /// The deadline for the next buffer, in microseconds since the Unix epoch.
     qint64 m_targetTime;
-    PerformanceTimer m_clkRefTimer;
+    PerformanceTimer m_transportDriverTimer;
 };
 
 class SoundDeviceNetworkThread : public QThread {
@@ -97,7 +97,7 @@ class SoundDeviceNetworkThread : public QThread {
 #endif
 
         while(!m_stop) {
-            m_pParent->callbackProcessClkRef();
+            m_pParent->callbackProcessTransportDriver();
         }
     }
     SoundDeviceNetwork* m_pParent;

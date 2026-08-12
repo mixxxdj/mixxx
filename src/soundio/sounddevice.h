@@ -31,7 +31,7 @@ class SoundDevice {
     }
     void setSampleRate(mixxx::audio::SampleRate sampleRate);
     void setConfigFramesPerBuffer(unsigned int framesPerBuffer);
-    virtual SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) = 0;
+    virtual SoundDeviceStatus open(bool isTransportDriver, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
     virtual SoundDeviceStatus close() = 0;
     virtual void readProcess(SINT framesPerBuffer) = 0;

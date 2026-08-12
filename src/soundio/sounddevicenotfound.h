@@ -20,8 +20,8 @@ class SoundDeviceNotFound : public SoundDevice {
         m_strDisplayName = name;
     }
 
-    SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override {
-        Q_UNUSED(isClkRefDevice);
+    SoundDeviceStatus open(bool isTransportDriver, int syncBuffers) override {
+        Q_UNUSED(isTransportDriver);
         Q_UNUSED(syncBuffers);
         return SoundDeviceStatus::Error;
     };
