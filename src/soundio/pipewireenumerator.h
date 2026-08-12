@@ -239,7 +239,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<AudioOutput, PortPair> m_outputs;
 
     PollingControlProxy m_audioLatencyUsage;
-    ControlObject m_COmanageExternalLinks;
+    ControlObject m_coPipewirePatchbaySync;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
@@ -249,6 +249,5 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // preference page, and leave the external patchbay connections
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
-    bool m_manageExternalLinks;
     int m_coreSyncSeq;
 };

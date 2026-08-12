@@ -76,8 +76,7 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
 }
 } // namespace
 
-PipewireEnumerator::PipewireEnumerator(
-        UserSettingsPointer pConfig, SoundManager* pManager)
+PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
         : m_pSoundManager(pManager),
           m_pPwThreadLoop(nullptr),
           m_pPwContext(nullptr),
@@ -87,12 +86,8 @@ PipewireEnumerator::PipewireEnumerator(
           m_pPwFilter(nullptr),
           m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
-          m_COmanageExternalLinks(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
-          m_framesPerBuffer(0),
-          m_manageExternalLinks(pConfig->getValue(
-                  ConfigKey(
-                          kAppGroup, QStringLiteral("pipewire_patchbay_sync")),
-                  false)) {
+          m_coPipewirePatchbaySync(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
+          m_framesPerBuffer(0) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -104,11 +99,6 @@ PipewireEnumerator::PipewireEnumerator(
 
     connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
     connect(this, &PipewireEnumerator::deviceRemoved, m_pSoundManager, &SoundManager::removeDevice);
-    connect(&m_COmanageExternalLinks, &ControlObject::valueChanged, this, [this](double value) {
-        pw_thread_loop_lock(m_pPwThreadLoop);
-        m_manageExternalLinks = static_cast<bool>(value);
-        pw_thread_loop_unlock(m_pPwThreadLoop);
-    });
 
     pw_init(nullptr, nullptr);
 
@@ -425,7 +415,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             }
         }
 
-        if (!m_manageExternalLinks) {
+        if (!static_cast<bool>(m_coPipewirePatchbaySync.get())) {
             QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::invalidateConfig);
         }
     }
@@ -514,7 +504,7 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
             }
         }
 
-        if (!m_manageExternalLinks) {
+        if (!static_cast<bool>(m_coPipewirePatchbaySync.get())) {
             QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::invalidateConfig);
         }
 
@@ -580,8 +570,7 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
         return "PipewireEnumerator uninitialized";
     }
 
-    qDebug() << "PipewireEnumerator::openDeviceInput" << m_manageExternalLinks;
-    if (m_manageExternalLinks) {
+    if (static_cast<bool>(m_coPipewirePatchbaySync.get())) {
         return {};
     }
 
@@ -629,8 +618,7 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId,
         return "PipewireEnumerator uninitialized";
     }
 
-    qDebug() << "PipewireEnumerator::openDeviceInput" << m_manageExternalLinks;
-    if (m_manageExternalLinks) {
+    if (static_cast<bool>(m_coPipewirePatchbaySync.get())) {
         return {};
     }
 
