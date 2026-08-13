@@ -8,6 +8,8 @@ import "../Mixer" as LateNightMixer
 Item {
     id: root
 
+    readonly property real collapsedChainWidth: collapsedSlotWidth * 3 + flowWidth * 2
+    readonly property real collapsedSlotWidth: Math.min(182, (slots.width - flowWidth * 2) / 3)
     readonly property color controllerColor: unitNumber < 3 ? LateNightTheme.effectsControllerColor12 : LateNightTheme.effectsControllerColor34
     readonly property bool expanded: expandedControl.value > 0
     readonly property int flowWidth: LateNightTheme.isPaleMoon ? 12 : 3
@@ -53,8 +55,8 @@ Item {
             unitColor: root.unitColor
             unitGroup: root.group
             unitNumber: root.unitNumber
-            width: root.expanded ? parent.width : (parent.width - root.flowWidth * 2) / 3
-            x: 0
+            width: root.expanded ? parent.width : root.collapsedSlotWidth
+            x: root.expanded ? 0 : parent.width - root.collapsedChainWidth
             y: root.expanded ? 0 : 2
         }
         EffectSlot {
@@ -67,7 +69,7 @@ Item {
             unitGroup: root.group
             unitNumber: root.unitNumber
             width: slot1.width
-            x: root.expanded ? 0 : slot1.width + root.flowWidth
+            x: root.expanded ? 0 : slot1.x + slot1.width + root.flowWidth
             y: root.expanded ? 52 : 2
         }
         EffectSlot {
@@ -80,7 +82,7 @@ Item {
             unitGroup: root.group
             unitNumber: root.unitNumber
             width: slot1.width
-            x: root.expanded ? 0 : (slot1.width + root.flowWidth) * 2
+            x: root.expanded ? 0 : slot2.x + slot2.width + root.flowWidth
             y: root.expanded ? 104 : 2
         }
         Image {
@@ -89,7 +91,7 @@ Item {
             source: LateNightTheme.assetFxFlowHorizontal
             visible: !root.expanded
             width: root.flowWidth
-            x: slot1.width
+            x: slot1.x + slot1.width
             y: 2
         }
         Image {
@@ -194,7 +196,7 @@ Item {
             height: 22
             width: 22
             x: root.expanded ? 19 : mixKnob.x + mixKnob.width + 2
-            y: root.expanded ? 43 : 8
+            y: root.expanded ? (showSuper.value > 0 ? 30 : 43) : 8
 
             Image {
                 anchors.fill: parent

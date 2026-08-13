@@ -34,7 +34,7 @@ Rectangle {
         RackFiller {
             height: Math.max(0, parent.height - y)
             visible: height > 0
-            width: unit1.width
+            width: unit1.width - 1
             x: unit1.x
             y: unit1.height + root.rowSpacing
         }
@@ -50,8 +50,8 @@ Rectangle {
         RackFiller {
             height: Math.max(0, parent.height - y)
             visible: height > 0
-            width: unit2.width
-            x: unit2.x
+            width: unit2.width - 1
+            x: unit2.x + 1
             y: unit2.height + root.rowSpacing
         }
     }
@@ -77,7 +77,7 @@ Rectangle {
         RackFiller {
             height: Math.max(0, parent.height - y)
             visible: height > 0
-            width: unit3.width
+            width: unit3.width - 1
             x: unit3.x
             y: unit3.height + root.rowSpacing
         }
@@ -93,8 +93,8 @@ Rectangle {
         RackFiller {
             height: Math.max(0, parent.height - y)
             visible: height > 0
-            width: unit4.width
-            x: unit4.x
+            width: unit4.width - 1
+            x: unit4.x + 1
             y: unit4.height + root.rowSpacing
         }
     }
