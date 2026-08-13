@@ -111,7 +111,12 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             height: 22
             width: 48
-            y: root.show4decks ? 106 : 51
+            y: root.show4decks ? 106 : 56
+
+            Rectangle {
+                anchors.fill: parent
+                color: splitControl.value > 0 ? LateNightTheme.mixerSplitActiveColor : LateNightTheme.mixerSplitInactiveColor
+            }
 
             Image {
                 anchors.fill: parent
@@ -120,7 +125,7 @@ Item {
             }
             Text {
                 anchors.centerIn: parent
-                color: splitControl.value > 0 ? LateNightTheme.mixerControlTextColor : LateNightTheme.mixerDimTextColor
+                color: LateNightTheme.mixerControlTextColor
                 font.bold: true
                 font.pixelSize: 12
                 text: "SPLIT"
@@ -134,7 +139,7 @@ Item {
         FxAssignButtons {
             anchors.horizontalCenter: parent.horizontalCenter
             groupName: "[Headphone]"
-            y: root.show4decks ? 135 : 74
+            y: root.show4decks ? 135 : 80
         }
     }
     Mixxx.ControlProxy {

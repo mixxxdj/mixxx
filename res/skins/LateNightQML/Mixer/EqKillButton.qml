@@ -19,17 +19,19 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        border.color: "#050505"
-        border.width: 2
         color: killControl.value > 0 ? LateNightTheme.mixerEqKillActiveColor : "#111113"
+    }
+    Image {
+        anchors.fill: parent
+        source: killControl.value > 0 ? LateNightTheme.assetMixerEqKillButtonActiveBackground : LateNightTheme.assetMixerEqKillButtonBackground
     }
     Image {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
-        height: 18
+        height: 15
         source: root.iconSource
         visible: killControl.value <= 0
-        width: 18
+        width: 15
     }
     MouseArea {
         anchors.fill: parent

@@ -98,6 +98,7 @@ Item {
             backgroundSource: LateNightTheme.assetMixerVolumeSliderBackground
             group: root.group
             handleSource: LateNightTheme.assetMixerVolumeSliderHandle
+            handleWidth: 31
             height: 107
             key: "volume"
             orientation: Qt.Vertical

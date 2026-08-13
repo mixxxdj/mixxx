@@ -25,7 +25,7 @@ Row {
 
             Rectangle {
                 anchors.fill: parent
-                color: assignControl.value > 0 ? "#333335" : LateNightTheme.deckEmbeddedButtonInactiveColor
+                color: assignControl.value > 0 ? "#333335" : LateNightTheme.mixerFxAssignInactiveColor
             }
             Image {
                 anchors.fill: parent
@@ -37,7 +37,7 @@ Row {
             }
             Text {
                 anchors.centerIn: parent
-                color: assignControl.value > 0 ? LateNightTheme.mixerControlTextColor : LateNightTheme.mixerDimTextColor
+                color: assignControl.value > 0 ? LateNightTheme.mixerControlTextColor : LateNightTheme.mixerFxAssignInactiveTextColor
                 font.bold: true
                 font.pixelSize: 12
                 text: cell.index === 0 ? "FX1" : cell.index + 1
