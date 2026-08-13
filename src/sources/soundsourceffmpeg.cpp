@@ -748,11 +748,17 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     if (m_pavStream->duration == AV_NOPTS_VALUE) {
-        // Streams with unknown or unlimited duration are
-        // not (yet) supported.
-        kLogger.warning()
-                << "Unknown or unlimited stream duration";
-        return OpenResult::Failed;
+        if (m_pavInputFormatContext->duration != AV_NOPTS_VALUE) {
+            m_pavStream->duration = m_pavInputFormatContext->duration;
+            kLogger.debug()
+                    << "using format context duration instead of stream duration";
+        } else {
+            // Streams with unknown or unlimited duration are
+            // not (yet) supported.
+            kLogger.warning()
+                    << "Unknown or unlimited stream duration";
+            return OpenResult::Failed;
+        }
     }
     const auto streamFrameIndexRange =
             getStreamFrameIndexRange(*m_pavStream);
