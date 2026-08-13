@@ -4,6 +4,7 @@
 #include <vorbisfile.h>
 
 #include <QFile>
+#include <QFileInfo>
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
