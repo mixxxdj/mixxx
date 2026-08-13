@@ -34,7 +34,10 @@ void EffectsBackendManager::addBackend(EffectsBackendPointer pBackend) {
     m_effectsBackends.insert(pBackend->getType(), pBackend);
 
     for (const QString& effectId : pBackend->getEffectIds()) {
-        m_manifests.append(pBackend->getManifest(effectId));
+        auto manifest = pBackend->getManifest(effectId);
+        if (manifest) {
+            m_manifests.append(manifest);
+        }
     }
 
     m_pNumEffectsAvailable->forceSet(m_manifests.size());
