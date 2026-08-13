@@ -32,7 +32,7 @@ public class UsbPermission {
             Log.v(TAG, "Received " + action);
             if (ACTION_USB_PERMISSION.equals(action)) {
                 synchronized (this) {
-                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice.class);
                     if (usbDevice == null) {
                         Log.e(TAG, "USB device is null");
                         return;
