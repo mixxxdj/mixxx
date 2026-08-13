@@ -93,6 +93,17 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                   ConfigKey(group, "boothDelay"))),
           m_pLatencyCompensationDelay(std::make_unique<EngineDelay>(
                   ConfigKey(group, "microphoneLatencyCompensation"))),
+          // The shared VuMeterMode control must be created before any
+          // EngineVuMeter (the main meter below as well as the per-channel and
+          // per-stem meters built later by PlayerManager), because each meter
+          // connects a PollingControlProxy to this key at construction time and
+          // will not retroactively connect if the control does not yet exist.
+          m_pVuMeterMode(std::make_unique<ControlObject>(
+                  EngineVuMeter::modeConfigKey(),
+                  true,
+                  false,
+                  true,
+                  EngineVuMeter::modeToValue(EngineVuMeter::MeterMode::DjPeak))),
           m_pVumeter(std::make_unique<EngineVuMeter>(kMainGroup, kLegacyGroup)),
           // Starts a thread for recording and broadcast
           m_pEngineSideChain(bEnableSidechain

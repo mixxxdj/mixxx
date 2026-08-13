@@ -312,6 +312,10 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<EngineDelay> m_pBoothDelay;
     std::unique_ptr<EngineDelay> m_pLatencyCompensationDelay;
 
+    // Must precede m_pVumeter (and be created before any per-channel meter) so
+    // each EngineVuMeter's mode proxy can connect to this control. See the
+    // initializer list in the constructor.
+    std::unique_ptr<ControlObject> m_pVuMeterMode;
     std::unique_ptr<EngineVuMeter> m_pVumeter;
     std::unique_ptr<EngineSideChain> m_pEngineSideChain;
 
