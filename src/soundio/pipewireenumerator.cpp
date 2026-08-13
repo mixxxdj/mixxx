@@ -87,6 +87,7 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManag
           m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_coPipewirePatchbaySync(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
+          m_coOutputLatencyMs(kAppGroup, QStringLiteral("output_latency_ms")),
           m_framesPerBuffer(0) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
@@ -560,9 +561,7 @@ bool PipewireEnumerator::isOpen(uint32_t id) {
 }
 
 std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
-        const AudioInput& input,
-        mixxx::audio::SampleRate sampleRate,
-        SINT framesPerBuffer) {
+        const AudioInput& input) {
     std::string result;
     VERIFY_OR_DEBUG_ASSERT(m_initialized) {
         qDebug() << "PipewireEnumerator::openDevice called when "
@@ -572,10 +571,6 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
 
     if (static_cast<bool>(m_coPipewirePatchbaySync.get())) {
         return {};
-    }
-
-    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
-        updateFilterLatency(sampleRate, framesPerBuffer);
     }
 
     PortPair& ports = m_inputs.at(input);
@@ -607,10 +602,7 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
     return result;
 }
 
-std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId,
-        const AudioOutput& output,
-        mixxx::audio::SampleRate sampleRate,
-        SINT framesPerBuffer) {
+std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId, const AudioOutput& output) {
     std::string result;
     VERIFY_OR_DEBUG_ASSERT(m_initialized) {
         qDebug() << "PipewireEnumerator::openDevice called when "
@@ -620,10 +612,6 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId,
 
     if (static_cast<bool>(m_coPipewirePatchbaySync.get())) {
         return {};
-    }
-
-    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
-        updateFilterLatency(sampleRate, framesPerBuffer);
     }
 
     PortPair& ports = m_outputs.at(output);
@@ -1032,4 +1020,12 @@ bool PipewireEnumerator::nodeHasPorts(const Node& node) {
     }
 
     return false;
+}
+
+void PipewireEnumerator::setLatencyParams(
+        mixxx::audio::SampleRate sampleRate, SINT framesPerBuffer) {
+    qDebug() << "PipewireEnumerator::setLatencyParams" << sampleRate << framesPerBuffer;
+    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
+        updateFilterLatency(sampleRate, framesPerBuffer);
+    }
 }

@@ -38,17 +38,11 @@ SoundDevicePipewire::~SoundDevicePipewire() {
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
     std::string error;
     for (auto& input : m_audioInputs) {
-        error += m_pEnumerator->openDeviceInput(m_deviceId.deviceIndex,
-                input,
-                m_sampleRate,
-                m_configFramesPerBuffer);
+        error += m_pEnumerator->openDeviceInput(m_deviceId.deviceIndex, input);
     }
 
     for (auto& output : m_audioOutputs) {
-        error += m_pEnumerator->openDeviceOutput(m_deviceId.deviceIndex,
-                output,
-                m_sampleRate,
-                m_configFramesPerBuffer);
+        error += m_pEnumerator->openDeviceOutput(m_deviceId.deviceIndex, output);
     }
 
     if (error.empty()) {

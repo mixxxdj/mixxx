@@ -9,6 +9,7 @@
 
 #include "audio/types.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -35,15 +36,11 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void deinitialize() override;
 
     bool isOpen(uint32_t id);
-    std::string openDeviceInput(uint32_t id,
-            const AudioInput& input,
-            mixxx::audio::SampleRate sampleRate,
-            SINT framesPerBuffer);
-    std::string openDeviceOutput(uint32_t id,
-            const AudioOutput& output,
-            mixxx::audio::SampleRate sampleRate,
-            SINT framesPerBuffer);
+    std::string openDeviceInput(uint32_t id, const AudioInput& input);
+    std::string openDeviceOutput(uint32_t id, const AudioOutput& output);
     void closeDevices();
+
+    void setLatencyParams(mixxx::audio::SampleRate sampleRate, SINT framesPerBuffer) override;
 
     mixxx::audio::SampleRate getDefaultSampleRate() const {
         return m_defaultSampleRate;
@@ -240,6 +237,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;
+    ControlProxy m_coOutputLatencyMs;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;

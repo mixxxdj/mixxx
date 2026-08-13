@@ -335,6 +335,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // loop over all available devices
 
     std::vector<SoundDevicePointer> devices = m_pEnumerator->queryDevices();
+
+    m_pEnumerator->setLatencyParams(m_config.getSampleRate(), m_config.getFramesPerBuffer());
+
     // here some network device conditions can be separated, currently simply
     // add it to the list of other devices
     devices.push_back(m_pNetworkDevice);
