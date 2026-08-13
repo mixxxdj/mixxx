@@ -62,7 +62,9 @@ SoundManager::SoundManager(
                   kAppGroup, QStringLiteral("audio_latency_overload")),
           m_pNetworkStream(QSharedPointer<EngineNetworkStream>::create(2, 0)),
           m_pNetworkDevice(QSharedPointer<SoundDeviceNetwork>::create(
-                  pConfig, this, m_pNetworkStream)) {
+                  pConfig, this, m_pNetworkStream)),
+          m_pipewireEnabled(m_pConfig->getValue(
+                  ConfigKey(kAppGroup, QStringLiteral("pipewire")), false)) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(

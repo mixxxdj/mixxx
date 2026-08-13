@@ -117,10 +117,7 @@ class SoundManager : public QObject {
     void updateDeviceChannels(SoundDevicePointer pDevice);
     bool isPipewireSelected() {
 #ifdef __PIPEWIRE__
-        return CmdlineArgs::Instance().getDeveloper() and
-                m_pConfig->getValue(ConfigKey(QStringLiteral("[App]"),
-                                            QStringLiteral("pipewire")),
-                        false);
+        return CmdlineArgs::Instance().getDeveloper() && m_pipewireEnabled;
 #else
         return false;
 #endif
@@ -213,4 +210,5 @@ class SoundManager : public QObject {
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;
+    bool m_pipewireEnabled;
 };

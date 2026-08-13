@@ -236,14 +236,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
         connect(m_pipewireCheckBox,
                 &QCheckBox::toggled,
                 this,
-                [this](bool checked) {
+                [this](bool) {
                     m_settingsModified = true;
-                    if (m_pSoundManager->isPipewireSelected() xor checked) {
-                        QMessageBox::information(this,
-                                tr("Information"),
-                                tr("Mixxx must be restarted for the PipeWire "
-                                   "API selection to take effect."));
-                    }
+                    QMessageBox::information(this,
+                            tr("Information"),
+                            tr("Mixxx must be restarted for the PipeWire "
+                               "API selection to take effect."));
                 });
     }
 
@@ -730,12 +728,6 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
                     QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
         }
     }
-
-#ifdef __PIPEWIRE__
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        m_pipewireCheckBox->setChecked(m_pSoundManager->isPipewireSelected());
-    }
-#endif
 
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
