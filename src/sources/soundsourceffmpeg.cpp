@@ -749,7 +749,16 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     if (m_pavStream->duration == AV_NOPTS_VALUE) {
         if (m_pavInputFormatContext->duration != AV_NOPTS_VALUE) {
-            m_pavStream->duration = m_pavInputFormatContext->duration;
+            // AVFormatContext::duration is measured in AV_TIME_BASE units
+            // (1/1e6 s), whereas AVStream::duration is measured in
+            // stream->time_base units. Rescale accordingly, otherwise the
+            // frame index range is inflated (e.g. ~1000x for webm/mkv
+            // streams with a 1/1000 s time base) which breaks seeking and
+            // the waveform/spectrogram.
+            m_pavStream->duration = av_rescale_q(
+                    m_pavInputFormatContext->duration,
+                    AV_TIME_BASE_Q,
+                    m_pavStream->time_base);
             kLogger.debug()
                     << "using format context duration instead of stream duration";
         } else {
