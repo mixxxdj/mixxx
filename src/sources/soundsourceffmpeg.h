@@ -22,6 +22,15 @@ class SoundSourceFFmpeg : public SoundSource {
 
     ~SoundSourceFFmpeg() override;
 
+    // Overrides the TagLib-based default implementation, because TagLib
+    // does not support Matroska/WebM containers. For these file types the
+    // stream info (especially the duration) is imported from the FFmpeg
+    // container, otherwise the library would show an empty duration.
+    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
+            TrackMetadata* pTrackMetadata,
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
+
     void close() override;
 
     static QString formatErrorString(int errnum);

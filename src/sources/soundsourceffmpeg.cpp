@@ -1,5 +1,7 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include <QFileInfo>
+
 extern "C" {
 
 #include <libavutil/avutil.h>
@@ -812,6 +814,126 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 #endif
 
     return OpenResult::Succeeded;
+}
+
+// @anchor: ffmpeg:import-metadata-override
+// TagLib does not support Matroska/WebM containers and its default
+// implementation in MetadataSourceTagLib returns Unavailable for these
+// file types. This override provides the stream info (especially the
+// duration) from the FFmpeg container, so the Mixxx library does not
+// show an empty duration column for such files.
+std::pair<MetadataSource::ImportResult, QDateTime>
+SoundSourceFFmpeg::importTrackMetadataAndCoverImage(
+        TrackMetadata* pTrackMetadata,
+        QImage* pCoverArt,
+        bool resetMissingTagMetadata) const {
+    // Delegate all file types supported by TagLib to the default
+    // implementation, which also imports tags like title and artist.
+    const QString fileSuffix =
+            QFileInfo(getLocalFileName()).suffix().toLower();
+    if (fileSuffix != QLatin1String("mkv") &&
+            fileSuffix != QLatin1String("webm")) {
+        return MetadataSourceTagLib::importTrackMetadataAndCoverImage(
+                pTrackMetadata,
+                pCoverArt,
+                resetMissingTagMetadata);
+    }
+
+    const auto sourceSynchronizedAt = getFileSynchronizedAt(
+            QFile(getLocalFileName()));
+    if (pTrackMetadata == nullptr) {
+        // Cover art cannot be imported from Matroska/WebM files.
+        return std::make_pair(ImportResult::Unavailable, sourceSynchronizedAt);
+    }
+
+    // Open the container for metadata inspection. No decoder is required.
+    AVFormatContext* pavInputFormatContext =
+            openInputFile(getLocalFileName());
+    if (pavInputFormatContext == nullptr) {
+        return std::make_pair(ImportResult::Failed, sourceSynchronizedAt);
+    }
+    const int findStreamInfoResult =
+            avformat_find_stream_info(pavInputFormatContext, nullptr);
+    if (findStreamInfoResult != 0) {
+        kLogger.warning()
+                << "Failed to read stream info for metadata import"
+                << getLocalFileName();
+        avformat_close_input(&pavInputFormatContext);
+        return std::make_pair(ImportResult::Failed, sourceSynchronizedAt);
+    }
+
+    // Select the same audio stream as tryOpen() without opening a decoder.
+    const int streamIndex = av_find_best_stream(
+            pavInputFormatContext,
+            AVMEDIA_TYPE_AUDIO,
+            m_wantedStreamIndex,
+            /*related_stream=*/ -1,
+            /*decoder_ret=*/ nullptr,
+            /*flags=*/ 0);
+    if (streamIndex < 0) {
+        kLogger.warning()
+                << "Failed to find audio stream for metadata import"
+                << getLocalFileName();
+        avformat_close_input(&pavInputFormatContext);
+        return std::make_pair(ImportResult::Failed, sourceSynchronizedAt);
+    }
+    AVStream* pavStream = pavInputFormatContext->streams[streamIndex];
+    VERIFY_OR_DEBUG_ASSERT(pavStream != nullptr) {
+        avformat_close_input(&pavInputFormatContext);
+        return std::make_pair(ImportResult::Failed, sourceSynchronizedAt);
+    }
+
+    // Mirror the duration fallback of tryOpen(): the stream duration of
+    // Matroska/WebM files is often unknown, in which case the format
+    // context duration is rescaled from AV_TIME_BASE to the stream time base.
+    if (pavStream->duration == AV_NOPTS_VALUE) {
+        if (pavInputFormatContext->duration == AV_NOPTS_VALUE) {
+            kLogger.warning()
+                    << "Unknown or unlimited stream duration"
+                    << getLocalFileName();
+            avformat_close_input(&pavInputFormatContext);
+            return std::make_pair(ImportResult::Failed, sourceSynchronizedAt);
+        }
+        pavStream->duration = av_rescale_q(
+                pavInputFormatContext->duration,
+                AV_TIME_BASE_Q,
+                pavStream->time_base);
+    }
+
+    const auto streamFrameIndexRange =
+            getStreamFrameIndexRange(*pavStream);
+    VERIFY_OR_DEBUG_ASSERT(
+            streamFrameIndexRange.start() <= streamFrameIndexRange.end()) {
+        kLogger.warning()
+                << "Stream with unsupported or invalid frame index range"
+                << streamFrameIndexRange;
+        avformat_close_input(&pavInputFormatContext);
+        return std::make_pair(ImportResult::Failed, sourceSynchronizedAt);
+    }
+
+    // Report the same stream properties as initResampling() to avoid a
+    // mismatch between the imported and the decoded stream info.
+    const auto channelCount = audio::ChannelCount(
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+            pavStream->codecpar->ch_layout.nb_channels
+#else
+            pavStream->codecpar->channels
+#endif
+    );
+    const auto sampleRate =
+            audio::SampleRate(pavStream->codecpar->sample_rate);
+    if (channelCount.isValid() && sampleRate.isValid()) {
+        pTrackMetadata->setStreamInfo(audio::StreamInfo{
+                audio::SignalInfo{channelCount, sampleRate},
+                audio::Bitrate(pavStream->codecpar->bit_rate / 1000), // kbit/s
+                Duration::fromSeconds(
+                        static_cast<double>(streamFrameIndexRange.length()) /
+                        sampleRate),
+        });
+    }
+
+    avformat_close_input(&pavInputFormatContext);
+    return std::make_pair(ImportResult::Succeeded, sourceSynchronizedAt);
 }
 
 bool SoundSourceFFmpeg::initResampling(
