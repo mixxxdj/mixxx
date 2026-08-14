@@ -339,8 +339,8 @@
       <control>
         <status>0x90</status>
         <midino>0x29</midino>
-        <group>[Playlist]</group>
-        <key>HerculesMP3e2.selectTrack</key>
+        <group>[Library]</group>
+        <key>MoveUp</key>
         <options>
           <Script-Binding/>
         </options>
@@ -348,8 +348,8 @@
       <control>
         <status>0x90</status>
         <midino>0x2a</midino>
-        <group>[Playlist]</group>
-        <key>HerculesMP3e2.mic</key>
+        <group>[Library]</group>
+        <key>MoveDown</key>
         <options>
           <Script-Binding/>
         </options>
@@ -357,8 +357,8 @@
       <control>
         <status>0x90</status>
         <midino>0x2B</midino>
-        <group>[Playlist]</group>
-        <key>HerculesMP3e2.scroll</key>
+        <group>[Library]</group>
+        <key>AutoDjAddBottom</key>
         <options>
           <Script-Binding/>
         </options>
@@ -366,8 +366,8 @@
       <control>
         <status>0x90</status>
         <midino>0x2C</midino>
-        <group>[Playlist]</group>
-        <key>HerculesMP3e2.scroll</key>
+        <group>[Library]</group>
+        <key>MoveFocus</key>
         <options>
           <Script-Binding/>
         </options>
