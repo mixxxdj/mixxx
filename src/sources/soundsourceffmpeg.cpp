@@ -841,11 +841,12 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 }
 
 // @anchor: ffmpeg:import-metadata-override
-// TagLib does not support Matroska/WebM containers and its default
+// TagLib < 2.2 does not support Matroska/WebM containers and its default
 // implementation in MetadataSourceTagLib returns Unavailable for these
 // file types. This override provides the stream info (especially the
 // duration) from the FFmpeg container, so the Mixxx library does not
-// show an empty duration column for such files.
+// show an empty duration column for such files. TagLib >= 2.2 supports
+// Matroska/WebM natively, including the duration and the cover art.
 std::pair<MetadataSource::ImportResult, QDateTime>
 SoundSourceFFmpeg::importTrackMetadataAndCoverImage(
         TrackMetadata* pTrackMetadata,
@@ -853,6 +854,16 @@ SoundSourceFFmpeg::importTrackMetadataAndCoverImage(
         bool resetMissingTagMetadata) const {
     // Delegate all file types supported by TagLib to the default
     // implementation, which also imports tags like title and artist.
+    // TagLib >= 2.2 handles Matroska/WebM (duration, cover art) natively.
+#if (TAGLIB_MAJOR_VERSION > 2) || \
+        ((TAGLIB_MAJOR_VERSION == 2) && (TAGLIB_MINOR_VERSION >= 2))
+    return MetadataSourceTagLib::importTrackMetadataAndCoverImage(
+            pTrackMetadata,
+            pCoverArt,
+            resetMissingTagMetadata);
+#else
+    // TagLib < 2.2 fallback: import the stream info for Matroska/WebM
+    // from the FFmpeg container.
     const QString fileSuffix =
             QFileInfo(getLocalFileName()).suffix().toLower();
     if (fileSuffix != QLatin1String("mkv") &&
@@ -959,6 +970,7 @@ SoundSourceFFmpeg::importTrackMetadataAndCoverImage(
 
     avformat_close_input(&pavInputFormatContext);
     return std::make_pair(ImportResult::Succeeded, sourceSynchronizedAt);
+#endif
 }
 
 bool SoundSourceFFmpeg::initResampling(
