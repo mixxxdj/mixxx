@@ -4,10 +4,16 @@
 #include <vorbisfile.h>
 
 #include <QFile>
-#include <QFileInfo>
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
+// TagLib < 2.2 has no Matroska module; the header only exists from 2.2 on.
+// The TAGLIB_* macros are defined by taglib_config.h, pulled in via the
+// taglib headers included through trackmetadata.h above.
+#if (TAGLIB_MAJOR_VERSION > 2) || \
+        ((TAGLIB_MAJOR_VERSION == 2) && (TAGLIB_MINOR_VERSION >= 2))
+#include <matroskafile.h>
+#endif
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
@@ -114,22 +120,6 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
 // fixed order. Both track metadata and cover art will be read
 // from the same tag types. Only the first available tag type
 // is read and data in subsequent tags is ignored.
-
-    // Bypass TagLib for Matroska/WebM files — TagLib does not support
-    // these container formats (returns FileType::Unknown). Duration and
-    // metadata are read from the FFmpeg-based sound source instead
-    // (see soundsource.cpp for the mime-type bypass).
-    if (m_fileType == taglib::FileType::Unknown) {
-        QString fileSuffix = QFileInfo(m_fileName).suffix().toLower();
-        if (fileSuffix == QLatin1String("mkv") || fileSuffix == QLatin1String("webm")) {
-            kLogger.debug()
-                    << "TagLib does not support" << m_fileName
-                    << "— using FFmpeg-based duration/metadata instead";
-            // Return empty metadata; duration will be read from the
-            // sound source's FFmpeg stream info.
-            return afterImport(ImportResult::Unavailable);
-        }
-    }
 
     switch (m_fileType) {
     case taglib::FileType::MPEG: {
@@ -301,6 +291,28 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             return afterImport(ImportResult::Succeeded);
         }
         break;
+    }
+    case taglib::FileType::Matroska: {
+#if (TAGLIB_MAJOR_VERSION > 2) || \
+        ((TAGLIB_MAJOR_VERSION == 2) && (TAGLIB_MINOR_VERSION >= 2))
+        // TagLib >= 2.2 natively supports Matroska (MKA, MKV) and WebM.
+        TagLib::Matroska::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        if (file.tag() && !file.tag()->isEmpty()) {
+            taglib::importTrackMetadataFromTag(pTrackMetadata, *file.tag());
+            return afterImport(ImportResult::Succeeded);
+        }
+        break;
+#else
+        // TagLib < 2.2 has no Matroska support; duration and metadata
+        // are read from the FFmpeg-based sound source instead.
+        kLogger.debug()
+                << "TagLib does not support" << m_fileName
+                << "— using FFmpeg-based duration/metadata instead";
+        return afterImport(ImportResult::Unavailable);
+#endif
     }
     default:
         kLogger.warning()
