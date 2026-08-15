@@ -129,7 +129,7 @@ EffectChainPointer EffectsManager::getOutputEffectChain() const {
 }
 
 EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const {
-    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber || unitNumber < m_standardEffectChains.size()) {
+    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber && unitNumber < m_standardEffectChains.size()) {
         return EffectChainPointer();
     }
     return m_standardEffectChains.at(unitNumber);
