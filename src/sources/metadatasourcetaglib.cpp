@@ -301,9 +301,19 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
             break;
         }
+        // @anchor: matroska:import-metadata-cover
+        bool importSucceeded = false;
         if (file.tag() && !file.tag()->isEmpty()) {
             taglib::importTrackMetadataFromTag(pTrackMetadata, *file.tag());
-            taglib::matroska::importCoverImageFromTag(pCoverImage, file);
+            importSucceeded = true;
+        }
+        // Cover art is stored in file-level attachments and may be present
+        // even when the standard tags are empty.
+        if (pCoverImage &&
+                taglib::matroska::importCoverImageFromTag(pCoverImage, file)) {
+            importSucceeded = true;
+        }
+        if (importSucceeded) {
             return afterImport(ImportResult::Succeeded);
         }
         break;
