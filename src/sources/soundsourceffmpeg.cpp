@@ -867,9 +867,9 @@ SoundSourceFFmpeg::importTrackMetadataAndCoverImage(
             pavInputFormatContext,
             AVMEDIA_TYPE_AUDIO,
             m_wantedStreamIndex,
-            /*related_stream=*/ -1,
-            /*decoder_ret=*/ nullptr,
-            /*flags=*/ 0);
+            /*related_stream=*/-1,
+            /*decoder_ret=*/nullptr,
+            /*flags=*/0);
     if (streamIndex < 0) {
         kLogger.warning()
                 << "Failed to find audio stream for metadata import"

@@ -115,11 +115,11 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                         << "of type" << fileTypeToString(m_fileType);
     }
 
-// Rationale: If a file contains different types of tags only
-// a single type of tag will be read. Tag types are read in a
-// fixed order. Both track metadata and cover art will be read
-// from the same tag types. Only the first available tag type
-// is read and data in subsequent tags is ignored.
+    // Rationale: If a file contains different types of tags only
+    // a single type of tag will be read. Tag types are read in a
+    // fixed order. Both track metadata and cover art will be read
+    // from the same tag types. Only the first available tag type
+    // is read and data in subsequent tags is ignored.
 
     switch (m_fileType) {
     case taglib::FileType::MPEG: {
