@@ -54,8 +54,8 @@ class StemControlFixture : public BaseSignalPathTest,
         const QString kStemFileLocationTest = getTestDir().filePath(STEM_FILE);
         TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
 
-        loadTrack(m_pMixerDeck1, pStemFile);
-        loadTrack(m_pMixerDeck3, pStemFile);
+        loadTrack(m_pMixerDeck1.get(), pStemFile);
+        loadTrack(m_pMixerDeck3.get(), pStemFile);
 
         m_pPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
 
@@ -157,13 +157,13 @@ TEST_P(StemControlFixture, StemCount) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
     kTrackLocationTest = getTestDir().filePath(STEM_FILE);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 }
@@ -176,7 +176,7 @@ TEST_P(StemControlFixture, StemColor) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Color->get(), -1.0);
     EXPECT_EQ(m_pStem2Color->get(), -1.0);
@@ -185,7 +185,7 @@ TEST_P(StemControlFixture, StemColor) {
 
     kTrackLocationTest = getTestDir().filePath(STEM_FILE);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
@@ -255,7 +255,7 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Volume->get(), 0.1);
     EXPECT_EQ(m_pStem2Volume->get(), 0.2);
@@ -268,7 +268,7 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
 
     m_pConfig->setValue(
             ConfigKey("[Mixer Profile]", "stem_auto_reset"), true);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Volume->get(), 1.0);
     EXPECT_EQ(m_pStem2Volume->get(), 1.0);
