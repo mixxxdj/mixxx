@@ -1,5 +1,8 @@
 #include <dsp/keydetection/GetKeyMode.h>
 
+#include <cmath>
+#include <numeric>
+
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarykey.h"
@@ -15,6 +18,10 @@ namespace {
 
 // Tuning frequency of concert A in Hertz. Default value from VAMP plugin.
 constexpr int kTuningFrequencyHertz = 440;
+
+double centsToTuningFrequencyHz(double cents) {
+    return kTuningFrequencyHertz * std::pow(2.0, cents / 12);
+}
 
 } // namespace
 
@@ -58,7 +65,12 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
 
     return m_helper.initialize(
             windowSize, stepSize, [this](double* pWindow, size_t) {
-                int iKey = m_pKeyMode->process(pWindow);
+                double dKey = m_pKeyMode->process(pWindow);
+                // dKey is [-0.5...12.5[ / [12.5...24.5[
+                int iKey = static_cast<int>(dKey + 0.5);
+
+                double tuningFrequencyHz = centsToTuningFrequencyHz(dKey - iKey);
+                // qWarning() << "tuningFrequencyHz:" << tuningFrequencyHz << dKey << iKey;
 
                 if (!ChromaticKey_IsValid(iKey)) {
                     qWarning() << "No valid key detected in analyzed window:" << iKey;
@@ -66,11 +78,20 @@ bool AnalyzerQueenMaryKey::initialize(mixxx::audio::SampleRate sampleRate) {
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);
-                if (key != m_prevKey) {
+                if (key != m_prevKey || m_resultKeys.isEmpty()) {
                     // TODO(rryan) reserve?
-                    m_resultKeys.push_back(qMakePair(
-                            key, static_cast<double>(m_currentFrame)));
+                    m_resultKeys.push_back({key,
+                            tuningFrequencyHz,
+                            mixxx::audio::FramePos(m_currentFrame)});
+                    m_tuningFrequenciesHz.clear();
+                    m_tuningFrequenciesHz.push_back(tuningFrequencyHz);
                     m_prevKey = key;
+                } else {
+                    m_tuningFrequenciesHz.push_back(tuningFrequencyHz);
+                    double sum = std::accumulate(m_tuningFrequenciesHz.begin(),
+                            m_tuningFrequenciesHz.end(),
+                            0.0);
+                    m_resultKeys.back().tuningFrequencyHz = sum / m_tuningFrequenciesHz.size();
                 }
                 return true;
             });
