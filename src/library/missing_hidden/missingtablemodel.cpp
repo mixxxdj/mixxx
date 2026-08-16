@@ -9,6 +9,7 @@
 #include "moc_missingtablemodel.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/assert.h"
 
 namespace {
 
@@ -80,6 +81,9 @@ void MissingTableModel::relocateTrack(const QModelIndex& index) {
         location = QFileInfo(pTrack->getLocation()).absolutePath();
         title = pTrack->getTitle();
         trackId = pTrack->getId();
+        VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+            return;
+        }
     }
     if (location.isEmpty() || !QDir(location).exists()) {
         location = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
@@ -97,9 +101,6 @@ void MissingTableModel::relocateTrack(const QModelIndex& index) {
     }
 
     const mixxx::FileInfo fileInfo(newLocation);
-    if (!trackId.isValid()) {
-        return;
-    }
 
     if (m_pTrackCollectionManager->relocateTrack(trackId, fileInfo)) {
         select(); // Repopulate the data model
