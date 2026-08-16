@@ -16,13 +16,13 @@ bool EffectManifest::hasMetaKnobLinking() const {
 
 bool EffectManifest::sortLexigraphically(
         EffectManifestPointer pManifest1, EffectManifestPointer pManifest2) {
-    // Defensive: null manifests sort to the end. A backend whose async
-    // manifest loading times out may briefly expose null entries; crashing
-    // std::sort on them is worse than a transiently misordered list.
-    if (!pManifest1) {
+    // Defensive: null manifests should no longer occur here, but
+    // this check is retained to prevent std::sort from crashing if an
+    // unexpected null pointer ever reaches this comparator. Nulls sort to the end.
+    VERIFY_OR_DEBUG_ASSERT(pManifest1) {
         return false;
     }
-    if (!pManifest2) {
+    VERIFY_OR_DEBUG_ASSERT(pManifest2) {
         return true;
     }
     // Sort built-in effects first before external plugins
