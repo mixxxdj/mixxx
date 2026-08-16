@@ -1465,8 +1465,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "calculateTransition"
-                 << "introLength" << introLength
-                 << "outroLength" << outroLength;
+                        << "introLength" << introLength
+                        << "outroLength" << outroLength;
     }
 
     m_crossfaderStartCenter = false;
@@ -1625,8 +1625,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "calculateTransition" << pFromDeck->group
-                 << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
-                 << pToDeck->startPos;
+                        << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
+                        << pToDeck->startPos;
     }
 }
 
@@ -1681,7 +1681,7 @@ void AutoDJProcessor::useFixedFadeTime(
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "playerTrackLoaded" << pDeck->group
-                 << (pTrack ? pTrack->getLocation() : "(null)");
+                        << (pTrack ? pTrack->getLocation() : "(null)");
     }
 
     pDeck->loading = false;
@@ -1740,8 +1740,8 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "playerLoadingTrack" << pDeck->group
-                 << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")
-                 << "old:" << (pOldTrack ? pOldTrack->getLocation() : "(null)");
+                        << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")
+                        << "old:" << (pOldTrack ? pOldTrack->getLocation() : "(null)");
     }
 
     pDeck->loading = true;
