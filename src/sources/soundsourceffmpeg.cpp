@@ -517,6 +517,22 @@ SoundSourceFFmpeg::~SoundSourceFFmpeg() {
 #endif
 }
 
+// Returns true if the audio codec is covered by patents that have not
+// expired yet. Mixxx intentionally refuses to decode such codecs, which
+// mainly occur in MKV files.
+bool isPatentEncumberedAudioCodec(enum AVCodecID codec_id) {
+    switch (codec_id) {
+    case AV_CODEC_ID_AC3:
+    case AV_CODEC_ID_EAC3:
+    case AV_CODEC_ID_TRUEHD:
+    case AV_CODEC_ID_MLP:
+    case AV_CODEC_ID_DTS:
+        return true;
+    default:
+        return false;
+    }
+}
+
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& params) {
@@ -607,6 +623,13 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         return SoundSource::OpenResult::Aborted;
     }
     DEBUG_ASSERT(pDecoder);
+
+    if (isPatentEncumberedAudioCodec(pDecoder->id)) {
+        kLogger.warning().noquote()
+                << "Refusing to decode patent-encumbered audio codec:"
+                << pDecoder->long_name << pDecoder->name;
+        return SoundSource::OpenResult::Aborted;
+    }
 
     if (pDecoder->id == AV_CODEC_ID_AAC ||
             pDecoder->id == AV_CODEC_ID_AAC_LATM) {
