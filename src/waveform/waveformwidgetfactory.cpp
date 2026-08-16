@@ -1382,6 +1382,8 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
         }
         break;
     case WaveformWidgetBackend::AllShader:
+        // Note: this might be a leftover of full QOpenGL builds even if this
+        // build does not support that setting.
 #ifdef MIXXX_USE_QOPENGL
         if (!m_openGlAvailable && !m_openGlesAvailable) {
             backend = WaveformWidgetBackend::None;
@@ -1390,7 +1392,7 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
         break;
     }
     return backend;
-};
+}
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
 #ifdef MIXXX_USE_QOPENGL
