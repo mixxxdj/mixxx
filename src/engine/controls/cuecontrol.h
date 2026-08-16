@@ -6,6 +6,7 @@
 #include <QAtomicPointer>
 #include <QList>
 
+#include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
@@ -322,6 +323,7 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pBeatLoopSize;
     bool m_bypassCueSetByPlay;
     ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
+    PollingControlProxy m_disablePreRoll;
 
     QList<HotcueControl*> m_hotcueControls;
 
