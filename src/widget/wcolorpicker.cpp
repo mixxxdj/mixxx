@@ -2,11 +2,13 @@
 
 #include <QColorDialog>
 #include <QGridLayout>
+#include <QKeyEvent>
 #include <QPushButton>
 #include <QStyle>
 #include <QStyleFactory>
 
 #include "moc_wcolorpicker.cpp"
+#include "util/optional.h"
 #include "util/parented_ptr.h"
 
 namespace {
@@ -29,12 +31,115 @@ inline int idealColumnCount(int numItems) {
             break;
         }
         if (remainder > numColumnsRemainder) {
-            numColumnsRemainder = numColumnsCandidate;
+            numColumnsRemainder = remainder;
             numColumns = numColumnsCandidate;
         }
     }
 
     return numColumns;
+}
+
+WColorGridButton::WColorGridButton(const mixxx::RgbColor::optional_t& color,
+        int row,
+        int column,
+        QWidget* parent)
+        : QPushButton(parent),
+          m_color(color),
+          m_row(row),
+          m_column(column) {
+    if (color) {
+        // Set the background color of the button.
+        // This can't be overridden in skin stylesheets.
+        setStyleSheet(
+                QStringLiteral("QPushButton { background-color: %1; }")
+                        .arg(mixxx::RgbColor::toQString(color.value())));
+        setToolTip(mixxx::RgbColor::toQString(color.value()));
+    } else {
+        setProperty("noColor", true);
+        setToolTip(tr("No color"));
+    }
+
+    setCheckable(true);
+
+    // Without this the button might shrink when setting the checkmark icon,
+    // both here or via external stylesheets.
+    setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+}
+
+void WColorGridButton::keyPressEvent(QKeyEvent* event) {
+    if (handleNavigation(event)) {
+        // Already handled completely
+    } else if (event->key() == Qt::Key_Return) {
+        // Key_Return should act the same as Key_Space
+        setDown(true);
+    } else {
+        QPushButton::keyPressEvent(event);
+    }
+}
+
+void WColorGridButton::keyReleaseEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Return && !event->isAutoRepeat() && isDown()) {
+        click();
+    } else {
+        QPushButton::keyReleaseEvent(event);
+    }
+}
+
+bool WColorGridButton::handleNavigation(QKeyEvent* event) {
+    QWidget* pParent = qobject_cast<QWidget*>(parent());
+    if (!pParent) {
+        return false;
+    }
+
+    QGridLayout* pGridLayout = qobject_cast<QGridLayout*>(pParent->layout());
+    if (!pGridLayout) {
+        return false;
+    }
+
+    const int maxRow = pGridLayout->rowCount() - 1;
+    const int maxColumn = pGridLayout->columnCount() - 1;
+    int newRow = m_row;
+    int newColumn = m_column;
+
+    switch (event->key()) {
+    case Qt::Key_Up: {
+        newRow = qBound(0, newRow - 1, maxRow);
+        break;
+    }
+    case Qt::Key_Down: {
+        newRow = qBound(0, newRow + 1, maxRow);
+        break;
+    }
+    case Qt::Key_Left: {
+        newColumn = qBound(0, newColumn - 1, maxColumn);
+        break;
+    }
+    case Qt::Key_Right: {
+        newColumn = qBound(0, newColumn + 1, maxColumn);
+        break;
+    }
+    default: {
+        return false;
+    }
+    }
+
+    // Show the keyboard focus frame (if not yet visible)
+    window()->setAttribute(Qt::WA_KeyboardFocusChange);
+
+    QLayoutItem* pNewItem = pGridLayout->itemAtPosition(newRow, newColumn);
+    if (!pNewItem) {
+        // May happen when itemCount < (rowCount * columnCount),
+        // i.e. when some cells in the grid are empty.
+        return false;
+    }
+
+    QWidget* pNewFocus = pNewItem->widget();
+    if (!pNewFocus) {
+        return false;
+    }
+
+    pNewFocus->setFocus();
+    return true;
 }
 
 WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget* parent)
@@ -138,21 +243,11 @@ void WColorPicker::addColorButtons() {
 }
 
 void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column) {
-    parented_ptr<QPushButton> pButton = make_parented<QPushButton>("", this);
+    auto pButton = make_parented<WColorGridButton>(color, row, column, this);
     if (m_pStyle) {
         pButton->setStyle(m_pStyle);
     }
-
-    // Set the background color of the button. This can't be overridden in skin stylesheets.
-    pButton->setStyleSheet(
-            QString("QPushButton { background-color: %1; }").arg(mixxx::RgbColor::toQString(color)));
-    pButton->setToolTip(mixxx::RgbColor::toQString(color));
-    pButton->setCheckable(true);
-    // Without this the button might shrink when setting the checkmark icon,
-    // both here or via external stylesheets.
-    pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
     m_colorButtons.append(pButton);
-
     connect(pButton,
             &QPushButton::clicked,
             this,
@@ -163,25 +258,21 @@ void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, i
 }
 
 void WColorPicker::addNoColorButton(QGridLayout* pLayout, int row, int column) {
-    QPushButton* pButton = m_pNoColorButton;
-    if (!pButton) {
-        pButton = make_parented<QPushButton>("", this);
-        if (m_pStyle) {
-            pButton->setStyle(m_pStyle);
-        }
-
-        pButton->setProperty("noColor", true);
-        pButton->setToolTip(tr("No color"));
-        pButton->setCheckable(true);
-        pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
-        connect(pButton,
-                &QPushButton::clicked,
-                this,
-                [this]() {
-                    emit colorPicked(std::nullopt);
-                });
-        m_pNoColorButton = pButton;
+    VERIFY_OR_DEBUG_ASSERT(!m_pNoColorButton) {
+        return;
     }
+
+    auto pButton = make_parented<WColorGridButton>(std::nullopt, row, column, this);
+    if (m_pStyle) {
+        pButton->setStyle(m_pStyle);
+    }
+    connect(pButton,
+            &QPushButton::clicked,
+            this,
+            [this]() {
+                emit colorPicked(std::nullopt);
+            });
+    m_pNoColorButton = pButton;
     pLayout->addWidget(pButton, row, column);
 }
 
@@ -258,4 +349,23 @@ void WColorPicker::setColorPalette(const ColorPalette& palette) {
 
 void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     setSelectedColor(color);
+}
+
+void WColorPicker::setInitialFocus() {
+    QGridLayout* pLayout = qobject_cast<QGridLayout*>(layout());
+    VERIFY_OR_DEBUG_ASSERT(pLayout) {
+        qWarning() << "Color Picker has no layout!";
+        return;
+    }
+
+    // Focus the top left button when the color picker
+    // popup is opened, so that keyboard navigation
+    // can be used.
+    auto* topLeftItem = pLayout->itemAtPosition(0, 0);
+    if (topLeftItem) {
+        auto* topLeftWidget = topLeftItem->widget();
+        if (topLeftWidget) {
+            topLeftWidget->setFocus();
+        }
+    }
 }
