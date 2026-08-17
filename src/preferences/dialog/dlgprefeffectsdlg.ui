@@ -561,9 +561,16 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayoutMetaKnob">
       <item>
-       <widget class="QRadioButton" name="radioButtonKeepMetaknobPosition">
+       <widget class="QRadioButton" name="radioButtonKeepAllMetaknobPositions">
         <property name="text">
-         <string>Keep metaknob position</string>
+         <string>Keep all metaknob positions</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonKeepTopMetaknobPosition">
+        <property name="text">
+         <string>Only keep the top-level Effect Unit metaknob position</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">buttonGroupMetaKnob</string>
