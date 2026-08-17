@@ -1,6 +1,7 @@
 import "." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick
+import "Effects" as Effects
 
 Item {
     id: root
@@ -15,11 +16,11 @@ Item {
         Column {
             width: parent.width / 2
 
-            Skin.EffectUnit {
+            Effects.EffectUnit {
                 unitNumber: 1
                 width: parent.width
             }
-            Skin.EffectUnit {
+            Effects.EffectUnit {
                 unitNumber: 3
                 visible: showFourUnitsControl.value > 0
                 width: parent.width
@@ -28,11 +29,11 @@ Item {
         Column {
             width: parent.width / 2
 
-            Skin.EffectUnit {
+            Effects.EffectUnit {
                 unitNumber: 2
                 width: parent.width
             }
-            Skin.EffectUnit {
+            Effects.EffectUnit {
                 unitNumber: 4
                 visible: showFourUnitsControl.value > 0
                 width: parent.width

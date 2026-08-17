@@ -22,21 +22,14 @@ QmlEffectSlotProxy::QmlEffectSlotProxy(
           m_pEffectsManager(pEffectsManager),
           m_unitNumber(unitNumber),
           m_pChainSlot(pChainSlot),
-          m_pEffectSlot(pEffectSlot) {
+          m_pEffectSlot(pEffectSlot),
+          m_pParametersModel(new QmlEffectSlotParametersModel(m_pEffectSlot, this)) {
     DEBUG_ASSERT(m_pChainSlot);
     DEBUG_ASSERT(m_pEffectSlot);
     connect(m_pEffectSlot.get(),
             &EffectSlot::effectChanged,
             this,
             &QmlEffectSlotProxy::effectIdChanged);
-    connect(m_pEffectSlot.get(),
-            &EffectSlot::effectChanged,
-            this,
-            &QmlEffectSlotProxy::parametersModelChanged);
-    connect(m_pEffectSlot.get(),
-            &EffectSlot::parametersChanged,
-            this,
-            &QmlEffectSlotProxy::parametersModelChanged);
 }
 
 int QmlEffectSlotProxy::getChainSlotNumber() const {
@@ -80,15 +73,8 @@ void QmlEffectSlotProxy::setEffectId(const QString& effectId) {
     m_pEffectSlot->loadEffectWithDefaults(pManifest);
 }
 
-QmlEffectManifestParametersModel* QmlEffectSlotProxy::getParametersModel() const {
-    if (!m_pEffectSlot->getManifest()) {
-        return nullptr;
-    }
-
-    QmlEffectManifestParametersModel* pModel =
-            new QmlEffectManifestParametersModel(m_pEffectSlot);
-    QQmlEngine::setObjectOwnership(pModel, QQmlEngine::JavaScriptOwnership);
-    return pModel;
+QmlEffectSlotParametersModel* QmlEffectSlotProxy::getParametersModel() const {
+    return m_pParametersModel;
 }
 
 void QmlEffectSlotProxy::setParameterVisible(const QString& parameterId, bool visible) {

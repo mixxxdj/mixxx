@@ -11,6 +11,7 @@ namespace qml {
 
 class QmlEffectUnitProxy : public QObject {
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(QmlEffectUnitProxy)
     Q_PROPERTY(int unitNumber READ getUnitNumber CONSTANT)
     Q_PROPERTY(QString group READ getGroup CONSTANT)
     Q_PROPERTY(QString presetName READ getPresetName NOTIFY presetChanged)
@@ -37,7 +38,7 @@ class QmlEffectUnitProxy : public QObject {
 
     Q_INVOKABLE void loadPreset(int index);
     Q_INVOKABLE void updatePreset();
-    Q_INVOKABLE void renamePreset();
+    Q_INVOKABLE bool renamePreset();
     Q_INVOKABLE void savePresetAs();
 
   signals:

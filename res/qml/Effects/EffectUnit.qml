@@ -1,7 +1,7 @@
-import "." as Skin
+import ".." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick
-import "Theme"
+import "../Theme"
 
 Item {
     id: root
@@ -22,7 +22,7 @@ Item {
         anchors.top: parent.top
         height: root.expanded ? 160 : 60
 
-        Skin.EffectSlot {
+        EffectSlot {
             id: effect1
 
             anchors.left: parent.left
@@ -33,7 +33,7 @@ Item {
             unitNumber: root.unitNumber
             width: root.expanded ? parent.width : parent.width / 3
         }
-        Skin.EffectSlot {
+        EffectSlot {
             id: effect2
 
             anchors.left: root.expanded ? parent.left : effect1.right
@@ -44,7 +44,7 @@ Item {
             unitNumber: root.unitNumber
             width: root.expanded ? parent.width : parent.width / 3
         }
-        Skin.EffectSlot {
+        EffectSlot {
             id: effect3
 
             anchors.left: root.expanded ? parent.left : effect2.right
@@ -115,7 +115,7 @@ Item {
                     width: 36
                 }
                 Skin.ControlKnob {
-                    arcStart: Knob.ArcStart.Minimum
+                    arcStart: Skin.Knob.ArcStart.Minimum
                     color: Theme.effectUnitColor
                     group: root.group
                     height: 40
@@ -123,7 +123,7 @@ Item {
                     width: 40
                 }
                 Skin.ControlKnob {
-                    arcStart: Knob.ArcStart.Minimum
+                    arcStart: Skin.Knob.ArcStart.Minimum
                     color: Theme.effectUnitColor
                     group: root.group
                     height: 40
@@ -134,7 +134,7 @@ Item {
             }
         }
     }
-    Skin.EffectChainPresetPopup {
+    EffectChainPresetPopup {
         id: presetPopup
 
         slot1: effect1.slot

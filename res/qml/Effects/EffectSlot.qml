@@ -1,9 +1,9 @@
 pragma ComponentBehavior: Bound
 
-import "." as Skin
+import ".." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick
-import "Theme"
+import "../Theme"
 
 Item {
     id: root
@@ -13,6 +13,7 @@ Item {
     property bool expanded: false
     readonly property string group: slot.group
     property real maxSelectorWidth: 300
+    readonly property int maximumParametersPerType: 8
     property Mixxx.EffectSlotProxy slot: Mixxx.EffectsManager.getEffectSlot(unitNumber, effectNumber)
     required property int unitNumber
 
@@ -26,7 +27,7 @@ Item {
         anchors.top: parent.top
         width: Math.min(root.width, root.maxSelectorWidth)
 
-        Skin.EffectFocusButton {
+        EffectFocusButton {
             id: focusButton
 
             anchors.left: parent.left
@@ -51,7 +52,7 @@ Item {
             toggleable: true
             width: 40
         }
-        Skin.EffectSelector {
+        EffectSelector {
             id: effectSelector
 
             anchors.bottom: parent.bottom
@@ -68,7 +69,7 @@ Item {
             anchors.margins: 5
             anchors.right: parent.right
             anchors.top: parent.top
-            arcStart: Knob.ArcStart.Minimum
+            arcStart: Skin.Knob.ArcStart.Minimum
             color: Theme.effectColor
             group: root.group
             key: "meta"
@@ -94,13 +95,13 @@ Item {
 
             required property string controlKey
             required property int index
-            readonly property bool isButton: type === 1
-            readonly property bool isKnob: type === 0
+            readonly property bool isButton: type === Mixxx.EffectSlotParametersModel.Button
+            readonly property bool isKnob: type === Mixxx.EffectSlotParametersModel.Knob
             readonly property string label: shortName || name
             required property bool loaded
             required property string name
             required property string shortName
-            readonly property bool shown: loaded && slotNumber > 0 && slotNumber <= 8
+            readonly property bool shown: loaded && slotNumber > 0 && slotNumber <= root.maximumParametersPerType
             readonly property int slotNumber: {
                 const match = controlKey.match(/(\d+)$/);
                 return match ? Number(match[1]) : 0;
@@ -111,7 +112,7 @@ Item {
             visible: shown
             width: shown ? 55 : 0
 
-            EmbeddedText {
+            Skin.EmbeddedText {
                 anchors.fill: parent
                 font.bold: false
                 text: parameter.label

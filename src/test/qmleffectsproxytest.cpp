@@ -10,7 +10,7 @@
 #include "effects/presets/effectchainpresetmanager.h"
 #include "engine/channelhandle.h"
 #include "qml/qmlchainpresetmodel.h"
-#include "qml/qmleffectmanifestparametersmodel.h"
+#include "qml/qmleffectslotparametersmodel.h"
 #include "qml/qmleffectslotproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmleffectunitproxy.h"
@@ -49,7 +49,7 @@ class QmlEffectsProxyTest : public MixxxTest {
     std::unique_ptr<mixxx::qml::QmlEffectsManagerProxy> m_pProxy;
 };
 
-TEST_F(QmlEffectsProxyTest, UnitPresetModelsAndParameterVisibility) {
+TEST_F(QmlEffectsProxyTest, UnitLookup) {
     auto* pUnit1 = m_pProxy->getEffectUnit(1);
     ASSERT_NE(nullptr, pUnit1);
     EXPECT_EQ(pUnit1, m_pProxy->getEffectUnit(1));
@@ -57,7 +57,9 @@ TEST_F(QmlEffectsProxyTest, UnitPresetModelsAndParameterVisibility) {
     EXPECT_EQ(QStringLiteral("[EffectRack1_EffectUnit1]"), pUnit1->getGroup());
     EXPECT_EQ(nullptr, m_pProxy->getEffectUnit(0));
     EXPECT_EQ(nullptr, m_pProxy->getEffectUnit(5));
+}
 
+TEST_F(QmlEffectsProxyTest, PresetModelsResetSeparately) {
     auto* pStandardModel = m_pProxy->property("standardChainPresetModel")
                                    .value<mixxx::qml::QmlChainPresetModel*>();
     auto* pQuickModel = m_pProxy->property("quickChainPresetModel")
@@ -79,7 +81,11 @@ TEST_F(QmlEffectsProxyTest, UnitPresetModelsAndParameterVisibility) {
             "quickEffectChainPresetListUpdated");
     EXPECT_EQ(1, standardResetSpy.count());
     EXPECT_EQ(1, quickResetSpy.count());
+}
 
+TEST_F(QmlEffectsProxyTest, UnitPresetStateAndLoading) {
+    auto* pUnit1 = m_pProxy->getEffectUnit(1);
+    ASSERT_NE(nullptr, pUnit1);
     QSignalSpy presetSpy(pUnit1, &mixxx::qml::QmlEffectUnitProxy::presetChanged);
     pUnit1->loadPreset(-1);
     EXPECT_EQ(0, presetSpy.count());
@@ -90,42 +96,55 @@ TEST_F(QmlEffectsProxyTest, UnitPresetModelsAndParameterVisibility) {
     EXPECT_EQ(pUnit1->canUpdatePreset() && !pUnit1->getPresetName().isEmpty(),
             pUnit1->canRenamePreset());
     EXPECT_GE(presetSpy.count(), 1);
+}
 
-    auto* pSlot = m_pProxy->getEffectSlot(1, 1);
+TEST_F(QmlEffectsProxyTest, SlotEffectAndParameterVisibility) {
+    constexpr int kExpectedParameterCount = 6;
+    constexpr int kParameter1Index = 0;
+    constexpr int kParameter2Index = 1;
+    constexpr int kParameter3Index = 2;
+    constexpr int kButtonParameter1Index = 4;
+
+    std::unique_ptr<mixxx::qml::QmlEffectSlotProxy> pSlot(
+            m_pProxy->getEffectSlot(1, 1));
     ASSERT_NE(nullptr, pSlot);
-    QSignalSpy effectSpy(pSlot, &mixxx::qml::QmlEffectSlotProxy::effectIdChanged);
-    QSignalSpy parametersSpy(
-            pSlot, &mixxx::qml::QmlEffectSlotProxy::parametersModelChanged);
+    QSignalSpy effectSpy(
+            pSlot.get(), &mixxx::qml::QmlEffectSlotProxy::effectIdChanged);
+    auto* pModel = pSlot->getParametersModel();
+    ASSERT_NE(nullptr, pModel);
+    QSignalSpy modelResetSpy(pModel, &QAbstractItemModel::modelReset);
+    QSignalSpy dataChangedSpy(pModel, &QAbstractItemModel::dataChanged);
+
     pSlot->setEffectId(EchoEffect::getId());
     ASSERT_TRUE(pSlot->isLoaded());
     EXPECT_GE(effectSpy.count(), 1);
-    EXPECT_GE(parametersSpy.count(), 1);
+    EXPECT_GE(modelResetSpy.count(), 1);
 
-    std::unique_ptr<mixxx::qml::QmlEffectManifestParametersModel> pModel(
-            pSlot->getParametersModel());
-    ASSERT_NE(nullptr, pModel);
-    ASSERT_EQ(6, pModel->rowCount({}));
+    ASSERT_EQ(kExpectedParameterCount, pModel->rowCount({}));
     EXPECT_EQ(QStringLiteral("parameter1"),
-            pModel->get(0).toMap().value("controlKey").toString());
+            pModel->get(kParameter1Index).toMap().value("controlKey").toString());
     EXPECT_EQ(QStringLiteral("parameter2"),
-            pModel->get(1).toMap().value("controlKey").toString());
+            pModel->get(kParameter2Index).toMap().value("controlKey").toString());
     EXPECT_EQ(QStringLiteral("button_parameter1"),
-            pModel->get(4).toMap().value("controlKey").toString());
+            pModel->get(kButtonParameter1Index)
+                    .toMap()
+                    .value("controlKey")
+                    .toString());
 
     pSlot->setParameterVisible(QStringLiteral("feedback_amount"), false);
-    EXPECT_GE(parametersSpy.count(), 2);
-    pModel.reset(pSlot->getParametersModel());
-    EXPECT_FALSE(pModel->get(1).toMap().value("loaded").toBool());
-    EXPECT_TRUE(pModel->get(1).toMap().value("controlKey").toString().isEmpty());
+    EXPECT_GE(dataChangedSpy.count(), 1);
+    EXPECT_FALSE(pModel->get(kParameter2Index).toMap().value("loaded").toBool());
+    EXPECT_TRUE(pModel->get(kParameter2Index)
+                    .toMap()
+                    .value("controlKey")
+                    .toString()
+                    .isEmpty());
     EXPECT_EQ(QStringLiteral("parameter2"),
-            pModel->get(2).toMap().value("controlKey").toString());
+            pModel->get(kParameter3Index).toMap().value("controlKey").toString());
 
     pSlot->setParameterVisible(QStringLiteral("feedback_amount"), true);
-    pModel.reset(pSlot->getParametersModel());
-    EXPECT_TRUE(pModel->get(1).toMap().value("loaded").toBool());
+    EXPECT_TRUE(pModel->get(kParameter2Index).toMap().value("loaded").toBool());
     pSlot->saveDefaultSnapshot();
-    pModel.reset();
-    delete pSlot;
 }
 
 } // namespace

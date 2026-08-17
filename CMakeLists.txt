@@ -3993,7 +3993,7 @@ if(QML)
       src/qml/qmlcontrolproxy.cpp
       src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
-      src/qml/qmleffectmanifestparametersmodel.cpp
+      src/qml/qmleffectslotparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp
       src/qml/qmleffectunitproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp

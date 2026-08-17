@@ -1,9 +1,9 @@
 pragma ComponentBehavior: Bound
 
-import "." as Skin
+import ".." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick
-import "Theme"
+import "../Theme"
 
 Row {
     id: root

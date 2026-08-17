@@ -3,7 +3,7 @@
 #include <QQmlEngine>
 
 #include "effects/effectsmanager.h"
-#include "qml/qmleffectmanifestparametersmodel.h"
+#include "qml/qmleffectslotparametersmodel.h"
 
 namespace mixxx {
 namespace qml {
@@ -18,8 +18,8 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(QString effectName READ getEffectName NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectDescription READ getEffectDescription NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
-    Q_PROPERTY(mixxx::qml::QmlEffectManifestParametersModel* parametersModel
-                    READ getParametersModel NOTIFY parametersModelChanged)
+    Q_PROPERTY(mixxx::qml::QmlEffectSlotParametersModel* parametersModel
+                    READ getParametersModel CONSTANT)
     QML_NAMED_ELEMENT(EffectSlotProxy)
     QML_UNCREATABLE(
             "Only accessible via "
@@ -42,7 +42,7 @@ class QmlEffectSlotProxy : public QObject {
     bool isLoaded() const;
     QString getEffectName() const;
     QString getEffectDescription() const;
-    QmlEffectManifestParametersModel* getParametersModel() const;
+    QmlEffectSlotParametersModel* getParametersModel() const;
 
   public slots:
     void setEffectId(const QString& effectId);
@@ -53,7 +53,6 @@ class QmlEffectSlotProxy : public QObject {
 
   signals:
     void effectIdChanged();
-    void parametersModelChanged();
 
   private:
     /// FIXME: The reference to EffectManager is needed for loading effects.
@@ -66,6 +65,7 @@ class QmlEffectSlotProxy : public QObject {
     const int m_unitNumber;
     const EffectChainPointer m_pChainSlot;
     const EffectSlotPointer m_pEffectSlot;
+    QmlEffectSlotParametersModel* const m_pParametersModel;
 };
 
 } // namespace qml

@@ -16,11 +16,11 @@ class QmlChainPresetModel;
 class QmlEffectsManagerProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(mixxx::qml::QmlVisibleEffectsModel* visibleEffectsModel
-                    MEMBER m_pVisibleEffectsModel CONSTANT);
+                    MEMBER m_pVisibleEffectsModel CONSTANT)
     Q_PROPERTY(mixxx::qml::QmlChainPresetModel* quickChainPresetModel
-                    MEMBER m_pQuickChainPresetModel CONSTANT);
+                    MEMBER m_pQuickChainPresetModel CONSTANT)
     Q_PROPERTY(mixxx::qml::QmlChainPresetModel* standardChainPresetModel
-                    MEMBER m_pStandardChainPresetModel CONSTANT);
+                    MEMBER m_pStandardChainPresetModel CONSTANT)
     QML_NAMED_ELEMENT(EffectsManager)
     QML_SINGLETON
 

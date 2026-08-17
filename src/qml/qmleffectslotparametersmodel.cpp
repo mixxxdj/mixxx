@@ -1,34 +1,57 @@
-#include "qml/qmleffectmanifestparametersmodel.h"
+#include "qml/qmleffectslotparametersmodel.h"
 
 #include <QModelIndex>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/effectslot.h"
-#include "moc_qmleffectmanifestparametersmodel.cpp"
+#include "moc_qmleffectslotparametersmodel.cpp"
 
 namespace mixxx {
 namespace qml {
 namespace {
 const QHash<int, QByteArray> kRoleNames = {
-        {QmlEffectManifestParametersModel::IdRole, "parameterId"},
-        {QmlEffectManifestParametersModel::NameRole, "name"},
-        {QmlEffectManifestParametersModel::ShortNameRole, "shortName"},
-        {QmlEffectManifestParametersModel::DescriptionRole, "description"},
-        {QmlEffectManifestParametersModel::TypeRole, "type"},
-        {QmlEffectManifestParametersModel::ControlKeyRole, "controlKey"},
-        {QmlEffectManifestParametersModel::LoadedRole, "loaded"},
+        {QmlEffectSlotParametersModel::IdRole, "parameterId"},
+        {QmlEffectSlotParametersModel::NameRole, "name"},
+        {QmlEffectSlotParametersModel::ShortNameRole, "shortName"},
+        {QmlEffectSlotParametersModel::DescriptionRole, "description"},
+        {QmlEffectSlotParametersModel::TypeRole, "type"},
+        {QmlEffectSlotParametersModel::ControlKeyRole, "controlKey"},
+        {QmlEffectSlotParametersModel::LoadedRole, "loaded"},
 };
 }
 
-QmlEffectManifestParametersModel::QmlEffectManifestParametersModel(
+QmlEffectSlotParametersModel::QmlEffectSlotParametersModel(
         EffectSlotPointer pEffectSlot,
         QObject* parent)
         : QAbstractListModel(parent),
           m_pEffectSlot(std::move(pEffectSlot)) {
+    connect(m_pEffectSlot.get(),
+            &EffectSlot::effectChanged,
+            this,
+            &QmlEffectSlotParametersModel::resetModel);
+    connect(m_pEffectSlot.get(),
+            &EffectSlot::parametersChanged,
+            this,
+            &QmlEffectSlotParametersModel::updateParameterState);
 }
 
-EffectParameterPointer QmlEffectManifestParametersModel::loadedParameterForRow(
+void QmlEffectSlotParametersModel::resetModel() {
+    beginResetModel();
+    endResetModel();
+}
+
+void QmlEffectSlotParametersModel::updateParameterState() {
+    const int parameterCount = rowCount({});
+    if (parameterCount == 0) {
+        return;
+    }
+    emit dataChanged(index(0, 0),
+            index(parameterCount - 1, 0),
+            {ControlKeyRole, LoadedRole});
+}
+
+EffectParameterPointer QmlEffectSlotParametersModel::loadedParameterForRow(
         int row, int* pSlotNumber) const {
     const auto pManifest = m_pEffectSlot->getManifest();
     if (!pManifest || row < 0 || row >= pManifest->parameters().size()) {
@@ -49,7 +72,7 @@ EffectParameterPointer QmlEffectManifestParametersModel::loadedParameterForRow(
     return nullptr;
 }
 
-QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int role) const {
+QVariant QmlEffectSlotParametersModel::data(const QModelIndex& index, int role) const {
     const auto pManifest = m_pEffectSlot->getManifest();
     if (!pManifest) {
         return QVariant();
@@ -61,19 +84,18 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
 
     const EffectManifestParameterPointer pParameter = parameters.at(index.row());
     switch (role) {
-    case QmlEffectManifestParametersModel::IdRole:
+    case QmlEffectSlotParametersModel::IdRole:
         return pParameter->id();
-    case QmlEffectManifestParametersModel::NameRole:
+    case QmlEffectSlotParametersModel::NameRole:
         return pParameter->name();
-    case QmlEffectManifestParametersModel::ShortNameRole:
+    case QmlEffectSlotParametersModel::ShortNameRole:
         return pParameter->shortName();
-    case QmlEffectManifestParametersModel::DescriptionRole:
+    case QmlEffectSlotParametersModel::DescriptionRole:
         return pParameter->description();
-    case QmlEffectManifestParametersModel::TypeRole:
-        // TODO: Remove this cast, instead expose the enum directly using
-        // Q_ENUM after #2618 has been merged.
-        return static_cast<int>(pParameter->parameterType());
-    case QmlEffectManifestParametersModel::ControlKeyRole: {
+    case QmlEffectSlotParametersModel::TypeRole:
+        return QVariant::fromValue(
+                static_cast<ParameterType>(pParameter->parameterType()));
+    case QmlEffectSlotParametersModel::ControlKeyRole: {
         int keyNumber = 0;
         if (!loadedParameterForRow(index.row(), &keyNumber)) {
             return QString();
@@ -84,25 +106,25 @@ QVariant QmlEffectManifestParametersModel::data(const QModelIndex& index, int ro
                          : QStringLiteral("parameter%1"))
                 .arg(QString::number(keyNumber));
     }
-    case QmlEffectManifestParametersModel::LoadedRole:
+    case QmlEffectSlotParametersModel::LoadedRole:
         return static_cast<bool>(loadedParameterForRow(index.row()));
     default:
         return QVariant();
     }
 }
 
-int QmlEffectManifestParametersModel::rowCount(const QModelIndex& parent) const {
+int QmlEffectSlotParametersModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid() || !m_pEffectSlot->getManifest()) {
         return 0;
     }
     return m_pEffectSlot->getManifest()->parameters().size();
 }
 
-QHash<int, QByteArray> QmlEffectManifestParametersModel::roleNames() const {
+QHash<int, QByteArray> QmlEffectSlotParametersModel::roleNames() const {
     return kRoleNames;
 }
 
-QVariant QmlEffectManifestParametersModel::get(int row) const {
+QVariant QmlEffectSlotParametersModel::get(int row) const {
     QModelIndex idx = index(row, 0);
     QVariantMap dataMap;
     for (auto it = kRoleNames.constBegin(); it != kRoleNames.constEnd(); it++) {

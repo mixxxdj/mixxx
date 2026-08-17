@@ -13,9 +13,9 @@ namespace qml {
 QmlEffectsManagerProxy::QmlEffectsManagerProxy(
         std::shared_ptr<EffectsManager> pEffectsManager, QObject* parent)
         : QObject(parent),
-          m_pEffectsManager(pEffectsManager),
+          m_pEffectsManager(std::move(pEffectsManager)),
           m_pVisibleEffectsModel(
-                  new QmlVisibleEffectsModel(pEffectsManager, this)),
+                  new QmlVisibleEffectsModel(m_pEffectsManager, this)),
           m_pQuickChainPresetModel(
                   new QmlChainPresetModel(m_pEffectsManager,
                           QmlChainPresetModel::PresetType::Quick,
