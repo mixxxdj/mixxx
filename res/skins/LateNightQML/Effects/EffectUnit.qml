@@ -1,6 +1,7 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import "../../../qml" as Skin
+import "../../../qml/Effects" as SharedEffects
 import "../Controls" as LateNightControls
 import "../LateNightTheme"
 import "../Mixer" as LateNightMixer
@@ -314,7 +315,7 @@ Item {
             onClicked: expandedControl.value = root.expanded ? 0 : 1
         }
     }
-    Skin.EffectChainPresetPopup {
+    SharedEffects.EffectChainPresetPopup {
         id: presetPopup
 
         backgroundColor: LateNightTheme.isClassic ? "#0f0f0f" : "#151517"

@@ -1,18 +1,19 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
+import "../LateNightTheme"
 
 Item {
     id: root
 
     readonly property bool active: control.value > 0
     property url activeBackgroundSource: backgroundSource
-    property color activeColor: "#888888"
+    property color activeColor: LateNightTheme.effectsControlActiveColor
     property url activeSource: normalSource
     property int backgroundInset: 2
     property url backgroundSource
     required property string group
     required property string key
-    property color normalColor: "#262626"
+    property color normalColor: LateNightTheme.effectsControlInactiveColor
     property url normalSource
     property bool toggleable: true
 
@@ -31,10 +32,8 @@ Item {
         fillMode: Image.Stretch
         source: root.active ? root.activeSource : root.normalSource
     }
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: {
+    TapHandler {
+        onTapped: {
             if (root.toggleable) {
                 control.value = root.active ? 0 : 1;
             } else {

@@ -38,7 +38,7 @@ Item {
         displayArcStart: LateNightControls.Knob.ArcStart.Minimum
         group: root.group
         height: 26
-        indicatorColor: LateNightTheme.isClassic ? "white" : "grey"
+        indicatorColor: LateNightTheme.effectsParameterIndicatorColor
         indicatorKind: "fx"
         key: root.controlKey
         visible: !root.buttonParameter
@@ -46,7 +46,7 @@ Item {
     }
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
-        color: "#666666"
+        color: LateNightTheme.effectsParameterTextColor
         elide: Text.ElideRight
         font.pixelSize: 10
         height: 10
@@ -64,7 +64,7 @@ Item {
         y: 38
 
         Rectangle {
-            color: inverseControl.item && inverseControl.item.value > 0 ? "#9c0900" : (LateNightTheme.isClassic ? "#4b4b4b" : "#333333")
+            color: inverseControl.item && inverseControl.item.value > 0 ? LateNightTheme.effectsParameterInverseActiveColor : LateNightTheme.effectsParameterLinkInactiveColor
             height: 7
             radius: 3
             width: 8
@@ -82,7 +82,7 @@ Item {
         Rectangle {
             id: linkBar
 
-            readonly property color backgroundColor: LateNightTheme.isClassic ? "#4b4b4b" : "#333333"
+            readonly property color backgroundColor: LateNightTheme.effectsParameterLinkInactiveColor
             readonly property color leftColor: state === 1 || state === 2 || state === 4 ? root.linkColor : backgroundColor
             readonly property color middleColor: state === 1 ? root.linkColor : backgroundColor
             readonly property color rightColor: state === 1 || state === 3 || state === 4 ? root.linkColor : backgroundColor

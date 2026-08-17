@@ -117,11 +117,6 @@ ComboBox {
     }
     onCountChanged: syncCurrentEffect()
 
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: root.popup.open()
-    }
     Connections {
         function onEffectIdChanged() {
             root.syncCurrentEffect();

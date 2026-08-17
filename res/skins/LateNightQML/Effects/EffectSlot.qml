@@ -13,6 +13,8 @@ Item {
     readonly property real buttonParameterWidth: 55 + parameterInitialGrowth
     required property int effectNumber
     property bool expanded: false
+    readonly property color focusInactiveBorderColor: LateNightTheme.isClassic ? LateNightTheme.deckPanelBorderDark : "transparent"
+    readonly property bool focused: showFocus.value > 0 && Math.round(focusedEffect.value) === effectNumber
     readonly property real knobParameterWidth: 40 + parameterInitialGrowth + (activeKnobParameterCount > 0 ? Math.max(0, parameterExtraWidth - parameterInitialGrowth * (activeButtonParameterCount + activeKnobParameterCount)) / activeKnobParameterCount : 0)
     readonly property real parameterExtraWidth: Math.max(0, Math.min(parametersFlickable.width - parameterMinimumWidth, activeButtonParameterCount * 5 + activeKnobParameterCount * 20))
     readonly property real parameterInitialGrowth: activeButtonParameterCount + activeKnobParameterCount > 0 ? Math.min(5, parameterExtraWidth / (activeButtonParameterCount + activeKnobParameterCount)) : 0
@@ -24,22 +26,22 @@ Item {
     required property int unitNumber
 
     function recountActiveParameters() {
-        let buttonCount = 0;
-        for (let index = 0; index < buttonRepeater.count; ++index) {
-            const loader = buttonRepeater.itemAt(index);
+        let activeButtonCount = 0;
+        for (let buttonIndex = 0; buttonIndex < buttonRepeater.count; ++buttonIndex) {
+            const loader = buttonRepeater.itemAt(buttonIndex);
             if (loader && loader.active) {
-                ++buttonCount;
+                ++activeButtonCount;
             }
         }
-        let knobCount = 0;
-        for (let index = 0; index < knobRepeater.count; ++index) {
-            const loader = knobRepeater.itemAt(index);
+        let activeKnobCount = 0;
+        for (let knobIndex = 0; knobIndex < knobRepeater.count; ++knobIndex) {
+            const loader = knobRepeater.itemAt(knobIndex);
             if (loader && loader.active) {
-                ++knobCount;
+                ++activeKnobCount;
             }
         }
-        activeButtonParameterCount = buttonCount;
-        activeKnobParameterCount = knobCount;
+        activeButtonParameterCount = activeButtonCount;
+        activeKnobParameterCount = activeKnobCount;
     }
 
     implicitHeight: expanded ? 51 : 34
@@ -53,7 +55,7 @@ Item {
         anchors.left: parent.left
         anchors.right: slotControls.left
         anchors.top: parent.top
-        border.color: showFocus.value > 0 && Math.round(focusedEffect.value) === root.effectNumber ? LateNightTheme.effectsFocusBorderColor : (LateNightTheme.isClassic ? LateNightTheme.deckPanelBorderDark : "transparent")
+        border.color: root.focused ? LateNightTheme.effectsFocusBorderColor : root.focusInactiveBorderColor
         border.width: 1
         color: LateNightTheme.effectsParameterPanelColor
         visible: root.expanded
@@ -69,7 +71,7 @@ Item {
             anchors.fill: parent
             anchors.margins: 1
             color: "#32000000"
-            visible: showFocus.value > 0 && Math.round(focusedEffect.value) === root.effectNumber
+            visible: root.focused
         }
     }
     Item {

@@ -563,7 +563,7 @@ ApplicationWindow {
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - deckPane.requiredPaneHeight >= 400
+                    active: true
                     width: parent.width
 
                     sourceComponent: Component {
@@ -594,14 +594,6 @@ ApplicationWindow {
                             AnchorChanges {
                                 anchors.top: deck1.bottom
                                 target: library
-                            }
-                        },
-                        State {
-                            when: !root.maximizeLibrary && root.height - deckPane.requiredPaneHeight < 400
-
-                            PropertyChanges {
-                                target: library
-                                visible: false
                             }
                         }
                     ]
