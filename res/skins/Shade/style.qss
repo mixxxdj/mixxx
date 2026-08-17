@@ -1010,6 +1010,10 @@ WLibrary { margin: 2px 3px 0px 0px; }
       min-width: 40px;
       max-width: 40px;
     }
+    QPushButton#pushButtonQueueInfo {
+      padding: 0px 5px;
+      min-width: 90px;
+    }
   #spinBoxTransition,
   #spinBoxRecentDays {
     height: 20px;
@@ -1072,6 +1076,9 @@ QPushButton#pushButtonShuffle {
 }
 QPushButton#pushButtonAddRandomTrack {
   image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
+}
+QPushButton#pushButtonAddEndMarker {
+  image: url(skin:/btn/btn_autodj_stop_marker.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {
   image: url(skin:/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;

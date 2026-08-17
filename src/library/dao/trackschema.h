@@ -54,6 +54,12 @@ const QString LIBRARYTABLE_COVERART_COLOR = QStringLiteral("coverart_color");
 const QString LIBRARYTABLE_COVERART_DIGEST = QStringLiteral("coverart_digest");
 const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
 const QString LIBRARYTABLE_CRATE = QStringLiteral("crate");
+const QString LIBRARYTABLE_IS_AUTODJ_END_MARKER = QStringLiteral("is_autodj_end_marker");
+// Sentinel value stored in library.location to identify AutoDJ end marker rows.
+// library.location is nominally an INTEGER FK to track_locations.id; SQLite's dynamic
+// typing allows storing this TEXT sentinel, which never matches any INTEGER id in JOIN queries.
+const QString LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION =
+        QStringLiteral("mixxx://autodj/transition");
 
 const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
 const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");
