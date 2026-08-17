@@ -108,6 +108,7 @@ FileType stringToEnumFileType(
             TypePair{"dff"_L1, FileType::DSDIFF},
             TypePair{"dsdiff"_L1, FileType::DSDIFF},
             TypePair{"mkv"_L1, FileType::Matroska},
+            TypePair{"mka"_L1, FileType::Matroska},
             TypePair{"webm"_L1, FileType::Matroska}};
 
     // NOLINTNEXTLINE(readability-qualified-auto)
