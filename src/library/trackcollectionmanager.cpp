@@ -491,6 +491,15 @@ bool TrackCollectionManager::relocateTrack(const TrackId trackId,
         return false;
     }
 
+    {
+        GlobalTrackCacheLocker cacheLocker;
+        cacheLocker.forceRelocateTrackById(trackId, mixxx::FileAccess(newLocation));
+        if (oRelocatedTrack->deletedTrackId().isValid()) {
+            cacheLocker.purgeTrackId(
+                    oRelocatedTrack->deletedTrackId());
+        }
+    }
+
     m_pInternalCollection->getTrackDAO().slotDatabaseTracksRelocated({*oRelocatedTrack});
     if (!m_externalCollections.isEmpty()) {
         afterTracksRelocated({*oRelocatedTrack});
