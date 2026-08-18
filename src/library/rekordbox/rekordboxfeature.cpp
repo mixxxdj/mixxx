@@ -4,11 +4,17 @@
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
 
+#include <QFile>
+#include <QFileDialog>
 #include <QMap>
 #include <QMessageBox>
+#include <QSet>
 #include <QSettings>
 #include <QString>
 #include <QTextCodec>
+#include <QUrl>
+#include <QXmlStreamReader>
+#include <QtConcurrent>
 #include <QtDebug>
 
 #include "engine/engine.h"
@@ -40,8 +46,11 @@ namespace {
 const QString kRekordboxLibraryTable = QStringLiteral("rekordbox_library");
 const QString kRekordboxPlaylistsTable = QStringLiteral("rekordbox_playlists");
 const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist_tracks");
+const QString kRekordboxCuesTable = QStringLiteral("rekordbox_cues");
 
 const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
+const QString kRekordboxXmlImportPlaylistName =
+        QStringLiteral("rekordbox_xml_import");
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 
 enum class IDForColor : uint8_t {
@@ -147,6 +156,27 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
     return true;
 }
 
+bool createRekordboxCuesTable(QSqlDatabase& database, const QString& tableName) {
+    QSqlQuery query(database);
+    query.prepare(
+            "CREATE TABLE IF NOT EXISTS " + tableName +
+            " ("
+            "    id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "    location TEXT,"
+            "    start_sec REAL,"
+            "    end_sec REAL,"
+            "    type INTEGER,"
+            "    label TEXT,"
+            "    hotcue INTEGER,"
+            "    color INTEGER"
+            ");");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    return true;
+}
+
 bool dropTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Dropping Rekordbox table: " << tableName;
 
@@ -159,6 +189,442 @@ bool dropTable(QSqlDatabase& database, const QString& tableName) {
     }
 
     return true;
+}
+
+// Rekordbox XML Location is "file://localhost/Users/..." (or file://localhost/C:/...).
+// QUrl::toLocalFile() can leave "/localhost" in the path or return a relative path;
+// strip localhost and ensure an absolute path so we never get /Users/user/Users/...
+QString rekordboxLocationToLocalPath(const QString& locationUri) {
+    QString path = QUrl(locationUri).toLocalFile();
+    if (path.startsWith(QLatin1String("//localhost/"))) {
+        path = path.mid(12);
+    } else if (path.startsWith(QLatin1String("/localhost/"))) {
+        path = path.mid(11);
+    }
+    if (!path.isEmpty() && !path.startsWith(QLatin1String("/"))) {
+        path.prepend(QLatin1String("/"));
+    }
+    return path;
+}
+
+// Forward declaration for PLAYLISTS NODE parser
+int parseRekordboxXmlPlaylistNodes(
+        QSqlDatabase& database,
+        QXmlStreamReader& xml,
+        const QString& pathPrefix,
+        const QMap<int, qint64>& trackIdToDbId,
+        const QMap<QString, qint64>& locationToDbId);
+
+// Recursively parse PLAYLISTS NODEs. xml is positioned on a NODE start element.
+int parseRekordboxXmlPlaylistNodes(
+        QSqlDatabase& database,
+        QXmlStreamReader& xml,
+        const QString& pathPrefix,
+        const QMap<int, qint64>& trackIdToDbId,
+        const QMap<QString, qint64>& locationToDbId) {
+    QXmlStreamAttributes a = xml.attributes();
+    int type = a.value(QLatin1String("Type")).toString().toInt();
+    QString name = a.value(QLatin1String("Name")).toString();
+    QString currentPath =
+            pathPrefix.isEmpty() ? name : pathPrefix + kPLaylistPathDelimiter + name;
+    int created = 0;
+
+    if (type == 0) {
+        // Process every child NODE (don't rely on Count; iterate until closing tag)
+        while (xml.readNextStartElement()) {
+            if (xml.name() == QLatin1String("NODE")) {
+                created += parseRekordboxXmlPlaylistNodes(database,
+                        xml,
+                        currentPath,
+                        trackIdToDbId,
+                        locationToDbId);
+            } else {
+                xml.skipCurrentElement();
+            }
+        }
+        return created;
+    }
+
+    if (type != 1) {
+        while (!xml.atEnd() &&
+                !(xml.isEndElement() && xml.name() == QLatin1String("NODE"))) {
+            xml.readNext();
+        }
+        return 0;
+    }
+
+    int entries = a.value(QLatin1String("Entries")).toString().toInt();
+    int keyType = a.value(QLatin1String("KeyType")).toString().toInt();
+
+    QSqlQuery insertPl(database);
+    insertPl.prepare(
+            "INSERT INTO " + kRekordboxPlaylistsTable + " (name) VALUES (:name)");
+    insertPl.bindValue(":name", currentPath);
+    if (!insertPl.exec()) {
+        LOG_FAILED_QUERY(insertPl);
+        while (!xml.atEnd() &&
+                !(xml.isEndElement() && xml.name() == QLatin1String("NODE"))) {
+            xml.readNext();
+        }
+        return 0;
+    }
+    const qint64 playlistId = insertPl.lastInsertId().toLongLong();
+
+    QSqlQuery insertPlTrack(database);
+    insertPlTrack.prepare(
+            "INSERT INTO " + kRekordboxPlaylistTracksTable +
+            " (playlist_id, track_id, position) VALUES (:playlist_id, :track_id,"
+            " :position)");
+    insertPlTrack.bindValue(":playlist_id", playlistId);
+
+    int tracksFound = 0;
+    while (tracksFound < entries && !xml.atEnd()) {
+        if (!xml.readNextStartElement()) {
+            break;
+        }
+        if (xml.name() != QLatin1String("TRACK")) {
+            xml.skipCurrentElement();
+            continue;
+        }
+        QString keyStr =
+                xml.attributes().value(QLatin1String("Key")).toString();
+        qint64 trackDbId = -1;
+        if (keyType == 0) {
+            trackDbId = trackIdToDbId.value(keyStr.toInt(), -1);
+        } else {
+            trackDbId = locationToDbId.value(keyStr, -1);
+        }
+        if (trackDbId >= 0) {
+            insertPlTrack.bindValue(":track_id", trackDbId);
+            insertPlTrack.bindValue(":position", tracksFound);
+            if (!insertPlTrack.exec()) {
+                LOG_FAILED_QUERY(insertPlTrack);
+            }
+            ++tracksFound;
+        }
+        // Consume this TRACK element so the next readNextStartElement() finds the next TRACK
+        xml.skipCurrentElement();
+    }
+
+    while (!xml.atEnd() &&
+            !(xml.isEndElement() && xml.name() == QLatin1String("NODE"))) {
+        xml.readNext();
+    }
+    return 1;
+}
+
+// Build sidebar tree under parentItem from playlist paths in DB.
+void buildPlaylistTreeFromPaths(
+        QSqlDatabase& database,
+        TreeItem* parentItem,
+        const QString& pathPrefix) {
+    QSqlQuery q(database);
+    if (pathPrefix.isEmpty()) {
+        q.prepare("SELECT name FROM " + kRekordboxPlaylistsTable);
+    } else {
+        q.prepare(
+                "SELECT name FROM " + kRekordboxPlaylistsTable +
+                " WHERE name LIKE :prefix");
+        q.bindValue(":prefix",
+                QVariant(pathPrefix + kPLaylistPathDelimiter + QStringLiteral("%")));
+    }
+    if (!q.exec()) {
+        LOG_FAILED_QUERY(q);
+        return;
+    }
+    QSet<QString> firstSegments;
+    QStringList names;
+    const int prefixLen = pathPrefix.isEmpty()
+            ? 0
+            : pathPrefix.length() + kPLaylistPathDelimiter.length();
+    while (q.next()) {
+        QString name = q.value(0).toString();
+        names.append(name);
+        QString segment = pathPrefix.isEmpty()
+                ? name.section(kPLaylistPathDelimiter, 0, 0)
+                : name.mid(prefixLen).section(kPLaylistPathDelimiter, 0, 0);
+        firstSegments.insert(segment);
+    }
+    for (const QString& segment : std::as_const(firstSegments)) {
+        QString fullPath =
+                pathPrefix.isEmpty()
+                ? segment
+                : pathPrefix + kPLaylistPathDelimiter + segment;
+        bool isFolder = false;
+        for (const QString& n : names) {
+            if (n != fullPath && n.startsWith(fullPath + kPLaylistPathDelimiter)) {
+                isFolder = true;
+                break;
+            }
+        }
+        QList<QVariant> data;
+        data << fullPath << IS_NOT_RECORDBOX_DEVICE;
+        TreeItem* child = parentItem->appendChild(segment, QVariant(data));
+        if (isFolder) {
+            buildPlaylistTreeFromPaths(database, child, fullPath);
+        }
+    }
+}
+
+// Parses Rekordbox XML export; fills rekordbox_* tables and returns playlist name.
+QString importRekordboxXml(
+        mixxx::DbConnectionPoolPtr dbConnectionPool, const QString& filePath) {
+    const mixxx::DbConnectionPooler dbConnectionPooler(dbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(dbConnectionPool);
+
+    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
+        qWarning() << "Rekordbox XML import: database not open";
+        return QString();
+    }
+
+    createLibraryTable(database, kRekordboxLibraryTable);
+    createPlaylistsTable(database, kRekordboxPlaylistsTable);
+    createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
+    createRekordboxCuesTable(database, kRekordboxCuesTable);
+
+    mixxx::FileInfo fileInfo(filePath);
+    if (!Sandbox::askForAccess(&fileInfo)) {
+        return QString();
+    }
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Rekordbox XML import: cannot open" << filePath
+                   << file.errorString();
+        return QString();
+    }
+
+    ScopedTransaction transaction(database);
+
+    QSqlQuery delPt(database);
+    delPt.prepare(
+            "DELETE FROM " + kRekordboxPlaylistTracksTable +
+            " WHERE playlist_id IN (SELECT id FROM " + kRekordboxPlaylistsTable +
+            " WHERE name = :name OR name LIKE :namePrefix)");
+    delPt.bindValue(":name", kRekordboxXmlImportPlaylistName);
+    delPt.bindValue(":namePrefix",
+            QVariant(kRekordboxXmlImportPlaylistName + kPLaylistPathDelimiter +
+                    QStringLiteral("%")));
+    if (!delPt.exec()) {
+        LOG_FAILED_QUERY(delPt);
+        return QString();
+    }
+    QSqlQuery delPl(database);
+    delPl.prepare(
+            "DELETE FROM " + kRekordboxPlaylistsTable +
+            " WHERE name = :name OR name LIKE :namePrefix");
+    delPl.bindValue(":name", kRekordboxXmlImportPlaylistName);
+    delPl.bindValue(":namePrefix",
+            QVariant(kRekordboxXmlImportPlaylistName + kPLaylistPathDelimiter +
+                    QStringLiteral("%")));
+    if (!delPl.exec()) {
+        LOG_FAILED_QUERY(delPl);
+        return QString();
+    }
+    QSqlQuery delCues(database);
+    delCues.prepare(
+            "DELETE FROM " + kRekordboxCuesTable +
+            " WHERE location IN (SELECT location FROM " + kRekordboxLibraryTable +
+            " WHERE device = :device)");
+    delCues.bindValue(":device", kRekordboxXmlImportPlaylistName);
+    if (!delCues.exec()) {
+        LOG_FAILED_QUERY(delCues);
+    }
+
+    QSqlQuery delLib(database);
+    delLib.prepare(
+            "DELETE FROM " + kRekordboxLibraryTable +
+            " WHERE device = :device");
+    delLib.bindValue(":device", kRekordboxXmlImportPlaylistName);
+    if (!delLib.exec()) {
+        LOG_FAILED_QUERY(delLib);
+        return QString();
+    }
+
+    QSqlQuery insertTrack(database);
+    insertTrack.prepare(
+            "INSERT INTO " + kRekordboxLibraryTable +
+            " (rb_id, artist, title, album, year, genre, comment, tracknumber,"
+            " bpm, bitrate, duration, location, rating, key, device) VALUES ("
+            ":rb_id, :artist, :title, :album, :year, :genre, :comment,"
+            " :tracknumber, :bpm, :bitrate, :duration, :location, :rating,"
+            " :key, :device)");
+
+    QXmlStreamReader xml(&file);
+    int trackCount = 0;
+    QMap<int, qint64> trackIdToDbId;
+    QMap<QString, qint64> locationToDbId;
+
+    // Skip to COLLECTION so we only read TRACKs from the library (not from playlists)
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement() && xml.name() == QLatin1String("COLLECTION")) {
+            break;
+        }
+    }
+    if (xml.atEnd() || xml.name() != QLatin1String("COLLECTION")) {
+        qWarning() << "Rekordbox XML import: COLLECTION not found";
+        transaction.commit();
+        return QString();
+    }
+
+    while (xml.readNextStartElement() &&
+            xml.name() == QLatin1String("TRACK")) {
+            QXmlStreamAttributes a = xml.attributes();
+            QString locationUri =
+                    a.value(QLatin1String("Location")).toString();
+            QString location = rekordboxLocationToLocalPath(locationUri);
+            if (location.isEmpty()) {
+                continue;
+            }
+
+            int rbId = a.value(QLatin1String("TrackID")).toString().toInt();
+            insertTrack.bindValue(":rb_id", rbId);
+            insertTrack.bindValue(":artist",
+                    a.value(QLatin1String("Artist")).toString());
+            insertTrack.bindValue(":title",
+                    a.value(QLatin1String("Name")).toString());
+            insertTrack.bindValue(":album",
+                    a.value(QLatin1String("Album")).toString());
+            insertTrack.bindValue(":year",
+                    a.value(QLatin1String("Year")).toString().toInt());
+            insertTrack.bindValue(":genre",
+                    a.value(QLatin1String("Genre")).toString());
+            insertTrack.bindValue(":comment",
+                    a.value(QLatin1String("Comments")).toString());
+            insertTrack.bindValue(":tracknumber",
+                    a.value(QLatin1String("TrackNumber")).toString());
+            insertTrack.bindValue(":bpm",
+                    a.value(QLatin1String("AverageBpm")).toString().toDouble());
+            insertTrack.bindValue(":bitrate",
+                    a.value(QLatin1String("BitRate")).toString());
+            insertTrack.bindValue(":duration",
+                    static_cast<int>(a.value(QLatin1String("TotalTime"))
+                                            .toString()
+                                            .toDouble()));
+            insertTrack.bindValue(":location", location);
+            insertTrack.bindValue(":rating",
+                    a.value(QLatin1String("Rating")).toString().toInt());
+            insertTrack.bindValue(":key",
+                    a.value(QLatin1String("Tonality")).toString());
+            insertTrack.bindValue(":device", kRekordboxXmlImportPlaylistName);
+
+            if (!insertTrack.exec()) {
+                LOG_FAILED_QUERY(insertTrack);
+                continue;
+            }
+            const qint64 dbId = insertTrack.lastInsertId().toLongLong();
+            trackIdToDbId[rbId] = dbId;
+            locationToDbId[locationUri] = dbId;
+            ++trackCount;
+
+            // Parse POSITION_MARK children (cue points). Rekordbox: Type 0=Cue, 1=FadeIn, 2=FadeOut, 3=Load, 4=Loop; Num: 0,1,2=hot cue, -1=memory.
+            QSqlQuery insertCue(database);
+            insertCue.prepare(
+                    "INSERT INTO " + kRekordboxCuesTable +
+                    " (location, start_sec, end_sec, type, label, hotcue, color) "
+                    "VALUES (:location, :start_sec, :end_sec, :type, :label,"
+                    " :hotcue, :color)");
+            insertCue.bindValue(":location", location);
+            while (!xml.atEnd()) {
+                xml.readNext();
+                if (xml.isEndElement() && xml.name() == QLatin1String("TRACK")) {
+                    break;
+                }
+                if (!xml.isStartElement() ||
+                        xml.name() != QLatin1String("POSITION_MARK")) {
+                    continue;
+                }
+                QXmlStreamAttributes c = xml.attributes();
+                double startSec =
+                        c.value(QLatin1String("Start")).toString().toDouble();
+                double endSec =
+                        c.value(QLatin1String("End")).toString().toDouble();
+                int rbType = c.value(QLatin1String("Type")).toString().toInt();
+                QString label =
+                        c.value(QLatin1String("Name")).toString();
+                int num = c.value(QLatin1String("Num")).toString().toInt();
+                int red = c.value(QLatin1String("Red")).toString().toInt();
+                int green = c.value(QLatin1String("Green")).toString().toInt();
+                int blue = c.value(QLatin1String("Blue")).toString().toInt();
+                int colorRgb = (red << 16) | (green << 8) | blue;
+                insertCue.bindValue(":start_sec", startSec);
+                insertCue.bindValue(":end_sec", endSec);
+                insertCue.bindValue(":type", rbType);
+                insertCue.bindValue(":label", label);
+                insertCue.bindValue(":hotcue", num);
+                insertCue.bindValue(":color", colorRgb);
+                if (!insertCue.exec()) {
+                    LOG_FAILED_QUERY(insertCue);
+                }
+            }
+    }
+
+    if (xml.hasError()) {
+        qWarning() << "Rekordbox XML import:" << xml.errorString();
+        return QString();
+    }
+
+    if (trackCount == 0) {
+        qDebug() << "Rekordbox XML import: no tracks found";
+        transaction.commit();
+        return QString();
+    }
+
+    file.reset();
+    xml.setDevice(&file);
+    bool inPlaylists = false;
+    int playlistsCreated = 0;
+    while (!xml.atEnd()) {
+        xml.readNext();
+        if (xml.isStartElement() && xml.name() == QLatin1String("PLAYLISTS")) {
+            inPlaylists = true;
+            break;
+        }
+    }
+    if (inPlaylists && xml.readNextStartElement() &&
+            xml.name() == QLatin1String("NODE")) {
+        playlistsCreated = parseRekordboxXmlPlaylistNodes(database,
+                xml,
+                kRekordboxXmlImportPlaylistName,
+                trackIdToDbId,
+                locationToDbId);
+    }
+
+    if (playlistsCreated == 0) {
+        QSqlQuery insertPl(database);
+        insertPl.prepare(
+                "INSERT INTO " + kRekordboxPlaylistsTable +
+                " (name) VALUES (:name)");
+        insertPl.bindValue(":name", kRekordboxXmlImportPlaylistName);
+        if (!insertPl.exec()) {
+            LOG_FAILED_QUERY(insertPl);
+            transaction.commit();
+            return QString();
+        }
+        const qint64 playlistId = insertPl.lastInsertId().toLongLong();
+        QSqlQuery insertPlTrack(database);
+        insertPlTrack.prepare(
+                "INSERT INTO " + kRekordboxPlaylistTracksTable +
+                " (playlist_id, track_id, position) VALUES (:playlist_id,"
+                " :track_id, :position)");
+        insertPlTrack.bindValue(":playlist_id", playlistId);
+        int pos = 0;
+        for (auto it = trackIdToDbId.constBegin();
+                it != trackIdToDbId.constEnd();
+                ++it) {
+            insertPlTrack.bindValue(":track_id", it.value());
+            insertPlTrack.bindValue(":position", pos++);
+            if (!insertPlTrack.exec()) {
+                LOG_FAILED_QUERY(insertPlTrack);
+            }
+        }
+    }
+
+    transaction.commit();
+    qDebug() << "Rekordbox XML import: imported" << trackCount << "tracks from"
+             << filePath;
+    return kRekordboxXmlImportPlaylistName;
 }
 
 // This function is executed in a separate thread other than the main thread
@@ -870,6 +1336,46 @@ void setHotCue(TrackPointer track,
     }
 }
 
+// Shared logic: first chronological memory cue → Mixxx main cue;
+// all other memory cues and loops → hot cues. Used by both ANLZ (USB) and XML import.
+void applyMemoryCuesAndLoops(TrackPointer track,
+        QList<memory_cue_loop_t> memoryCuesAndLoops,
+        int* pLastHotCueIndex) {
+    if (memoryCuesAndLoops.isEmpty()) {
+        return;
+    }
+    std::sort(memoryCuesAndLoops.begin(),
+            memoryCuesAndLoops.end(),
+            [](const memory_cue_loop_t& a, const memory_cue_loop_t& b)
+                    -> bool { return a.startPosition < b.startPosition; });
+
+    bool mainCueFound = false;
+
+    for (int i = 0; i < memoryCuesAndLoops.size(); i++) {
+        memory_cue_loop_t memoryCueOrLoop = memoryCuesAndLoops[i];
+
+        if (!mainCueFound && !memoryCueOrLoop.endPosition.isValid()) {
+            // Set first chronological memory cue as Mixxx MainCue
+            track->setMainCuePosition(memoryCueOrLoop.startPosition);
+            CuePointer pMainCue = track->findCueByType(mixxx::CueType::MainCue);
+            pMainCue->setLabel(memoryCueOrLoop.comment);
+            if (memoryCueOrLoop.color) {
+                pMainCue->setColor(*memoryCueOrLoop.color);
+            }
+            mainCueFound = true;
+        } else {
+            // Loops and subsequent memory cues become hot cues (same as USB/ANLZ path)
+            (*pLastHotCueIndex)++;
+            setHotCue(track,
+                    memoryCueOrLoop.startPosition,
+                    memoryCueOrLoop.endPosition,
+                    *pLastHotCueIndex,
+                    memoryCueOrLoop.comment,
+                    memoryCueOrLoop.color);
+        }
+    }
+}
+
 void readAnalyze(TrackPointer track,
         mixxx::audio::SampleRate sampleRate,
         int timingOffset,
@@ -1055,41 +1561,7 @@ void readAnalyze(TrackPointer track,
         }
     }
 
-    if (memoryCuesAndLoops.size() > 0) {
-        std::sort(memoryCuesAndLoops.begin(),
-                memoryCuesAndLoops.end(),
-                [](const memory_cue_loop_t& a, const memory_cue_loop_t& b)
-                        -> bool { return a.startPosition < b.startPosition; });
-
-        bool mainCueFound = false;
-
-        // Add memory cues and loops
-        for (int memoryCueOrLoopIndex = 0;
-                memoryCueOrLoopIndex < memoryCuesAndLoops.size();
-                memoryCueOrLoopIndex++) {
-            memory_cue_loop_t memoryCueOrLoop = memoryCuesAndLoops[memoryCueOrLoopIndex];
-
-            if (!mainCueFound && !memoryCueOrLoop.endPosition.isValid()) {
-                // Set first chronological memory cue as Mixxx MainCue
-                track->setMainCuePosition(memoryCueOrLoop.startPosition);
-                CuePointer pMainCue = track->findCueByType(mixxx::CueType::MainCue);
-                pMainCue->setLabel(memoryCueOrLoop.comment);
-                pMainCue->setColor(*memoryCueOrLoop.color);
-                mainCueFound = true;
-            } else {
-                // Mixxx v2.4 will feature multiple loops, so these saved here will be usable
-                // For 2.3, Mixxx treats them as hotcues and the first one will be loaded as the single loop Mixxx supports
-                lastHotCueIndex++;
-                setHotCue(
-                        track,
-                        memoryCueOrLoop.startPosition,
-                        memoryCueOrLoop.endPosition,
-                        lastHotCueIndex,
-                        memoryCueOrLoop.comment,
-                        memoryCueOrLoop.color);
-            }
-        }
-    }
+    applyMemoryCuesAndLoops(track, memoryCuesAndLoops, &lastHotCueIndex);
 }
 
 } // anonymous namespace
@@ -1293,6 +1765,75 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     track->setColor(mixxx::RgbColor::fromQVariant(
             getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COLOR)));
 
+    // Apply cue points from rekordbox_cues (XML import) using same logic as USB/ANLZ:
+    // hot cues → Mixxx hot cues; first memory cue → main cue; rest + loops → hot cues.
+    if (track->getCuePoints().isEmpty()) {
+        const double sampleRateKhz = sampleRate / 1000.0;
+        QSqlQuery q(m_database);
+        q.prepare("SELECT start_sec, end_sec, type, label, hotcue, color FROM " +
+                kRekordboxCuesTable + " WHERE location = :loc ORDER BY start_sec");
+        q.bindValue(":loc", location);
+        if (q.exec()) {
+            int lastHotCueIndex = -1;
+            QList<memory_cue_loop_t> memoryCuesAndLoops;
+
+            while (q.next()) {
+                double startSec = q.value(0).toDouble();
+                double endSec = q.value(1).toDouble();
+                int rbType = q.value(2).toInt();
+                QString label = q.value(3).toString();
+                int num = q.value(4).toInt();
+                int colorRgb = q.value(5).toInt();
+
+                // Apply timing offset (same unit as ANLZ: milliseconds)
+                double startMs = startSec * 1000 + timingOffset;
+                if (startMs < 1) {
+                    startMs = 1;
+                }
+                mixxx::audio::FramePos startPosition(sampleRateKhz * startMs);
+                mixxx::RgbColor::optional_t colorOpt;
+                if (colorRgb != 0) {
+                    colorOpt = mixxx::RgbColor(colorRgb);
+                }
+
+                if (rbType == 4) {
+                    // Loop
+                    double endMs = endSec > startSec ? endSec * 1000 + timingOffset : startMs;
+                    if (endMs < 1) {
+                        endMs = 1;
+                    }
+                    memory_cue_loop_t loop;
+                    loop.startPosition = startPosition;
+                    loop.endPosition = mixxx::audio::FramePos(sampleRateKhz * endMs);
+                    loop.comment = label;
+                    loop.color = colorOpt;
+                    memoryCuesAndLoops << loop;
+                } else if (num >= 0 && num < 8) {
+                    // Hot cue
+                    if (num > lastHotCueIndex) {
+                        lastHotCueIndex = num;
+                    }
+                    setHotCue(track,
+                            startPosition,
+                            mixxx::audio::kInvalidFramePos,
+                            num,
+                            label,
+                            colorOpt);
+                } else {
+                    // Memory cue (e.g. Num == -1)
+                    memory_cue_loop_t memoryCue;
+                    memoryCue.startPosition = startPosition;
+                    memoryCue.endPosition = mixxx::audio::kInvalidFramePos;
+                    memoryCue.comment = label;
+                    memoryCue.color = colorOpt;
+                    memoryCuesAndLoops << memoryCue;
+                }
+            }
+
+            applyMemoryCuesAndLoops(track, memoryCuesAndLoops, &lastHotCueIndex);
+        }
+    }
+
     return track;
 }
 
@@ -1359,12 +1900,14 @@ RekordboxFeature::RekordboxFeature(
     // Drop any leftover temporary Rekordbox database tables if they exist
     dropTable(database, kRekordboxPlaylistTracksTable);
     dropTable(database, kRekordboxPlaylistsTable);
+    dropTable(database, kRekordboxCuesTable);
     dropTable(database, kRekordboxLibraryTable);
 
     // Create new temporary Rekordbox database tables
     createLibraryTable(database, kRekordboxLibraryTable);
     createPlaylistsTable(database, kRekordboxPlaylistsTable);
     createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
+    createRekordboxCuesTable(database, kRekordboxCuesTable);
     transaction.commit();
 
     connect(&m_devicesFutureWatcher,
@@ -1388,6 +1931,7 @@ RekordboxFeature::~RekordboxFeature() {
     ScopedTransaction transaction(database);
     dropTable(database, kRekordboxPlaylistTracksTable);
     dropTable(database, kRekordboxPlaylistsTable);
+    dropTable(database, kRekordboxCuesTable);
     dropTable(database, kRekordboxLibraryTable);
     transaction.commit();
 }
@@ -1403,11 +1947,28 @@ void RekordboxFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
-    if (QString(link.path()) == "refresh") {
+    if (link.path() == QLatin1String("refresh")) {
         activate();
-    } else {
-        qDebug() << "Unknown link clicked" << link;
+        return;
     }
+    if (link.path() == QLatin1String("importxml")) {
+        QString path = QFileDialog::getOpenFileName(nullptr,
+                tr("Import Rekordbox Library"),
+                QDir::homePath(),
+                tr("Rekordbox XML (*.xml)"));
+        if (path.isEmpty()) {
+            return;
+        }
+        m_title = tr("(importing) Rekordbox");
+        emit featureIsLoading(this, true);
+        Library* pLibrary = static_cast<Library*>(parent());
+        m_tracksFuture = QtConcurrent::run(importRekordboxXml,
+                pLibrary->dbConnectionPool(),
+                path);
+        m_tracksFutureWatcher.setFuture(m_tracksFuture);
+        return;
+    }
+    qDebug() << "Unknown link clicked" << link;
 }
 
 std::unique_ptr<BaseSqlTableModel>
@@ -1477,6 +2038,13 @@ QString RekordboxFeature::formatRootViewHtml() const {
     //https://github.com/mixxxdj/mixxx/issues/9103
     html.append(QString("<a style=\"color:#0496FF;\" href=\"refresh\">%1</a>")
                         .arg(refreshLink));
+    html.append(QStringLiteral(" &nbsp;|&nbsp; "));
+    QString importXmlLink = tr("Import from XML file");
+    html.append(QString("<a style=\"color:#0496FF;\" href=\"importxml\">%1</a>")
+                        .arg(importXmlLink));
+    html.append(QStringLiteral(
+            " <small>(Rekordbox: File &gt; Export &gt; Export collection as "
+            "XML)</small>"));
     return html;
 }
 
@@ -1555,12 +2123,14 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 
         dropTable(database, kRekordboxPlaylistTracksTable);
         dropTable(database, kRekordboxPlaylistsTable);
+        dropTable(database, kRekordboxCuesTable);
         dropTable(database, kRekordboxLibraryTable);
 
         // Create new temporary Rekordbox database tables
         createLibraryTable(database, kRekordboxLibraryTable);
         createPlaylistsTable(database, kRekordboxPlaylistsTable);
         createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
+        createRekordboxCuesTable(database, kRekordboxCuesTable);
 
         transaction.commit();
 
@@ -1606,6 +2176,36 @@ void RekordboxFeature::onRekordboxDevicesFound() {
             }
         }
 
+        // Add "Imported from XML" node if an XML import exists (single playlist or hierarchy)
+        QSqlQuery hasXmlPl(database);
+        hasXmlPl.prepare(
+                "SELECT 1 FROM " + kRekordboxPlaylistsTable +
+                " WHERE name = :name OR name LIKE :namePrefix LIMIT 1");
+        hasXmlPl.bindValue(":name", kRekordboxXmlImportPlaylistName);
+        hasXmlPl.bindValue(":namePrefix",
+                QVariant(kRekordboxXmlImportPlaylistName + kPLaylistPathDelimiter +
+                        QStringLiteral("%")));
+        if (hasXmlPl.exec() && hasXmlPl.next()) {
+            bool hasXmlNode = false;
+            for (int i = 0; i < root->childRows(); ++i) {
+                if (root->child(i)->getLabel() == tr("Imported from XML")) {
+                    hasXmlNode = true;
+                    break;
+                }
+            }
+            if (!hasXmlNode) {
+                QList<QVariant> data;
+                data << kRekordboxXmlImportPlaylistName
+                     << IS_NOT_RECORDBOX_DEVICE;
+                auto xmlItem = std::make_unique<TreeItem>(
+                        tr("Imported from XML"), QVariant(data));
+                buildPlaylistTreeFromPaths(database,
+                        xmlItem.get(),
+                        kRekordboxXmlImportPlaylistName);
+                childrenToAdd.push_back(std::move(xmlItem));
+            }
+        }
+
         if (!childrenToAdd.empty()) {
             m_pSidebarModel->insertTreeItemRows(std::move(childrenToAdd), 0);
         }
@@ -1617,7 +2217,6 @@ void RekordboxFeature::onRekordboxDevicesFound() {
 }
 
 void RekordboxFeature::onTracksFound() {
-    qDebug() << "onTracksFound";
     m_pSidebarModel->triggerRepaint();
 
     QString devicePlaylist;
@@ -1625,11 +2224,46 @@ void RekordboxFeature::onTracksFound() {
         devicePlaylist = m_tracksFuture.result();
     } catch (const std::exception& e) {
         qWarning() << "Failed to load Rekordbox database:" << e.what();
+        m_title = tr("Rekordbox");
+        emit featureLoadingFinished(this);
         return;
     }
 
-    qDebug() << "Show Rekordbox Device Playlist: " << devicePlaylist;
+    if (devicePlaylist.isEmpty()) {
+        m_title = tr("Rekordbox");
+        emit featureLoadingFinished(this);
+        return;
+    }
 
+    // When the result is an XML import, ensure "Imported from XML" is in the sidebar
+    if (devicePlaylist == kRekordboxXmlImportPlaylistName) {
+        TreeItem* root = m_pSidebarModel->getRootItem();
+        bool hasXmlNode = false;
+        for (int i = 0; i < root->childRows(); ++i) {
+            if (root->child(i)->getLabel() == tr("Imported from XML")) {
+                hasXmlNode = true;
+                break;
+            }
+        }
+        if (!hasXmlNode) {
+            QList<QVariant> data;
+            data << kRekordboxXmlImportPlaylistName << IS_NOT_RECORDBOX_DEVICE;
+            std::vector<std::unique_ptr<TreeItem>> items;
+            auto xmlItem = std::make_unique<TreeItem>(
+                    tr("Imported from XML"), QVariant(data));
+            QSqlDatabase database = m_pTrackCollection->database();
+            buildPlaylistTreeFromPaths(database,
+                    xmlItem.get(),
+                    kRekordboxXmlImportPlaylistName);
+            items.push_back(std::move(xmlItem));
+            m_pSidebarModel->insertTreeItemRows(std::move(items), 0);
+        }
+    }
+
+    m_trackSource->buildIndex();
+    qDebug() << "Show Rekordbox Playlist: " << devicePlaylist;
     m_pRekordboxPlaylistModel->setPlaylist(devicePlaylist);
     emit showTrackModel(m_pRekordboxPlaylistModel);
+    m_title = tr("Rekordbox");
+    emit featureLoadingFinished(this);
 }

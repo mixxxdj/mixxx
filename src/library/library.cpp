@@ -208,7 +208,7 @@ Library::Library(
     // are mounted/unmounted would be to have some form of timed thread to check
     // periodically. Not ideal performance wise.
     if (m_pConfig->getValue(
-                ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
+                ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), false)) {
         addFeature(new RekordboxFeature(this, m_pConfig));
     }
 

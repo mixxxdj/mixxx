@@ -1,8 +1,11 @@
 #include "util/sandbox.h"
 
+#include <QCoreApplication>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMetaObject>
 #include <QObject>
+#include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
 
@@ -98,6 +101,70 @@ bool Sandbox::canAccessDir(const QDir& dir) {
     return QFileInfo(dir.canonicalPath()).isReadable();
 }
 
+namespace {
+
+// Runs the sandbox permission dialog (message box + file picker). Must be
+// called from the main thread on macOS (AppKit/NSAlert is main-thread only).
+bool askForAccessOnMainThread(const mixxx::FileInfo& targetInfo) {
+    const QString location = targetInfo.location();
+    const QString fileName = targetInfo.fileName();
+    const QString title =
+            QObject::tr("Mixxx Needs Access to: %1").arg(fileName);
+    QMessageBox::information(nullptr,
+            title,
+            QObject::tr(
+                    "Your permission is required to access "
+                    "the following location:"
+                    "\n\n%1\n\n"
+                    "After clicking OK, you will see a file picker. "
+                    "Please select '%2' to proceed or click Cancel if "
+                    "you don't want to grant Mixxx access and abort "
+                    "this action.")
+                    .arg(location, fileName));
+
+    mixxx::FileInfo resultInfo;
+    while (true) {
+        QString result;
+        if (targetInfo.isFile()) {
+            result = QFileDialog::getOpenFileName(nullptr, title, location);
+        } else {
+            result = QFileDialog::getExistingDirectory(
+                    nullptr,
+                    title,
+                    location,
+                    QFileDialog::ShowDirsOnly);
+        }
+
+        if (result.isNull()) {
+            if (sDebug) {
+                qDebug() << "Sandbox: User rejected access to" << location;
+            }
+            return false;
+        }
+
+        if (sDebug) {
+            qDebug() << "Sandbox: User selected" << result;
+        }
+        resultInfo = mixxx::FileInfo(result);
+        if (resultInfo == targetInfo) {
+            break;
+        }
+
+        if (sDebug) {
+            qDebug() << "User selected the wrong file.";
+        }
+        QMessageBox::information(nullptr,
+                title,
+                QObject::tr("You selected the wrong file. To grant Mixxx "
+                            "access, please select the file '%1'. If you do "
+                            "not want to continue, press Cancel.")
+                        .arg(fileName));
+    }
+    return Sandbox::createSecurityToken(&resultInfo);
+}
+
+} // namespace
+
 // static
 bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
     // We always want read/write access because we wouldn't want to have to
@@ -119,59 +186,23 @@ bool Sandbox::askForAccess(mixxx::FileInfo* pFileInfo) {
         return true;
     }
 
-    const QString location = pFileInfo->location();
-    const QString fileName = pFileInfo->fileName();
-    const QString title = QObject::tr("Mixxx Needs Access to: %1").arg(fileName);
-    QMessageBox::information(nullptr,
-            title,
-            QObject::tr(
-                    "Your permission is required to access "
-                    "the following location:"
-                    "\n\n%1\n\n"
-                    "After clicking OK, you will see a file picker. "
-                    "Please select '%2' to proceed or click Cancel if "
-                    "you don't want to grant Mixxx access and abort "
-                    "this action.")
-                    .arg(location, fileName));
-
-    mixxx::FileInfo resultInfo;
-    while (true) {
-        QString result;
-        if (pFileInfo->isFile()) {
-            result = QFileDialog::getOpenFileName(nullptr, title, location);
-        } else if (pFileInfo->isDir()) {
-            result = QFileDialog::getExistingDirectory(
-                    nullptr,
-                    title,
-                    location,
-                    QFileDialog::ShowDirsOnly);
-        }
-
-        if (result.isNull()) {
-            if (sDebug) {
-                qDebug() << "Sandbox: User rejected access to" << location;
-            }
-            return false;
-        }
-
-        if (sDebug) {
-            qDebug() << "Sandbox: User selected" << result;
-        }
-        resultInfo = mixxx::FileInfo(result);
-        if (resultInfo == *pFileInfo) {
-            break;
-        }
-
-        if (sDebug) {
-            qDebug() << "User selected the wrong file.";
-        }
-        QMessageBox::information(
-                nullptr, title, QObject::tr("You selected the wrong file. To grant Mixxx access, "
-                                            "please select the file '%1'. If you do not want to "
-                                            "continue, press Cancel.")
-                                        .arg(fileName));
+#if defined(Q_OS_MACOS)
+    // AppKit (NSAlert, NSWindow) requires UI to run on the main thread.
+    // Showing QMessageBox/QFileDialog from a worker thread causes SIGABRT.
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
+        bool result = false;
+        const mixxx::FileInfo targetCopy = *pFileInfo;
+        QMetaObject::invokeMethod(
+                QCoreApplication::instance(),
+                [&result, targetCopy]() {
+                    result = askForAccessOnMainThread(targetCopy);
+                },
+                Qt::BlockingQueuedConnection);
+        return result;
     }
-    return createSecurityToken(&resultInfo);
+#endif
+
+    return askForAccessOnMainThread(*pFileInfo);
 }
 
 // static
