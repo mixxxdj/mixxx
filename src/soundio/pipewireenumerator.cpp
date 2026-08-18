@@ -80,7 +80,8 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
 }
 } // namespace
 
-PipewireEnumerator::PipewireEnumerator(UserSettingsPointer pConfig, SoundManager* pManager)
+PipewireEnumerator::PipewireEnumerator(
+        UserSettingsPointer pConfig, SoundManager* pManager)
         : m_pSoundManager(pManager),
           m_pConfig(pConfig),
           m_pPwThreadLoop(nullptr),
@@ -90,11 +91,18 @@ PipewireEnumerator::PipewireEnumerator(UserSettingsPointer pConfig, SoundManager
           m_pPwMetadata(nullptr),
           m_pPwFilter(nullptr),
           m_sampleRate(48000),
-          m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
-          m_coPipewirePatchbaySync(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
-          m_coBufferSize(ConfigKey(kAppGroup, QStringLiteral("buffer_size"))),
-          m_coOutputLatencyMs(kAppGroup, QStringLiteral("output_latency_ms")),
           m_framesPerBuffer(1024),
+          m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
+          m_coPipewirePatchbaySync(ConfigKey(
+                  kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
+          m_coBufferSize(ConfigKey(kAppGroup, QStringLiteral("buffer_size")),
+                  true,
+                  false,
+                  false,
+                  m_framesPerBuffer),
+          m_coLatencyParamsMismatch(ConfigKey(
+                  kAppGroup, QStringLiteral("latency_params_mismatch"))),
+          m_coOutputLatencyMs(kAppGroup, QStringLiteral("output_latency_ms")),
           m_forceSamplerate(false),
           m_forceQuantum(false) {
     connect(m_pSoundManager,
@@ -947,8 +955,14 @@ void PipewireEnumerator::updateFilterLatency() {
 }
 
 void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int framesPerBuffer) {
+    const bool samplerateMismatch = m_forceSamplerate && m_sampleRate != sampleRate;
+    const bool quantumMismatch = m_forceQuantum && m_framesPerBuffer != framesPerBuffer;
+
     qDebug() << "PipewireEnumerator::setLatency" << m_sampleRate << sampleRate
-             << m_framesPerBuffer << framesPerBuffer;
+             << m_framesPerBuffer << framesPerBuffer << m_forceSamplerate << m_forceQuantum;
+
+    m_coLatencyParamsMismatch.set(samplerateMismatch || quantumMismatch);
+    qDebug() << "m_coLatencyParamsMismatch" << m_coLatencyParamsMismatch.get();
 
     m_sampleRate = sampleRate;
     m_framesPerBuffer = framesPerBuffer;

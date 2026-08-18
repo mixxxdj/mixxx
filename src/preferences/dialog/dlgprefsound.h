@@ -135,5 +135,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<QCheckBox> m_forceSamplerate;
     parented_ptr<ControlProxy> m_cpSamplerate;
     parented_ptr<ControlProxy> m_cpBufferSize;
+    parented_ptr<ControlProxy> m_cpLatencyParamsMismatch;
+    QLabel* m_latencyParamsMismatchText;
 #endif
 };

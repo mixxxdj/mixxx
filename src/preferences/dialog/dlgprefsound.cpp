@@ -245,6 +245,29 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                                "API selection to take effect."));
                 });
 
+        auto pipewireGroupBox = make_parented<QGroupBox>("PipeWire Settings", this);
+        auto pipewireSettings = make_parented<QVBoxLayout>(pipewireGroupBox);
+        verticalLayout_2->insertWidget(2, pipewireGroupBox.get());
+
+        m_pipewirePatchbayCheckBox = make_parented<QCheckBox>(this);
+        m_pipewirePatchbayCheckBox->setText(tr("Sync with external patchbay"));
+        m_pPipewirePatchbay = make_parented<ControlProxy>(
+                kPipeWirePatchbay.group, kPipeWirePatchbay.item, this);
+        connect(m_pipewirePatchbayCheckBox,
+                &QCheckBox::toggled,
+                this,
+                [this](bool checked) {
+                    m_pSettings->setValue(kPipeWirePatchbay, checked);
+                    m_pPipewirePatchbay->set(checked);
+                    ioTabs->setDisabled(checked);
+                    m_settingsModified = true;
+                });
+
+        bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
+        m_pipewirePatchbayCheckBox->setChecked(checked);
+        pipewireSettings->addWidget(m_pipewirePatchbayCheckBox.get());
+        pipewireGroupBox->setVisible(pipewireSelected);
+
         if (pipewireSelected) {
             m_forceBufferSize = make_parented<QCheckBox>(this);
             m_forceSamplerate = make_parented<QCheckBox>(this);
@@ -295,6 +318,26 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             m_cpSamplerate = make_parented<ControlProxy>(
                     kAppGroup, QStringLiteral("samplerate"), this);
 
+            if (m_forceSamplerate->isChecked()) {
+                auto samplerates = m_pSoundManager->getSampleRates();
+                updateSampleRates(samplerates);
+            } else {
+                sampleRateComboBox->clear();
+                unsigned int samplerate = static_cast<unsigned int>(m_cpSamplerate->get());
+                sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
+                        QVariant::fromValue(samplerate));
+            }
+
+            if (m_forceBufferSize->isChecked()) {
+                updateAudioBufferSizes(0);
+            } else {
+                audioBufferComboBox->clear();
+                unsigned int bufferSize = static_cast<unsigned int>(m_cpBufferSize->get());
+                audioBufferComboBox->addItem(
+                        tr("%1 frames/period").arg(bufferSize),
+                        QVariant::fromValue(bufferSize));
+            }
+
             m_cpBufferSize->connectValueChanged(this, [this](double value) {
                 qDebug() << "m_cpBufferSize->connectValueChanged" << value;
                 if (!audioBufferComboBox->isEnabled()) {
@@ -313,28 +356,28 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             QVariant::fromValue(samplerate));
                 }
             });
+
+            m_latencyParamsMismatchText = new QLabel();
+            pipewireSettings->addWidget(m_latencyParamsMismatchText);
+
+            m_cpLatencyParamsMismatch = make_parented<ControlProxy>(
+                    kAppGroup, QStringLiteral("latency_params_mismatch"), this);
+            m_latencyParamsMismatchText->setVisible(
+                    static_cast<bool>(m_cpLatencyParamsMismatch->get()));
+            m_cpLatencyParamsMismatch->connectValueChanged(
+                    this, [this](double mismatch) {
+                        qDebug() << "m_cpLatencyParamsMismatch->"
+                                    "connectValueChanged"
+                                 << static_cast<bool>(mismatch);
+                        m_latencyParamsMismatchText->setText(
+                                tr("Server is providing different buffer size "
+                                   "(%1) or samplerate (%2) than forced.")
+                                        .arg(m_cpBufferSize->get())
+                                        .arg(m_cpSamplerate->get()));
+                        m_latencyParamsMismatchText->setVisible(
+                                static_cast<bool>(mismatch));
+                    });
         }
-        m_pipewirePatchbayCheckBox = make_parented<QCheckBox>(this);
-        m_pipewirePatchbayCheckBox->setText(tr("Sync with external patchbay"));
-        m_pPipewirePatchbay = make_parented<ControlProxy>(
-                kPipeWirePatchbay.group, kPipeWirePatchbay.item, this);
-        connect(m_pipewirePatchbayCheckBox,
-                &QCheckBox::toggled,
-                this,
-                [this](bool checked) {
-                    m_pSettings->setValue(kPipeWirePatchbay, checked);
-                    m_pPipewirePatchbay->set(checked);
-                    ioTabs->setDisabled(checked);
-                    m_settingsModified = true;
-                });
-
-        auto pipewireGroupBox = make_parented<QGroupBox>("PipeWire Settings", this);
-        auto pipewireSettings = make_parented<QVBoxLayout>(pipewireGroupBox);
-        verticalLayout_2->insertWidget(2, pipewireGroupBox.get());
-
-        bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
-        m_pipewirePatchbayCheckBox->setChecked(checked);
-        pipewireSettings->addWidget(m_pipewirePatchbayCheckBox.get());
     }
 #endif
 
