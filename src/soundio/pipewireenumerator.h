@@ -235,14 +235,16 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<AudioInput, PortPair> m_inputs;
     std::unordered_map<AudioOutput, PortPair> m_outputs;
 
+    uint32_t m_framesPerBuffer;
+
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;
     ControlObject m_coBufferSize;
+    ControlObject m_coLatencyParamsMismatch;
     ControlProxy m_coOutputLatencyMs;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
-    uint32_t m_framesPerBuffer;
     // Handle all connections made to/from Mixxx node
     // If we do not, then we only track connections made in the
     // preference page, and leave the external patchbay connections
