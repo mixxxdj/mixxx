@@ -1752,6 +1752,7 @@ add_library(
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
+  src/widget/wbasicpushbutton.cpp
   src/widget/wbattery.cpp
   src/widget/wbeatspinbox.cpp
   src/widget/wbpmeditor.cpp
