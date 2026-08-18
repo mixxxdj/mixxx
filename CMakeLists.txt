@@ -1363,7 +1363,9 @@ add_library(
   src/engine/filters/enginefilterbessel4.cpp
   src/engine/filters/enginefilterbessel8.cpp
   src/engine/filters/enginefilterbiquad1.cpp
+  src/engine/filters/enginefilterbutterworth2.cpp
   src/engine/filters/enginefilterbutterworth4.cpp
+  src/engine/filters/enginefilterbutterworth6.cpp
   src/engine/filters/enginefilterbutterworth8.cpp
   src/engine/filters/enginefilterlinkwitzriley2.cpp
   src/engine/filters/enginefilterlinkwitzriley4.cpp
