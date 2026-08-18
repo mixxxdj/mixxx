@@ -702,10 +702,15 @@ void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
         slotLoopInGoto(1);
     }
 
-    // Don't allow loop size widget setting to trigger creation of another loop.
-    m_pCOBeatLoopSize->blockSignals(true);
-    m_pCOBeatLoopSize->setAndConfirm(findBeatloopSizeForLoop(startPosition, endPosition));
-    m_pCOBeatLoopSize->blockSignals(false);
+    double loaded_loop_size = findBeatloopSizeForLoop(startPosition, endPosition);
+    if (loaded_loop_size != -1) {
+        // If the loop size matches any of the 2^n sizes we adopt
+        // the value for the spinbox.
+        // Don't allow loop size widget setting to trigger creation of another loop.
+        m_pCOBeatLoopSize->blockSignals(true);
+        m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
+        m_pCOBeatLoopSize->blockSignals(false);
+    }
 }
 
 void LoopingControl::setLoopInToCurrentPosition() {
@@ -1269,6 +1274,8 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         double loaded_loop_size = findBeatloopSizeForLoop(
                 loopInfo.startPosition, loopInfo.endPosition);
         if (loaded_loop_size != -1) {
+            // If the loop size matches any of the 2^n sizes we adopt
+            // the value for the spinbox
             m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
         }
     }
