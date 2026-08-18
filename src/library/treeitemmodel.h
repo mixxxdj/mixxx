@@ -27,6 +27,7 @@ class TreeItemModel : public QAbstractItemModel {
                          int a_iRole = Qt::EditRole) override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
 
     void insertTreeItemRows(
             std::vector<std::unique_ptr<TreeItem>>&&,
