@@ -1498,9 +1498,7 @@ TEST_F(EngineSyncTest, ExplicitLeaderPostProcessed) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_NEAR(0.0023219956,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos(),
-            kMaxFloatingPointErrorLowPrecision);
+    EXPECT_DOUBLE_EQ(512, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 }
 
 TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
