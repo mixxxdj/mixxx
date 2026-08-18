@@ -59,6 +59,7 @@ CmdlineArgs::CmdlineArgs()
           m_qml(false),
 #endif
           m_safeMode(false),
+          m_repairDatabase(false),
           m_useLegacyVuMeter(false),
           m_useLegacySpinny(false),
           m_debugAssertBreak(false),
@@ -198,6 +199,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "Rescans the library when Mixxx is launched.")
                             : QString());
     parser.addOption(rescanLibrary);
+
+    const QCommandLineOption repairDatabase(QStringLiteral("repair-database"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Run a database cleanup when Mixxx is launched.")
+                            : QString());
+    parser.addOption(repairDatabase);
 
     // An option with a value
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
@@ -444,6 +451,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     if (parser.isSet(rescanLibrary)) {
         m_rescanLibrary = true;
+    }
+
+    if (parser.isSet(repairDatabase)) {
+        m_repairDatabase = true;
     }
 
     if (parser.isSet(settingsPath)) {
