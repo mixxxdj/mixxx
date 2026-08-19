@@ -658,8 +658,27 @@ ApplicationWindow {
             }
         }
     }
-    MultiSurfaceTestWindow {
-        id: multiSurfaceTestWindow
+    AuxiliarySurfaceWindow {
+        id: auxiliarySurfaceWindow
+
+        readonly property var targetAuxiliaryScreen: {
+            const screens = Qt.application.screens;
+
+            for (let i = 0; i < screens.length; ++i) {
+                if (screens[i].width === 800 && screens[i].height === 480)
+                    return screens[i];
+            }
+
+            return screens[0];
+        }
+
+        fullscreen: true
+        targetScreen: targetAuxiliaryScreen
+        title: "Mixxx Multi-Surface PoC"
+
+        MultiSurfaceTestContent {
+            anchors.fill: parent
+        }
     }
     Skin.Settings {
         id: settingsPopup
