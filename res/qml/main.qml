@@ -661,21 +661,29 @@ ApplicationWindow {
     Loader {
         id: auxiliarySurfaceLoader
 
-        readonly property var targetScreen: {
+        property var targetScreen: null
+
+        function refreshTargetScreen() {
             const screenName = Mixxx.Config.auxiliarySurfaceScreenName;
-            if (!screenName)
-                return null;
+            if (!screenName) {
+                targetScreen = null;
+                return;
+            }
 
             const screens = Qt.application.screens;
             for (let i = 0; i < screens.length; ++i) {
-                if (screens[i].name === screenName)
-                    return screens[i];
+                if (screens[i].name === screenName) {
+                    targetScreen = screens[i];
+                    return;
+                }
             }
 
-            return null;
+            targetScreen = null;
         }
 
         active: Mixxx.Config.auxiliarySurfaceEnabled && targetScreen !== null
+
+        Component.onCompleted: refreshTargetScreen()
 
         sourceComponent: Component {
             AuxiliarySurfaceWindow {
@@ -683,10 +691,41 @@ ApplicationWindow {
                 targetScreen: auxiliarySurfaceLoader.targetScreen
                 title: "Mixxx Auxiliary Surface"
 
+                onClosing: (close) => {
+                    close.accepted = false;
+                    Mixxx.Config.auxiliarySurfaceEnabled = false;
+                }
+
                 AuxiliarySurfaceContent {
                     anchors.fill: parent
                 }
             }
+        }
+    }
+    Connections {
+        target: Mixxx.ScreenManager
+
+        function onScreenAdded() {
+            Qt.callLater(auxiliarySurfaceLoader.refreshTargetScreen);
+        }
+
+        function onScreenRemoved(screen) {
+            if (screen.name === Mixxx.Config.auxiliarySurfaceScreenName) {
+                if (auxiliarySurfaceLoader.item)
+                    auxiliarySurfaceLoader.item.hide();
+
+                auxiliarySurfaceLoader.targetScreen = null;
+                return;
+            }
+
+            Qt.callLater(auxiliarySurfaceLoader.refreshTargetScreen);
+        }
+    }
+    Connections {
+        target: Mixxx.Config
+
+        function onAuxiliarySurfaceScreenNameChanged() {
+            auxiliarySurfaceLoader.refreshTargetScreen();
         }
     }
     Skin.Settings {
