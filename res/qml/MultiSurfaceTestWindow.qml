@@ -4,12 +4,13 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import "Theme"
+import "." as Skin
 
 Window {
     id: root
 
     width: 760
-    height: 320
+    height: 400
     visible: true
     title: "Mixxx Multi-Surface PoC"
     color: Theme.backgroundColor
@@ -53,6 +54,12 @@ Window {
                     text: "BPM: " + Number(deck1Bpm.value).toFixed(2)
                     color: Theme.textColor
                     font.pixelSize: 20
+                }
+
+                Skin.WaveformDisplay {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 100
+                    group: "[Channel1]"
                 }
 
                 Label {
@@ -110,6 +117,12 @@ Window {
                     text: "BPM: " + Number(deck2Bpm.value).toFixed(2)
                     color: Theme.textColor
                     font.pixelSize: 20
+                }
+
+                Skin.WaveformDisplay {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 100
+                    group: "[Channel2]"
                 }
 
                 Label {
