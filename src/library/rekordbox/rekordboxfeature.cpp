@@ -43,9 +43,11 @@ const QString kRekordboxLibraryTable = QStringLiteral("rekordbox_library");
 const QString kRekordboxPlaylistsTable = QStringLiteral("rekordbox_playlists");
 const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist_tracks");
 
+// depending on the filesystem of the external media, rekordbox seems
+// to store its metadata in different paths:
 const QStringList kPdbPaths = {
-        QStringLiteral("PIONEER/rekordbox/export.pdb"),
-        QStringLiteral(".PIONEER/rekordbox/export.pdb"),
+        QStringLiteral("PIONEER/rekordbox/export.pdb"), // FAT32/exFat
+        QStringLiteral(".PIONEER/rekordbox/export.pdb"), // HFS+ media
 };
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
 
