@@ -81,7 +81,7 @@ Category {
     }
     function loadAuxiliarySurface() {
         auxiliarySurfaceEnabledInput.selected = Mixxx.Config.auxiliarySurfaceEnabled ? "on" : "off";
-        auxiliarySurfaceScreenInput.currentIndex = auxiliarySurfaceScreenInput.model.indexOf(Mixxx.Config.auxiliarySurfaceScreenName);
+        auxiliarySurfaceScreenInput.currentIndex = auxiliarySurfaceTab.screenIds.indexOf(Mixxx.Config.auxiliarySurfaceScreenId);
         auxiliarySurfaceFullscreenInput.selected = Mixxx.Config.auxiliarySurfaceFullscreen ? "on" : "off";
         auxiliarySurfaceTab.dirty = false;
     }
@@ -158,7 +158,7 @@ Category {
             Mixxx.Config.auxiliarySurfaceEnabled = false;
 
         if (screenIndex >= 0)
-            Mixxx.Config.auxiliarySurfaceScreenName = auxiliarySurfaceScreenInput.model[screenIndex];
+            Mixxx.Config.auxiliarySurfaceScreenId = auxiliarySurfaceTab.screenIds[screenIndex];
 
         Mixxx.Config.auxiliarySurfaceFullscreen = auxiliarySurfaceFullscreenInput.selected === "on";
 
@@ -173,7 +173,7 @@ Category {
     tabs: ["theme & color", "waveform", "decks", "auxiliary surface"]
 
     Component.onCompleted: {
-        auxiliarySurfaceTab.refreshScreenNames();
+        auxiliarySurfaceTab.refreshScreens();
         root.load();
     }
 
@@ -1593,19 +1593,25 @@ Category {
         id: auxiliarySurfaceTab
 
         property bool dirty: false
+        property var screenIds: []
         property var screenNames: []
 
-        function refreshScreenNames() {
+        function refreshScreens() {
+            const ids = [];
             const names = [];
             const screens = Qt.application.screens;
-            for (let i = 0; i < screens.length; ++i)
-                names.push(screens[i].name);
+            for (let i = 0; i < screens.length; ++i) {
+                const screen = screens[i];
+                ids.push(Mixxx.ScreenManager.screenId(screen.name, screen.serialNumber));
+                names.push(screen.name);
+            }
+            screenIds = ids;
             screenNames = names;
         }
 
         function handleScreensChanged() {
             const wasDirty = dirty;
-            refreshScreenNames();
+            refreshScreens();
 
             if (!wasDirty)
                 root.loadAuxiliarySurface();

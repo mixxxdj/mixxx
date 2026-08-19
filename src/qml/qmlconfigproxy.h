@@ -197,9 +197,9 @@ class QmlConfigProxy : public QmlConfigProxyBase {
                                     controlPitchBendBehaviourChanged);
     Q_PROPERTY(bool auxiliarySurfaceEnabled READ auxiliarySurfaceEnabled WRITE
                     set_auxiliarySurfaceEnabled NOTIFY auxiliarySurfaceEnabledChanged);
-    Q_PROPERTY(QString auxiliarySurfaceScreenName READ auxiliarySurfaceScreenName
-                    WRITE set_auxiliarySurfaceScreenName NOTIFY
-                            auxiliarySurfaceScreenNameChanged);
+    Q_PROPERTY(QString auxiliarySurfaceScreenId READ auxiliarySurfaceScreenId
+                    WRITE set_auxiliarySurfaceScreenId NOTIFY
+                            auxiliarySurfaceScreenIdChanged);
     Q_PROPERTY(bool auxiliarySurfaceFullscreen READ auxiliarySurfaceFullscreen
                     WRITE set_auxiliarySurfaceFullscreen NOTIFY
                             auxiliarySurfaceFullscreenChanged);
@@ -398,7 +398,7 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     PROPERTY_DECL_ACCESSOR(bool, controlRateDir);
     PROPERTY_DECL_ACCESSOR(RateControl::RampMode, controlPitchBendBehaviour);
     PROPERTY_DECL_ACCESSOR(bool, auxiliarySurfaceEnabled);
-    PROPERTY_DECL_ACCESSOR(QString, auxiliarySurfaceScreenName);
+    PROPERTY_DECL_ACCESSOR(QString, auxiliarySurfaceScreenId);
     PROPERTY_DECL_ACCESSOR(bool, auxiliarySurfaceFullscreen);
 
     // Config group
@@ -491,7 +491,7 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     void controlRateDirChanged();
     void controlPitchBendBehaviourChanged();
     void auxiliarySurfaceEnabledChanged();
-    void auxiliarySurfaceScreenNameChanged();
+    void auxiliarySurfaceScreenIdChanged();
     void auxiliarySurfaceFullscreenChanged();
     void configHotcueColorPaletteChanged();
     void configTrackColorPaletteChanged();

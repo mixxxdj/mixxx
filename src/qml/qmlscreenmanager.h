@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QScreen>
+#include <QString>
 
 namespace mixxx {
 namespace qml {
@@ -22,6 +23,9 @@ class QmlScreenManager : public QObject {
             [[maybe_unused]] QJSEngine* pJsEngine) {
         return new QmlScreenManager(pQmlEngine);
     }
+
+    Q_INVOKABLE QString screenId(
+            const QString& name, const QString& serialNumber) const;
 
   signals:
     void screenAdded(QScreen* screen);

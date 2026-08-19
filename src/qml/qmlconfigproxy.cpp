@@ -109,7 +109,7 @@ const QString kRateDirKey = QStringLiteral("RateDir");
 const QString kRateRampKey = QStringLiteral("RateRamp");
 
 const QString kAuxiliarySurfaceEnabledKey = QStringLiteral("Enabled");
-const QString kAuxiliarySurfaceScreenNameKey = QStringLiteral("ScreenName");
+const QString kAuxiliarySurfaceScreenIdKey = QStringLiteral("ScreenId");
 const QString kAuxiliarySurfaceFullscreenKey = QStringLiteral("Fullscreen");
 
 // Config group
@@ -401,9 +401,9 @@ PROPERTY_IMPL(kAuxiliarySurfaceGroup,
         auxiliarySurfaceEnabled,
         false);
 PROPERTY_IMPL(kAuxiliarySurfaceGroup,
-        kAuxiliarySurfaceScreenNameKey,
+        kAuxiliarySurfaceScreenIdKey,
         QString,
-        auxiliarySurfaceScreenName,
+        auxiliarySurfaceScreenId,
         QString());
 PROPERTY_IMPL(kAuxiliarySurfaceGroup,
         kAuxiliarySurfaceFullscreenKey,

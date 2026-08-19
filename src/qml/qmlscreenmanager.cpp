@@ -8,6 +8,14 @@
 namespace mixxx {
 namespace qml {
 
+QString QmlScreenManager::screenId(
+        const QString& name, const QString& serialNumber) const {
+    if (!serialNumber.isEmpty()) {
+        return QStringLiteral("serial:") + serialNumber;
+    }
+    return QStringLiteral("name:") + name;
+}
+
 QmlScreenManager::QmlScreenManager(QObject* parent)
         : QObject(parent) {
     auto* pApplication =

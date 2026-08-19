@@ -664,16 +664,17 @@ ApplicationWindow {
         property var targetScreen: null
 
         function refreshTargetScreen() {
-            const screenName = Mixxx.Config.auxiliarySurfaceScreenName;
-            if (!screenName) {
+            const screenId = Mixxx.Config.auxiliarySurfaceScreenId;
+            if (!screenId) {
                 targetScreen = null;
                 return;
             }
 
             const screens = Qt.application.screens;
             for (let i = 0; i < screens.length; ++i) {
-                if (screens[i].name === screenName) {
-                    targetScreen = screens[i];
+                const screen = screens[i];
+                if (Mixxx.ScreenManager.screenId(screen.name, screen.serialNumber) === screenId) {
+                    targetScreen = screen;
                     return;
                 }
             }
@@ -710,7 +711,8 @@ ApplicationWindow {
         }
 
         function onScreenRemoved(screen) {
-            if (screen.name === Mixxx.Config.auxiliarySurfaceScreenName) {
+            if (Mixxx.ScreenManager.screenId(screen.name, screen.serialNumber)
+                    === Mixxx.Config.auxiliarySurfaceScreenId) {
                 if (auxiliarySurfaceLoader.item)
                     auxiliarySurfaceLoader.item.hide();
 
@@ -724,7 +726,7 @@ ApplicationWindow {
     Connections {
         target: Mixxx.Config
 
-        function onAuxiliarySurfaceScreenNameChanged() {
+        function onAuxiliarySurfaceScreenIdChanged() {
             auxiliarySurfaceLoader.refreshTargetScreen();
         }
     }
