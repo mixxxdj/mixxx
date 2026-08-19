@@ -9,8 +9,23 @@ import "." as Skin
 Window {
     id: root
 
-    width: 760
-    height: 400
+    readonly property var targetScreen: {
+        const screens = Qt.application.screens;
+
+        for (let i = 0; i < screens.length; ++i) {
+            if (screens[i].width === 800 && screens[i].height === 480)
+                return screens[i];
+        }
+
+        return screens[0];
+    }
+
+    screen: targetScreen
+    x: targetScreen.virtualX
+    y: targetScreen.virtualY
+
+    width: 800
+    height: 480
     visible: true
     title: "Mixxx Multi-Surface PoC"
     color: Theme.backgroundColor
