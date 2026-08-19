@@ -26,7 +26,7 @@ Window {
 
     width: 800
     height: 480
-    visible: true
+    visibility: Window.FullScreen
     title: "Mixxx Multi-Surface PoC"
     color: Theme.backgroundColor
 
