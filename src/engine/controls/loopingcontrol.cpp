@@ -1269,9 +1269,11 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         }
     }
 
-    // Reset to default value if track has no loop
-    // TODO Also reset if current loop size is odd or has decimals?
-    if (loaded_loop_size == -1) {
+    // Optinonally reset to default value if track has no loop
+    bool reset = m_pConfig->getValue(
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("LoopAutoReset")),
+            false);
+    if (loaded_loop_size == -1 && reset) {
         m_pCOBeatLoopSize->setAndConfirm(kDefaultBeatloopSize);
     }
 }
