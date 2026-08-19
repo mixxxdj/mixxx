@@ -173,9 +173,29 @@ Category {
     tabs: ["theme & color", "waveform", "decks", "auxiliary surface"]
 
     Component.onCompleted: {
+        auxiliarySurfaceTab.refreshScreenNames();
         root.load();
     }
 
+    Connections {
+        target: Mixxx.Config
+
+        function onAuxiliarySurfaceEnabledChanged() {
+            if (!auxiliarySurfaceTab.dirty)
+                root.loadAuxiliarySurface();
+        }
+    }
+    Connections {
+        target: Mixxx.ScreenManager
+
+        function onScreenAdded() {
+            Qt.callLater(auxiliarySurfaceTab.handleScreensChanged);
+        }
+
+        function onScreenRemoved() {
+            Qt.callLater(auxiliarySurfaceTab.handleScreensChanged);
+        }
+    }
     Mixxx.ControlProxy {
         id: numDecks
 
@@ -1573,12 +1593,22 @@ Category {
         id: auxiliarySurfaceTab
 
         property bool dirty: false
-        readonly property var screenNames: {
+        property var screenNames: []
+
+        function refreshScreenNames() {
             const names = [];
             const screens = Qt.application.screens;
             for (let i = 0; i < screens.length; ++i)
                 names.push(screens[i].name);
-            return names;
+            screenNames = names;
+        }
+
+        function handleScreensChanged() {
+            const wasDirty = dirty;
+            refreshScreenNames();
+
+            if (!wasDirty)
+                root.loadAuxiliarySurface();
         }
 
         anchors.fill: parent
