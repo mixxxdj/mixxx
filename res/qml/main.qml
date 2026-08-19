@@ -681,9 +681,9 @@ ApplicationWindow {
             AuxiliarySurfaceWindow {
                 fullscreen: Mixxx.Config.auxiliarySurfaceFullscreen
                 targetScreen: auxiliarySurfaceLoader.targetScreen
-                title: "Mixxx Multi-Surface PoC"
+                title: "Mixxx Auxiliary Surface"
 
-                MultiSurfaceTestContent {
+                AuxiliarySurfaceContent {
                     anchors.fill: parent
                 }
             }
