@@ -10,12 +10,12 @@ Window {
     required property var targetScreen
 
     color: Theme.backgroundColor
-    height: targetScreen.height
+    height: fullscreen ? targetScreen.height : Math.round(targetScreen.height * 0.85)
     screen: targetScreen
     visibility: fullscreen ? Window.FullScreen : Window.Windowed
-    width: targetScreen.width
-    x: targetScreen.virtualX
-    y: targetScreen.virtualY
+    width: fullscreen ? targetScreen.width : Math.round(targetScreen.width * 0.8)
+    x: targetScreen.virtualX + Math.round((targetScreen.width - width) / 2)
+    y: targetScreen.virtualY + Math.round((targetScreen.height - height) / 2)
 
     Item {
         id: surfaceContent
