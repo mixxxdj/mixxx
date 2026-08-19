@@ -658,26 +658,35 @@ ApplicationWindow {
             }
         }
     }
-    AuxiliarySurfaceWindow {
-        id: auxiliarySurfaceWindow
+    Loader {
+        id: auxiliarySurfaceLoader
 
-        readonly property var targetAuxiliaryScreen: {
+        readonly property var targetScreen: {
+            const screenName = Mixxx.Config.auxiliarySurfaceScreenName;
+            if (!screenName)
+                return null;
+
             const screens = Qt.application.screens;
-
             for (let i = 0; i < screens.length; ++i) {
-                if (screens[i].width === 800 && screens[i].height === 480)
+                if (screens[i].name === screenName)
                     return screens[i];
             }
 
-            return screens[0];
+            return null;
         }
 
-        fullscreen: true
-        targetScreen: targetAuxiliaryScreen
-        title: "Mixxx Multi-Surface PoC"
+        active: Mixxx.Config.auxiliarySurfaceEnabled && targetScreen !== null
 
-        MultiSurfaceTestContent {
-            anchors.fill: parent
+        sourceComponent: Component {
+            AuxiliarySurfaceWindow {
+                fullscreen: Mixxx.Config.auxiliarySurfaceFullscreen
+                targetScreen: auxiliarySurfaceLoader.targetScreen
+                title: "Mixxx Multi-Surface PoC"
+
+                MultiSurfaceTestContent {
+                    anchors.fill: parent
+                }
+            }
         }
     }
     Skin.Settings {
