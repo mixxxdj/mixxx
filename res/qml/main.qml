@@ -658,6 +658,9 @@ ApplicationWindow {
             }
         }
     }
+    MultiSurfaceTestWindow {
+        id: multiSurfaceTestWindow
+    }
     Skin.Settings {
         id: settingsPopup
 
