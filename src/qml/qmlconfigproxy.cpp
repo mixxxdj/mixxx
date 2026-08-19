@@ -44,6 +44,7 @@ const QString kControlGroup = QStringLiteral("[Control]");
 const QString kWaveformGroup = QStringLiteral("[Waveform]");
 const QString kControlsGroup = QStringLiteral("[Controls]");
 const QString kLibraryGroup = QStringLiteral("[Library]");
+const QString kAuxiliarySurfaceGroup = QStringLiteral("[AuxiliarySurface]");
 const QString kBpmGroup = QStringLiteral("[BPM]");
 
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
@@ -106,6 +107,10 @@ const QString kRatePermFineKey = QStringLiteral("RatePermRight");
 const QString kRateRangeKey = QStringLiteral("RateRangePercent");
 const QString kRateDirKey = QStringLiteral("RateDir");
 const QString kRateRampKey = QStringLiteral("RateRamp");
+
+const QString kAuxiliarySurfaceEnabledKey = QStringLiteral("Enabled");
+const QString kAuxiliarySurfaceScreenNameKey = QStringLiteral("ScreenName");
+const QString kAuxiliarySurfaceFullscreenKey = QStringLiteral("Fullscreen");
 
 // Config group
 const QString kHotcueColorPaletteKey = QStringLiteral("HotcueColorPalette");
@@ -389,6 +394,22 @@ PROPERTY_IMPL(kControlGroup,
         RateControl::RampMode,
         controlPitchBendBehaviour,
         RateControl::RampMode::Stepping);
+
+PROPERTY_IMPL(kAuxiliarySurfaceGroup,
+        kAuxiliarySurfaceEnabledKey,
+        bool,
+        auxiliarySurfaceEnabled,
+        false);
+PROPERTY_IMPL(kAuxiliarySurfaceGroup,
+        kAuxiliarySurfaceScreenNameKey,
+        QString,
+        auxiliarySurfaceScreenName,
+        QString());
+PROPERTY_IMPL(kAuxiliarySurfaceGroup,
+        kAuxiliarySurfaceFullscreenKey,
+        bool,
+        auxiliarySurfaceFullscreen,
+        false);
 
 // Config group
 PROPERTY_IMPL(kConfigGroup,
