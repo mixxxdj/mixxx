@@ -49,7 +49,7 @@ ApplicationWindow {
         sourceComponent: Skin.MainMenuBar {
             applicationWindow: root
             commands: applicationMenuCommands
-            numberOfDecks: root.numDecks
+            numberOfDecks: root.show4decks ? root.numDecks : 2
 
             onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
         }

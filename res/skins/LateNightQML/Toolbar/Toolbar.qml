@@ -763,6 +763,8 @@ Rectangle {
         property real opacity: 1.0
     }
     ApplicationMenuShortcuts {
+        show4decks: root.show4decks
+
         onApplicationMenuRequested: root.openApplicationMenuFromKeyboard()
         onShortcutTriggered: command => root.triggerApplicationMenuShortcut(command)
     }
@@ -1179,6 +1181,7 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuAction {
+                    enabled: root.show4decks
                     text: "Load Track to Deck 3"
                     visible: root.activeAppMenuSection === "File"
 
@@ -1187,6 +1190,7 @@ Rectangle {
                     }
                 }
                 ToolbarAppMenuAction {
+                    enabled: root.show4decks
                     text: "Load Track to Deck 4"
                     visible: root.activeAppMenuSection === "File"
 
@@ -1586,6 +1590,7 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: vinylDeck3Control.value > 0
+                    enabled: root.show4decks
                     shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl3", "Ctrl+U")
                     text: "Enable Vinyl Control 3"
 
@@ -1596,6 +1601,7 @@ Rectangle {
                 ToolbarAppMenuAction {
                     checkable: true
                     checked: vinylDeck4Control.value > 0
+                    enabled: root.show4decks
                     shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl4", "Ctrl+I")
                     text: "Enable Vinyl Control 4"
 
