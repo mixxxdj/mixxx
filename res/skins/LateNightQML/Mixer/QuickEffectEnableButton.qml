@@ -29,10 +29,8 @@ Item {
         visible: enabledControl.value <= 0
         width: 18
     }
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: root.toggle()
+    TapHandler {
+        onTapped: root.toggle()
     }
     Mixxx.ControlProxy {
         id: enabledControl

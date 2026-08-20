@@ -31,10 +31,8 @@ Item {
         visible: killControl.value <= 0
         width: 18
     }
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: killControl.value = killControl.value > 0 ? 0 : 1
+    TapHandler {
+        onTapped: killControl.value = killControl.value > 0 ? 0 : 1
     }
     Mixxx.ControlProxy {
         id: killControl

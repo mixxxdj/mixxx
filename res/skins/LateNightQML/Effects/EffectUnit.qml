@@ -203,10 +203,8 @@ Item {
                 anchors.fill: parent
                 source: LateNightTheme.assetFxSettingsButton
             }
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: presetPopup.open()
+            TapHandler {
+                onTapped: presetPopup.open()
             }
         }
         LateNightControls.Knob {
@@ -309,10 +307,8 @@ Item {
             visible: controllerActive.value > 0
             width: 1
         }
-        MouseArea {
-            anchors.fill: parent
-
-            onClicked: expandedControl.value = root.expanded ? 0 : 1
+        TapHandler {
+            onTapped: expandedControl.value = root.expanded ? 0 : 1
         }
     }
     SharedEffects.EffectChainPresetPopup {

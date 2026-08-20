@@ -44,10 +44,8 @@ Row {
                 font.pixelSize: 12
                 text: root.unitCount === 2 || cell.index === 0 ? "FX" + (cell.index + 1) : cell.index + 1
             }
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: assignControl.value = assignControl.value > 0 ? 0 : 1
+            TapHandler {
+                onTapped: assignControl.value = assignControl.value > 0 ? 0 : 1
             }
             Mixxx.ControlProxy {
                 id: assignControl

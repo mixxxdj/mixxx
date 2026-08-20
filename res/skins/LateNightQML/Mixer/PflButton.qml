@@ -28,10 +28,8 @@ Item {
         source: pflControl.value > 0 ? LateNightTheme.assetMixerPflActiveIcon : LateNightTheme.assetMixerPflIcon
         width: 26
     }
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: pflControl.value = pflControl.value > 0 ? 0 : 1
+    TapHandler {
+        onTapped: pflControl.value = pflControl.value > 0 ? 0 : 1
     }
     Mixxx.ControlProxy {
         id: pflControl

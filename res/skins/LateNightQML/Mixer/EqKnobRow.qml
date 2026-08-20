@@ -58,10 +58,8 @@ Item {
         x: root.mirror ? eqKnob.x + 32 : eqKnob.x
         y: 27
 
-        MouseArea {
-            anchors.fill: parent
-
-            onClicked: eqKillButton.toggle()
+        TapHandler {
+            onTapped: eqKillButton.toggle()
         }
     }
 }

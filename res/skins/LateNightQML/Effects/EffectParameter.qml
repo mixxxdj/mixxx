@@ -69,10 +69,8 @@ Item {
             radius: 3
             width: 8
 
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: {
+            TapHandler {
+                onTapped: {
                     if (inverseControl.item) {
                         inverseControl.item.value = inverseControl.item.value > 0 ? 0 : 1;
                     }
@@ -121,10 +119,8 @@ Item {
                 }
             }
 
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: {
+            TapHandler {
+                onTapped: {
                     if (linkControl.item) {
                         linkControl.item.value = (Math.round(linkControl.item.value) + 1) % 5;
                     }

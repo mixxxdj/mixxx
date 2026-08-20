@@ -13,17 +13,15 @@ Item {
         anchors.fill: parent
         source: root.focused ? LateNightTheme.assetFxFocusActiveButton : LateNightTheme.assetFxFocusButton
     }
-    MouseArea {
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        anchors.fill: parent
+    TapHandler {
+        acceptedButtons: Qt.LeftButton
 
-        onClicked: mouse => {
-            if (mouse.button === Qt.RightButton) {
-                focusedEffect.value = 0;
-            } else {
-                focusedEffect.value = root.focused ? 0 : root.effectNumber;
-            }
-        }
+        onTapped: focusedEffect.value = root.focused ? 0 : root.effectNumber
+    }
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+
+        onTapped: focusedEffect.value = 0
     }
     Mixxx.ControlProxy {
         id: focusedEffect

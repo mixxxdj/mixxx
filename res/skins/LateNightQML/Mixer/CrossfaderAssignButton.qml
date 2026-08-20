@@ -27,10 +27,8 @@ Item {
         fillMode: Image.PreserveAspectFit
         source: LateNightTheme.lateNightAsset("buttons", "btn__xfader_deck_" + root.stateLabel + "_" + root.stateStyle + ".svg")
     }
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: orientationControl.value = (Math.round(orientationControl.value) + 1) % 3
+    TapHandler {
+        onTapped: orientationControl.value = (Math.round(orientationControl.value) + 1) % 3
     }
     Mixxx.ControlProxy {
         id: orientationControl

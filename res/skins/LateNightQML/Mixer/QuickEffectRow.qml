@@ -32,10 +32,8 @@ Item {
         x: root.mirror ? quickEffectKnob.x + 32 : quickEffectKnob.x
         y: 27
 
-        MouseArea {
-            anchors.fill: parent
-
-            onClicked: enableButton.toggle()
+        TapHandler {
+            onTapped: enableButton.toggle()
         }
     }
     LateNightControls.Knob {
