@@ -11,7 +11,24 @@ Item {
     required property string group
     required property string label
     required property color linkColor
+    property bool showParameterValue: false
+    property bool skipNextValueChange: true
     required property color unitColor
+    required property string unitString
+
+    function formatParameterValue(value) {
+        const absoluteRoundedValue = Math.abs(Math.round(value));
+        const decimalPlaces = absoluteRoundedValue < 100 ? 2 : (absoluteRoundedValue < 1000 ? 1 : 0);
+        const decimalFactor = Math.pow(10, decimalPlaces);
+        const roundedValue = Math.round(value * decimalFactor) / decimalFactor;
+        const displayValue = roundedValue === 0 ? 0 : roundedValue;
+        return displayValue.toString() + (root.unitString.length > 0 ? " " + root.unitString : "");
+    }
+    function resetValueDisplay() {
+        valueDisplayTimer.stop();
+        root.showParameterValue = false;
+        root.skipNextValueChange = true;
+    }
 
     implicitHeight: 45
     implicitWidth: buttonParameter ? 55 : 40
@@ -51,7 +68,7 @@ Item {
         font.pixelSize: 10
         height: 10
         horizontalAlignment: Text.AlignHCenter
-        text: root.label
+        text: root.showParameterValue ? root.formatParameterValue(parameterValue.value) : root.label
         verticalAlignment: Text.AlignVCenter
         width: root.width
         y: 28
@@ -146,6 +163,32 @@ Item {
         sourceComponent: ParameterControlProxy {
             group: root.group
             key: root.controlKey + "_link_type"
+        }
+    }
+    Timer {
+        id: valueDisplayTimer
+
+        interval: 800
+
+        onTriggered: root.showParameterValue = false
+    }
+    Mixxx.ControlProxy {
+        id: parameterValue
+
+        group: root.group
+        key: root.controlKey
+
+        onGroupChanged: root.resetValueDisplay()
+        onKeyChanged: root.resetValueDisplay()
+        onValueChanged: value => {
+            if (root.skipNextValueChange) {
+                root.skipNextValueChange = false;
+                return;
+            }
+            if (!root.buttonParameter) {
+                root.showParameterValue = true;
+                valueDisplayTimer.restart();
+            }
         }
     }
 

@@ -175,6 +175,7 @@ Item {
                     required property string name
                     required property string shortName
                     required property int type
+                    required property string unitString
 
                     function updateActive() {
                         if (completed) {
@@ -195,6 +196,7 @@ Item {
                         label: buttonLoader.shortName || buttonLoader.name
                         linkColor: root.unitDimColor
                         unitColor: root.unitColor
+                        unitString: buttonLoader.unitString
                     }
 
                     Component.onCompleted: {
@@ -222,6 +224,7 @@ Item {
                     required property string name
                     required property string shortName
                     required property int type
+                    required property string unitString
 
                     function updateActive() {
                         if (completed) {
@@ -242,6 +245,7 @@ Item {
                         label: knobLoader.shortName || knobLoader.name
                         linkColor: root.unitDimColor
                         unitColor: root.unitColor
+                        unitString: knobLoader.unitString
                     }
 
                     Component.onCompleted: {

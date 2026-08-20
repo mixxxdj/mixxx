@@ -18,6 +18,7 @@ const QHash<int, QByteArray> kRoleNames = {
         {QmlEffectSlotParametersModel::TypeRole, "type"},
         {QmlEffectSlotParametersModel::ControlKeyRole, "controlKey"},
         {QmlEffectSlotParametersModel::LoadedRole, "loaded"},
+        {QmlEffectSlotParametersModel::UnitStringRole, "unitString"},
 };
 }
 
@@ -108,6 +109,8 @@ QVariant QmlEffectSlotParametersModel::data(const QModelIndex& index, int role) 
     }
     case QmlEffectSlotParametersModel::LoadedRole:
         return static_cast<bool>(loadedParameterForRow(index.row()));
+    case QmlEffectSlotParametersModel::UnitStringRole:
+        return pParameter->unitString();
     default:
         return QVariant();
     }
