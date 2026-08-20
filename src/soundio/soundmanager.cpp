@@ -248,10 +248,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     m_pErrorDevice.clear();
 
     // deinitialize in case of PortAudio so the devices are updated
-#ifdef __PIPEWIRE__
-    if (m_config.getAPI() != SoundManagerConfig::kAPIPipewire)
-#endif
-    {
+    if (isPipewireSelected()) {
         m_pEnumerator->deinitialize();
     }
 }
