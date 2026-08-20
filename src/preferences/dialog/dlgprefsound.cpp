@@ -363,6 +363,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     kAppGroup, QStringLiteral("latency_params_mismatch"), this);
             m_latencyParamsMismatchText->setVisible(
                     static_cast<bool>(m_cpLatencyParamsMismatch->get()));
+            m_latencyParamsMismatchText->setText(
+                    tr("Server is providing different buffer size "
+                       "(%1) or samplerate (%2) than forced.")
+                            .arg(QString::number(m_cpBufferSize->get()),
+                                    QString::number(m_cpSamplerate->get())));
+
             m_cpLatencyParamsMismatch->connectValueChanged(
                     this, [this](double mismatch) {
                         qDebug() << "m_cpLatencyParamsMismatch->"
@@ -371,8 +377,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                         m_latencyParamsMismatchText->setText(
                                 tr("Server is providing different buffer size "
                                    "(%1) or samplerate (%2) than forced.")
-                                        .arg(m_cpBufferSize->get())
-                                        .arg(m_cpSamplerate->get()));
+                                        .arg(QString::number(
+                                                     m_cpBufferSize->get()),
+                                                QString::number(m_cpSamplerate
+                                                                ->get())));
                         m_latencyParamsMismatchText->setVisible(
                                 static_cast<bool>(mismatch));
                     });
@@ -585,7 +593,7 @@ void DlgPrefSound::slotApply() {
 #ifdef __PIPEWIRE__
         if (CmdlineArgs::Instance().getDeveloper()) {
             m_pSettings->set(kPipeWire, ConfigValue(m_pipewireCheckBox->isChecked()));
-            if (m_pSettings->getValue(kPipeWire, false)) {
+            if (m_pSoundManager->isPipewireSelected()) {
                 m_pSettings->setValue(kForceBufferSize, m_forceBufferSize->isChecked());
                 m_pSettings->setValue(kForceSamplerate, m_forceSamplerate->isChecked());
             }
@@ -909,15 +917,23 @@ void DlgPrefSound::updateAPIs() {
 void DlgPrefSound::sampleRateChanged(int index) {
     m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
     m_bLatencyChanged = true;
-    updateAudioBufferSizes(index);
+
+    if (!m_pSoundManager->isPipewireSelected()) {
+        updateAudioBufferSizes(index);
+    }
     checkLatencyCompensation();
 }
 
 /// Slot called when the latency combo box is changed to update the
 /// latency in the config.
 void DlgPrefSound::audioBufferChanged(int index) {
-    m_config.setAudioBufferSizeIndex(
-            audioBufferComboBox->itemData(index).toUInt());
+    if (!m_pSoundManager->isPipewireSelected() || audioBufferComboBox->isEnabled()) {
+        // don't update config when working with PipeWire server assigned
+        // buffer size, which can or cannot be power of 2, so keep last forced buffer size
+
+        m_config.setAudioBufferSizeIndex(
+                audioBufferComboBox->itemData(index).toUInt());
+    }
     m_bLatencyChanged = true;
     checkLatencyCompensation();
 }
@@ -957,7 +973,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
         if (audioBufferComboBox->isEnabled()) {
             audioBufferComboBox->clear();
             for (int i = 1; i < 8; i++) {
-                audioBufferComboBox->addItem(tr("%1 frames/period").arg(2 << (i + 4)),
+                audioBufferComboBox->addItem(tr("%1 frames/period").arg(1 << (i + 5)),
                         QVariant::fromValue(i));
             }
         }

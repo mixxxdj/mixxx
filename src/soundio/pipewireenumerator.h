@@ -58,7 +58,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
   private slots:
     void registerInput(const AudioInput& input, AudioDestination* dest);
     void registerOutput(const AudioOutput& output, AudioSource* src);
-    void devicesSetup();
 
   private:
     struct Link {
@@ -193,7 +192,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             uint32_t inPortId);
     void destroyLink(uint32_t id);
 
-    void updateAudioLatencyUsage(const SINT framesPerBuffer);
+    void updateAudioLatencyUsage(SINT samplerate, SINT framesPerBuffer);
     void setLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
 
     void createInputPorts(const AudioInput& path, PortPair& ports);
@@ -201,7 +200,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void createPorts(PortPair& ports, std::string_view name, spa_direction direction);
     void closePorts(PortPair& ports);
 
-    void updateFilterLatency();
+    void updateFilterLatency(const SINT samplerate, const SINT bufferSize);
     bool nodeHasPorts(const Node& node);
 
     std::unordered_map<uint32_t, Node> m_nodes;
@@ -229,19 +228,17 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     int m_invalidTimeInfoCount;
     double m_lastCallbackEntrytoDacSecs;
     PerformanceTimer m_clkRefTimer;
-    mixxx::audio::SampleRate m_sampleRate;
     mixxx::audio::SampleRate m_defaultSampleRate;
 
     std::unordered_map<AudioInput, PortPair> m_inputs;
     std::unordered_map<AudioOutput, PortPair> m_outputs;
-
-    uint32_t m_framesPerBuffer;
 
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;
     ControlObject m_coBufferSize;
     ControlObject m_coLatencyParamsMismatch;
     ControlProxy m_coOutputLatencyMs;
+    ControlProxy m_coSamplerate;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
@@ -251,6 +248,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
     int m_coreSyncSeq;
-    bool m_forceSamplerate;
     bool m_forceQuantum;
+    bool m_forceSamplerate;
+    uint32_t m_samplerate;
+    uint32_t m_bufferSize;
 };
