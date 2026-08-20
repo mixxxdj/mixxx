@@ -21,9 +21,7 @@ const QString SoundManagerConfig::kAPIDirectSound = QStringLiteral("Windows Dire
 // (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
 const QString SoundManagerConfig::kAPIIosAudio = QStringLiteral("iOS Audio");
 const QString SoundManagerConfig::kAPICoreAudio = QStringLiteral("Core Audio");
-#ifdef __PIPEWIRE__
 const QString SoundManagerConfig::kAPIPipewire = QStringLiteral("PipeWire");
-#endif
 
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;

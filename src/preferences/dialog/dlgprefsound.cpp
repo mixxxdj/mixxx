@@ -968,7 +968,6 @@ void DlgPrefSound::engineClockChanged(int index) {
 // but they'll be close).
 void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     QVariant oldSizeIndex = audioBufferComboBox->currentData();
-#ifdef __PIPEWIRE__
     if (m_config.getAPI() == SoundManagerConfig::kAPIPipewire) {
         if (audioBufferComboBox->isEnabled()) {
             audioBufferComboBox->clear();
@@ -979,7 +978,6 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
         }
         return;
     }
-#endif
 
     audioBufferComboBox->clear();
     if (m_config.getAPI() == SoundManagerConfig::kAPIJack) {
