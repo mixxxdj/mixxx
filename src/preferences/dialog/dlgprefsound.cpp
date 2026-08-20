@@ -1,6 +1,8 @@
 #include "preferences/dialog/dlgprefsound.h"
 
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
@@ -37,6 +39,8 @@ const ConfigKey kKeylockMultiThreadingCfgkey =
         ConfigKey(kAppGroup, QStringLiteral("keylock_multithreading"));
 const ConfigKey kPipeWire =
         ConfigKey(kAppGroup, QStringLiteral("pipewire"));
+const ConfigKey kPipeWirePatchbay =
+        ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -118,6 +122,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &SoundManager::deviceChannelsUpdated,
             this,
             &DlgPrefSound::updateDeviceChannels);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::configInvalidated,
+            this,
+            &DlgPrefSound::invalidateConfig);
 
     apiComboBox->clear();
     apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
@@ -227,15 +236,37 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
         connect(m_pipewireCheckBox,
                 &QCheckBox::toggled,
                 this,
-                [this](bool checked) {
+                [this](bool) {
                     m_settingsModified = true;
-                    if (m_pSoundManager->isPipewireSelected() xor checked) {
-                        QMessageBox::information(this,
-                                tr("Information"),
-                                tr("Mixxx must be restarted for the PipeWire "
-                                   "API selection to take effect."));
-                    }
+                    QMessageBox::information(this,
+                            tr("Information"),
+                            tr("Mixxx must be restarted for the PipeWire "
+                               "API selection to take effect."));
                 });
+    }
+
+    if (m_pSoundManager->isPipewireSelected()) {
+        m_pipewirePatchbayCheckBox = make_parented<QCheckBox>(this);
+        m_pipewirePatchbayCheckBox->setText(tr("Sync with external patchbay"));
+        m_pPipewirePatchbay = make_parented<ControlProxy>(
+                kPipeWirePatchbay.group, kPipeWirePatchbay.item, this);
+        connect(m_pipewirePatchbayCheckBox,
+                &QCheckBox::toggled,
+                this,
+                [this](bool checked) {
+                    m_pSettings->setValue(kPipeWirePatchbay, checked);
+                    m_pPipewirePatchbay->set(checked);
+                    ioTabs->setDisabled(checked);
+                    m_settingsModified = true;
+                });
+
+        auto pipewireGroupBox = make_parented<QGroupBox>("PipeWire Settings", this);
+        auto pipewireSettings = make_parented<QVBoxLayout>(pipewireGroupBox);
+        verticalLayout_2->insertWidget(2, pipewireGroupBox.get());
+
+        bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
+        m_pipewirePatchbayCheckBox->setChecked(checked);
+        pipewireSettings->addWidget(m_pipewirePatchbayCheckBox.get());
     }
 #endif
 
@@ -575,7 +606,6 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::deviceChannelsUpdated,
             pItem,
             &DlgPrefSoundItem::updateDeviceChannels);
-    connect(this, &DlgPrefSound::deviceRouteUpdated, pItem, &DlgPrefSoundItem::updateDeviceRoute);
 }
 
 void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
@@ -698,12 +728,6 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
                     QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
         }
     }
-
-#ifdef __PIPEWIRE__
-    if (CmdlineArgs::Instance().getDeveloper()) {
-        m_pipewireCheckBox->setChecked(m_pSoundManager->isPipewireSelected());
-    }
-#endif
 
     m_loading = false;
     // DlgPrefSoundItem has it's own inhibit flag
@@ -1233,4 +1257,8 @@ void DlgPrefSound::updateSampleRates(const QList<mixxx::audio::SampleRate>& samp
                     QVariant::fromValue(sampleRate));
         }
     }
+}
+
+void DlgPrefSound::invalidateConfig() {
+    m_settingsModified = true;
 }

@@ -16,6 +16,15 @@ bool EffectManifest::hasMetaKnobLinking() const {
 
 bool EffectManifest::sortLexigraphically(
         EffectManifestPointer pManifest1, EffectManifestPointer pManifest2) {
+    // Defensive: null manifests should no longer occur here, but
+    // this check is retained to prevent std::sort from crashing if an
+    // unexpected null pointer ever reaches this comparator. Nulls sort to the end.
+    VERIFY_OR_DEBUG_ASSERT(pManifest1) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pManifest2) {
+        return true;
+    }
     // Sort built-in effects first before external plugins
     int backendNameComparision = static_cast<int>(pManifest1->backendType()) -
             static_cast<int>(pManifest2->backendType());

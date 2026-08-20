@@ -310,10 +310,10 @@ EngineBuffer::~EngineBuffer() {
     df.close();
 #endif
 
-    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
-
     delete m_pReadAheadManager;
     delete m_pReader;
+
+    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
 
     delete m_playButton;
     delete m_playStartButton;
