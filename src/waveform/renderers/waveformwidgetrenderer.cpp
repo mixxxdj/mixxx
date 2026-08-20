@@ -47,6 +47,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
           m_pContext(nullptr),
+          m_hotcueDragInProgress(false),
+          m_hotcueDragIndex(Cue::kNoHotCue),
           m_passthroughEnabled(false) {
     //qDebug() << "WaveformWidgetRenderer";
     for (int type = ::WaveformRendererAbstract::Play;
