@@ -16,6 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetrackplayer.cpp"
+#include "track/cue.h"
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -24,8 +25,6 @@
 namespace {
 
 constexpr double kNoTrackColor = -1;
-constexpr double kShiftCuesOffsetMillis = 10;
-constexpr double kShiftCuesOffsetSmallMillis = 1;
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
@@ -53,7 +52,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
           m_pLoadedTrack(),
           m_pPrevFailedTrackId(),
           m_replaygainPending(false),
-          m_pChannelToCloneFrom(nullptr) {
+          m_pChannelToCloneFrom(nullptr),
+          m_focusedHotcueIndexCO(ControlFlag::AllowMissingOrInvalid),
+          m_pQuantizeEnabled(ControlFlag::AllowMissingOrInvalid) {
     auto channel = std::make_unique<EngineDeck>(handleGroup,
             pConfig,
             pMixingEngine,
@@ -82,6 +83,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             this,
             // signal-to-signal
             &BaseTrackPlayerImpl::noVinylControlInputConfigured);
+
+    m_focusedHotcueIndexCO = PollingControlProxy(getGroup(), QStringLiteral("hotcue_focus"));
+    m_pQuantizeEnabled = PollingControlProxy(getGroup(), QStringLiteral("quantize"));
 
     m_pEject = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "eject"));
     connect(m_pEject.get(),
@@ -283,20 +287,24 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     connect(m_pShiftCuesEarlier.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftCuesMillisButton(value, -kShiftCuesOffsetMillis); });
+            [this](double value) {
+                slotShiftCuesMillisButton(value, -Cue::kShiftCuesOffsetMillis);
+            });
     m_pShiftCuesLater = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "shift_cues_later"));
     connect(m_pShiftCuesLater.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftCuesMillisButton(value, kShiftCuesOffsetMillis); });
+            [this](double value) {
+                slotShiftCuesMillisButton(value, Cue::kShiftCuesOffsetMillis);
+            });
     m_pShiftCuesEarlierSmall = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "shift_cues_earlier_small"));
     connect(m_pShiftCuesEarlierSmall.get(),
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftCuesMillisButton(value, -kShiftCuesOffsetSmallMillis);
+                slotShiftCuesMillisButton(value, -Cue::kShiftCuesOffsetMillisSmall);
             });
     m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "shift_cues_later_small"));
@@ -304,7 +312,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftCuesMillisButton(value, kShiftCuesOffsetSmallMillis);
+                slotShiftCuesMillisButton(value, -Cue::kShiftCuesOffsetMillisSmall);
             });
     m_pShiftCues = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "shift_cues"));
@@ -312,6 +320,49 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlObject::valueChanged,
             this,
             &BaseTrackPlayerImpl::slotShiftCuesMillis);
+    // the same for the currently focused (last touched) hotcue, if there is one
+    if (primaryDeck) {
+        m_pShiftFocusedHotcueEarlier = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_earlier"));
+        connect(m_pShiftFocusedHotcueEarlier.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(
+                            value, -Cue::kShiftCuesOffsetMillis);
+                });
+        m_pShiftFocusedHotcueLater = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_later"));
+        connect(m_pShiftFocusedHotcueLater.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(
+                            value, Cue::kShiftCuesOffsetMillis);
+                });
+        m_pShiftFocusedHotcueEarlierSmall = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_earlier_small"));
+        connect(m_pShiftFocusedHotcueEarlierSmall.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(value, -Cue::kShiftCuesOffsetMillisSmall);
+                });
+        m_pShiftFocusedHotcueLaterSmall = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "shift_focused_hotcue_later_small"));
+        connect(m_pShiftFocusedHotcueLaterSmall.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    slotShiftFocusedHotcueMillisButton(value, Cue::kShiftCuesOffsetMillisSmall);
+                });
+        m_pShiftFocusedHotcue = std::make_unique<ControlObject>(
+                ConfigKey(getGroup(), "shift_focused_hotcue"));
+        connect(m_pShiftFocusedHotcue.get(),
+                &ControlObject::valueChanged,
+                this,
+                &BaseTrackPlayerImpl::slotShiftFocusedHotcueMillis);
+    }
 
     // BPM and key of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(getGroup(), "file_bpm"));
@@ -1108,6 +1159,30 @@ void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double millise
         return;
     }
     slotShiftCuesMillis(milliseconds);
+}
+
+void BaseTrackPlayerImpl::slotShiftFocusedHotcueMillis(double milliseconds) {
+    if (!m_pLoadedTrack || milliseconds == 0) {
+        return;
+    }
+    // `hotcue_focus` control is 1-based, track hotcues are 0-based
+    int hotcueIndex = static_cast<int>(m_focusedHotcueIndexCO.get()) - 1;
+    if (hotcueIndex == Cue::kNoHotCue) {
+        return;
+    }
+
+    if (m_pQuantizeEnabled.toBool()) {
+        m_pLoadedTrack->shiftHotcuePositionBeats(hotcueIndex, milliseconds > 0 ? 1 : -1);
+    } else {
+        m_pLoadedTrack->shiftHotcuePositionMillis(hotcueIndex, milliseconds);
+    }
+}
+
+void BaseTrackPlayerImpl::slotShiftFocusedHotcueMillisButton(double value, double milliseconds) {
+    if (value <= 0 || milliseconds == 0) {
+        return;
+    }
+    slotShiftFocusedHotcueMillis(milliseconds);
 }
 
 void BaseTrackPlayerImpl::slotUpdateReplayGainFromPregain(double pressed) {
