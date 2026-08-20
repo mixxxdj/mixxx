@@ -33,8 +33,9 @@ Item {
         LateNightControls.Fader {
             backgroundSource: LateNightTheme.assetMixerVolumeSliderBackground
             group: root.group
+            handleHeight: 19
             handleSource: LateNightTheme.assetMixerVolumeSliderHandle
-            handleWidth: 31
+            handleWidth: 42
             height: 107
             key: "volume"
             orientation: Qt.Vertical

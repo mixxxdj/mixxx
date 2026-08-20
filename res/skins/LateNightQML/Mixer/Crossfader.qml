@@ -16,11 +16,14 @@ Item {
     LateNightControls.Fader {
         anchors.centerIn: parent
         backgroundSource: root.compact ? LateNightTheme.assetMixerCrossfaderSmallBackground : LateNightTheme.assetMixerCrossfaderBackground
+        bar.axis: 19
         bar.margin: 7
         bar.start: 0.5
         group: "[Master]"
+        handleHeight: 40
         handleSource: LateNightTheme.assetMixerCrossfaderHandle
-        height: implicitHeight
+        handleWidth: 19
+        height: 40
         key: "crossfader"
         orientation: Qt.Horizontal
         width: root.compact ? 85 : 115
