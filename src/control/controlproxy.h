@@ -133,6 +133,11 @@ class ControlProxy : public QObject {
         return m_pControl->defaultValue();
     }
 
+    /// Returns true if the current value is the default.
+    inline bool isDefault() const {
+        return m_pControl->get() == m_pControl->defaultValue();
+    }
+
   public slots:
     /// Sets the control value to v. Thread safe, non-blocking.
     void set(double v) {

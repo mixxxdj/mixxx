@@ -18,6 +18,7 @@
 namespace {
 constexpr int kRateSensitivityMin = 100;
 constexpr int kRateSensitivityMax = 2500;
+const double kRateUltraRange = 0.5; // +-50 %
 } // namespace
 
 // Static default values for rate buttons (percents)
@@ -35,6 +36,7 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pBpmControl(nullptr),
           m_pSampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
+          m_usingRateUltra(PlayerManager::isDeckGroup(getGroup())),
           m_pRateRatio(std::make_unique<ControlObject>(
                   ConfigKey(group, QStringLiteral("rate_ratio")),
                   true,
@@ -51,10 +53,23 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           // adjustments are not capped.
           m_pRateSlider(std::make_unique<ControlPotmeter>(
                   ConfigKey(group, QStringLiteral("rate")), -1.0, 1.0, true)),
+          // Allow rate utra slider to go out of bounds so that sync lock rate
+          // adjustments are not capped.
+          m_pRateUltraSlider(m_usingRateUltra
+                          ? std::make_unique<ControlPotmeter>(
+                                    ConfigKey(group, QStringLiteral("rate_ultra")), -1.0, 1.0, true)
+                          : nullptr),
           // Search rate. Rate used when searching in sound. This overrules the
           // playback rate
           m_pRateSearch(std::make_unique<ControlPotmeter>(
                   ConfigKey(group, QStringLiteral("rateSearch")), -300., 300.)),
+          // Toggle rate_ultra
+          m_pRateUltraEnabled(m_usingRateUltra
+                          ? std::make_unique<ControlPushButton>(
+                                    ConfigKey(group, QStringLiteral("rate_ultra_enabled")),
+                                    true,
+                                    0.0)
+                          : nullptr),
           // Temporary rate-change buttons
           m_pButtonRateTempDown(std::make_unique<ControlPushButton>(
                   ConfigKey(group, QStringLiteral("rate_temp_down")))),
@@ -78,6 +93,7 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
                   ConfigKey(group, QStringLiteral("reverse")))),
           m_pReverseRollButton(std::make_unique<ControlPushButton>(
                   ConfigKey(group, QStringLiteral("reverseroll")))),
+          // Fast forward and backward buttons, using `rate_search`
           m_pForwardButton(std::make_unique<ControlPushButton>(
                   ConfigKey(group, QStringLiteral("fwd")))),
           m_pBackButton(std::make_unique<ControlPushButton>(
@@ -86,7 +102,7 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_pWheel(std::make_unique<ControlTTRotary>(
                   ConfigKey(group, QStringLiteral("wheel")))),
           // Scratch controller, this is an accumulator which is useful for
-          // controllers that return individual +1 or -1s, these get added up
+          // controllers that return individual +1 or -1, these get added up
           // and cleared when we read
           m_pScratch2(std::make_unique<ControlObject>(
                   ConfigKey(group, QStringLiteral("scratch2")))),
@@ -147,6 +163,27 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
             this,
             &RateControl::slotRateSliderChanged,
             Qt::DirectConnection);
+
+    if (m_usingRateUltra) {
+        connect(m_pRateUltraSlider.get(),
+                &ControlObject::valueChanged,
+                this,
+                &RateControl::slotRateSliderChanged,
+                Qt::DirectConnection);
+    }
+
+    if (m_usingRateUltra) {
+        if (group == "[Channel1]") {
+            qWarning() << "--------- [Channel1] rate_ultra init value:"
+                       << m_pRateUltraEnabled->get();
+        }
+        m_pRateUltraEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+        connect(m_pRateUltraEnabled.get(),
+                &ControlObject::valueChanged,
+                this,
+                &RateControl::slotRateUltraToggled,
+                Qt::DirectConnection);
+    }
 
     m_pReverseButton->set(0);
 
@@ -286,22 +323,62 @@ double RateControl::getPermanentRateChangeFineAmount() {
 }
 
 void RateControl::slotRateRangeChanged(double) {
-    // update RateSlider with the new Range value butdo not change m_pRateRatio
+    // update RateSlider with the new Range value but do not change m_pRateRatio
     slotRateRatioChanged(m_pRateRatio->get());
 }
 
-void RateControl::slotRateSliderChanged(double v) {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * v;
+void RateControl::slotRateSliderChanged(double) {
+    // This is called when touching both rate and rate_ultra, but we must not
+    // consider rate_ultra when it's not enabled (but the slider may have been
+    // touched nonetheless)
+    double rateUltra = 0;
+    if (m_usingRateUltra) {
+        rateUltra = m_pRateUltraEnabled->toBool()
+                ? m_pRateUltraSlider->get() * kRateUltraRange
+                : 0;
+    }
+    double rate = m_pRateSlider->get() * m_pRateRange->get();
+    double rateRatio = 1.0 + m_pRateDir->get() * (rate + rateUltra);
     m_pRateRatio->set(rateRatio);
 }
 
 void RateControl::slotRateRatioChanged(double v) {
-    double rateRange = m_pRateRange->get();
-    if (rateRange > 0.0) {
-        double newRate = m_pRateDir->get() * (v - 1) / rateRange;
-        m_pRateSlider->set(newRate);
+    if (m_usingRateUltra && m_pRateUltraEnabled->toBool()) {
+        // never change rate slider programmatically
+        double newRateUltra =
+                (((v - 1) * m_pRateDir->get()) -
+                        (m_pRateRange->get() * m_pRateSlider->get())) /
+                kRateUltraRange;
+        m_pRateUltraSlider->set(newRateUltra);
     } else {
-        m_pRateSlider->set(0);
+        // Classic mode without rate_ultra
+        double rateRange = m_pRateRange->get();
+        if (rateRange > 0.0) {
+            double newRate = m_pRateDir->get() * (v - 1) / rateRange;
+            m_pRateSlider->set(newRate);
+        } else {
+            m_pRateSlider->set(0);
+        }
+    }
+}
+
+void RateControl::slotRateUltraToggled(double v) {
+    // Shouldn't be possible if this is a main deck
+    DEBUG_ASSERT(m_usingRateUltra);
+
+    // Currently we only touch the rate slider when disabling ultra mode.
+    // FIXME When enabling, reset rate and apply rate_ratio to rate_ultra?
+    if (v == 0) {
+        // Disable ultra mode.
+        // The goal is to keep rate_ratio steady and reset rate_ultra.
+        // So we need to apply the rate_ultra factor to the rate slider.
+        // Block signals to prevent calling slotRateSliderChanged()
+        m_pRateUltraSlider->blockSignals(true);
+        m_pRateUltraSlider->set(0);
+        m_pRateUltraSlider->blockSignals(false);
+
+        // Update rate slider
+        slotRateRatioChanged(m_pRateRatio->get());
     }
 }
 
