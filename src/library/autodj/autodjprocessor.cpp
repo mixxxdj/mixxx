@@ -14,6 +14,7 @@ const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
 constexpr double kTransitionPreferenceDefault = 10.0;
 constexpr double kKeepPosition = -1.0;
+constexpr double kSkipToNextTrack = -2.0;
 
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
@@ -1053,11 +1054,6 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
             // This forces the other deck to be the fromDeck.
             thisDeck->startPos = kKeepPosition;
             calculateTransition(otherDeck, thisDeck, true);
-            if (thisDeck->startPos != kKeepPosition) {
-                // Note: this seek will trigger the playerPositionChanged slot
-                // which may calls the calculateTransition() again without seek = true;
-                thisDeck->setPlayPosition(thisDeck->startPos);
-            }
         }
     }
 }
@@ -1282,6 +1278,38 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         return;
     }
 
+    calculateTransitionImpl(pFromDeck, pToDeck, seekToStartPoint);
+
+    if constexpr (sDebug) {
+        qDebug() << this << "calculateTransition" << pFromDeck->group
+                 << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
+                 << pToDeck->startPos;
+    }
+
+    if (pToDeck->startPos == kSkipToNextTrack) {
+        // This is a safety measure to handle tracks that are too short.
+        // Immediately skip to the next track instead. Note that this
+        // will trigger the playerTrackLoaded slot, which will call
+        // calculateTransition() again.
+        loadNextTrackFromQueue(*pToDeck, false);
+        return;
+    }
+
+    if (seekToStartPoint && pToDeck->startPos != kKeepPosition) {
+        // Note: This seek will trigger the playerPositionChanged slot
+        // which may call calculateTransition() again, but without seekToPosition = true.
+        pToDeck->setPlayPosition(pToDeck->startPos);
+    }
+}
+
+void AutoDJProcessor::calculateTransitionImpl(
+        DeckAttributes* pFromDeck,
+        DeckAttributes* pToDeck,
+        bool seekToStartPoint) {
+    // ===================================
+    // Check for tracks that are too short
+    // ===================================
+
     const double fromDeckEndPosition = getEndSecond(pFromDeck);
     const double toDeckEndPosition = getEndSecond(pToDeck);
     // Since the end position is measured in seconds from 0:00 it is also
@@ -1290,24 +1318,29 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     const double toDeckDuration = toDeckEndPosition;
 
     VERIFY_OR_DEBUG_ASSERT(fromDeckDuration >= kMinimumTrackDurationSec) {
-        // Track has no duration or too short. This should not happen, because short
-        // tracks are skipped after load. Play ToDeck immediately.
+        // Track has no duration or is too short. This should not happen,
+        // because short tracks are skipped after load. Play ToDeck immediately.
         pFromDeck->fadeBeginPos = 0;
         pFromDeck->fadeEndPos = 0;
         pToDeck->startPos = kKeepPosition;
         return;
     }
     if (toDeckDuration == 0) {
-        // This is a seek call to zero after ejecting the track
-        // this signal is received before the track pointer becomes null
+        // This is a seek call to zero after ejecting the track.
+        // This signal is received before the track pointer becomes null.
         return;
     }
+
     VERIFY_OR_DEBUG_ASSERT(toDeckDuration >= kMinimumTrackDurationSec) {
-        // Track has no duration or too short. This should not happen, because short
-        // tracks are skipped after load.
-        loadNextTrackFromQueue(*pToDeck, false);
+        // Track has no duration or is too short. This should not happen, because short
+        // tracks are skipped after load. Immediately pick next track from queue.
+        pToDeck->startPos = kSkipToNextTrack;
         return;
     }
+
+    // ========================
+    // Handle intros and outros
+    // ========================
 
     // Within this function, the outro refers to the outro of the currently
     // playing track and the intro refers to the intro of the next track.
@@ -1514,7 +1547,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
     }
 
-    // These are expected to be a fraction of the track length.
+    // The positions are expected to be a fraction of the track length.
     pFromDeck->fadeBeginPos /= fromDeckDuration;
     pFromDeck->fadeEndPos /= fromDeckDuration;
     pToDeck->startPos /= toDeckDuration;
@@ -1526,12 +1559,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     VERIFY_OR_DEBUG_ASSERT(pFromDeck->fadeBeginPos <= 1) {
         pFromDeck->fadeBeginPos = 1;
-    }
-
-    if constexpr (sDebug) {
-        qDebug() << this << "calculateTransition" << pFromDeck->group
-                 << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
-                 << pToDeck->startPos;
     }
 }
 
@@ -1618,11 +1645,6 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         }
         pDeck->startPos = kKeepPosition;
         calculateTransition(fromDeck, pDeck, true);
-        if (pDeck->startPos != kKeepPosition) {
-            // Note: this seek will trigger the playerPositionChanged slot
-            // which may call the calculateTransition() again without seek = true;
-            pDeck->setPlayPosition(pDeck->startPos);
-        }
         // we are here in the relative domain 0..1
         if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
             // repeat a probably missed update
@@ -1785,11 +1807,6 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
 
     if (pLeftDeck->isPlaying() && !pRightDeck->isPlaying()) {
         calculateTransition(pLeftDeck, pRightDeck, true);
-        if (pRightDeck->startPos != kKeepPosition) {
-            // Note: this seek will trigger the playerPositionChanged slot
-            // which may calls the calculateTransition() again without seek = true;
-            pRightDeck->setPlayPosition(pRightDeck->startPos);
-        }
     } else if (pRightDeck->isPlaying() && pLeftDeck->isPlaying()) {
         calculateTransition(pRightDeck, pLeftDeck, true);
         if (pLeftDeck->startPos != kKeepPosition) {
