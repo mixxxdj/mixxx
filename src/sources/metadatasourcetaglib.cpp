@@ -13,6 +13,7 @@
 #if (TAGLIB_MAJOR_VERSION > 2) || \
         ((TAGLIB_MAJOR_VERSION == 2) && (TAGLIB_MINOR_VERSION >= 2))
 #include <matroskafile.h>
+
 #include "track/taglib/trackmetadata_matroska.h"
 #endif
 #include "track/taglib/trackmetadata_common.h"

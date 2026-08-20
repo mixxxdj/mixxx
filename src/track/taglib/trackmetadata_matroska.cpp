@@ -58,7 +58,7 @@ bool importCoverImageFromTag(
         if (image.isNull()) {
             kLogger.warning()
                     << "Failed to load image from Matroska cover art attachment of type"
-                    << mimeType;
+                    << mimeType.toCString();
             continue;
         }
         *pCoverArt = image;
