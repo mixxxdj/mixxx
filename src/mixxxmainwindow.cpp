@@ -326,6 +326,7 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getVinylControlManager(),
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
+            m_pCoreServices->getScrobblingManager(),
             m_pCoreServices->getLibrary());
     m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
