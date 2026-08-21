@@ -6,16 +6,6 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
-      <!-- 2 Decks: Spacer sized like channel Gain knob -->
-      <WidgetGroup>
-        <Size>0min,28f</Size>
-        <Connection>
-          <ConfigKey>[Skin],large_vu</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
