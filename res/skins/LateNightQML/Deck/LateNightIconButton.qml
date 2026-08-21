@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import "../LateNightTheme"
 
 Item {
@@ -38,6 +39,7 @@ Item {
     property int iconRightPadding: 0
     property int iconTopPadding: 0
     property int iconBottomPadding: 0
+    property bool rasterizeIconAtPaintedSize: false
 
     readonly property url effectiveBackgroundSource: {
         var src = backgroundSource.toString();
@@ -123,6 +125,9 @@ Item {
         width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / 2 : root.iconAvailableWidth)
         height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / 2 : root.iconAvailableHeight)
         source: root.effectiveIconSource
+        sourceSize: root.rasterizeIconAtPaintedSize
+                ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+                : Qt.size(-1, -1)
         fillMode: root.stretchIcon ? Image.Stretch : Image.PreserveAspectFit
         opacity: root.contentOpacity
         visible: root.effectiveIconSource.toString().length > 0
@@ -160,6 +165,9 @@ Item {
             width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / 2 : root.iconAvailableWidth)
             height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / 2 : root.iconAvailableHeight)
             source: root.latchOverlayIconSource
+            sourceSize: root.rasterizeIconAtPaintedSize
+                    ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+                    : Qt.size(-1, -1)
             fillMode: root.stretchIcon ? Image.Stretch : Image.PreserveAspectFit
             opacity: root.contentOpacity
             visible: root.latchOverlayIconSource.toString().length > 0

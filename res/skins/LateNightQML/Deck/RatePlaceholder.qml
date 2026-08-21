@@ -192,8 +192,12 @@ Item {
                 inactiveOpacity: 1.0
                 activeColor: LateNightTheme.syncExplicitLeaderColor
                 fillMargin: 0
-                iconLeftPadding: LateNightTheme.syncButtonHorizontalPadding
-                iconRightPadding: LateNightTheme.syncButtonHorizontalPadding
+                iconBottomPadding: LateNightTheme.isPaleMoon ? 2 : 0
+                iconLeftPadding: LateNightTheme.isPaleMoon ? 2 : LateNightTheme.syncButtonHorizontalPadding
+                iconRightPadding: LateNightTheme.isPaleMoon ? 2 : LateNightTheme.syncButtonHorizontalPadding
+                iconTopPadding: LateNightTheme.isPaleMoon ? 2 : 0
+                rasterizeIconAtPaintedSize: LateNightTheme.isPaleMoon
+                stretchIcon: LateNightTheme.isPaleMoon
             }
 
             // Leader button: press = request leader state; display follows sync_leader light.
