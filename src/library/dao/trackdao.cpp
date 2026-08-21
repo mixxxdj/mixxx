@@ -1,6 +1,7 @@
 #include "library/dao/trackdao.h"
 
 #include <QChar>
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
 #include <QThread>
@@ -16,6 +17,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/trackfingerprintdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library_prefs.h"
 #include "library/queryutil.h"
@@ -89,14 +91,16 @@ QSet<QString> collectTrackLocations(FwdSqlQuery& query) {
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        AnalysisDao& analysisDao,
+        LibraryHashDAO& libraryHashDao,
+        TrackFingerprintDao& fingerprintDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
           m_libraryHashDao(libraryHashDao),
+          m_fingerprintDao(fingerprintDao),
           m_pConfig(pConfig),
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
@@ -376,6 +380,96 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
     emit mixxx::thisAsNonConst(this)->trackClean(trackId);
 
     return true;
+}
+
+bool TrackDAO::updateAcoustIdResult(
+        TrackId trackId,
+        const QString& acoustidId,
+        const QString& acoustidLookupStatus,
+        const QString& musicbrainzRecordingId,
+        const QString& musicbrainzReleaseId,
+        const QString& musicbrainzTrackId,
+        const QString& musicbrainzArtistId) {
+    kLogger.debug() << "Updating AcoustID result for track" << trackId;
+    if (!trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            "UPDATE library SET "
+            "acoustid_id=:acoustid_id, "
+            "acoustid_lookup_status=:acoustid_status, "
+            "acoustid_lookup_at=:acoustid_lookup_at, "
+            "musicbrainz_recording_id=:mbid_recording, "
+            "musicbrainz_release_id=:mbid_release, "
+            "musicbrainz_track_id=:mbid_track, "
+            "musicbrainz_artist_id=:mbid_artist "
+            "WHERE id=:track_id");
+
+    query.bindValue(":track_id", trackId.toVariant());
+    // Bind NULL for empty strings — don't overwrite existing data with blanks
+    query.bindValue(":acoustid_id",
+            acoustidId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : acoustidId);
+    query.bindValue(":acoustid_status",
+            acoustidLookupStatus.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : acoustidLookupStatus);
+    query.bindValue(":acoustid_lookup_at", QDateTime::currentSecsSinceEpoch());
+    query.bindValue(":mbid_recording",
+            musicbrainzRecordingId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzRecordingId);
+    query.bindValue(":mbid_release",
+            musicbrainzReleaseId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzReleaseId);
+    query.bindValue(":mbid_track",
+            musicbrainzTrackId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzTrackId);
+    query.bindValue(":mbid_artist",
+            musicbrainzArtistId.isEmpty()
+                    ? QVariant(QMetaType(QMetaType::QString))
+                    : musicbrainzArtistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't update AcoustID result for track" << trackId;
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
+}
+
+bool TrackDAO::clearMusicBrainzData(TrackId trackId) const {
+    kLogger.debug() << "Clearing MusicBrainz/AcoustID data for track" << trackId;
+    if (!trackId.isValid()) {
+        return false;
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(
+            "UPDATE library SET "
+            "acoustid_id=NULL, "
+            "acoustid_lookup_status=NULL, "
+            "acoustid_lookup_at=NULL, "
+            "musicbrainz_recording_id=NULL, "
+            "musicbrainz_release_id=NULL, "
+            "musicbrainz_track_id=NULL, "
+            "musicbrainz_artist_id=NULL "
+            "WHERE id=:track_id");
+    query.bindValue(":track_id", trackId.toVariant());
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query)
+                << "couldn't clear MusicBrainz data for track" << trackId;
+        return false;
+    }
+
+    return query.numRowsAffected() > 0;
 }
 
 void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
@@ -1108,6 +1202,40 @@ bool TrackDAO::onPurgingTracks(
         }
     }
     {
+        // Delete orphaned fingerprint metadata for purged tracks
+        FwdSqlQuery query(m_database, QString("DELETE FROM fingerprint_metadata "
+                                              "WHERE track_id IN (%1)")
+                                              .arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // Delete CMRT group memberships for purged tracks
+        FwdSqlQuery query(m_database, QString("DELETE FROM cmrt_members "
+                                              "WHERE track_id IN (%1)")
+                                              .arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // Delete pending AcoustID jobs for purged tracks
+        FwdSqlQuery query(m_database, QString("DELETE FROM acoustid_queue "
+                                              "WHERE track_id IN (%1)")
+                                              .arg(idListJoined));
+        if (query.hasError() || !query.execPrepared()) {
+            return false;
+        }
+    }
+    {
+        // Delete .chroma files for purged tracks.
+        // DB rows are handled above; files must be cleaned up separately
+        for (const TrackId& trackId : trackIds) {
+            m_fingerprintDao.deleteChromaFile(trackId);
+        }
+    }
+    {
         // Remove Track from library table
         FwdSqlQuery query(m_database, QString(
                 "DELETE FROM library "
@@ -1573,6 +1701,14 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
     pTrack->markClean();
 
+    // if this track is a CMRT member with the overlay
+    // checkbox on, replace the cues/beats just loaded above with a shifted,
+    // resampled view of its canonical track's data. Applied here (DAO
+    // level), not in BaseTrackPlayerImpl::loadTrack(), so every consumer of
+    // this Track object -- both decks, DlgTrackInfo, Auto DJ preview --
+    // sees the overlay consistently
+    applyCmrtOverlayIfConfigured(pTrack);
+
     // Synchronize the track's metadata with the corresponding source
     // file. This import might have never been completed successfully
     // before, so just check and try for every track that has been
@@ -1675,6 +1811,77 @@ TrackPointer TrackDAO::getTrackByRef(
         return nullptr;
     }
     return getTrackById(trackId);
+}
+
+void TrackDAO::applyCmrtOverlayIfConfigured(const TrackPointer& pTrack) const {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    auto pMember = m_fingerprintDao.getCmrtMemberByTrackId(pTrack->getId());
+    if (!pMember || !pMember->useCmrtData) {
+        return;
+    }
+    auto pGroup = m_fingerprintDao.getCmrtGroup(pMember->groupId);
+    if (!pGroup || pGroup->canonicalTrackId == pTrack->getId()) {
+        // No group, or this track already IS the canonical -- nothing to
+        // overlay onto itself.
+        return;
+    }
+    // Flush any pending edits to this track's own cues/beats before
+    // overwriting the in-memory copy with the canonical's overlay data.
+    // Otherwise those edits are lost from memory without ever having
+    // reached the database, and later disabling the overlay in
+    // reloadOwnCuesAndBeats() would silently resurrect the stale,
+    // pre-edit values instead of what the user just set.
+    if (pTrack->isDirty()) {
+        saveTrack(pTrack.get());
+    }
+    TrackPointer pCanonical = getTrackById(pGroup->canonicalTrackId);
+    if (!pCanonical) {
+        qWarning() << "TrackDAO -> [applyCmrtOverlayIfConfigured] -> "
+                      "canonical track"
+                   << pGroup->canonicalTrackId << "for group" << pMember->groupId
+                   << "could not be loaded; leaving track"
+                   << pTrack->getId() << "with its own cues/beats";
+        return;
+    }
+    pTrack->applyCmrtOverlay(pCanonical,
+            pMember->offsetFromCanonical,
+            pTrack->getSampleRate());
+}
+
+void TrackDAO::applyCmrtOverlayToLoadedTrack(const TrackPointer& pTrack) const {
+    applyCmrtOverlayIfConfigured(pTrack);
+}
+
+void TrackDAO::reloadOwnCuesAndBeats(const TrackPointer& pTrack) const {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    // Same Reasoning as in applyCmrtOverlayIfConfigured() above:
+    // flush any pending edits to this track's own cues/beats
+    // before overwriting the in-memory copy with the canonical's overlay data.
+    if (pTrack->isDirty()) {
+        saveTrack(pTrack.get());
+    }
+    const TrackId trackId = pTrack->getId();
+    pTrack->clearCmrtOverlay();
+    pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
+
+    // Query the beats
+    // columns directly instead and run them through the same setTrackBeats()
+    // populator a fresh load uses (defined above in this file), applied
+    // straight to pTrack, so we always get a genuinely new BeatsPointer.
+    QSqlQuery query(m_database);
+    query.prepare(
+            "SELECT bpm, beats_version, beats_sub_version, beats, bpm_lock "
+            "FROM Library WHERE id=:id");
+    query.bindValue(":id", trackId.toVariant());
+    if (query.exec() && query.next()) {
+        setTrackBeats(query.record(), 0, pTrack.get());
+    } else {
+        LOG_FAILED_QUERY(query) << "reloadOwnCuesAndBeats" << trackId;
+    }
 }
 
 // Saves a track's info back to the database

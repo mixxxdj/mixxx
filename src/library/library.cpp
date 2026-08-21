@@ -81,6 +81,11 @@ Library::Library(
             this,
             &Library::slotRefreshLibraryModels);
 
+    connect(m_pTrackCollectionManager,
+            &TrackCollectionManager::cmrtDataChanged,
+            this,
+            &Library::slotRefreshLibraryModels);
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = make_parented<MixxxLibraryFeature>(
@@ -162,6 +167,7 @@ Library::Library(
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
+
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
     connect(pPlayerManager,
