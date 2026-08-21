@@ -99,14 +99,10 @@ QString getModuleTypeFromUrl(const QUrl& url) {
 
 } // anonymous namespace
 
-unsigned int SoundSourceOpenMPT::s_bufferSizeLimit = 0;
-TrackerDSP::Settings SoundSourceOpenMPT::s_dspSettings;
+unsigned int SoundSourceOpenMPT::s_bufferSizeLimit = 256 << 20; // 256 MB default
 
-void SoundSourceOpenMPT::configure(
-        unsigned int bufferSizeLimit,
-        const TrackerDSP::Settings& dspSettings) {
+void SoundSourceOpenMPT::configure(unsigned int bufferSizeLimit) {
     s_bufferSizeLimit = bufferSizeLimit;
-    s_dspSettings = dspSettings;
 }
 
 const QString SoundSourceProviderOpenMPT::kDisplayName = QStringLiteral("OpenMPT");
@@ -204,8 +200,7 @@ SoundSource::OpenResult SoundSourceOpenMPT::tryOpen(
         return OpenResult::Failed;
     }
 
-    // configure DSP
-    m_dsp.configure(s_dspSettings, kSampleRate);
+    // DSP effects are now handled by the Tracker DSP effect in the effect rack
 
     DEBUG_ASSERT(0 == (kChunkSizeInBytes % sizeof(m_sampleBuf[0])));
     const SINT chunkSizeInSamples = kChunkSizeInBytes / sizeof(m_sampleBuf[0]);
@@ -252,16 +247,6 @@ SoundSource::OpenResult SoundSourceOpenMPT::tryOpen(
     kLogger.debug() << "sample buffer has"
                     << m_sampleBuf.capacity() - m_sampleBuf.size()
                     << "samples unused capacity";
-
-    // apply DSP effects to entire buffer
-    if (s_dspSettings.reverbEnabled ||
-            s_dspSettings.megabassEnabled ||
-            s_dspSettings.surroundEnabled ||
-            s_dspSettings.noiseReductionEnabled) {
-        kLogger.debug() << "applying DSP effects to decoded buffer";
-        const SINT frameCount = m_sampleBuf.size() / kChannelCount;
-        m_dsp.processStereo(m_sampleBuf.data(), frameCount);
-    }
 
     initChannelCountOnce(kChannelCount);
     initSampleRateOnce(kSampleRate);

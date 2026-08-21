@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "sources/soundsourceprovider.h"
-#include "sources/trackerdsp.h"
 
 // forward declarations for openmpt types
 namespace openmpt {
@@ -21,9 +20,7 @@ class SoundSourceOpenMPT final : public SoundSource {
     static constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
 
     // apply settings for decoding
-    static void configure(
-            unsigned int bufferSizeLimit,
-            const TrackerDSP::Settings& dspSettings);
+    static void configure(unsigned int bufferSizeLimit);
 
     explicit SoundSourceOpenMPT(const QUrl& url);
     ~SoundSourceOpenMPT() override;
@@ -45,15 +42,12 @@ class SoundSourceOpenMPT final : public SoundSource {
             const OpenParams& params) override;
 
     static unsigned int s_bufferSizeLimit;
-    static TrackerDSP::Settings s_dspSettings;
 
     std::unique_ptr<openmpt::module> m_pModule;
     QByteArray m_fileBuf;
 
     typedef std::vector<CSAMPLE> ModSampleBuffer;
     ModSampleBuffer m_sampleBuf;
-
-    TrackerDSP m_dsp;
 };
 
 class SoundSourceProviderOpenMPT : public SoundSourceProvider {

@@ -1290,6 +1290,7 @@ add_library(
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
+  src/effects/backends/builtin/trackereffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
   src/effects/backends/effectmanifest.cpp
   src/effects/backends/effectmanifestparameter.cpp
@@ -5231,13 +5232,12 @@ if(NOT OpenMPT_FOUND)
 endif()
 
 if(OPENMPT OR MODPLUG)
-  # shared tracker DSP and preferences
+  # shared tracker preferences
   target_sources(
     mixxx-lib
     PRIVATE
       src/preferences/dialog/dlgprefmodplugdlg.ui
       src/preferences/dialog/dlgprefmodplug.cpp
-      src/sources/trackerdsp.cpp
   )
 endif()
 
