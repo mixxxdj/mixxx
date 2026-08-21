@@ -149,20 +149,9 @@ void DlgPrefModplug::applySettings() {
     unsigned int bufferSizeLimit = m_pUi->memoryLimit->value() << 20;
 
 #ifdef __OPENMPT__
-    // configure openmpt with DSP settings
-    mixxx::TrackerDSP::Settings dspSettings;
-    dspSettings.reverbEnabled = m_pUi->reverb->isChecked();
-    dspSettings.reverbDepth = m_pUi->reverbDepth->value();
-    dspSettings.reverbDelay = m_pUi->reverbDelay->value();
-    dspSettings.megabassEnabled = m_pUi->megabass->isChecked();
-    dspSettings.bassDepth = m_pUi->bassDepth->value();
-    dspSettings.bassCutoff = m_pUi->bassCutoff->value();
-    dspSettings.surroundEnabled = m_pUi->surround->isChecked();
-    dspSettings.surroundDepth = m_pUi->surroundDepth->value();
-    dspSettings.surroundDelay = m_pUi->surroundDelay->value();
-    dspSettings.noiseReductionEnabled = m_pUi->noiseReduction->isChecked();
-
-    mixxx::SoundSourceOpenMPT::configure(bufferSizeLimit, dspSettings);
+    // DSP effects (reverb, megabass, surround, noise reduction) are now
+    // handled by the Tracker DSP effect in the effect rack, not at decode time.
+    mixxx::SoundSourceOpenMPT::configure(bufferSizeLimit);
 #endif
 
 #ifdef __MODPLUG__
