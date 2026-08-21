@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -9,8 +11,8 @@ Item {
 
     required property string group
 
-    readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
-    readonly property var currentTrack: deckPlayer?.currentTrack
+    readonly property Mixxx.Player deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property Mixxx.Track currentTrack: root.deckPlayer?.currentTrack ?? null
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color loadedDeckTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
@@ -25,51 +27,45 @@ Item {
         if (!Number.isFinite(value) || value <= 0) {
             return "";
         }
-        const totalSeconds = Math.floor(value);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        if (hours > 0) {
-            return hours.toString() + ":" +
-                    minutes.toString().padStart(2, "0") + ":" +
-                    seconds.toString().padStart(2, "0");
-        }
-        return minutes.toString() + ":" + seconds.toString().padStart(2, "0");
+        return Mixxx.DurationFormatter.format(value, Mixxx.DurationFormatter.TraditionalCoarse);
     }
 
-    function formatTrackTime(value, coarse) {
+    function formatTrackTime(value, mode) {
         if (!Number.isFinite(value)) {
             value = 0;
         }
 
-        const absoluteValue = Math.abs(value);
-        const totalSeconds = Math.floor(absoluteValue);
-        const centiseconds = Math.floor((absoluteValue - totalSeconds) * 100);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-        let text = hours > 0
-                ? hours.toString() + ":" + minutes.toString().padStart(2, "0") + ":" + seconds.toString().padStart(2, "0")
-                : minutes.toString() + ":" + seconds.toString().padStart(2, "0");
-
-        if (!coarse) {
-            text += "." + centiseconds.toString().padStart(2, "0");
-        }
-        return text;
+        const sign = value < 0 ? "-" : "";
+        return sign + Mixxx.DurationFormatter.format(Math.abs(value), mode);
     }
 
     function formatPositionTime() {
         const elapsed = durationProxy.value * playpositionProxy.value;
         const remaining = durationProxy.value * (1 - playpositionProxy.value);
-        const coarse = Mixxx.Config.controlTimeFormat === SharedDeck.TrackTime.Mode.TraditionalCoarse;
+        const mode = Mixxx.Config.controlTimeFormat;
         switch (Mixxx.Config.controlPositionDisplay) {
         case SharedDeck.TrackTime.Display.Remaining:
-            return "-" + root.formatTrackTime(remaining, coarse);
+            return "-" + root.formatTrackTime(remaining, mode);
         case SharedDeck.TrackTime.Display.Both:
-            return root.formatTrackTime(elapsed, coarse) + "  -" + root.formatTrackTime(remaining, coarse);
+            return root.formatTrackTime(elapsed, mode) + "  -" + root.formatTrackTime(remaining, mode);
         case SharedDeck.TrackTime.Display.Elapsed:
         default:
-            return root.formatTrackTime(elapsed, coarse);
+            return root.formatTrackTime(elapsed, mode);
+        }
+    }
+
+    function cyclePositionDisplay() {
+        switch (Mixxx.Config.controlPositionDisplay) {
+        case SharedDeck.TrackTime.Display.Elapsed:
+            Mixxx.Config.controlPositionDisplay = SharedDeck.TrackTime.Display.Remaining;
+            break;
+        case SharedDeck.TrackTime.Display.Remaining:
+            Mixxx.Config.controlPositionDisplay = SharedDeck.TrackTime.Display.Both;
+            break;
+        case SharedDeck.TrackTime.Display.Both:
+        default:
+            Mixxx.Config.controlPositionDisplay = SharedDeck.TrackTime.Display.Elapsed;
+            break;
         }
     }
 
@@ -93,31 +89,39 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 25
-            spacing: 10
+            spacing: 0
 
-            Text {
+            LateNightTrackPropertyText {
                 id: titleText
                 Layout.fillWidth: true
-                text: root.isLoaded ? (currentTrack?.title || "Unknown Title") : ""
-                font.family: "Open Sans"
-                font.pixelSize: 18
-                font.weight: Font.Normal
-                color: root.isLoaded ? root.loadedDeckTextColor : LateNightTheme.textColorMuted
-                elide: Text.ElideRight
-                verticalAlignment: Text.AlignVCenter
+                Layout.fillHeight: true
+                group: root.group
+                track: root.currentTrack
+                text: root.isLoaded ? (root.currentTrack?.title || "Unknown Title") : ""
+                displayProperty: "titleInfo"
+                editProperty: "title"
+                editable: true
+                pixelSize: 18
+                textColor: root.isLoaded ? root.loadedDeckTextColor : LateNightTheme.textColorMuted
             }
 
-            Text {
+            LateNightTrackPropertyText {
                 id: trackTimeDisplay
-                Layout.preferredWidth: 180
-                text: root.formatPositionTime()
-                font.family: "Open Sans"
-                font.pixelSize: 16
-                font.weight: Font.Normal
-                color: root.isLoaded ? LateNightTheme.deckTimeTextColor : LateNightTheme.textColorMuted
+                Layout.fillHeight: true
+                contextMenuEnabled: false
+                displayProperty: "durationTextCentiseconds"
+                editable: false
+                group: root.group
                 horizontalAlignment: Text.AlignRight
-                verticalAlignment: Text.AlignVCenter
+                horizontalPadding: 6
+                pixelSize: 16
+                showTrackPropertiesOnDoubleClick: false
+                textColor: root.isLoaded ? LateNightTheme.deckTimeTextColor : LateNightTheme.textColorMuted
+                track: root.currentTrack
+                text: root.formatPositionTime()
                 visible: root.isLoaded
+
+                onDoubleClicked: root.cyclePositionDisplay()
             }
         }
 
@@ -142,30 +146,34 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 20
-            spacing: 10
+            spacing: 0
 
-            Text {
+            LateNightTrackPropertyText {
                 id: artistText
                 Layout.fillWidth: true
-                text: root.isLoaded ? (currentTrack?.artist || "Unknown Artist") : ""
-                font.family: "Open Sans"
-                font.pixelSize: 18
-                font.weight: Font.Normal
-                color: root.isLoaded ? root.loadedDeckTextColor : LateNightTheme.textColorMuted
-                elide: Text.ElideRight
-                verticalAlignment: Text.AlignVCenter
+                Layout.fillHeight: true
+                group: root.group
+                track: root.currentTrack
+                text: root.isLoaded ? (root.currentTrack?.artist || "Unknown Artist") : ""
+                displayProperty: "artist"
+                editProperty: "artist"
+                editable: true
+                pixelSize: 18
+                textColor: root.isLoaded ? root.loadedDeckTextColor : LateNightTheme.textColorMuted
             }
 
-            Text {
+            LateNightTrackPropertyText {
                 id: durationText
-                Layout.preferredWidth: 180
+                Layout.fillHeight: true
+                group: root.group
+                track: root.currentTrack
                 text: root.isLoaded ? root.formatDuration(durationProxy.value) : ""
-                font.family: "Open Sans"
-                font.pixelSize: 14
-                font.weight: Font.Normal
-                color: root.isLoaded ? LateNightTheme.deckTimeTextColor : LateNightTheme.textColorMuted
+                displayProperty: "durationTextSeconds"
+                editable: false
+                pixelSize: 14
+                textColor: root.isLoaded ? LateNightTheme.deckTimeTextColor : LateNightTheme.textColorMuted
                 horizontalAlignment: Text.AlignRight
-                verticalAlignment: Text.AlignVCenter
+                horizontalPadding: 6
             }
         }
     }

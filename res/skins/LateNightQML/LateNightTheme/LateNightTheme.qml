@@ -20,6 +20,7 @@ QtObject {
     readonly property color deckBeatSpinBoxTextColor: isClassic ? "#888888" : "#a7998b"
     readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
     readonly property color deckTopRowBackgroundColor: "#181818"
+    readonly property color deckActiveButtonTextColor: "#000000"
     readonly property color deckPanelColor: "#1e1e20"
     readonly property color deckPanelBorderDark: "#0c0c0c"
     readonly property color deckPanelBorderLight: "#333333"
@@ -37,6 +38,8 @@ QtObject {
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
+    readonly property color waveformPrimaryBackgroundColor: "#0f0f0e"
+    readonly property color waveformSecondaryBackgroundColor: "#001b23"
     readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
     readonly property color secondaryDeckTextColor: isClassic ? "#0bd9d1" : "#85bdbb"
     readonly property color secondaryOverviewBackgroundColor: "#001b23"
@@ -78,9 +81,41 @@ QtObject {
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
     readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
     readonly property int syncButtonHorizontalPadding: isClassic ? 3 : 0
+    readonly property color bpmTapEditorBackgroundColor: "#0f0f0f"
+    readonly property color bpmTapEditorSelectBackgroundColor: "#151517"
+    readonly property color bpmTapEditorSelectBorderColor: isPaleMoon ? "#7d350d" : "#5E4507"
+    readonly property color bpmTapEditorEditBorderColor: isPaleMoon ? "#257b82" : "#d08e00"
+    readonly property color bpmTapEditorButtonColor: "#171719"
+    readonly property color beatgridDisabledCoverColor: "#b4151517"
+    readonly property color trackPropertyHighlightColor: "#151515"
+    readonly property color trackPropertySelectedTextColor: "#111111"
+    readonly property color trackPropertySelectionColor: white
     readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
     readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
     readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
+    readonly property color vinylStatusSignalColor: isClassic ? "#659f08" : "#438225"
+    readonly property color vinylStatusSpeedColor: "#d09300"
+    readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
+    readonly property color vinylCueingActiveColor: "#888888"
+    readonly property color passthroughActiveColor: vinylStatusSpeedColor
+    readonly property color waveformCueColor: isPaleMoon ? "#ff7a01" : "#ff001c"
+    readonly property color waveformLoopColor: isPaleMoon ? "#00b400" : "#00ff00"
+    readonly property color waveformIntroOutroColor: isPaleMoon ? "#2c5c9a" : "#0000ff"
+    readonly property color waveformPlayPositionColor: isPaleMoon ? "#00c6ff" : "#00c8ff"
+    readonly property color waveformBeatAxesColor: isPaleMoon ? "#999999" : "#ffffff"
+    readonly property color waveformEndOfTrackWarningColor: "#ff8872"
+    readonly property color waveformDisabledMarkColor: "#ffffff"
+    readonly property color waveformMarkerTextColor: "#ffffff"
+    readonly property color waveformDefaultMarkColor: "#ff0000"
+    readonly property color waveformFilteredHighColor: "#d5c2a2"
+    readonly property color waveformFilteredMidColor: "#97632d"
+    readonly property color waveformFilteredLowColor: "#2154d7"
+    readonly property color overviewRgbLowColor: "#0000ff"
+    readonly property color overviewRgbMidColor: "#00ff00"
+    readonly property color overviewRgbHighColor: "#ff0000"
+    readonly property color overviewMarkerTextColor: "#ffffff"
+    readonly property color overviewHotcueBrightTextColor: "#000000"
+    readonly property int overviewHotcueBrightnessThreshold: 127
     readonly property color white: "#D9D9D9"
 
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
@@ -93,6 +128,22 @@ QtObject {
     readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
     readonly property url assetDeckCoverDefault: lateNightAsset("style", "cover_default.svg")
     readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
+    readonly property url assetDeckBeatCurposLargeButton: lateNightAsset("buttons", "btn__beat_curpos_large.svg")
+    readonly property url assetDeckBeatsEarlierButton: lateNightAsset("buttons", "btn__beats_earlier.svg")
+    readonly property url assetDeckBeatsFasterButton: lateNightAsset("buttons", "btn__beats_faster.svg")
+    readonly property url assetDeckBeatsLaterButton: lateNightAsset("buttons", "btn__beats_later.svg")
+    readonly property url assetDeckBeatsSlowerButton: lateNightAsset("buttons", "btn__beats_slower.svg")
+    readonly property url assetDeckUndoButton: lateNightAsset("buttons", "btn__undo.svg")
+    readonly property url assetDeckBpmLockedButton: lateNightAsset("buttons", "btn__bpm_locked.svg")
+    readonly property url assetDeckBpmUnlockedButton: lateNightAsset("buttons", "btn__bpm_unlocked.svg")
+    readonly property url assetDeckBpmSelectTapButton: lateNightAsset("buttons", "btn__bpm_select_tap.svg")
+    readonly property url assetDeckBpmSelectEditButton: lateNightAsset("buttons", "btn__bpm_select_edit.svg")
+    readonly property url assetDeckBpmSpinboxPlusButton: lateNightAsset("buttons", "btn__bpm_spinbox_plus.svg")
+    readonly property url assetDeckBpmSpinboxMinusButton: lateNightAsset("buttons", "btn__bpm_spinbox_minus.svg")
+    readonly property url assetDeckBpmSpinboxPlusPressedButton: lateNightAsset("buttons", isClassic ? "btn__bpm_spinbox_plus_pressed.svg" : "btn__bpm_spinbox_plus.svg")
+    readonly property url assetDeckBpmSpinboxMinusPressedButton: lateNightAsset("buttons", isClassic ? "btn__bpm_spinbox_minus_pressed.svg" : "btn__bpm_spinbox_minus.svg")
+    readonly property url assetDeckBeatsHotcuesEarlierButton: lateNightAsset("buttons", "btn__beats_hotcues_earlier.svg")
+    readonly property url assetDeckBeatsHotcuesLaterButton: lateNightAsset("buttons", "btn__beats_hotcues_later.svg")
     readonly property url assetDeckCueButton: lateNightAsset("buttons", "btn__cue_deck.svg")
     readonly property url assetDeckEjectButton: lateNightAsset("buttons", "btn__eject.svg")
     readonly property url assetDeckIntroEndButton: lateNightAsset("buttons", "btn__intro_end.svg")
@@ -164,6 +215,29 @@ QtObject {
 
     function lateNightAsset(directory, fileName) {
         return Qt.resolvedUrl("../../LateNight/" + ColorScheme.name + "/" + directory + "/" + fileName);
+    }
+
+    function vinylStatusColor(status) {
+        switch (Math.round(status)) {
+        case 1:
+            return vinylStatusSignalColor;
+        case 2:
+            return vinylStatusSpeedColor;
+        case 3:
+            return vinylStatusSignalAndSpeedColor;
+        default:
+            return deckEmbeddedButtonInactiveColor;
+        }
+    }
+
+    function overviewHotcueTextColor(hotcueColor) {
+        const red = hotcueColor.r * 255;
+        const green = hotcueColor.g * 255;
+        const blue = hotcueColor.b * 255;
+        const brightness = Math.sqrt(red * red * 0.241 + green * green * 0.691 + blue * blue * 0.068);
+        return brightness <= overviewHotcueBrightnessThreshold
+                ? overviewMarkerTextColor
+                : overviewHotcueBrightTextColor;
     }
 
     function sharedImage(fileName) {
