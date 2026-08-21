@@ -791,6 +791,33 @@ NumarkMixtrackGo.crossFader = new components.Pot({
     }
 });
 
+// toggles the filter/low knob function between controlling the channels quick effect
+// and the low EQ
+NumarkMixtrackGo.filterLowSwitcher = new components.Button({
+    input: function(_channel, _control, value) {
+        if (value === 127) {
+            if (filterLowSwitch === 0) {
+                filterLowSwitch = 1;
+            } else {
+                filterLowSwitch = 0;
+            }
+        }
+    },
+});
+
+// toggles the availability of the scratch function on the jog-wheels
+NumarkMixtrackGo.vinylModeSwitcher = new components.Button({
+    input: function(_channel, _control, value) {
+        if (value === 127) {
+            if (vinylModeEnabled) {
+                vinylModeEnabled = false; ;
+            } else {
+                vinylModeEnabled = true;
+            }
+        }
+    },
+});
+
 NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     components.Deck.call(this, deckNumber);
     const group = `[Channel${deckNumber}]`;
@@ -927,17 +954,23 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     });
 
     // play led control
+    engine.makeConnection(group, "play_indicator", function() {
+        if (engine.getValue(group, "play_indicator") === 1) {
+            NumarkMixtrackGo.led.setPlayBright(deckIndex);
+        } else {
+            NumarkMixtrackGo.led.setPlayDim(deckIndex);
+        }
+    });
+
+    // set play led default state
     const playConnection = engine.makeConnection(group, "play", function() {
-        const playState = engine.getValue(group, "play");
-        if (playState === 0) {
+        if (engine.getValue(group, "play")=== 0) {
             NumarkMixtrackGo.led.setPlayDim(deckIndex);
             //if play stops and fade fx is on, the effects need to be reset (same on serato)
             if (isFadeFxOn) {
                 engine.setValue("[QuickEffectRack1_[Channel1]]", "super1", 0);
                 engine.setValue("[QuickEffectRack1_[Channel2]]", "super1", 0);
             }
-        } else if (playState === 1) {
-            NumarkMixtrackGo.led.setPlayBright(deckIndex);
         }
     });
 
@@ -1222,30 +1255,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     };
 
-    this.filterLowSwitcher = new components.Button({
-        input: function(_channel, _control, value) {
-            if (value === 127) {
-                if (filterLowSwitch === 0) {
-                    filterLowSwitch = 1;
-                } else {
-                    filterLowSwitch = 0;
-                }
-            }
-        },
-    });
-
-    this.vinylModeSwitcher = new components.Button({
-        input: function(_channel, _control, value) {
-            if (value === 127) {
-                if (vinylModeEnabled) {
-                    vinylModeEnabled = false; ;
-                } else {
-                    vinylModeEnabled = true;
-                }
-            }
-        },
-    });
-
     this.filterLowPot = new components.Pot({
         quickEffectRackGroup: `[QuickEffectRack1_[Channel${deckNumber}]]`,
         lowEqGroup: `[EqualizerRack1_[Channel${deckNumber}]_Effect1]`,
@@ -1350,14 +1359,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     });
 
-    this.cueGoToAndStopButton = new components.Button({
-        input: function(_channel, _control, value) {
-            if (value === 127) {
-                script.triggerControl(group, "cue_gotoandstop");
-            }
-        }
-    });
-
     this.cueGoToAndPlayDoubleTapButton = new components.Button({
         timerFinished: true,
         timerId: 0,
@@ -1376,14 +1377,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                     // load previous track and cue go to and play
                     script.triggerControl(group, "LoadSelectedTrackAndPlay");
                 }
-            }
-        }
-    });
-
-    this.playButton = new components.Button({
-        input: function(_channel, _control, value) {
-            if (value === 127) {
-                script.toggleControl(group, "play");
             }
         }
     });
