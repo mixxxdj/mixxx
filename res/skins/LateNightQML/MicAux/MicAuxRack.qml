@@ -26,7 +26,7 @@ Item {
 
             MicrophoneDuckingPanel {
                 Layout.alignment: Qt.AlignTop
-                visible: showDuckingControls.value > 0
+                visible: numMicrophonesControl.value > 0
             }
             Repeater {
                 model: 4
@@ -66,9 +66,9 @@ Item {
         }
     }
     Mixxx.ControlProxy {
-        id: showDuckingControls
+        id: numMicrophonesControl
 
-        group: "[Skin]"
-        key: "show_ducking_controls"
+        group: "[App]"
+        key: "num_microphones"
     }
 }

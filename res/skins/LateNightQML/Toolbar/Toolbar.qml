@@ -127,6 +127,15 @@ Rectangle {
         }
         return LateNightTheme.toolbarButtonInactiveBackgroundColor;
     }
+    function selectSamplerMode(mode) {
+        show4SamplersControl.value = mode === 0 ? 1.0 : 0.0;
+        show8SamplersControl.value = mode === 1 ? 1.0 : 0.0;
+        show16SamplersControl.value = mode === 2 ? 1.0 : 0.0;
+        show32SamplersControl.value = mode === 3 ? 1.0 : 0.0;
+        show48SamplersControl.value = mode === 4 ? 1.0 : 0.0;
+        show64SamplersControl.value = mode === 5 ? 1.0 : 0.0;
+        samplerRowsControl.value = mode;
+    }
     function setControlValueIfInitialized(control, value) {
         if (control.initialized) {
             control.value = value;
@@ -402,25 +411,61 @@ Rectangle {
     Mixxx.ControlProxy {
         id: samplerRowsControl
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "sampler_rows"
+    }
+    Mixxx.ControlProxy {
+        id: show4SamplersControl
+
+        group: "[Skin]"
+        key: "show_4samplers"
+    }
+    Mixxx.ControlProxy {
+        id: show8SamplersControl
+
+        group: "[Skin]"
+        key: "show_8samplers"
+    }
+    Mixxx.ControlProxy {
+        id: show16SamplersControl
+
+        group: "[Skin]"
+        key: "show_16samplers"
+    }
+    Mixxx.ControlProxy {
+        id: show32SamplersControl
+
+        group: "[Skin]"
+        key: "show_32samplers"
+    }
+    Mixxx.ControlProxy {
+        id: show48SamplersControl
+
+        group: "[Skin]"
+        key: "show_48samplers"
+    }
+    Mixxx.ControlProxy {
+        id: show64SamplersControl
+
+        group: "[Skin]"
+        key: "show_64samplers"
     }
     Mixxx.ControlProxy {
         id: expandSamplers14Control
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "expand_samplers_1-4"
     }
     Mixxx.ControlProxy {
         id: expandSamplers18Control
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "expand_samplers_1-8"
     }
     Mixxx.ControlProxy {
         id: expandSamplers916Control
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "expand_samplers_9-16"
     }
     Mixxx.ControlProxy {
@@ -1569,6 +1614,7 @@ Rectangle {
                 id: samplersHeader
 
                 property bool checked: showSamplersControl.value > 0
+                readonly property bool samplerCountChoiceStripHovered: samplersHeaderMouseArea.containsMouse && samplersHeaderMouseArea.mouseX >= sampler4Choice.x && samplersHeaderMouseArea.mouseX <= sampler64Choice.x + sampler64Choice.width
 
                 Layout.fillWidth: true
                 Layout.minimumWidth: implicitWidth
@@ -1577,7 +1623,7 @@ Rectangle {
 
                 Rectangle {
                     anchors.fill: parent
-                    color: root.menuHoverColor(samplersHeaderMouseArea.containsMouse, samplersHeader.enabled)
+                    color: root.menuHoverColor(samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered, samplersHeader.enabled)
                     radius: 1
                 }
                 MouseArea {
@@ -1595,45 +1641,91 @@ Rectangle {
                     id: samplersHeaderContent
 
                     anchors.fill: parent
-                    spacing: 5
+                    spacing: 0
 
                     Image {
                         Layout.leftMargin: 2
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
+                        Layout.rightMargin: 5
                         fillMode: Image.PreserveAspectFit
                         source: samplersHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                     }
                     ToolbarMenuInlineChoice {
-                        checked: samplerRowsControl.value === 0.0
+                        id: sampler4Choice
+
+                        checked: show4SamplersControl.value > 0.5
                         enabled: showSamplersControl.value > 0
+                        minimumWidth: 33
                         text: "4"
 
                         onClicked: {
-                            samplerRowsControl.value = 0.0;
+                            root.selectSamplerMode(0);
                         }
                     }
                     ToolbarMenuInlineChoice {
-                        checked: samplerRowsControl.value === 1.0
+                        id: sampler8Choice
+
+                        checked: show8SamplersControl.value > 0.5
                         enabled: showSamplersControl.value > 0
+                        minimumWidth: 33
                         text: "8"
 
                         onClicked: {
-                            samplerRowsControl.value = 1.0;
+                            root.selectSamplerMode(1);
                         }
                     }
                     ToolbarMenuInlineChoice {
-                        checked: samplerRowsControl.value === 2.0
+                        id: sampler16Choice
+
+                        checked: show16SamplersControl.value > 0.5
                         enabled: showSamplersControl.value > 0
-                        minimumWidth: 32
+                        minimumWidth: 37
                         text: "16"
 
                         onClicked: {
-                            samplerRowsControl.value = 2.0;
+                            root.selectSamplerMode(2);
+                        }
+                    }
+                    ToolbarMenuInlineChoice {
+                        id: sampler32Choice
+
+                        checked: show32SamplersControl.value > 0.5
+                        enabled: showSamplersControl.value > 0
+                        minimumWidth: 37
+                        text: "32"
+
+                        onClicked: {
+                            root.selectSamplerMode(3);
+                        }
+                    }
+                    ToolbarMenuInlineChoice {
+                        id: sampler48Choice
+
+                        checked: show48SamplersControl.value > 0.5
+                        enabled: showSamplersControl.value > 0
+                        minimumWidth: 37
+                        text: "48"
+
+                        onClicked: {
+                            root.selectSamplerMode(4);
+                        }
+                    }
+                    ToolbarMenuInlineChoice {
+                        id: sampler64Choice
+
+                        checked: show64SamplersControl.value > 0.5
+                        enabled: showSamplersControl.value > 0
+                        minimumWidth: 37
+                        text: "64"
+
+                        onClicked: {
+                            root.selectSamplerMode(5);
                         }
                     }
                     Text {
-                        color: samplersHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        Layout.leftMargin: 5
+                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "sample decks"

@@ -1,8 +1,6 @@
 import "../Controls" as Controls
 import "../LateNightTheme"
-import "../../../qml" as Shared
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick
 import QtQuick.Layouts
 
@@ -44,16 +42,18 @@ Controls.Panel {
                 onClicked: duckModeControl.value = (Math.round(duckModeControl.value) + 1) % 3
             }
         }
-        Shared.ControlKnob {
+        Controls.Knob {
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: 35
             Layout.preferredWidth: 35
-            arcStart: MixxxControls.Knob.ArcStart.Maximum
             backgroundSource: LateNightTheme.assetMicAuxGainKnobBackground
-            color: LateNightTheme.activePlayCueColor
+            displayArc: true
+            displayArcColor: LateNightTheme.activePlayCueColor
+            displayArcStart: Controls.Knob.ArcStart.Maximum
             group: "[Master]"
+            indicatorColor: "orange"
+            indicatorKind: "small"
             key: "duckStrength"
-            shadowSource: ""
         }
     }
     Mixxx.ControlProxy {

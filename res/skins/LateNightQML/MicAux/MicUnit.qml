@@ -5,7 +5,6 @@ import "../Deck" as DeckControls
 import "../LateNightTheme"
 import "../../../qml" as Shared
 import Mixxx 1.0 as Mixxx
-import Mixxx.Controls 1.0 as MixxxControls
 import QtQuick
 import QtQuick.Layouts
 
@@ -90,15 +89,17 @@ Item {
                         Layout.preferredHeight: 34
                         spacing: 3
 
-                        Shared.ControlKnob {
+                        Controls.Knob {
                             Layout.preferredHeight: 30
                             Layout.preferredWidth: 35
-                            arcStart: MixxxControls.Knob.ArcStart.Minimum
                             backgroundSource: LateNightTheme.assetMicAuxGainKnobBackground
-                            color: LateNightTheme.samplerGainColor
+                            displayArc: true
+                            displayArcColor: LateNightTheme.samplerGainColor
+                            displayArcStart: Controls.Knob.ArcStart.Minimum
                             group: root.group
+                            indicatorColor: "orange"
+                            indicatorKind: "small"
                             key: "pregain"
-                            shadowSource: ""
                         }
                         DeckControls.LateNightControlButton {
                             Layout.preferredHeight: 26

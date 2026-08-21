@@ -30,7 +30,7 @@ ApplicationWindow {
 
     color: LateNightTheme.backgroundColor
     height: 1008
-    minimumHeight: 668
+    minimumHeight: Math.max(668, toolbar.height + mixer.height + rackColumn.height + (root.showWaveforms && !root.maximizeLibrary ? 40 : 0))
     minimumWidth: 1280
     visible: true
     width: 1792
@@ -172,42 +172,105 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        defaultValue: 1.0
         group: "[Skin]"
         key: "show_sampler_fx"
         persist: true
     }
     Mixxx.SkinControlCreator {
         defaultValue: 1.0
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "sampler_rows"
         persist: true
     }
     Mixxx.SkinControlCreator {
-        group: "[LateNight]"
+        defaultValue: -1.0
+        group: "[Skin]"
         key: "show_4samplers"
+        persist: true
     }
     Mixxx.SkinControlCreator {
         defaultValue: 1.0
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "show_8samplers"
+        persist: true
     }
     Mixxx.SkinControlCreator {
-        group: "[LateNight]"
+        defaultValue: -1.0
+        group: "[Skin]"
         key: "show_16samplers"
+        persist: true
     }
     Mixxx.SkinControlCreator {
-        group: "[LateNight]"
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_32samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_48samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_64samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
         key: "expand_samplers_1-4"
         persist: true
     }
     Mixxx.SkinControlCreator {
-        group: "[LateNight]"
+        defaultValue: -1.0
+        group: "[Skin]"
         key: "expand_samplers_1-8"
         persist: true
     }
     Mixxx.SkinControlCreator {
-        group: "[LateNight]"
+        defaultValue: -1.0
+        group: "[Skin]"
         key: "expand_samplers_9-16"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_17-24"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_25-32"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_33-40"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_41-48"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_49-56"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_57-64"
         persist: true
     }
     Column {
@@ -271,8 +334,9 @@ ApplicationWindow {
             LateNightWaveforms.WaveformStack {
                 id: waveforms
 
-                SplitView.fillHeight: !library.active
-                SplitView.preferredHeight: library.active ? 120 : undefined
+                SplitView.fillHeight: false
+                SplitView.minimumHeight: visible ? 40 : 0
+                SplitView.preferredHeight: visible ? 120 : 0
                 show4decks: root.show4decks
                 visible: root.showWaveforms && !root.maximizeLibrary
 
@@ -283,8 +347,7 @@ ApplicationWindow {
             Item {
                 id: deckPane
 
-                SplitView.fillHeight: library.active
-                SplitView.maximumHeight: library.active ? undefined : mixer.height + rackColumn.height
+                SplitView.fillHeight: true
                 SplitView.minimumHeight: mixer.height + rackColumn.height
                 width: splitView.width
 
@@ -582,7 +645,7 @@ ApplicationWindow {
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - mixer.height - rackColumn.height >= 400
+                    active: true
                     width: parent.width
 
                     sourceComponent: Component {
@@ -613,14 +676,6 @@ ApplicationWindow {
                             AnchorChanges {
                                 anchors.top: deck1.bottom
                                 target: library
-                            }
-                        },
-                        State {
-                            when: !root.maximizeLibrary && root.height - mixer.height - rackColumn.height < 400
-
-                            PropertyChanges {
-                                target: library
-                                visible: false
                             }
                         }
                     ]

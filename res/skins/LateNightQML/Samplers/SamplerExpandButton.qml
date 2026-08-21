@@ -1,21 +1,22 @@
-import "../Deck" as DeckControls
 import "../LateNightTheme"
 import Mixxx 1.0 as Mixxx
 import QtQuick
 
-DeckControls.LateNightIconButton {
+SamplerGutter {
     id: root
 
     required property string controlKey
-    readonly property bool expanded: expandControl.value > 0
+    readonly property bool expanded: expandControl.value > 0.5
 
-    activeColor: LateNightTheme.samplerColor
-    backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-    iconSource: root.expanded ? LateNightTheme.assetSamplerCollapseButton : LateNightTheme.assetSamplerExpandButton
-    implicitHeight: 26
-    implicitWidth: 20
-    stretchIcon: true
-
+    Image {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        fillMode: Image.PreserveAspectFit
+        height: 18
+        source: root.expanded ? LateNightTheme.assetSamplerCollapseButton : LateNightTheme.assetSamplerExpandButton
+        width: 16
+    }
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
@@ -25,7 +26,7 @@ DeckControls.LateNightIconButton {
     Mixxx.ControlProxy {
         id: expandControl
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: root.controlKey
     }
 }

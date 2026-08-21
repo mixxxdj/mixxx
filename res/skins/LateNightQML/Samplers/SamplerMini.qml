@@ -8,32 +8,48 @@ import QtQuick.Layouts
 Controls.Panel {
     id: root
 
-    property var currentTrack: player.currentTrack
+    property var currentTrack: player?.currentTrack ?? null
     required property string group
     readonly property bool loaded: trackLoadedControl.value > 0
     property var player: Mixxx.PlayerManager.getPlayer(group)
 
+    bottomBorderColor: LateNightTheme.isClassic ? "#0a0a0a" : "#0c0c0c"
     color: LateNightTheme.samplerPanelColor
-    implicitHeight: 38
+    implicitHeight: 40
     implicitWidth: 150
+    leftBorderColor: LateNightTheme.isClassic ? "#333333" : "#282828"
+    radius: LateNightTheme.isClassic ? 2 : 1
+    rightBorderColor: LateNightTheme.isClassic ? "#0a0a0a" : "#181818"
+    topBorderColor: "#333333"
 
     RowLayout {
+        anchors.bottomMargin: 2
         anchors.fill: parent
-        anchors.margins: 1
-        spacing: 1
+        anchors.leftMargin: LateNightTheme.isClassic ? 2 : 1
+        anchors.rightMargin: 2
+        anchors.topMargin: LateNightTheme.isClassic ? 2 : 1
+        spacing: 0
 
-        DeckControls.LateNightControlButton {
+        Item {
             Layout.fillHeight: true
             Layout.preferredWidth: 36
-            activeColor: LateNightTheme.activePlayCueColor
-            backgroundSource: LateNightTheme.lateNightTopRegionButton("square_big")
-            displayKey: "play_latched"
-            group: root.group
-            iconSource: isActive ? LateNightTheme.assetSamplerPauseButton : LateNightTheme.assetSamplerPlayButton
-            inactiveOpacity: 0.9
-            key: "cue_gotoandplay"
-            rightClickKey: "cue_default"
-            stretchIcon: true
+
+            DeckControls.LateNightControlButton {
+                activeColor: LateNightTheme.activePlayCueColor
+                anchors.centerIn: parent
+                backgroundSource: LateNightTheme.lateNightTopRegionButton("square_big")
+                contentOpacity: 1
+                displayKey: "play_latched"
+                group: root.group
+                height: 34
+                iconSource: isActive ? LateNightTheme.assetSamplerPauseButton : LateNightTheme.assetSamplerPlayButton
+                inactiveFillEnabled: false
+                inactiveOpacity: 1.0
+                key: "cue_gotoandplay"
+                rightClickKey: "cue_default"
+                stretchIcon: true
+                width: 34
+            }
         }
         ColumnLayout {
             Layout.fillHeight: true
@@ -45,8 +61,9 @@ Controls.Panel {
                 Layout.preferredHeight: 18
                 color: LateNightTheme.samplerTitleColor
                 elide: Text.ElideRight
+                font.bold: true
                 font.family: "Open Sans"
-                font.pixelSize: 11
+                font.pixelSize: 14
                 text: root.currentTrack?.title ?? ""
                 verticalAlignment: Text.AlignVCenter
             }
@@ -54,22 +71,30 @@ Controls.Panel {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
                 spacing: 1
+                visible: root.loaded
 
                 Text {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: 45
                     color: LateNightTheme.samplerBpmColor
                     font.family: "Open Sans"
-                    font.pixelSize: 10
-                    text: root.loaded && visualBpmControl.value > 0 ? visualBpmControl.value.toFixed(1) : ""
+                    font.pixelSize: 12
+                    font.weight: Font.Medium
+                    horizontalAlignment: Text.AlignLeft
+                    text: root.loaded ? visualBpmControl.value.toFixed(2) : ""
                     verticalAlignment: Text.AlignVCenter
+                }
+                Item {
+                    Layout.fillWidth: true
                 }
                 DeckControls.LateNightControlButton {
                     Layout.preferredHeight: 18
                     Layout.preferredWidth: 21
                     activeIconSuffix: "active_12"
                     backgroundSource: ""
+                    contentOpacity: 1
                     group: root.group
                     iconSource: LateNightTheme.lateNightAsset("buttons", "btn__eject.svg")
+                    inactiveFillEnabled: false
                     key: "eject"
                     stretchIcon: true
                 }
