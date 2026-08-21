@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#121216">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="favicon-32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mixxx">
+    <link rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="mixxx.js"></script>
+    <title>mixxx</title>
+  </head>
+  <body onload="checkauth()">
+    <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
+    <main>
+      <div class="card" id="deckcontrol">
+        <label for="deckselect">Deck</label>
+        <select id="deckselect" onchange="onDeckChange();"></select>
+        <div class="deck-trackinfo">
+          <div id="decktitle">–</div>
+          <div id="deckartist"></div>
+        </div>
+        <div class="deck-position">
+          <input type="range" id="deckposition" min="0" max="1000" step="1" value="0"
+                 oninput="onDeckSeekInput(this.value);"
+                 onchange="onDeckSeekCommit(this.value);"
+                 onmousedown="deckSeeking=true;" onmouseup="deckSeeking=false;"
+                 ontouchstart="deckSeeking=true;" ontouchend="deckSeeking=false;">
+          <div class="row deck-time">
+            <span id="deckelapsed">0:00</span>
+            <span id="deckduration">0:00</span>
+          </div>
+        </div>
+        <div class="toolbar deck-toolbar">
+          <button id="deckplaybtn" class="accent" onclick="setDeckPlaying(true);">▶ Play</button>
+          <button id="deckpausebtn" onclick="setDeckPlaying(false);">⏸ Pause</button>
+          <button onclick="deckstop();">⏹ Stop</button>
+          <button onclick="deckcue();">Cue</button>
+        </div>
+      </div>
+
+      <div class="card" id="mastergain">
+        <label for="mastergainrange">Master Gain</label>
+        <input type="range" id="mastergainrange" min="0" max="5" step="0.01" value="1"
+               oninput="setmastergain(this.value);">
+      </div>
+
+      <div class="card" id="crossfader">
+        <label for="crossfaderrange">Crossfader</label>
+        <input type="range" id="crossfaderrange" min="-1" max="1" step="0.01" value="0"
+               oninput="setcrossfader(this.value);">
+      </div>
+
+      <div class="card row" id="autodjtoggle">
+        <label for="autodjenabled">Auto DJ</label>
+        <label class="switch">
+          <input type="checkbox" id="autodjenabled" onchange="setautodjenabled(this.checked);">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="card" id="autoplaylist">
+      </div>
+
+      <div class="toolbar" id="tools">
+        <button onclick="moveautotracklist('up');">▲ Up</button>
+        <button onclick="moveautotracklist('down');">▼ Down</button>
+        <button class="accent" onclick="window.location.href='library.html';">+ Add</button>
+        <button class="accent" onclick="loadautodjtrack(false);">Load on Deck</button>
+        <button class="accent" onclick="loadautodjtrack(true);">▶ Play on Deck</button>
+        <button class="danger" onclick="delautodj();">Remove</button>
+      </div>
+      <script>document.addEventListener("DOMContentLoaded", (event) => {loadautodjtracklist();getmastergain();getcrossfader();getautodjenabled();getnumdecks();});</script>
+    </main>
+    <footer></footer>
+  </body>
+</html>
