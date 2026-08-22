@@ -3268,7 +3268,8 @@ WSearchLineEdit {
   selection-color: #000;
   selection-background-color: #ccc;
   }
-  WSearchLineEdit:focus {
+  WSearchLineEdit:focus,
+  WSearchLineEdit[qmlBridgeFocused="true"] {
     padding: 1px;
     border: 2px solid #257b82;
     border-radius: 0px;

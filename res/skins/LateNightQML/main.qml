@@ -25,13 +25,54 @@ ApplicationWindow {
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
 
+    function focusLegacyLibrarySearch() {
+        Qt.callLater(function() {
+            if (library.item) {
+                library.item.focusSearch();
+            }
+        });
+    }
+
     color: LateNightTheme.backgroundColor
     height: 1008
+    menuBar: nativeApplicationMenuLoader.item
     minimumHeight: 668
     minimumWidth: 1280
     visible: true
     width: 1792
 
+    Loader {
+        id: nativeApplicationMenuLoader
+
+        active: Qt.platform.os === "osx"
+
+        sourceComponent: Skin.MainMenuBar {
+            applicationWindow: root
+            commands: applicationMenuCommands
+            numberOfDecks: root.show4decks ? root.numDecks : 2
+
+            onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
+        }
+    }
+    Skin.ApplicationMenuCommands {
+        id: applicationMenuCommands
+
+        applicationWindow: root
+
+        onShowDeveloperToolsRequested: {
+            developerToolsWindow.show();
+            developerToolsWindow.raise();
+            developerToolsWindow.requestActivate();
+        }
+    }
+    Skin.DeveloperToolsWindow {
+        id: developerToolsWindow
+
+        height: 480
+        width: 640
+    }
+    Skin.LibraryScanSummaryDialog {
+    }
     Mixxx.ControlProxy {
         group: "[App]"
         key: "num_decks"
@@ -188,8 +229,11 @@ ApplicationWindow {
         LateNightToolbar.Toolbar {
             id: toolbar
 
+            applicationMenuCommands: applicationMenuCommands
             show4decksAvailable: root.height > 515
             width: parent.width
+
+            onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
         }
         SplitView {
             id: splitView
