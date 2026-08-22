@@ -10,6 +10,7 @@
 #include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "preferences/dialog/dlgprefsound.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -27,7 +28,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     QList<mixxx::audio::SampleRate> getSampleRates(
             [[maybe_unused]] bool jackSampleRates) const override {
-        return m_samplerates;
+        return {};
     }
 
     std::vector<SoundDevicePointer> queryDevices() const override;
@@ -39,8 +40,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::string openDeviceInput(uint32_t id, const AudioInput& input);
     std::string openDeviceOutput(uint32_t id, const AudioOutput& output);
     void closeDevices();
-
-    void setLatencyParams(mixxx::audio::SampleRate sampleRate, SINT framesPerBuffer) override;
 
     mixxx::audio::SampleRate getDefaultSampleRate() const {
         return m_defaultSampleRate;
@@ -59,6 +58,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
   private slots:
     void registerInput(const AudioInput& input, AudioDestination* dest);
     void registerOutput(const AudioOutput& output, AudioSource* src);
+    void devicesSetup();
 
   private:
     struct Link {
@@ -145,15 +145,41 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             .global_remove = registryEventGlobalRemoveOuter,
     };
 
-    static int metadataProperty(void* data,
+    static int metadataEventSetting(void* data,
             uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value) {
+        return static_cast<PipewireEnumerator*>(data)->metadataEventSetting(id, key, type, value);
+    }
+
+    int metadataEventSetting(uint32_t id,
             const char* key,
             const char* type,
             const char* value);
 
-    static constexpr struct pw_metadata_events metadataEvents = {
+    static constexpr struct pw_metadata_events metadataEventsSetting{
             .version = PW_VERSION_METADATA_EVENTS,
-            .property = metadataProperty};
+            .property = metadataEventSetting,
+    };
+
+    static int metadataEventDefault(void* data,
+            uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value) {
+        return static_cast<PipewireEnumerator*>(data)->metadataEventDefault(id, key, type, value);
+    }
+
+    int metadataEventDefault(uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value);
+
+    static constexpr struct pw_metadata_events metadataEventsDefault{
+            .version = PW_VERSION_METADATA_EVENTS,
+            .property = metadataEventDefault,
+    };
 
     static void callback(void* data, spa_io_position* pos) {
         ((PipewireEnumerator*)data)->callback(pos);
@@ -201,7 +227,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void createPorts(PortPair& ports, std::string_view name, spa_direction direction);
     void closePorts(PortPair& ports);
 
-    void updateFilterLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
+    void updateFilterLatency();
     bool nodeHasPorts(const Node& node);
 
     std::unordered_map<uint32_t, Node> m_nodes;
@@ -216,12 +242,14 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     pw_context* m_pPwContext;
     pw_core* m_pPwCore;
     pw_registry* m_pPwRegistry;
-    pw_metadata* m_pPwMetadata;
+    pw_metadata* m_pPwMetadataSetting;
+    pw_metadata* m_pPwMetadataDefault;
     pw_filter* m_pPwFilter;
     spa_hook m_pwCoreListener;
     spa_hook m_pwRegistryListener;
     spa_hook m_pwFilterListener;
-    spa_hook m_pwMetadataListener;
+    spa_hook m_pwMetadataSettingListener;
+    spa_hook m_pwMetadataDefaultListener;
 
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
@@ -235,17 +263,27 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<AudioInput, PortPair> m_inputs;
     std::unordered_map<AudioOutput, PortPair> m_outputs;
 
+    uint32_t m_framesPerBuffer;
+
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;
+    ControlObject m_coBufferSize;
+    ControlObject m_coLatencyParamsMismatch;
     ControlProxy m_coOutputLatencyMs;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
-    uint32_t m_framesPerBuffer;
     // Handle all connections made to/from Mixxx node
     // If we do not, then we only track connections made in the
     // preference page, and leave the external patchbay connections
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
     int m_coreSyncSeq;
+    bool m_forceSamplerate;
+    bool m_forceQuantum;
+
+    uint32_t m_defaultSourceId;
+    uint32_t m_defaultSinkId;
+    std::string m_defaultSourceName;
+    std::string m_defaultSinkName;
 };

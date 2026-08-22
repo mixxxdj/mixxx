@@ -17,13 +17,15 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
         SoundManager* pManager,
         PipewireEnumerator* pEnumerator,
         uint32_t id,
-        const std::string_view name)
+        std::string_view displayName,
+        std::string_view name)
         : SoundDevice(pConfig, pManager),
           m_pEnumerator(pEnumerator) {
     m_hostAPI = SoundManagerConfig::kAPIPipewire;
-    m_deviceId.name = name.data();
+    m_deviceId.name = displayName.data();
+    m_deviceId.alsaHwDevice = name.data();
     m_deviceId.deviceIndex = id;
-    m_strDisplayName = QString::fromUtf8(name);
+    m_strDisplayName = QString::fromUtf8(displayName);
     m_numInputChannels = mixxx::audio::ChannelCount(0);
     m_numOutputChannels = mixxx::audio::ChannelCount(0);
     m_sampleRate = getDefaultSampleRate();
