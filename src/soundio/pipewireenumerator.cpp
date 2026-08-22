@@ -608,7 +608,12 @@ std::vector<SoundDevicePointer> PipewireEnumerator::queryDevices() const {
 int PipewireEnumerator::metadataEventSetting(
         uint32_t, const char* key, const char*, const char* value) {
     if (strcmp(key, "clock.rate") == 0) {
-        m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
+        int32_t samplerate;
+        if (spa_atoi32(value, &samplerate, 10)) {
+            m_defaultSampleRate = mixxx::audio::SampleRate(samplerate);
+        } else {
+            m_defaultSampleRate = mixxx::audio::SampleRate();
+        }
     }
 
     return 0;
