@@ -6,6 +6,7 @@
 #include "control/controlpushbutton.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
+#include "library/overviewcache.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/db/dbconnectionpooled.h"
@@ -89,6 +90,14 @@ DlgPrefWaveform::DlgPrefWaveform(
     m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")));
     m_pOverviewMinuteMarkersControl->setReadOnly();
+
+    m_pOverviewUniformTimeBaseControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_uniform_time_base")));
+    m_pOverviewUniformTimeBaseControl->setReadOnly();
+
+    m_pOverviewTimeBaseMinutesControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_time_base_minutes")));
+    m_pOverviewTimeBaseMinutesControl->setReadOnly();
 
     // Populate untilMark options
     untilMarkAlignComboBox->addItem(tr("Top"));
@@ -206,6 +215,14 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetOverviewStereoMode);
+    connect(overviewUniformTimeBaseCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewUniformTimeBase);
+    connect(overviewTimeBaseMinutesSpinBox,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetOverviewTimeBaseMinutes);
 
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
@@ -389,10 +406,20 @@ void DlgPrefWaveform::slotUpdate() {
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
     m_pOverviewMinuteMarkersControl->forceSet(drawOverviewMinuteMarkers);
 
+    bool uniformTimeBase = m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_uniform_time_base")), false);
+    overviewUniformTimeBaseCheckBox->setChecked(uniformTimeBase);
+    m_pOverviewUniformTimeBaseControl->forceSet(uniformTimeBase);
+
+    double timeBaseMinutes = m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("overview_time_base_minutes")), 6.0);
+    overviewTimeBaseMinutesSpinBox->setValue(timeBaseMinutes);
+    m_pOverviewTimeBaseMinutesControl->forceSet(timeBaseMinutes);
+
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
     enableWaveformGenerationWithAnalysis->setChecked(
-        waveformSettings.waveformGenerationWithAnalysisEnabled());
+            waveformSettings.waveformGenerationWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
 }
 
@@ -401,7 +428,7 @@ void DlgPrefWaveform::slotApply() {
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
-        enableWaveformGenerationWithAnalysis->isChecked());
+            enableWaveformGenerationWithAnalysis->isChecked());
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
@@ -448,6 +475,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
+
+    // Uniform time base off by default.
+    overviewUniformTimeBaseCheckBox->setChecked(false);
+    overviewTimeBaseMinutesSpinBox->setValue(6.0);
 
     // Use "Global" waveform gain + ReplayGain if enabled
     overview_scale_allReplayGain->setChecked(!WaveformWidgetFactory::isOverviewNormalizedDefault());
@@ -739,6 +770,23 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
 void DlgPrefWaveform::slotSetOverviewStereoMode(bool stereo) {
     m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), stereo);
     m_pOverviewStereoControl->forceSet(stereo);
+}
+
+void DlgPrefWaveform::slotSetOverviewUniformTimeBase(bool uniform) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup,
+                                QStringLiteral("overview_uniform_time_base")),
+            uniform);
+    m_pOverviewUniformTimeBaseControl->forceSet(uniform);
+    // Invalidate cached overviews so they are re-rendered with the new mode
+    OverviewCache::instance()->invalidateAll();
+}
+
+void DlgPrefWaveform::slotSetOverviewTimeBaseMinutes(double minutes) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup,
+                                QStringLiteral("overview_time_base_minutes")),
+            minutes);
+    m_pOverviewTimeBaseMinutesControl->forceSet(minutes);
+    OverviewCache::instance()->invalidateAll();
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {

@@ -56,6 +56,7 @@ class OverviewDelegate : public TableItemDelegate {
     mixxx::OverviewType m_type;
     bool m_inhibitLazyLoading;
     parented_ptr<ControlProxy> m_pTypeControl;
+    parented_ptr<ControlProxy> m_pUniformTimeBaseControl;
     WaveformSignalColors m_signalColors;
 
     mutable QSet<TrackId> m_cacheMissIds;
