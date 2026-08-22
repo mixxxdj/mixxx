@@ -3,112 +3,33 @@ import QtQuick
 import "."
 
 QtObject {
-    readonly property bool isClassic: ColorScheme.name === "classic"
-    readonly property bool isPaleMoon: ColorScheme.name === "palemoon"
-
-    readonly property color backgroundColor: "#1e1e1e"
-    readonly property color buttonActiveColor: white
-    readonly property color buttonNormalColor: "#696969"
-    readonly property color buttonPressedColor: white
-    readonly property color darkGray: "#0f0f0f"
     readonly property color accentColor: ColorScheme.accentColor
     readonly property color activePlayCueColor: isClassic ? "#db0000" : "#b24c12"
-    readonly property color deckTimeTextColor: isClassic ? "#f0bb2b" : "#777777"
-    readonly property color deckButtonInactiveColor: isClassic ? "#262626" : "#121213"
-    readonly property color deckDimButtonInactiveColor: isClassic ? "#262626" : "#171719"
-    readonly property color deckEmbeddedButtonInactiveColor: isClassic ? "#262626" : "#1e1e20"
-    readonly property color deckBeatSpinBoxTextColor: isClassic ? "#888888" : "#a7998b"
-    readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
-    readonly property color deckTopRowBackgroundColor: "#181818"
-    readonly property color deckPanelColor: "#1e1e20"
-    readonly property color deckPanelBorderDark: "#0c0c0c"
-    readonly property color deckPanelBorderLight: "#333333"
-    readonly property color deckPanelBorderLeft: "#282828"
-    readonly property color deckPanelBorderRight: deckTopRowBackgroundColor
-    readonly property color overviewBorderTopColor: "#0d0d0d"
-    readonly property color overviewBorderLeftColor: "#121212"
-    readonly property color overviewBorderBottomColor: "#2a2a2a"
-    readonly property color overviewBorderRightColor: "#252525"
-    readonly property color libraryPanelSplitterBackground: "#1e1e1e"
-    readonly property color libraryPanelSplitterHandle: "#5f5f5f"
-    readonly property color libraryPanelSplitterHandleActive: "#7a7a7a"
-    readonly property color textColor: white
-    readonly property color textColorMuted: "#696969"
-    readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
-    readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
-    readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
-    readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
-    readonly property color secondaryDeckTextColor: isClassic ? "#0bd9d1" : "#85bdbb"
-    readonly property color secondaryOverviewBackgroundColor: "#001b23"
-    readonly property color secondaryWaveformSignalColor: isClassic ? "#09b2ae" : "#7bc6c3"
-    readonly property color starsColor12: isClassic ? "#f0bb2b" : "#988f86"
-    readonly property color starsColor34: isClassic ? "#0bd9d1" : "#559b99"
-    readonly property color toolbarActiveColor: white
-    readonly property color toolbarBackgroundColor: "#242424"
-    readonly property color toolbarRootBackgroundColor: "#151517"
-    readonly property color toolbarBottomBorderColor: "#020202"
-    readonly property color toolbarButtonActiveBackgroundColor: isClassic ? "#d09300" : "#777777"
-    readonly property color toolbarButtonInactiveBackgroundColor: isClassic ? "#262626" : "#151517"
-    readonly property color toolbarButtonActiveTextColor: "#000000"
-    readonly property color toolbarButtonInactiveTextColor: isClassic ? "#d2d2d1" : "#777777"
-    readonly property color toolbarClockTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
-    readonly property color toolbarMenuHoverColor: isPaleMoon ? "#2c454f" : "#5e4507"
-    readonly property color toolbarMenuHoverTextColor: "#ffffff"
-    readonly property color toolbarMenuTextColor: "#c2b3a5"
-    readonly property color toolbarMenuDisabledTextColor: "#777777"
-    readonly property color toolbarBroadcastOnColor: isClassic ? "#659f08" : "#438225"
-    readonly property color toolbarRecordInitColor: "#d09300"
-    readonly property color toolbarRecordOnColor: isClassic ? "#db0000" : "#a80000"
-    readonly property color toolbarStatusErrorColor: "#f856e7"
-    readonly property int toolbarButtonHeight: 26
-    readonly property int toolbarButtonWidth: 52
-    readonly property url assetToolbarDropdownIcon: lateNightAsset("buttons", "btn__fx_selector_down.svg")
-    readonly property url assetToolbarMenuIcon: lateNightAsset("buttons", "btn__menu.svg")
-    readonly property color toolbarMeterBackgroundColor: darkGray
-    readonly property color toolbarLatencyBorderColor: "#040404"
-    readonly property color toolbarLatencyOverloadColor: "#ffff00"
-    readonly property color toolbarLatencyLabelColor: "#444444"
-    readonly property color toolbarPopupBorderColor: "#585858"
-    readonly property color toolbarPopupBackgroundColor: "#0f0f0f"
-    readonly property color toolbarStatusOkColor: "#54c76a"
-    readonly property color toolbarStatusWarnColor: "#d89124"
-    readonly property color toolbarRecordingColor: "#db0000"
-    readonly property color toolbarRecordingTextColor: "#ff7373"
-    readonly property color syncExplicitLeaderColor: activePlayCueColor
-    readonly property color syncInactiveBackgroundColor: "#1e1e1e"
-    readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
-    readonly property int syncButtonHorizontalPadding: isClassic ? 3 : 0
-    readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
-    readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
-    readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
-    readonly property color white: "#D9D9D9"
-
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
     readonly property url assetDeckArrowRightDownButton: lateNightAsset("buttons", "btn__arrow_right_down.svg")
-    readonly property url assetDeckBeatjumpLeftButton: lateNightAsset("buttons", "btn__beatjump_left.svg")
-    readonly property url assetDeckBeatjumpRightButton: lateNightAsset("buttons", "btn__beatjump_right.svg")
+    readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
     readonly property url assetDeckBeatSpinBoxBorder: isClassic ? lateNightAsset("buttons", "spinbox_elevated_border.svg") : lateNightSubRegionButton("wide")
     readonly property url assetDeckBeatSpinBoxDownButton: isClassic ? lateNightAsset("buttons", "spinbox_down.svg") : lateNightAsset("buttons", "btn__spinbox_down.svg")
     readonly property url assetDeckBeatSpinBoxUpButton: isClassic ? lateNightAsset("buttons", "spinbox_up.svg") : lateNightAsset("buttons", "btn__spinbox_up.svg")
-    readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
+    readonly property url assetDeckBeatjumpLeftButton: lateNightAsset("buttons", "btn__beatjump_left.svg")
+    readonly property url assetDeckBeatjumpRightButton: lateNightAsset("buttons", "btn__beatjump_right.svg")
     readonly property url assetDeckCoverDefault: lateNightAsset("style", "cover_default.svg")
-    readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
     readonly property url assetDeckCueButton: lateNightAsset("buttons", "btn__cue_deck.svg")
     readonly property url assetDeckEjectButton: lateNightAsset("buttons", "btn__eject.svg")
     readonly property url assetDeckIntroEndButton: lateNightAsset("buttons", "btn__intro_end.svg")
     readonly property url assetDeckIntroStartButton: lateNightAsset("buttons", "btn__intro_start.svg")
+    readonly property url assetDeckKeyButtonBackground: lateNightAsset("buttons", "btn_embedded_library.svg")
     readonly property url assetDeckKeyDownButton: lateNightAsset("buttons", "btn__key_down.svg")
-    readonly property url assetDeckKeylockButton: lateNightAsset("buttons", "btn__keylock.svg")
     readonly property url assetDeckKeyMatchButton: lateNightAsset("buttons", "btn__key_match.svg")
     readonly property url assetDeckKeyUpButton: lateNightAsset("buttons", "btn__key_up.svg")
-    readonly property url assetDeckKeyButtonBackground: lateNightAsset("buttons", "btn_embedded_library.svg")
+    readonly property url assetDeckKeylockButton: lateNightAsset("buttons", "btn__keylock.svg")
     readonly property url assetDeckLeaderBackground: lateNightAsset("buttons", "btn_embedded_grid.svg")
     readonly property url assetDeckLeaderButton: lateNightAsset("buttons", "btn__sync_leader.svg")
     readonly property url assetDeckLeaderExplicitButton: isPaleMoon ? lateNightAsset("buttons", "btn__sync_leader_explicit.svg") : lateNightAsset("buttons", "btn__sync_leader_active.svg")
     readonly property url assetDeckLeaderImplicitButton: isPaleMoon ? lateNightAsset("buttons", "btn__sync_leader_implicit.svg") : lateNightAsset("buttons", "btn__sync_leader_active.svg")
-    readonly property url assetDeckLoopButton: lateNightAsset("buttons", "btn__loop.svg")
     readonly property url assetDeckLoopAnchorEndButton: lateNightAsset("buttons", "btn__loop_anchor_end.svg")
     readonly property url assetDeckLoopAnchorStartButton: lateNightAsset("buttons", "btn__loop_anchor_start.svg")
+    readonly property url assetDeckLoopButton: lateNightAsset("buttons", "btn__loop.svg")
     readonly property url assetDeckLoopInButton: lateNightAsset("buttons", "btn__loop_in.svg")
     readonly property url assetDeckLoopOutButton: lateNightAsset("buttons", "btn__loop_out.svg")
     readonly property url assetDeckMinusButton: lateNightAsset("buttons", "btn__minus.svg")
@@ -117,8 +38,6 @@ QtObject {
     readonly property url assetDeckPlayButton: lateNightAsset("buttons", "btn__play_deck.svg")
     readonly property url assetDeckPlusButton: lateNightAsset("buttons", "btn__plus.svg")
     readonly property url assetDeckQuantizeButton: lateNightAsset("buttons", "btn__quantize.svg")
-    readonly property url optionalDeckRateCenterActive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_cyan.svg") : ""
-    readonly property url optionalDeckRateCenterInactive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_off.svg") : ""
     readonly property url assetDeckRateSliderBackground: lateNightAsset("sliders", "slider_pitch_deck.svg")
     readonly property url assetDeckRateSliderHandle: lateNightAsset("sliders", "knob_pitch_deck.svg")
     readonly property url assetDeckReloopButton: lateNightAsset("buttons", "btn__reloop.svg")
@@ -132,40 +51,210 @@ QtObject {
     readonly property url assetDeckSpinnyIndicator: lateNightAsset("style", "spinny_indicator.svg")
     readonly property url assetDeckSpinnyMask12: lateNightAsset("style", "spinny_mask_12.svg")
     readonly property url assetDeckSpinnyMask34: lateNightAsset("style", "spinny_mask_34.svg")
+    readonly property url assetDeckSyncActiveButton: isPaleMoon ? lateNightAsset("buttons", "btn__sync_deck_active.svg") : lateNightAsset("buttons", "btn__sync_deck.svg")
     readonly property url assetDeckSyncBackground: lateNightAsset("buttons", "btn_embedded_library.svg")
     readonly property url assetDeckSyncButton: lateNightAsset("buttons", "btn__sync_deck.svg")
-    readonly property url assetDeckSyncActiveButton: isPaleMoon ? lateNightAsset("buttons", "btn__sync_deck_active.svg") : lateNightAsset("buttons", "btn__sync_deck.svg")
-    readonly property url assetDeckVolumeSliderBackground: lateNightAsset("sliders", "slider_volume_deck.svg")
-    readonly property url assetDeckVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
     readonly property url assetDeckVinylControl0: lateNightAsset("style", "vinyl_control_0.svg")
     readonly property url assetDeckVinylControl1: lateNightAsset("style", "vinyl_control_1.svg")
     readonly property url assetDeckVinylControl2: lateNightAsset("style", "vinyl_control_2.svg")
     readonly property url assetDeckVinylControl3: lateNightAsset("style", "vinyl_control_3.svg")
+    readonly property url assetDeckVolumeSliderBackground: lateNightAsset("sliders", "slider_volume_deck.svg")
+    readonly property url assetDeckVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
+    readonly property url assetFxCollapseButton: lateNightAsset("buttons", isClassic ? "btn__collapse.svg" : "btn__collapse_dim.svg")
+    readonly property url assetFxExpandButton: lateNightAsset("buttons", isClassic ? "btn__expand.svg" : "btn__expand_dim.svg")
+    readonly property url assetFxFlowHorizontal: lateNightAsset("style", isClassic ? "fx_separator.svg" : "fx_flow_horizontal.svg")
+    readonly property url assetFxFlowVertical: lateNightAsset("style", isClassic ? "fx_separator.svg" : "fx_flow_vertical.svg")
+    readonly property url assetFxFocusActiveButton: lateNightAsset("buttons", "btn__fx_focus_active.svg")
+    readonly property url assetFxFocusButton: lateNightAsset("buttons", "btn__fx_focus.svg")
     readonly property url assetFxKnobBackground: lateNightAsset("knobs", "knob_bg_fx.svg")
+    readonly property url assetFxMixModeButton: lateNightAsset("buttons", "btn_embedded_mixmode.svg")
+    readonly property url assetFxMixModeDryWetButton: lateNightAsset("buttons", "btn__fx_mixmode_d-w.svg")
+    readonly property url assetFxMixModeDryWetSumButton: lateNightAsset("buttons", "btn__fx_mixmode_d+w.svg")
+    readonly property url assetFxParameterActiveButton: lateNightAsset("buttons", "btn_embedded_fx_parameter_active.svg")
+    readonly property url assetFxParameterButton: lateNightAsset("buttons", "btn_embedded_fx_parameter.svg")
+    readonly property url assetFxSelectorActiveBorder: lateNightAsset("buttons", "btn_embedded_library_active.svg")
+    readonly property url assetFxSelectorBorder: lateNightAsset("buttons", "btn_embedded_library.svg")
+    readonly property url assetFxSelectorDownButton: lateNightAsset("buttons", "btn__fx_selector_down.svg")
+    readonly property url assetFxSettingsButton: lateNightAsset("buttons", "btn__fx_settings.svg")
+    readonly property url assetFxSlotButtonActiveBackground: lateNightAsset("buttons", "btn_embedded_square_active.svg")
+    readonly property url assetFxSlotButtonBackground: lateNightAsset("buttons", "btn_embedded_square.svg")
+    readonly property url assetFxToggleActiveButton: lateNightAsset("buttons", "btn__fx_toggle_active.svg")
+    readonly property url assetFxToggleButton: lateNightAsset("buttons", "btn__fx_toggle.svg")
     readonly property url assetMainKnobBackground: lateNightAsset("knobs", "knob_bg_main.svg")
+    readonly property url assetMixerCrossfaderBackground: lateNightAsset("sliders", "slider_crossfader.svg")
+    readonly property url assetMixerCrossfaderHandle: lateNightAsset("sliders", "knob_crossfader.svg")
+    readonly property url assetMixerCrossfaderSmallBackground: lateNightAsset("sliders", "slider_crossfader_small.svg")
+    readonly property url assetMixerEqKillHighIcon: lateNightAsset("buttons", "btn__eq_kill_high.svg")
+    readonly property url assetMixerEqKillLowIcon: lateNightAsset("buttons", "btn__eq_kill_low.svg")
+    readonly property url assetMixerEqKillMidIcon: lateNightAsset("buttons", "btn__eq_kill_mid.svg")
+    readonly property url assetMixerPflActiveIcon: isPaleMoon ? lateNightAsset("buttons", "btn__pfl_active.svg") : lateNightAsset("buttons", "btn__pfl.svg")
+    readonly property url assetMixerPflBackground: lateNightTopRegionButton("square")
+    readonly property url assetMixerPflIcon: lateNightAsset("buttons", "btn__pfl.svg")
+    readonly property url assetMixerQuickEffectIcon: lateNightAsset("buttons", "btn__star.svg")
+    readonly property url assetMixerSplitActiveIcon: lateNightAsset("buttons", isClassic ? "btn_elevated_headsplit_active.svg" : "btn_embedded_headsplit_active.svg")
+    readonly property url assetMixerSplitIcon: lateNightAsset("buttons", isClassic ? "btn_elevated_headsplit.svg" : "btn_embedded_headsplit.svg")
+    readonly property url assetMixerVolumeSliderBackground: lateNightAsset("sliders", "slider_volume_deck.svg")
+    readonly property url assetMixerVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
     readonly property url assetRegularKnobBackground: lateNightAsset("knobs", "knob_bg_regular.svg")
     readonly property url assetSmallKnobBackground: lateNightAsset("knobs", "knob_bg_small.svg")
-
-    function lateNightButton(fileName) {
-        return lateNightAsset("buttons", fileName);
-    }
-
-    function lateNightRegionButton(regionButtonType, buttonSize) {
-        return lateNightButton("btn_" + regionButtonType + "_" + buttonSize + ".svg");
-    }
-
-    function lateNightSubRegionButton(buttonSize) {
-        return lateNightRegionButton(isClassic ? "elevated" : "embedded", buttonSize);
-    }
-
-    function lateNightTopRegionButton(buttonSize) {
-        return lateNightRegionButton("embedded", buttonSize);
-    }
+    readonly property url assetToolbarDropdownIcon: lateNightAsset("buttons", "btn__fx_selector_down.svg")
+    readonly property url assetToolbarMenuIcon: lateNightAsset("buttons", "btn__menu.svg")
+    readonly property color backgroundColor: "#1e1e1e"
+    readonly property color buttonActiveColor: white
+    readonly property color buttonNormalColor: "#696969"
+    readonly property color buttonPressedColor: white
+    readonly property color darkGray: "#0f0f0f"
+    readonly property color deckBeatSpinBoxTextColor: isClassic ? "#888888" : "#a7998b"
+    readonly property color deckButtonInactiveColor: isClassic ? "#262626" : "#121213"
+    readonly property color deckDimButtonInactiveColor: isClassic ? "#262626" : "#171719"
+    readonly property color deckEmbeddedButtonInactiveColor: isClassic ? "#262626" : "#1e1e20"
+    readonly property color deckPanelBorderDark: "#0c0c0c"
+    readonly property color deckPanelBorderLeft: "#282828"
+    readonly property color deckPanelBorderLight: "#333333"
+    readonly property color deckPanelBorderRight: deckTopRowBackgroundColor
+    readonly property color deckPanelColor: "#1e1e20"
+    readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
+    readonly property color deckTimeTextColor: isClassic ? "#f0bb2b" : "#777777"
+    readonly property color deckTopRowBackgroundColor: "#181818"
+    readonly property color effectsAssignmentActiveTextColor: isClassic ? "#000000" : "#a7998b"
+    readonly property color effectsAssignmentInactiveColor: isClassic ? "#262626" : "#151517"
+    readonly property color effectsAssignmentInactiveTextColor: isClassic ? "#d2d2d1" : "#555555"
+    readonly property color effectsControlActiveColor: "#888888"
+    readonly property color effectsControlInactiveColor: "#262626"
+    readonly property color effectsControllerColor12: isClassic ? "#73b508" : "#518f00"
+    readonly property color effectsControllerColor34: isClassic ? "#0795b5" : "#028392"
+    readonly property color effectsFillerColor: isClassic ? "#171717" : "#151517"
+    readonly property color effectsFocusBorderColor: isClassic ? "#d08e00" : "#257b82"
+    readonly property color effectsHeaderColor: isClassic ? "#1e1e1e" : "#151517"
+    readonly property color effectsMasterButtonInactiveColor: isClassic ? "#262626" : "#1e1e20"
+    readonly property color effectsPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
+    readonly property color effectsParameterActiveColor: "#888888"
+    readonly property color effectsParameterArcColor: "#6d6d6d"
+    readonly property color effectsParameterInactiveColor: isClassic ? "#333333" : "#2a2a2c"
+    readonly property string effectsParameterIndicatorColor: isClassic ? "white" : "grey"
+    readonly property color effectsParameterInverseActiveColor: "#9c0900"
+    readonly property color effectsParameterLinkInactiveColor: isClassic ? "#4b4b4b" : "#333333"
+    readonly property color effectsParameterPanelColor: isClassic ? "#151515" : "#1e1e20"
+    readonly property color effectsParameterTextColor: "#666666"
+    readonly property color effectsRackGutterColor: "#060606"
+    readonly property color effectsSlotToggleInactiveColor: isClassic ? "#262626" : "#121213"
+    readonly property color effectsUnitColor12: isClassic ? "#659f08" : "#438225"
+    readonly property color effectsUnitColor34: isClassic ? "#0895bc" : "#257b82"
+    readonly property color effectsUnitDimColor12: isClassic ? "#426b00" : "#236b00"
+    readonly property color effectsUnitDimColor34: isClassic ? "#00696b" : "#146674"
+    readonly property bool isClassic: ColorScheme.name === "classic"
+    readonly property bool isPaleMoon: ColorScheme.name === "palemoon"
+    readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
+    readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
+    readonly property color libraryPanelSplitterBackground: "#1e1e1e"
+    readonly property color libraryPanelSplitterHandle: "#5f5f5f"
+    readonly property color libraryPanelSplitterHandleActive: "#7a7a7a"
+    readonly property color mixerAccentCyan: "#0bd9d1"
+    readonly property color mixerAccentOrange: isClassic ? "#db7700" : "#b24c12"
+    readonly property color mixerAccentRed: isClassic ? "#db0000" : "#a80000"
+    readonly property color mixerArcEqColor: "#858585"
+    readonly property color mixerArcGainColor: "#b96300"
+    readonly property color mixerArcGainLowColor: "#8d3b11"
+    readonly property color mixerArcMainBalanceColor: "#a00000"
+    readonly property color mixerArcQuickEffectColor: "#518f00"
+    readonly property real mixerArcRadiusBig: 14.5
+    readonly property real mixerArcRadiusCompact: 12.5
+    readonly property real mixerArcWidth: 2
+    readonly property color mixerControlTextColor: isClassic ? "#d2d2d1" : "#a7998b"
+    readonly property color mixerDimTextColor: "#696969"
+    readonly property color mixerEqKillActiveColor: isClassic ? "#db0000" : "#a80000"
+    readonly property color mixerMainSeparatorDarkColor: isPaleMoon ? "#0c0c0c" : mixerPanelBorderDark
+    readonly property color mixerMainSeparatorLightColor: isPaleMoon ? "#222222" : mixerPanelBorderLight
+    readonly property color mixerPanelBorderDark: "#080808"
+    readonly property color mixerPanelBorderLight: "#343434"
+    readonly property color mixerPanelColor: "#1d1d1f"
+    readonly property color mixerPflActiveFillColor: isClassic ? "#db0000" : "#666666"
+    readonly property color mixerQuickEffectActiveColor: isClassic ? "#659f08" : "#236b00"
+    readonly property color mixerQuickEffectSelectorTextColor: "#918273"
+    readonly property color mixerSliderBarColor: "#257b82"
+    readonly property color mixerVuClipColor: mixerAccentRed
+    readonly property color mixerVuLevelColor: mixerAccentRed
+    readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
+    readonly property url optionalDeckRateCenterActive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_cyan.svg") : ""
+    readonly property url optionalDeckRateCenterInactive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_off.svg") : ""
+    readonly property url optionalMixerEqKillDotActiveGreen: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_active_green.svg") : ""
+    readonly property url optionalMixerEqKillDotActiveRed: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_active_red.svg") : ""
+    readonly property url optionalMixerEqKillDotOff: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_off.svg") : ""
+    readonly property color overviewBorderBottomColor: "#2a2a2a"
+    readonly property color overviewBorderLeftColor: "#121212"
+    readonly property color overviewBorderRightColor: "#252525"
+    readonly property color overviewBorderTopColor: "#0d0d0d"
+    readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
+    readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
+    readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
+    readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
+    readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
+    readonly property color secondaryDeckTextColor: isClassic ? "#0bd9d1" : "#85bdbb"
+    readonly property color secondaryOverviewBackgroundColor: "#001b23"
+    readonly property color secondaryWaveformSignalColor: isClassic ? "#09b2ae" : "#7bc6c3"
+    readonly property color starsColor12: isClassic ? "#f0bb2b" : "#988f86"
+    readonly property color starsColor34: isClassic ? "#0bd9d1" : "#559b99"
+    readonly property int syncButtonHorizontalPadding: isClassic ? 3 : 0
+    readonly property color syncExplicitLeaderColor: activePlayCueColor
+    readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
+    readonly property color syncInactiveBackgroundColor: "#1e1e1e"
+    readonly property color textColor: white
+    readonly property color textColorMuted: "#696969"
+    readonly property color toolbarActiveColor: white
+    readonly property color toolbarBackgroundColor: "#242424"
+    readonly property color toolbarBottomBorderColor: "#020202"
+    readonly property color toolbarBroadcastOnColor: isClassic ? "#659f08" : "#438225"
+    readonly property color toolbarButtonActiveBackgroundColor: isClassic ? "#d09300" : "#777777"
+    readonly property color toolbarButtonActiveTextColor: "#000000"
+    readonly property int toolbarButtonHeight: 26
+    readonly property color toolbarButtonInactiveBackgroundColor: isClassic ? "#262626" : "#151517"
+    readonly property color toolbarButtonInactiveTextColor: isClassic ? "#d2d2d1" : "#777777"
+    readonly property int toolbarButtonWidth: 52
+    readonly property color toolbarClockTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
+    readonly property color toolbarLatencyBorderColor: "#040404"
+    readonly property color toolbarLatencyLabelColor: "#444444"
+    readonly property color toolbarLatencyOverloadColor: "#ffff00"
+    readonly property color toolbarMenuDisabledTextColor: "#777777"
+    readonly property color toolbarMenuHoverColor: isPaleMoon ? "#2c454f" : "#5e4507"
+    readonly property color toolbarMenuHoverTextColor: "#ffffff"
+    readonly property color toolbarMenuTextColor: "#c2b3a5"
+    readonly property color toolbarMeterBackgroundColor: darkGray
+    readonly property color toolbarPopupBackgroundColor: "#0f0f0f"
+    readonly property color toolbarPopupBorderColor: "#585858"
+    readonly property color toolbarRecordInitColor: "#d09300"
+    readonly property color toolbarRecordOnColor: isClassic ? "#db0000" : "#a80000"
+    readonly property color toolbarRecordingColor: "#db0000"
+    readonly property color toolbarRecordingTextColor: "#ff7373"
+    readonly property color toolbarRootBackgroundColor: "#151517"
+    readonly property color toolbarStatusErrorColor: "#f856e7"
+    readonly property color toolbarStatusOkColor: "#54c76a"
+    readonly property color toolbarStatusWarnColor: "#d89124"
+    readonly property color white: "#D9D9D9"
 
     function lateNightAsset(directory, fileName) {
         return Qt.resolvedUrl("../../LateNight/" + ColorScheme.name + "/" + directory + "/" + fileName);
     }
-
+    function lateNightButton(fileName) {
+        return lateNightAsset("buttons", fileName);
+    }
+    function lateNightRegionButton(regionButtonType, buttonSize) {
+        return lateNightButton("btn_" + regionButtonType + "_" + buttonSize + ".svg");
+    }
+    function lateNightSubRegionButton(buttonSize) {
+        return lateNightRegionButton(isClassic ? "elevated" : "embedded", buttonSize);
+    }
+    function lateNightTopRegionButton(buttonSize) {
+        return lateNightRegionButton("embedded", buttonSize);
+    }
+    function mixerKnobIndicator(kind, colorName) {
+        return lateNightAsset("knobs", "knob_indicator_" + kind + "_" + colorName + ".svg");
+    }
+    function mixerVuClipBackground(colorVariant) {
+        return lateNightAsset("style", "vu_deck_clipping_bg_" + colorVariant + ".png");
+    }
+    function mixerVuLevelBackground(colorVariant) {
+        return lateNightAsset("style", "vu_deck_level_bg_" + colorVariant + ".png");
+    }
     function sharedImage(fileName) {
         return Qt.resolvedUrl("../../../qml/images/" + fileName);
     }
