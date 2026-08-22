@@ -658,6 +658,78 @@ ApplicationWindow {
             }
         }
     }
+    Loader {
+        id: auxiliarySurfaceLoader
+
+        property var targetScreen: null
+
+        function refreshTargetScreen() {
+            const screenId = Mixxx.Config.auxiliarySurfaceScreenId;
+            if (!screenId) {
+                targetScreen = null;
+                return;
+            }
+
+            const screens = Qt.application.screens;
+            for (let i = 0; i < screens.length; ++i) {
+                const screen = screens[i];
+                if (Mixxx.ScreenManager.screenId(screen.name, screen.serialNumber) === screenId) {
+                    targetScreen = screen;
+                    return;
+                }
+            }
+
+            targetScreen = null;
+        }
+
+        active: Mixxx.Config.auxiliarySurfaceEnabled && targetScreen !== null
+
+        Component.onCompleted: refreshTargetScreen()
+
+        sourceComponent: Component {
+            AuxiliarySurfaceWindow {
+                fullscreen: Mixxx.Config.auxiliarySurfaceFullscreen
+                targetScreen: auxiliarySurfaceLoader.targetScreen
+                title: "Mixxx Auxiliary Surface"
+
+                onClosing: (close) => {
+                    close.accepted = false;
+                    Mixxx.Config.auxiliarySurfaceEnabled = false;
+                }
+
+                AuxiliarySurfaceContent {
+                    anchors.fill: parent
+                }
+            }
+        }
+    }
+    Connections {
+        target: Mixxx.ScreenManager
+
+        function onScreenAdded() {
+            Qt.callLater(auxiliarySurfaceLoader.refreshTargetScreen);
+        }
+
+        function onScreenRemoved(screen) {
+            if (Mixxx.ScreenManager.screenId(screen.name, screen.serialNumber)
+                    === Mixxx.Config.auxiliarySurfaceScreenId) {
+                if (auxiliarySurfaceLoader.item)
+                    auxiliarySurfaceLoader.item.hide();
+
+                auxiliarySurfaceLoader.targetScreen = null;
+                return;
+            }
+
+            Qt.callLater(auxiliarySurfaceLoader.refreshTargetScreen);
+        }
+    }
+    Connections {
+        target: Mixxx.Config
+
+        function onAuxiliarySurfaceScreenIdChanged() {
+            auxiliarySurfaceLoader.refreshTargetScreen();
+        }
+    }
     Skin.Settings {
         id: settingsPopup
 
