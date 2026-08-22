@@ -613,10 +613,14 @@ TrackId AutoDJCratesDAO::getRandomTrackId() {
         QString strDateTime = timeCurrent.toString("yyyy-MM-dd hh:mm:ss");
 
         // Count the number of tracks that haven't been played since this time.
-        // SELECT COUNT(*) FROM temp_autodj_activetracks WHERE lastplayed < :lastplayed;
+        // Include tracks that have never been played (NULL or empty lastplayed).
+        // SELECT COUNT(*) FROM temp_autodj_activetracks
+        //   WHERE lastplayed IS NULL OR lastplayed = '' OR lastplayed < :lastplayed;
         int iIgnoreTimeTracks = 0;
         oQuery.prepare("SELECT COUNT(*) FROM " AUTODJACTIVETRACKS_TABLE
-            " WHERE " AUTODJCRATESTABLE_LASTPLAYED " < :lastplayed");
+            " WHERE " AUTODJCRATESTABLE_LASTPLAYED " IS NULL"
+            " OR " AUTODJCRATESTABLE_LASTPLAYED " = ''"
+            " OR " AUTODJCRATESTABLE_LASTPLAYED " < :lastplayed");
         oQuery.bindValue (":lastplayed", strDateTime);
         if (oQuery.exec()) {
             if (oQuery.next()) {
