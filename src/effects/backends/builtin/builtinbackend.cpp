@@ -30,8 +30,8 @@
 #include "effects/backends/builtin/pitchshifteffect.h"
 #endif
 #include "effects/backends/builtin/gaineffect.h"
-#include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/trackereffect.h"
+#include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
 BuiltInBackend::BuiltInBackend() {

@@ -1,3 +1,5 @@
+#include "sources/soundsourceopenmpt.h"
+
 #include <gtest/gtest.h>
 
 #include <QTemporaryDir>
@@ -5,7 +7,6 @@
 #include <QtDebug>
 
 #include "sources/audiosourcestereoproxy.h"
-#include "sources/soundsourceopenmpt.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
@@ -31,12 +32,6 @@ const SINT kMaxReadFrameCount =
 
 const CSAMPLE kMaxDecodingError = 0.01f;
 
-// Returns the path to the bundled test module file.
-QString getTestModFilePath() {
-    return QDir::current().filePath(
-            QStringLiteral("src/test/id3-test-data/test.mod"));
-}
-
 } // anonymous namespace
 
 // Tests SoundSourceOpenMPT using the same patterns as SoundSourceProxyTest:
@@ -50,6 +45,11 @@ class SoundSourceOpenMPTTest : public MixxxTest {
         if (!SoundSourceProxy::isFileSuffixSupported("wav")) {
             SoundSourceProxy::registerProviders();
         }
+    }
+
+    QString getTestModFilePath() const {
+        return getTestDir().filePath(
+                QStringLiteral("id3-test-data/test.mod"));
     }
 
     static mixxx::AudioSourcePointer openAudioSource(
@@ -102,9 +102,9 @@ TEST_F(SoundSourceOpenMPTTest, open) {
                 providerRegistration.getProvider());
         ASSERT_NE(nullptr, pAudioSource);
         EXPECT_EQ(pAudioSource->getSignalInfo().getChannelCount(),
-                  mixxx::audio::ChannelCount::stereo());
+                mixxx::audio::ChannelCount::stereo());
         EXPECT_EQ(pAudioSource->getSignalInfo().getSampleRate(),
-                  SoundSourceOpenMPT::kSampleRate);
+                SoundSourceOpenMPT::kSampleRate);
         EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
     }
 }

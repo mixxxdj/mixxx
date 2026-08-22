@@ -1,12 +1,13 @@
+#include "effects/backends/builtin/trackereffect.h"
+
 #include <gtest/gtest.h>
 
 #include <QtDebug>
 
-#include "effects/backends/builtin/trackereffect.h"
 #include "effects/backends/effectmanifest.h"
-#include "engine/engine.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
