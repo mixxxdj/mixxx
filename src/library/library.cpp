@@ -347,7 +347,19 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
+
+
     // Setup the sources view
+    pSidebarWidget->setRootIsDecorated(true);
+    pSidebarWidget->setItemsExpandable(true);
+    pSidebarWidget->setIndentation(18);
+
+    //Drag and drop support for the sidebar. This is needed to support reordering of playlists and crates.
+    pSidebarWidget->setDragEnabled(true);
+    pSidebarWidget->setAcceptDrops(true);
+    pSidebarWidget->setDropIndicatorShown(true);
+    pSidebarWidget->setDragDropMode(QAbstractItemView::InternalMove);
+
     pSidebarWidget->setModel(m_pSidebarModel);
     connect(m_pSidebarModel,
             &SidebarModel::selectIndex,

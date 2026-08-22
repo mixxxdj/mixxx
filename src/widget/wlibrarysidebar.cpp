@@ -1,14 +1,19 @@
 #include "widget/wlibrarysidebar.h"
-
 #include <QHeaderView>
 #include <QUrl>
 #include <QtDebug>
-
+#include <QDrag>
+#include <QMimeData>
+#include <QDrag>
+#include <QMimeData>
+#include <QMouseEvent>
 #include "library/library_prefs.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
 #include "util/dnd.h"
+#include "library/treeitem.h"
+#include "library/libraryfeature.h"
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
@@ -20,7 +25,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
     //Drag and drop setup
-    setDragEnabled(false);
+    setDragEnabled(true);
     setDragDropMode(QAbstractItemView::DragDrop);
     setDropIndicatorShown(true);
     setAcceptDrops(true);
@@ -48,21 +53,19 @@ void WLibrarySidebar::contextMenuEvent(QContextMenuEvent* pEvent) {
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent* pEvent) {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << pEvent->mimeData()->formats();
     resetHoverIndexAndDragMoveResult();
+
+    if (pEvent->mimeData()->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
+        pEvent->acceptProposedAction();
+        return;
+    }
+
     if (pEvent->mimeData()->hasUrls()) {
-        // We don't have a way to ask the LibraryFeatures whether to accept a
-        // drag so for now we accept all drags. Since almost every
-        // LibraryFeature accepts all files in the drop and accepts playlist
-        // drops we default to those flags to DragAndDropHelper.
-        // FIXME Unless the cursor is steady after entering the sidebar (which
-        // is veryhard to achieve for humans) QDragEnterEvent is followed by one
-        // or more QDragMoveEvent, so don't check here at all and rely on dragMove?
         if (DragAndDropHelper::urlsContainSupportedTrackFiles(pEvent->mimeData()->urls(), true)) {
             pEvent->acceptProposedAction();
             return;
         }
     }
     pEvent->ignore();
-    // QTreeView::dragEnterEvent(pEvent);
 }
 
 /// Drag leave event, happens when leaving and when the drag is aborted, eg. with Esc.
@@ -76,7 +79,6 @@ void WLibrarySidebar::dragLeaveEvent(QDragLeaveEvent* pEvent) {
 
 /// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
-    // qDebug() << "WLibrarySidebar::dragMoveEvent" << pEvent->mimeData()->formats();
     toggleDragHoverPropertyAndUpdateStyle(true);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -85,44 +87,61 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     QPoint pos = pEvent->pos();
 #endif
     const QModelIndex index = indexAt(pos);
+
+    // --- Internal playlist drag handling ---
+    if (pEvent->mimeData()->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
+        SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
+
+        if (pSidebarModel) {
+            if (!index.isValid() || index.internalPointer() == pSidebarModel) {
+                m_hoverIndex = QModelIndex();
+                m_lastDragMoveAccepted = true;
+                pEvent->acceptProposedAction();
+                return;
+            }
+
+            TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
+            if (pItem && pItem->feature() &&
+                    pItem->feature()->title().toString() == QStringLiteral("Playlists")) {
+                m_hoverIndex = index;
+                setCurrentIndex(index);
+
+                m_lastDragMoveAccepted = true;
+                pEvent->acceptProposedAction();
+                return;
+            }
+        }
+
+        m_lastDragMoveAccepted = false;
+        pEvent->ignore();
+        return;
+    }
+    // ------------------------------------
+
+    // The rest of the code below keeps the original Mixxx URL-handling logic.
     if (m_hoverIndex == index) {
         m_lastDragMoveAccepted ? pEvent->acceptProposedAction() : pEvent->ignore();
         return;
     }
-
     m_hoverIndex = index;
-
     if (m_hoverExpandDelay >= 0) {
-        // Timeout of < 0 disables auto-expand
         m_expandTimer.stop();
         m_expandTimer.start(m_hoverExpandDelay, this);
     }
-
-    // This has to be here instead of after, otherwise all drags will be
-    // rejected -- rryan 3/2011
     QTreeView::dragMoveEvent(pEvent);
     if (!pEvent->mimeData()->hasUrls()) {
         pEvent->ignore();
         m_lastDragMoveAccepted = false;
         return;
     }
-
     const QList<QUrl> urls = pEvent->mimeData()->urls();
-    // Drag and drop within this widget
     if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
-        // Do nothing.
         m_lastDragMoveAccepted = false;
         pEvent->ignore();
         return;
     }
-
     SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        m_lastDragMoveAccepted = false;
-        pEvent->ignore();
-        return;
-    }
-    if (pSidebarModel->dragMoveAccept(index, urls)) {
+    if (pSidebarModel && pSidebarModel->dragMoveAccept(index, urls)) {
         m_lastDragMoveAccepted = true;
         pEvent->acceptProposedAction();
     } else {
@@ -148,38 +167,48 @@ void WLibrarySidebar::timerEvent(QTimerEvent* pEvent) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track sources view
 void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
-    // qDebug() << "WLibrarySidebar::dropEvent";
     resetHoverIndexAndDragMoveResult();
     toggleDragHoverPropertyAndUpdateStyle(false);
 
+    if (pEvent->mimeData()->hasFormat(QStringLiteral("application/x-mixxx-playlist-id"))) {
+        qDebug() << "Sidebar drop event started";
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QPoint pos = pEvent->position().toPoint();
+#else
+        QPoint pos = pEvent->pos();
+#endif
+        const QModelIndex destIndex = indexAt(pos);
+        SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
+
+        if (pSidebarModel && destIndex.isValid()) {
+            if (pSidebarModel->dropMimeData(pEvent->mimeData(), pEvent->dropAction(), -1, -1, destIndex)) {
+                qDebug() << "Sidebar model accepted the drop";
+                pEvent->setDropAction(Qt::MoveAction);
+                pEvent->acceptProposedAction();
+                return;
+            }
+        }
+        pEvent->ignore();
+        return;
+    }
+  
     if (!pEvent->mimeData()->hasUrls()) {
         pEvent->ignore();
         return;
     }
-    // Drag and drop within this widget
     if ((pEvent->source() == this) && (pEvent->possibleActions() & Qt::MoveAction)) {
-        // Do nothing.
         pEvent->ignore();
         return;
     }
-    // Drag-and-drop from an external application (eg. a file manager) or the
-    // track table widget onto the sidebar.
-    // Reset the selected items (if you had anything highlighted, it clears it)
-    // this->selectionModel()->clear();
     SidebarModel* pSidebarModel = qobject_cast<SidebarModel*>(model());
-    VERIFY_OR_DEBUG_ASSERT(pSidebarModel) {
-        pEvent->ignore();
-        return;
-    }
+    if (!pSidebarModel) { pEvent->ignore(); return; }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     QPoint pos = pEvent->position().toPoint();
 #else
     QPoint pos = pEvent->pos();
 #endif
-
     const QModelIndex destIndex = indexAt(pos);
-    // pEvent->source() will return NULL if something is dropped from
-    // a different application
     const QList<QUrl> urls = pEvent->mimeData()->urls();
     if (pSidebarModel->dropAccept(destIndex, urls, pEvent->source())) {
         pEvent->acceptProposedAction();
