@@ -133,18 +133,24 @@ class TrackerEffect : public EffectProcessorImpl<TrackerEffectGroupState> {
     }
 
     void processReverb(TrackerEffectGroupState* pState,
-            SINT* pr, SINT frameCount);
+            SINT* pr,
+            SINT frameCount);
     void processSurround(TrackerEffectGroupState* pState,
-            SINT* pr, SINT frameCount);
+            SINT* pr,
+            SINT frameCount);
     void processMegabass(TrackerEffectGroupState* pState,
-            SINT* px, SINT frameCount);
+            SINT* px,
+            SINT frameCount);
     void processNoiseReduction(TrackerEffectGroupState* pState,
-            SINT* pnr, SINT frameCount);
+            SINT* pnr,
+            SINT frameCount);
 
     void configureReverb(TrackerEffectGroupState* pState,
-            int depth, int delayMs);
+            int depth,
+            int delayMs);
     void configureSurround(TrackerEffectGroupState* pState,
-            int depth, int delayMs);
+            int depth,
+            int delayMs);
     void configureMegabass(TrackerEffectGroupState* pState,
             int depth);
 

@@ -202,19 +202,26 @@ void TrackerEffect::configureReverb(
         }
 
         std::fill(pState->m_reverbLoFilterBuffer.begin(),
-                pState->m_reverbLoFilterBuffer.end(), 0);
+                pState->m_reverbLoFilterBuffer.end(),
+                0);
         std::fill(pState->m_reverbLoFilterDelay.begin(),
-                pState->m_reverbLoFilterDelay.end(), 0);
+                pState->m_reverbLoFilterDelay.end(),
+                0);
         std::fill(pState->m_reverbBuffer.begin(),
-                pState->m_reverbBuffer.end(), 0);
+                pState->m_reverbBuffer.end(),
+                0);
         std::fill(pState->m_reverbBuffer2.begin(),
-                pState->m_reverbBuffer2.end(), 0);
+                pState->m_reverbBuffer2.end(),
+                0);
         std::fill(pState->m_reverbBuffer3.begin(),
-                pState->m_reverbBuffer3.end(), 0);
+                pState->m_reverbBuffer3.end(),
+                0);
         std::fill(pState->m_reverbBuffer4.begin(),
-                pState->m_reverbBuffer4.end(), 0);
+                pState->m_reverbBuffer4.end(),
+                0);
         std::fill(pState->m_gRvbLowPass.begin(),
-                pState->m_gRvbLowPass.end(), 0);
+                pState->m_gRvbLowPass.end(),
+                0);
     }
 }
 
@@ -233,13 +240,17 @@ void TrackerEffect::configureSurround(
     pState->m_nDolbyHiFltPos = pState->m_nDolbyHiFltSum = 0;
 
     std::fill(pState->m_dolbyLoFilterBuffer.begin(),
-            pState->m_dolbyLoFilterBuffer.end(), 0);
+            pState->m_dolbyLoFilterBuffer.end(),
+            0);
     std::fill(pState->m_dolbyHiFilterBuffer.begin(),
-            pState->m_dolbyHiFilterBuffer.end(), 0);
+            pState->m_dolbyHiFilterBuffer.end(),
+            0);
     std::fill(pState->m_dolbyLoFilterDelay.begin(),
-            pState->m_dolbyLoFilterDelay.end(), 0);
+            pState->m_dolbyLoFilterDelay.end(),
+            0);
     std::fill(pState->m_surroundBuffer.begin(),
-            pState->m_surroundBuffer.end(), 0);
+            pState->m_surroundBuffer.end(),
+            0);
 
     pState->m_nSurroundSize = (pState->m_sampleRate * nProLogicDelay) / 1000;
     if (pState->m_nSurroundSize > 8192) {
@@ -277,9 +288,11 @@ void TrackerEffect::configureMegabass(
         pState->m_nXBassSum = pState->m_nXBassBufferPos =
                 pState->m_nXBassDlyPos = 0;
         std::fill(pState->m_xBassBuffer.begin(),
-                pState->m_xBassBuffer.end(), 0);
+                pState->m_xBassBuffer.end(),
+                0);
         std::fill(pState->m_xBassDelay.begin(),
-                pState->m_xBassDelay.end(), 0);
+                pState->m_xBassDelay.end(),
+                0);
     }
 }
 
