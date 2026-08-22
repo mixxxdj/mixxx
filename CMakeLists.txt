@@ -99,7 +99,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
 endif()
 
 if(
-  ((APPLE AND NOT IOS) OR WIN32 OR ANDROID)
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32 OR ANDROID)
   AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
 )
   if(NOT DEFINED BUILDENV_BASEPATH)
@@ -403,6 +403,7 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(MIXXX_APPIMAGE "Build for AppImage distribution (bundle dlopen dependencies)" OFF)
 cmake_dependent_option(
   QML
   "Build with QML"
@@ -539,6 +540,19 @@ include(ExternalProject)
 include(GNUInstallDirs)
 include(DefaultOption)
 include(IsStaticLibrary)
+
+if(DEFINED MIXXX_VCPKG_ROOT AND UNIX AND NOT APPLE)
+  # Prepend system paths to find the system's shared GLib instead of the
+  # vcpkg static GLib (which causes constructor-ordering issues when linked
+  # alongside static FFmpeg via LINK_GROUP:RESCAN).
+  # CMAKE_LIBRARY_ARCHITECTURE is set automatically on Debian-based systems.
+  if(CMAKE_LIBRARY_ARCHITECTURE)
+    list(PREPEND CMAKE_PREFIX_PATH
+      "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}"
+      "/usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake"
+    )
+  endif()
+endif()
 
 # Verify VCPKG settings
 if(DEFINED _VCPKG_INSTALLED_DIR)
@@ -2632,6 +2646,19 @@ if(UNIX AND NOT APPLE)
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   )
 
+  # AppImage desktop file (simplified Exec=mixxx)
+  if(MIXXX_APPIMAGE)
+    set(MIXXX_APPIMAGE_DESKTOP_FILE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-appimage.desktop")
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop" MIXXX_APPIMAGE_DESKTOP_CONTENT)
+    string(REGEX REPLACE "\nExec=[^\n]*" "\nExec=mixxx" MIXXX_APPIMAGE_DESKTOP_CONTENT "${MIXXX_APPIMAGE_DESKTOP_CONTENT}")
+    file(WRITE "${MIXXX_APPIMAGE_DESKTOP_FILE}" "${MIXXX_APPIMAGE_DESKTOP_CONTENT}")
+    install(
+      FILES "${MIXXX_APPIMAGE_DESKTOP_FILE}"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+      RENAME "mixxx-appimage.desktop"
+    )
+  endif()
+
   # Icon files for menu entry
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/"
@@ -2843,7 +2870,19 @@ if(FFMPEG)
       __STDC_FORMAT_MACROS
   )
 
-  target_link_libraries(mixxx-lib PRIVATE FFmpeg::FFmpeg)
+  # Static FFmpeg libraries have cross-references (e.g. libavformat references
+  # av_adts_header_parse from libavcodec).  LINK_GROUP:RESCAN wraps them in
+  # --start-group/--end-group so the GNU linker resolves these.  Harmless for
+  # shared builds; Apple's ld64 does not support the group flags.
+  if(UNIX AND NOT APPLE)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE
+        "$<LINK_GROUP:RESCAN,FFmpeg::avformat,FFmpeg::avcodec,FFmpeg::avutil,FFmpeg::swresample>"
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE FFmpeg::FFmpeg)
+  endif()
   target_include_directories(mixxx-lib PUBLIC "${FFmpeg_INCLUDE_DIRS}")
 endif()
 
@@ -5009,6 +5048,37 @@ if(FdkAac_FOUND)
   endif()
 else()
   message(STATUS "Could NOT find fdk-aac (FdkAac_FOUND is FALSE)")
+endif()
+
+# Bundle codec libraries that Mixxx loads at runtime via QLibrary (dlopen).
+# The vcpkg buildenv provides static (.a) versions, but QLibrary needs the
+# shared (.so.*) files with versioned sonames (e.g. libfaad.so.2).
+if(MIXXX_APPIMAGE)
+  set(_suffixes "${CMAKE_FIND_LIBRARY_SUFFIXES}")
+
+  # libfaad: loader always expects libfaad.so.2
+  set(CMAKE_FIND_LIBRARY_SUFFIXES ".so.2")
+  find_library(FAAD_LIBRARY NAMES faad)
+  if(FAAD_LIBRARY)
+    install(FILES "${FAAD_LIBRARY}" DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+  endif()
+
+  # libfdk-aac: loader probes .so.1 first, then .so.2 — try both
+  unset(FDKAAC_LIBRARY CACHE)
+  foreach(_soname IN ITEMS 1 2)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".so.${_soname}")
+    find_library(FDKAAC_LIBRARY NAMES fdk-aac)
+    if(FDKAAC_LIBRARY)
+      break()
+    endif()
+  endforeach()
+  if(FDKAAC_LIBRARY)
+    install(FILES "${FDKAAC_LIBRARY}" DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+  else()
+    message(WARNING "libfdk-aac not found — fdk-aac encoding will be unavailable in the AppImage")
+  endif()
+
+  set(CMAKE_FIND_LIBRARY_SUFFIXES "${_suffixes}")
 endif()
 
 # Google PerfTools
