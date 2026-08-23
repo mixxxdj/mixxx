@@ -4,7 +4,9 @@
 
 #include "audio/types.h"
 #include "moc_dlgprefsounditem.cpp"
+#ifdef __PIPEWIRE__
 #include "soundio/pipewireenumerator.h"
+#endif
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
