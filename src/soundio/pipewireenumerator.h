@@ -58,7 +58,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
   private slots:
     void registerInput(const AudioInput& input, AudioDestination* dest);
     void registerOutput(const AudioOutput& output, AudioSource* src);
-    void devicesSetup();
 
   private:
     struct Link {
@@ -219,7 +218,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             uint32_t inPortId);
     void destroyLink(uint32_t id);
 
-    void updateAudioLatencyUsage(const SINT framesPerBuffer);
+    void updateAudioLatencyUsage(SINT samplerate, SINT framesPerBuffer);
     void setLatency(unsigned int sampleRate, unsigned int framesPerBuffer);
 
     void createInputPorts(const AudioInput& path, PortPair& ports);
@@ -227,7 +226,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void createPorts(PortPair& ports, std::string_view name, spa_direction direction);
     void closePorts(PortPair& ports);
 
-    void updateFilterLatency();
+    void updateFilterLatency(SINT samplerate, SINT bufferSize);
     bool nodeHasPorts(const Node& node);
 
     std::unordered_map<uint32_t, Node> m_nodes;
@@ -257,7 +256,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     int m_invalidTimeInfoCount;
     double m_lastCallbackEntrytoDacSecs;
     PerformanceTimer m_clkRefTimer;
-    mixxx::audio::SampleRate m_sampleRate;
     mixxx::audio::SampleRate m_defaultSampleRate;
 
     std::unordered_map<AudioInput, PortPair> m_inputs;
@@ -270,6 +268,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     ControlObject m_coBufferSize;
     ControlObject m_coLatencyParamsMismatch;
     ControlProxy m_coOutputLatencyMs;
+    ControlProxy m_coSamplerate;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
@@ -286,4 +285,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     uint32_t m_defaultSinkId;
     std::string m_defaultSourceName;
     std::string m_defaultSinkName;
+    uint32_t m_samplerate;
+    uint32_t m_bufferSize;
 };
