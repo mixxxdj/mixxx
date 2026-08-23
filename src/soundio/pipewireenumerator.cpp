@@ -76,8 +76,12 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
         }
     }
 
-    // worst case scenario, we still have node ID as name
-    return name + ":" + std::to_string(id);
+    if (name.empty()) {
+        // worst case scenario, we still have node ID as name
+        return std::to_string(id);
+    } else {
+        return name + ":" + std::to_string(id);
+    }
 }
 } // namespace
 
@@ -331,7 +335,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Node) == 0) {
         const char* media_class = spa_dict_lookup(pProps, PW_KEY_MEDIA_CLASS);
         const char* media_type = spa_dict_lookup(pProps, PW_KEY_MEDIA_TYPE);
-        const char* nodeName = spa_dict_lookup(pProps, PW_KEY_NODE_NAME);
+        const char* pNodeName = spa_dict_lookup(pProps, PW_KEY_NODE_NAME);
 
         bool isAudioNode = (media_class && strstr(media_class, "Audio")) ||
                 (media_type && strstr(media_type, "Audio"));
@@ -341,10 +345,13 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         }
 
         std::string name = find_node_name(id, pProps);
+        if (!pNodeName) {
+            pNodeName = name.c_str();
+        }
 
         m_nodes.insert_or_assign(id, Node{});
         auto pDevice = QSharedPointer<SoundDevicePipewire>::create(
-                m_pConfig, m_pSoundManager, this, id, name, nodeName);
+                m_pConfig, m_pSoundManager, this, id, name, pNodeName);
         emit deviceAdded(pDevice);
         // pipewire assigns each object with a unique ID
         // any previous element is either invalid or already removed
@@ -352,11 +359,11 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
 
         // not sure if metadata events happen after respective devices
         // are enumerated, so checking here as well
-        if (m_defaultSinkId == 0 && m_defaultSinkName == nodeName) {
+        if (m_defaultSinkId == 0 && m_defaultSinkName == pNodeName) {
             m_defaultSinkId = id;
         }
 
-        if (m_defaultSourceId == 0 && m_defaultSourceName == nodeName) {
+        if (m_defaultSourceId == 0 && m_defaultSourceName == pNodeName) {
             m_defaultSourceId = id;
         }
 
@@ -401,14 +408,14 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             node.inputs.push_back(id);
             pSoundDevice->setNumOutputs(node.inputs.size());
 
-            if (node_id == m_defaultSourceId) {
+            if (node_id == m_defaultSinkId) {
                 auto defaultDevice = m_soundDevices.at(kDefaultDeviceId);
                 defaultDevice->setNumOutputs(node.inputs.size());
             }
         } else {
             node.outputs.push_back(id);
             pSoundDevice->setNumInputs(node.outputs.size());
-            if (node_id == m_defaultSinkId) {
+            if (node_id == m_defaultSourceId) {
                 auto defaultDevice = m_soundDevices.at(kDefaultDeviceId);
                 defaultDevice->setNumInputs(node.outputs.size());
             }
@@ -507,6 +514,14 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
 
 void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
     if (m_nodes.contains(id)) {
+        if (id == m_defaultSourceId) {
+            m_defaultSourceId = 0;
+        }
+
+        if (id == m_defaultSinkId) {
+            m_defaultSinkId = 0;
+        }
+
         m_nodes.erase(id);
         VERIFY_OR_DEBUG_ASSERT(m_soundDevices.contains(id)) {
             return;
@@ -526,14 +541,14 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         if (port.isInput) {
             std::erase(node.inputs, id);
             pSoundDevice->setNumOutputs(node.inputs.size());
-            if (port.node == m_defaultSourceId) {
+            if (port.node == m_defaultSinkId) {
                 auto defaultDevice = m_soundDevices.at(kDefaultDeviceId);
                 defaultDevice->setNumOutputs(node.inputs.size());
             }
         } else {
             std::erase(node.outputs, id);
             pSoundDevice->setNumInputs(node.outputs.size());
-            if (port.node == m_defaultSinkId) {
+            if (port.node == m_defaultSourceId) {
                 auto defaultDevice = m_soundDevices.at(kDefaultDeviceId);
                 defaultDevice->setNumInputs(node.outputs.size());
             }
@@ -623,11 +638,11 @@ int PipewireEnumerator::metadataEventDefault(
         uint32_t id, const char* key, const char* type, const char* value) {
     bool defaultAudioSource = strcmp(key, "default.audio.source") == 0;
     bool defaultAudioSink = strcmp(key, "default.audio.sink") == 0;
+    qDebug() << "PipewireEnumerator::metadataEventDefault" << id << key << type
+             << value << defaultAudioSource << defaultAudioSink;
     if (!defaultAudioSource && !defaultAudioSink) {
         return 0;
     }
-
-    qDebug() << "PipewireEnumerator::metadataEventDefault" << id << key << type << value;
 
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(value, &parseError);
@@ -638,12 +653,6 @@ int PipewireEnumerator::metadataEventDefault(
 
     QJsonObject obj = doc.object();
     QString name = obj["name"].toString();
-
-    if (defaultAudioSource) {
-        m_defaultSourceName = name.toStdString();
-    } else {
-        m_defaultSinkName = name.toStdString();
-    }
 
     for (const auto& [deviceId, device] : m_soundDevices) {
         if (device->getDeviceId().alsaHwDevice == name) {
@@ -658,9 +667,11 @@ int PipewireEnumerator::metadataEventDefault(
             if (defaultAudioSource) {
                 defaultDevice->setNumInputs(device->getNumInputChannels());
                 m_defaultSourceId = deviceId;
+                m_defaultSourceName = name.toStdString();
             } else {
                 defaultDevice->setNumOutputs(device->getNumOutputChannels());
                 m_defaultSinkId = deviceId;
+                m_defaultSinkName = name.toStdString();
             }
 
             if (isOpen) {
@@ -668,9 +679,18 @@ int PipewireEnumerator::metadataEventDefault(
                 // update this when we start respecting
                 defaultDevice->open(false, 0);
             }
-
-            break;
+            return 0;
         }
+    }
+
+    qWarning() << "PipewireEnumerator::metadataEventDefault no default"
+               << (defaultAudioSource ? "source" : "sink") << name;
+    if (defaultAudioSource) {
+        m_defaultSourceId = 0;
+        m_defaultSourceName = {};
+    } else {
+        m_defaultSinkId = 0;
+        m_defaultSinkName = {};
     }
 
     return 0;
@@ -678,13 +698,13 @@ int PipewireEnumerator::metadataEventDefault(
 
 bool PipewireEnumerator::isOpen(uint32_t id) {
     for (const auto& ports : std::views::values(m_inputs)) {
-        if (ports.activeDevice == id && ports.active.load()) {
+        if (ports.activeDevice == id) {
             return true;
         }
     }
 
     for (const auto& ports : std::views::values(m_outputs)) {
-        if (ports.activeDevice == id && ports.active.load()) {
+        if (ports.activeDevice == id) {
             return true;
         }
     }
@@ -707,6 +727,12 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
 
     uint32_t actualDeviceId = deviceId == kDefaultDeviceId ? m_defaultSourceId : deviceId;
 
+    // before default device changes due to device removal
+    // the default device is in invalid state, do nothing
+    if (!actualDeviceId) {
+        return "default device not set";
+    }
+
     PortPair& ports = m_inputs.at(input);
     ports.activeDevice = deviceId;
 
@@ -718,6 +744,17 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
     unsigned char channelBase = channelGroup.getChannelBase();
     unsigned char channelCount = channelGroup.getChannelCount().value();
     std::span<const uint32_t> portIds = m_nodes.at(actualDeviceId).outputs;
+
+    if (deviceId == kDefaultDeviceId) {
+        // for default device we only bother to wire up the most basic
+        // routing, and ignore the preference page channels
+        channelBase = 0;
+        channelCount = std::min<unsigned char>(portIds.size(), 2);
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(channelCount) {
+        return {};
+    }
 
     pw_thread_loop_lock(m_pPwThreadLoop);
 
@@ -750,6 +787,12 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId, const AudioO
 
     uint32_t actualDeviceId = deviceId == kDefaultDeviceId ? m_defaultSinkId : deviceId;
 
+    // before default device changes due to device removal
+    // the default device is in invalid state, do nothing
+    if (!actualDeviceId) {
+        return "default device not set";
+    }
+
     PortPair& ports = m_outputs.at(output);
 
     if (ports.active.load()) {
@@ -761,8 +804,18 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId, const AudioO
     ChannelGroup channelGroup = output.getChannelGroup();
     unsigned char channelBase = channelGroup.getChannelBase();
     unsigned char channelCount = channelGroup.getChannelCount().value();
-
     std::span<const uint32_t> portIds = m_nodes.at(actualDeviceId).inputs;
+
+    if (deviceId == kDefaultDeviceId) {
+        // for default device we only bother to wire up the most basic
+        // routing, and ignore the preference page channels
+        channelBase = 0;
+        channelCount = std::min<unsigned char>(portIds.size(), 2);
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(channelCount) {
+        return {};
+    }
 
     pw_thread_loop_lock(m_pPwThreadLoop);
 
@@ -1127,6 +1180,8 @@ QString PipewireEnumerator::getChannelString(
 
     if (id == kDefaultDeviceId) {
         id = input ? m_defaultSourceId : m_defaultSinkId;
+        // before default device changes due to device removal
+        // the default device is in invalid state, do nothing
         VERIFY_OR_DEBUG_ASSERT(id) {
             return {};
         }
