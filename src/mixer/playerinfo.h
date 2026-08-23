@@ -32,6 +32,10 @@ class PlayerInfo : public QObject {
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
     void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void trackPaused(const QString& group, TrackPointer pTrack);
+    void trackResumed(const QString& group, TrackPointer pTrack);
+    void trackLoaded(const QString& group, TrackPointer pTrack);
+    void trackUnloaded(const QString& group, TrackPointer pTrack);
 
   private:
     class DeckControls {
