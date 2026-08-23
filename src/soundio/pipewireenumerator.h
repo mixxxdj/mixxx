@@ -51,6 +51,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     QString getChannelString(uint32_t id, ChannelGroup channelGroup, bool input) const;
 
+    static constexpr uint32_t kDefaultDeviceId = PW_ID_ANY;
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);

@@ -33,7 +33,6 @@
 namespace {
 
 constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
-constexpr uint32_t kDefaultDeviceId = PW_ID_ANY;
 constexpr int kDefaultBufferSize = 1024;
 const QString kAppGroup = QStringLiteral("[App]");
 
@@ -671,6 +670,8 @@ int PipewireEnumerator::metadataEventDefault(
                 m_defaultSinkId = deviceId;
                 m_defaultSinkName = name.toStdString();
             }
+
+            m_pSoundManager->updateDeviceChannels(device);
 
             if (isOpen) {
                 // currently SoundDevicePipewire ignores clockReference and syncBuffers
