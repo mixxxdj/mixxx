@@ -1,7 +1,9 @@
 #include "soundio/pipewireenumerator.h"
 
 #include <pipewire/pipewire.h>
-#include <qobjectdefs.h>
+#include <qendian.h>
+#include <qlogging.h>
+#include <qobject.h>
 #include <spa/utils/defs.h>
 #include <spa/utils/dict.h>
 #include <spa/utils/result.h>
@@ -17,6 +19,8 @@
 #include "audio/types.h"
 #include "control/controlobject.h"
 #include "moc_pipewireenumerator.cpp"
+#include "preferences/configobject.h"
+#include "preferences/dialog/dlgprefsound.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicepipewire.h"
 #include "soundio/soundmanager.h"
@@ -29,6 +33,7 @@
 namespace {
 
 constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
+constexpr int kDefaultBufferSize = 1024;
 const QString kAppGroup = QStringLiteral("[App]");
 
 static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
@@ -76,19 +81,32 @@ static std::string find_node_name(uint32_t id, const struct spa_dict* props) {
 }
 } // namespace
 
-PipewireEnumerator::PipewireEnumerator(UserSettingsPointer, SoundManager* pManager)
+PipewireEnumerator::PipewireEnumerator(
+        UserSettingsPointer pConfig, SoundManager* pManager)
         : m_pSoundManager(pManager),
+          m_pConfig(pConfig),
           m_pPwThreadLoop(nullptr),
           m_pPwContext(nullptr),
           m_pPwCore(nullptr),
           m_pPwRegistry(nullptr),
           m_pPwMetadata(nullptr),
           m_pPwFilter(nullptr),
-          m_sampleRate(48000),
           m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
-          m_coPipewirePatchbaySync(ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
+          m_coPipewirePatchbaySync(ConfigKey(
+                  kAppGroup, QStringLiteral("pipewire_patchbay_sync"))),
+          m_coBufferSize(ConfigKey(kAppGroup, QStringLiteral("buffer_size")),
+                  true,
+                  false,
+                  false,
+                  kDefaultBufferSize),
+          m_coLatencyParamsMismatch(ConfigKey(
+                  kAppGroup, QStringLiteral("latency_params_mismatch"))),
           m_coOutputLatencyMs(kAppGroup, QStringLiteral("output_latency_ms")),
-          m_framesPerBuffer(0) {
+          m_coSamplerate(kAppGroup, QStringLiteral("samplerate")),
+          m_forceQuantum(false),
+          m_forceSamplerate(false),
+          m_samplerate(48000),
+          m_bufferSize(kDefaultBufferSize) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -528,19 +546,8 @@ int PipewireEnumerator::metadataProperty(
 
     if (strcmp(key, "clock.rate") == 0) {
         pEnumerator->m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
-    } else if (strcmp(key, "clock.allowed-rates") == 0) {
-        qDebug() << "PipewireEnumerator::metadataProperty clock.allowed-rates" << value;
-        // parse json arrays like [ 44100, 48000, 96000 ]
-        QString s = value;
-        s.remove('[');
-        s.remove(']');
-
-        const QStringList parts = s.split(',', Qt::SkipEmptyParts);
-
-        for (const QString& part : parts) {
-            pEnumerator->m_samplerates.push_back(mixxx::audio::SampleRate(part.trimmed().toInt()));
-        }
     }
+
     return 0;
 }
 
@@ -696,16 +703,6 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
     const uint32_t sampleRate = pos->clock.rate.denom;
     const uint64_t framesPerBuffer = pos->clock.duration;
 
-    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
-        qDebug() << "PipewireEnumerator::callback"
-                    "requested"
-                 << m_framesPerBuffer << "samples at" << m_sampleRate << "hz,"
-                                                                         "provided"
-                 << framesPerBuffer << "samples at" << sampleRate << "hz";
-        setLatency(sampleRate, framesPerBuffer);
-    }
-
-    // qDebug() << "PipewireEnumerator::callback" << sampleRate << framesPerBuffer;
     m_pSoundManager->processUnderflowHappened(framesPerBuffer);
 
     for (const auto& [input, ports] : m_inputs) {
@@ -774,15 +771,81 @@ void PipewireEnumerator::callback(const spa_io_position* pos) {
         }
     }
 
-    updateAudioLatencyUsage(framesPerBuffer);
+    const bool configForceQuantum = m_pConfig->getValue(
+            ConfigKey(kAppGroup, QStringLiteral("force_buffer_size")), false);
+    const bool configForceSamplerate = m_pConfig->getValue(
+            ConfigKey(kAppGroup, QStringLiteral("force_samplerate")), false);
+    const unsigned int engineSamplerate = static_cast<unsigned int>(m_coSamplerate.get());
+    const unsigned int engineBufferSize = static_cast<unsigned int>(m_coBufferSize.get());
+
+    const mixxx::audio::SampleRate configSamplerate = m_pSoundManager->getConfig().getSampleRate();
+    const unsigned int configBufferSize = configForceQuantum
+            ? m_pSoundManager->getConfig().getFramesPerBuffer()
+            // server set buffer size can be arbitrary (non power of 2)
+            // here we don't store it in SoundManagerConfig, and instead use ControlObject
+            : engineBufferSize;
+
+    const bool forceChanged = configForceQuantum != m_forceQuantum ||
+            configForceSamplerate != m_forceSamplerate;
+    const bool latencyParamsChanged = configSamplerate != m_samplerate ||
+            configBufferSize != m_bufferSize;
+
+    if (forceChanged) {
+        m_forceQuantum = configForceQuantum;
+        m_forceSamplerate = configForceSamplerate;
+    }
+
+    if (latencyParamsChanged) {
+        m_samplerate = configSamplerate;
+        m_bufferSize = configBufferSize;
+    }
+
+    if (forceChanged || latencyParamsChanged) {
+        std::string rate = m_forceSamplerate ? std::to_string(m_samplerate) : "";
+        std::string quantum = m_forceQuantum ? std::to_string(m_bufferSize) : "";
+
+        const spa_dict_item propItems[] = {
+                SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_RATE, rate.c_str()),
+                SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_QUANTUM, quantum.c_str()),
+        };
+
+        spa_dict properties = SPA_DICT_INIT(propItems, std::size(propItems));
+
+        pw_thread_loop_lock(m_pPwThreadLoop);
+        int res = pw_filter_update_properties(m_pPwFilter, nullptr, &properties);
+        pw_thread_loop_unlock(m_pPwThreadLoop);
+
+        if (res < 0) {
+            qDebug() << "PipewireEnumerator::setLatency "
+                        "pw_filter_update_properties failed:"
+                     << spa_strerror(res);
+            qDebug() << "Unable to set requested samplerate";
+        }
+
+        const bool bufferSizeMismatch = m_forceQuantum && (framesPerBuffer != m_bufferSize);
+        const bool samplerateMismatch = m_forceSamplerate && (sampleRate != m_samplerate);
+        m_coLatencyParamsMismatch.set(bufferSizeMismatch || samplerateMismatch);
+    }
+
+    if (sampleRate != engineSamplerate || framesPerBuffer != engineBufferSize) {
+        qDebug() << "PipewireEnumerator::callback requested"
+                 << m_samplerate << "samples at" << m_bufferSize << "hz, provided"
+                 << sampleRate << "samples at" << framesPerBuffer << "hz";
+
+        m_coOutputLatencyMs.set(framesPerBuffer * 1000 / sampleRate);
+        m_coSamplerate.set(sampleRate);
+        m_coBufferSize.set(framesPerBuffer);
+    }
+
+    updateAudioLatencyUsage(sampleRate, framesPerBuffer);
 }
 
-void PipewireEnumerator::updateAudioLatencyUsage(const SINT framesPerBuffer) {
+void PipewireEnumerator::updateAudioLatencyUsage(SINT samplerate, SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > ((double)samplerate / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_audioLatencyUsage.set(
-                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
+                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / (double)samplerate));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
         // qDebug() << m_audioLatencyUsage
@@ -917,46 +980,29 @@ void PipewireEnumerator::createOutputPorts(const AudioOutput& output, PortPair& 
     createPorts(ports, outputName, SPA_DIRECTION_OUTPUT);
 }
 
-void PipewireEnumerator::updateFilterLatency(
-        unsigned int sampleRate, unsigned int framesPerBuffer) {
-    qDebug() << "PipewireEnumerator::updateFilterLatency" << sampleRate << framesPerBuffer;
-    std::string rate = std::to_string(sampleRate);
-    std::string rateStr = "1/" + rate;
-    std::string quantumStr = std::to_string(framesPerBuffer);
-    std::string latencyStr = quantumStr + "/" + std::to_string(sampleRate);
+void PipewireEnumerator::updateFilterLatency(const SINT samplerate, const SINT bufferSize) {
+    qDebug() << "PipewireEnumerator::updateFilterLatency" << m_forceQuantum << m_forceSamplerate;
 
-    spa_dict_item items[] = {
-            SPA_DICT_ITEM_INIT(PW_KEY_NODE_RATE, rateStr.c_str()),
-            SPA_DICT_ITEM_INIT(PW_KEY_NODE_LATENCY, latencyStr.c_str()),
+    std::string rate = m_forceSamplerate ? std::to_string(samplerate) : "";
+    std::string quantum = m_forceQuantum ? std::to_string(bufferSize) : "";
+
+    const spa_dict_item propItems[] = {
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_RATE, rate.c_str()),
+            SPA_DICT_ITEM_INIT(PW_KEY_NODE_FORCE_QUANTUM, quantum.c_str()),
     };
 
-    // don't set PW_KEY_NODE_LATENCY if framesPerBuffer is 0 (uninitialized)
-    uint32_t numProps = framesPerBuffer == 0 ? 1 : 2;
-    spa_dict properties = SPA_DICT_INIT(items, numProps);
+    spa_dict properties = SPA_DICT_INIT(propItems, std::size(propItems));
 
     pw_thread_loop_lock(m_pPwThreadLoop);
-
     int res = pw_filter_update_properties(m_pPwFilter, nullptr, &properties);
-
     pw_thread_loop_unlock(m_pPwThreadLoop);
-    if (res >= 0) {
-        setLatency(sampleRate, framesPerBuffer);
-    } else {
+
+    if (res < 0) {
         qDebug() << "PipewireEnumerator::setLatency "
                     "pw_filter_update_properties failed:"
                  << spa_strerror(res);
         qDebug() << "Unable to set requested samplerate";
     }
-}
-
-void PipewireEnumerator::setLatency(unsigned int sampleRate, unsigned int framesPerBuffer) {
-    qDebug() << "PipewireEnumerator::setLatency" << sampleRate << framesPerBuffer;
-    m_sampleRate = sampleRate;
-    m_framesPerBuffer = framesPerBuffer;
-    ControlObject::set(
-            ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
-            m_framesPerBuffer * 1000 / m_sampleRate);
-    ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
 }
 
 void PipewireEnumerator::coreEventDone(uint32_t id, int seq) {
@@ -1020,12 +1066,4 @@ bool PipewireEnumerator::nodeHasPorts(const Node& node) {
     }
 
     return false;
-}
-
-void PipewireEnumerator::setLatencyParams(
-        mixxx::audio::SampleRate sampleRate, SINT framesPerBuffer) {
-    qDebug() << "PipewireEnumerator::setLatencyParams" << sampleRate << framesPerBuffer;
-    if (sampleRate != m_sampleRate || framesPerBuffer != m_framesPerBuffer) {
-        updateFilterLatency(sampleRate, framesPerBuffer);
-    }
 }
