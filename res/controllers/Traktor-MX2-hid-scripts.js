@@ -1525,25 +1525,31 @@ class TraktorMX2Class {
     };
 
     outputHandler(value, group, key) {
-        // Custom value for multi-colored LEDs
 
-        let ledValue = value;
+        let ledValue;
 
         // Look up color from map
         const colorConfig = this.outputColorMap[group]?.[key];
 
         if (colorConfig) {
+            // Should use colors from colorConfig
             if (value === 0 || value === false) {
                 ledValue = colorConfig.dim;
             } else if (value === 1 || value === true) {
                 ledValue = colorConfig.full;
+            } else {
+                // If value is not boolean, use the value directly (for multi-color LEDs)
+                ledValue = value;
             }
+        } else {
+            // If no color config is found, use the value directly
+            ledValue = value;
         }
 
         this.controller.setOutput(group, key, ledValue, true);
     };
 
-    colorOutputHandler(value, group, key) {
+    padOutputHandler(value, group, key) {
         // Custom value for multi-colored LEDs
         const colorValue = this.padColorMap.getValueForNearestColor(value);
         this.controller.setOutput(group, key, colorValue, true);
@@ -1620,14 +1626,14 @@ class TraktorMX2Class {
                         mode === 2 ? (enabled ? this.baseColors.blue : this.baseColors.dimmedBlue) :
                             mode === 3 ? (enabled ? this.baseColors.green : this.baseColors.dimmedGreen) : this.baseColors.off;
 
-                    this.colorOutputHandler(color, channel, "fx_misc");
+                    this.outputHandler(color, channel, "fx_misc");
                 } else if (name.startsWith("button_parameter")) {
                     const paramNum = name[name.length - 1];
 
                     if (paramNum <=engine.getValue(group, "num_button_parameters")) {
                         this.outputHandler(engine.getValue(group, name), channel, `fx_${paramNum}`);
                     } else {
-                        this.colorOutputHandler(this.baseColors.off, channel, `fx_${paramNum}`);
+                        this.outputHandler(this.baseColors.off, channel, `fx_${paramNum}`);
                     }
                 }
             }
@@ -1657,7 +1663,7 @@ class TraktorMX2Class {
             const color = engine.getValue(group, colorKey);
             const padNum = name[7];
             if (value > 0) {
-                this.colorOutputHandler(color, group, `pad_${padNum}`);
+                this.padOutputHandler(color, group, `pad_${padNum}`);
             } else {
                 this.outputHandler(this.baseColors.dimmedWhite, group, `pad_${padNum}`);
             }
@@ -1668,7 +1674,7 @@ class TraktorMX2Class {
         // Light button LED only when we are in hotcue mode
         const padNum = name[7];
         if (this.padModeState[group] === 0) {
-            this.colorOutputHandler(value, group, `pad_${padNum}`);
+            this.padOutputHandler(value, group, `pad_${padNum}`);
         }
     };
 
