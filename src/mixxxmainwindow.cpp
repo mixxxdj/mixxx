@@ -326,7 +326,12 @@ void MixxxMainWindow::initialize() {
             m_pCoreServices->getVinylControlManager(),
             m_pCoreServices->getEffectsManager(),
             m_pCoreServices->getSettingsManager(),
-            m_pCoreServices->getLibrary());
+            m_pCoreServices->getLibrary()
+#ifdef HTTP_REMOTE
+            ,
+            m_pCoreServices->getRemoteControl()
+#endif // HTTP_REMOTE
+    );
     m_pPrefDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
     m_pPrefDlg->setHidden(true);
     connect(m_pPrefDlg,
