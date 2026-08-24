@@ -53,9 +53,5 @@ KrugerMatzDJ001.wheelTurn = function (channel, control, value, status, group) {
 
 // -- Rotary selector (library navigation) -------------------------------------
 KrugerMatzDJ001.rotarySelector = function (channel, control, value, status, group) {
-    if (value === 0x7F) {
-        engine.setValue("[Library]", "MoveDown", 1);
-    } else {
-        engine.setValue("[Library]", "MoveUp", 1);
-    }
+    engine.setValue("[Library]", "MoveVertical", value === 0x7f ? 1 : -1);
 };
