@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefFingerprintDlg</class>
+ <widget class="QWidget" name="DlgPrefFingerprintDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>576</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Fingerprint Analysis Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+
+   <item row="0" column="0" colspan="2">
+    <widget class="QCheckBox" name="checkBoxFingerprintEnabled">
+     <property name="toolTip">
+      <string>Compute Chromaprint fingerprints during track analysis. Fingerprints enable AcoustID identification and MusicBrainz metadata lookup. Disabled by default because fingerprinting reads the full audio file and is significantly slower than beat and key analysis.</string>
+     </property>
+     <property name="text">
+      <string>Enable Fingerprint Analysis (Chromaprint / AcoustID)</string>
+     </property>
+    </widget>
+   </item>
+
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxAcoustId">
+     <property name="title">
+      <string>AcoustID Submission</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayoutAcoustId">
+
+      <!-- API key label and link -->
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="labelApiKeyInfo">
+        <property name="text">
+         <string>AcoustID User API Key (required for submission):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="lineEditAcoustIdApiKey">
+        <property name="toolTip">
+         <string>Your personal AcoustID API key. Required to submit unmatched fingerprints. Get yours at acoustid.org after linking your MusicBrainz account.</string>
+        </property>
+        <property name="placeholderText">
+         <string>Paste your API key here</string>
+        </property>
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="1">
+       <widget class="QLabel" name="labelAcoustIdApiKeyLink">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+
+      <item row="2" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAcoustIdAutoSubmit">
+        <property name="toolTip">
+         <string>Automatically submit unmatched fingerprints to AcoustID after lookup. Requires an API key. Only the Chromaprint fingerprint, track title, artist, duration, and MusicBrainz recording ID (if tagged) are sent — no audio is uploaded.</string>
+        </property>
+        <property name="text">
+         <string>Auto-submit unmatched fingerprints to AcoustID</string>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxCmrtGrouping">
+     <property name="title">
+      <string>Mastering / CMRT Grouping</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutCmrtGrouping">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutCmrtThreshold">
+        <item>
+         <widget class="QLabel" name="labelCmrtMatchThreshold">
+          <property name="text">
+           <string>Match threshold:</string>
+          </property>
+          <property name="toolTip">
+           <string>Minimum similarity score for two tracks to be treated as the same mastering and grouped together for offset calculation. Lower values group more aggressively but risk merging tracks that are not actually the same mastering; higher values are stricter. Default 90%.</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxCmrtMatchThreshold">
+          <property name="suffix">
+           <string> %</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>50.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>90.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacerCmrtThreshold">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtAllowStemCanonical">
+        <property name="toolTip">
+         <string>When off (default), stem files can never outrank a regular audio file for becoming the canonical track (CMRT) of their group -- they only stay canonical if no non-stem copy exists. When on, stem files are scored the same way as any other format.</string>
+        </property>
+        <property name="text">
+         <string>Allow stem files to become the canonical track (CMRT)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxCmrtColumn">
+     <property name="title">
+      <string>CMRT Library Column</string>
+     </property>
+     <property name="toolTip">
+      <string>At least one field must remain shown.</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutCmrtColumn">
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowArtist">
+        <property name="text">
+         <string>Show artist</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowTitle">
+        <property name="text">
+         <string>Show title</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowGroupId">
+        <property name="text">
+         <string>Show group ID</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowOffset">
+        <property name="text">
+         <string>Show offset (non-canonical tracks)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnShowMatchScore">
+        <property name="text">
+         <string>Show match % (non-canonical tracks)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxCmrtColumnGroupIdAppend">
+        <property name="text">
+         <string>Append group ID after name (uncheck to prepend)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutCmrtDelimiter">
+        <item>
+         <widget class="QLabel" name="labelCmrtColumnDelimiter">
+          <property name="text">
+           <string>Delimiter:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditCmrtColumnDelimiter"/>
+        </item>
+        <item>
+         <spacer name="horizontalSpacerCmrtDelimiter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item row="4" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxClearFingerprints">
+     <property name="title">
+      <string>Library-wide Fingerprint Cleanup</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutClear">
+      <item>
+       <widget class="QLabel" name="labelClearInfo">
+        <property name="text">
+         <string>Removes all stored Chromaprint fingerprints, AcoustID queue entries, and CMRT group memberships from the entire library. Individual tracks can also be cleared via the right-click context menu.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClearAllFingerprints">
+        <property name="toolTip">
+         <string>Deletes all .chroma files and removes all fingerprint metadata from the database. Tracks will be re-fingerprinted the next time fingerprint analysis runs.</string>
+        </property>
+        <property name="text">
+         <string>Clear All Fingerprints…</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item row="5" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+</ui>
