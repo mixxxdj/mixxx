@@ -36,8 +36,13 @@ void EngineSideChainCompressor::calculateRates() {
     if (m_decayPerFrame <= 0) {
         m_decayPerFrame = 0.005f;
     }
-    //qDebug() << "Compressor attack per frame: " << m_attackPerFrame
-    //         << "decay per frame: " << m_decayPerFrame;
+    qWarning() << ".";
+    qWarning() << "Compressor::calculateRates()";
+    qWarning() << "  attack time:     " << m_attackTime;
+    qWarning() << "  attack per frame:" << m_attackPerFrame;
+    qWarning() << "  decay time:  " << m_decayTime;
+    qWarning() << "  attack per frame: " << m_decayPerFrame;
+    qWarning() << ".";
 }
 
 void EngineSideChainCompressor::setAboveThreshold(bool value) {
