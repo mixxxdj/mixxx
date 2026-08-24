@@ -25,6 +25,10 @@ QmlApplicationProxy::QmlApplicationProxy(QObject* pParent)
             &KeyboardEventFilter::shortcutsEnabled,
             this,
             &QmlApplicationProxy::keyboardShortcutsEnabledChanged);
+    connect(s_pKeyboardEventFilter.get(),
+            &KeyboardEventFilter::keyboardConfigReloaded,
+            this,
+            &QmlApplicationProxy::menuShortcutsChanged);
 }
 
 bool QmlApplicationProxy::keyboardShortcutsEnabled() const {

@@ -37,9 +37,7 @@ ApplicationWindow {
         active: Qt.platform.os === "osx" || (Mixxx.Application.supportsGlobalMenuBar && root.visibility !== Window.FullScreen)
 
         sourceComponent: Skin.MainMenuBar {
-            applicationWindow: root
-            commands: applicationMenuCommands
-            numberOfDecks: root.show4decks ? root.numDecks : 2
+            actions: applicationMenuActions
         }
     }
     Skin.ApplicationMenuCommands {
@@ -52,6 +50,13 @@ ApplicationWindow {
             devToolsWindow.raise();
             devToolsWindow.requestActivate();
         }
+    }
+    Skin.ApplicationMenuActions {
+        id: applicationMenuActions
+
+        applicationWindow: root
+        commands: applicationMenuCommands
+        numberOfDecks: root.show4decks ? root.numDecks : 2
     }
     Skin.LibraryScanSummaryDialog {
     }

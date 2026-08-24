@@ -3,17 +3,12 @@ pragma ComponentBehavior: Bound
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Window
 
 MenuBar {
     id: root
 
-    required property ApplicationWindow applicationWindow
-    required property var commands
+    required property var actions
     property Menu developerMenu: null
-    property int numberOfDecks: 4
-
-    signal focusLibrarySearchRequested
 
     Component.onCompleted: {
         if (Mixxx.Application.developerMode) {
@@ -23,388 +18,163 @@ MenuBar {
     }
 
     Menu {
-        title: qsTr("&File")
+        title: qsTranslate("WMainMenuBar", "&File")
 
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("FileMenu_LoadDeck1", "Ctrl+O")
-            text: qsTr("Load Track to Deck &1")
-
-            onTriggered: root.commands.loadTrackToDeck(1)
+        MenuItem {
+            action: root.actions.fileLoadDeck1
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("FileMenu_LoadDeck2", "Ctrl+Shift+O")
-            text: qsTr("Load Track to Deck &2")
-
-            onTriggered: root.commands.loadTrackToDeck(2)
+        MenuItem {
+            action: root.actions.fileLoadDeck2
         }
-        Action {
-            enabled: root.numberOfDecks >= 3
-            text: qsTr("Load Track to Deck &3")
-
-            onTriggered: root.commands.loadTrackToDeck(3)
+        MenuItem {
+            action: root.actions.fileLoadDeck3
         }
-        Action {
-            enabled: root.numberOfDecks >= 4
-            text: qsTr("Load Track to Deck &4")
-
-            onTriggered: root.commands.loadTrackToDeck(4)
+        MenuItem {
+            action: root.actions.fileLoadDeck4
         }
         MenuSeparator {
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("FileMenu_Quit", "Ctrl+Q")
-            text: qsTr("E&xit")
-
-            onTriggered: Qt.quit()
+        MenuItem {
+            action: root.actions.fileQuit
         }
     }
     Menu {
-        title: qsTr("&Library")
+        title: qsTranslate("WMainMenuBar", "&Library")
 
-        Action {
-            enabled: !Mixxx.Library.libraryScanActive
-            shortcut: Mixxx.Application.menuShortcut("LibraryMenu_Rescan", "Ctrl+Shift+L")
-            text: qsTr("&Rescan Library")
-
-            onTriggered: Mixxx.Library.rescanLibrary()
+        MenuItem {
+            action: root.actions.libraryRescan
         }
-        Action {
-            enabled: Mixxx.Library.enginePrimeExportAvailable
-            text: qsTr("E&xport Library to Engine DJ")
-
-            onTriggered: Mixxx.Library.exportLibrary()
+        MenuItem {
+            action: root.actions.libraryExport
         }
         MenuSeparator {
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("LibraryMenu_SearchInCurrentView", "Ctrl+F")
-            text: qsTr("Search in Current View...")
-
-            onTriggered: {
-                Mixxx.Library.searchInCurrentView();
-                root.focusLibrarySearchRequested();
-            }
+        MenuItem {
+            action: root.actions.librarySearchCurrentView
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("LibraryMenu_SearchInAllTracks", "Ctrl+Shift+F")
-            text: qsTr("Search in Tracks Library...")
-
-            onTriggered: {
-                Mixxx.Library.searchInTracksLibrary();
-                root.focusLibrarySearchRequested();
-            }
+        MenuItem {
+            action: root.actions.librarySearchTracks
         }
         MenuSeparator {
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("LibraryMenu_NewPlaylist", "Ctrl+N")
-            text: qsTr("Create &New Playlist")
-
-            onTriggered: Mixxx.Library.createPlaylist()
+        MenuItem {
+            action: root.actions.libraryCreatePlaylist
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("LibraryMenu_NewCrate", "Ctrl+Shift+N")
-            text: qsTr("Create New &Crate")
-
-            onTriggered: Mixxx.Library.createCrate()
+        MenuItem {
+            action: root.actions.libraryCreateCrate
         }
     }
     Menu {
-        title: qsTr("&View") + "\u200c"
+        title: qsTranslate("WMainMenuBar", "&View") + "\u200c"
 
-        Action {
-            checkable: true
-            checked: showMicrophonesControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowMicrophone", "Ctrl+2")
-            text: qsTr("Show Microphone Section")
-
-            onTriggered: showMicrophonesControl.value = showMicrophonesControl.value > 0 ? 0.0 : 1.0
+        MenuItem {
+            action: root.actions.viewShowMicrophone
         }
-        Action {
-            checkable: true
-            checked: showVinylControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowVinylControl", "Ctrl+3")
-            text: qsTr("Show Vinyl Control Section")
-
-            onTriggered: showVinylControl.value = showVinylControl.value > 0 ? 0.0 : 1.0
+        MenuItem {
+            action: root.actions.viewShowVinylControl
         }
-        Action {
-            checkable: true
-            checked: showPreviewDecksControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowPreviewDeck", "Ctrl+4")
-            text: qsTr("Show Preview Deck")
-
-            onTriggered: showPreviewDecksControl.value = showPreviewDecksControl.value > 0 ? 0.0 : 1.0
+        MenuItem {
+            action: root.actions.viewShowPreviewDeck
         }
-        Action {
-            checkable: true
-            checked: showLibraryCoverArtControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowCoverArt", "Ctrl+6")
-            text: qsTr("Show Cover Art")
-
-            onTriggered: showLibraryCoverArtControl.value = showLibraryCoverArtControl.value > 0 ? 0.0 : 1.0
+        MenuItem {
+            action: root.actions.viewShowCoverArt
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowKeywheel", "F12")
-            text: qsTr("Show Keywheel")
-
-            onTriggered: root.commands.showKeywheel()
+        MenuItem {
+            action: root.actions.viewShowKeywheel
         }
-        Action {
-            checkable: true
-            checked: showMaximizedLibraryControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_MaximizeLibrary", "Space")
-            text: qsTr("Maximize Library")
-
-            onTriggered: showMaximizedLibraryControl.value = showMaximizedLibraryControl.value > 0 ? 0.0 : 1.0
+        MenuItem {
+            action: root.actions.viewMaximizeLibrary
         }
         MenuSeparator {
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("ViewMenu_ShowAutoDJ", "Ctrl+9")
-            text: qsTr("Show Auto DJ")
-
-            onTriggered: Mixxx.Library.showAutoDJ()
+        MenuItem {
+            action: root.actions.viewShowAutoDJ
         }
-        Action {
-            checkable: true
-            checked: root.applicationWindow.visibility === Window.FullScreen
-            shortcut: Qt.platform.os === "osx" ? "Ctrl+Meta+F" : "F11"
-            text: qsTr("&Full Screen")
-
-            onTriggered: {
-                root.commands.toggleFullScreen();
-            }
+        MenuItem {
+            action: root.actions.viewFullScreen
         }
     }
     Menu {
-        title: qsTr("&Options")
+        title: qsTranslate("WMainMenuBar", "&Options")
 
         Menu {
-            title: qsTr("Vinyl Control")
+            title: qsTranslate("WMainMenuBar", "&Vinyl Control")
 
-            Action {
-                checkable: true
-                checked: vinylDeck1Control.value > 0
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl1", "Ctrl+T")
-                text: qsTr("Enable Vinyl Control 1")
-
-                onTriggered: vinylDeck1Control.value = vinylDeck1Control.value > 0 ? 0.0 : 1.0
+            MenuItem {
+                action: root.actions.optionsEnableVinyl1
             }
-            Action {
-                checkable: true
-                checked: vinylDeck2Control.value > 0
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl2", "Ctrl+Y")
-                text: qsTr("Enable Vinyl Control 2")
-
-                onTriggered: vinylDeck2Control.value = vinylDeck2Control.value > 0 ? 0.0 : 1.0
+            MenuItem {
+                action: root.actions.optionsEnableVinyl2
             }
-            Action {
-                checkable: true
-                checked: vinylDeck3Control.value > 0
-                enabled: root.numberOfDecks >= 3
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl3", "Ctrl+U")
-                text: qsTr("Enable Vinyl Control 3")
-
-                onTriggered: vinylDeck3Control.value = vinylDeck3Control.value > 0 ? 0.0 : 1.0
+            MenuItem {
+                action: root.actions.optionsEnableVinyl3
             }
-            Action {
-                checkable: true
-                checked: vinylDeck4Control.value > 0
-                enabled: root.numberOfDecks >= 4
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableVinyl4", "Ctrl+I")
-                text: qsTr("Enable Vinyl Control 4")
-
-                onTriggered: vinylDeck4Control.value = vinylDeck4Control.value > 0 ? 0.0 : 1.0
+            MenuItem {
+                action: root.actions.optionsEnableVinyl4
             }
         }
         MenuSeparator {
         }
-        Action {
-            checkable: true
-            checked: recordingStatusControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_RecordMix", "Ctrl+R")
-            text: qsTr("&Record Mix")
-
-            onTriggered: recordingToggleControl.trigger()
+        MenuItem {
+            action: root.actions.optionsRecordMix
         }
-        Action {
-            checkable: true
-            checked: broadcastEnabledControl.value > 0
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableLiveBroadcasting", "Ctrl+L")
-            text: qsTr("Enable Live &Broadcasting")
-
-            onTriggered: broadcastEnabledControl.value = broadcastEnabledControl.value > 0 ? 0.0 : 1.0
+        MenuItem {
+            action: root.actions.optionsEnableLiveBroadcasting
         }
-        Action {
-            checkable: true
-            checked: Mixxx.Application.keyboardShortcutsEnabled
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_EnableShortcuts", "Ctrl+`")
-            text: qsTr("Enable &Keyboard Shortcuts")
-
-            onTriggered: Mixxx.Application.keyboardShortcutsEnabled = !Mixxx.Application.keyboardShortcutsEnabled
+        MenuItem {
+            action: root.actions.optionsEnableKeyboardShortcuts
         }
         MenuSeparator {
         }
-        Action {
-            shortcut: Mixxx.Application.menuShortcut("OptionsMenu_Preferences", "Ctrl+,")
-            text: qsTr("&Preferences")
-
-            onTriggered: Mixxx.PreferencesDialog.show()
+        MenuItem {
+            action: root.actions.optionsPreferences
         }
     }
     Component {
         id: developerMenuComponent
 
         Menu {
-            title: qsTr("&Developer")
+            title: qsTranslate("WMainMenuBar", "&Developer")
 
-            Action {
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_ReloadSkin", "Ctrl+Shift+R")
-                text: qsTr("&Reload Skin")
-
-                onTriggered: Mixxx.Application.reloadSkin()
+            MenuItem {
+                action: root.actions.developerReloadSkin
             }
-            Action {
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperTools", "Ctrl+Shift+T")
-                text: qsTr("Developer &Tools")
-
-                onTriggered: root.commands.showDeveloperToolsRequested()
+            MenuItem {
+                action: root.actions.developerTools
             }
-            Action {
-                checkable: true
-                checked: Mixxx.Application.experimentStatsEnabled
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsExperiment", "Ctrl+Shift+E")
-                text: qsTr("Stats: &Experiment Bucket")
-
-                onTriggered: Mixxx.Application.setExperimentStatsEnabled(!Mixxx.Application.experimentStatsEnabled)
+            MenuItem {
+                action: root.actions.developerExperimentStats
             }
-            Action {
-                checkable: true
-                checked: Mixxx.Application.baseStatsEnabled
-                shortcut: Mixxx.Application.menuShortcut("OptionsMenu_DeveloperStatsBase", "Ctrl+Shift+B")
-                text: qsTr("Stats: &Base Bucket")
-
-                onTriggered: Mixxx.Application.setBaseStatsEnabled(!Mixxx.Application.baseStatsEnabled)
+            MenuItem {
+                action: root.actions.developerBaseStats
             }
-            Action {
-                checkable: true
-                checked: Mixxx.Application.debuggerEnabled
-                shortcut: Mixxx.Application.menuShortcut("DeveloperMenu_EnableDebugger", "Ctrl+Shift+D")
-                text: qsTr("Deb&ugger Enabled")
-
-                onTriggered: Mixxx.Application.debuggerEnabled = !Mixxx.Application.debuggerEnabled
+            MenuItem {
+                action: root.actions.developerDebugger
             }
         }
     }
     Menu {
-        title: qsTr("&Help")
+        title: qsTranslate("WMainMenuBar", "&Help")
 
-        Action {
-            text: qsTr("&Community Support")
-
-            onTriggered: Qt.openUrlExternally("https://www.mixxx.org/support/")
+        MenuItem {
+            action: root.actions.helpCommunitySupport
         }
-        Action {
-            text: qsTr("&User Manual")
-
-            onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/")
+        MenuItem {
+            action: root.actions.helpUserManual
         }
-        Action {
-            text: qsTr("&Keyboard Shortcuts")
-
-            onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/chapters/controlling_mixxx.html#using-a-keyboard")
+        MenuItem {
+            action: root.actions.helpKeyboardShortcuts
         }
-        Action {
-            // Qt Quick Controls does not expose native menu roles. Prevent
-            // macOS from treating this action as the application Preferences action.
-            text: qsTr("&Settings directory") + "\u200c"
-
-            onTriggered: Qt.openUrlExternally(Mixxx.Application.settingsDirectoryUrl)
+        MenuItem {
+            action: root.actions.helpSettingsDirectory
         }
-        Action {
-            text: qsTr("&Translate This Application")
-
-            onTriggered: Qt.openUrlExternally("https://explore.transifex.com/mixxx-dj-software/")
+        MenuItem {
+            action: root.actions.helpTranslate
         }
         MenuSeparator {
         }
-        Action {
-            text: qsTr("&About")
-
-            onTriggered: root.commands.showAbout()
+        MenuItem {
+            action: root.actions.helpAbout
         }
-    }
-    Mixxx.ControlProxy {
-        id: showMicrophonesControl
-
-        group: "[Skin]"
-        key: "show_microphones"
-    }
-    Mixxx.ControlProxy {
-        id: showVinylControl
-
-        group: "[Skin]"
-        key: "show_vinylcontrol"
-    }
-    Mixxx.ControlProxy {
-        id: showPreviewDecksControl
-
-        group: "[Skin]"
-        key: "show_preview_decks"
-    }
-    Mixxx.ControlProxy {
-        id: showLibraryCoverArtControl
-
-        group: "[Skin]"
-        key: "show_library_coverart"
-    }
-    Mixxx.ControlProxy {
-        id: showMaximizedLibraryControl
-
-        group: "[Skin]"
-        key: "show_maximized_library"
-    }
-    Mixxx.ControlProxy {
-        id: vinylDeck1Control
-
-        group: "[Channel1]"
-        key: "vinylcontrol_enabled"
-    }
-    Mixxx.ControlProxy {
-        id: vinylDeck2Control
-
-        group: "[Channel2]"
-        key: "vinylcontrol_enabled"
-    }
-    Mixxx.ControlProxy {
-        id: vinylDeck3Control
-
-        group: "[Channel3]"
-        key: "vinylcontrol_enabled"
-    }
-    Mixxx.ControlProxy {
-        id: vinylDeck4Control
-
-        group: "[Channel4]"
-        key: "vinylcontrol_enabled"
-    }
-    Mixxx.ControlProxy {
-        id: recordingStatusControl
-
-        group: "[Recording]"
-        key: "status"
-    }
-    Mixxx.ControlProxy {
-        id: recordingToggleControl
-
-        group: "[Recording]"
-        key: "toggle_recording"
-    }
-    Mixxx.ControlProxy {
-        id: broadcastEnabledControl
-
-        group: "[Shoutcast]"
-        key: "enabled"
     }
 }
