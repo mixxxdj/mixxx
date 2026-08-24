@@ -13,6 +13,8 @@
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
+#include "library/dao/trackdao.h"
+#include "library/dao/trackfingerprintdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
@@ -215,6 +217,8 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::BPM)) {
         m_pBPMMenu = make_parented<QMenu>(this);
         m_pBPMMenu->setTitle(tr("Adjust BPM"));
+        // Required to show CMRT-disabled tooltip.
+        m_pBPMMenu->setToolTipsVisible(true);
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -224,16 +228,22 @@ void WTrackMenu::createMenus() {
 
     m_pHotcueMenu = make_parented<QMenu>(this);
     m_pHotcueMenu->setTitle(tr("Hotcues"));
+    // Required to show CMRT-disabled tooltip.
+    m_pHotcueMenu->setToolTipsVisible(true);
 
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = make_parented<QMenu>(this);
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Clear"));
+        // Required to show CMRT-disabled tooltip.
+        m_pClearMetadataMenu->setToolTipsVisible(true);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu = make_parented<QMenu>(this);
         m_pAnalyzeMenu->setTitle(tr("Analyze"));
+        // Required to show CMRT-disabled tooltip.
+        m_pAnalyzeMenu->setToolTipsVisible(true);
     }
 
     if (featureIsEnabled(Feature::SearchRelated)) {
@@ -482,6 +492,19 @@ void WTrackMenu::createActions() {
         m_pClearCommentAction = make_parented<QAction>(tr("Comment"), m_pClearMetadataMenu);
         connect(m_pClearCommentAction, &QAction::triggered, this, &WTrackMenu::slotClearComment);
 
+        m_pClearFingerprintAction = make_parented<QAction>(tr("Fingerprint"), m_pClearMetadataMenu);
+        connect(m_pClearFingerprintAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearFingerprint);
+
+        m_pClearMusicBrainzAction = make_parented<QAction>(
+                tr("MusicBrainz Data"), m_pClearMetadataMenu);
+        connect(m_pClearMusicBrainzAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotClearMusicBrainz);
+
         m_pClearAllMetadataAction = make_parented<QAction>(tr("All"), m_pClearMetadataMenu);
         connect(m_pClearAllMetadataAction, &QAction::triggered, this, &WTrackMenu::slotClearAllMetadata);
 
@@ -501,6 +524,18 @@ void WTrackMenu::createActions() {
                 [this]() {
                     slotSortHotcuesByPosition(HotcueSortMode::KeepOffsets);
                 });
+        m_pCopyCmrtHotcuesAction = make_parented<QAction>(
+                tr("Copy CMRT Hotcues (replace existing)"), m_pHotcueMenu);
+        connect(m_pCopyCmrtHotcuesAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotCopyCmrtHotcues);
+        m_pAddCmrtHotcuesAction = make_parented<QAction>(
+                tr("Add CMRT Hotcues (keep existing)"), m_pHotcueMenu);
+        connect(m_pAddCmrtHotcuesAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotAddCmrtHotcues);
     }
 
     if (featureIsEnabled(Feature::BPM)) {
@@ -592,6 +627,19 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotReanalyzeWithVariableTempo);
+
+        m_pAnalyzeFingerprintAction = make_parented<QAction>(tr("Analyze fingerprint"), this);
+        connect(m_pAnalyzeFingerprintAction.get(),
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotAnalyzeFingerprint);
+
+        m_pMakeCmrtCanonicalAction =
+                make_parented<QAction>(tr("Make Canonical (CMRT)"), this);
+        connect(m_pMakeCmrtCanonicalAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotMakeCmrtCanonical);
     }
 
     // This action is only usable when m_deckGroup is set. That is true only
@@ -740,6 +788,9 @@ void WTrackMenu::setupActions() {
 
         m_pHotcueMenu->addAction(m_pSortHotcuesByPositionCompressAction);
         m_pHotcueMenu->addAction(m_pSortHotcuesByPositionAction);
+        m_pHotcueMenu->addSeparator();
+        m_pHotcueMenu->addAction(m_pCopyCmrtHotcuesAction);
+        m_pHotcueMenu->addAction(m_pAddCmrtHotcuesAction);
         addMenu(m_pHotcueMenu);
     }
 
@@ -757,6 +808,8 @@ void WTrackMenu::setupActions() {
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
         m_pClearMetadataMenu->addSeparator();
+        m_pClearMetadataMenu->addAction(m_pClearFingerprintAction);
+        m_pClearMetadataMenu->addAction(m_pClearMusicBrainzAction);
         m_pClearMetadataMenu->addSeparator();
         m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
         addMenu(m_pClearMetadataMenu);
@@ -767,6 +820,10 @@ void WTrackMenu::setupActions() {
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pAnalyzeFingerprintAction.get());
+        m_pAnalyzeMenu->addSeparator();
+        m_pAnalyzeMenu->addAction(m_pMakeCmrtCanonicalAction);
         addMenu(m_pAnalyzeMenu);
     }
 
@@ -830,6 +887,111 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
         anyBpmNotLocked = !anyBpmLocked;
     }
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
+}
+
+bool WTrackMenu::anySelectedTrackUsesCmrtOverlay() const {
+    if (m_pTrackModel) {
+        const int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_CMRT_USE_DATA);
+        if (column < 0) {
+            return false;
+        }
+        for (const auto& trackIndex : m_trackIndexList) {
+            const QModelIndex useCmrtDataIndex =
+                    trackIndex.sibling(trackIndex.row(), column);
+            if (useCmrtDataIndex.data(Qt::CheckStateRole).toInt() == Qt::Checked) {
+                return true;
+            }
+        }
+        return false;
+    } else if (m_pTrack) {
+        return m_pTrack->hasCmrtOverlayActive();
+    }
+    return false;
+}
+
+bool WTrackMenu::anySelectedTrackIsCmrtMember() const {
+    if (m_pTrackModel) {
+        const int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_CMRT_USE_DATA);
+        if (column < 0) {
+            return false;
+        }
+        for (const auto& trackIndex : m_trackIndexList) {
+            const QModelIndex useCmrtDataIndex =
+                    trackIndex.sibling(trackIndex.row(), column);
+            // An invalid QVariant means ungrouped or canonical,
+            // neither of which has a canonical track to pull from.
+            if (useCmrtDataIndex.data(Qt::CheckStateRole).isValid()) {
+                return true;
+            }
+        }
+        return false;
+    } else if (m_pTrack) {
+        double offsetSeconds = 0.0;
+        return m_pLibrary->trackCollectionManager()
+                       ->internalCollection()
+                       ->getTrackDAO()
+                       .getCmrtCanonicalTrack(m_pTrack->getId(), &offsetSeconds) !=
+                nullptr;
+    }
+    return false;
+}
+
+void WTrackMenu::slotCopyCmrtHotcues() {
+    copyOrAddCmrtHotcuesForSelection(/*replaceExisting*/ true);
+}
+
+void WTrackMenu::slotAddCmrtHotcues() {
+    copyOrAddCmrtHotcuesForSelection(/*replaceExisting*/ false);
+}
+
+void WTrackMenu::copyOrAddCmrtHotcuesForSelection(bool replaceExisting) {
+    const auto pTrackPointerIter = newTrackPointerIterator();
+    if (!pTrackPointerIter) {
+        return;
+    }
+    TrackDAO& trackDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getTrackDAO();
+    while (auto nextTrackPointer = pTrackPointerIter->nextItem()) {
+        const TrackPointer pTrack = *nextTrackPointer;
+        if (!pTrack || pTrack->hasCmrtOverlayActive()) {
+            // Skip overlay-active tracks -- guarded here too,
+            continue;
+        }
+        double offsetSeconds = 0.0;
+        const TrackPointer pCanonical =
+                trackDao.getCmrtCanonicalTrack(pTrack->getId(), &offsetSeconds);
+        if (!pCanonical) {
+            continue;
+        }
+        pTrack->copyOrMergeCmrtHotcues(pCanonical, offsetSeconds, replaceExisting);
+    }
+}
+
+void WTrackMenu::slotMakeCmrtCanonical() {
+    promoteSelectionToCmrtCanonical();
+}
+
+void WTrackMenu::promoteSelectionToCmrtCanonical() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.isEmpty()) {
+        return;
+    }
+
+    TrackDAO& trackDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getTrackDAO();
+
+    bool anyPromoted = false;
+    for (const TrackId& id : std::as_const(trackIds)) {
+        if (trackDao.promoteCmrtCanonical(id)) {
+            anyPromoted = true;
+        }
+    }
+
+    if (anyPromoted) {
+        emit m_pLibrary->trackCollectionManager()->cmrtDataChanged();
+    }
 }
 
 int WTrackMenu::getCommonTrackRating() const {
@@ -1013,6 +1175,14 @@ void WTrackMenu::updateMenus() {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
+    // CMRT-managed tracks own their beatgrid/hotcue/cue/loop data, so any
+    // control that would let the user edit that data needs to be disabled
+    // regardless of which feature section it lives in.
+    // Applied consistently everywhere it's needed below.
+    const bool cmrtActive = anySelectedTrackUsesCmrtOverlay();
+    const QString cmrtDisabledTooltip = tr(
+            "Disabled because one or more tracks are using CMRT data. "
+            "Uncheck \"Use CMRT Data\" first.");
 
     if (featureIsEnabled(Feature::SearchRelated)) {
         m_bSearchRelatedMenuLoaded = false;
@@ -1146,7 +1316,33 @@ void WTrackMenu::updateMenus() {
         // https://github.com/mixxxdj/mixxx/pull/10931#issuecomment-1262559750
         m_pReanalyzeConstBpmAction->setVisible(!useFixedTempo);
         m_pReanalyzeVarBpmAction->setVisible(useFixedTempo);
+
+        const bool anyOverlayActive = anySelectedTrackUsesCmrtOverlay();
+        const bool anyPromotable =
+                !anyOverlayActive && anySelectedTrackIsCmrtMember();
+        m_pMakeCmrtCanonicalAction->setEnabled(anyPromotable);
+        m_pMakeCmrtCanonicalAction->setToolTip(anyPromotable
+                        ? tr("Make the selected track(s) the new canonical track(s) of their "
+                             "CMRT groups.\n"
+                             "Offsets of other members in the group are recalculated with "
+                             "respect to the new canonical track.")
+                        : anyOverlayActive
+                        ? tr("Disabled while \"Use CMRT Data\" is "
+                             "checked. Uncheck it first.")
+                        : tr("Disabled: the selected track(s) are "
+                             "either already the canonical (CMRT) "
+                             "track for their group, or aren't "
+                             "linked to a CMRT group with another "
+                             "track to compare against."));
     }
+
+    const auto applyCmrtRestriction = [cmrtActive, &cmrtDisabledTooltip](QAction* pAction) {
+        if (!pAction) {
+            return;
+        }
+        pAction->setEnabled(!cmrtActive);
+        pAction->setToolTip(cmrtActive ? cmrtDisabledTooltip : QString());
+    };
 
     if (featureIsEnabled(Feature::Reset) ||
             featureIsEnabled(Feature::BPM)) {
@@ -1154,21 +1350,78 @@ void WTrackMenu::updateMenus() {
         bool anyBpmNotLocked;
         std::tie(anyBpmLocked, anyBpmNotLocked) = getTrackBpmLockStates();
         if (featureIsEnabled(Feature::Reset)) {
-            m_pClearBeatsAction->setEnabled(!anyBpmLocked);
+            m_pClearBeatsAction->setEnabled(!anyBpmLocked && !cmrtActive);
+            m_pClearBeatsAction->setToolTip(
+                    cmrtActive ? cmrtDisabledTooltip : QString());
+
+            // Hotcue sorting also touches CMRT-owned hotcue data.
+            applyCmrtRestriction(m_pSortHotcuesByPositionCompressAction);
+            applyCmrtRestriction(m_pSortHotcuesByPositionAction);
+
+            applyCmrtRestriction(m_pClearHotCuesAction);
+            applyCmrtRestriction(m_pClearMainCueAction);
+            applyCmrtRestriction(m_pClearIntroCueAction);
+            applyCmrtRestriction(m_pClearOutroCueAction);
+            applyCmrtRestriction(m_pClearLoopsAction);
+            applyCmrtRestriction(m_pClearAllMetadataAction);
+
+            const bool canUseCmrtHotcueActions =
+                    !cmrtActive && anySelectedTrackIsCmrtMember();
+            const QString cmrtHotcueActionsTooltip = cmrtActive
+                    ? cmrtDisabledTooltip
+                    : tr("No canonical track (CMRT) to copy hotcues from.");
+            m_pCopyCmrtHotcuesAction->setEnabled(canUseCmrtHotcueActions);
+            m_pCopyCmrtHotcuesAction->setToolTip(canUseCmrtHotcueActions
+                            ? tr("Copy Hotcues from canonical track (CMRT).") +
+                                    "\n\n" +
+                                    tr("This will overwrite all existing "
+                                       "hotcues in the selected track(s).")
+                            : cmrtHotcueActionsTooltip);
+            m_pAddCmrtHotcuesAction->setEnabled(canUseCmrtHotcueActions);
+            m_pAddCmrtHotcuesAction->setToolTip(canUseCmrtHotcueActions
+                            ? tr("Add Hotcues from canonical track (CMRT).") +
+                                    "\n\n" +
+                                    tr("This will add hotcues to the selected "
+                                       "track(s) without overwriting existing "
+                                       "hotcues.") +
+                                    "\n" +
+                                    tr("CMRT hotcues are sorted and appended "
+                                       "after the last saved hotcue in the "
+                                       "selected track(s).")
+                            : cmrtHotcueActionsTooltip);
         }
         if (featureIsEnabled(Feature::BPM)) {
-            m_pBpmUnlockAction->setEnabled(anyBpmLocked);
-            m_pBpmLockAction->setEnabled(anyBpmNotLocked);
-            m_pBpmHalveAction->setEnabled(!anyBpmLocked);
-            m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
-            m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
-            m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
-            m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
-            m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
-            m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
-            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
-            m_pBpmResetAction->setEnabled(!anyBpmLocked);
-            m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
+            m_pBpmUnlockAction->setEnabled(anyBpmLocked && !cmrtActive);
+            m_pBpmLockAction->setEnabled(anyBpmNotLocked && !cmrtActive);
+            applyCmrtRestriction(m_pBpmHalveAction);
+            applyCmrtRestriction(m_pBpmTwoThirdsAction);
+            applyCmrtRestriction(m_pBpmThreeFourthsAction);
+            applyCmrtRestriction(m_pBpmFourFifthsAction);
+            applyCmrtRestriction(m_pBpmFiveFourthsAction);
+            applyCmrtRestriction(m_pBpmFourThirdsAction);
+            applyCmrtRestriction(m_pBpmThreeHalvesAction);
+            applyCmrtRestriction(m_pBpmDoubleAction);
+            applyCmrtRestriction(m_pBpmResetAction);
+            m_pBpmUndoAction->setEnabled(
+                    !anyBpmLocked && !cmrtActive && canUndoBeatsChange());
+            m_pBpmUndoAction->setToolTip(
+                    cmrtActive ? cmrtDisabledTooltip : QString());
+
+            // The BPM scale actions above already reflect anyBpmLocked via
+            // the "!anyBpmLocked" part of their original logic; folding
+            // that into applyCmrtRestriction would lose the lock check, so
+            // apply it explicitly here instead.
+            if (!cmrtActive) {
+                m_pBpmHalveAction->setEnabled(!anyBpmLocked);
+                m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
+                m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+                m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
+                m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
+                m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
+                m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+                m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
+                m_pBpmResetAction->setEnabled(!anyBpmLocked);
+            }
 
             // Append scaled BPM preview for single selection
             // TODO ... and multiple tracks with same BPM.
@@ -1195,7 +1448,9 @@ void WTrackMenu::updateMenus() {
     }
 
     if (m_pTranslateBeatsHalf) {
-        m_pTranslateBeatsHalf->setEnabled(!m_deckGroup.isEmpty());
+        m_pTranslateBeatsHalf->setEnabled(!m_deckGroup.isEmpty() && !cmrtActive);
+        m_pTranslateBeatsHalf->setToolTip(
+                cmrtActive ? cmrtDisabledTooltip : QString());
     }
 
     if (featureIsEnabled(Feature::Color)) {
@@ -1807,11 +2062,13 @@ void WTrackMenu::slotAnalyze() {
 
 void WTrackMenu::slotReanalyze() {
     clearBeats();
+    clearFingerprintDataForSelection();
     addToAnalysis();
 }
 
 void WTrackMenu::slotReanalyzeWithFixedTempo() {
     clearBeats();
+    clearFingerprintDataForSelection();
     AnalyzerTrack::Options options;
     options.useFixedTempo = true;
     addToAnalysis(options);
@@ -1819,6 +2076,7 @@ void WTrackMenu::slotReanalyzeWithFixedTempo() {
 
 void WTrackMenu::slotReanalyzeWithVariableTempo() {
     clearBeats();
+    clearFingerprintDataForSelection();
     AnalyzerTrack::Options options;
     options.useFixedTempo = false;
     addToAnalysis(options);
@@ -2442,6 +2700,62 @@ void WTrackMenu::slotClearAllMetadata() {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+
+    clearFingerprintDataForSelection();
+    clearMusicBrainzDataForSelection();
+}
+
+void WTrackMenu::slotClearFingerprint() {
+    clearFingerprintDataForSelection();
+}
+
+void WTrackMenu::slotClearMusicBrainz() {
+    clearMusicBrainzDataForSelection();
+}
+
+void WTrackMenu::clearMusicBrainzDataForSelection() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.empty()) {
+        return;
+    }
+
+    TrackDAO& trackDao = m_pLibrary->trackCollectionManager()
+                                 ->internalCollection()
+                                 ->getTrackDAO();
+
+    for (const TrackId& id : std::as_const(trackIds)) {
+        trackDao.clearMusicBrainzData(id);
+    }
+}
+
+void WTrackMenu::clearFingerprintDataForSelection() {
+    const TrackIdList trackIds = getTrackIds();
+    if (trackIds.empty()) {
+        return;
+    }
+
+    TrackFingerprintDao& dao = m_pLibrary->trackCollectionManager()
+                                       ->internalCollection()
+                                       ->getTrackFingerprintDAO();
+
+    // We use a simple loop here rather than TrackPointerOperation because
+    // clearFingerprintData() works directly on TrackId and does not need an
+    // in-memory TrackPointer — it only touches the DB and the .chroma file.
+    // Using applyTrackPointerOperation would load each track into memory
+    // unnecessarily and would not give us access to the DAO.
+    int cleared = 0;
+    for (const TrackId& id : std::as_const(trackIds)) {
+        if (dao.clearFingerprintData(id)) {
+            ++cleared;
+        }
+    }
+
+    // TODO(XXX): Add a progress dialog when
+    // fingerprint clearing moves into a TrackPointerOperation.
+
+    if (cleared > 0) {
+        emit m_pLibrary->trackCollectionManager()->cmrtDataChanged();
+    }
 }
 
 namespace {
@@ -3042,4 +3356,14 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
         DEBUG_ASSERT(!"unreachable");
         return false;
     }
+}
+
+void WTrackMenu::slotAnalyzeFingerprint() {
+    // Schedule selected tracks for fingerprint-only analysis.
+    // WithFingerprint | LowPriority — does not re-run beats, waveform, or
+    // any other analyzer. Useful for back-filling fingerprints on a library
+    // that was fully analyzed before fingerprinting was enabled.
+    AnalyzerTrack::Options options;
+    options.fingerprintOnly = true;
+    addToAnalysis(options);
 }
