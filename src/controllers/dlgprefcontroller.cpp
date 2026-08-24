@@ -1,5 +1,6 @@
 #include "controllers/dlgprefcontroller.h"
 
+#include <QDialogButtonBox>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -48,6 +49,7 @@ QString mappingNameToPath(const QString& directory, const QString& mappingName) 
 
 const QString kBuiltinFileSuffix =
         QStringLiteral(" (") + QObject::tr("built-in") + QStringLiteral(")");
+const char* kScriptFileInfoProperty = "scriptFileInfoProperty";
 
 /// @brief  Format a controller file to display attributes (system, missing) in the UI.
 /// @return The formatted string.
@@ -889,10 +891,9 @@ bool DlgPrefController::saveMapping() {
 
     QString oldFilePath = m_pMapping->filePath();
     QString newFilePath;
-    QFileInfo fileInfo(oldFilePath);
     QString mappingName = m_pMapping->name();
 
-    bool isUserMapping = fileInfo.absoluteDir().absolutePath().append("/") == m_pUserDir;
+    bool isUserMapping = userMappingLoaded();
     bool saveAsNew = true;
     if (m_pOverwriteMappings.contains(oldFilePath) &&
             m_pOverwriteMappings.value(oldFilePath) == true) {
@@ -947,7 +948,7 @@ bool DlgPrefController::saveMapping() {
     // * initially saving a modified Mixxx mapping to the user folder
     // * saving a user mapping with a new name.
     // The name will be used as display name and file name.
-    if (!saveAsNew) {
+    if (!saveAsNew) { // overwrite
         newFilePath = oldFilePath;
     } else {
         mappingName = askForMappingName(mappingName);
@@ -964,6 +965,8 @@ bool DlgPrefController::saveMapping() {
     if (!m_pMapping->saveMapping(newFilePath)) {
         qDebug() << "Failed to save mapping as" << newFilePath;
         return false;
+    } else if (!isUserMapping) { // This is the previous state, now it's a user mapping!
+        copyScriptFilesToUserDir();
     }
     qDebug() << "Mapping saved as" << newFilePath;
 
@@ -1020,6 +1023,109 @@ QString DlgPrefController::askForMappingName(const QString& prefilledName) const
         validMappingName = true;
     }
     return mappingName;
+}
+
+void DlgPrefController::copyScriptFilesToUserDir() {
+    VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
+        return;
+    }
+
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = m_pMapping->getScriptFiles();
+    if (scriptFiles.isEmpty()) {
+        return;
+    }
+
+    // Create dialog
+    QDialog scriptCopyDialog;
+    auto pScriptCopyInfolabel = make_parented<QLabel>(&scriptCopyDialog);
+    //: <br> is a linebreak, <b> is for bold, %1 is the placeholder for the mapping name
+    const QString scriptCopyInfo =
+            tr("The mapping <b>%1</b> requires the following script files.<br>"
+               "If you plan to modify the scripted behavior, as well, you can select<br>"
+               "which files you want to copy along with the mapping.<br>"
+               "(usually only the script named like the mapping needs to be copied)"
+               "<br><br>"
+               "If you don't plan to modify the script, click Cancel.<br>"
+               "Mixxx will then continue using the built-in files.")
+                    .arg(m_pMapping->name());
+    pScriptCopyInfolabel->setText(scriptCopyInfo);
+    pScriptCopyInfolabel->setTextFormat(Qt::RichText);
+    pScriptCopyInfolabel->setSizePolicy(QSizePolicy(QSizePolicy::Minimum,
+            QSizePolicy::Minimum));
+    // Collect script files, store ScriptFileInfo in a QCheckBox property.
+    // Files with non-empty prefix are assumed to be specific for this mapping,
+    // so we show them at the top of the list and check them by default.
+    QList<QCheckBox*> scriptCheckBoxes;
+    for (const auto& script : scriptFiles) {
+        auto pBox = make_parented<QCheckBox>(&scriptCopyDialog);
+        pBox->setText(script.name);
+        pBox->setProperty(kScriptFileInfoProperty, QVariant::fromValue(script));
+        if (!script.identifier.isEmpty()) {
+            pBox->setChecked(true);
+            scriptCheckBoxes.prepend(pBox);
+        } else {
+            // common include
+            pBox->setChecked(false);
+            scriptCheckBoxes.append(pBox);
+        }
+    }
+
+    auto pButtons = make_parented<QDialogButtonBox>(&scriptCopyDialog);
+    QPushButton* pCancelBtn = pButtons->addButton(
+            tr("Cancel"),
+            QDialogButtonBox::RejectRole);
+    QPushButton* pCopyBtn = pButtons->addButton(
+            tr("Copy"),
+            QDialogButtonBox::AcceptRole);
+    pCancelBtn->setDefault(true);
+    // This is required after customizing the buttons, otherwise neither button
+    // would close the dialog.
+    connect(pCancelBtn, &QPushButton::clicked, &scriptCopyDialog, &QDialog::reject);
+    connect(pCopyBtn, &QPushButton::clicked, &scriptCopyDialog, &QDialog::accept);
+
+    // Create and poulate the main layout
+    auto pCopyLayout = make_parented<QVBoxLayout>(&scriptCopyDialog);
+    pCopyLayout->addWidget(pScriptCopyInfolabel);
+    // Now that the boxes are sorted by checkstate we add them to the layout.
+    for (auto* pBox : std::as_const(scriptCheckBoxes)) {
+        pCopyLayout->addWidget(pBox);
+    }
+    pCopyLayout->addWidget(pButtons);
+    scriptCopyDialog.setLayout(pCopyLayout);
+
+    if (scriptCopyDialog.exec() == QDialog::Rejected) {
+        return;
+    }
+
+    for (auto* pBox : std::as_const(scriptCheckBoxes)) {
+        if (!pBox->isChecked()) {
+            continue;
+        }
+        const auto scriptVar = pBox->property(kScriptFileInfoProperty);
+        if (!scriptVar.canConvert<LegacyControllerMapping::ScriptFileInfo>()) {
+            // warn
+            continue;
+        }
+        const auto script = scriptVar.value<LegacyControllerMapping::ScriptFileInfo>();
+        const QString newPath = m_pUserDir + script.file.fileName();
+        if (QFile::exists(newPath)) {
+            qWarning() << "Abort copying script file" << script.file.fileName()
+                       << "to" << m_pUserDir << ", already exists!";
+            continue;
+            // TODO(ronso0) Ask whether to skip, overwrite or save with new name.
+            // If a new name is picked, we need to change m_pMapping:
+            // * remove old SFI from mapping
+            // * set new name & file of SFI
+            // * add new SFI to mapping
+            // * set flag to rewrite mapping after saving all SFIs
+        }
+        if (!QFile::copy(script.file.filePath(), newPath)) {
+            qDebug() << "Script file" << script.file.fileName() << "saved in" << m_pUserDir;
+        } else {
+            qWarning() << "Copying script file" << script.file.fileName()
+                       << "to" << m_pUserDir << "failed!";
+        }
+    }
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {
