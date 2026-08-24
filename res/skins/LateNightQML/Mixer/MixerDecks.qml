@@ -39,15 +39,17 @@ Item {
             showEqKnobs: root.showEqKnobs
             showXfader: root.showXfader
         }
-        PflButton {
-            group: root.groups[0]
-            x: 110
+        Row {
+            spacing: 3
+            x: 140 - width / 2
             y: 17
-        }
-        PflButton {
-            group: root.groups[1]
-            x: 139
-            y: 17
+
+            PflButton {
+                group: root.groups[0]
+            }
+            PflButton {
+                group: root.groups[1]
+            }
         }
         LateNightControls.Knob {
             backgroundSource: LateNightTheme.assetRegularKnobBackground
