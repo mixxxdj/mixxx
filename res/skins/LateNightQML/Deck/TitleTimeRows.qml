@@ -27,7 +27,7 @@ Item {
         if (!Number.isFinite(value) || value <= 0) {
             return "";
         }
-        return Mixxx.DurationFormatter.format(value, Mixxx.DurationFormatter.TraditionalCoarse);
+        return Mixxx.DurationFormatter.format(value, Mixxx.DurationFormatter.Mode.TraditionalCoarse);
     }
 
     function formatTrackTime(value, mode) {
@@ -42,8 +42,8 @@ Item {
     function formatPositionTime() {
         const elapsed = durationProxy.value * playpositionProxy.value;
         const remaining = durationProxy.value * (1 - playpositionProxy.value);
-        const mode = Mixxx.Config.controlTimeFormat;
-        switch (Mixxx.Config.controlPositionDisplay) {
+        const mode = timeFormatProxy.value;
+        switch (positionDisplayProxy.value) {
         case SharedDeck.TrackTime.Display.Remaining:
             return "-" + root.formatTrackTime(remaining, mode);
         case SharedDeck.TrackTime.Display.Both:
@@ -55,18 +55,21 @@ Item {
     }
 
     function cyclePositionDisplay() {
-        switch (Mixxx.Config.controlPositionDisplay) {
+        let nextDisplay;
+        switch (positionDisplayProxy.value) {
         case SharedDeck.TrackTime.Display.Elapsed:
-            Mixxx.Config.controlPositionDisplay = SharedDeck.TrackTime.Display.Remaining;
+            nextDisplay = SharedDeck.TrackTime.Display.Remaining;
             break;
         case SharedDeck.TrackTime.Display.Remaining:
-            Mixxx.Config.controlPositionDisplay = SharedDeck.TrackTime.Display.Both;
+            nextDisplay = SharedDeck.TrackTime.Display.Both;
             break;
         case SharedDeck.TrackTime.Display.Both:
         default:
-            Mixxx.Config.controlPositionDisplay = SharedDeck.TrackTime.Display.Elapsed;
+            nextDisplay = SharedDeck.TrackTime.Display.Elapsed;
             break;
         }
+        positionDisplayProxy.value = nextDisplay;
+        Mixxx.Config.controlPositionDisplay = nextDisplay;
     }
 
     Mixxx.ControlProxy {
@@ -79,6 +82,18 @@ Item {
         id: playpositionProxy
         group: root.group
         key: "playposition"
+    }
+
+    Mixxx.ControlProxy {
+        id: timeFormatProxy
+        group: "[Controls]"
+        key: "TimeFormat"
+    }
+
+    Mixxx.ControlProxy {
+        id: positionDisplayProxy
+        group: "[Controls]"
+        key: "PositionDisplay"
     }
 
     ColumnLayout {
