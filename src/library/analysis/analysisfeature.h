@@ -12,6 +12,7 @@
 #include "util/parented_ptr.h"
 
 class DlgAnalysis;
+class DlgMusicBrainzQueue;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
@@ -38,6 +39,7 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
 
     void suspendAnalysis();
@@ -59,11 +61,13 @@ class AnalysisFeature : public LibraryFeature {
     void setTitleProgress(int currentTrackNumber, int totalTracksCount);
 
     const QString m_baseTitle;
+    const QString kQueueTitle;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     DlgAnalysis* m_pAnalysisView;
+    DlgMusicBrainzQueue* m_pQueueView;
 
     // The title is dynamic and reflects the current progress
     QString m_title;
