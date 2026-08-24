@@ -50,7 +50,10 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent,
+            TrackCollectionManager* pTrackCollectionManager,
+            RecordingManager* pRec,
+            const char* nameSpace);
     virtual ~BrowseTableModel();
 
     // initiate table population, store path

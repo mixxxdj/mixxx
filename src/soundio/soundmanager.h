@@ -11,9 +11,11 @@
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
-#include "soundio/networkenumerator.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceenumerator.h"
+#include "soundio/sounddevicenetwork.h"
+#include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/cmdlineargs.h"
 #include "util/types.h"
@@ -77,6 +79,7 @@ class SoundManager : public QObject {
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
+    void pushInputBuffer(const AudioInput& input, const SINT iFramesPerBuffer);
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                           const SINT iFramesPerBuffer);
 
@@ -89,7 +92,7 @@ class SoundManager : public QObject {
     QList<AudioInput> registeredInputs() const;
 
     QSharedPointer<EngineNetworkStream> getNetworkStream() const {
-        return m_pNetworkEnumerator->getNetworkStream();
+        return m_pNetworkStream;
     }
 
     void underflowHappened(int code) {
@@ -111,9 +114,45 @@ class SoundManager : public QObject {
         m_audioLatencyOverloadCount.set(0);
     }
 
-    // currently only used by pipewire
     void updateDeviceChannels(SoundDevicePointer pDevice);
+    bool isPipewireSelected() {
+#ifdef __PIPEWIRE__
+        return CmdlineArgs::Instance().getDeveloper() && m_pipewireEnabled;
+#else
+        return false;
+#endif
+    }
 
+    bool pipewireSkipConfig() {
+        return isPipewireSelected() &&
+                m_pConfig->getValue(
+                        ConfigKey("[App]",
+                                QStringLiteral("pipewire_patchbay_sync")),
+                        false);
+    }
+
+    CSAMPLE* getInputBuffer(const AudioInput& input) {
+        if (!m_inputBuffers.contains(input)) {
+            qWarning() << "getInputBuffer does not have" << input.getString();
+        }
+        return m_inputBuffers.value(input);
+    }
+
+    const CSAMPLE* getOutputBuffer(const AudioOutput& output) {
+        const float* buffer = m_registeredSources.value(output)->buffer(output).data();
+        if (!buffer) {
+            qWarning() << "getOutputBuffer does not have" << output.getString();
+        }
+        return buffer;
+    }
+
+    void configureInput(const AudioInput& input);
+    void unconfigureInput(const AudioInput& input);
+    void configureOutput(const AudioOutput& output);
+    void unconfigureOutput(const AudioOutput& output);
+
+    void loadConfig();
+    void invalidateConfig();
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
@@ -126,6 +165,7 @@ class SoundManager : public QObject {
     void devicesClosed(); // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
+    void configInvalidated();
 
   private slots:
     void completeDevicesClosing();
@@ -133,6 +173,7 @@ class SoundManager : public QObject {
   public slots:
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
+    void devicesEnumerated();
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -145,13 +186,13 @@ class SoundManager : public QObject {
     void closeDevices(bool sleepAfterClosing, bool async = false);
 
     bool jackApiUsed() const {
-        return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
+        return m_config.getAPI() == SoundManagerConfig::kAPIJack;
     }
 
     EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     QList<SoundDevicePointer> m_devices;
-    QList<CSAMPLE*> m_inputBuffers;
+    QHash<AudioInput, CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
     SoundDevicePointer m_pErrorDevice;
@@ -165,11 +206,9 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverloadCount;
     PollingControlProxy m_audioLatencyOverload;
 
-    std::unique_ptr<PortAudioEnumerator> m_pPaEnumerator;
+    std::unique_ptr<SoundDeviceEnumerator> m_pEnumerator;
 
-#ifdef __PIPEWIRE__
-    std::unique_ptr<PipewireEnumerator> m_pPipewireEnumerator;
-#endif
-
-    std::unique_ptr<NetworkEnumerator> m_pNetworkEnumerator;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+    QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;
+    bool m_pipewireEnabled;
 };

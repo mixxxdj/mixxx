@@ -111,12 +111,14 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers();
     static void renderers_append(
-            QQmlListProperty<QmlWaveformRendererFactory>* property,
-            QmlWaveformRendererFactory* value);
-    static qsizetype renderers_count(QQmlListProperty<QmlWaveformRendererFactory>* property);
-    static QmlWaveformRendererFactory* renderers_at(
-            QQmlListProperty<QmlWaveformRendererFactory>* property, qsizetype index);
-    static void renderers_clear(QQmlListProperty<QmlWaveformRendererFactory>* property);
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property,
+            mixxx::qml::QmlWaveformRendererFactory* value);
+    static qsizetype renderers_count(
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property);
+    static mixxx::qml::QmlWaveformRendererFactory* renderers_at(
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property, qsizetype index);
+    static void renderers_clear(
+            QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory>* property);
 
     WaveformRendererSignalBaseOptions options() const {
         return m_options;
@@ -138,18 +140,10 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     void playerChanged();
     void zoomChanged();
     void groupChanged(const QString& group);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void trackChanged(QmlTrackProxy* track);
-#else
     void trackChanged(mixxx::qml::QmlTrackProxy* track);
-#endif
     void positionChanged(double);
     void backgroundColorChanged();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void optionsChanged(WaveformRendererSignalBaseOptions);
-#else
     void optionsChanged(mixxx::qml::WaveformRendererSignalBaseOptions);
-#endif
 
   private:
     void setCurrentTrack(TrackPointer pTrack);

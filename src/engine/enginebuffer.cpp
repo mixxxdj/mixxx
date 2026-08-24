@@ -310,10 +310,10 @@ EngineBuffer::~EngineBuffer() {
     df.close();
 #endif
 
-    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
-
     delete m_pReadAheadManager;
     delete m_pReader;
+
+    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
 
     delete m_playButton;
     delete m_playStartButton;
@@ -872,11 +872,18 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 #ifdef __RUBBERBAND__
     case KeylockEngine::RubberBandFaster:
         m_pScaleRB->useEngineFiner(false);
+        m_pScaleRB->useOptionWindowShort(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
     case KeylockEngine::RubberBandFiner:
         m_pScaleRB->useEngineFiner(
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
+        m_pScaleRB->useOptionWindowShort(false);
+        m_pScaleKeylock = m_pScaleRB;
+        break;
+    case KeylockEngine::RubberBandR3ShortWindow:
+        m_pScaleRB->useEngineFiner(true);
+        m_pScaleRB->useOptionWindowShort(true);
         m_pScaleKeylock = m_pScaleRB;
         break;
 #endif
