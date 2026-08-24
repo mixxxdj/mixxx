@@ -4,14 +4,11 @@
  * @author Jairo Master Zion
  */
 
-function KrugerMatzDJ001() {}
+function KrugerMatzDJ001() { }
 
-// -- Speed multipliers --------------------------------------------------------
-// Tune these values if needed to adjust jog wheel scratch & pitch bend response.
-KrugerMatzDJ001.deck1Forward = 0.33; // Deck 1 -- turning forward
-KrugerMatzDJ001.deck1Backward = 0.33; // Deck 1 -- turning backward
-KrugerMatzDJ001.deck2Forward = 0.33; // Deck 2 -- turning forward
-KrugerMatzDJ001.deck2Backward = 0.33; // Deck 2 -- turning backward
+// -- Jog wheel sensitivity ---------------------------------------------------
+// Tune this value if needed to adjust jog wheel scratch & pitch bend response.
+KrugerMatzDJ001.jogSensitivity = 6;
 
 // -- Wheel touch (enables / disables scratch mode) ----------------------------
 KrugerMatzDJ001.wheelTouch = function (channel, control, value, status, group) {
@@ -40,16 +37,12 @@ KrugerMatzDJ001.wheelTurn = function (channel, control, value, status, group) {
     //   value 65-127 -> small negative delta (other direction, e.g. 127 = -1)
     var delta = (value < 64) ? value : (value - 128);
 
-    // Pick the speed multiplier for this deck + direction
-    var scale;
+    /*
     if (currentDeck === 1) {
-        scale = (delta > 0) ? KrugerMatzDJ001.deck1Forward : KrugerMatzDJ001.deck1Backward;
-        delta = delta * -1; // invert physical direction for deck 1
-    } else {
-        scale = (delta > 0) ? KrugerMatzDJ001.deck2Forward : KrugerMatzDJ001.deck2Backward;
+        delta = -delta; // Invert physical direction for deck 1
     }
-
-    var newValue = delta * scale;
+*/
+    var newValue = delta * KrugerMatzDJ001.jogSensitivity;
 
     if (engine.isScratching(currentDeck)) {
         engine.scratchTick(currentDeck, newValue); // Scratch
