@@ -54,6 +54,7 @@ CmdlineArgs::CmdlineArgs()
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
+          m_stats(false),
 #ifdef MIXXX_USE_QML
           m_qml(false),
 #endif
@@ -279,6 +280,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                             : QString());
     parser.addOption(developer);
 
+    const QCommandLineOption stats(QStringLiteral("stats"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Enables collection of performance statistics.")
+                            : QString());
+    parser.addOption(stats);
+
 #ifdef MIXXX_USE_QML
     const QCommandLineOption qml(QStringLiteral("qml"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -457,6 +464,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_controllerPreviewScreens = parser.isSet(controllerPreviewScreens);
     m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
+    m_stats = parser.isSet(stats);
 #ifdef MIXXX_USE_QML
     m_qml = parser.isSet(qml);
 #endif
