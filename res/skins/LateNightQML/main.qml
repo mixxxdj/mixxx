@@ -47,11 +47,7 @@ ApplicationWindow {
         active: Qt.platform.os === "osx"
 
         sourceComponent: Skin.MainMenuBar {
-            applicationWindow: root
-            commands: applicationMenuCommands
-            numberOfDecks: root.show4decks ? root.numDecks : 2
-
-            onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
+            actions: applicationMenuActions
         }
     }
     Skin.ApplicationMenuCommands {
@@ -64,6 +60,15 @@ ApplicationWindow {
             developerToolsWindow.raise();
             developerToolsWindow.requestActivate();
         }
+    }
+    Skin.ApplicationMenuActions {
+        id: applicationMenuActions
+
+        applicationWindow: root
+        commands: applicationMenuCommands
+        numberOfDecks: root.show4decks ? root.numDecks : 2
+
+        onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
     }
     Skin.DeveloperToolsWindow {
         id: developerToolsWindow
@@ -229,7 +234,7 @@ ApplicationWindow {
         LateNightToolbar.Toolbar {
             id: toolbar
 
-            applicationMenuCommands: applicationMenuCommands
+            applicationMenuActions: applicationMenuActions
             show4decksAvailable: root.height > 515
             width: parent.width
 
