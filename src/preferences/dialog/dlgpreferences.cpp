@@ -41,6 +41,7 @@
 #endif // __BROADCAST__
 
 #include "preferences/dialog/dlgprefbeats.h"
+#include "preferences/dialog/dlgpreffingerprint.h"
 #include "preferences/dialog/dlgprefkey.h"
 #include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
@@ -234,6 +235,14 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Key Detection"),
             "ic_preferences_keydetect.svg");
+    addPageWidget(PreferencesPage(new DlgPrefFingerprint(this,
+                                          m_pConfig,
+                                          pLibrary->trackCollectionManager()),
+                          new QTreeWidgetItem(
+                                  contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Fingerprint Analysis"),
+            "ic_preferences_bpmdetect.svg"); // TODO(CMRT): replace with
+                                             // dedicated fingerprint icon
     addPageWidget(PreferencesPage(
                           new DlgPrefReplayGain(this, m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
