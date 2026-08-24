@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgAcoustIdSubmit</class>
+ <widget class="QDialog" name="DlgAcoustIdSubmit">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>480</width>
+    <height>280</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Submit Fingerprints to AcoustID</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+
+   <item>
+    <widget class="QLabel" name="labelTrackCount">
+     <property name="text">
+      <string>Submitting N tracks.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QLabel" name="labelWhatIsSent">
+     <property name="text">
+      <string>The following will be sent to AcoustID (no audio is uploaded):
+  • Chromaprint fingerprint
+  • Track title and artist (from your tags)
+  • Duration
+  • MusicBrainz recording ID (if tagged)</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayoutApiKey">
+     <item>
+      <widget class="QLabel" name="labelApiKey">
+       <property name="text">
+        <string>AcoustID API key:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditApiKey">
+       <property name="toolTip">
+        <string>Your personal AcoustID API key. Required to submit fingerprints. Get yours at acoustid.org after linking your MusicBrainz account.</string>
+       </property>
+       <property name="placeholderText">
+        <string>Paste your API key here</string>
+       </property>
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
+     </item>
+
+     <item>
+      <widget class="QLabel" name="labelGetKey">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+
+   <item>
+    <widget class="QCheckBox" name="checkBoxRemember">
+     <property name="toolTip">
+      <string>Save this key to Preferences and enable auto-submit. Future submissions will skip this dialog.</string>
+     </property>
+     <property name="text">
+      <string>Remember key and auto-submit in future</string>
+     </property>
+    </widget>
+   </item>
+
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>DlgAcoustIdSubmit</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel"><x>248</x><y>254</y></hint>
+    <hint type="destinationlabel"><x>157</x><y>274</y></hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>DlgAcoustIdSubmit</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel"><x>316</x><y>260</y></hint>
+    <hint type="destinationlabel"><x>286</x><y>274</y></hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
