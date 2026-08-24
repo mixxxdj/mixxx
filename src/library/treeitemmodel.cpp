@@ -89,7 +89,9 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
 
 Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
     if (index.isValid()) {
-        return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+        // Set Qt::ItemIsDragEnabled, else we can "drag" it but hovering
+        // another sidebar (root) item would not trigger the expand timer
+        return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
     } else {
         return Qt::NoItemFlags;
     }
