@@ -5,14 +5,15 @@ import "../LateNightTheme"
 Item {
     id: root
 
+    readonly property int fourDeckChannelHeight: root.showEqKnobs ? (root.showXfader ? 359 : 344) : (root.showXfader ? 197 : 182)
     required property var groups
     property bool show4decks: false
     property bool showEqKillButtons: true
     property bool showEqKnobs: true
     property bool showXfader: true
 
-    implicitHeight: root.show4decks ? (root.showXfader ? 405 : 352) : (root.showXfader ? 203 : (root.showEqKnobs ? 182 : 164))
-    implicitWidth: root.show4decks ? ((!root.showEqKnobs || root.showEqKillButtons) ? 278 : 206) : (root.showEqKnobs ? (root.showEqKillButtons ? 278 : 242) : (root.showXfader ? 163 : 151))
+    implicitHeight: root.show4decks ? (root.showXfader ? 405 : root.fourDeckChannelHeight + 8) : (root.showXfader ? 203 : (root.showEqKnobs ? 182 : 164))
+    implicitWidth: root.show4decks ? 278 : (root.showEqKnobs ? (root.showEqKillButtons ? 278 : 242) : (root.showXfader ? 163 : 151))
 
     Item {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -38,15 +39,17 @@ Item {
             showEqKnobs: root.showEqKnobs
             showXfader: root.showXfader
         }
-        PflButton {
-            group: root.groups[0]
-            x: 110
+        Row {
+            spacing: 3
+            x: 140 - width / 2
             y: 17
-        }
-        PflButton {
-            group: root.groups[1]
-            x: 139
-            y: 17
+
+            PflButton {
+                group: root.groups[0]
+            }
+            PflButton {
+                group: root.groups[1]
+            }
         }
         LateNightControls.Knob {
             backgroundSource: LateNightTheme.assetRegularKnobBackground
@@ -84,14 +87,14 @@ Item {
             group: root.groups[0]
             height: 96
             width: 8
-            x: 115
+            x: 118
             y: 55
         }
         Rectangle {
             color: "#040404"
             height: 96
             width: 14
-            x: 130
+            x: 133
             y: 55
         }
         LateNightControls.ImageVuMeter {
@@ -102,7 +105,7 @@ Item {
             levelKey: "vu_meter_left"
             peakKey: "peak_indicator_left"
             width: 6
-            x: 131
+            x: 134
             y: 55
         }
         LateNightControls.ImageVuMeter {
@@ -113,14 +116,14 @@ Item {
             levelKey: "vu_meter_right"
             peakKey: "peak_indicator_right"
             width: 6
-            x: 137
+            x: 140
             y: 55
         }
         LateNightControls.ImageVuMeter {
             group: root.groups[1]
             height: 96
             width: 8
-            x: 151
+            x: 154
             y: 55
         }
         Crossfader {
@@ -178,7 +181,7 @@ Item {
             groups: root.groups
             showAssignments: false
             visible: root.showXfader
-            y: 365
+            y: root.fourDeckChannelHeight + Math.max(0, (parent.height - root.fourDeckChannelHeight - height) / 2)
         }
     }
 }

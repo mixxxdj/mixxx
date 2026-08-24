@@ -7,7 +7,9 @@ Skin.ControlFader {
 
     property int backgroundMargin: 0
     property alias backgroundSource: backgroundImage.source
+    property real handleHeight: 0
     property alias handleSource: handleImage.source
+    property real handleWidth: 0
     property color valueLineColor: LateNightTheme.mixerSliderBarColor
 
     bar.color: valueLineColor
@@ -29,9 +31,9 @@ Skin.ControlFader {
         id: handleImage
 
         fillMode: Image.PreserveAspectFit
-        height: implicitHeight
-        width: implicitWidth
-        x: root.horizontal ? root.visualPosition * (root.width - width) : (root.width - width) / 2
-        y: root.vertical ? root.visualPosition * (root.height - height) : (root.height - height) / 2
+        height: root.handleHeight > 0 ? root.handleHeight : implicitHeight
+        width: root.handleWidth > 0 ? root.handleWidth : implicitWidth
+        x: root.horizontal ? Math.round(root.visualPosition * (root.width - width)) : Math.round((root.width - width) / 2)
+        y: root.vertical ? Math.round(root.visualPosition * (root.height - height)) : Math.round((root.height - height) / 2)
     }
 }

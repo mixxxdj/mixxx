@@ -21,9 +21,7 @@ const QString SoundManagerConfig::kAPIDirectSound = QStringLiteral("Windows Dire
 // (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
 const QString SoundManagerConfig::kAPIIosAudio = QStringLiteral("iOS Audio");
 const QString SoundManagerConfig::kAPICoreAudio = QStringLiteral("Core Audio");
-#ifdef __PIPEWIRE__
 const QString SoundManagerConfig::kAPIPipewire = QStringLiteral("PipeWire");
-#endif
 
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
@@ -418,7 +416,16 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
-    if (m_api == SoundManagerConfig::kAPIJack) {
+    if (m_api == SoundManagerConfig::kAPIPipewire) {
+        unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
+        VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
+            const int index1024frames = 5;
+            audioBufferSizeIndex = index1024frames;
+        }
+
+        // audioBufferSize combobox contains from 64 to 4096 frames
+        return 1 << (audioBufferSizeIndex + 5);
+    } else if (m_api == SoundManagerConfig::kAPIJack) {
         // in case of jack we configure the frames/period
         if (m_audioBufferSizeIndex ==
                 static_cast<unsigned int>(

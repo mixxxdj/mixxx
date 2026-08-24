@@ -27,13 +27,15 @@ Item {
             group: root.group
             showEqKillButtons: root.showEqKillButtons
             showEqKnobs: root.showEqKnobs
-            x: root.mirror ? 42 : 0
+            x: root.mirror ? 51 : 0
             y: 10
         }
         LateNightControls.Fader {
             backgroundSource: LateNightTheme.assetMixerVolumeSliderBackground
             group: root.group
+            handleHeight: 19
             handleSource: LateNightTheme.assetMixerVolumeSliderHandle
+            handleWidth: 42
             height: 107
             key: "volume"
             orientation: Qt.Vertical

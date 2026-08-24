@@ -11,9 +11,10 @@ Item {
     property bool showEqKillButtons: true
     property bool showEqKnobs: true
     property bool showXfader: true
+    readonly property int volumeY: root.showEqKnobs ? 237 : 75
 
-    implicitHeight: root.showXfader ? 359 : 344
-    implicitWidth: !root.showEqKnobs || root.showEqKillButtons ? 62 : 44
+    implicitHeight: root.volumeY + 107 + (root.showXfader ? 15 : 0)
+    implicitWidth: 62
 
     Item {
         anchors.right: parent.right
@@ -68,6 +69,7 @@ Item {
         }
         QuickEffectRow {
             group: root.group
+            showEqKillButtons: root.showEqKillButtons
             visible: root.showEqKnobs
             width: 58
             x: 0
@@ -83,25 +85,27 @@ Item {
         PflButton {
             group: root.group
             x: 28
-            y: 210
+            y: root.showEqKnobs ? 210 : 49
         }
         LateNightControls.ImageVuMeter {
             group: root.group
             height: 96
             width: 20
             x: 0
-            y: 237
+            y: root.volumeY
         }
         LateNightControls.Fader {
             backgroundSource: LateNightTheme.assetMixerVolumeSliderBackground
             group: root.group
+            handleHeight: 19
             handleSource: LateNightTheme.assetMixerVolumeSliderHandle
+            handleWidth: 42
             height: 107
             key: "volume"
             orientation: Qt.Vertical
             width: 42
             x: 20
-            y: 237
+            y: root.volumeY
         }
         CrossfaderAssignButton {
             group: root.group
@@ -109,7 +113,7 @@ Item {
             rightStyle: root.rightStyle
             visible: root.showXfader
             x: 14
-            y: 344
+            y: root.volumeY + 107
         }
     }
 }

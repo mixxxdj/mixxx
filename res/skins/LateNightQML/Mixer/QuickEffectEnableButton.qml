@@ -17,16 +17,18 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        border.color: "#050505"
-        border.width: 2
         color: enabledControl.value > 0 ? LateNightTheme.mixerQuickEffectActiveColor : "#111113"
+    }
+    Image {
+        anchors.fill: parent
+        source: enabledControl.value > 0 ? LateNightTheme.assetMixerEqKillButtonActiveBackground : LateNightTheme.assetMixerEqKillButtonBackground
     }
     Image {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
         height: 18
-        source: LateNightTheme.assetMixerQuickEffectIcon
-        visible: enabledControl.value <= 0
+        source: enabledControl.value > 0 ? LateNightTheme.optionalMixerQuickEffectActiveIcon : LateNightTheme.assetMixerQuickEffectIcon
+        visible: enabledControl.value <= 0 || LateNightTheme.isPaleMoon
         width: 18
     }
     TapHandler {

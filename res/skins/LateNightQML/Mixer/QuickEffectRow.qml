@@ -31,6 +31,7 @@ Item {
         width: 9
         x: root.mirror ? quickEffectKnob.x + 32 : quickEffectKnob.x
         y: 27
+        z: 1
 
         TapHandler {
             onTapped: enableButton.toggle()

@@ -57,6 +57,7 @@ Item {
         width: 9
         x: root.mirror ? eqKnob.x + 32 : eqKnob.x
         y: 27
+        z: 1
 
         TapHandler {
             onTapped: eqKillButton.toggle()

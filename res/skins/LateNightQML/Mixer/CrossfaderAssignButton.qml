@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import "../LateNightTheme"
@@ -27,8 +29,36 @@ Item {
         fillMode: Image.PreserveAspectFit
         source: LateNightTheme.lateNightAsset("buttons", "btn__xfader_deck_" + root.stateLabel + "_" + root.stateStyle + ".svg")
     }
-    TapHandler {
-        onTapped: orientationControl.value = (Math.round(orientationControl.value) + 1) % 3
+    Row {
+        anchors.fill: parent
+
+        Repeater {
+            model: ["orientation_left", "orientation_center", "orientation_right"]
+
+            Item {
+                id: assignButton
+
+                required property int index
+                required property string modelData
+
+                height: parent.height
+                width: 11
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onCanceled: assignControl.value = 0
+                    onPressed: assignControl.value = 1
+                    onReleased: assignControl.value = 0
+                }
+                Mixxx.ControlProxy {
+                    id: assignControl
+
+                    group: root.group
+                    key: assignButton.modelData
+                }
+            }
+        }
     }
     Mixxx.ControlProxy {
         id: orientationControl
