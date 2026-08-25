@@ -1246,6 +1246,7 @@ add_library(
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
+  src/dialog/dlgfreemusic.cpp
   src/dialog/dlgkeywheel.cpp
   src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp

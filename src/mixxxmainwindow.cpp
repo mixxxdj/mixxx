@@ -28,6 +28,7 @@
 #include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
+#include "dialog/dlgfreemusic.h"
 #include "dialog/dlgkeywheel.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
@@ -109,6 +110,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 #endif
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
+          m_pFreeMusicDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
     DEBUG_ASSERT(pCoreServices);
@@ -552,6 +554,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DeveloperToolsDlg";
     delete m_pDeveloperToolsDlg;
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting FreeMusicDlg";
+    delete m_pFreeMusicDlg;
+
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
     m_pLibraryExporter.reset();
@@ -895,6 +900,11 @@ void MixxxMainWindow::connectMenuBar() {
             &WMainMenuBar::showAbout,
             this,
             &MixxxMainWindow::slotHelpAbout,
+            Qt::UniqueConnection);
+    connect(m_pMenuBar,
+            &WMainMenuBar::showFreeMusic,
+            this,
+            &MixxxMainWindow::slotShowFreeMusic,
             Qt::UniqueConnection);
 
     // Developer
@@ -1249,6 +1259,16 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout;
     about->show();
+}
+
+void MixxxMainWindow::slotShowFreeMusic() {
+    if (!m_pFreeMusicDlg) {
+        m_pFreeMusicDlg = new DlgFreeMusic(this);
+        m_pFreeMusicDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
+    }
+    m_pFreeMusicDlg->show();
+    m_pFreeMusicDlg->raise();
+    m_pFreeMusicDlg->activateWindow();
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {

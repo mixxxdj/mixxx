@@ -11,6 +11,7 @@
 
 class ControlObject;
 class DlgDeveloperTools;
+class DlgFreeMusic;
 class DlgPreferences;
 class DlgKeywheel;
 class GuiTick;
@@ -64,6 +65,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsPreferences();
     /// show the about dialog
     void slotHelpAbout();
+    /// show legal free-music sources
+    void slotShowFreeMusic();
     /// show popup with library scan results
     void slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result);
     /// show keywheel
@@ -148,6 +151,7 @@ class MixxxMainWindow : public QMainWindow {
     bool m_inRebootMixxxView;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
+    DlgFreeMusic* m_pFreeMusicDlg;
 
     DlgPreferences* m_pPrefDlg;
     parented_ptr<DlgKeywheel> m_pKeywheel;

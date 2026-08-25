@@ -386,6 +386,14 @@ void WMainMenuBar::initialize() {
 
     pViewMenu->addSeparator();
 
+    QString freeMusicTitle = tr("Free Music Sources");
+    QString freeMusicText = tr("Open legal sources for free music in your web browser.");
+    auto* pViewFreeMusic = new QAction(freeMusicTitle, this);
+    pViewFreeMusic->setStatusTip(freeMusicText);
+    pViewFreeMusic->setWhatsThis(buildWhatsThis(freeMusicTitle, freeMusicText));
+    connect(pViewFreeMusic, &QAction::triggered, this, &WMainMenuBar::showFreeMusic);
+    pViewMenu->addAction(pViewFreeMusic);
+
     QString autoDJTitle = tr("Show Auto DJ");
     QString autoDJText = tr("Switch to the Auto DJ view.");
     auto* pViewAutoDJ = new QAction(autoDJTitle, this);
