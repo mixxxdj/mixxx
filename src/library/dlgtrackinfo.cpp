@@ -226,17 +226,17 @@ void DlgTrackInfo::init() {
                         txtAlbumArtist->text());
             });
     connect(txtRecordLabel,
-        &QLineEdit::editingFinished,
-        this,
-        [this]() {
-            txtRecordLabel->setText(
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                txtRecordLabel->setText(
                     txtRecordLabel->text().trimmed());
 
-            m_trackRecord
+                m_trackRecord
                     .refMetadata()
                     .refAlbumInfo()
                     .setRecordLabel(
-                            txtRecordLabel->text());
+                        txtRecordLabel->text());
         });
     connect(txtGenre,
             &QLineEdit::editingFinished,

@@ -599,7 +599,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":title", trackInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album", albumInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album_artist", albumInfo.getArtist());
-    pTrackLibraryQuery->bindValue(":record_label",albumInfo.getRecordLabel());
+    pTrackLibraryQuery->bindValue(":record_label", albumInfo.getRecordLabel());
     pTrackLibraryQuery->bindValue(":year", trackInfo.getYear());
     pTrackLibraryQuery->bindValue(":genre", trackInfo.getGenre());
     pTrackLibraryQuery->bindValue(":composer", trackInfo.getComposer());
@@ -1693,7 +1693,6 @@ bool TrackDAO::updateTrack(const Track& track) const {
     kLogger.debug() << "Updating track in database"
                     << trackId
                     << track.getLocation();
-
 
     SqlTransaction transaction(m_database);
     // PerformanceTimer time;

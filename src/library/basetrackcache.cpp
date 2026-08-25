@@ -316,7 +316,7 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         return QVariant{pTrack->getAlbumArtist()};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RECORDLABEL) == column) {
-    return QVariant{pTrack->getRecordLabel()};
+        return QVariant{pTrack->getRecordLabel()};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         return QVariant{pTrack->getYear()};
