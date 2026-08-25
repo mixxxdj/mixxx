@@ -615,7 +615,6 @@ const padModes = ["hotcue", "loops", "fx", "sampler", "stems"];
 // 0 for filter, 1 for low
 let filterLowSwitch = 1;
 
-
 let vinylModeEnabled = true;
 
 // to disable the lights demo, from npredella@mixxxforums
@@ -624,7 +623,6 @@ const IdentityRequestSysex = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
 // to retrieve controller state
 // https://github.com/mixxxdj/mixxx/wiki/Serato%20sysex
 const ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
-
 
 /**
  * Required function.
@@ -1347,14 +1345,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
                         engine.setValue(voiceStemGroup, "mute", 1);
                     }
                 }
-            }
-        }
-    });
-
-    this.syncButton = new components.Button({
-        input: function(_channel, _control, value) {
-            if (value === 127) {
-                script.toggleControl(group, "sync_enabled");
             }
         }
     });
