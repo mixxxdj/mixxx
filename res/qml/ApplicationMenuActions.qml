@@ -176,6 +176,7 @@ Item {
 
         checkable: true
         checked: showVinylControl.value > 0
+        enabled: Mixxx.Application.vinylControlAvailable
         shortcut: root.configuredMenuShortcut("ViewMenu_ShowVinylControl", "Ctrl+3", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Show Vinyl Control Section")
 
@@ -242,6 +243,7 @@ Item {
 
         checkable: true
         checked: vinylDeck1Control.value > 0
+        enabled: Mixxx.Application.vinylControlAvailable
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl1", "Ctrl+T", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(1)
 
@@ -252,6 +254,7 @@ Item {
 
         checkable: true
         checked: vinylDeck2Control.value > 0
+        enabled: Mixxx.Application.vinylControlAvailable
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl2", "Ctrl+Y", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(2)
 
@@ -262,7 +265,7 @@ Item {
 
         checkable: true
         checked: vinylDeck3Control.value > 0
-        enabled: root.numberOfDecks >= 3
+        enabled: Mixxx.Application.vinylControlAvailable && root.numberOfDecks >= 3
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl3", "Ctrl+U", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(3)
 
@@ -273,7 +276,7 @@ Item {
 
         checkable: true
         checked: vinylDeck4Control.value > 0
-        enabled: root.numberOfDecks >= 4
+        enabled: Mixxx.Application.vinylControlAvailable && root.numberOfDecks >= 4
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl4", "Ctrl+I", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(4)
 
@@ -294,6 +297,7 @@ Item {
 
         checkable: true
         checked: broadcastEnabledControl.value > 0
+        enabled: Mixxx.Application.liveBroadcastingAvailable
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableLiveBroadcasting", "Ctrl+L", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Live &Broadcasting")
 
@@ -378,16 +382,16 @@ Item {
     Action {
         id: helpUserManualAction
 
-        text: qsTranslate("WMainMenuBar", "&User Manual") + root.externalLinkSuffix
+        text: qsTranslate("WMainMenuBar", "&User Manual") + (Mixxx.Application.userManualExternal ? root.externalLinkSuffix : "")
 
-        onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/")
+        onTriggered: Qt.openUrlExternally(Mixxx.Application.userManualUrl)
     }
     Action {
         id: helpKeyboardShortcutsAction
 
-        text: qsTranslate("WMainMenuBar", "&Keyboard Shortcuts") + root.externalLinkSuffix
+        text: qsTranslate("WMainMenuBar", "&Keyboard Shortcuts") + (Mixxx.Application.keyboardShortcutsExternal ? root.externalLinkSuffix : "")
 
-        onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/chapters/controlling_mixxx.html#using-a-keyboard")
+        onTriggered: Qt.openUrlExternally(Mixxx.Application.keyboardShortcutsUrl)
     }
     Action {
         id: helpSettingsDirectoryAction

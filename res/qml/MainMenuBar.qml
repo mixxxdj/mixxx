@@ -98,6 +98,7 @@ MenuBar {
         title: qsTranslate("WMainMenuBar", "&Options")
 
         Menu {
+            enabled: Mixxx.Application.vinylControlAvailable
             title: qsTranslate("WMainMenuBar", "&Vinyl Control")
 
             MenuItem {

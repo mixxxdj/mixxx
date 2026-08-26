@@ -9,12 +9,12 @@
 
 #include "library/dao/directorydao.h"
 #include "library/scanner/libraryscanner.h"
+#include "library/trackcollectionmanager.h"
 #include "qml/qmllibrarysource.h"
 #include "qml/qmllibrarytracklistmodel.h"
 #include "util/parented_ptr.h"
 
 class Library;
-class LibraryScanner;
 class KeyboardEventFilter;
 
 namespace mixxx {
@@ -47,7 +47,10 @@ class QmlLibraryScannerProxy : public QObject {
     QML_NAMED_ELEMENT(LibraryScanner)
     QML_UNCREATABLE("Only accessible via Mixxx.Library.scanner")
   public:
-    QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent);
+    QmlLibraryScannerProxy(
+            LibraryScanner* libraryScanner,
+            TrackCollectionManager* trackCollectionManager,
+            QObject* parent);
 
     bool isRunning() const {
         return m_running;
@@ -162,7 +165,8 @@ class QmlLibraryProxy : public QObject {
 
     QmlLibraryTrackListModel* model() const;
     bool libraryScanActive() const {
-        return m_pScanner && m_pScanner->isRunning();
+        return m_pTrackCollectionManager &&
+                m_pTrackCollectionManager->isLibraryScanActive();
     }
     bool enginePrimeExportAvailable() const;
 
@@ -198,11 +202,13 @@ class QmlLibraryProxy : public QObject {
             const QString& informativeText);
 
   private:
+    void deliverPendingLibraryScanSummary();
     static inline std::shared_ptr<Library> s_pLibrary;
 
     /// This needs to be a plain pointer because it's used as a `Q_PROPERTY` member variable.
     QmlLibraryTrackListModel* m_pModelProperty;
     QmlLibraryScannerProxy* m_pScanner;
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     static qsizetype sources_count(QQmlListProperty<QmlLibrarySource>* property);
     static QmlLibrarySource* sources_at(
