@@ -11,12 +11,12 @@ Skin.ControlKnob {
     property color displayArcColor: "transparent"
     property real displayArcOffsetY: 1.998
     property real displayArcRadius: 12.5
-    property int displayArcStart: 1
+    property int displayArcStart: 1 // Knob.ArcStart.Center
     property real displayArcWidth: 2
     property string indicatorColor: "orange"
     property string indicatorKind: "regular"
 
-    angle: 135
+    angle: LateNightTheme.isClassic ? 135 : 130
     arc: false
     arcStart: displayArcStart
     color: displayArcColor

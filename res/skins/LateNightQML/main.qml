@@ -1,6 +1,8 @@
 import "../../qml" as Skin
 import "LateNightTheme"
 import "Deck" as LateNightDeck
+import "Effects" as LateNightEffects
+import "Mixer" as LateNightMixer
 import "Samplers" as LateNightSamplers
 import "Toolbar" as LateNightToolbar
 import "Waveforms" as LateNightWaveforms
@@ -18,7 +20,7 @@ ApplicationWindow {
     property alias maximizeLibrary: toolbar.maximizeLibrary
     readonly property int minimizedDeckHeight: 80
     readonly property int numDecks: 4
-    readonly property int numSamplers: 16
+    readonly property int numSamplers: 64
     readonly property bool show4decks: toolbar.show4decks
     property alias showEffects: toolbar.showEffects
     readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
@@ -28,7 +30,7 @@ ApplicationWindow {
 
     color: LateNightTheme.backgroundColor
     height: 1008
-    minimumHeight: Math.max(668, toolbar.height + mixer.height + rackColumn.height + (root.showWaveforms && !root.maximizeLibrary ? 40 : 0))
+    minimumHeight: 668
     minimumWidth: 1280
     visible: true
     width: 1792
@@ -126,8 +128,20 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        defaultValue: 1.0
+        group: "[Skin]"
+        key: "show_effectrack"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_4effectunits"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: 0.0
+        group: "[Skin]"
+        key: "show_superknobs"
         persist: true
     }
     Mixxx.SkinControlCreator {
@@ -165,12 +179,6 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
-        group: "[Skin]"
-        key: "show_superknobs"
-        persist: true
-    }
-    Mixxx.SkinControlCreator {
-        defaultValue: 1.0
         group: "[Skin]"
         key: "show_sampler_fx"
         persist: true
@@ -332,9 +340,8 @@ ApplicationWindow {
             LateNightWaveforms.WaveformStack {
                 id: waveforms
 
-                SplitView.fillHeight: false
-                SplitView.minimumHeight: visible ? 40 : 0
-                SplitView.preferredHeight: visible ? 120 : 0
+                SplitView.fillHeight: !library.active
+                SplitView.preferredHeight: library.active ? 120 : undefined
                 show4decks: root.show4decks
                 visible: root.showWaveforms && !root.maximizeLibrary
 
@@ -345,8 +352,15 @@ ApplicationWindow {
             Item {
                 id: deckPane
 
-                SplitView.fillHeight: true
-                SplitView.minimumHeight: mixer.height + rackColumn.height
+                readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
+                readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
+                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height
+                readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
+
+                SplitView.fillHeight: library.active
+                SplitView.maximumHeight: library.active ? undefined : requiredPaneHeight
+                SplitView.minimumHeight: requiredPaneHeight
+                implicitHeight: requiredPaneHeight
                 width: splitView.width
 
                 LateNightDeck.Deck {
@@ -388,25 +402,17 @@ ApplicationWindow {
                         top: parent.top
                     }
                 }
-                Skin.Mixer {
+                LateNightMixer.Mixer {
                     id: mixer
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     groups: [deck1.group, deck2.group, deck3.group, deck4.group]
+                    height: visible ? implicitHeight : 0
                     show4decks: root.show4decks
                     visible: root.showMixer && !root.maximizeLibrary
                     width: visible ? implicitWidth : 0
 
-                    Behavior on height {
-                        SpringAnimation {
-                            id: mixerHeightAnimation
-
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
-                    }
                     states: [
                         State {
                             when: root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
@@ -472,6 +478,15 @@ ApplicationWindow {
                     }
                     Skin.FadeBehavior on visible {
                         fadeTarget: mixer
+                    }
+                    Behavior on width {
+                        SpringAnimation {
+                            id: mixerWidthAnimation
+
+                            damping: 0.2
+                            duration: 500
+                            spring: 2
+                        }
                     }
                 }
                 LateNightDeck.Deck {
@@ -601,35 +616,78 @@ ApplicationWindow {
                         top: deck2.bottom
                     }
                 }
-                Column {
-                    id: rackColumn
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.top: mixer.bottom
-                    height: visible ? implicitHeight : 0
-                    visible: !root.maximizeLibrary && root.showSamplers
+                // Skin.SamplerRow {
+                //     id: samplers
+                //     visible: root.showSamplers
+                //     width: parent.width
+
+                //     Skin.FadeBehavior on visible {
+                //         fadeTarget: samplers
+                //     }
+                // }
+                Item {
+                    id: effectsSection
+
+                    clip: true
+                    height: root.showEffects && !root.maximizeLibrary ? effectsRack.implicitHeight : 0
+                    opacity: root.showEffects && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: deckPane.basePaneHeight
+                    z: 2
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    LateNightEffects.EffectsRack {
+                        id: effectsRack
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+                }
+                Item {
+                    id: samplersSection
+
+                    clip: true
+                    height: root.showSamplers && !root.maximizeLibrary ? samplers.implicitHeight : 0
+                    opacity: root.showSamplers && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: effectsSection.y + effectsSection.height
+                    z: 2
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
 
                     LateNightSamplers.SamplersRack {
                         id: samplers
 
-                        visible: root.showSamplers
-                        width: parent.width
-
-                        Skin.FadeBehavior on visible {
-                            fadeTarget: samplers
-                        }
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
                     }
                 }
-                // Skin.EffectRow {
-                //     id: effects
-                //     visible: root.showEffects
-                //     width: parent.width
-
-                //     Skin.FadeBehavior on visible {
-                //         fadeTarget: effects
-                //     }
-                // }
                 Loader {
                     id: library
 
@@ -670,7 +728,7 @@ ApplicationWindow {
 
                     anchors {
                         bottom: parent.bottom
-                        top: rackColumn.bottom
+                        top: samplersSection.bottom
                     }
                 }
             }
