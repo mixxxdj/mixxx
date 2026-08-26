@@ -59,11 +59,12 @@ class WTrackMenu : public QMenu {
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
+        DownbeatMarkers = 1 << 18,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
-                FindOnWeb
+                FindOnWeb | DownbeatMarkers
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -83,6 +84,7 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::Properties |
             WTrackMenu::Feature::UpdateReplayGainFromPregain |
             WTrackMenu::Feature::FindOnWeb |
+            WTrackMenu::Feature::DownbeatMarkers |
             WTrackMenu::Feature::SelectInLibrary};
 
     WTrackMenu(QWidget* parent,
@@ -179,6 +181,8 @@ class WTrackMenu : public QMenu {
     void slotImportMetadataFromFileTags();
     void slotExportMetadataIntoFileTags();
     void slotUpdateExternalTrackCollection(ExternalTrackCollection* externalTrackCollection);
+    void slotShowDownbeatMarkers();
+    void slotHideDownbeatMarkers();
 
     // Playlist and crate
     void slotPopulatePlaylistMenu();
@@ -250,6 +254,7 @@ class WTrackMenu : public QMenu {
 
     void clearBeats();
     void lockBpm(bool lock);
+    void setDownbeatMarkers(bool show);
 
 #ifdef __STEM__
     void loadSelectionToGroup(const QString& group,
@@ -262,6 +267,8 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
+    std::pair<bool, bool> getTrackDownbeatMarkersStates() const;
+
     bool canUndoBeatsChange() const;
 
     /// Get the common rating of all selected tracks.
@@ -378,6 +385,8 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pClearAllMetadataAction;
     parented_ptr<QAction> m_pSortHotcuesByPositionAction{};
     parented_ptr<QAction> m_pSortHotcuesByPositionCompressAction{};
+    parented_ptr<QAction> m_pShowDownbeatMarkersAction;
+    parented_ptr<QAction> m_pHideDownbeatMarkersAction;
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;

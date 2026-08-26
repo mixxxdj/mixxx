@@ -19,6 +19,7 @@ TrackRecord::TrackRecord(TrackId id)
           m_mainCuePosition(mixxx::audio::kStartFramePos),
           m_rating(0),
           m_bpmLocked(false),
+          m_showDownbeats(false),
           m_headerParsed(false) {
 }
 
@@ -372,6 +373,7 @@ bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
             lhs.getColor() == rhs.getColor() &&
             lhs.getMainCuePosition() == rhs.getMainCuePosition() &&
             lhs.getBpmLocked() == rhs.getBpmLocked() &&
+            lhs.getShowDownbeats() == rhs.getShowDownbeats() &&
             lhs.getKeys() == rhs.getKeys() &&
             lhs.getRating() == rhs.getRating() &&
             lhs.m_headerParsed == rhs.m_headerParsed;
