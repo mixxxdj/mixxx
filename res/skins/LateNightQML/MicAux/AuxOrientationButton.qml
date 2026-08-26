@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import "../LateNightTheme"
@@ -24,11 +26,32 @@ Item {
             }
         }
     }
-    MouseArea {
+    Row {
         anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
 
-        onClicked: orientationControl.value = (Math.round(orientationControl.value) + 1) % 3
+        Repeater {
+            model: ["orientation_left", "orientation_center", "orientation_right"]
+
+            Item {
+                id: assignButton
+
+                required property int index
+                required property string modelData
+
+                height: parent.height
+                width: root.width / 3
+
+                TapHandler {
+                    onPressedChanged: assignControl.value = pressed ? 1 : 0
+                }
+                Mixxx.ControlProxy {
+                    id: assignControl
+
+                    group: root.group
+                    key: assignButton.modelData
+                }
+            }
+        }
     }
     Mixxx.ControlProxy {
         id: orientationControl
