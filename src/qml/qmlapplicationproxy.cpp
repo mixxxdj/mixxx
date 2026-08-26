@@ -167,7 +167,11 @@ QString QmlApplicationProxy::menuShortcut(
     VERIFY_OR_DEBUG_ASSERT(s_pKeyboardEventFilter) {
         return defaultShortcut;
     }
-    return s_pKeyboardEventFilter->getKeyboardConfig()->getValue(
+    const auto pKeyboardConfig = s_pKeyboardEventFilter->getKeyboardConfig();
+    VERIFY_OR_DEBUG_ASSERT(pKeyboardConfig) {
+        return defaultShortcut;
+    }
+    return pKeyboardConfig->getValue(
             ConfigKey(QStringLiteral("[KeyboardShortcuts]"), command),
             defaultShortcut);
 }

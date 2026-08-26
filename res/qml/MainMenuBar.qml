@@ -7,7 +7,7 @@ import QtQuick.Controls
 MenuBar {
     id: root
 
-    required property var actions
+    required property ApplicationMenuActions actions
     property Menu developerMenu: null
 
     Component.onCompleted: {
@@ -28,9 +28,11 @@ MenuBar {
         }
         MenuItem {
             action: root.actions.fileLoadDeck3
+            enabled: root.actions.fileLoadDeck3.enabled
         }
         MenuItem {
             action: root.actions.fileLoadDeck4
+            enabled: root.actions.fileLoadDeck4.enabled
         }
         MenuSeparator {
         }
@@ -103,15 +105,19 @@ MenuBar {
 
             MenuItem {
                 action: root.actions.optionsEnableVinyl1
+                enabled: root.actions.optionsEnableVinyl1.enabled
             }
             MenuItem {
                 action: root.actions.optionsEnableVinyl2
+                enabled: root.actions.optionsEnableVinyl2.enabled
             }
             MenuItem {
                 action: root.actions.optionsEnableVinyl3
+                enabled: root.actions.optionsEnableVinyl3.enabled
             }
             MenuItem {
                 action: root.actions.optionsEnableVinyl4
+                enabled: root.actions.optionsEnableVinyl4.enabled
             }
         }
         MenuSeparator {
