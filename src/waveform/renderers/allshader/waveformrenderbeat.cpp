@@ -197,7 +197,8 @@ bool WaveformRenderBeat::preprocessInner() {
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
     bool downbeatsEnabled = false;
     int downbeatDistance = pWaveformWidgetFactory->getDownbeatDistance();
-    if (pWaveformWidgetFactory->getDownbeatsEnabled() && m_firstDownBeat.has_value()) {
+    if (pWaveformWidgetFactory->getDownbeatsEnabled() &&
+            m_firstDownBeat.has_value() && m_pLoadedTrack->getShowDownbeats()) {
         downbeatsEnabled = true;
         firstDownbeat = *m_firstDownBeat;
     }

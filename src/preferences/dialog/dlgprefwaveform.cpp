@@ -270,6 +270,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSpinBox::valueChanged,
             this,
             &DlgPrefWaveform::slotSetDownbeatDistance);
+    connect(enableDownbeatsForNewTracksCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetDownbeatsForNewTracksEnabled);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -412,6 +416,8 @@ void DlgPrefWaveform::slotUpdate() {
     downbeatDistanceSpinBox->setEnabled(downbeatsEnabled);
     int downbeatDistance = factory->getDownbeatDistance();
     downbeatDistanceSpinBox->setValue(downbeatDistance);
+    enableDownbeatsForNewTracksCheckBox->setChecked(
+            factory->getDownbeatsForNewTracksEnabled());
 }
 
 void DlgPrefWaveform::slotApply() {
@@ -489,6 +495,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     enableDownBeatCheckBox->setChecked(WaveformWidgetFactory::downbeatsEnabledDefault());
     downbeatDistanceSpinBox->setValue(WaveformWidgetFactory::downbeatDistanceDefault());
+    enableDownbeatsForNewTracksCheckBox->setChecked(
+            WaveformWidgetFactory::downbeatsForNewTracksEnabledDefault());
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -792,6 +800,10 @@ void DlgPrefWaveform::slotSetDownbeatEnabled(bool enabled) {
 
 void DlgPrefWaveform::slotSetDownbeatDistance(int downbeatDistance) {
     WaveformWidgetFactory::instance()->setDownbeatDistance(downbeatDistance);
+}
+
+void DlgPrefWaveform::slotSetDownbeatsForNewTracksEnabled(bool enabled) {
+    WaveformWidgetFactory::instance()->setDownbeatsForNewTracksEnabled(enabled);
 }
 
 void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {

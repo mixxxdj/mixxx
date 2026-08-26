@@ -64,6 +64,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotStemOpacity(float value);
     void slotStemReorderOnChange(bool value);
     void slotSetDownbeatEnabled(bool value);
+    void slotSetDownbeatsForNewTracksEnabled(bool value);
     void slotStemOutlineOpacity(float value);
     void slotStemDisplayMode(int index);
     // overview options

@@ -252,6 +252,14 @@ class WaveformWidgetFactory : public QObject,
         return 4;
     };
 
+    void setDownbeatsForNewTracksEnabled(bool enabled);
+    bool getDownbeatsForNewTracksEnabled() const {
+        return m_downbeatsForNewTracksEnabled;
+    }
+    static bool downbeatsForNewTracksEnabledDefault() {
+        return false;
+    };
+
     void setVisualGain(BandIndex index, double gain);
     double getVisualGain(BandIndex index) const;
     static double getVisualGainDefault(BandIndex index);
@@ -376,6 +384,7 @@ class WaveformWidgetFactory : public QObject,
     int m_beatGridAlpha;
     bool m_downbeatsEnabled;
     int m_downbeatDistance;
+    bool m_downbeatsForNewTracksEnabled;
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
