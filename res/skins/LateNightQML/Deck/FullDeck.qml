@@ -7,13 +7,16 @@ import "../LateNightTheme"
 Controls.Panel {
     id: root
 
-    property bool editMode: false
+    implicitHeight: root.minimized ? 80 : 206
+    implicitWidth: 620
+
     required property string group
     property bool minimized: false
-    readonly property bool show8Hotcues: show8HotcuesProxy.value > 0
+    property bool editMode: false
     readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
     readonly property bool showBigSpinnyOrCover: selectBigSpinnyProxy.value > 0
     readonly property bool showHotcues: showHotcuesProxy.value > 0
+    readonly property bool show8Hotcues: show8HotcuesProxy.value > 0
     readonly property bool showIntroOutroCues: showIntroOutroCuesProxy.value > 0
     readonly property bool showKeyControls: showKeyControlsProxy.value > 0
     readonly property bool showLoopControls: showLoopControlsProxy.value > 0
@@ -25,103 +28,99 @@ Controls.Panel {
     signal toggleFocus
 
     color: LateNightTheme.deckPanelColor
-    implicitHeight: root.minimized ? 80 : 206
-    implicitWidth: 620
 
     Mixxx.ControlProxy {
         id: selectBigSpinnyProxy
-
         group: "[Skin]"
         key: "select_big_spinny_or_cover"
     }
+
     Mixxx.ControlProxy {
         id: showKeyControlsProxy
-
         group: "[Skin]"
         key: "show_key_controls"
     }
+
     Mixxx.ControlProxy {
         id: showVinylControlsProxy
-
         group: "[Skin]"
         key: "show_vinylcontrol"
     }
+
     Mixxx.ControlProxy {
         id: show4EffectUnitsProxy
-
         group: "[Skin]"
         key: "show_4effectunits"
     }
+
     Mixxx.ControlProxy {
         id: showHotcuesProxy
-
         group: "[Skin]"
         key: "show_hotcues"
     }
+
     Mixxx.ControlProxy {
         id: show8HotcuesProxy
-
         group: "[Skin]"
         key: "show_8_hotcues"
     }
+
     Mixxx.ControlProxy {
         id: showIntroOutroCuesProxy
-
         group: "[Skin]"
         key: "show_intro_outro_cues"
     }
+
     Mixxx.ControlProxy {
         id: showLoopControlsProxy
-
         group: "[Skin]"
         key: "show_loop_controls"
     }
+
     Mixxx.ControlProxy {
         id: showBeatjumpControlsProxy
-
         group: "[Skin]"
         key: "show_beatjump_controls"
     }
+
     Mixxx.ControlProxy {
         id: showRateControlsProxy
-
         group: "[Skin]"
         key: "show_rate_controls"
     }
+
     Mixxx.ControlProxy {
         id: showRateControlButtonsProxy
-
         group: "[Skin]"
         key: "show_rate_control_buttons"
     }
+
     RowLayout {
-        anchors.bottomMargin: 2
         anchors.fill: parent
         anchors.leftMargin: 1
-        anchors.rightMargin: 1
         anchors.topMargin: 2
+        anchors.rightMargin: 1
+        anchors.bottomMargin: 2
         spacing: 2
 
         // Central main deck column
         ColumnLayout {
             id: mainDeckColumn
-
-            Layout.alignment: Qt.AlignTop
-            Layout.fillHeight: false
             Layout.fillWidth: true
+            Layout.fillHeight: false
+            Layout.alignment: Qt.AlignTop
             spacing: 1
 
             // Top row: FX assignment and key controls.
             RowLayout {
                 id: topPlaceholderRow
-
-                Layout.fillHeight: false
                 Layout.fillWidth: true
-                Layout.maximumHeight: 20
-                Layout.minimumHeight: 20
                 Layout.preferredHeight: 20
-                spacing: 0
+                Layout.minimumHeight: 20
+                Layout.maximumHeight: 20
+                Layout.fillHeight: false
                 visible: !root.minimized
+                spacing: 0
 
                 // FX assignment buttons: toggle effect unit assignment for this deck
                 Row {
@@ -133,47 +132,53 @@ Controls.Panel {
                         delegate: Item {
                             id: fxAssignButton
 
-                            readonly property bool active: fxAssignProxy.value > 0
-                            readonly property color activeColor: index < 2 ? (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor12 : LateNightTheme.effectsUnitDimColor12) : (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor34 : LateNightTheme.effectsUnitDimColor34)
-                            readonly property color fillColor: active ? activeColor : inactiveColor
-                            readonly property color inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
                             required property int index
 
-                            height: 20
                             width: show4EffectUnitsProxy.value > 0 && index > 0 ? 20 : 26
+                            height: 20
+                            readonly property bool active: fxAssignProxy.value > 0
+                            readonly property color activeColor: index < 2 ? (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor12 : LateNightTheme.effectsUnitDimColor12) : (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor34 : LateNightTheme.effectsUnitDimColor34)
+                            readonly property color inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
+                            readonly property color fillColor: active ? activeColor : inactiveColor
 
                             Mixxx.ControlProxy {
                                 id: fxAssignProxy
-
                                 group: `[EffectRack1_EffectUnit${index + 1}]`
                                 key: `group_${root.group}_enable`
                             }
+
                             Rectangle {
                                 anchors.fill: parent
                                 color: fxAssignButton.fillColor
                             }
+
                             Image {
                                 anchors.fill: parent
-                                fillMode: Image.Stretch
                                 source: {
                                     if (index === 0) {
-                                        return fxAssignButton.active ? LateNightTheme.lateNightButton("btn_embedded_library_active.svg") : LateNightTheme.lateNightButton("btn_embedded_library.svg");
+                                        return fxAssignButton.active
+                                            ? LateNightTheme.lateNightButton("btn_embedded_library_active.svg")
+                                            : LateNightTheme.lateNightButton("btn_embedded_library.svg");
                                     } else {
-                                        return fxAssignButton.active ? LateNightTheme.lateNightButton("btn_embedded_grid_active.svg") : LateNightTheme.lateNightButton("btn_embedded_grid.svg");
+                                        return fxAssignButton.active
+                                            ? LateNightTheme.lateNightButton("btn_embedded_grid_active.svg")
+                                            : LateNightTheme.lateNightButton("btn_embedded_grid.svg");
                                     }
                                 }
+                                fillMode: Image.Stretch
                             }
+
                             Text {
                                 anchors.centerIn: parent
-                                color: fxAssignButton.active ? (LateNightTheme.isClassic ? "#000000" : LateNightTheme.mixerControlTextColor) : (LateNightTheme.isClassic ? "#d2d2d1" : "#666666")
-                                font.bold: true
+                                text: show4EffectUnitsProxy.value > 0 && index > 0 ? (index + 1).toString() : "FX" + (show4EffectUnitsProxy.value > 0 && index === 0 ? "1" : (index + 1).toString())
                                 font.family: "Open Sans"
                                 font.pixelSize: 10
-                                text: show4EffectUnitsProxy.value > 0 && index > 0 ? (index + 1).toString() : "FX" + (show4EffectUnitsProxy.value > 0 && index === 0 ? "1" : (index + 1).toString())
+                                font.bold: true
+                                color: fxAssignButton.active ? (LateNightTheme.isClassic ? "#000000" : LateNightTheme.mixerControlTextColor) : (LateNightTheme.isClassic ? "#d2d2d1" : "#666666")
                             }
+
                             MouseArea {
                                 anchors.fill: parent
-
                                 onClicked: {
                                     fxAssignProxy.value = !fxAssignProxy.value;
                                 }
@@ -181,35 +186,39 @@ Controls.Panel {
                         }
                     }
                 }
+
                 Item {
-                    Layout.fillHeight: true
                     Layout.fillWidth: true
+                    Layout.fillHeight: true
 
                     Rectangle {
-                        anchors.bottom: parent.bottom
                         anchors.left: parent.left
                         anchors.right: parent.right
-                        color: LateNightTheme.deckPanelBorderDark
+                        anchors.bottom: parent.bottom
                         height: 1
+                        color: LateNightTheme.deckPanelBorderDark
                     }
                 }
+
                 VinylControlsPlaceholder {
-                    Layout.maximumHeight: 20
-                    Layout.preferredHeight: 20
                     Layout.preferredWidth: 158
+                    Layout.preferredHeight: 20
+                    Layout.maximumHeight: 20
                     group: root.group
                     visible: root.showVinylControls
                 }
+
                 Item {
-                    Layout.fillHeight: true
                     Layout.preferredWidth: root.showVinylControls ? 2 : 0
+                    Layout.fillHeight: true
                     visible: root.showVinylControls
                 }
+
                 KeyControlsPlaceholder {
-                    Layout.maximumHeight: 20
+                    Layout.preferredWidth: 111
                     Layout.maximumWidth: 111
                     Layout.preferredHeight: 20
-                    Layout.preferredWidth: 111
+                    Layout.maximumHeight: 20
                     group: root.group
                     visible: root.showKeyControls
                 }
@@ -218,18 +227,16 @@ Controls.Panel {
             // Middle Row: Big Spinny on the left, Title/Overview on the right
             RowLayout {
                 id: middleDeckRow
-
-                Layout.fillHeight: false
                 Layout.fillWidth: true
-                Layout.maximumHeight: root.minimized ? 68 : 122
+                Layout.fillHeight: false
                 Layout.minimumHeight: root.minimized ? 68 : 122
                 Layout.preferredHeight: root.minimized ? 68 : 122
+                Layout.maximumHeight: root.minimized ? 68 : 122
                 spacing: 8
 
                 // Big Spinny/Cover Slot (Large mode)
                 SpinnyCoverSlot {
                     id: leftSpinnyBig
-
                     Layout.preferredHeight: 114
                     Layout.preferredWidth: 114
                     group: root.group
@@ -239,20 +246,18 @@ Controls.Panel {
                 // Column containing Title rows and Overview row
                 ColumnLayout {
                     id: titleOverviewColumn
-
-                    Layout.fillHeight: false
                     Layout.fillWidth: true
+                    Layout.fillHeight: false
                     Layout.preferredHeight: root.minimized ? 68 : 122
                     spacing: 2
 
                     // Title, Time, Artist, Duration Rows
                     TitleTimeRows {
                         id: titleTimeRows
-
                         Layout.fillWidth: true
-                        Layout.maximumHeight: root.minimized ? 48 : 55
                         Layout.minimumHeight: root.minimized ? 48 : 55
                         Layout.preferredHeight: root.minimized ? 48 : 55
+                        Layout.maximumHeight: root.minimized ? 48 : 55
                         group: root.group
 
                         TapHandler {
@@ -263,18 +268,16 @@ Controls.Panel {
                     // Row containing Small Spinny (on the left of overview) and the Waveform Overview
                     RowLayout {
                         id: overviewAndSpinnyRow
-
-                        Layout.fillHeight: false
                         Layout.fillWidth: true
-                        Layout.maximumHeight: root.minimized ? 20 : 63
+                        Layout.fillHeight: false
                         Layout.minimumHeight: root.minimized ? 20 : 63
                         Layout.preferredHeight: root.minimized ? 20 : 63
+                        Layout.maximumHeight: root.minimized ? 20 : 63
                         spacing: 1
 
                         // Small Spinny/Cover Slot (Small mode)
                         SpinnyCoverSlot {
                             id: leftSpinnySmall
-
                             Layout.preferredHeight: 63
                             Layout.preferredWidth: 63
                             group: root.group
@@ -284,9 +287,8 @@ Controls.Panel {
                         // Waveform Overview Row
                         OverviewRow {
                             id: overviewRow
-
-                            Layout.fillHeight: true
                             Layout.fillWidth: true
+                            Layout.fillHeight: true
                             group: root.group
                         }
                     }
@@ -296,18 +298,17 @@ Controls.Panel {
             // Lower Transport, Loop, Beatjump Placeholders
             TransportLoopBeatjumpPlaceholders {
                 id: transportRow
-
-                Layout.fillHeight: false
                 Layout.fillWidth: true
-                Layout.maximumHeight: 55
+                Layout.fillHeight: false
                 Layout.minimumHeight: 55
                 Layout.preferredHeight: 55
+                Layout.maximumHeight: 55
                 group: root.group
-                show8Hotcues: root.show8Hotcues
-                showBeatjumpControls: root.showBeatjumpControls
                 showHotcues: root.showHotcues
+                show8Hotcues: root.show8Hotcues
                 showIntroOutroCues: root.showIntroOutroCues
                 showLoopControls: root.showLoopControls
+                showBeatjumpControls: root.showBeatjumpControls
                 visible: !root.minimized
             }
         }
@@ -315,20 +316,21 @@ Controls.Panel {
         // Right Rate controls placeholder
         RatePlaceholder {
             id: rateControls
-
-            Layout.alignment: Qt.AlignTop
+            Layout.preferredWidth: 90
             Layout.fillHeight: false
-            Layout.maximumHeight: 202
             Layout.minimumHeight: 202
             Layout.preferredHeight: 202
-            Layout.preferredWidth: 90
+            Layout.maximumHeight: 202
+            Layout.alignment: Qt.AlignTop
             group: root.group
             showRateControlButtons: root.showRateControlButtons
             visible: !root.minimized && root.showRateControls
         }
     }
+
     Mixxx.PlayerDropArea {
         anchors.fill: parent
         group: root.group
     }
+
 }

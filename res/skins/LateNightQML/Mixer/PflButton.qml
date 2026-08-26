@@ -6,6 +6,7 @@ Item {
     id: root
 
     required property string group
+    property string key: "pfl"
 
     implicitHeight: 26
     implicitWidth: 26
@@ -34,6 +35,6 @@ Item {
         id: pflControl
 
         group: root.group
-        key: "pfl"
+        key: root.key
     }
 }
