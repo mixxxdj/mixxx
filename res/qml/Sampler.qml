@@ -143,7 +143,7 @@ Rectangle {
             radius: height / 2
 
             Rectangle {
-                antialiasing: false
+                antialiasing: false // for performance reasons
                 color: Theme.samplerColor
                 height: parent.height
                 radius: height / 2
@@ -252,11 +252,11 @@ Rectangle {
                 model: Math.min(8, Math.max(0, root.hotcueCount))
 
                 Skin.HotcueButton {
-                    required property int index
+                    required property int hotcueIdx
 
                     Layout.fillWidth: true
                     group: root.group
-                    hotcueNumber: index + 1
+                    hotcueNumber: hotcueIdx + 1
                     implicitHeight: 22
                 }
             }
@@ -272,17 +272,17 @@ Rectangle {
                 Skin.ControlButton {
                     id: fxButton
 
-                    required property int index
+                    required property int fxUnitIdx
 
                     Layout.fillWidth: true
                     activeColor: Theme.effectUnitColor
-                    group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
+                    group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
                     implicitHeight: 22
                     key: "group_" + root.group + "_enable"
-                    text: "FX" + (index + 1)
+                    text: "FX" + (fxUnitIdx + 1)
                     toggleable: true
 
-                    onHighlightChanged: root.fxAssignmentChanged(index + 1, highlight)
+                    onHighlightChanged: root.fxAssignmentChanged(fxUnitIdx + 1, highlight)
                 }
             }
         }

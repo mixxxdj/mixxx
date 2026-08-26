@@ -9,10 +9,10 @@ import "Theme"
 Row {
     id: root
 
+    required property int unitNumber
     property int fxUnitCount: 4
     property string group: unitNumber === 1 ? "[Microphone]" : "[Microphone" + unitNumber + "]"
     readonly property bool inputConfigured: inputConfiguredControl.value > 0
-    required property int unitNumber
 
     signal fxAssignmentChanged(int unitNumber, bool enabled)
 
@@ -98,18 +98,18 @@ Row {
                             model: Math.max(0, root.fxUnitCount)
 
                             Skin.ControlButton {
-                                required property int index
+                                required property int fxUnitIdx
 
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
                                 activeColor: Theme.effectUnitColor
-                                group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
+                                group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
                                 implicitWidth: 28
                                 key: "group_" + root.group + "_enable"
-                                text: "FX" + (index + 1)
+                                text: "FX" + (fxUnitIdx + 1)
                                 toggleable: true
 
-                                onHighlightChanged: root.fxAssignmentChanged(index + 1, highlight)
+                                onHighlightChanged: root.fxAssignmentChanged(fxUnitIdx + 1, highlight)
                             }
                         }
                     }
