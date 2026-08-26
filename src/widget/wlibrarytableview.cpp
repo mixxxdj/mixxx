@@ -45,6 +45,11 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     //Work around a Qt bug that lets you make your columns so wide you
     //can't reach the divider to make them small again.
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    // Required for QScroller-driven kinetic touch scrolling to map finger
+    // movement 1:1 to pixels. Without this, the vertical scrollbar's range
+    // is in row-units, so QScroller scrolls by a number of rows proportional
+    // to the drag distance, which feels amplified and worsens on long lists.
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
     verticalHeader()->hide();
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
