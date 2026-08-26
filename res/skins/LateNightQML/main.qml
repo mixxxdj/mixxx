@@ -1,7 +1,6 @@
 import "../../qml" as Skin
 import "LateNightTheme"
 import "Deck" as LateNightDeck
-import "MicAux" as LateNightMicAux
 import "Samplers" as LateNightSamplers
 import "Toolbar" as LateNightToolbar
 import "Waveforms" as LateNightWaveforms
@@ -23,7 +22,6 @@ ApplicationWindow {
     readonly property bool show4decks: toolbar.show4decks
     property alias showEffects: toolbar.showEffects
     readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
-    property alias showMicAux: toolbar.showMicAux
     readonly property bool showMixer: toolbar.showMixer
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
@@ -610,7 +608,7 @@ ApplicationWindow {
                     anchors.right: parent.right
                     anchors.top: mixer.bottom
                     height: visible ? implicitHeight : 0
-                    visible: !root.maximizeLibrary && (root.showSamplers || root.showMicAux)
+                    visible: !root.maximizeLibrary && root.showSamplers
 
                     LateNightSamplers.SamplersRack {
                         id: samplers
@@ -620,16 +618,6 @@ ApplicationWindow {
 
                         Skin.FadeBehavior on visible {
                             fadeTarget: samplers
-                        }
-                    }
-                    LateNightMicAux.MicAuxRack {
-                        id: micAuxRack
-
-                        visible: root.showMicAux
-                        width: parent.width
-
-                        Skin.FadeBehavior on visible {
-                            fadeTarget: micAuxRack
                         }
                     }
                 }

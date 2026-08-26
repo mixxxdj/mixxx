@@ -5,10 +5,6 @@ import "."
 QtObject {
     readonly property color accentColor: ColorScheme.accentColor
     readonly property color activePlayCueColor: isClassic ? "#db0000" : "#b24c12"
-    readonly property url assetAuxMainMixButton: lateNightAsset("buttons", "btn__aux_play.svg")
-    readonly property url assetAuxXfaderLeft: lateNightAsset("buttons", isClassic ? "btn__xfader_aux_left.svg" : "btn__xfader_deck_left_default.svg")
-    readonly property url assetAuxXfaderMain: lateNightAsset("buttons", isClassic ? "btn__xfader_aux_mid.svg" : "btn__xfader_deck_mid_default.svg")
-    readonly property url assetAuxXfaderRight: lateNightAsset("buttons", isClassic ? "btn__xfader_aux_right.svg" : "btn__xfader_deck_right_default.svg")
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
     readonly property url assetDeckArrowRightDownButton: lateNightAsset("buttons", "btn__arrow_right_down.svg")
     readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
@@ -66,13 +62,6 @@ QtObject {
     readonly property url assetDeckVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
     readonly property url assetFxKnobBackground: lateNightAsset("knobs", "knob_bg_fx.svg")
     readonly property url assetMainKnobBackground: lateNightAsset("knobs", "knob_bg_main.svg")
-    readonly property url assetMicAuxAddButton: lateNightAsset("buttons", "btn__plus_flat.svg")
-    readonly property url assetMicAuxGainKnobBackground: lateNightAsset("knobs", "knob_bg_small.svg")
-    readonly property url assetMicAuxUnconfiguredBackground: lateNightAsset("buttons", "btn_flat_square.svg")
-    readonly property url assetMicDuckAutoButton: lateNightAsset("buttons", "btn__mic_duck_auto.svg")
-    readonly property url assetMicDuckManualButton: lateNightAsset("buttons", "btn__mic_duck_manual.svg")
-    readonly property url assetMicDuckOffButton: lateNightAsset("buttons", "btn__mic_duck_off.svg")
-    readonly property url assetMicTalkButton: lateNightAsset("buttons", "btn__mic_talk.svg")
     readonly property url assetRegularKnobBackground: lateNightAsset("knobs", "knob_bg_regular.svg")
     readonly property url assetSamplerCollapseButton: lateNightAsset("buttons", "btn__collapse_dim.svg")
     readonly property url assetSamplerExpandButton: lateNightAsset("buttons", "btn__expand_dim.svg")
@@ -115,8 +104,6 @@ QtObject {
     readonly property color libraryPanelSplitterBackground: "#1e1e1e"
     readonly property color libraryPanelSplitterHandle: "#5f5f5f"
     readonly property color libraryPanelSplitterHandleActive: "#7a7a7a"
-    readonly property color micAuxPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
-    readonly property color micAuxUnconfiguredTextColor: isClassic ? "#444444" : "#555555"
     readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
     readonly property url optionalDeckRateCenterActive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_cyan.svg") : ""
     readonly property url optionalDeckRateCenterInactive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_off.svg") : ""

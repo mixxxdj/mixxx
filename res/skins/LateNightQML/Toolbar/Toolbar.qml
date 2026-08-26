@@ -31,7 +31,6 @@ Rectangle {
     property bool show4decksAvailable: true
     property alias showEffects: showEffectsButton.checked
     property alias showMaximizedDecks: maxLibraryDecksButton.checked
-    property alias showMicAux: showMicAuxButton.checked
     property alias showMixer: showMixerButton.checked
     property alias showSamplers: showSamplersButton.checked
     property alias showWaveforms: showWaveformsButton.checked
@@ -74,7 +73,6 @@ Rectangle {
         setControlValueIfInitialized(showMixerControl, 1.0);
         setControlValueIfInitialized(showWaveformsControl, 1.0);
         showEffectRackControl.value = 1.0;
-        showMicAuxControl.value = 0.0;
         showSamplersControl.value = 0.0;
         setControlValueIfInitialized(show4DecksControl, 0.0);
         showMaximizedLibraryControl.value = 0.0;
@@ -225,16 +223,6 @@ Rectangle {
 
         onValueChanged: {
             showSamplersButton.checked = value > 0;
-        }
-    }
-    Mixxx.ControlProxy {
-        id: showMicAuxControl
-
-        group: "[Skin]"
-        key: "show_microphones"
-
-        onValueChanged: {
-            showMicAuxButton.checked = value > 0;
         }
     }
     Mixxx.ControlProxy {
@@ -771,21 +759,6 @@ Rectangle {
                     }
                 }
             }
-            RowLayout {
-                Layout.alignment: Qt.AlignVCenter
-                spacing: -2
-
-                LateNightToolbarButton {
-                    id: showMicAuxButton
-
-                    buttonWidth: 61
-                    text: "MIC/AUX"
-
-                    onActivated: {
-                        showMicAuxControl.value = checked ? 1.0 : 0.0;
-                    }
-                }
-            }
         }
         RowLayout {
             Layout.alignment: Qt.AlignVCenter
@@ -1030,17 +1003,6 @@ Rectangle {
                     shortcut: "Ctrl+Shift+N"
                     text: "Create New Crate"
                     visible: root.activeAppMenuSection === "Library"
-                }
-                ToolbarAppMenuAction {
-                    checkable: true
-                    checked: showMicAuxControl.value > 0
-                    shortcut: "Ctrl+2"
-                    text: "Show Microphone Section"
-                    visible: root.activeAppMenuSection === "View"
-
-                    onTriggered: {
-                        showMicAuxControl.value = showMicAuxControl.value > 0 ? 0.0 : 1.0;
-                    }
                 }
                 ToolbarAppMenuAction {
                     checkable: true

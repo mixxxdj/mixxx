@@ -6,7 +6,7 @@ Controls.Knob {
     id: root
 
     angle: LateNightTheme.isClassic ? 135 : 130
-    backgroundSource: LateNightTheme.assetMicAuxGainKnobBackground
+    backgroundSource: LateNightTheme.assetSmallKnobBackground
     displayArc: !LateNightTheme.isClassic
     displayArcColor: LateNightTheme.samplerGainArcColor
     displayArcOffsetY: 2
