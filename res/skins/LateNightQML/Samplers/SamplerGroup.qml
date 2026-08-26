@@ -54,10 +54,10 @@ Item {
                 model: root.count / 2
 
                 SamplerMini {
-                    required property int index
+                    required property int samplerIdx
 
                     Layout.fillWidth: true
-                    group: "[Sampler" + (root.firstSampler + index) + "]"
+                    group: "[Sampler" + (root.firstSampler + samplerIdx) + "]"
                 }
             }
             SamplerExpandButton {
@@ -69,10 +69,10 @@ Item {
                 model: root.count / 2
 
                 SamplerMini {
-                    required property int index
+                    required property int samplerIdx
 
                     Layout.fillWidth: true
-                    group: "[Sampler" + (root.firstSampler + root.count / 2 + index) + "]"
+                    group: "[Sampler" + (root.firstSampler + root.count / 2 + samplerIdx) + "]"
                 }
             }
         }
@@ -87,10 +87,10 @@ Item {
                 model: 2
 
                 SamplerFull {
-                    required property int index
+                    required property int samplerIdx
 
                     Layout.fillWidth: true
-                    group: "[Sampler" + (root.firstSampler + index) + "]"
+                    group: "[Sampler" + (root.firstSampler + samplerIdx) + "]"
                     show8Hotcues: root.show8Hotcues
                     showFxAssignments: root.showFxAssignments
                     waveformsActive: root.expanded
@@ -105,10 +105,10 @@ Item {
                 model: 2
 
                 SamplerFull {
-                    required property int index
+                    required property int samplerIdx
 
                     Layout.fillWidth: true
-                    group: "[Sampler" + (root.firstSampler + 2 + index) + "]"
+                    group: "[Sampler" + (root.firstSampler + 2 + samplerIdx) + "]"
                     show8Hotcues: root.show8Hotcues
                     showFxAssignments: root.showFxAssignments
                     waveformsActive: root.expanded

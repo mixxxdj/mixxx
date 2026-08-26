@@ -326,7 +326,7 @@ Controls.Panel {
                                 model: root.show8Hotcues ? 8 : 4
 
                                 SamplerHotcueButton {
-                                    required property int index
+                                    required property int hotcueIdx
 
                                     Layout.alignment: Qt.AlignVCenter
                                     Layout.minimumHeight: 0
@@ -334,7 +334,7 @@ Controls.Panel {
                                     Layout.preferredHeight: 26 * samplerButtonsRow.buttonScale
                                     Layout.preferredWidth: 26 * samplerButtonsRow.buttonScale
                                     group: root.group
-                                    hotcueNumber: index + 1
+                                    hotcueNumber: hotcueIdx + 1
                                 }
                             }
                             Item {
@@ -345,27 +345,27 @@ Controls.Panel {
                                 model: samplerButtonsRow.effectButtonCount
 
                                 DeckControls.LateNightControlButton {
-                                    required property int index
+                                    required property int fxUnitIdx
 
                                     Layout.alignment: Qt.AlignVCenter
                                     Layout.minimumHeight: 0
                                     Layout.minimumWidth: 0
                                     Layout.preferredHeight: 20 * samplerButtonsRow.buttonScale
-                                    Layout.preferredWidth: (show4EffectUnitsControl.value > 0 && index > 0 ? 20 : 26) * samplerButtonsRow.buttonScale
+                                    Layout.preferredWidth: (show4EffectUnitsControl.value > 0 && fxUnitIdx > 0 ? 20 : 26) * samplerButtonsRow.buttonScale
                                     activeBackgroundSuffix: "active"
-                                    activeColor: index < 2 ? LateNightTheme.samplerEffectAssignment12ActiveColor : LateNightTheme.samplerEffectAssignment34ActiveColor
+                                    activeColor: fxUnitIdx < 2 ? LateNightTheme.samplerEffectAssignment12ActiveColor : LateNightTheme.samplerEffectAssignment34ActiveColor
                                     backgroundBorderBottom: 2
-                                    backgroundBorderLeft: index === 0 ? 2 : 1
+                                    backgroundBorderLeft: fxUnitIdx === 0 ? 2 : 1
                                     backgroundBorderRight: 2
                                     backgroundBorderTop: 2
-                                    backgroundSource: LateNightTheme.lateNightAsset("buttons", index === 0 ? "btn_embedded_library.svg" : "btn_embedded_grid.svg")
+                                    backgroundSource: LateNightTheme.lateNightAsset("buttons", fxUnitIdx === 0 ? "btn_embedded_library.svg" : "btn_embedded_grid.svg")
                                     fillMargin: 0
                                     fillRadius: 0
-                                    group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
+                                    group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
                                     inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
                                     inactiveOpacity: 1
                                     key: "group_" + root.group + "_enable"
-                                    label: show4EffectUnitsControl.value > 0 ? (index === 0 ? "\u200aFX\u200a1" : String(index + 1)) : "\u200aFX" + (index + 1)
+                                    label: show4EffectUnitsControl.value > 0 ? (fxUnitIdx === 0 ? "\u200aFX\u200a1" : String(fxUnitIdx + 1)) : "\u200aFX" + (fxUnitIdx + 1)
                                     labelColor: isActive ? "#000001" : (LateNightTheme.isClassic ? "#696969" : "#666666")
                                     labelPixelSize: 12
                                     solidFillEnabled: true

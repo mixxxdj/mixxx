@@ -11,10 +11,10 @@ import QtQuick.Layouts
 Item {
     id: root
 
+    required property int unitNumber
     property string group: unitNumber === 1 ? "[Microphone]" : "[Microphone" + unitNumber + "]"
     readonly property bool inputConfigured: inputConfiguredControl.value > 0
     readonly property Item loadedUnit: unitLoader.item as Item
-    required property int unitNumber
 
     implicitHeight: loadedUnit?.implicitHeight ?? 0
     implicitWidth: loadedUnit?.implicitWidth ?? 0
@@ -121,14 +121,14 @@ Item {
                             model: 4
 
                             DeckControls.LateNightControlButton {
-                                required property int index
+                                required property int fxUnitIdx
 
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 20
                                 activeColor: LateNightTheme.samplerColor
-                                group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
+                                group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
                                 key: "group_" + root.group + "_enable"
-                                label: String(index + 1)
+                                label: String(fxUnitIdx + 1)
                                 labelPixelSize: 8
                                 toggleable: true
                             }

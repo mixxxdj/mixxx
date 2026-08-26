@@ -132,18 +132,18 @@ Controls.Panel {
                         delegate: Item {
                             id: fxAssignButton
 
-                            required property int index
+                            required property int fxUnitIdx
 
-                            width: show4EffectUnitsProxy.value > 0 && index > 0 ? 20 : 26
+                            width: show4EffectUnitsProxy.value > 0 && fxUnitIdx > 0 ? 20 : 26
                             height: 20
                             readonly property bool active: fxAssignProxy.value > 0
-                            readonly property color activeColor: index < 2 ? "#236b00" : "#146674"
+                            readonly property color activeColor: fxUnitIdx < 2 ? "#236b00" : "#146674"
                             readonly property color inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
                             readonly property color fillColor: active ? activeColor : inactiveColor
 
                             Mixxx.ControlProxy {
                                 id: fxAssignProxy
-                                group: `[EffectRack1_EffectUnit${index + 1}]`
+                                group: `[EffectRack1_EffectUnit${fxUnitIdx + 1}]`
                                 key: `group_${root.group}_enable`
                             }
 
