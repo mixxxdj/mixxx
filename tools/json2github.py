@@ -23,6 +23,7 @@ You can use it like this:
       mixxx_bugs.json mixxx_milestones.json
 
 """
+
 import argparse
 import binascii
 import datetime
