@@ -1,6 +1,7 @@
 import "../../qml" as Skin
 import "LateNightTheme"
 import "Deck" as LateNightDeck
+import "Effects" as LateNightEffects
 import "Mixer" as LateNightMixer
 import "Toolbar" as LateNightToolbar
 import "Waveforms" as LateNightWaveforms
@@ -126,8 +127,20 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        defaultValue: 1.0
+        group: "[Skin]"
+        key: "show_effectrack"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_4effectunits"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: 0.0
+        group: "[Skin]"
+        key: "show_superknobs"
         persist: true
     }
     Mixxx.SkinControlCreator {
@@ -162,11 +175,6 @@ ApplicationWindow {
     Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "timing_shift_buttons"
-        persist: true
-    }
-    Mixxx.SkinControlCreator {
-        group: "[Skin]"
-        key: "show_superknobs"
         persist: true
     }
     Mixxx.SkinControlCreator {
@@ -247,8 +255,9 @@ ApplicationWindow {
             Item {
                 id: deckPane
 
+                readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
                 readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
-                readonly property real requiredPaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
+                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height
                 readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
 
                 SplitView.fillHeight: library.active
@@ -520,19 +529,41 @@ ApplicationWindow {
                 //         fadeTarget: samplers
                 //     }
                 // }
-                // Skin.EffectRow {
-                //     id: effects
-                //     visible: root.showEffects
-                //     width: parent.width
+                Item {
+                    id: effectsSection
 
-                //     Skin.FadeBehavior on visible {
-                //         fadeTarget: effects
-                //     }
-                // }
+                    clip: true
+                    height: root.showEffects && !root.maximizeLibrary ? effectsRack.implicitHeight : 0
+                    opacity: root.showEffects && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: deckPane.basePaneHeight
+                    z: 2
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    LateNightEffects.EffectsRack {
+                        id: effectsRack
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+                }
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - deckPane.requiredPaneHeight >= 400
+                    active: true
                     width: parent.width
 
                     sourceComponent: Component {
@@ -564,20 +595,12 @@ ApplicationWindow {
                                 anchors.top: deck1.bottom
                                 target: library
                             }
-                        },
-                        State {
-                            when: !root.maximizeLibrary && root.height - deckPane.requiredPaneHeight < 400
-
-                            PropertyChanges {
-                                target: library
-                                visible: false
-                            }
                         }
                     ]
 
                     anchors {
                         bottom: parent.bottom
-                        top: root.show4decks ? deck4.bottom : deck1.bottom
+                        top: effectsSection.bottom
                     }
                 }
             }
