@@ -5,6 +5,7 @@
 #include <QDomNode>
 #include <iterator>
 
+#include "engine/engine.h"
 #include "moc_waveformrenderbeat.cpp"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
@@ -13,6 +14,7 @@
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
@@ -117,6 +119,13 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
+    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+
+    const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
+            trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
+    const bool splitStemTracks = isStemTrack &&
+            WaveformWidgetFactory::instance()->isStemSplitTracks();
+
     const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0.0) {
         return false;
@@ -169,7 +178,10 @@ bool WaveformRenderBeat::preprocessInner() {
         numBeatsInRange++;
     }
 
-    const int reserved = numBeatsInRange * numVerticesPerLine;
+    const int numBoxesPerBeat = (m_isSlipRenderer && splitStemTracks)
+            ? mixxx::kMaxSupportedStems
+            : 1;
+    const int reserved = numBeatsInRange * numVerticesPerLine * numBoxesPerBeat;
     geometry().allocate(reserved);
 
     RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
@@ -190,6 +202,10 @@ bool WaveformRenderBeat::preprocessInner() {
         firstDownbeat = *m_firstDownBeat;
     }
 
+    const float boxBreadth = splitStemTracks
+            ? rendererBreadth / static_cast<float>(mixxx::kMaxSupportedStems)
+            : rendererBreadth;
+
     for (auto it = m_pTrackBeats->iteratorFrom(startPosition);
             it != m_pTrackBeats->cend() && *it <= endPosition;
             ++it) {
@@ -203,16 +219,22 @@ bool WaveformRenderBeat::preprocessInner() {
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        if (downbeatsEnabled && std::distance(*firstDownbeat, it) % downbeatDistance == 0) {
-            vertexUpdater.addRectangleHGradient({x1, 0.f},
-                    {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth},
-                    {downbeat_r, downbeat_g, downbeat_b, downbeat_alpha},
-                    {downbeat_r, downbeat_g, downbeat_b, downbeat_alpha});
+        const bool isDownbeat = downbeatsEnabled &&
+                std::distance(*firstDownbeat, it) % downbeatDistance == 0;
+        const QVector4D color = isDownbeat
+                ? QVector4D{downbeat_r, downbeat_g, downbeat_b, downbeat_alpha}
+                : QVector4D{beat_r, beat_g, beat_b, beat_alpha};
+
+        if (m_isSlipRenderer && splitStemTracks) {
+            for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; ++stemIdx) {
+                const float posy1 = stemIdx * boxBreadth;
+                const float posy2 = posy1 + boxBreadth / 2.f;
+                vertexUpdater.addRectangle({x1, posy1}, {x2, posy2}, color);
+            }
         } else {
-            vertexUpdater.addRectangleHGradient({x1, 0.f},
+            vertexUpdater.addRectangle({x1, 0.f},
                     {x2, m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth},
-                    {beat_r, beat_g, beat_b, beat_alpha},
-                    {beat_r, beat_g, beat_b, beat_alpha});
+                    color);
         }
     }
     markDirtyGeometry();
