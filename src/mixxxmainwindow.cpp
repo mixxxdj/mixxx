@@ -30,6 +30,7 @@
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgfreemusic.h"
 #include "dialog/dlgkeywheel.h"
+#include "dialog/dlgsongsuggester.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __BROADCAST__
@@ -111,6 +112,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
           m_pFreeMusicDlg(nullptr),
+          m_pSongSuggesterDlg(nullptr),
           m_pPrefDlg(nullptr),
           m_toolTipsCfg(mixxx::preferences::Tooltips::On) {
     DEBUG_ASSERT(pCoreServices);
@@ -557,6 +559,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting FreeMusicDlg";
     delete m_pFreeMusicDlg;
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SongSuggesterDlg";
+    delete m_pSongSuggesterDlg;
+
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
     m_pLibraryExporter.reset();
@@ -905,6 +910,11 @@ void MixxxMainWindow::connectMenuBar() {
             &WMainMenuBar::showFreeMusic,
             this,
             &MixxxMainWindow::slotShowFreeMusic,
+            Qt::UniqueConnection);
+    connect(m_pMenuBar,
+            &WMainMenuBar::showSongSuggester,
+            this,
+            &MixxxMainWindow::slotShowSongSuggester,
             Qt::UniqueConnection);
 
     // Developer
@@ -1269,6 +1279,19 @@ void MixxxMainWindow::slotShowFreeMusic() {
     m_pFreeMusicDlg->show();
     m_pFreeMusicDlg->raise();
     m_pFreeMusicDlg->activateWindow();
+}
+
+void MixxxMainWindow::slotShowSongSuggester() {
+    if (!m_pSongSuggesterDlg) {
+        m_pSongSuggesterDlg = new DlgSongSuggester(
+                m_pCoreServices->getTrackCollectionManager().get(),
+                m_pCoreServices->getPlayerManager().get(),
+                this);
+        m_pSongSuggesterDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
+    }
+    m_pSongSuggesterDlg->show();
+    m_pSongSuggesterDlg->raise();
+    m_pSongSuggesterDlg->activateWindow();
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {

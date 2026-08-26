@@ -394,6 +394,15 @@ void WMainMenuBar::initialize() {
     connect(pViewFreeMusic, &QAction::triggered, this, &WMainMenuBar::showFreeMusic);
     pViewMenu->addAction(pViewFreeMusic);
 
+    QString songSuggesterTitle = tr("Song Suggester");
+    QString songSuggesterText =
+            tr("Suggest tracks matching the tempo, energy, language, and fame of a track.");
+    auto* pViewSongSuggester = new QAction(songSuggesterTitle, this);
+    pViewSongSuggester->setStatusTip(songSuggesterText);
+    pViewSongSuggester->setWhatsThis(buildWhatsThis(songSuggesterTitle, songSuggesterText));
+    connect(pViewSongSuggester, &QAction::triggered, this, &WMainMenuBar::showSongSuggester);
+    pViewMenu->addAction(pViewSongSuggester);
+
     QString autoDJTitle = tr("Show Auto DJ");
     QString autoDJText = tr("Switch to the Auto DJ view.");
     auto* pViewAutoDJ = new QAction(autoDJTitle, this);

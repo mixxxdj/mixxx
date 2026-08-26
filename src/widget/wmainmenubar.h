@@ -73,6 +73,7 @@ class WMainMenuBar : public QMenuBar {
     void searchInAllTracks();
     void showAutoDJ();
     void showFreeMusic();
+    void showSongSuggester();
     void menubarAutoHideChanged(bool autohide);
     void showAbout();
     void showKeywheel(bool visible);
