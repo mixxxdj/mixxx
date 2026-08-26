@@ -113,6 +113,7 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
         case ::WaveformWidgetType::RGB:
         case ::WaveformWidgetType::Filtered:
         case ::WaveformWidgetType::Stacked:
+        case ::WaveformWidgetType::Perceptual3Band:
             return addWaveformSignalRenderer<WaveformRendererTextured>(
                     type, positionSource, options);
         default:
@@ -129,10 +130,14 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
     case ::WaveformWidgetType::HSV:
         return addWaveformSignalRenderer<WaveformRendererHSV>(options);
     case ::WaveformWidgetType::Filtered:
-        return addWaveformSignalRenderer<WaveformRendererFiltered>(false, options);
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(
+                WaveformRendererFiltered::Mode::Filtered, options);
     case ::WaveformWidgetType::Stacked:
         return addWaveformSignalRenderer<WaveformRendererFiltered>(
-                true, options); // true for RGB Stacked
+                WaveformRendererFiltered::Mode::Stacked, options);
+    case ::WaveformWidgetType::Perceptual3Band:
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(
+                WaveformRendererFiltered::Mode::Perceptual3Band, options);
     default:
         break;
     }
