@@ -268,8 +268,14 @@ bool SoundSourceProxy::registerProviders() {
         for (const QMimeType& mimeType : mimeTypes) {
             if (!mimeType.isDefault()) {
                 qDebug() << mimeType << supportedFileType;
-                DEBUG_ASSERT(s_fileTypeByMimeType.constFind(mimeType) ==
-                        s_fileTypeByMimeType.constEnd());
+                // Different file types may share a MIME type on some
+                // platforms (e.g. Ubuntu 24.04 maps several tracker module
+                // extensions to the same MIME type). Skip duplicates instead
+                // of asserting, since DebugAssertBreak raises SIGINT.
+                if (s_fileTypeByMimeType.constFind(mimeType) !=
+                        s_fileTypeByMimeType.constEnd()) {
+                    continue;
+                }
                 s_fileTypeByMimeType.insert(mimeType, supportedFileType);
             }
         }
