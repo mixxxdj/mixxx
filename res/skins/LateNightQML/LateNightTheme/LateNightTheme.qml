@@ -149,6 +149,21 @@ QtObject {
     function lateNightButton(fileName) {
         return lateNightAsset("buttons", fileName);
     }
+    readonly property color micAuxActiveColor: accentColor
+    readonly property color micAuxGainColor: isClassic ? "#db7700" : "#b24c12"
+    readonly property color micAuxPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
+    readonly property color micAuxUnconfiguredTextColor: isClassic ? "#444444" : "#555555"
+    readonly property url assetAuxMainMixButton: lateNightAsset("buttons", "btn__aux_play.svg")
+    readonly property url assetAuxXfaderLeft: lateNightAsset("buttons", isClassic ? "btn__xfader_aux_left.svg" : "btn__xfader_deck_left_default.svg")
+    readonly property url assetAuxXfaderMain: lateNightAsset("buttons", isClassic ? "btn__xfader_aux_mid.svg" : "btn__xfader_deck_mid_default.svg")
+    readonly property url assetAuxXfaderRight: lateNightAsset("buttons", isClassic ? "btn__xfader_aux_right.svg" : "btn__xfader_deck_right_default.svg")
+    readonly property url assetMicAuxAddButton: lateNightAsset("buttons", "btn__plus_flat.svg")
+    readonly property url assetMicAuxGainKnobBackground: lateNightAsset("knobs", "knob_bg_small.svg")
+    readonly property url assetMicAuxUnconfiguredBackground: lateNightAsset("buttons", "btn_flat_square.svg")
+    readonly property url assetMicDuckAutoButton: lateNightAsset("buttons", "btn__mic_duck_auto.svg")
+    readonly property url assetMicDuckManualButton: lateNightAsset("buttons", "btn__mic_duck_manual.svg")
+    readonly property url assetMicDuckOffButton: lateNightAsset("buttons", "btn__mic_duck_off.svg")
+    readonly property url assetMicTalkButton: lateNightAsset("buttons", "btn__mic_talk.svg")
 
     function lateNightRegionButton(regionButtonType, buttonSize) {
         return lateNightButton("btn_" + regionButtonType + "_" + buttonSize + ".svg");

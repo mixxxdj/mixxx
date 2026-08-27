@@ -7,6 +7,7 @@ import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "MicAux" as LateNightMicAux
 
 ApplicationWindow {
     id: root
@@ -24,10 +25,11 @@ ApplicationWindow {
     property alias showEffects: toolbar.showEffects
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
+    property alias showMicAux: toolbar.showMicAux
 
     color: LateNightTheme.backgroundColor
     height: 1008
-    minimumHeight: 668
+    minimumHeight: Math.max(668, toolbar.height + mixer.height + micAuxRack.height + (root.showWaveforms && !root.maximizeLibrary ? 40 : 0))
     minimumWidth: 1280
     visible: true
     width: 1792
@@ -247,8 +249,8 @@ ApplicationWindow {
                 id: deckPane
 
                 SplitView.fillHeight: library.active
-                SplitView.maximumHeight: library.active ? undefined : mixer.height
-                SplitView.minimumHeight: mixer.height
+                SplitView.maximumHeight: library.active ? undefined : mixer.height + micAuxRack.height
+                SplitView.minimumHeight: mixer.height + micAuxRack.height
                 width: splitView.width
 
                 LateNightDeck.Deck {
@@ -504,6 +506,19 @@ ApplicationWindow {
                     }
                 }
 
+                LateNightMicAux.MicAuxRack {
+                    id: micAuxRack
+
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: mixer.bottom
+                    height: visible ? implicitHeight : 0
+                    visible: root.showMicAux && !root.maximizeLibrary
+
+                    Skin.FadeBehavior on visible {
+                        fadeTarget: micAuxRack
+                    }
+                }
                 // Skin.SamplerRow {
                 //     id: samplers
                 //     visible: root.showSamplers
@@ -525,7 +540,7 @@ ApplicationWindow {
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - mixer.height >= 400
+                    active: true
                     width: parent.width
 
                     sourceComponent: Component {
@@ -570,7 +585,7 @@ ApplicationWindow {
 
                     anchors {
                         bottom: parent.bottom
-                        top: mixer.bottom
+                        top: micAuxRack.bottom
                     }
                 }
             }
