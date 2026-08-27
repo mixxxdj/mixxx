@@ -2977,7 +2977,6 @@ if(BUILD_TESTING)
     src/test/skincontext_test.cpp
     src/test/softtakeover_test.cpp
     src/test/soundproxy_test.cpp
-    src/test/soundsourceopenmpt_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
     src/test/sqliteliketest.cpp
     src/test/synccontroltest.cpp
@@ -5287,6 +5286,7 @@ if(OPENMPT)
     )
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceopenmpt.cpp)
+  target_sources(mixxx-test PRIVATE src/test/soundsourceopenmpt_test.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __OPENMPT__)
   target_link_libraries(mixxx-lib PRIVATE OpenMPT::OpenMPT)
   message(STATUS "using libopenmpt for tracker module support")

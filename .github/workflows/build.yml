@@ -58,7 +58,7 @@ jobs:
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
-              -DMODPLUG=ON
+              -DOPENMPT=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
