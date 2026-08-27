@@ -152,7 +152,12 @@ declare namespace MixxxControls {
         /**
          * The [VinylControl] group can toggle the vinyl control feature.
          */
-        | '[VinylControl]';
+        | '[VinylControl]'
+
+        /**
+         * The [Waveform] group contains controls that affect waveform rendering and visualization settings.
+         */
+        | '[Waveform]';
 
     /*
      * Public
@@ -184,6 +189,7 @@ declare namespace MixxxControls {
         '[Shoutcast]': ShoutcastControl;
         '[Skin]': SkinControl;
         '[VinylControl]': VinylControlControl;
+        '[Waveform]': WaveformControl;
     } & {
         [key: `[Auxiliary${number}]`]: AuxiliaryNControl;
         [key: `[Channel${number}]`]: ChannelNControl;
@@ -3820,6 +3826,21 @@ declare namespace MixxxControls {
          * @since New in version 1.10.0.
          */
         | 'Toggle';
+
+    type WaveformControl =
+        /**
+         * Toggles between stacked (split tracks) and overlapping stem waveform display modes.
+         *
+         * @groups [Waveform]
+         * @range
+         * |Value|Meaning|
+         * |---|---|
+         * |0  |Overlapping stem waveforms (default)|
+         * |1  |Stacked (split) stem waveforms|
+         * @feedback Waveform overview and scrolling display mode changes.
+         * @since New in version 2.6.0.
+         */
+        'stem_split_tracks';
 
     type ChannelNStemMControl = ChannelNChannelNStemMPreviewDeckNSamplerNControl;
 
