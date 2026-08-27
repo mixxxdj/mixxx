@@ -278,6 +278,11 @@ void WaveformRendererTextured::resizeGL(int, int) {
 
 void WaveformRendererTextured::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
+    // initializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
+    loadTexture();
 }
 
 void WaveformRendererTextured::paintGL() {
