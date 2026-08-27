@@ -161,6 +161,7 @@ Rectangle {
         // case "PulseAudio":
         // case "sndio":
 
+        case "Android Oboe":
         case "ALSA":
             {
                 const hwAlsa = / (\(hw:\d+,\d+\))/;

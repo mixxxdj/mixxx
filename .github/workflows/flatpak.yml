@@ -20,7 +20,7 @@ on:
 jobs:
   publish-flatpak:
     name: Publish Flatpak
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: "Set up SSH Agent"
         shell: bash
@@ -37,7 +37,7 @@ jobs:
 
       - name: Check out repository
         if: ${{ inputs.update_repo }}
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Prepare"
         id: prepare
@@ -118,7 +118,6 @@ jobs:
             flatpak build-import-bundle -v --gpg-sign=$GPG_KEY_ID repo.tmp "$file"
             checksum=$(ostree --repo=repo.tmp rev-parse "${type}/${id}/${arch}/master")
             metadata=$(ostree --repo=repo.tmp show --print-metadata-key=xa.metadata "${type}/${id}/${arch}/master")
-            ostree --repo=repo pull --depth=-1 --mirror "upstream:${type}/${id}/${arch}/${BRANCH}" || true
             ostree --repo=repo pull-local repo.tmp "${checksum}"
             ostree --repo=repo commit \
               --gpg-sign=$GPG_KEY_ID \
@@ -135,7 +134,8 @@ jobs:
           ostree --repo=repo init --mode=archive-z2
 
           # Hook publish repo to the remote
-          ostree --repo=repo remote add upstream https://downloads.mixxx.org/flatpak/
+          ostree --repo=repo remote --set=gpg-verify=false add upstream https://downloads.mixxx.org/flatpak/
+          ostree --repo=repo pull --depth=-1 --mirror "upstream"
 
           for arch in "x86_64" "aarch64"; do
             import_to_repo "bundles/Mixxx-${VERSION}-${arch}.flatpak" org.mixxx.Mixxx ${arch} app
@@ -151,8 +151,29 @@ jobs:
         shell: bash
         env:
           EXPIRY: ${{ steps.prepare.outputs.expiry }}
+          BRANCH: ${{ steps.prepare.outputs.branch }}
         run: |
-          ostree --repo=repo prune --refs-only --keep-younger-than="$EXPIRY ago"
+          cleanup_repo() {
+              local id=$1
+              local arch=$2
+              local type=$3
+
+              local ref="${type}/${id}/${arch}/${BRANCH}"
+
+              echo "Pruning ${ref} (keeping ${EXPIRY})"
+
+              ostree --repo=repo prune \
+                  --only-branch="$ref" \
+                  --keep-younger-than="${EXPIRY} ago"
+          }
+
+          for arch in x86_64 aarch64; do
+              cleanup_repo org.mixxx.Mixxx       "$arch" app
+              cleanup_repo org.mixxx.Mixxx.Debug "$arch" runtime
+          done
+
+          # Garbage-collect unreferenced objects.
+          ostree --repo=repo prune
       - name: "Push the updated repo"
         env:
           SSH_HOST: downloads-hostgator.mixxx.org

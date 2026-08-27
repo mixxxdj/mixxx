@@ -3,6 +3,7 @@ import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 import QtQuick.Shapes
 import Qt5Compat.GraphicalEffects
 import "Theme"
@@ -14,7 +15,9 @@ ApplicationWindow {
     property var focusedDeck: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property int numDecks: 4
+    readonly property int numPreviewDecks: 1
     readonly property int numSamplers: 16
+    readonly property int waveformOverviewTypeRgb: 2
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
@@ -24,6 +27,7 @@ ApplicationWindow {
     minimumHeight: 300
     minimumWidth: 680
     visible: true
+    visibility: Mixxx.Config.configStartInFullscreenKey ? Window.FullScreen : Window.Windowed
     width: 1792
 
     Mixxx.ControlProxy {
@@ -40,6 +44,22 @@ ApplicationWindow {
 
         onInitializedChanged: {
             value = root.numSamplers;
+        }
+    }
+    Mixxx.ControlProxy {
+        group: "[App]"
+        key: "num_preview_decks"
+
+        onInitializedChanged: {
+            value = root.numPreviewDecks;
+        }
+    }
+    Mixxx.ControlProxy {
+        group: "[Waveform]"
+        key: "WaveformOverviewType"
+
+        onInitializedChanged: {
+            value = root.waveformOverviewTypeRgb;
         }
     }
     Column {

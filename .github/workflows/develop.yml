@@ -21,14 +21,14 @@ permissions:
 jobs:
   stop-build:
     name: Check if build should be stopped
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     outputs:
       result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
     steps:
       - name: Check if there is an open PR for this branch
         id: stop-build
         if: ${{ github.event_name == 'push' }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           ORGANIZATION: mixxxdj
           REPOSITORY: mixxx
@@ -85,7 +85,7 @@ jobs:
       - checks
       - git
       - build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Ready to go
         run: "exit 0"

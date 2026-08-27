@@ -1,28 +1,38 @@
 #pragma once
+#include <qtmetamacros.h>
+
 #include <QColor>
 #include <QObject>
 #include <QQmlEngine>
 #include <QVariantList>
+#include <type_traits>
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/defs_keylock.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
 #include "preferences/constants.h"
 #include "preferences/interface.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlconfigproxybase.h"
+#include "qml/qmlwaveformdisplay.h"
 
-#define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                                  \
-  public:                                                                   \
-    TYPE NAME() const;                                                      \
-    void set_##NAME(                                                        \
-            std::conditional<(sizeof(TYPE) <= 16), TYPE, const TYPE&>::type \
+#define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                              \
+  public:                                                               \
+    TYPE NAME() const;                                                  \
+    void set_##NAME(                                                    \
+            std::conditional_t<(sizeof(TYPE) <= 16), TYPE, const TYPE&> \
                     value);
 
 namespace mixxx {
 namespace qml {
 
-class QmlConfigProxy : public QObject {
+// The following typedefs are used to prevent clazy warnings
+typedef QmlWaveformDisplay::Type QmlWaveformDisplayType;
+typedef QmlWaveformDisplay::Options QmlWaveformDisplayOptions;
+
+class QmlConfigProxy : public QmlConfigProxyBase {
     Q_OBJECT
     QML_NAMED_ELEMENT(Config)
     QML_SINGLETON
@@ -33,6 +43,64 @@ class QmlConfigProxy : public QObject {
                             multiSamplingLevelChanged);
     Q_PROPERTY(bool useAcceleration READ useAcceleration WRITE
                     set_useAcceleration NOTIFY useAccelerationChanged);
+
+    // Waveform group
+    Q_PROPERTY(bool waveformZoomSynchronization READ waveformZoomSynchronization
+                    WRITE set_waveformZoomSynchronization NOTIFY
+                            waveformZoomSynchronizationChanged);
+    Q_PROPERTY(bool waveformOverviewNormalized READ waveformOverviewNormalized
+                    WRITE set_waveformOverviewNormalized NOTIFY
+                            waveformOverviewNormalizedChanged);
+    // 1..10
+    Q_PROPERTY(double waveformDefaultZoom READ waveformDefaultZoom WRITE
+                    set_waveformDefaultZoom NOTIFY waveformDefaultZoomChanged);
+    // [0..1]
+    Q_PROPERTY(double waveformPlayMarkerPosition READ waveformPlayMarkerPosition
+                    WRITE set_waveformPlayMarkerPosition NOTIFY
+                            waveformPlayMarkerPositionChanged);
+    Q_PROPERTY(bool waveformUntilMarkShowBeats READ waveformUntilMarkShowBeats
+                    WRITE set_waveformUntilMarkShowBeats NOTIFY
+                            waveformUntilMarkShowBeatsChanged);
+    Q_PROPERTY(bool waveformUntilMarkShowTime READ waveformUntilMarkShowTime
+                    WRITE set_waveformUntilMarkShowTime NOTIFY
+                            waveformUntilMarkShowTimeChanged);
+    // {1,2,3}, Qt::AlignTop, Qt::AlignVCenter, Qt::AlignBottom
+    Q_PROPERTY(double waveformUntilMarkAlign READ waveformUntilMarkAlign WRITE
+                    set_waveformUntilMarkAlign NOTIFY
+                            waveformUntilMarkAlignChanged);
+    Q_PROPERTY(int waveformUntilMarkTextPointSize READ
+                    waveformUntilMarkTextPointSize WRITE
+                            set_waveformUntilMarkTextPointSize NOTIFY
+                                    waveformUntilMarkTextPointSizeChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainAll READ waveformVisualGainAll WRITE
+                    set_waveformVisualGainAll NOTIFY
+                            waveformVisualGainAllChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainLow READ waveformVisualGainLow WRITE
+                    set_waveformVisualGainLow NOTIFY
+                            waveformVisualGainLowChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainMedium READ waveformVisualGainMedium
+                    WRITE set_waveformVisualGainMedium NOTIFY
+                            waveformVisualGainMediumChanged);
+    // [0..1..]
+    Q_PROPERTY(double waveformVisualGainHigh READ waveformVisualGainHigh WRITE
+                    set_waveformVisualGainHigh NOTIFY
+                            waveformVisualGainHighChanged);
+    // Seconds
+    Q_PROPERTY(
+            int waveformEndOfTrackWarningTime READ waveformEndOfTrackWarningTime
+                    WRITE set_waveformEndOfTrackWarningTime NOTIFY
+                            waveformEndOfTrackWarningTimeChanged);
+    Q_PROPERTY(QmlWaveformDisplayType waveformType READ waveformType WRITE
+                    set_waveformType NOTIFY waveformTypeChanged);
+    Q_PROPERTY(QmlWaveformDisplayOptions waveformOptions READ waveformOptions
+                    WRITE set_waveformOptions NOTIFY waveformOptionsChanged);
+    // Percent, 0..100
+    Q_PROPERTY(double waveformBeatGridAlpha READ waveformBeatGridAlpha WRITE
+                    set_waveformBeatGridAlpha NOTIFY
+                            waveformBeatGridAlphaChanged);
 
     // Library group
     Q_PROPERTY(mixxx::preferences::Tooltips libraryTooltips READ libraryTooltips
@@ -143,10 +211,73 @@ class QmlConfigProxy : public QObject {
     Q_PROPERTY(bool configStartInFullscreenKey READ configStartInFullscreenKey
                     WRITE set_configStartInFullscreenKey NOTIFY
                             configStartInFullscreenKeyChanged);
+    Q_PROPERTY(QString configScheme READ configScheme WRITE set_configScheme
+                    NOTIFY configSchemeChanged);
+    Q_PROPERTY(QString configSkin READ configSkin WRITE set_configSkin
+                    NOTIFY configSkinChanged);
     // BPM group
     Q_PROPERTY(EngineSync::SyncLockAlgorithm bpmSyncLockAlgorithm READ
                     bpmSyncLockAlgorithm WRITE set_bpmSyncLockAlgorithm NOTIFY
                             bpmSyncLockAlgorithmChanged);
+
+    // Library group
+    Q_PROPERTY(bool librarySyncTrackMetadataExport READ
+                    librarySyncTrackMetadataExport WRITE
+                            set_librarySyncTrackMetadataExport NOTIFY
+                                    librarySyncTrackMetadataExportChanged);
+    Q_PROPERTY(bool librarySeratoMetadataExport READ librarySeratoMetadataExport
+                    WRITE set_librarySeratoMetadataExport NOTIFY
+                            librarySeratoMetadataExportChanged);
+    Q_PROPERTY(bool libraryUseRelativePathOnExport READ
+                    libraryUseRelativePathOnExport WRITE
+                            set_libraryUseRelativePathOnExport NOTIFY
+                                    libraryUseRelativePathOnExportChanged);
+    // Count, 0..
+    Q_PROPERTY(
+            int libraryHistoryMinTracksToKeep READ libraryHistoryMinTracksToKeep
+                    WRITE set_libraryHistoryMinTracksToKeep NOTIFY
+                            libraryHistoryMinTracksToKeepChanged);
+    // Count, 0..
+    Q_PROPERTY(int libraryHistoryTrackDuplicateDistance READ
+                    libraryHistoryTrackDuplicateDistance WRITE
+                            set_libraryHistoryTrackDuplicateDistance NOTIFY
+                                    libraryHistoryTrackDuplicateDistanceChanged);
+    // Percent, 0..1.0
+    Q_PROPERTY(double librarySearchBpmFuzzyRange READ librarySearchBpmFuzzyRange
+                    WRITE set_librarySearchBpmFuzzyRange NOTIFY
+                            librarySearchBpmFuzzyRangeChanged);
+    // Duration (ms), 100..9999
+    Q_PROPERTY(int librarySearchDebouncingTimeout READ
+                    librarySearchDebouncingTimeout WRITE
+                            set_librarySearchDebouncingTimeout NOTIFY
+                                    librarySearchDebouncingTimeoutChanged);
+    Q_PROPERTY(bool librarySearchCompletionsEnable READ
+                    librarySearchCompletionsEnable WRITE
+                            set_librarySearchCompletionsEnable NOTIFY
+                                    librarySearchCompletionsEnableChanged);
+    Q_PROPERTY(bool librarySearchHistoryShortcutsEnable READ
+                    librarySearchHistoryShortcutsEnable WRITE
+                            set_librarySearchHistoryShortcutsEnable NOTIFY
+                                    librarySearchHistoryShortcutsEnableChanged);
+    // Integration
+    Q_PROPERTY(bool libraryRhythmboxEnabled READ libraryRhythmboxEnabled WRITE
+                    set_libraryRhythmboxEnabled NOTIFY
+                            libraryRhythmboxEnabledChanged);
+    Q_PROPERTY(bool libraryBansheeEnabled READ libraryBansheeEnabled WRITE
+                    set_libraryBansheeEnabled NOTIFY
+                            libraryBansheeEnabledChanged);
+    Q_PROPERTY(bool libraryITunesEnabled READ libraryITunesEnabled WRITE
+                    set_libraryITunesEnabled NOTIFY
+                            libraryITunesEnabledChanged);
+    Q_PROPERTY(bool libraryTraktorEnabled READ libraryTraktorEnabled WRITE
+                    set_libraryTraktorEnabled NOTIFY
+                            libraryTraktorEnabledChanged);
+    Q_PROPERTY(bool libraryRekordboxEnabled READ libraryRekordboxEnabled WRITE
+                    set_libraryRekordboxEnabled NOTIFY
+                            libraryRekordboxEnabledChanged);
+    Q_PROPERTY(bool librarySeratoEnabled READ librarySeratoEnabled WRITE
+                    set_librarySeratoEnabled NOTIFY
+                            librarySeratoEnabledChanged);
 
     // Colors
     Q_PROPERTY(QVariantList hotcueColorPalette READ hotcueColorPalette NOTIFY
@@ -160,7 +291,12 @@ class QmlConfigProxy : public QObject {
   public:
     explicit QmlConfigProxy(
             UserSettingsPointer pConfig,
-            QObject* parent = nullptr);
+            QObject* pParent = nullptr);
+    ~QmlConfigProxy() override;
+
+    void setConfigScheme(const QString& scheme) override {
+        set_configScheme(scheme);
+    }
 
     // with UserSettings, since there is no synchronisation upon mutations.
     QVariantList hotcueColorPalette() const;
@@ -186,8 +322,31 @@ class QmlConfigProxy : public QObject {
     PROPERTY_DECL_ACCESSOR(bool, useAcceleration);
 
     // Waveform settings
-    Q_INVOKABLE bool waveformZoomSynchronization();
-    Q_INVOKABLE double waveformDefaultZoom();
+    PROPERTY_DECL_ACCESSOR(bool, waveformZoomSynchronization);
+    PROPERTY_DECL_ACCESSOR(bool, waveformOverviewNormalized);
+    // 1..10
+    PROPERTY_DECL_ACCESSOR(double, waveformDefaultZoom);
+    // [0..1]
+    PROPERTY_DECL_ACCESSOR(double, waveformPlayMarkerPosition);
+    PROPERTY_DECL_ACCESSOR(bool, waveformUntilMarkShowBeats);
+    PROPERTY_DECL_ACCESSOR(bool, waveformUntilMarkShowTime);
+    // {1,2,3}, Qt::AlignTop, Qt::AlignVCenter, Qt::AlignBottom
+    PROPERTY_DECL_ACCESSOR(double, waveformUntilMarkAlign);
+    PROPERTY_DECL_ACCESSOR(int, waveformUntilMarkTextPointSize);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainAll);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainLow);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainMedium);
+    // [0..1..]
+    PROPERTY_DECL_ACCESSOR(double, waveformVisualGainHigh);
+    // Seconds
+    PROPERTY_DECL_ACCESSOR(int, waveformEndOfTrackWarningTime);
+    PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayType, waveformType);
+    PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayOptions, waveformOptions);
+    // Percent, 0..100
+    PROPERTY_DECL_ACCESSOR(double, waveformBeatGridAlpha);
 
     // Library group
     PROPERTY_DECL_ACCESSOR(mixxx::preferences::Tooltips, libraryTooltips);
@@ -237,9 +396,33 @@ class QmlConfigProxy : public QObject {
     PROPERTY_DECL_ACCESSOR(QString, configKeyColorPalette);
     PROPERTY_DECL_ACCESSOR(bool, configKeyColorsEnabled);
     PROPERTY_DECL_ACCESSOR(bool, configStartInFullscreenKey);
+    PROPERTY_DECL_ACCESSOR(QString, configScheme);
+    PROPERTY_DECL_ACCESSOR(QString, configSkin);
 
     // BPM group
     PROPERTY_DECL_ACCESSOR(EngineSync::SyncLockAlgorithm, bpmSyncLockAlgorithm);
+
+    // Library group
+    PROPERTY_DECL_ACCESSOR(bool, librarySyncTrackMetadataExport);
+    PROPERTY_DECL_ACCESSOR(bool, librarySeratoMetadataExport);
+    PROPERTY_DECL_ACCESSOR(bool, libraryUseRelativePathOnExport);
+    // Count, 0..
+    PROPERTY_DECL_ACCESSOR(int, libraryHistoryMinTracksToKeep);
+    // Count, 0..
+    PROPERTY_DECL_ACCESSOR(int, libraryHistoryTrackDuplicateDistance);
+    // Percent, 0..1.0
+    PROPERTY_DECL_ACCESSOR(double, librarySearchBpmFuzzyRange);
+    // Duration (ms), 100..9999
+    PROPERTY_DECL_ACCESSOR(int, librarySearchDebouncingTimeout);
+    PROPERTY_DECL_ACCESSOR(bool, librarySearchCompletionsEnable);
+    PROPERTY_DECL_ACCESSOR(bool, librarySearchHistoryShortcutsEnable);
+    // Integration
+    PROPERTY_DECL_ACCESSOR(bool, libraryRhythmboxEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryBansheeEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryITunesEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryTraktorEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, libraryRekordboxEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, librarySeratoEnabled);
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {
@@ -253,6 +436,22 @@ class QmlConfigProxy : public QObject {
   signals:
     void multiSamplingLevelChanged();
     void useAccelerationChanged();
+    void waveformZoomSynchronizationChanged();
+    void waveformOverviewNormalizedChanged();
+    void waveformDefaultZoomChanged();
+    void waveformPlayMarkerPositionChanged();
+    void waveformUntilMarkShowBeatsChanged();
+    void waveformUntilMarkShowTimeChanged();
+    void waveformUntilMarkAlignChanged();
+    void waveformUntilMarkTextPointSizeChanged();
+    void waveformVisualGainAllChanged();
+    void waveformVisualGainLowChanged();
+    void waveformVisualGainMediumChanged();
+    void waveformVisualGainHighChanged();
+    void waveformEndOfTrackWarningTimeChanged();
+    void waveformTypeChanged();
+    void waveformOptionsChanged();
+    void waveformBeatGridAlphaChanged();
     void libraryTooltipsChanged();
     void libraryInhibitScreensaverChanged();
     void libraryHideMenuBarChanged();
@@ -285,9 +484,40 @@ class QmlConfigProxy : public QObject {
     void configKeyColorPaletteChanged();
     void configKeyColorsEnabledChanged();
     void configStartInFullscreenKeyChanged();
+    void configSkinChanged();
     void bpmSyncLockAlgorithmChanged();
+    void librarySyncTrackMetadataExportChanged();
+    void librarySeratoMetadataExportChanged();
+    void libraryUseRelativePathOnExportChanged();
+    void libraryHistoryMinTracksToKeepChanged();
+    void libraryHistoryTrackDuplicateDistanceChanged();
+    void librarySearchBpmFuzzyRangeChanged();
+    void librarySearchDebouncingTimeoutChanged();
+    void librarySearchCompletionsEnableChanged();
+    void librarySearchHistoryShortcutsEnableChanged();
+    void libraryRhythmboxEnabledChanged();
+    void libraryBansheeEnabledChanged();
+    void libraryITunesEnabledChanged();
+    void libraryTraktorEnabledChanged();
+    void libraryRekordboxEnabledChanged();
+    void librarySeratoEnabledChanged();
 
   private:
+    template<typename Type, typename Signal>
+    void setConfigValueAndNotify(
+            const QString& group,
+            const QString& key,
+            std::conditional_t<(sizeof(Type) <= 16), Type, const Type&> value,
+            const Type& defaultValue,
+            Signal signal) {
+        if (value == defaultValue) {
+            m_pConfig->remove(ConfigKey(group, key));
+        } else {
+            m_pConfig->setValue(ConfigKey(group, key), value);
+        }
+        emit(this->*signal)();
+    }
+
     static inline UserSettingsPointer s_pUserSettings = nullptr;
 
     const UserSettingsPointer m_pConfig;

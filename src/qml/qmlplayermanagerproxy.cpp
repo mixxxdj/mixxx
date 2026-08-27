@@ -87,6 +87,14 @@ void QmlPlayerManagerProxy::loadTrackToPlayer(TrackPointer track,
             play);
 }
 
+void QmlPlayerManagerProxy::showNoDeckPassthroughInputConfiguredWarning() {
+    emit m_pPlayerManager->noDeckPassthroughInputConfigured();
+}
+
+void QmlPlayerManagerProxy::showNoVinylControlInputConfiguredWarning() {
+    emit m_pPlayerManager->noVinylControlInputConfigured();
+}
+
 // static
 QmlPlayerManagerProxy* QmlPlayerManagerProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine) {
     // The implementation of this method is mostly taken from the code example

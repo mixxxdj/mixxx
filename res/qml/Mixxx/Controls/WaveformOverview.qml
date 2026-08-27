@@ -32,16 +32,20 @@ Mixxx.WaveformOverview {
         anchors.fill: parent
         visible: trackLoadedControl.value
 
-        Repeater {
-            model: 8
-
-            MixxxControls.WaveformOverviewHotcueMarker {
-                required property int index
-
-                anchors.fill: parent
-                group: root.group // qmllint disable unqualified
-                hotcueNumber: this.index + 1
-            }
+        MixxxControls.WaveformOverviewMarkerLayer {
+            anchors.fill: parent
+            cueColor: "red"
+            cueText: "C"
+            group: root.group
+            introOutroColor: "blue"
+            introStartText: "IN"
+            labelColor: "white"
+            loopColor: "green"
+            loopStartText: "LOOP"
+            outroStartText: "OUT"
+            showHotcueLabels: false
+            showIntroOutroLabels: false
+            showLoopLabel: false
         }
         MixxxControls.WaveformOverviewMarker {
             id: playPositionMarker
