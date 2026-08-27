@@ -3996,6 +3996,7 @@ if(QML)
     PRIVATE
       src/qml/asyncimageprovider.cpp
       src/qml/qmlapplication.cpp
+      src/qml/qmlapplicationproxy.cpp
       src/qml/qmlautoreload.cpp
       src/qml/qmlbatteryproxy.cpp
       src/qml/qmlbeatsmodel.cpp
@@ -4586,6 +4587,9 @@ elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE Qt${QT_VERSION_MAJOR}::DBus)
+  endif()
 elseif(WIN32)
   if(Qt_IS_STATIC)
     target_link_libraries(

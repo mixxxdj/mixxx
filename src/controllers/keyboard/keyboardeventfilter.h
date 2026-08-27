@@ -69,6 +69,7 @@ class KeyboardEventFilter : public QObject {
 #endif
     // We're only the relay here: CoreServices -> this -> WBaseWidget
     void shortcutsEnabled(bool enabled);
+    void keyboardConfigReloaded();
     void showOnlyKbdShortcuts(bool enabled);
 
   private:
