@@ -1,7 +1,9 @@
 #include "library/autodj/dlgautodj.h"
 
+#include <QDateTime>
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QLocale>
 #include <QMessageBox>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -17,6 +19,7 @@
 namespace {
 const char* kPreferenceGroupName = "[Auto DJ]";
 const char* kRepeatPlaylistPreference = "Requeue";
+const char* kQueueInfoShowEndTime = "QueueInfoShowEndTime";
 } // anonymous namespace
 
 DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
@@ -33,8 +36,20 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
                   pLibrary,
                   parent->getTrackTableBackgroundColorOpacity())),
           m_bShowButtonText(parent->getShowButtonText()),
-          m_pAutoDJTableModel(nullptr) {
+          m_pAutoDJTableModel(nullptr),
+          m_queueSeconds(0.0),
+          m_showEndTime(m_pConfig->getValue(
+                  ConfigKey(kPreferenceGroupName, kQueueInfoShowEndTime), false)),
+          m_autoDJWasActive(false) {
     setupUi(this);
+
+    labelSelectionInfo->hide();
+    connect(pushButtonQueueInfo, &QPushButton::clicked, this, [this]() {
+        m_showEndTime = !m_showEndTime;
+        m_pConfig->setValue(
+                ConfigKey(kPreferenceGroupName, kQueueInfoShowEndTime), m_showEndTime);
+        slotUpdateQueueDuration();
+    });
 
     m_pTrackTableView->installEventFilter(pKeyboard);
 
@@ -50,11 +65,6 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &WTrackTableView::trackSelected,
             this,
             &DlgAutoDJ::trackSelected);
-    connect(m_pTrackTableView,
-            &WTrackTableView::trackSelected,
-            this,
-            &DlgAutoDJ::updateSelectionInfo);
-
     connect(pLibrary,
             &Library::setTrackTableFont,
             m_pTrackTableView,
@@ -69,7 +79,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &WTrackTableView::setSelectedClick);
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
-    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -80,8 +90,21 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
+    connect(m_pAutoDJTableModel,
+            &QAbstractItemModel::rowsInserted,
+            this,
+            [this](const QModelIndex&, int, int) { slotRecalcQueueDuration(); });
+    connect(m_pAutoDJTableModel,
+            &QAbstractItemModel::rowsRemoved,
+            this,
+            [this](const QModelIndex&, int, int) { slotRecalcQueueDuration(); });
+    connect(m_pAutoDJTableModel,
+            &QAbstractItemModel::modelReset,
+            this,
+            &DlgAutoDJ::slotRecalcQueueDuration);
+
     // Do not set this because it disables auto-scrolling
-    //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
+    // m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
     connect(pushButtonAutoDJ,
             &QPushButton::clicked,
@@ -92,6 +115,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     setupActionButton(pushButtonSkipNext, &DlgAutoDJ::skipNextButton, tr("Skip"));
     setupActionButton(pushButtonShuffle, &DlgAutoDJ::shufflePlaylistButton, tr("Shuffle"));
     setupActionButton(pushButtonAddRandomTrack, &DlgAutoDJ::addRandomTrackButton, tr("Random"));
+    setupActionButton(pushButtonAddEndMarker, &DlgAutoDJ::slotAddEndMarker, tr("Add End"));
 
     m_enableBtnTooltip = tr(
             "Enable Auto DJ\n"
@@ -116,6 +140,9 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     QString addRandomTrackBtnTooltip = tr(
             "Adds a random track from track sources (crates) to the Auto DJ queue.\n"
             "If no track sources are configured, the track is added from the library instead.");
+    QString addEndMarkerBtnTooltip = tr(
+            "Inserts an end marker below the selected track.\n"
+            "Auto DJ will be disabled when the marker reaches the top of the queue.");
     QString repeatBtnTooltip = tr(
             "Repeat the playlist");
     QString spinBoxTransitionTooltip = tr(
@@ -155,6 +182,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
     pushButtonShuffle->setToolTip(shuffleBtnTooltip);
     pushButtonAddRandomTrack->setToolTip(addRandomTrackBtnTooltip);
+    pushButtonAddEndMarker->setToolTip(addEndMarkerBtnTooltip);
     pushButtonRepeatPlaylist->setToolTip(repeatBtnTooltip);
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
     labelTransitionAppendix->setToolTip(labelTransitionTooltip);
@@ -212,6 +240,14 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             this,
             &DlgAutoDJ::transitionTimeChanged);
 
+    // 1-second timer keeps "Ends at" clock current without requiring queue changes
+    m_pQueueDurationTimer = make_parented<QTimer>(this);
+    m_pQueueDurationTimer->setInterval(1000);
+    connect(m_pQueueDurationTimer,
+            &QTimer::timeout,
+            this,
+            &DlgAutoDJ::slotUpdateQueueDuration);
+
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::autoDJError,
             this,
@@ -222,8 +258,6 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             this,
             &DlgAutoDJ::autoDJStateChanged);
     autoDJStateChanged(m_pAutoDJProcessor->getState());
-
-    updateSelectionInfo();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -245,6 +279,14 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
 
 void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
+    slotRecalcQueueDuration();
+    m_pQueueDurationTimer->stop();
+    m_pQueueDurationTimer->start();
+}
+
+void DlgAutoDJ::hideEvent(QHideEvent* event) {
+    m_pQueueDurationTimer->stop();
+    QWidget::hideEvent(event);
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
@@ -304,6 +346,7 @@ void DlgAutoDJ::autoDJError(AutoDJProcessor::AutoDJError error) {
 
 void DlgAutoDJ::transitionTimeChanged(int time) {
     spinBoxTransition->setValue(time);
+    slotRecalcQueueDuration();
 }
 
 void DlgAutoDJ::transitionSliderChanged(int value) {
@@ -320,6 +363,7 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         pushButtonFadeNow->setEnabled(false);
         pushButtonSkipNext->setEnabled(false);
     } else {
+        m_autoDJWasActive = true;
         // No matter the mode, you can always disable once it is enabled.
         pushButtonAutoDJ->setChecked(true);
         pushButtonAutoDJ->setToolTip(m_disableBtnTooltip);
@@ -338,6 +382,7 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
 
         pushButtonSkipNext->setEnabled(true);
     }
+    slotRecalcQueueDuration();
 }
 
 void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
@@ -346,7 +391,7 @@ void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
                     fadeModeCombobox->itemData(newIndex).toInt()));
     // Clicking on a transition mode item moves keyboard focus to the list widget.
     // Move focus back to the previously focused library widget.
-    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
+    refocusPrevWidget();
 }
 
 void DlgAutoDJ::slotRepeatPlaylistChanged(bool checked) {
@@ -354,24 +399,82 @@ void DlgAutoDJ::slotRepeatPlaylistChanged(bool checked) {
             checked);
 }
 
-void DlgAutoDJ::updateSelectionInfo() {
-    QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
+void DlgAutoDJ::refocusPrevWidget() {
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
+}
 
-    // Derive total duration from the table model. This is much faster than
-    // getting the duration from individual track objects.
-    mixxx::Duration duration = m_pAutoDJTableModel->getTotalDuration(indices);
+bool DlgAutoDJ::eventFilter(QObject* pObj, QEvent* pEvent) {
+    Q_UNUSED(pObj);
+    // Catch Enter, Return and Escape from the transition spinbox line edit
+    if (pEvent->type() == QEvent::KeyPress) {
+        const auto* keyEvent = static_cast<QKeyEvent*>(pEvent);
+        if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter ||
+                keyEvent->key() == Qt::Key_Escape) {
+            refocusPrevWidget();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(pObj, pEvent);
+}
 
-    QString label;
+void DlgAutoDJ::slotRecalcQueueDuration() {
+    m_queueSeconds = 0.0;
+    if (m_pAutoDJTableModel) {
+        // Collect row indices up to (not including) any end marker
+        QModelIndexList indices;
+        const int rows = m_pAutoDJTableModel->rowCount();
+        for (int row = 0; row < rows; ++row) {
+            const QModelIndex idx = m_pAutoDJTableModel->index(row, 0);
+            if (m_pAutoDJTableModel->isEndMarker(idx)) {
+                break;
+            }
+            indices.append(idx);
+        }
+        if (!indices.isEmpty()) {
+            // N tracks have N-1 transition overlaps
+            const double rawSeconds =
+                    m_pAutoDJTableModel->getTotalDuration(indices).toDoubleSeconds();
+            const double transitionSecs = m_pAutoDJProcessor->getTransitionTime();
+            m_queueSeconds = std::max(
+                    0.0, rawSeconds - (indices.size() - 1) * transitionSecs);
+        }
+    }
+    slotUpdateQueueDuration();
+}
 
-    if (!indices.isEmpty()) {
-        label.append(mixxx::DurationBase::formatTime(duration.toDoubleSeconds()));
-        label.append(QString(" (%1)").arg(indices.size()));
-        labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
-        labelSelectionInfo->setText(label);
-        labelSelectionInfo->setEnabled(true);
+void DlgAutoDJ::slotUpdateQueueDuration() {
+    const bool autoDJActive =
+            m_pAutoDJProcessor->getState() != AutoDJProcessor::ADJ_DISABLED;
+    double deckSeconds = 0.0;
+    if (autoDJActive) {
+        deckSeconds = m_pAutoDJProcessor->getActiveDeckRemainingSeconds();
+    } else if (m_autoDJWasActive) {
+        deckSeconds = m_pAutoDJProcessor->getRemainingDeckSeconds();
+    }
+    // Subtract one crossfade overlap: the first queued track starts T seconds
+    // before the active deck ends, so the queue formula over-counts by T.
+    const double transitionSecs = m_pAutoDJProcessor->getTransitionTime();
+    const double totalSeconds = m_queueSeconds + deckSeconds -
+            (autoDJActive && m_queueSeconds > 0.0 ? transitionSecs : 0.0);
+    const bool shouldBeEnabled = autoDJActive || (m_autoDJWasActive && totalSeconds > 0.0);
+    if (!shouldBeEnabled) {
+        m_autoDJWasActive = false;
+    }
+    if (pushButtonQueueInfo->isEnabled() != shouldBeEnabled) {
+        pushButtonQueueInfo->setEnabled(shouldBeEnabled);
+    }
+    QString newText;
+    if (totalSeconds <= 0.0) {
+        newText = m_showEndTime ? tr("Ends: --:-- --") : tr("Queue: -:--:--");
+    } else if (m_showEndTime) {
+        const QDateTime endTime =
+                QDateTime::currentDateTime().addSecs(static_cast<qint64>(totalSeconds));
+        newText = tr("Ends: %1").arg(QLocale().toString(endTime.time(), QLocale::ShortFormat));
     } else {
-        labelSelectionInfo->setText("");
-        labelSelectionInfo->setEnabled(false);
+        newText = tr("Queue: %1").arg(mixxx::DurationBase::formatTime(totalSeconds));
+    }
+    if (newText != pushButtonQueueInfo->text()) {
+        pushButtonQueueInfo->setText(newText);
     }
 }
 
@@ -394,7 +497,7 @@ void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
     if (pEvent->key() == Qt::Key_Return ||
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {
-        ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
+        refocusPrevWidget();
         return;
     }
     QWidget::keyPressEvent(pEvent);
@@ -406,4 +509,13 @@ void DlgAutoDJ::saveCurrentViewState() {
 
 bool DlgAutoDJ::restoreCurrentViewState() {
     return m_pTrackTableView->restoreCurrentViewState();
+}
+
+void DlgAutoDJ::slotAddEndMarker(bool) {
+    QModelIndexList selection = m_pTrackTableView->selectionModel()->selectedRows();
+    int afterRow = -1;
+    if (!selection.isEmpty()) {
+        afterRow = selection.last().row();
+    }
+    m_pAutoDJTableModel->insertEndMarker(afterRow);
 }

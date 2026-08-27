@@ -957,6 +957,35 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     return numTracksAdded;
 }
 
+TrackId PlaylistDAO::getOrCreateAutoDJEndMarker() {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("SELECT id FROM library WHERE location = :loc LIMIT 1"));
+    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION);
+    if (query.exec() && query.next()) {
+        transaction.commit();
+        return TrackId(query.value(0));
+    }
+    query.prepare(QStringLiteral(
+            "INSERT INTO library (location, mixxx_deleted) VALUES (:loc, 0)"));
+    query.bindValue(":loc", LIBRARYTABLE_AUTODJ_END_MARKER_LOCATION);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return TrackId();
+    }
+    TrackId id(query.lastInsertId());
+    transaction.commit();
+    return id;
+}
+
+bool PlaylistDAO::insertEndMarkerIntoPlaylist(int playlistId, int position) {
+    TrackId endMarkerId = getOrCreateAutoDJEndMarker();
+    if (!endMarkerId.isValid()) {
+        return false;
+    }
+    return insertTrackIntoPlaylist(endMarkerId, playlistId, position);
+}
+
 void PlaylistDAO::clearAutoDJQueue() {
     const int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
     // If the first track is already loaded to the player,
