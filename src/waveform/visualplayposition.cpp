@@ -50,7 +50,6 @@ void VisualPlayPosition::set(
     data.m_tempoTrackSeconds = tempoTrackSeconds;
     data.m_audioBufferMicroS = audioBufferMicroS;
 
-    // Atomic write
     m_data.push(data);
 }
 

@@ -88,14 +88,18 @@ class VisualPlayPosition : public QObject {
     };
 
   private:
+    /// This is a single producer single consumer ring buffer that allows
+    /// to access historic (delayed) values
     class DelayRing {
       public:
+        /// Push new data to the ring
+        /// Must be called from a single thread only
         void push(const VisualPlayPositionData& data) {
-            size_t write = writeIndex.load(std::memory_order_relaxed);
-            ring[write % kRingSize] = data;
-            writeIndex.store(write + 1, std::memory_order_release);
-            if (level.load(std::memory_order_relaxed) < kRingSize) {
-                level.fetch_add(1, std::memory_order_release);
+            size_t write = m_writeIndex.load(std::memory_order_relaxed);
+            m_ring[write % kRingSize] = data;
+            m_writeIndex.store(write + 1, std::memory_order_release);
+            if (m_level.load(std::memory_order_relaxed) < kRingSize) {
+                m_level.fetch_add(1, std::memory_order_release);
             }
             return;
         }
@@ -105,33 +109,35 @@ class VisualPlayPosition : public QObject {
         /// getAt(1) returns the value that has been pushed before
         /// keep 'at' small compared to kRingSize to make a ring lap during the
         /// call of getAt() unlikely
+        /// Must be called from a single thread only
         bool getAt(std::size_t at, VisualPlayPositionData* pData) {
             size_t writeBefore;
             size_t writeAfter;
             VisualPlayPositionData data;
-            if (level.load(std::memory_order_relaxed) <= at) {
+            if (m_level.load(std::memory_order_relaxed) <= at) {
                 // value not available
                 return false;
             }
             do {
-                writeBefore = writeIndex.load(std::memory_order_acquire);
+                writeBefore = m_writeIndex.load(std::memory_order_acquire);
                 size_t read = (writeBefore - 1 - at);
-                *pData = ring[read % kRingSize];
-                writeAfter = writeIndex.load(std::memory_order_acquire);
+                *pData = m_ring[read % kRingSize];
+                writeAfter = m_writeIndex.load(std::memory_order_acquire);
                 // try again in case of a ring lap
             } while (writeAfter - writeBefore >= kRingSize - at);
             return true;
         }
 
+        /// Clears the ring, can be called from any thread
         void reset() {
-            level.exchange(0, std::memory_order_acquire);
+            m_level.exchange(0, std::memory_order_acquire);
         }
 
       private:
         static constexpr size_t kRingSize = 16;
-        std::array<VisualPlayPositionData, kRingSize> ring;
-        std::atomic<std::size_t> writeIndex = 0;
-        std::atomic<std::size_t> level = 0;
+        std::array<VisualPlayPositionData, kRingSize> m_ring;
+        std::atomic<std::size_t> m_writeIndex = 0;
+        std::atomic<std::size_t> m_level = 0;
     };
 
     double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
