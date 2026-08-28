@@ -9,6 +9,7 @@
 
 #include "audio/types.h"
 #include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "preferences/dialog/dlgprefsound.h"
 #include "preferences/usersettings.h"
@@ -41,12 +42,15 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::string openDeviceOutput(uint32_t id, const AudioOutput& output);
     void closeDevices();
 
-    mixxx::audio::SampleRate getDefaultSampleRate() const {
-        return m_defaultSampleRate;
-    }
-
     QList<QString> getAPIs() const override {
         return {SoundManagerConfig::kAPIPipewire};
+    }
+
+    std::vector<std::pair<uint32_t, QString>> queryHardwareDevices() override;
+    std::unordered_map<uint32_t, QString> queryHardwareVolumes(uint32_t deviceIndex) override;
+
+    mixxx::audio::SampleRate getDefaultSampleRate() const {
+        return m_defaultSampleRate;
     }
 
     QString getChannelString(uint32_t id, ChannelGroup channelGroup, bool input) const;
@@ -58,7 +62,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
   private slots:
     void registerInput(const AudioInput& input, AudioDestination* dest);
     void registerOutput(const AudioOutput& output, AudioSource* src);
-    void setHardwareGain(float gain, bool isInput);
+    void setHardwareGain(uint32_t deviceIndex, uint32_t routeIndex, float gain);
 
   private:
     struct Link {
@@ -86,18 +90,31 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     struct Node {
         std::vector<uint32_t> inputs;
         std::vector<uint32_t> outputs;
+        spa_hook listener;
+        pw_node* proxy;
     };
 
     struct Device {
+        struct Route {
+            bool mute;
+            uint32_t device;
+            ControlPotmeter volume;
+            uint32_t numChannels;
+            QString description;
+
+            Route(const ConfigKey& key, const QString& description)
+                    : mute(false),
+                      volume(key),
+                      description(description) {
+            }
+        };
+
         pw_device* device;
         std::string name;
         spa_hook listener = {};
-        uint32_t inRouteIndex = 0;
-        uint32_t inRouteDevice = 0;
-        uint32_t outRouteIndex = 0;
-        uint32_t outRouteDevice = 0;
-        float volumes[2] = {0, 0};
         bool serialFlag = false;
+        bool enumSerialFlag = false;
+        std::unordered_map<uint32_t, Route> routes = {};
     };
 
     struct PortPair {
@@ -263,7 +280,6 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void updateFilterLatency(const SINT samplerate, const SINT bufferSize);
     std::unordered_set<uint32_t> getPwDevicesByOutput(
             const AudioPath& path, spa_direction direction);
-    std::vector<std::pair<uint32_t, QString>> queryHardwareDevices() override;
 
     bool nodeHasPorts(const Node& node);
 
@@ -314,14 +330,20 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // preference page, and leave the external patchbay connections
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
-    int m_coreSyncSeq;
+    int m_coreRegistrySyncSeq;
+    int m_coreDeviceSyncSeq;
     bool m_forceQuantum;
     bool m_forceSamplerate;
     uint32_t m_samplerate;
     uint32_t m_bufferSize;
 
     ControlObject m_coVolumeDevice;
-    uint32_t m_volumeDeviceIndex;
+    ControlObject m_coGraphDriver;
     uint32_t m_enumParamDeviceId;
     uint32_t m_coreSync;
+    // pw_device param enumeration seq, since one enumeration
+    // request yields multiple callbacks, we manually track
+    // and remove previous entries
+    std::unordered_map<int, uint32_t> m_deviceParamSeq;
+    int m_prevDeviceParamSeq = 0;
 };

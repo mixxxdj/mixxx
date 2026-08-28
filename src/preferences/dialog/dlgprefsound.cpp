@@ -2,14 +2,14 @@
 
 #include <QBoxLayout>
 #include <QCheckBox>
-#include <QGroupBox>
 #include <QComboBox>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
+#include <ranges>
 #include <vector>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "engine/enginebuffer.h"
@@ -112,6 +112,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &SoundManager::devicesUpdated,
             this,
             &DlgPrefSound::refreshDevices);
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::hardwareDevicesUpdated,
+            this,
+            &DlgPrefSound::refreshHardwareDevices);
 
     connect(m_pSoundManager.get(),
             &SoundManager::deviceAdded,
@@ -232,27 +237,23 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 &SoundManager::hardwareDeviceAdded,
                 this,
                 [this](const QString& name, uint32_t id) {
-                    qWarning() << "SoundManager::hardwareDeviceAdded";
+                    m_hardwareDevices.insert_or_assign(id, HardwareDevice{name, {}});
                     m_volumeDevice->addItem(name, id);
                 });
         connect(m_pSoundManager.get(),
                 &SoundManager::hardwareDeviceRemoved,
                 this,
                 [this](uint32_t id) {
-                    qWarning() << "SoundManager::hardwareDeviceRemoved";
                     int removeIndex = m_volumeDevice->findData(id);
                     m_volumeDevice->removeItem(removeIndex);
                 });
 
+        bool pipewireSelected = m_pSoundManager->isPipewireSelected();
+
         m_pipewireCheckBox = make_parented<QCheckBox>(this);
         m_pipewireCheckBox->setText(tr("Use PipeWire API"));
-
-        bool pipewireSelected = m_pSoundManager->isPipewireSelected();
         m_pipewireCheckBox->setChecked(pipewireSelected);
         m_pipewireCheckBox->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
-        apiComboBox->setDisabled(pipewireSelected);
-        apiHBox->addWidget(m_pipewireCheckBox.get());
-
         connect(m_pipewireCheckBox,
                 &QCheckBox::toggled,
                 this,
@@ -263,232 +264,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             tr("Mixxx must be restarted for the PipeWire "
                                "API selection to take effect."));
                 });
-        auto groupBox = make_parented<QGroupBox>(this);
-        groupBox->setTitle("Hardware Volume");
-        auto grid = make_parented<QGridLayout>(groupBox);
-        grid->addWidget(new QLabel("Inputs"), 1, 0);
-        grid->addWidget(new QLabel("Outputs"), 2, 0);
-
-        m_volumeDevice = make_parented<QComboBox>(groupBox);
-        grid->addWidget(m_volumeDevice, 0, 1);
-        const ConfigKey kVolumeDevice{kAppGroup, "hardware_volume_device"};
-        m_pHardwareDevice = make_parented<ControlProxy>(kAppGroup, "hardware_volume_device", this);
-        connect(m_volumeDevice,
-                &QComboBox::currentIndexChanged,
-                this,
-                [this, kVolumeDevice](int value) {
-                    // the checkbox selection needs to immediately take effect
-                    // so this setting is stored and broadcasted at same time
-                    uint32_t id = m_volumeDevice->itemData(value).toUInt();
-                    m_pHardwareDevice->set(id);
-                    m_pSettings->setValue(kVolumeDevice, id);
-                });
-
-        constexpr unsigned int sliderRange = 100;
-
-        m_pInputVolumeSlider = make_parented<QSlider>(groupBox);
-        m_pOutputVolumeSlider = make_parented<QSlider>(groupBox);
-        m_pInputVolumeSlider->setOrientation(Qt::Horizontal);
-        m_pOutputVolumeSlider->setOrientation(Qt::Horizontal);
-        m_pInputVolumeSlider->setRange(0, sliderRange);
-        m_pOutputVolumeSlider->setRange(0, sliderRange);
-
-        grid->addWidget(m_pInputVolumeSlider, 1, 1);
-        grid->addWidget(m_pOutputVolumeSlider, 2, 1);
-
-        m_pInputVolume = make_parented<ControlProxy>(
-                ConfigKey(kAppGroup, "hardware_input_volume"), this);
-        m_pOutputVolume = make_parented<ControlProxy>(
-                ConfigKey(kAppGroup, "hardware_output_volume"), this);
-        bool connected;
-        connected = connect(m_pInputVolumeSlider,
-                &QSlider::valueChanged,
-                m_pInputVolume.get(),
-                [this](float value) {
-                    m_pInputVolume->set(value / sliderRange);
-                    qWarning() << "m_pInputVolume->set(" << value / sliderRange
-                               << ")";
-                });
-        if (!connected) {
-            qWarning() << "connection failed m_pInputVolumeSlider";
-        }
-        connected = connect(m_pOutputVolumeSlider,
-                &QSlider::valueChanged,
-                m_pOutputVolume.get(),
-                [this](float value) {
-                    m_pOutputVolume->set(value / sliderRange);
-                    qDebug() << "m_pOutputVolume->set(" << value / sliderRange
-                             << ")";
-                });
-        if (!connected) {
-            qDebug() << "connection failed m_pOutputVolumeSlider";
-        }
-        connected = connect(m_pInputVolume.get(),
-                &ControlProxy::valueChanged,
-                m_pInputVolumeSlider.get(),
-                [this](double value) {
-                    int sliderValue = static_cast<int>(value * sliderRange);
-                    m_pInputVolumeSlider->setValue(sliderValue);
-                    qDebug() << "m_pInputVolumeSlider->setValue" << sliderValue;
-                });
-        if (!connected) {
-            qDebug() << "connection failed m_pInputVolume";
-        }
-        connected = connect(m_pOutputVolume.get(),
-                &ControlProxy::valueChanged,
-                m_pOutputVolumeSlider.get(),
-                [this](double value) {
-                    int sliderValue = static_cast<int>(value * sliderRange);
-                    m_pOutputVolumeSlider->setValue(sliderValue);
-                    qDebug()
-                            << "m_pOutputVolumeSlider->setValue" << sliderValue;
-                });
-        if (!connected) {
-            qDebug() << "connection failed m_pOutputVolume";
-        }
-
-        verticalLayout_2->addWidget(groupBox);
-
-        auto pipewireGroupBox = make_parented<QGroupBox>("PipeWire Settings", this);
-        auto pipewireSettings = make_parented<QVBoxLayout>(pipewireGroupBox);
-        verticalLayout_2->insertWidget(2, pipewireGroupBox.get());
-
-        m_pipewirePatchbayCheckBox = make_parented<QCheckBox>(this);
-        m_pipewirePatchbayCheckBox->setText(tr("Sync with external patchbay"));
-        m_pPipewirePatchbay = make_parented<ControlProxy>(
-                kPipeWirePatchbay.group, kPipeWirePatchbay.item, this);
-        connect(m_pipewirePatchbayCheckBox,
-                &QCheckBox::toggled,
-                this,
-                [this](bool checked) {
-                    m_pSettings->setValue(kPipeWirePatchbay, checked);
-                    m_pPipewirePatchbay->set(checked);
-                    ioTabs->setDisabled(checked);
-                    m_settingsModified = true;
-                });
-
-        bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
-        m_pipewirePatchbayCheckBox->setChecked(checked);
-        pipewireSettings->addWidget(m_pipewirePatchbayCheckBox.get());
-        pipewireGroupBox->setVisible(pipewireSelected);
 
         if (pipewireSelected) {
-            m_forceBufferSize = make_parented<QCheckBox>(this);
-            m_forceSamplerate = make_parented<QCheckBox>(this);
-            m_forceBufferSize->setText(tr("Force PipeWire Buffer Size"));
-            m_forceSamplerate->setText(tr("Force PipeWire Samplerate"));
-            m_forceBufferSize->setChecked(m_pSettings->getValue(kForceBufferSize, false));
-            m_forceSamplerate->setChecked(m_pSettings->getValue(kForceSamplerate, false));
-            audioBufferComboBox->setEnabled(m_forceBufferSize->isChecked());
-            sampleRateComboBox->setEnabled(m_forceSamplerate->isChecked());
-
-            m_forceBufferSize->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
-            m_forceSamplerate->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
-            sampleRateHBox->addWidget(m_forceSamplerate.get());
-            audioBufferHBox->addWidget(m_forceBufferSize.get());
-
-            connect(m_forceSamplerate, &QCheckBox::toggled, this, [this](bool checked) {
-                m_settingsModified = true;
-                sampleRateComboBox->setEnabled(checked);
-
-                if (checked) {
-                    auto samplerates = m_pSoundManager->getSampleRates();
-                    updateSampleRates(samplerates);
-                } else {
-                    sampleRateComboBox->clear();
-                    unsigned int samplerate = static_cast<unsigned int>(m_cpSamplerate->get());
-                    sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
-                            QVariant::fromValue(samplerate));
-                }
-            });
-
-            connect(m_forceBufferSize, &QCheckBox::toggled, this, [this](bool checked) {
-                m_settingsModified = true;
-                audioBufferComboBox->setEnabled(checked);
-
-                if (checked) {
-                    updateAudioBufferSizes(0);
-                } else {
-                    audioBufferComboBox->clear();
-                    unsigned int bufferSize = static_cast<unsigned int>(m_cpBufferSize->get());
-                    audioBufferComboBox->addItem(
-                            tr("%1 frames/period").arg(bufferSize),
-                            QVariant::fromValue(bufferSize));
-                }
-            });
-
-            m_cpBufferSize = make_parented<ControlProxy>(
-                    kAppGroup, QStringLiteral("buffer_size"), this);
-            m_cpSamplerate = make_parented<ControlProxy>(
-                    kAppGroup, QStringLiteral("samplerate"), this);
-
-            if (m_forceSamplerate->isChecked()) {
-                auto samplerates = m_pSoundManager->getSampleRates();
-                updateSampleRates(samplerates);
-            } else {
-                sampleRateComboBox->clear();
-                unsigned int samplerate = static_cast<unsigned int>(m_cpSamplerate->get());
-                sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
-                        QVariant::fromValue(samplerate));
-            }
-
-            if (m_forceBufferSize->isChecked()) {
-                updateAudioBufferSizes(0);
-            } else {
-                audioBufferComboBox->clear();
-                unsigned int bufferSize = static_cast<unsigned int>(m_cpBufferSize->get());
-                audioBufferComboBox->addItem(
-                        tr("%1 frames/period").arg(bufferSize),
-                        QVariant::fromValue(bufferSize));
-            }
-
-            m_cpBufferSize->connectValueChanged(this, [this](double value) {
-                qDebug() << "m_cpBufferSize->connectValueChanged" << value;
-                if (!audioBufferComboBox->isEnabled()) {
-                    unsigned int bufferSize = static_cast<unsigned int>(value);
-                    audioBufferComboBox->clear();
-                    audioBufferComboBox->addItem(tr("%1 frames/period").arg(bufferSize),
-                            QVariant::fromValue(bufferSize));
-                }
-            });
-            m_cpSamplerate->connectValueChanged(this, [this](double value) {
-                qDebug() << "m_cpSamplerate->connectValueChanged" << value;
-                if (!sampleRateComboBox->isEnabled()) {
-                    unsigned int samplerate = static_cast<unsigned int>(value);
-                    sampleRateComboBox->clear();
-                    sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
-                            QVariant::fromValue(samplerate));
-                }
-            });
-
-            m_latencyParamsMismatchText = new QLabel();
-            pipewireSettings->addWidget(m_latencyParamsMismatchText);
-
-            m_cpLatencyParamsMismatch = make_parented<ControlProxy>(
-                    kAppGroup, QStringLiteral("latency_params_mismatch"), this);
-            m_latencyParamsMismatchText->setVisible(
-                    static_cast<bool>(m_cpLatencyParamsMismatch->get()));
-            m_latencyParamsMismatchText->setText(
-                    tr("Server is providing different buffer size "
-                       "(%1) or samplerate (%2) than forced.")
-                            .arg(QString::number(m_cpBufferSize->get()),
-                                    QString::number(m_cpSamplerate->get())));
-
-            m_cpLatencyParamsMismatch->connectValueChanged(
-                    this, [this](double mismatch) {
-                        qDebug() << "m_cpLatencyParamsMismatch->"
-                                    "connectValueChanged"
-                                 << static_cast<bool>(mismatch);
-                        m_latencyParamsMismatchText->setText(
-                                tr("Server is providing different buffer size "
-                                   "(%1) or samplerate (%2) than forced.")
-                                        .arg(QString::number(
-                                                     m_cpBufferSize->get()),
-                                                QString::number(m_cpSamplerate
-                                                                ->get())));
-                        m_latencyParamsMismatchText->setVisible(
-                                static_cast<bool>(mismatch));
-                    });
+            initPipewire();
+            refreshHardwareDevices();
         }
     }
 #endif
@@ -642,6 +421,266 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     // (append here to keep existing tr strings)
     latencyLabel->setText(latencyLabel->text() + ':');
     underflowLabel->setText(underflowLabel->text() + ':');
+}
+
+#ifdef __PIPEWIRE__
+void DlgPrefSound::initPipewire() {
+    apiComboBox->setDisabled(true);
+    apiHBox->addWidget(m_pipewireCheckBox.get());
+
+    auto pipewireGroupBox = make_parented<QGroupBox>("PipeWire Settings", this);
+    auto pipewireSettings = make_parented<QVBoxLayout>(pipewireGroupBox);
+    verticalLayout_2->insertWidget(2, pipewireGroupBox.get());
+
+    m_pipewirePatchbayCheckBox = make_parented<QCheckBox>(this);
+    m_pipewirePatchbayCheckBox->setText(tr("Sync with external patchbay"));
+    m_pPipewirePatchbay = make_parented<ControlProxy>(
+            kPipeWirePatchbay.group, kPipeWirePatchbay.item, this);
+    connect(m_pipewirePatchbayCheckBox,
+            &QCheckBox::toggled,
+            this,
+            [this](bool checked) {
+                m_pSettings->setValue(kPipeWirePatchbay, checked);
+                m_pPipewirePatchbay->set(checked);
+                ioTabs->setDisabled(checked);
+                m_settingsModified = true;
+            });
+
+    bool checked = m_pSettings->getValue(kPipeWirePatchbay, false);
+    m_pipewirePatchbayCheckBox->setChecked(checked);
+    pipewireSettings->addWidget(m_pipewirePatchbayCheckBox.get());
+
+    m_forceBufferSize = make_parented<QCheckBox>(this);
+    m_forceSamplerate = make_parented<QCheckBox>(this);
+    m_forceBufferSize->setText(tr("Force PipeWire Buffer Size"));
+    m_forceSamplerate->setText(tr("Force PipeWire Samplerate"));
+    m_forceBufferSize->setChecked(m_pSettings->getValue(kForceBufferSize, false));
+    m_forceSamplerate->setChecked(m_pSettings->getValue(kForceSamplerate, false));
+    audioBufferComboBox->setEnabled(m_forceBufferSize->isChecked());
+    sampleRateComboBox->setEnabled(m_forceSamplerate->isChecked());
+
+    m_forceBufferSize->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
+    m_forceSamplerate->setSizePolicy(QSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed));
+    sampleRateHBox->addWidget(m_forceSamplerate.get());
+    audioBufferHBox->addWidget(m_forceBufferSize.get());
+
+    connect(m_forceSamplerate, &QCheckBox::toggled, this, [this](bool checked) {
+        m_settingsModified = true;
+        sampleRateComboBox->setEnabled(checked);
+
+        if (checked) {
+            auto samplerates = m_pSoundManager->getSampleRates();
+            updateSampleRates(samplerates);
+        } else {
+            sampleRateComboBox->clear();
+            unsigned int samplerate = static_cast<unsigned int>(m_cpSamplerate->get());
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
+                    QVariant::fromValue(samplerate));
+        }
+    });
+
+    connect(m_forceBufferSize, &QCheckBox::toggled, this, [this](bool checked) {
+        m_settingsModified = true;
+        audioBufferComboBox->setEnabled(checked);
+
+        if (checked) {
+            updateAudioBufferSizes(0);
+        } else {
+            audioBufferComboBox->clear();
+            unsigned int bufferSize = static_cast<unsigned int>(m_cpBufferSize->get());
+            audioBufferComboBox->addItem(
+                    tr("%1 frames/period").arg(bufferSize),
+                    QVariant::fromValue(bufferSize));
+        }
+    });
+
+    m_cpBufferSize = make_parented<ControlProxy>(
+            kAppGroup, QStringLiteral("buffer_size"), this);
+    m_cpSamplerate = make_parented<ControlProxy>(
+            kAppGroup, QStringLiteral("samplerate"), this);
+
+    if (m_forceSamplerate->isChecked()) {
+        auto samplerates = m_pSoundManager->getSampleRates();
+        updateSampleRates(samplerates);
+    } else {
+        sampleRateComboBox->clear();
+        unsigned int samplerate = static_cast<unsigned int>(m_cpSamplerate->get());
+        sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
+                QVariant::fromValue(samplerate));
+    }
+
+    if (m_forceBufferSize->isChecked()) {
+        updateAudioBufferSizes(0);
+    } else {
+        audioBufferComboBox->clear();
+        unsigned int bufferSize = static_cast<unsigned int>(m_cpBufferSize->get());
+        audioBufferComboBox->addItem(
+                tr("%1 frames/period").arg(bufferSize),
+                QVariant::fromValue(bufferSize));
+    }
+
+    m_cpBufferSize->connectValueChanged(this, [this](double value) {
+        if (!audioBufferComboBox->isEnabled()) {
+            unsigned int bufferSize = static_cast<unsigned int>(value);
+            audioBufferComboBox->clear();
+            audioBufferComboBox->addItem(tr("%1 frames/period").arg(bufferSize),
+                    QVariant::fromValue(bufferSize));
+        }
+    });
+    m_cpSamplerate->connectValueChanged(this, [this](double value) {
+        if (!sampleRateComboBox->isEnabled()) {
+            unsigned int samplerate = static_cast<unsigned int>(value);
+            sampleRateComboBox->clear();
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(samplerate),
+                    QVariant::fromValue(samplerate));
+        }
+    });
+
+    m_latencyParamsMismatchText = new QLabel();
+    pipewireSettings->addWidget(m_latencyParamsMismatchText);
+
+    m_cpLatencyParamsMismatch = make_parented<ControlProxy>(
+            kAppGroup, QStringLiteral("latency_params_mismatch"), this);
+    m_latencyParamsMismatchText->setVisible(
+            static_cast<bool>(m_cpLatencyParamsMismatch->get()));
+    m_latencyParamsMismatchText->setText(
+            tr("Server is providing different buffer size "
+               "(%1) or samplerate (%2) than forced.")
+                    .arg(QString::number(m_cpBufferSize->get()),
+                            QString::number(m_cpSamplerate->get())));
+
+    m_cpLatencyParamsMismatch->connectValueChanged(
+            this, [this](double mismatch) {
+                m_latencyParamsMismatchText->setText(
+                        tr("Server is providing different buffer size "
+                           "(%1) or samplerate (%2) than forced.")
+                                .arg(QString::number(
+                                             m_cpBufferSize->get()),
+                                        QString::number(m_cpSamplerate
+                                                        ->get())));
+                m_latencyParamsMismatchText->setVisible(
+                        static_cast<bool>(mismatch));
+            });
+    m_pPipewireDriver = new QLabel();
+    pipewireSettings->addWidget(m_pPipewireDriver);
+    m_pNodeDriver = make_parented<ControlProxy>(kAppGroup, "pipewire_driver", this);
+    m_pNodeDriver->connectValueChanged(this, [this](double value) {
+        // PipeWire IDs are uint32_t, but we are going to compare it with int anyway
+        updateGraphDriver(static_cast<int>(value));
+    });
+
+    m_hardwareVolumeGroupBox = make_parented<QGroupBox>("Hardware Volume Control", this);
+    m_hardwareVolumeGroupBox->setTitle("Hardware Volume");
+    pipewireSettings->addWidget(m_hardwareVolumeGroupBox);
+
+    m_hardwareVolumeGrid = make_parented<QGridLayout>(m_hardwareVolumeGroupBox);
+
+    m_volumeDevice = make_parented<QComboBox>(m_hardwareVolumeGroupBox);
+    m_hardwareVolumeGrid->addWidget(m_volumeDevice, 0, 1);
+    m_cpHardwareDevice = make_parented<ControlProxy>(kAppGroup, "hardware_volume_device", this);
+    connect(m_volumeDevice,
+            &QComboBox::currentIndexChanged,
+            this,
+            [this](int value) {
+                uint32_t currentDeviceId = static_cast<uint32_t>(m_cpHardwareDevice->get());
+
+                if (m_hardwareDevices.contains(currentDeviceId)) {
+                    HardwareDevice& currentDevice = m_hardwareDevices.at(currentDeviceId);
+                    for (auto& volume : std::views::values(currentDevice.volumes)) {
+                        volume.slider->hide();
+                        volume.label->hide();
+                    }
+                }
+
+                uint32_t newDeviceId = m_volumeDevice->itemData(value).toUInt();
+                if (m_hardwareDevices.contains(newDeviceId)) {
+                    HardwareDevice& newDevice = m_hardwareDevices.at(newDeviceId);
+                    for (auto& volume : std::views::values(newDevice.volumes)) {
+                        volume.slider->show();
+                        volume.label->show();
+                    }
+                }
+
+                // the checkbox selection needs to immediately take effect
+                // so this setting is stored and broadcasted at same time
+                m_cpHardwareDevice->set(newDeviceId);
+                m_pSettings->setValue(ConfigKey{kAppGroup, "hardware_volume_device"}, newDeviceId);
+            });
+
+    connect(m_pSoundManager.get(),
+            &SoundManager::hardwareVolumeAdded,
+            this,
+            &DlgPrefSound::addHardwareVolume);
+
+    verticalLayout_2->addWidget(m_hardwareVolumeGroupBox);
+}
+
+void DlgPrefSound::updateGraphDriver(int driverId) {
+    for (const auto& device : std::as_const(m_outputDevices)) {
+        const SoundDeviceId& deviceId = device->getDeviceId();
+        if (deviceId.deviceIndex == driverId) {
+            m_pPipewireDriver->setText(
+                    tr("Hardware device \"%1\" is driving Mixxx")
+                            .arg(deviceId.alsaHwDevice));
+            m_pPipewireDriver->show();
+            return;
+        }
+    }
+
+    for (const auto& device : std::as_const(m_inputDevices)) {
+        const SoundDeviceId& deviceId = device->getDeviceId();
+        if (deviceId.deviceIndex == driverId) {
+            m_pPipewireDriver->setText(
+                    tr("Hardware device \"%1\" is driving Mixxx")
+                            .arg(deviceId.alsaHwDevice));
+            m_pPipewireDriver->show();
+            return;
+        }
+    }
+
+    m_pPipewireDriver->hide();
+    return;
+}
+#endif
+
+void DlgPrefSound::addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index) {
+    constexpr unsigned int sliderRange = 100;
+
+    HardwareDevice& device = m_hardwareDevices.at(deviceId);
+    auto [it, didEmplace] = device.volumes.try_emplace(index,
+            make_parented<QSlider>(m_hardwareVolumeGroupBox.get()),
+            make_parented<ControlProxy>(device.name, QString::number(index), this),
+            new QLabel(name));
+    HardwareDevice::Volume& volume = it->second;
+    volume.slider->setOrientation(Qt::Horizontal);
+    volume.slider->setRange(0, sliderRange);
+    connect(volume.slider, &QSlider::valueChanged, this, [this, deviceId, index](int value) {
+        HardwareDevice& device = m_hardwareDevices.at(deviceId);
+        device.volumes.at(index).value->set(((float)value) / sliderRange);
+    });
+
+    volume.value->connectValueChanged(this, [this, deviceId, index](double value) {
+        int sliderValue = static_cast<int>(value * sliderRange);
+        HardwareDevice& device = m_hardwareDevices.at(deviceId);
+        auto& slider = device.volumes.at(index).slider;
+
+        QSignalBlocker blocker(*slider);
+        slider->setValue(sliderValue);
+    });
+
+    m_hardwareVolumeGrid->addWidget(volume.label, index + 1, 0);
+    m_hardwareVolumeGrid->addWidget(volume.slider, index + 1, 1);
+
+    {
+        QSignalBlocker blocker(*volume.slider);
+        int sliderValue = static_cast<int>(volume.value->get() * sliderRange);
+        volume.slider->setValue(sliderValue);
+    }
+
+    if (deviceId != m_cpHardwareDevice->get()) {
+        volume.label->hide();
+        volume.slider->hide();
+    }
 }
 
 /// Slot called when the preferences dialog is opened.
@@ -1149,11 +1188,34 @@ void DlgPrefSound::refreshDevices() {
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);
 
-#ifdef __PIPEWIRE__
-    for (auto [id, deviceName] : m_pSoundManager->queryHardwareDevices()) {
-        m_volumeDevice->addItem(deviceName, id);
+    if (m_pSoundManager->isPipewireSelected()) {
+        updateGraphDriver(static_cast<int>(m_pNodeDriver->get()));
     }
-#endif
+}
+
+void DlgPrefSound::refreshHardwareDevices() {
+    for (HardwareDevice& hardwareDevice : std::views::values(m_hardwareDevices)) {
+        for (HardwareDevice::Volume& volume : std::views::values(hardwareDevice.volumes)) {
+            volume.label->deleteLater();
+            volume.slider->deleteLater();
+            volume.value->deleteLater();
+        }
+    }
+    m_hardwareDevices.clear();
+    m_volumeDevice->clear();
+
+    for (const auto& [id, name] : m_pSoundManager->queryHardwareDevices()) {
+        m_hardwareDevices.insert_or_assign(id, HardwareDevice{name, {}});
+        m_volumeDevice->addItem(name, id);
+    }
+
+    for (uint32_t deviceId : std::views::keys(m_hardwareDevices)) {
+        std::unordered_map<uint32_t, QString> volumes =
+                m_pSoundManager->queryHardwareVolumes(deviceId);
+        for (const auto& [index, volume] : volumes) {
+            addHardwareVolume(deviceId, volume, index);
+        }
+    }
 }
 
 void DlgPrefSound::addDevice(SoundDevicePointer pDevice) {

@@ -122,10 +122,11 @@ class SoundManager : public QObject {
         return false;
 #endif
     }
-    void addHardwareVolume(QString name, uint32_t newRoute, uint32_t previousRoute);
-    void addHardwareDevice(QString name, uint32_t id);
+    void addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index);
+    void addHardwareDevice(const QString& name, uint32_t id);
     void removeHardwareDevice(uint32_t id);
     std::vector<std::pair<uint32_t, QString>> queryHardwareDevices();
+    std::unordered_map<uint32_t, QString> queryHardwareVolumes(uint32_t deviceId);
 
     bool pipewireSkipConfig() {
         return isPipewireSelected() &&
@@ -170,9 +171,10 @@ class SoundManager : public QObject {
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
     void configInvalidated();
-    void hardwareVolumeAdded(QString name, uint32_t newRoute, uint32_t previousRoute);
-    void hardwareDeviceAdded(QString name, uint32_t id);
+    void hardwareVolumeAdded(uint32_t deviceId, const QString& name, uint32_t index);
+    void hardwareDeviceAdded(const QString& name, uint32_t id);
     void hardwareDeviceRemoved(uint32_t id);
+    void hardwareDevicesUpdated();
 
   private slots:
     void completeDevicesClosing();

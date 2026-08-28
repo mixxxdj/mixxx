@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QGridLayout>
+#include <QGroupBox>
 #include <QSlider>
 #include <memory>
 
@@ -94,6 +96,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updateDeviceChannels(SoundDevicePointer pDevice);
     void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
     void invalidateConfig();
+    void refreshHardwareDevices();
 
   private:
     void initializePaths();
@@ -101,6 +104,12 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
+#ifdef __PIPEWIRE__
+    void initPipewire();
+    void updateGraphDriver(int driverId);
+#endif
+    void hardwareVolumeAdded(uint32_t deviceId, const QString& name, uint32_t index, bool isInput);
+    void addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index);
 
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
@@ -138,11 +147,23 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<ControlProxy> m_cpBufferSize;
     parented_ptr<ControlProxy> m_cpLatencyParamsMismatch;
     QLabel* m_latencyParamsMismatchText;
-    parented_ptr<ControlProxy> m_pInputVolume;
-    parented_ptr<ControlProxy> m_pOutputVolume;
-    parented_ptr<ControlProxy> m_pHardwareDevice;
+    parented_ptr<ControlProxy> m_pNodeDriver;
     parented_ptr<QComboBox> m_volumeDevice;
-    parented_ptr<QSlider> m_pInputVolumeSlider;
-    parented_ptr<QSlider> m_pOutputVolumeSlider;
+    QLabel* m_pPipewireDriver;
 #endif
+
+    struct HardwareDevice {
+        struct Volume {
+            parented_ptr<QSlider> slider;
+            parented_ptr<ControlProxy> value;
+            QLabel* label;
+        };
+        QString name;
+        std::unordered_map<uint32_t, Volume> volumes;
+    };
+    parented_ptr<ControlProxy> m_cpHardwareDevice;
+    std::unordered_map<uint32_t, HardwareDevice> m_hardwareDevices;
+
+    parented_ptr<QGroupBox> m_hardwareVolumeGroupBox;
+    parented_ptr<QGridLayout> m_hardwareVolumeGrid;
 };

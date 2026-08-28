@@ -731,13 +731,13 @@ void SoundManager::invalidateConfig() {
     emit configInvalidated();
 }
 
-void SoundManager::addHardwareVolume(QString name, uint32_t newRoute, uint32_t previousRoute) {
-    qWarning() << "SoundManager::addHardwareVolume";
-    emit hardwareVolumeAdded(name, newRoute, previousRoute);
+void SoundManager::addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index) {
+    qDebug() << "SoundManager::addHardwareVolume";
+    emit hardwareVolumeAdded(deviceId, name, index);
 }
 
-void SoundManager::addHardwareDevice(QString name, uint32_t id) {
-    qWarning() << "SoundManager::addHardwareDevice";
+void SoundManager::addHardwareDevice(const QString& name, uint32_t id) {
+    qDebug() << "SoundManager::addHardwareDevice";
     emit hardwareDeviceAdded(name, id);
 }
 
@@ -746,5 +746,10 @@ void SoundManager::removeHardwareDevice(uint32_t id) {
 }
 
 std::vector<std::pair<uint32_t, QString>> SoundManager::queryHardwareDevices() {
+    qDebug() << "SoundManager::queryHardwareDevices";
     return m_pEnumerator->queryHardwareDevices();
+}
+
+std::unordered_map<uint32_t, QString> SoundManager::queryHardwareVolumes(uint32_t deviceId) {
+    return m_pEnumerator->queryHardwareVolumes(deviceId);
 }

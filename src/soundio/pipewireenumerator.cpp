@@ -113,7 +113,7 @@ PipewireEnumerator::PipewireEnumerator(
           m_samplerate(48000),
           m_bufferSize(kDefaultBufferSize),
           m_coVolumeDevice(ConfigKey(kAppGroup, "hardware_volume_device")),
-          m_volumeDeviceIndex(0) {
+          m_coGraphDriver(ConfigKey(kAppGroup, "pipewire_driver")) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
@@ -125,35 +125,6 @@ PipewireEnumerator::PipewireEnumerator(
 
     connect(this, &PipewireEnumerator::deviceAdded, m_pSoundManager, &SoundManager::addDevice);
     connect(this, &PipewireEnumerator::deviceRemoved, m_pSoundManager, &SoundManager::removeDevice);
-
-    bool connected;
-
-    connected = connect(&m_coVolumeDevice,
-            &ControlObject::valueChanged,
-            this,
-            [this](double index) {
-                m_volumeDeviceIndex = static_cast<uint32_t>(index);
-            });
-    if (!connected) {
-        qWarning() << "connection failed m_COVolumeDevice";
-    }
-
-    connected = connect(&m_coInputVolume,
-            &ControlObject::valueChanged,
-            this,
-            [this](double gain) { setHardwareGain(static_cast<float>(gain), true); });
-    if (!connected) {
-        qWarning() << "connection failed m_coInputVolume";
-    }
-    // connected = connect(&m_coOutputVolume, &ControlObject::valueChanged,
-    // this, [this](double gain) {
-    connected = connect(&m_coOutputVolume,
-            &ControlObject::valueChanged,
-            this,
-            [this](double gain) { setHardwareGain(gain, false); });
-    if (!connected) {
-        qWarning() << "connection failed m_coOutputVolume";
-    }
 
     pw_init(nullptr, nullptr);
 
@@ -251,7 +222,7 @@ void PipewireEnumerator::initialize() {
 
     // queue an event when device enumeration is complete
     // so we can compare from Mixxx config and configure the devices
-    m_coreSyncSeq = pw_core_sync(m_pPwCore, PW_ID_CORE, 0);
+    m_coreRegistrySyncSeq = pw_core_sync(m_pPwCore, PW_ID_CORE, 0);
 
     pw_thread_loop_start(m_pPwThreadLoop);
 
@@ -267,6 +238,15 @@ void PipewireEnumerator::deinitialize() {
 
     // clear everything we get through registry
     m_soundDevices.clear();
+
+    for (Node& node : std::views::values(m_nodes)) {
+        pw_proxy_destroy(reinterpret_cast<pw_proxy*>(node.proxy));
+    }
+
+    for (Device& device : std::views::values(m_devices)) {
+        pw_proxy_destroy(reinterpret_cast<pw_proxy*>(device.device));
+    }
+
     m_nodes.clear();
     m_ports.clear();
     m_links.clear();
@@ -274,6 +254,7 @@ void PipewireEnumerator::deinitialize() {
 
     // or is it better to m_pSoundManager->removeDevice(device) for every device?
     emit m_pSoundManager->devicesUpdated();
+    emit m_pSoundManager->hardwareDevicesUpdated();
 
     if (m_pPwFilter) {
         spa_hook_remove(&m_pwFilterListener);
@@ -342,6 +323,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         Device& device = m_devices.at(id);
         pw_device_add_listener(device.device, &device.listener, &deviceEvents, this);
         m_pSoundManager->addHardwareDevice(name, id);
+        m_coVolumeDevice.set(id);
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Metadata) == 0) {
         const char* name = spa_dict_lookup(pProps, PW_KEY_METADATA_NAME);
         if (strcmp(name, "settings") != 0) {
@@ -366,9 +348,14 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
             return;
         }
 
-        std::string name = find_node_name(id, pProps);
+        void* proxy = pw_registry_bind(
+                m_pPwRegistry, id, PW_TYPE_INTERFACE_Node, PW_VERSION_NODE, 0);
 
-        m_nodes.insert_or_assign(id, Node{});
+        std::string name = find_node_name(id, pProps);
+        auto [it, inserted] = m_nodes.insert_or_assign(id, Node{});
+        Node& node = it->second;
+        node.proxy = static_cast<pw_node*>(proxy);
+        pw_node_add_listener(node.proxy, &node.listener, &nodeEvents, this);
         auto pDevice = QSharedPointer<SoundDevicePipewire>::create(
                 m_pConfig, m_pSoundManager, this, id, name);
         emit deviceAdded(pDevice);
@@ -1083,9 +1070,11 @@ void PipewireEnumerator::updateFilterLatency(const SINT samplerate, const SINT b
 }
 
 void PipewireEnumerator::coreEventDone(uint32_t id, int seq) {
-    qDebug() << "PipewireEnumerator::coreEventDone" << id << seq << m_coreSyncSeq;
-    if (id == 0 && seq == m_coreSyncSeq) {
-        QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::devicesEnumerated);
+    qDebug() << "PipewireEnumerator::coreEventDone" << id << seq << m_coreRegistrySyncSeq;
+    if (id == 0) {
+        if (seq == m_coreRegistrySyncSeq) {
+            QMetaObject::invokeMethod(m_pSoundManager, &SoundManager::devicesEnumerated);
+        }
     }
 }
 
@@ -1145,31 +1134,25 @@ bool PipewireEnumerator::nodeHasPorts(const Node& node) {
     return false;
 }
 
-void PipewireEnumerator::setHardwareGain(float gain, bool isInput) {
-    float volumes[] = {gain, gain};
-
-    Device& device = m_devices.at(m_volumeDeviceIndex);
-    uint32_t routeIndex = isInput ? device.inRouteIndex : device.outRouteIndex;
-    uint32_t routeDevice = isInput ? device.inRouteDevice : device.outRouteDevice;
-
-    qDebug() << "PipewireEnumerator::setHardwareGain device"
-             << m_volumeDeviceIndex << isInput << gain << routeIndex;
+void PipewireEnumerator::setHardwareGain(uint32_t deviceIndex, uint32_t routeIndex, float gain) {
+    Device& device = m_devices.at(deviceIndex);
+    Device::Route& route = device.routes.at(routeIndex);
+    std::vector<float> volumes(route.numChannels, gain);
 
     uint8_t buffer[1024];
     spa_pod_builder b = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
-
     const void* inner = spa_pod_builder_add_object(&b,
             SPA_TYPE_OBJECT_Props,
             SPA_PARAM_Props,
             SPA_PROP_channelVolumes,
-            SPA_POD_Array(sizeof(float), SPA_TYPE_Float, 2, volumes));
+            SPA_POD_Array(sizeof(float), SPA_TYPE_Float, volumes.size(), volumes.data()));
     const void* outer = spa_pod_builder_add_object(&b,
             SPA_TYPE_OBJECT_ParamRoute,
             SPA_PARAM_Route,
             SPA_PARAM_ROUTE_index,
             SPA_POD_Int(routeIndex),
             SPA_PARAM_ROUTE_device,
-            SPA_POD_Int(routeDevice),
+            SPA_POD_Int(route.device),
             SPA_PARAM_ROUTE_props,
             SPA_POD_PodObject(inner));
 
@@ -1179,11 +1162,12 @@ void PipewireEnumerator::setHardwareGain(float gain, bool isInput) {
 }
 
 void PipewireEnumerator::nodeEventInfo(const struct pw_node_info* info) {
-    const char* driverId = spa_dict_lookup(info->props, PW_KEY_NODE_DRIVER);
-    Node& node = m_nodes.at(info->id);
-
-    VERIFY_OR_DEBUG_ASSERT(driverId and spa_atou32(driverId, &node.driver, 10)) {
-        node.driver = 0;
+    if (info->id == m_filterId) {
+        const char* driverId = spa_dict_lookup(info->props, PW_KEY_NODE_DRIVER_ID);
+        qDebug() << "PipewireEnumerator::nodeEventInfo Mixxx" << info->id << driverId;
+        uint32_t driver = 0;
+        spa_atou32(driverId, &driver, 10);
+        m_coGraphDriver.set(driver);
     }
 }
 
@@ -1203,6 +1187,11 @@ void PipewireEnumerator::deviceEventInfo(const struct pw_device_info* info) {
             enumerate = serialFlag != device.serialFlag;
             device.serialFlag = serialFlag;
             break;
+        case SPA_PARAM_EnumRoute:
+            enumerate = true;
+            // enumerate = serialFlag != device.enumSerialFlag;
+            // device.enumSerialFlag = serialFlag;
+            break;
         }
 
         if (enumerate) {
@@ -1210,8 +1199,18 @@ void PipewireEnumerator::deviceEventInfo(const struct pw_device_info* info) {
             // as in theory multiple devices can be enum_param'd, so we need synchronization
             // for each device, either by pw_core_sync or pw_proxy_sync. Especially for the
             // case where volumes of multiple pw_devices is changed together
-            m_enumParamDeviceId = deviceId;
-            pw_device_enum_params(device.device, 0, param_id, 0, UINT32_MAX, nullptr);
+            int seq = pw_device_enum_params(device.device, 0, param_id, 0, UINT32_MAX, nullptr);
+            m_deviceParamSeq.insert_or_assign(seq, deviceId);
+            if (param_id == SPA_PARAM_EnumRoute) {
+                int seq = pw_device_enum_params(device.device,
+                        0,
+                        SPA_PARAM_Route,
+                        0,
+                        UINT32_MAX,
+                        nullptr);
+                m_deviceParamSeq.insert_or_assign(seq, deviceId);
+            }
+            m_coreDeviceSyncSeq = pw_core_sync(m_pPwCore, PW_ID_CORE, 0);
         }
     }
 }
@@ -1222,11 +1221,21 @@ void PipewireEnumerator::deviceEventParam(int seq,
         uint32_t next,
         const struct spa_pod* param) {
     qDebug() << "PipewireEnumerator::deviceEventParam" << seq << id << index << next << param;
-    if (!m_enumParamDeviceId) {
-        qWarning() << "PipewireEnumerator::deviceEventParam !m_enumParamDeviceId" << seq;
+    if (!m_deviceParamSeq.contains(seq)) {
+        qWarning() << "PipewireEnumerator::deviceEventParam !m_deviceParamSeq.contains(seq)" << seq;
         return;
     }
-    if (id == SPA_PARAM_Route) {
+
+    if (id == 0 && m_prevDeviceParamSeq != 0) {
+        m_deviceParamSeq.erase(m_prevDeviceParamSeq);
+    }
+
+    m_prevDeviceParamSeq = seq;
+    uint32_t deviceId = m_deviceParamSeq.at(seq);
+    Device& device = m_devices.at(deviceId);
+
+    switch (id) {
+    case SPA_PARAM_Route: {
         uint32_t routeIndex;
         uint32_t routeDevice;
         uint32_t direction;
@@ -1247,60 +1256,105 @@ void PipewireEnumerator::deviceEventParam(int seq,
                 SPA_POD_PodObject(&props));
 
         VERIFY_OR_DEBUG_ASSERT(res > 0) {
-            qWarning() << "spa_pod_parse_object failed";
+            return;
+        }
+
+        // should it be VERIFY_OR_DEBUG_ASSERT
+        if (!device.routes.contains(routeIndex)) {
+            qDebug() << "!device.routes.contains(routeIndex)";
             return;
         }
 
         const float* volumes;
-        uint32_t arraySize;
-        uint32_t childType;
-        uint32_t childSize;
+        uint32_t numChannels;
+        uint32_t volumeFieldType;
+        uint32_t volumeFieldSize;
+        bool mute;
 
         res = spa_pod_parse_object(props,
                 SPA_TYPE_OBJECT_Props,
                 nullptr,
+                SPA_PROP_mute,
+                SPA_POD_Bool(&mute),
                 SPA_PROP_channelVolumes,
-                SPA_POD_Array(&childSize, &childType, &arraySize, &volumes));
+                SPA_POD_Array(&volumeFieldSize, &volumeFieldType, &numChannels, &volumes));
 
         VERIFY_OR_DEBUG_ASSERT(res > 0) {
-            qWarning() << "spa_pod_parse_object failed";
             return;
         }
 
-        qDebug() << "spa_pod_parse_object res" << res << "direction"
-                 << direction << "route_index" << routeIndex << "routeDevice"
-                 << routeDevice << "childSize" << childSize << "childType"
-                 << childType << "arraySize" << arraySize;
-
-        Device& device = m_devices.at(m_enumParamDeviceId);
-
-        float averageVolume = 0;
-        for (uint32_t i = 0; i < arraySize; i++) {
-            averageVolume += volumes[i];
+        float volumeSum = 0;
+        for (uint32_t i = 0; i < numChannels; i++) {
+            volumeSum += volumes[i];
         }
-        averageVolume /= arraySize;
 
-        if (direction == SPA_DIRECTION_INPUT) {
-            if (device.inRouteIndex != routeIndex) {
-                m_pSoundManager->addHardwareVolume(description, routeIndex, device.inRouteIndex);
-                device.inRouteIndex = routeIndex;
-            }
-            qWarning() << "PipewireEnumerator::deviceEventParam" << direction
-                       << routeIndex << device.inRouteIndex;
-            device.inRouteDevice = routeDevice;
-            m_coInputVolume.set(averageVolume);
-        } else {
-            if (device.outRouteIndex != routeIndex) {
-                m_pSoundManager->addHardwareVolume(description, routeIndex, device.outRouteIndex);
-                device.outRouteIndex = routeIndex;
-            }
-            qWarning() << "PipewireEnumerator::deviceEventParam" << direction
-                       << routeIndex << device.outRouteIndex;
-            device.outRouteDevice = routeDevice;
-            m_coOutputVolume.set(averageVolume);
+        Device::Route& route = device.routes.at(routeIndex);
+        route.volume.set(volumeSum / numChannels);
+        route.device = routeDevice;
+        route.mute = mute;
+        route.numChannels = numChannels;
+        break;
+    }
+
+    case SPA_PARAM_EnumRoute: {
+        uint32_t routeIndex;
+        uint32_t direction;
+        const char* name;
+        const char* description;
+        int32_t priority;
+        uint32_t available;
+
+        uint32_t profileChildSize;
+        uint32_t profileChildType;
+        uint32_t profileCount;
+        const int32_t* profiles;
+
+        uint32_t deviceChildSize;
+        uint32_t deviceChildType;
+        uint32_t deviceCount;
+        const int32_t* devices;
+
+        int res = spa_pod_parse_object(param,
+                SPA_TYPE_OBJECT_ParamRoute,
+                nullptr,
+                SPA_PARAM_ROUTE_index,
+                SPA_POD_Int(&routeIndex),
+                SPA_PARAM_ROUTE_direction,
+                SPA_POD_Id(&direction),
+                SPA_PARAM_ROUTE_name,
+                SPA_POD_String(&name),
+                SPA_PARAM_ROUTE_description,
+                SPA_POD_String(&description),
+                SPA_PARAM_ROUTE_priority,
+                SPA_POD_Int(&priority),
+                SPA_PARAM_ROUTE_available,
+                SPA_POD_Id(&available),
+                SPA_PARAM_ROUTE_profiles,
+                SPA_POD_Array(&profileChildSize, &profileChildType, &profileCount, &profiles),
+                SPA_PARAM_ROUTE_devices,
+                SPA_POD_Array(&deviceChildSize, &deviceChildType, &deviceCount, &devices));
+
+        VERIFY_OR_DEBUG_ASSERT(res > 0) {
+            return;
         }
-        device.volumes[0] = volumes[0];
-        device.volumes[1] = volumes[1];
+
+        auto [it, didEmplace] = device.routes.try_emplace(routeIndex,
+                ConfigKey(QString::fromStdString(device.name), QString::number(routeIndex)),
+                description);
+
+        if (!didEmplace) {
+            return;
+        }
+
+        m_pSoundManager->addHardwareVolume(deviceId, description, routeIndex);
+        connect(&it->second.volume,
+                &ControlObject::valueChanged,
+                this,
+                [this, deviceId, routeIndex](double gain) {
+                    setHardwareGain(
+                            deviceId, routeIndex, static_cast<float>(gain));
+                });
+    }
     }
 }
 
@@ -1311,4 +1365,13 @@ std::vector<std::pair<uint32_t, QString>> PipewireEnumerator::queryHardwareDevic
         devices.emplace_back(id, device.name.c_str());
     }
     return devices;
+}
+
+std::unordered_map<uint32_t, QString> PipewireEnumerator::queryHardwareVolumes(
+        uint32_t deviceIndex) {
+    std::unordered_map<uint32_t, QString> volumes;
+    for (auto& [id, route] : m_devices.at(deviceIndex).routes) {
+        volumes.try_emplace(id, route.description);
+    }
+    return volumes;
 }
