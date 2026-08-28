@@ -129,18 +129,11 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
         SINT first = 0;
         SINT last = 0;
         SINT i = 0;
-        for (; i < size - 1; i += 2) {
+        for (; i < size; ++i) {
             if (std::abs(expected[i] - actual[i]) > kMaxDecodingError) {
                 error_count = 1;
                 first = i;
                 EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
-                        << "i=" << i << " " << errorMessage;
-                break;
-            }
-            if (std::abs(expected[i + 1] - actual[i + 1]) > kMaxDecodingError) {
-                error_count = 1;
-                first = i;
-                EXPECT_NEAR(expected[i + 1], actual[i + 1], kMaxDecodingError)
                         << "i=" << i << " " << errorMessage;
                 break;
             }
