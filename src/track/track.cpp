@@ -2215,6 +2215,8 @@ void Track::applyCmrtOverlay(TrackPointer pCanonical,
         auto lock2 = lockMutex(&m_qMutex);
         m_pBeats = pOverlayBeats;
         m_cuePoints = overlayCues;
+        m_record.refMetadata().refTrackInfo().setBpm(
+                getBeatsPointerBpm(m_pBeats, getDuration()));
     }
     emit beatsUpdated();
     emit cuesUpdated();
