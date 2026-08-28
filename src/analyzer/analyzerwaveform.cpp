@@ -282,9 +282,12 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
 
                 m_perceptualStride.m_summaryOverallData[channel] +=
                         overall[channel] * overall[channel];
-                m_perceptualStride.m_summaryFilteredData[channel][Low] += low[channel] * low[channel];
-                m_perceptualStride.m_summaryFilteredData[channel][Mid] += mid[channel] * mid[channel];
-                m_perceptualStride.m_summaryFilteredData[channel][High] += high[channel] * high[channel];
+                m_perceptualStride.m_summaryFilteredData[channel][Low] +=
+                        low[channel] * low[channel];
+                m_perceptualStride.m_summaryFilteredData[channel][Mid] +=
+                        mid[channel] * mid[channel];
+                m_perceptualStride.m_summaryFilteredData[channel][High] +=
+                        high[channel] * high[channel];
             }
             ++m_perceptualStride.m_sampleCount;
             ++m_perceptualStride.m_summarySampleCount;
@@ -325,7 +328,7 @@ bool AnalyzerWaveform::processSamples(const CSAMPLE* pIn, SINT count) {
         const double strideLength =
                 isPerceptual ? m_perceptualStride.m_length : m_legacyStride.m_length;
         const double summaryStrideLength = isPerceptual ? m_perceptualStride.m_averageLength
-                                                         : m_legacyStride.m_averageLength;
+                                                        : m_legacyStride.m_averageLength;
         ++position;
 
         if (std::fmod(position, strideLength) < 1) {

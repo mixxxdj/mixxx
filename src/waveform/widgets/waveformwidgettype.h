@@ -20,8 +20,8 @@ class WaveformWidgetType {
         RGB = 12,      // 12 RGB GLSL
         Stacked = 16,  // 16 RGB Stacked
         Perceptual3Band = 17,
-        Invalid,       // Don't use! Used to indicate invalid/unknown type, as
-                       // Count_WaveformWidgetType used to.
+        Invalid, // Don't use! Used to indicate invalid/unknown type, as
+                 // Count_WaveformWidgetType used to.
     };
     static constexpr std::array kValues = {
             WaveformWidgetType::Empty,

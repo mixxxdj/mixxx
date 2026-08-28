@@ -248,7 +248,8 @@ struct PerceptualWaveformStride {
             int band) const {
         const float releaseTimeSeconds = band == Low
                 ? 0.097816f
-                : band == Mid ? 0.048390f : 0.017013f;
+                : band == Mid ? 0.048390f
+                              : 0.017013f;
         const float releaseFactor = std::exp(-static_cast<float>(sampleCount) /
                 static_cast<float>(m_sampleRate * releaseTimeSeconds));
         *envelope = std::max(rms(sumSquares, sampleCount), *envelope * releaseFactor);

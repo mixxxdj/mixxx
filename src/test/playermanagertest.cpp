@@ -274,7 +274,7 @@ TEST_F(PlayerManagerTest, ReanalyzeLoadedTracks) {
     pTrack->setWaveform(ConstWaveformPointer(new Waveform()));
     pTrack->setWaveformSummary(ConstWaveformPointer(new Waveform()));
     QSignalSpy progressSpy(
-            m_pPlayerManager.get(), SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)));
+            m_pPlayerManager.get(), &PlayerManager::trackAnalyzerProgress);
 
     m_pPlayerManager->slotReanalyzeLoadedTracks();
 
@@ -325,7 +325,7 @@ TEST_F(PlayerManagerTest, WaveformProfileChangeReanalyzesLoadedTracks) {
 
     ASSERT_TRUE(pWaveformWidgetFactory->setWidgetType(WaveformWidgetType::RGB));
     QSignalSpy progressSpy(
-            m_pPlayerManager.get(), SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)));
+            m_pPlayerManager.get(), &PlayerManager::trackAnalyzerProgress);
 
     pTrack->setWaveform(ConstWaveformPointer(new Waveform()));
     pTrack->setWaveformSummary(ConstWaveformPointer(new Waveform()));

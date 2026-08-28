@@ -229,7 +229,8 @@ TEST(PerceptualWaveformLutTest, interpolatesKnotsAndUsesLowTail) {
             if (value <= knots[index].first) {
                 const auto [lowerInput, lowerOutput] = knots[index - 1];
                 const auto [upperInput, upperOutput] = knots[index];
-                return lowerOutput + (value - lowerInput) * (upperOutput - lowerOutput) /
+                return lowerOutput +
+                        (value - lowerInput) * (upperOutput - lowerOutput) /
                         (upperInput - lowerInput);
             }
         }
@@ -258,7 +259,8 @@ TEST(PerceptualWaveformLutTest, interpolatesKnotsAndUsesLowTail) {
             0.000001f);
 
     for (int input = 0; input <= 128; ++input) {
-        EXPECT_NEAR(legacyLow(static_cast<float>(input)), transform(static_cast<float>(input), Low),
+        EXPECT_NEAR(legacyLow(static_cast<float>(input)),
+                transform(static_cast<float>(input), Low),
                 0.00001f);
     }
 

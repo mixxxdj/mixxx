@@ -426,28 +426,28 @@ void WaveformRendererTextured::paintGL() {
                 usePerceptualThreeBand) {
             const QVector4D lowColor = usePerceptualThreeBand
                     ? QVector4D(32.0f / 255.0f,
-                            83.0f / 255.0f,
-                            217.0f / 255.0f,
-                            1.0f)
+                              83.0f / 255.0f,
+                              217.0f / 255.0f,
+                              1.0f)
                     : QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
-                            static_cast<GLfloat>(m_rgbLowColor_g),
-                            static_cast<GLfloat>(m_rgbLowColor_b),
-                            1.0f);
+                              static_cast<GLfloat>(m_rgbLowColor_g),
+                              static_cast<GLfloat>(m_rgbLowColor_b),
+                              1.0f);
             const QVector4D midColor = usePerceptualThreeBand
                     ? QVector4D(242.0f / 255.0f,
-                            170.0f / 255.0f,
-                            60.0f / 255.0f,
-                            1.0f)
+                              170.0f / 255.0f,
+                              60.0f / 255.0f,
+                              1.0f)
                     : QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
-                            static_cast<GLfloat>(m_rgbMidColor_g),
-                            static_cast<GLfloat>(m_rgbMidColor_b),
-                            1.0f);
+                              static_cast<GLfloat>(m_rgbMidColor_g),
+                              static_cast<GLfloat>(m_rgbMidColor_b),
+                              1.0f);
             const QVector4D highColor = usePerceptualThreeBand
                     ? QVector4D(1.0f, 1.0f, 1.0f, 1.0f)
                     : QVector4D(static_cast<GLfloat>(m_rgbHighColor_r),
-                            static_cast<GLfloat>(m_rgbHighColor_g),
-                            static_cast<GLfloat>(m_rgbHighColor_b),
-                            1.0f);
+                              static_cast<GLfloat>(m_rgbHighColor_g),
+                              static_cast<GLfloat>(m_rgbHighColor_b),
+                              1.0f);
             m_frameShaderProgram->setUniformValue("lowColor", lowColor);
             m_frameShaderProgram->setUniformValue("midColor", midColor);
             m_frameShaderProgram->setUniformValue("highColor", highColor);
