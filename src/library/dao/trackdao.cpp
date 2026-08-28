@@ -1877,12 +1877,6 @@ void TrackDAO::reloadOwnCuesAndBeats(const TrackPointer& pTrack) const {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
-    // Same Reasoning as in applyCmrtOverlayIfConfigured() above:
-    // flush any pending edits to this track's own cues/beats
-    // before overwriting the in-memory copy with the canonical's overlay data.
-    if (pTrack->isDirty()) {
-        saveTrack(pTrack.get());
-    }
     const TrackId trackId = pTrack->getId();
     pTrack->clearCmrtOverlay();
     pTrack->setCuePoints(m_cueDao.getCuesForTrack(trackId));
@@ -1900,6 +1894,10 @@ void TrackDAO::reloadOwnCuesAndBeats(const TrackPointer& pTrack) const {
         setTrackBeats(query.record(), 0, pTrack.get());
     } else {
         LOG_FAILED_QUERY(query) << "reloadOwnCuesAndBeats" << trackId;
+    }
+
+    if (pTrack->isDirty()) {
+        saveTrack(pTrack.get());
     }
 }
 
