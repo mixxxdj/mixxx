@@ -12,6 +12,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "preferences/configobject.h"
@@ -69,6 +70,7 @@ QmlApplication::QmlApplication(
     QQuickStyle::setStyle("Basic");
 
     m_pCoreServices->initialize(app);
+    app->installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");
