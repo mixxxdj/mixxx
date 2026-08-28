@@ -113,19 +113,32 @@ class VisualPlayPosition : public QObject {
         /// call of getAt() unlikely
         /// Must be called from a single thread only
         bool getAt(std::size_t at, VisualPlayPositionData* pData) {
+            // not enough data available
+            if (m_level.load(std::memory_order_acquire) <= at) {
+                return false;
+            }
+
             size_t writeBefore;
             size_t writeAfter;
-            VisualPlayPositionData data;
-            if (m_level.load(std::memory_order_acquire) <= at) {
-                return false; // value not available
-            }
             do {
+                // snapshot the published write count (acquire)
                 writeBefore = m_writeIndex.load(std::memory_order_acquire);
-                size_t read = (writeBefore - 1 - at);
+
+                // compute read index (unsigned arithmetic handles wrap)
+                const size_t read = writeBefore - 1 - at;
+
+                // copy the payload (non-atomic)
                 std::memcpy(pData, &m_ring[read % kRingSize], sizeof(VisualPlayPositionData));
+
+                // re-check the published write count (acquire)
                 writeAfter = m_writeIndex.load(std::memory_order_acquire);
-                // try again in case of a ring lap
+
+                // loop condition below will retry only if producer could have overwritten the slot
             } while (writeAfter - writeBefore >= kRingSize - at);
+
+            // At this point the producer did not advance enough to have
+            // overwritten the slot we copied. Extra guard: ensure level didn't
+            // drop below 'at' while we retried.
             if (m_level.load(std::memory_order_relaxed) <= at) {
                 return false;
             }
@@ -140,8 +153,8 @@ class VisualPlayPosition : public QObject {
       private:
         static constexpr size_t kRingSize = 16;
         std::array<VisualPlayPositionData, kRingSize> m_ring;
-        std::atomic<std::size_t> m_writeIndex = 0;
-        std::atomic<std::size_t> m_level = 0;
+        std::atomic<std::size_t> m_writeIndex{0};
+        std::atomic<std::size_t> m_level{0};
     };
 
     double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
