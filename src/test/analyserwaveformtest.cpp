@@ -12,7 +12,9 @@
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/perceptualwaveformlut.h"
 #include "library/dao/analysisdao.h"
+#ifdef MIXXX_USE_QML
 #include "qml/qmlwaveformdisplay.h"
+#endif
 #include "test/mixxxtest.h"
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
@@ -312,6 +314,7 @@ TEST(WaveformWidgetTypeTest, mapsOnlyPerceptualThreeBandToThePerceptualProfile) 
             mixxx::WaveformAnalysisProfile::Perceptual3Band);
 }
 
+#ifdef MIXXX_USE_QML
 TEST(QmlWaveformDisplayTest, doesNotExposePerceptualThreeBand) {
     const QMetaObject& metaObject = mixxx::qml::QmlWaveformDisplay::staticMetaObject;
     const int enumIndex = metaObject.indexOfEnumerator("Type");
@@ -320,5 +323,6 @@ TEST(QmlWaveformDisplayTest, doesNotExposePerceptualThreeBand) {
     const QMetaEnum waveformType = metaObject.enumerator(enumIndex);
     EXPECT_EQ(waveformType.keyToValue("Perceptual3Band"), -1);
 }
+#endif
 
 } // namespace
