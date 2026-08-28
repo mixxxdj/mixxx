@@ -3,7 +3,9 @@
 #include <QAtomicPointer>
 #include <QMap>
 #include <QTime>
+#include <array>
 #include <atomic>
+#include <cstring>
 
 #include "control/controlvalue.h"
 #include "engine/slipmodestate.h"
@@ -96,7 +98,7 @@ class VisualPlayPosition : public QObject {
         /// Must be called from a single thread only
         void push(const VisualPlayPositionData& data) {
             size_t write = m_writeIndex.load(std::memory_order_relaxed);
-            m_ring[write % kRingSize] = data;
+            std::memcpy(&m_ring[write % kRingSize], &data, sizeof(VisualPlayPositionData));
             m_writeIndex.store(write + 1, std::memory_order_release);
             if (m_level.load(std::memory_order_relaxed) < kRingSize) {
                 m_level.fetch_add(1, std::memory_order_release);
@@ -114,23 +116,25 @@ class VisualPlayPosition : public QObject {
             size_t writeBefore;
             size_t writeAfter;
             VisualPlayPositionData data;
-            if (m_level.load(std::memory_order_relaxed) <= at) {
-                // value not available
-                return false;
+            if (m_level.load(std::memory_order_acquire) <= at) {
+                return false; // value not available
             }
             do {
                 writeBefore = m_writeIndex.load(std::memory_order_acquire);
                 size_t read = (writeBefore - 1 - at);
-                *pData = m_ring[read % kRingSize];
+                std::memcpy(pData, &m_ring[read % kRingSize], sizeof(VisualPlayPositionData));
                 writeAfter = m_writeIndex.load(std::memory_order_acquire);
                 // try again in case of a ring lap
             } while (writeAfter - writeBefore >= kRingSize - at);
+            if (m_level.load(std::memory_order_relaxed) <= at) {
+                return false;
+            }
             return true;
         }
 
         /// Clears the ring, can be called from any thread
         void reset() {
-            m_level.exchange(0, std::memory_order_acquire);
+            m_level.store(0, std::memory_order_release);
         }
 
       private:
