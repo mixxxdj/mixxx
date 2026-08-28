@@ -106,10 +106,12 @@ mixxx::audio::FramePos getCurrentPlayPositionWithQuantize(
 }
 } // namespace
 
-QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent)
+QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner,
+        TrackCollectionManager* trackCollectionManager,
+        QObject* parent)
         : QObject(parent),
           m_pLibraryScanner(libraryScanner),
-          m_running(false),
+          m_running(trackCollectionManager->isLibraryScanActive()),
           m_cancelling(false) {
     connect(libraryScanner,
             &LibraryScanner::progressLoading,
@@ -152,7 +154,10 @@ QmlLibraryProxy::QmlLibraryProxy(QObject* parent)
           m_pModelProperty(new QmlLibraryTrackListModel(
                   QList<QmlLibraryTrackListColumn*>{}, s_pLibrary->trackTableModel(), this)),
           m_pScanner(new QmlLibraryScannerProxy(
-                  s_pLibrary->trackCollectionManager()->scanner(), this)) {
+                  s_pLibrary->trackCollectionManager()->scanner(),
+                  s_pLibrary->trackCollectionManager(),
+                  this)),
+          m_pTrackCollectionManager(s_pLibrary->trackCollectionManager()) {
     connect(m_pScanner,
             &QmlLibraryScannerProxy::stateChanged,
             this,
@@ -165,61 +170,10 @@ QmlLibraryProxy::QmlLibraryProxy(QObject* parent)
     connect(pTrackCollectionManager,
             &TrackCollectionManager::libraryScanSummary,
             this,
-            [this](const LibraryScanResultSummary& result) {
-                const UserSettingsPointer pConfig = QmlConfigProxy::get();
-                if (!pConfig ||
-                        !pConfig->getValue<bool>(
-                                mixxx::library::prefs::kShowScanSummaryConfigKey,
-                                true)) {
-                    return;
-                }
-                if (result.autoscan &&
-                        result.numNewTracks == 0 &&
-                        result.numNewMissingTracks == 0 &&
-                        result.numRediscoveredTracks == 0) {
-                    return;
-                }
-
-                const QString title = tr("Library scan finished");
-                if (result.noDirectoriesConfigured) {
-                    emit libraryScanSummaryAvailable(
-                            title,
-                            tr("No music directories configured for scanning."),
-                            tr("Add directories in the library preferences."));
-                    return;
-                }
-
-                const QString text = tr("Scan took %1").arg(result.durationString);
-                QStringList details;
-                if (result.numNewTracks == 0 &&
-                        result.numMovedTracks == 0 &&
-                        result.numNewMissingTracks == 0 &&
-                        result.numRediscoveredTracks == 0) {
-                    details.append(tr("No changes detected."));
-                } else {
-                    if (result.numNewTracks != 0) {
-                        details.append(tr("%n new track(s) found", nullptr, result.numNewTracks));
-                    }
-                    if (result.numMovedTracks != 0) {
-                        details.append(tr("%n moved track(s) detected",
-                                nullptr,
-                                result.numMovedTracks));
-                    }
-                    if (result.numNewMissingTracks != 0) {
-                        details.append(tr("%n track(s) missing (%1 total)",
-                                nullptr,
-                                result.numNewMissingTracks)
-                                        .arg(result.numMissingTracks));
-                    }
-                    if (result.numRediscoveredTracks != 0) {
-                        details.append(tr("%n track(s) rediscovered",
-                                nullptr,
-                                result.numRediscoveredTracks));
-                    }
-                }
-                details.append(tr("%n track(s) in total", nullptr, result.tracksTotal));
-                emit libraryScanSummaryAvailable(title, text, details.join(QLatin1Char('\n')));
+            [this](const LibraryScanResultSummary&) {
+                deliverPendingLibraryScanSummary();
             });
+    deliverPendingLibraryScanSummary();
 #ifdef __ENGINEPRIME__
     m_pLibraryExporter = s_pLibrary->makeLibraryExporter(nullptr);
     connect(s_pLibrary.get(),
@@ -238,6 +192,64 @@ QmlLibraryProxy::QmlLibraryProxy(QObject* parent)
 }
 
 QmlLibraryProxy::~QmlLibraryProxy() = default;
+
+void QmlLibraryProxy::deliverPendingLibraryScanSummary() {
+    const auto pendingResult = m_pTrackCollectionManager->takePendingLibraryScanSummary();
+    if (!pendingResult) {
+        return;
+    }
+    const auto& result = *pendingResult;
+    const UserSettingsPointer pConfig = QmlConfigProxy::get();
+    if (!pConfig ||
+            !pConfig->getValue<bool>(
+                    mixxx::library::prefs::kShowScanSummaryConfigKey, true)) {
+        return;
+    }
+    if (result.autoscan &&
+            result.numNewTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        return;
+    }
+
+    const QString title = tr("Library scan finished");
+    if (result.noDirectoriesConfigured) {
+        emit libraryScanSummaryAvailable(title,
+                tr("No music directories configured for scanning."),
+                tr("Add directories in the library preferences."));
+        return;
+    }
+
+    const QString text = tr("Scan took %1").arg(result.durationString);
+    QStringList details;
+    if (result.numNewTracks == 0 &&
+            result.numMovedTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        details.append(tr("No changes detected."));
+    } else {
+        if (result.numNewTracks != 0) {
+            details.append(tr("%n new track(s) found", nullptr, result.numNewTracks));
+        }
+        if (result.numMovedTracks != 0) {
+            details.append(
+                    tr("%n moved track(s) detected", nullptr, result.numMovedTracks));
+        }
+        if (result.numNewMissingTracks != 0) {
+            details.append(tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks)
+                            .arg(result.numMissingTracks));
+        }
+        if (result.numRediscoveredTracks != 0) {
+            details.append(tr("%n track(s) rediscovered",
+                    nullptr,
+                    result.numRediscoveredTracks));
+        }
+    }
+    details.append(tr("%n track(s) in total", nullptr, result.tracksTotal));
+    emit libraryScanSummaryAvailable(title, text, details.join(QLatin1Char('\n')));
+}
 
 QmlLibraryTrackListModel* QmlLibraryProxy::model() const {
     return make_qml_owned<QmlLibraryTrackListModel>(

@@ -1,6 +1,10 @@
 #include "qml/qmlapplicationproxy.h"
 
+#include <QDir>
+
+#include "config.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "defs_urls.h"
 #include "moc_qmlapplicationproxy.cpp"
 #include "preferences/configobject.h"
 #include "util/cmdlineargs.h"
@@ -94,6 +98,54 @@ QString QmlApplicationProxy::platform() const {
     return VersionStore::platform();
 }
 
+bool QmlApplicationProxy::vinylControlAvailable() const {
+#ifdef __VINYLCONTROL__
+    return true;
+#else
+    return false;
+#endif
+}
+
+bool QmlApplicationProxy::liveBroadcastingAvailable() const {
+#ifdef __BROADCAST__
+    return true;
+#else
+    return false;
+#endif
+}
+
+QUrl QmlApplicationProxy::documentationUrl(
+        const QString& fileName, const QString& onlineUrl) const {
+    VERIFY_OR_DEBUG_ASSERT(s_pConfig) {
+        return QUrl(onlineUrl);
+    }
+    QDir resourceDir(s_pConfig->getResourcePath());
+#if defined(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR)
+    if (!resourceDir.exists(fileName)) {
+        resourceDir.cd(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR);
+    }
+#endif
+    return resourceDir.exists(fileName)
+            ? QUrl::fromLocalFile(resourceDir.absoluteFilePath(fileName))
+            : QUrl(onlineUrl);
+}
+
+QUrl QmlApplicationProxy::userManualUrl() const {
+    return documentationUrl(MIXXX_MANUAL_FILENAME, MIXXX_MANUAL_URL);
+}
+
+bool QmlApplicationProxy::userManualExternal() const {
+    return !userManualUrl().isLocalFile();
+}
+
+QUrl QmlApplicationProxy::keyboardShortcutsUrl() const {
+    return documentationUrl(MIXXX_KBD_SHORTCUTS_FILENAME, MIXXX_MANUAL_SHORTCUTS_URL);
+}
+
+bool QmlApplicationProxy::keyboardShortcutsExternal() const {
+    return !keyboardShortcutsUrl().isLocalFile();
+}
+
 bool QmlApplicationProxy::supportsGlobalMenuBar() const {
     return desktopSupportsGlobalMenuBar();
 }
@@ -121,7 +173,11 @@ QString QmlApplicationProxy::menuShortcut(
     VERIFY_OR_DEBUG_ASSERT(s_pKeyboardEventFilter) {
         return defaultShortcut;
     }
-    return s_pKeyboardEventFilter->getKeyboardConfig()->getValue(
+    const auto pKeyboardConfig = s_pKeyboardEventFilter->getKeyboardConfig();
+    VERIFY_OR_DEBUG_ASSERT(pKeyboardConfig) {
+        return defaultShortcut;
+    }
+    return pKeyboardConfig->getValue(
             ConfigKey(QStringLiteral("[KeyboardShortcuts]"), command),
             defaultShortcut);
 }

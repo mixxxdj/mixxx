@@ -1621,6 +1621,7 @@ Rectangle {
             Item {
                 id: samplersHeader
                 property bool checked: showSamplersControl.value > 0
+                readonly property bool samplerCountChoiceStripHovered: samplersHeaderMouseArea.containsMouse && samplersHeaderMouseArea.mouseX >= sampler4Choice.x && samplersHeaderMouseArea.mouseX <= sampler64Choice.x + sampler64Choice.width
 
                 Layout.fillWidth: true
                 Layout.minimumWidth: implicitWidth
@@ -1629,7 +1630,7 @@ Rectangle {
 
                 Rectangle {
                     anchors.fill: parent
-                    color: root.menuHoverColor(samplersHeaderMouseArea.containsMouse, samplersHeader.enabled)
+                    color: root.menuHoverColor(samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered, samplersHeader.enabled)
                     radius: 1
                 }
 
@@ -1648,19 +1649,23 @@ Rectangle {
                     id: samplersHeaderContent
 
                     anchors.fill: parent
-                    spacing: 5
+                    spacing: 0
 
                     Image {
                         Layout.leftMargin: 2
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
+                        Layout.rightMargin: 5
                         fillMode: Image.PreserveAspectFit
                         source: samplersHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                     }
 
                     ToolbarMenuInlineChoice {
+                        id: sampler4Choice
+
                         checked: samplerRowsControl.value === 0.0
                         enabled: showSamplersControl.value > 0
+                        minimumWidth: 33
                         text: "4"
 
                         onClicked: {
@@ -1669,8 +1674,11 @@ Rectangle {
                     }
 
                     ToolbarMenuInlineChoice {
+                        id: sampler8Choice
+
                         checked: samplerRowsControl.value === 1.0
                         enabled: showSamplersControl.value > 0
+                        minimumWidth: 33
                         text: "8"
 
                         onClicked: {
@@ -1679,9 +1687,11 @@ Rectangle {
                     }
 
                     ToolbarMenuInlineChoice {
+                        id: sampler16Choice
+
                         checked: samplerRowsControl.value === 2.0
                         enabled: showSamplersControl.value > 0
-                        minimumWidth: 32
+                        minimumWidth: 37
                         text: "16"
 
                         onClicked: {
@@ -1690,17 +1700,46 @@ Rectangle {
                     }
 
                     ToolbarMenuInlineChoice {
+                        id: sampler32Choice
+
+                        checked: samplerRowsControl.value === 3.0
+                        enabled: showSamplersControl.value > 0
+                        minimumWidth: 37
+                        text: "32"
+
+                        onClicked: {
+                            samplerRowsControl.value = 3.0;
+                        }
+                    }
+
+                    ToolbarMenuInlineChoice {
+                        id: sampler48Choice
+
                         checked: samplerRowsControl.value === 4.0
                         enabled: showSamplersControl.value > 0
-                        minimumWidth: 32
-                        text: "64"
+                        minimumWidth: 37
+                        text: "48"
 
                         onClicked: {
                             samplerRowsControl.value = 4.0;
                         }
                     }
+
+                    ToolbarMenuInlineChoice {
+                        id: sampler64Choice
+
+                        checked: samplerRowsControl.value === 5.0
+                        enabled: showSamplersControl.value > 0
+                        minimumWidth: 37
+                        text: "64"
+
+                        onClicked: {
+                            samplerRowsControl.value = 5.0;
+                        }
+                    }
                     Text {
-                        color: samplersHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        Layout.leftMargin: 5
+                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "sample decks"

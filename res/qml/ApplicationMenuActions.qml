@@ -7,7 +7,7 @@ Item {
     id: root
 
     required property ApplicationWindow applicationWindow
-    required property var commands
+    required property ApplicationMenuCommands commands
     property alias developerBaseStats: developerBaseStatsAction
     property alias developerDebugger: developerDebuggerAction
     property alias developerExperimentStats: developerExperimentStatsAction
@@ -169,17 +169,18 @@ Item {
         shortcut: root.configuredMenuShortcut("ViewMenu_ShowMicrophone", "Ctrl+2", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Show Microphone Section")
 
-        onTriggered: showMicrophonesControl.value = showMicrophonesControl.value > 0 ? 0.0 : 1.0
+        onTriggered: showMicrophonesControl.toggle()
     }
     Action {
         id: viewShowVinylControlAction
 
         checkable: true
         checked: showVinylControl.value > 0
+        enabled: Mixxx.Application.vinylControlAvailable
         shortcut: root.configuredMenuShortcut("ViewMenu_ShowVinylControl", "Ctrl+3", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Show Vinyl Control Section")
 
-        onTriggered: showVinylControl.value = showVinylControl.value > 0 ? 0.0 : 1.0
+        onTriggered: showVinylControl.toggle()
     }
     Action {
         id: viewShowPreviewDeckAction
@@ -189,7 +190,7 @@ Item {
         shortcut: root.configuredMenuShortcut("ViewMenu_ShowPreviewDeck", "Ctrl+4", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Show Preview Deck")
 
-        onTriggered: showPreviewDecksControl.value = showPreviewDecksControl.value > 0 ? 0.0 : 1.0
+        onTriggered: showPreviewDecksControl.toggle()
     }
     Action {
         id: viewShowCoverArtAction
@@ -199,7 +200,7 @@ Item {
         shortcut: root.configuredMenuShortcut("ViewMenu_ShowCoverArt", "Ctrl+6", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Show Cover Art")
 
-        onTriggered: showLibraryCoverArtControl.value = showLibraryCoverArtControl.value > 0 ? 0.0 : 1.0
+        onTriggered: showLibraryCoverArtControl.toggle()
     }
     Action {
         id: viewShowKeywheelAction
@@ -217,7 +218,7 @@ Item {
         shortcut: root.configuredMenuShortcut("ViewMenu_MaximizeLibrary", "Space", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Maximize Library")
 
-        onTriggered: showMaximizedLibraryControl.value = showMaximizedLibraryControl.value > 0 ? 0.0 : 1.0
+        onTriggered: showMaximizedLibraryControl.toggle()
     }
     Action {
         id: viewShowAutoDJAction
@@ -242,42 +243,44 @@ Item {
 
         checkable: true
         checked: vinylDeck1Control.value > 0
+        enabled: Mixxx.Application.vinylControlAvailable
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl1", "Ctrl+T", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(1)
 
-        onTriggered: vinylDeck1Control.value = vinylDeck1Control.value > 0 ? 0.0 : 1.0
+        onTriggered: vinylDeck1Control.toggle()
     }
     Action {
         id: optionsEnableVinyl2Action
 
         checkable: true
         checked: vinylDeck2Control.value > 0
+        enabled: Mixxx.Application.vinylControlAvailable
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl2", "Ctrl+Y", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(2)
 
-        onTriggered: vinylDeck2Control.value = vinylDeck2Control.value > 0 ? 0.0 : 1.0
+        onTriggered: vinylDeck2Control.toggle()
     }
     Action {
         id: optionsEnableVinyl3Action
 
         checkable: true
         checked: vinylDeck3Control.value > 0
-        enabled: root.numberOfDecks >= 3
+        enabled: Mixxx.Application.vinylControlAvailable && root.numberOfDecks >= 3
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl3", "Ctrl+U", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(3)
 
-        onTriggered: vinylDeck3Control.value = vinylDeck3Control.value > 0 ? 0.0 : 1.0
+        onTriggered: vinylDeck3Control.toggle()
     }
     Action {
         id: optionsEnableVinyl4Action
 
         checkable: true
         checked: vinylDeck4Control.value > 0
-        enabled: root.numberOfDecks >= 4
+        enabled: Mixxx.Application.vinylControlAvailable && root.numberOfDecks >= 4
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableVinyl4", "Ctrl+I", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Vinyl Control &%1").arg(4)
 
-        onTriggered: vinylDeck4Control.value = vinylDeck4Control.value > 0 ? 0.0 : 1.0
+        onTriggered: vinylDeck4Control.toggle()
     }
     Action {
         id: optionsRecordMixAction
@@ -294,10 +297,11 @@ Item {
 
         checkable: true
         checked: broadcastEnabledControl.value > 0
+        enabled: Mixxx.Application.liveBroadcastingAvailable
         shortcut: root.configuredMenuShortcut("OptionsMenu_EnableLiveBroadcasting", "Ctrl+L", root.shortcutRevision)
         text: qsTranslate("WMainMenuBar", "Enable Live &Broadcasting")
 
-        onTriggered: broadcastEnabledControl.value = broadcastEnabledControl.value > 0 ? 0.0 : 1.0
+        onTriggered: broadcastEnabledControl.toggle()
     }
     Action {
         id: optionsEnableKeyboardShortcutsAction
@@ -378,16 +382,16 @@ Item {
     Action {
         id: helpUserManualAction
 
-        text: qsTranslate("WMainMenuBar", "&User Manual") + root.externalLinkSuffix
+        text: qsTranslate("WMainMenuBar", "&User Manual") + (Mixxx.Application.userManualExternal ? root.externalLinkSuffix : "")
 
-        onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/")
+        onTriggered: Qt.openUrlExternally(Mixxx.Application.userManualUrl)
     }
     Action {
         id: helpKeyboardShortcutsAction
 
-        text: qsTranslate("WMainMenuBar", "&Keyboard Shortcuts") + root.externalLinkSuffix
+        text: qsTranslate("WMainMenuBar", "&Keyboard Shortcuts") + (Mixxx.Application.keyboardShortcutsExternal ? root.externalLinkSuffix : "")
 
-        onTriggered: Qt.openUrlExternally("https://manual.mixxx.org/2.7/chapters/controlling_mixxx.html#using-a-keyboard")
+        onTriggered: Qt.openUrlExternally(Mixxx.Application.keyboardShortcutsUrl)
     }
     Action {
         id: helpSettingsDirectoryAction

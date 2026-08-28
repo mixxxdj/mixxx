@@ -27,6 +27,12 @@ class QmlApplicationProxy : public QObject {
     Q_PROPERTY(QString applicationName READ applicationName CONSTANT)
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString platform READ platform CONSTANT)
+    Q_PROPERTY(bool vinylControlAvailable READ vinylControlAvailable CONSTANT)
+    Q_PROPERTY(bool liveBroadcastingAvailable READ liveBroadcastingAvailable CONSTANT)
+    Q_PROPERTY(QUrl userManualUrl READ userManualUrl CONSTANT)
+    Q_PROPERTY(bool userManualExternal READ userManualExternal CONSTANT)
+    Q_PROPERTY(QUrl keyboardShortcutsUrl READ keyboardShortcutsUrl CONSTANT)
+    Q_PROPERTY(bool keyboardShortcutsExternal READ keyboardShortcutsExternal CONSTANT)
     Q_PROPERTY(bool supportsGlobalMenuBar READ supportsGlobalMenuBar CONSTANT)
     QML_NAMED_ELEMENT(Application)
     QML_SINGLETON
@@ -45,6 +51,12 @@ class QmlApplicationProxy : public QObject {
     QString applicationName() const;
     QString version() const;
     QString platform() const;
+    bool vinylControlAvailable() const;
+    bool liveBroadcastingAvailable() const;
+    QUrl userManualUrl() const;
+    bool userManualExternal() const;
+    QUrl keyboardShortcutsUrl() const;
+    bool keyboardShortcutsExternal() const;
     bool supportsGlobalMenuBar() const;
 
     Q_INVOKABLE void setExperimentStatsEnabled(bool enabled);
@@ -73,6 +85,8 @@ class QmlApplicationProxy : public QObject {
     void debuggerEnabledChanged();
 
   private:
+    QUrl documentationUrl(const QString& fileName, const QString& onlineUrl) const;
+
     static inline UserSettingsPointer s_pConfig;
     static inline std::shared_ptr<KeyboardEventFilter> s_pKeyboardEventFilter;
     static inline std::function<void()> s_reloadCallback;

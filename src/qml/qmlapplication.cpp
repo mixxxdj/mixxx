@@ -1,6 +1,7 @@
 #include "qmlapplication.h"
 
 #include <QCoreApplication>
+#include <QLocale>
 #include <QMessageBox>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
@@ -316,6 +317,7 @@ bool QmlApplication::loadQml(const QString& path) {
     // QQmlApplicationEngine::load creates a new window but also leaves the old one,
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
+    m_pAppEngine->setUiLanguage(QLocale().name());
 
     m_autoReload.clear();
     m_pAppEngine->addUrlInterceptor(&m_autoReload);

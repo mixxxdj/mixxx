@@ -57,6 +57,12 @@ ApplicationWindow {
         applicationWindow: root
         commands: applicationMenuCommands
         numberOfDecks: root.show4decks ? root.numDecks : 2
+
+        onFocusLibrarySearchRequested: {
+            if (library.item) {
+                library.item.focusSearch();
+            }
+        }
     }
     Skin.LibraryScanSummaryDialog {
     }
