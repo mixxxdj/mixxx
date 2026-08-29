@@ -654,10 +654,6 @@ int PipewireEnumerator::metadataEventDefault(
     for (const auto& [deviceId, device] : m_soundDevices) {
         if (device->getDeviceId().alsaHwDevice == name) {
             auto defaultDevice = m_soundDevices.at(kDefaultDeviceId);
-            bool isOpen = defaultDevice->isOpen();
-            if (isOpen) {
-                defaultDevice->close();
-            }
 
             // these values should only be modified here, when m_defaultDevice
             // is closed, since device opening/closing depends on these values
@@ -673,7 +669,7 @@ int PipewireEnumerator::metadataEventDefault(
 
             m_pSoundManager->updateDeviceChannels(device);
 
-            if (isOpen) {
+            if (defaultDevice->isOpen()) {
                 // currently SoundDevicePipewire ignores clockReference and syncBuffers
                 // update this when we start respecting
                 defaultDevice->open(false, 0);
@@ -745,6 +741,11 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
     std::span<const uint32_t> portIds = m_nodes.at(actualDeviceId).outputs;
 
     if (deviceId == kDefaultDeviceId) {
+        if (isOpen(m_defaultSourceId)) {
+            // we don't want any popup
+            return {};
+        }
+
         // for default device we only bother to wire up the most basic
         // routing, and ignore the preference page channels
         channelBase = 0;
@@ -806,6 +807,10 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId, const AudioO
     std::span<const uint32_t> portIds = m_nodes.at(actualDeviceId).inputs;
 
     if (deviceId == kDefaultDeviceId) {
+        if (isOpen(m_defaultSinkId)) {
+            // we don't want any popup
+            return {};
+        }
         // for default device we only bother to wire up the most basic
         // routing, and ignore the preference page channels
         channelBase = 0;
