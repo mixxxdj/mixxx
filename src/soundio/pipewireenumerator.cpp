@@ -1194,7 +1194,9 @@ void PipewireEnumerator::setHardwareGain(uint32_t deviceIndex, uint32_t routeInd
     pw_thread_loop_unlock(m_pPwThreadLoop);
 }
 
-void PipewireEnumerator::nodeEventInfo(const struct pw_node_info* info) {
+void PipewireEnumerator::nodeEventInfo([[maybe_unused]] const pw_node_info* info) {
+    // Older PipeWire versions don't expose PW_KEY_NODE_DRIVER_ID
+    // no simple way to infer node driver
 #if PW_CHECK_VERSION(1, 1, 81)
     if (info->id == m_filterId) {
         const char* driverId = spa_dict_lookup(info->props, PW_KEY_NODE_DRIVER_ID);
@@ -1377,18 +1379,22 @@ void PipewireEnumerator::deviceEventParam(int seq,
                 ConfigKey(QString::fromStdString(device.name), QString::number(routeIndex)),
                 description);
 
+        Device::Route& route = it->second;
+
         if (!didEmplace) {
             return;
         }
 
         m_pSoundManager->addHardwareVolume(deviceId, description, routeIndex);
-        connect(&it->second.volume,
+        connect(&route.volume,
                 &ControlObject::valueChanged,
                 this,
                 [this, deviceId, routeIndex](double gain) {
                     setHardwareGain(
                             deviceId, routeIndex, static_cast<float>(gain));
                 });
+
+        route.device = devices[0];
     }
     }
 }
