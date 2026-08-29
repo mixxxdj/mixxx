@@ -112,7 +112,16 @@ PipewireEnumerator::PipewireEnumerator(
           m_forceSamplerate(false),
           m_samplerate(48000),
           m_bufferSize(kDefaultBufferSize),
-          m_coVolumeDevice(ConfigKey(kAppGroup, "hardware_volume_device")),
+          m_coMainVolume(ConfigKey("[Master]", "hwGain")),
+          m_coHeadVolume(ConfigKey("[Master]", "headHwGain")),
+          m_coBoothVolume(ConfigKey("[Master]", "boothHwGain")),
+          m_coMainVolumeRoute(ConfigKey(kAppGroup, "main_volume_route")),
+          m_coHeadVolumeRoute(ConfigKey(kAppGroup, "head_volume_route")),
+          m_coBoothVolumeRoute(ConfigKey(kAppGroup, "booth_volume_route")),
+          m_coMainVolumeDevice(ConfigKey(kAppGroup, "main_volume_device")),
+          m_coHeadVolumeDevice(ConfigKey(kAppGroup, "head_volume_device")),
+          m_coBoothVolumeDevice(ConfigKey(kAppGroup, "booth_volume_device")),
+          m_coManualVolumeDevice(ConfigKey(kAppGroup, "manual_volume_device")),
           m_coGraphDriver(ConfigKey(kAppGroup, "pipewire_driver")) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
@@ -133,6 +142,21 @@ PipewireEnumerator::PipewireEnumerator(
     spa_zero(m_pwRegistryListener);
     spa_zero(m_pwMetadataListener);
     spa_zero(m_pwFilterListener);
+    connect(&m_coMainVolume, &ControlPotmeter::valueChanged, this, [this](double value) {
+        uint32_t deviceId = static_cast<uint32_t>(m_coMainVolumeDevice.get());
+        uint32_t route = static_cast<uint32_t>(m_coMainVolumeRoute.get());
+        setHardwareGain(deviceId, route, static_cast<float>(value));
+    });
+    connect(&m_coHeadVolume, &ControlPotmeter::valueChanged, this, [this](double value) {
+        uint32_t deviceId = static_cast<uint32_t>(m_coHeadVolumeDevice.get());
+        uint32_t route = static_cast<uint32_t>(m_coHeadVolumeRoute.get());
+        setHardwareGain(deviceId, route, static_cast<float>(value));
+    });
+    connect(&m_coBoothVolume, &ControlPotmeter::valueChanged, this, [this](double value) {
+        uint32_t deviceId = static_cast<uint32_t>(m_coBoothVolumeDevice.get());
+        uint32_t route = static_cast<uint32_t>(m_coBoothVolumeRoute.get());
+        setHardwareGain(deviceId, route, static_cast<float>(value));
+    });
 }
 
 PipewireEnumerator::~PipewireEnumerator() {
@@ -323,7 +347,9 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         Device& device = m_devices.at(id);
         pw_device_add_listener(device.device, &device.listener, &deviceEvents, this);
         m_pSoundManager->addHardwareDevice(name, id);
-        m_coVolumeDevice.set(id);
+        if (m_coManualVolumeDevice.get() == 0) {
+            m_coManualVolumeDevice.set(id);
+        }
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Metadata) == 0) {
         const char* name = spa_dict_lookup(pProps, PW_KEY_METADATA_NAME);
         if (strcmp(name, "settings") != 0) {
@@ -1135,7 +1161,14 @@ bool PipewireEnumerator::nodeHasPorts(const Node& node) {
 }
 
 void PipewireEnumerator::setHardwareGain(uint32_t deviceIndex, uint32_t routeIndex, float gain) {
+    qDebug() << "PipewireEnumerator::setHardwareGain" << deviceIndex << routeIndex << gain;
+    if (!m_devices.contains(deviceIndex)) {
+        return;
+    }
     Device& device = m_devices.at(deviceIndex);
+    if (!device.routes.contains(routeIndex)) {
+        return;
+    }
     Device::Route& route = device.routes.at(routeIndex);
     std::vector<float> volumes(route.numChannels, gain);
 
@@ -1162,6 +1195,7 @@ void PipewireEnumerator::setHardwareGain(uint32_t deviceIndex, uint32_t routeInd
 }
 
 void PipewireEnumerator::nodeEventInfo(const struct pw_node_info* info) {
+#if PW_CHECK_VERSION(1, 1, 81)
     if (info->id == m_filterId) {
         const char* driverId = spa_dict_lookup(info->props, PW_KEY_NODE_DRIVER_ID);
         qDebug() << "PipewireEnumerator::nodeEventInfo Mixxx" << info->id << driverId;
@@ -1169,6 +1203,7 @@ void PipewireEnumerator::nodeEventInfo(const struct pw_node_info* info) {
         spa_atou32(driverId, &driver, 10);
         m_coGraphDriver.set(driver);
     }
+#endif
 }
 
 void PipewireEnumerator::deviceEventInfo(const struct pw_device_info* info) {

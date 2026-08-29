@@ -95,6 +95,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Main Output delay"),
             pMainOutputMenu,
             true);
+    addControl("[Master]",
+            "hwGain",
+            tr("Main Hardware Gain"),
+            tr("Main Hardware gain"),
+            pMainOutputMenu,
+            true);
     // Headphone
     QMenu* pHeadphoneMenu = addSubmenu(tr("Headphone"), pMixerMenu);
     addControl("[Master]",
@@ -119,6 +125,20 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Headphone Delay"),
             tr("Headphone delay"),
             pHeadphoneMenu,
+            true);
+    addControl("[Master]",
+            "headHwGain",
+            tr("Headphone Hardware Gain"),
+            tr("Headphone Hardware gain"),
+            pHeadphoneMenu,
+            true);
+    // Booth
+    QMenu* pBoothMenu = addSubmenu(tr("Booth"), pMixerMenu);
+    addControl("[Master]",
+            "boothHwGain",
+            tr("Booth Hardware Gain"),
+            tr("Booth Hardware gain"),
+            pBoothMenu,
             true);
     pMixerMenu->addSeparator();
     // EQs

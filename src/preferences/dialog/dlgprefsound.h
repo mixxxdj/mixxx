@@ -148,7 +148,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<ControlProxy> m_cpLatencyParamsMismatch;
     QLabel* m_latencyParamsMismatchText;
     parented_ptr<ControlProxy> m_pNodeDriver;
-    parented_ptr<QComboBox> m_volumeDevice;
     QLabel* m_pPipewireDriver;
 #endif
 
@@ -161,9 +160,12 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
         QString name;
         std::unordered_map<uint32_t, Volume> volumes;
     };
-    parented_ptr<ControlProxy> m_cpHardwareDevice;
+    parented_ptr<ControlProxy> m_cpMainVolumeRoute;
+    parented_ptr<ControlProxy> m_cpHeadVolumeRoute;
+    parented_ptr<ControlProxy> m_cpBoothVolumeRoute;
+    parented_ptr<ControlProxy> m_cpMainVolumeDevice;
+    parented_ptr<ControlProxy> m_cpHeadVolumeDevice;
+    parented_ptr<ControlProxy> m_cpBoothVolumeDevice;
+    parented_ptr<ControlProxy> m_cpManualVolumeDevice;
     std::unordered_map<uint32_t, HardwareDevice> m_hardwareDevices;
-
-    parented_ptr<QGroupBox> m_hardwareVolumeGroupBox;
-    parented_ptr<QGridLayout> m_hardwareVolumeGrid;
 };

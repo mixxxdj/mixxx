@@ -461,6 +461,83 @@
      </layout>
     </widget>
    </item>
+   <item>
+     <widget class="QGroupBox" name="hardwareVolumeGroupBox">
+       <property name="title">
+        <string>Hardware Volume</string>
+       </property>
+       <layout class="QGridLayout" name="hardwareVolumeGrid">
+         <item row="0" column="0">
+          <widget class="QLabel" name="mainVolumeLabel">
+           <property name="text">
+            <string>Main Volume</string>
+           </property>
+           <property name="buddy">
+            <cstring>mainDeviceComboBox</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="mainDeviceComboBox">
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QComboBox" name="mainRouteComboBox">
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="headVolumeLabel">
+           <property name="text">
+            <string>Headphone Volume</string>
+           </property>
+           <property name="buddy">
+            <cstring>headDeviceComboBox</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QComboBox" name="headDeviceComboBox">
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QComboBox" name="headRouteComboBox">
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="boothVolumeLabel">
+           <property name="text">
+            <string>Booth Volume</string>
+           </property>
+           <property name="buddy">
+            <cstring>boothDeviceComboBox</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="boothDeviceComboBox">
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QComboBox" name="boothRouteComboBox">
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="manualVolumeLabel">
+           <property name="text">
+            <string>Manual Volume</string>
+           </property>
+           <property name="buddy">
+            <cstring>manualDeviceComboBox</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QComboBox" name="manualDeviceComboBox">
+          </widget>
+         </item>
+       </layout>
+     </widget>
+   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -479,6 +556,10 @@
   <tabstop>boothDelaySpinBox</tabstop>
   <tabstop>queryButton</tabstop>
   <tabstop>ioTabs</tabstop>
+  <tabstop>mainDeviceComboBox</tabstop>
+  <tabstop>headDeviceComboBox</tabstop>
+  <tabstop>boothDeviceComboBox</tabstop>
+  <tabstop>manualDeviceComboBox</tabstop>
  </tabstops>
  <resources/>
  <connections/>

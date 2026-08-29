@@ -23,6 +23,7 @@
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/assert.h"
 #include "util/cmdlineargs.h"
 #include "util/parented_ptr.h"
 #include "util/rlimit.h"
@@ -93,7 +94,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pSoundManager(pSoundManager),
           m_pSettings(pSettings),
           m_config(pSoundManager.get()),
-          m_pLatencyCompensation(kMasterGroup, QStringLiteral("microphoneLatencyCompensation")),
+          m_pLatencyCompensation(kMasterGroup,
+                  QStringLiteral("microphoneLatencyCompensation")),
           m_pMainDelay(kMasterGroup, QStringLiteral("delay")),
           m_pHeadDelay(kMasterGroup, QStringLiteral("headDelay")),
           m_pBoothDelay(kMasterGroup, QStringLiteral("boothDelay")),
@@ -103,7 +105,21 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
           m_loading(false),
-          m_configValid(true) {
+          m_configValid(true),
+          m_cpMainVolumeRoute(make_parented<ControlProxy>(
+                  kAppGroup, "main_volume_route", this)),
+          m_cpHeadVolumeRoute(make_parented<ControlProxy>(
+                  kAppGroup, "head_volume_route", this)),
+          m_cpBoothVolumeRoute(make_parented<ControlProxy>(
+                  kAppGroup, "booth_volume_route", this)),
+          m_cpMainVolumeDevice(make_parented<ControlProxy>(
+                  kAppGroup, "main_volume_device", this)),
+          m_cpHeadVolumeDevice(make_parented<ControlProxy>(
+                  kAppGroup, "head_volume_device", this)),
+          m_cpBoothVolumeDevice(make_parented<ControlProxy>(
+                  kAppGroup, "booth_volume_device", this)),
+          m_cpManualVolumeDevice(make_parented<ControlProxy>(
+                  kAppGroup, "manual_volume_device", this)) {
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -238,14 +254,28 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 this,
                 [this](const QString& name, uint32_t id) {
                     m_hardwareDevices.insert_or_assign(id, HardwareDevice{name, {}});
-                    m_volumeDevice->addItem(name, id);
+                    mainDeviceComboBox->addItem(name, id);
+                    headDeviceComboBox->addItem(name, id);
+                    boothDeviceComboBox->addItem(name, id);
+                    manualDeviceComboBox->addItem(name, id);
                 });
         connect(m_pSoundManager.get(),
                 &SoundManager::hardwareDeviceRemoved,
                 this,
                 [this](uint32_t id) {
-                    int removeIndex = m_volumeDevice->findData(id);
-                    m_volumeDevice->removeItem(removeIndex);
+                    int removeIndex = mainDeviceComboBox->findData(id);
+                    mainDeviceComboBox->removeItem(removeIndex);
+
+                    removeIndex = headDeviceComboBox->findData(id);
+                    headDeviceComboBox->removeItem(removeIndex);
+
+                    removeIndex = boothDeviceComboBox->findData(id);
+                    boothDeviceComboBox->removeItem(removeIndex);
+
+                    removeIndex = manualDeviceComboBox->findData(id);
+                    manualDeviceComboBox->removeItem(removeIndex);
+
+                    m_hardwareDevices.erase(id);
                 });
 
         bool pipewireSelected = m_pSoundManager->isPipewireSelected();
@@ -268,6 +298,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
         if (pipewireSelected) {
             initPipewire();
             refreshHardwareDevices();
+        } else {
+            hardwareVolumeGroupBox->hide();
         }
     }
 #endif
@@ -569,20 +601,46 @@ void DlgPrefSound::initPipewire() {
         updateGraphDriver(static_cast<int>(value));
     });
 
-    m_hardwareVolumeGroupBox = make_parented<QGroupBox>("Hardware Volume Control", this);
-    m_hardwareVolumeGroupBox->setTitle("Hardware Volume");
-    pipewireSettings->addWidget(m_hardwareVolumeGroupBox);
+    connect(mainDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
+        mainRouteComboBox->clear();
+        unsigned int deviceId = mainDeviceComboBox->currentData().toUInt();
+        m_cpMainVolumeDevice->set(deviceId);
+        for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
+            mainRouteComboBox->addItem(volume.label->text(), id);
+        }
+    });
+    connect(headDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
+        headRouteComboBox->clear();
+        unsigned int deviceId = headDeviceComboBox->currentData().toUInt();
+        m_cpHeadVolumeDevice->set(deviceId);
+        for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
+            headRouteComboBox->addItem(volume.label->text(), id);
+        }
+    });
+    connect(boothDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
+        boothRouteComboBox->clear();
+        unsigned int deviceId = boothDeviceComboBox->currentData().toUInt();
+        m_cpBoothVolumeDevice->set(deviceId);
+        for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
+            boothRouteComboBox->addItem(volume.label->text(), id);
+        }
+    });
 
-    m_hardwareVolumeGrid = make_parented<QGridLayout>(m_hardwareVolumeGroupBox);
+    connect(mainRouteComboBox, &QComboBox::currentIndexChanged, this, [this]() {
+        m_cpMainVolumeRoute->set(mainRouteComboBox->currentData().toUInt());
+    });
+    connect(headRouteComboBox, &QComboBox::currentIndexChanged, this, [this]() {
+        m_cpHeadVolumeRoute->set(headRouteComboBox->currentData().toUInt());
+    });
+    connect(boothRouteComboBox, &QComboBox::currentIndexChanged, this, [this]() {
+        m_cpBoothVolumeRoute->set(boothRouteComboBox->currentData().toUInt());
+    });
 
-    m_volumeDevice = make_parented<QComboBox>(m_hardwareVolumeGroupBox);
-    m_hardwareVolumeGrid->addWidget(m_volumeDevice, 0, 1);
-    m_cpHardwareDevice = make_parented<ControlProxy>(kAppGroup, "hardware_volume_device", this);
-    connect(m_volumeDevice,
+    connect(manualDeviceComboBox,
             &QComboBox::currentIndexChanged,
             this,
             [this](int value) {
-                uint32_t currentDeviceId = static_cast<uint32_t>(m_cpHardwareDevice->get());
+                uint32_t currentDeviceId = static_cast<uint32_t>(m_cpManualVolumeDevice->get());
 
                 if (m_hardwareDevices.contains(currentDeviceId)) {
                     HardwareDevice& currentDevice = m_hardwareDevices.at(currentDeviceId);
@@ -592,7 +650,7 @@ void DlgPrefSound::initPipewire() {
                     }
                 }
 
-                uint32_t newDeviceId = m_volumeDevice->itemData(value).toUInt();
+                uint32_t newDeviceId = manualDeviceComboBox->itemData(value).toUInt();
                 if (m_hardwareDevices.contains(newDeviceId)) {
                     HardwareDevice& newDevice = m_hardwareDevices.at(newDeviceId);
                     for (auto& volume : std::views::values(newDevice.volumes)) {
@@ -603,7 +661,7 @@ void DlgPrefSound::initPipewire() {
 
                 // the checkbox selection needs to immediately take effect
                 // so this setting is stored and broadcasted at same time
-                m_cpHardwareDevice->set(newDeviceId);
+                m_cpManualVolumeDevice->set(newDeviceId);
                 m_pSettings->setValue(ConfigKey{kAppGroup, "hardware_volume_device"}, newDeviceId);
             });
 
@@ -611,8 +669,6 @@ void DlgPrefSound::initPipewire() {
             &SoundManager::hardwareVolumeAdded,
             this,
             &DlgPrefSound::addHardwareVolume);
-
-    verticalLayout_2->addWidget(m_hardwareVolumeGroupBox);
 }
 
 void DlgPrefSound::updateGraphDriver(int driverId) {
@@ -648,7 +704,7 @@ void DlgPrefSound::addHardwareVolume(uint32_t deviceId, const QString& name, uin
 
     HardwareDevice& device = m_hardwareDevices.at(deviceId);
     auto [it, didEmplace] = device.volumes.try_emplace(index,
-            make_parented<QSlider>(m_hardwareVolumeGroupBox.get()),
+            make_parented<QSlider>(hardwareVolumeGroupBox),
             make_parented<ControlProxy>(device.name, QString::number(index), this),
             new QLabel(name));
     HardwareDevice::Volume& volume = it->second;
@@ -668,8 +724,8 @@ void DlgPrefSound::addHardwareVolume(uint32_t deviceId, const QString& name, uin
         slider->setValue(sliderValue);
     });
 
-    m_hardwareVolumeGrid->addWidget(volume.label, index + 1, 0);
-    m_hardwareVolumeGrid->addWidget(volume.slider, index + 1, 1);
+    hardwareVolumeGrid->addWidget(volume.label, index + 4, 0);
+    hardwareVolumeGrid->addWidget(volume.slider, index + 4, 1);
 
     {
         QSignalBlocker blocker(*volume.slider);
@@ -677,9 +733,21 @@ void DlgPrefSound::addHardwareVolume(uint32_t deviceId, const QString& name, uin
         volume.slider->setValue(sliderValue);
     }
 
-    if (deviceId != m_cpHardwareDevice->get()) {
+    if (deviceId != m_cpManualVolumeDevice->get()) {
         volume.label->hide();
         volume.slider->hide();
+    }
+
+    if (deviceId == m_cpMainVolumeDevice->get()) {
+        mainRouteComboBox->addItem(name, index);
+    }
+
+    if (deviceId == m_cpHeadVolumeDevice->get()) {
+        headRouteComboBox->addItem(name, index);
+    }
+
+    if (deviceId == m_cpBoothVolumeDevice->get()) {
+        boothRouteComboBox->addItem(name, index);
     }
 }
 
@@ -1188,9 +1256,11 @@ void DlgPrefSound::refreshDevices() {
     emit refreshOutputDevices(m_outputDevices);
     emit refreshInputDevices(m_inputDevices);
 
+#ifdef __PIPEWIRE__
     if (m_pSoundManager->isPipewireSelected()) {
         updateGraphDriver(static_cast<int>(m_pNodeDriver->get()));
     }
+#endif
 }
 
 void DlgPrefSound::refreshHardwareDevices() {
@@ -1202,11 +1272,21 @@ void DlgPrefSound::refreshHardwareDevices() {
         }
     }
     m_hardwareDevices.clear();
-    m_volumeDevice->clear();
+    mainRouteComboBox->clear();
+    headRouteComboBox->clear();
+    boothRouteComboBox->clear();
+
+    mainDeviceComboBox->clear();
+    headDeviceComboBox->clear();
+    boothDeviceComboBox->clear();
+    manualDeviceComboBox->clear();
 
     for (const auto& [id, name] : m_pSoundManager->queryHardwareDevices()) {
         m_hardwareDevices.insert_or_assign(id, HardwareDevice{name, {}});
-        m_volumeDevice->addItem(name, id);
+        mainDeviceComboBox->addItem(name, id);
+        headDeviceComboBox->addItem(name, id);
+        boothDeviceComboBox->addItem(name, id);
+        manualDeviceComboBox->addItem(name, id);
     }
 
     for (uint32_t deviceId : std::views::keys(m_hardwareDevices)) {
