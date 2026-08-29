@@ -93,6 +93,8 @@ class VisualPlayPosition : public QObject {
     /// This is a single producer single consumer ring buffer that allows
     /// to access historic (delayed) values
     class DelayRing {
+        static_assert(std::is_trivially_copyable_v<VisualPlayPositionData>);
+
       public:
         /// Push new data to the ring
         /// Must be called from a single thread only
