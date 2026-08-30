@@ -9,10 +9,10 @@ import "Theme"
 Row {
     id: root
 
+    required property int unitNumber
     property int fxUnitCount: 4
     property string group: unitNumber === 1 ? "[Microphone]" : "[Microphone" + unitNumber + "]"
     readonly property bool inputConfigured: inputConfiguredControl.value > 0
-    required property int unitNumber
 
     signal fxAssignmentChanged(int unitNumber, bool enabled)
 

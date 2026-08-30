@@ -185,16 +185,16 @@ Item {
                 onItemAdded: rows.advancePreload()
 
                 SamplerGroup {
-                    required property int samplerGroupIdx
+                    required property int index
 
                     Layout.fillWidth: true
                     count: 8
                     expandKey: "expand_samplers_" + firstSampler + "-" + (firstSampler + 7)
-                    firstSampler: 1 + samplerGroupIdx * 8
-                    preloadExpandedContent: samplerGroupIdx <= rows.preloadIndex
+                    firstSampler: 1 + index * 8
+                    preloadExpandedContent: index <= rows.preloadIndex
                     show8Hotcues: show8HotcuesControl.value > 0
                     showFxAssignments: showSamplerFxControl.value > 0
-                    visible: samplerGroupIdx < root.selectedSamplerCount / 8
+                    visible: index < root.selectedSamplerCount / 8
 
                     onExpandedContentReadyChanged: rows.advancePreload()
                 }

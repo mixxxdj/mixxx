@@ -93,7 +93,7 @@ Rectangle {
             height: 40
             highlight: playLatchedControl.value > 0 || root.playing
             key: "cue_gotoandplay"
-            text: root.playing ? "Pause" : "Play"
+            text: "Play"
             width: 40
 
             MouseArea {
@@ -129,39 +129,14 @@ Rectangle {
             font.pixelSize: Theme.buttonFontPixelSize
             text: root.loaded && root.visualBpm > 0 ? root.visualBpm.toFixed(1) : ""
         }
-        Rectangle {
-            id: progressContainer
-
+        Skin.WaveformOverview {
             anchors.bottom: embedded.bottom
             anchors.left: playButton.right
             anchors.leftMargin: 5
             anchors.right: embedded.right
-            border.color: Theme.deckLineColor
-            border.width: 1
-            color: "transparent"
-            height: 5
-            radius: height / 2
-
-            Rectangle {
-                antialiasing: false
-                color: Theme.samplerColor
-                height: parent.height
-                radius: height / 2
-                width: Math.max(0, Math.min(1, playPositionControl.value)) * parent.width
-            }
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-
-                onPositionChanged: function (mouse) {
-                    if (containsPress)
-                        playPositionControl.value = mouse.x / width;
-                }
-                onPressed: function (mouse) {
-                    playPositionControl.value = mouse.x / width;
-                }
-            }
+            anchors.top: label.bottom
+            anchors.topMargin: 2
+            group: root.group
         }
         Skin.VuMeter {
             id: vuMeter
@@ -310,12 +285,6 @@ Rectangle {
 
         group: root.group
         key: "play_latched"
-    }
-    Mixxx.ControlProxy {
-        id: playPositionControl
-
-        group: root.group
-        key: "playposition"
     }
     Mixxx.ControlProxy {
         id: cueDefaultControl

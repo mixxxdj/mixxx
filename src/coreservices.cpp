@@ -42,6 +42,7 @@
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 
+#include "qml/qmlapplicationproxy.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
@@ -809,6 +810,8 @@ void CoreServices::initializeQMLSingletons() {
     // singletons to that they can be accessed by components instantiated by
     // QML, which would also be suboptimal.
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(getEffectsManager());
+    mixxx::qml::QmlApplicationProxy::registerUserSettings(getSettings());
+    mixxx::qml::QmlApplicationProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
@@ -906,6 +909,8 @@ void CoreServices::finalize() {
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerUserSettings(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerKeyboardEventFilter(nullptr);
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
