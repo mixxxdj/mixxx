@@ -370,8 +370,8 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
-    // Only record stats in developer mode.
-    if (m_cmdlineArgs.getDeveloper()) {
+    // Only record stats in developer mode or when --stats is specified.
+    if (m_cmdlineArgs.getStats()) {
         StatsManager::createInstance();
     }
     mixxx::Translations::initializeTranslations(
@@ -387,7 +387,7 @@ CoreServices::~CoreServices() {
     // Tear down remaining stuff that was initialized in the constructor.
     CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
 
-    if (m_cmdlineArgs.getDeveloper()) {
+    if (m_cmdlineArgs.getStats()) {
         StatsManager::destroy();
     }
 
