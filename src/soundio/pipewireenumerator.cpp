@@ -680,6 +680,9 @@ int PipewireEnumerator::metadataEventDefault(
             m_pSoundManager->updateDeviceChannels(device);
 
             if (defaultDevice->isOpen()) {
+                qDebug() << "PipewireEnumerator::metadataEventDefault "
+                            "defaultDevice->isOpen()"
+                         << name;
                 // currently SoundDevicePipewire ignores clockReference and syncBuffers
                 // update this when we start respecting
                 defaultDevice->open(false, 0);
@@ -731,6 +734,9 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
     }
 
     uint32_t actualDeviceId = deviceId == kDefaultDeviceId ? m_defaultSourceId : deviceId;
+
+    qDebug() << "PipewireEnumerator::openDeviceInput" << deviceId
+             << actualDeviceId << input.getString();
 
     // before default device changes due to device removal
     // the default device is in invalid state, do nothing
@@ -796,6 +802,9 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId, const AudioO
     }
 
     uint32_t actualDeviceId = deviceId == kDefaultDeviceId ? m_defaultSinkId : deviceId;
+
+    qDebug() << "PipewireEnumerator::openDeviceOutput" << deviceId
+             << actualDeviceId << output.getString();
 
     // before default device changes due to device removal
     // the default device is in invalid state, do nothing
