@@ -32,9 +32,6 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
 }
 
 SoundDevicePipewire::~SoundDevicePipewire() {
-    if (isOpen()) {
-        close();
-    }
 }
 
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {

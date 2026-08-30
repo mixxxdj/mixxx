@@ -524,7 +524,17 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
             return;
         }
 
-        emit deviceRemoved(m_soundDevices.at(id));
+        auto pDevice = m_soundDevices.at(id);
+
+        emit deviceRemoved(pDevice);
+        for (const AudioInputBuffer& input : pDevice->inputs()) {
+            m_inputs.at(input).activeDevice = 0;
+        }
+
+        for (const AudioOutputBuffer& output : pDevice->outputs()) {
+            m_outputs.at(output).activeDevice = 0;
+        }
+
         m_soundDevices.erase(id);
     } else if (m_ports.contains(id)) {
         const Port& port = m_ports.at(id);
