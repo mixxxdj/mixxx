@@ -98,18 +98,18 @@ Row {
                             model: Math.max(0, root.fxUnitCount)
 
                             Skin.ControlButton {
-                                required property int fxUnitIdx
+                                required property int index
 
                                 Layout.fillHeight: true
                                 Layout.fillWidth: true
                                 activeColor: Theme.effectUnitColor
-                                group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
+                                group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
                                 implicitWidth: 28
                                 key: "group_" + root.group + "_enable"
-                                text: "FX" + (fxUnitIdx + 1)
+                                text: "FX" + (index + 1)
                                 toggleable: true
 
-                                onHighlightChanged: root.fxAssignmentChanged(fxUnitIdx + 1, highlight)
+                                onHighlightChanged: root.fxAssignmentChanged(index + 1, highlight)
                             }
                         }
                     }

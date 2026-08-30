@@ -32,10 +32,10 @@ Item {
                 model: 4
 
                 MicUnit {
-                    required property int micUnitIdx
+                    required property int index
 
                     Layout.alignment: Qt.AlignTop
-                    unitNumber: micUnitIdx + 1
+                    unitNumber: index + 1
                 }
             }
         }
@@ -52,10 +52,10 @@ Item {
                 model: 4
 
                 AuxUnit {
-                    required property int auxUnitIdx
+                    required property int index
 
                     Layout.alignment: Qt.AlignTop
-                    unitNumber: auxUnitIdx + 1
+                    unitNumber: index + 1
                 }
             }
         }

@@ -121,14 +121,14 @@ Item {
                             model: 4
 
                             DeckControls.LateNightControlButton {
-                                required property int fxUnitIdx
+                                required property int index
 
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 20
                                 activeColor: LateNightTheme.micAuxActiveColor
-                                group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
+                                group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
                                 key: "group_" + root.group + "_enable"
-                                label: String(fxUnitIdx + 1)
+                                label: String(index + 1)
                                 labelPixelSize: 8
                                 toggleable: true
                             }

@@ -93,7 +93,7 @@ Rectangle {
             height: 40
             highlight: playLatchedControl.value > 0 || root.playing
             key: "cue_gotoandplay"
-            text: root.playing ? "Pause" : "Play"
+            text: "Play"
             width: 40
 
             MouseArea {
@@ -129,39 +129,14 @@ Rectangle {
             font.pixelSize: Theme.buttonFontPixelSize
             text: root.loaded && root.visualBpm > 0 ? root.visualBpm.toFixed(1) : ""
         }
-        Rectangle {
-            id: progressContainer
-
+        Skin.WaveformOverview {
             anchors.bottom: embedded.bottom
             anchors.left: playButton.right
             anchors.leftMargin: 5
             anchors.right: embedded.right
-            border.color: Theme.deckLineColor
-            border.width: 1
-            color: "transparent"
-            height: 5
-            radius: height / 2
-
-            Rectangle {
-                antialiasing: false // for performance reasons
-                color: Theme.samplerColor
-                height: parent.height
-                radius: height / 2
-                width: Math.max(0, Math.min(1, playPositionControl.value)) * parent.width
-            }
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                hoverEnabled: true
-
-                onPositionChanged: function (mouse) {
-                    if (containsPress)
-                        playPositionControl.value = mouse.x / width;
-                }
-                onPressed: function (mouse) {
-                    playPositionControl.value = mouse.x / width;
-                }
-            }
+            anchors.top: label.bottom
+            anchors.topMargin: 2
+            group: root.group
         }
         Skin.VuMeter {
             id: vuMeter
@@ -252,11 +227,11 @@ Rectangle {
                 model: Math.min(8, Math.max(0, root.hotcueCount))
 
                 Skin.HotcueButton {
-                    required property int hotcueIdx
+                    required property int index
 
                     Layout.fillWidth: true
                     group: root.group
-                    hotcueNumber: hotcueIdx + 1
+                    hotcueNumber: index + 1
                     implicitHeight: 22
                 }
             }
@@ -272,17 +247,17 @@ Rectangle {
                 Skin.ControlButton {
                     id: fxButton
 
-                    required property int fxUnitIdx
+                    required property int index
 
                     Layout.fillWidth: true
                     activeColor: Theme.effectUnitColor
-                    group: "[EffectRack1_EffectUnit" + (fxUnitIdx + 1) + "]"
+                    group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
                     implicitHeight: 22
                     key: "group_" + root.group + "_enable"
-                    text: "FX" + (fxUnitIdx + 1)
+                    text: "FX" + (index + 1)
                     toggleable: true
 
-                    onHighlightChanged: root.fxAssignmentChanged(fxUnitIdx + 1, highlight)
+                    onHighlightChanged: root.fxAssignmentChanged(index + 1, highlight)
                 }
             }
         }
@@ -310,12 +285,6 @@ Rectangle {
 
         group: root.group
         key: "play_latched"
-    }
-    Mixxx.ControlProxy {
-        id: playPositionControl
-
-        group: root.group
-        key: "playposition"
     }
     Mixxx.ControlProxy {
         id: cueDefaultControl

@@ -24,11 +24,11 @@ GridLayout {
         model: Math.max(0, root.samplerCount)
 
         Skin.Sampler {
-            required property int samplerIdx
+            required property int index
 
             Layout.fillWidth: true
             fxUnitCount: root.fxUnitCount
-            group: "[Sampler" + (root.firstSampler + samplerIdx) + "]"
+            group: "[Sampler" + (root.firstSampler + index) + "]"
             hotcueCount: root.hotcueCount
             minimized: root.minimized
             showFxAssignments: root.showFxAssignments

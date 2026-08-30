@@ -9,15 +9,16 @@
 
 #include "library/dao/directorydao.h"
 #include "library/scanner/libraryscanner.h"
+#include "library/trackcollectionmanager.h"
 #include "qml/qmllibrarysource.h"
 #include "qml/qmllibrarytracklistmodel.h"
 #include "util/parented_ptr.h"
 
 class Library;
-class LibraryScanner;
 class KeyboardEventFilter;
 
 namespace mixxx {
+class LibraryExporter;
 namespace qml {
 
 class QmlLibrarySource : public QObject {
@@ -46,7 +47,10 @@ class QmlLibraryScannerProxy : public QObject {
     QML_NAMED_ELEMENT(LibraryScanner)
     QML_UNCREATABLE("Only accessible via Mixxx.Library.scanner")
   public:
-    QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent);
+    QmlLibraryScannerProxy(
+            LibraryScanner* libraryScanner,
+            TrackCollectionManager* trackCollectionManager,
+            QObject* parent);
 
     bool isRunning() const {
         return m_running;
@@ -87,8 +91,10 @@ class QmlLibraryScannerProxy : public QObject {
 class QmlLibraryProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(mixxx::qml::QmlLibraryTrackListModel* model MEMBER m_pModelProperty CONSTANT)
-    Q_PROPERTY(QQmlListProperty<QmlLibrarySource> sources READ sources CONSTANT)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibrarySource> sources READ sources CONSTANT)
     Q_PROPERTY(mixxx::qml::QmlLibraryScannerProxy* scanner MEMBER m_pScanner CONSTANT)
+    Q_PROPERTY(bool libraryScanActive READ libraryScanActive NOTIFY libraryScanActiveChanged)
+    Q_PROPERTY(bool enginePrimeExportAvailable READ enginePrimeExportAvailable CONSTANT)
     QML_NAMED_ELEMENT(Library)
     QML_SINGLETON
 
@@ -121,7 +127,7 @@ class QmlLibraryProxy : public QObject {
     };
     Q_ENUM(SourceRemovalType);
 
-    explicit QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent = nullptr);
+    explicit QmlLibraryProxy(QObject* parent = nullptr);
     ~QmlLibraryProxy() override;
 
     static QmlLibraryProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
@@ -142,9 +148,12 @@ class QmlLibraryProxy : public QObject {
                 &QmlLibraryProxy::sources_clear};
     }
 
-    Q_INVOKABLE AddResult addSource(const QUrl& newPath);
-    Q_INVOKABLE RemoveResult removeSource(const QUrl& oldPath, SourceRemovalType type);
-    Q_INVOKABLE RelocateResult relinkSource(const QUrl& oldPath, const QUrl& newPath);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::AddResult addSource(const QUrl& newPath);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::RemoveResult removeSource(
+            const QUrl& oldPath,
+            mixxx::qml::QmlLibraryProxy::SourceRemovalType type);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::RelocateResult relinkSource(
+            const QUrl& oldPath, const QUrl& newPath);
 
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);
@@ -155,7 +164,20 @@ class QmlLibraryProxy : public QObject {
     }
 
     QmlLibraryTrackListModel* model() const;
+    bool libraryScanActive() const {
+        return m_pTrackCollectionManager &&
+                m_pTrackCollectionManager->isLibraryScanActive();
+    }
+    bool enginePrimeExportAvailable() const;
+
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
+    Q_INVOKABLE void createCrate();
+    Q_INVOKABLE void createPlaylist();
+    Q_INVOKABLE void exportLibrary();
+    Q_INVOKABLE void rescanLibrary();
+    Q_INVOKABLE void searchInCurrentView();
+    Q_INVOKABLE void searchInTracksLibrary();
+    Q_INVOKABLE void showAutoDJ();
     Q_INVOKABLE QString deckHotcueLabel(
             mixxx::qml::QmlTrackProxy* track,
             int hotcueNumber) const;
@@ -172,20 +194,30 @@ class QmlLibraryProxy : public QObject {
             mixxx::qml::QmlTrackProxy* track,
             int hotcueNumber);
 
-  private:
-    static inline std::shared_ptr<Library> s_pLibrary;
+  signals:
+    void libraryScanActiveChanged();
+    void libraryScanSummaryAvailable(
+            const QString& title,
+            const QString& text,
+            const QString& informativeText);
 
-    std::shared_ptr<Library> m_pLibrary;
+  private:
+    void deliverPendingLibraryScanSummary();
+    static inline std::shared_ptr<Library> s_pLibrary;
 
     /// This needs to be a plain pointer because it's used as a `Q_PROPERTY` member variable.
     QmlLibraryTrackListModel* m_pModelProperty;
     QmlLibraryScannerProxy* m_pScanner;
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     static qsizetype sources_count(QQmlListProperty<QmlLibrarySource>* property);
     static QmlLibrarySource* sources_at(
             QQmlListProperty<QmlLibrarySource>* property, qsizetype index);
     static void sources_clear(QQmlListProperty<QmlLibrarySource>* property);
     static inline std::shared_ptr<KeyboardEventFilter> s_pKeyboard;
+#ifdef __ENGINEPRIME__
+    std::unique_ptr<mixxx::LibraryExporter> m_pLibraryExporter;
+#endif
 };
 
 } // namespace qml
