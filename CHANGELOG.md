@@ -2,6 +2,10 @@
 
 ## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
 
+### Library
+
+* Do not warn when .m4a files are sniffed as video/mp4
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support
