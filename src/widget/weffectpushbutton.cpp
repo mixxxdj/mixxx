@@ -34,61 +34,72 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
             this,
             &WEffectPushButton::parameterUpdated);
 
-    m_pButtonMenu = new QMenu(this);
-    connect(m_pButtonMenu,
-            &QMenu::triggered,
-            this,
-            &WEffectPushButton::slotActionChosen);
     parameterUpdated();
 }
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
-    const QList<QAction*> actions = m_pButtonMenu->actions();
-    for (const auto& action : actions) {
-        if (action->data().toDouble() == dValue) {
-            action->setChecked(true);
-            break;
-        }
-    }
+    setCheckedActionByValue(dValue);
     WPushButton::onConnectedControlChanged(dParameter, dValue);
 }
 
 void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
-    const bool rightClick = e->button() == Qt::RightButton;
-    if (rightClick && !m_pButtonMenu->actions().isEmpty()) {
+    if (e->button() == Qt::RightButton) {
+        // Get or create and connect the menu
+        QMenu* pMenu = createConnectAndGetMenu();
+        // Populate the menu if it hasn't been populated yet
+        if (pMenu->actions().isEmpty()) {
+            parameterUpdated();
+        }
+        if (!pMenu->actions().isEmpty()) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        m_pButtonMenu->exec(e->globalPosition().toPoint());
+            pMenu->exec(e->globalPosition().toPoint());
 #else
-        m_pButtonMenu->exec(e->globalPos());
+            pMenu->exec(e->globalPos());
 #endif
-        return;
+            return;
+        }
     }
 
     // Pass all other press events to the base class.
     WPushButton::mousePressEvent(e);
 
-    // The push handler may have set the left value. Check the corresponding
-    // QAction.
-    const double leftValue = getControlParameterLeft();
-    const QList<QAction*> actions = m_pButtonMenu->actions();
-    for (const auto& action : actions) {
-        if (action->data().toDouble() == leftValue) {
-            action->setChecked(true);
-            break;
-        }
-    }
+    // The push handler may have set the left value.
+    // Check the corresponding QAction.
+    setCheckedActionByValue(getControlParameterLeft());
 }
 
 void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
     // Pass all other release events to the base class.
     WPushButton::mouseReleaseEvent(e);
 
-    // The release handler may have set the left value. Check the corresponding
-    // QAction.
-    const double leftValue = getControlParameterLeft();
-    const QList<QAction*> actions = m_pButtonMenu->actions();
+    // The release handler may have set the left value.
+    // Check the corresponding QAction.
+    setCheckedActionByValue(getControlParameterLeft());
+}
+
+QMenu* WEffectPushButton::createConnectAndGetMenu() {
+    if (m_pButtonMenu == nullptr) {
+        m_pButtonMenu = new QMenu(this);
+        connect(m_pButtonMenu,
+                &QMenu::triggered,
+                this,
+                &WEffectPushButton::slotActionChosen);
+    }
+    return m_pButtonMenu;
+}
+
+QMenu* WEffectPushButton::getMenuIfCreated() {
+    return m_pButtonMenu;
+}
+
+void WEffectPushButton::setCheckedActionByValue(double value) {
+    QMenu* pMenu = getMenuIfCreated();
+    if (pMenu == nullptr) {
+        return;
+    }
+    const QList<QAction*> actions = pMenu->actions();
     for (QAction* action : actions) {
-        if (action->data().toDouble() == leftValue) {
+        if (action->data().toDouble() == value) {
             action->setChecked(true);
             break;
         }
@@ -112,7 +123,6 @@ void WEffectPushButton::parameterUpdated() {
         setBaseTooltip("");
     }
 
-    m_pButtonMenu->clear();
     EffectManifestParameterPointer pManifest = m_pEffectParameterSlot->getManifest();
     QList<QPair<QString, double>> options;
     if (pManifest) {
@@ -126,9 +136,17 @@ void WEffectPushButton::parameterUpdated() {
         m_iNoStates = 2;
         return;
     }
-    double value = getControlParameterLeft();
 
-    auto* actionGroup = new QActionGroup(m_pButtonMenu);
+    // Only populate menu if it exists (created on demand on right-click)
+    QMenu* pMenu = getMenuIfCreated();
+    if (pMenu == nullptr) {
+        return;
+    }
+
+    pMenu->clear();
+    const double value = getControlParameterLeft();
+
+    auto* actionGroup = new QActionGroup(pMenu);
     actionGroup->setExclusive(true);
     for (const auto& option : std::as_const(options)) {
         // action is added automatically to actionGroup
@@ -141,11 +159,11 @@ void WEffectPushButton::parameterUpdated() {
         if (option.second == value) {
             action->setChecked(true);
         }
-        m_pButtonMenu->addAction(action);
+        pMenu->addAction(action);
     }
 }
 
-void WEffectPushButton::slotActionChosen(QAction* action) {
-    action->setChecked(true);
-    setControlParameterLeftDown(action->data().toDouble());
+void WEffectPushButton::slotActionChosen(QAction* pAction) {
+    pAction->setChecked(true);
+    setControlParameterLeftDown(pAction->data().toDouble());
 }
