@@ -4,9 +4,6 @@
 
 #include "audio/types.h"
 #include "moc_dlgprefsounditem.cpp"
-#ifdef __PIPEWIRE__
-#include "soundio/pipewireenumerator.h"
-#endif
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
@@ -102,9 +99,11 @@ void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
     const SoundDeviceId& selectedDevice = deviceComboBox->currentData().value<SoundDeviceId>();
     // not good, comparing int with uint32_t, but we cannot do much since
     // SoundDeviceId stored int only
+    // NOTE(pri-yan-shu) copied PW_ID_ANY verbatim, any more sensible id may be used in future,
+    // with a dedicated identifier
     const bool defaultDevice =
             static_cast<uint32_t>(selectedDevice.deviceIndex) ==
-            PipewireEnumerator::kDefaultDeviceId;
+            (uint32_t)(0xffffffff);
     int index = defaultDevice
             ? deviceComboBox->currentIndex()
             : deviceComboBox->findData(QVariant::fromValue(id));
