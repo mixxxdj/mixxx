@@ -55,7 +55,7 @@ Item {
                         font.family: "Open Sans"
                         font.pixelSize: 10
                         horizontalAlignment: Text.AlignHCenter
-                        text: "mic " + root.unitNumber
+                        text: "MIC " + root.unitNumber
                         verticalAlignment: Text.AlignVCenter
                     }
                     Item {

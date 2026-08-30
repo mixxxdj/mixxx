@@ -55,7 +55,7 @@ Item {
                         font.family: "Open Sans"
                         font.pixelSize: 10
                         horizontalAlignment: Text.AlignHCenter
-                        text: "Aux " + root.unitNumber
+                        text: "AUX " + root.unitNumber
                         verticalAlignment: Text.AlignVCenter
                     }
                     AuxOrientationButton {

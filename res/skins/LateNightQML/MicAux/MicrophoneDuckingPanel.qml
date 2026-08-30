@@ -51,7 +51,7 @@ Controls.Panel {
             displayArcColor: LateNightTheme.activePlayCueColor
             displayArcStart: Controls.Knob.ArcStart.Maximum
             group: "[Master]"
-            indicatorColor: "orange"
+            indicatorColor: "red"
             indicatorKind: "small"
             key: "duckStrength"
         }
