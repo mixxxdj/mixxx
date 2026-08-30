@@ -1022,19 +1022,15 @@ TEST_F(SoundSourceProxyTest, handleWrongFileSuffix) {
             SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated);
     EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
 
-    // Change the file type back to the wrong file type after the initial import
-    // and update from source once again to verify that the wrong type gets updated
-    // to the correct type.
+    // Change the file type back to the wrong file type after the initial import.
     pTrack->setType(wrongFileType);
-    // The re-import of metadata should be skipped with UpdateTrackFromSourceMode::Once
-    // and updateTrackFromSource() is supposed to return false.
+    // Once-mode must not reopen the file after a successful import. That
+    // keeps library operations fast on remote filesystems.
     ASSERT_EQ(SoundSourceProxy(pTrack).updateTrackFromSource(
                       SoundSourceProxy::UpdateTrackFromSourceMode::Once,
                       SyncTrackMetadataParams{}),
             SoundSourceProxy::UpdateTrackFromSourceResult::NotUpdated);
-    // But even though updateTrackFromSource() returned false the wrong file type
-    // should have been fixed.
-    EXPECT_STREQ(qPrintable(contentFileType), qPrintable(pTrack->getType()));
+    EXPECT_STREQ(qPrintable(wrongFileType), qPrintable(pTrack->getType()));
 }
 
 TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {

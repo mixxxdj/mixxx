@@ -71,6 +71,17 @@ TEST_F(TrackRefTest, FromFileInfoWithoutId) {
     EXPECT_EQ(m_invalidTrackId, actual.getId());
 }
 
+TEST_F(TrackRefTest, FromLocationAndIdDoesNotRequireCanonicalPath) {
+    const TrackRef actual(TrackRef::fromLocationAndId(
+            m_tempFileInfo.location(), m_validTrackId));
+
+    EXPECT_EQ(m_tempFileInfo.location(), actual.getLocation());
+    EXPECT_FALSE(actual.hasCanonicalLocation());
+    EXPECT_TRUE(actual.hasId());
+    EXPECT_EQ(m_validTrackId, actual.getId());
+    EXPECT_TRUE(actual.isValid());
+}
+
 TEST_F(TrackRefTest, CopyAndSetId) {
     const TrackRef withoutId(
             TrackRef::fromFileInfo(m_tempFileInfo));
