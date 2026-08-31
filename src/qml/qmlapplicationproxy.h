@@ -78,6 +78,7 @@ class QmlApplicationProxy : public QObject {
     }
 
   signals:
+    void applicationMenuRequested();
     void keyboardShortcutsEnabledChanged();
     void menuShortcutsChanged();
     void statsModeChanged();

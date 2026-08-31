@@ -33,6 +33,12 @@ QmlApplicationProxy::QmlApplicationProxy(QObject* pParent)
             &KeyboardEventFilter::keyboardConfigReloaded,
             this,
             &QmlApplicationProxy::menuShortcutsChanged);
+#if !defined(Q_OS_MACOS)
+    connect(s_pKeyboardEventFilter.get(),
+            &KeyboardEventFilter::altPressedWithoutKeys,
+            this,
+            &QmlApplicationProxy::applicationMenuRequested);
+#endif
 }
 
 bool QmlApplicationProxy::keyboardShortcutsEnabled() const {

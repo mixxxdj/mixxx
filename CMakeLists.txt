@@ -5385,6 +5385,9 @@ if(VINYLCONTROL)
       src/engine/controls/vinylcontrolcontrol.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __VINYLCONTROL__)
+  endif()
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
