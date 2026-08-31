@@ -17,11 +17,8 @@ SamplerGutter {
         source: root.expanded ? LateNightTheme.assetSamplerCollapseButton : LateNightTheme.assetSamplerExpandButton
         width: 16
     }
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-
-        onClicked: expandControl.value = root.expanded ? 0 : 1
+    TapHandler {
+        onTapped: expandControl.value = root.expanded ? 0 : 1
     }
     Mixxx.ControlProxy {
         id: expandControl

@@ -8,7 +8,7 @@ Item {
     id: root
 
     readonly property Item loadedRack: (mode === 0 ? fourSamplerLoader.item : samplerRowsLoader.item) as Item
-    readonly property int mode: show4SamplersControl.value > 0.5 ? 0 : show16SamplersControl.value > 0.5 ? 2 : show32SamplersControl.value > 0.5 ? 3 : show48SamplersControl.value > 0.5 ? 4 : show64SamplersControl.value > 0.5 ? 5 : 1
+    readonly property int mode: Math.max(0, Math.min(5, Math.round(samplerRowsControl.value)))
     readonly property bool modeControlsInitialized: show4SamplersControl.initialized && show8SamplersControl.initialized && show16SamplersControl.initialized && show32SamplersControl.initialized && show48SamplersControl.initialized && show64SamplersControl.initialized
     readonly property int selectedSamplerCount: [4, 8, 16, 32, 48, 64][mode]
     property bool synchronizingMode: false

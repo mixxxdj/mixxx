@@ -10,7 +10,7 @@ Column {
         Off,
         Auto,
         Manual,
-        NumModes
+        NumModes // This always needs to be the last value
     }
 
     property string duckingModeKey: "talkoverDucking"

@@ -22,15 +22,15 @@ Controls.Panel {
     readonly property bool useFilteredOverview: Math.round(waveformOverviewTypeControl.value) === 0
     property bool waveformsActive: true
 
-    bottomBorderColor: LateNightTheme.isClassic ? "#0a0a0a" : "#0c0c0c"
+    bottomBorderColor: LateNightTheme.mixerPanelBorderBottom
     clip: true
     color: LateNightTheme.samplerPanelColor
     implicitHeight: 98
     implicitWidth: 280
-    leftBorderColor: LateNightTheme.isClassic ? "#333333" : "#282828"
+    leftBorderColor: LateNightTheme.mixerPanelBorderLeft
     radius: LateNightTheme.isClassic ? 2 : 1
-    rightBorderColor: LateNightTheme.isClassic ? "#0a0a0a" : "#181818"
-    topBorderColor: "#333333"
+    rightBorderColor: LateNightTheme.mixerPanelBorderRight
+    topBorderColor: LateNightTheme.mixerPanelBorderTop
 
     RowLayout {
         anchors.bottomMargin: LateNightTheme.isClassic ? 3 : 1
@@ -76,7 +76,7 @@ Controls.Panel {
                         anchors.bottom: parent.bottom
                         anchors.left: parent.left
                         anchors.top: parent.top
-                        color: "#0c0c0c"
+                        color: LateNightTheme.deckPanelBorderDark
                         width: 1
                     }
                     Rectangle {
@@ -84,7 +84,7 @@ Controls.Panel {
                         anchors.left: parent.left
                         anchors.leftMargin: 1
                         anchors.top: parent.top
-                        color: "#292929"
+                        color: LateNightTheme.samplerBpmSeparatorLightColor
                         width: 1
                     }
                     Text {
@@ -99,14 +99,14 @@ Controls.Panel {
                         font.pixelSize: 14
                         font.weight: Font.Medium
                         horizontalAlignment: Text.AlignHCenter
-                        text: root.loaded ? visualBpmControl.value.toFixed(2) : ""
+                        text: root.loaded && visualBpmControl.value > 0 ? visualBpmControl.value.toFixed(2) : ""
                         verticalAlignment: Text.AlignVCenter
                     }
                     Rectangle {
                         anchors.bottom: parent.bottom
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        color: LateNightTheme.isClassic ? "#0c0c0c" : "#292929"
+                        color: LateNightTheme.isClassic ? LateNightTheme.deckPanelBorderDark : LateNightTheme.samplerBpmSeparatorLightColor
                         width: 1
                     }
                 }
@@ -181,14 +181,14 @@ Controls.Panel {
                                 sourceComponent: Component {
                                     MixxxControls.WaveformOverview {
                                         channels: Mixxx.WaveformOverview.Channels.BothChannels
-                                        colorHigh: root.useFilteredOverview ? LateNightTheme.samplerWaveformFilteredHighColor : "#0000ff"
-                                        colorLow: root.useFilteredOverview ? LateNightTheme.samplerWaveformFilteredLowColor : "#ff0000"
-                                        colorMid: root.useFilteredOverview ? LateNightTheme.samplerWaveformFilteredMidColor : "#00ff00"
-                                        cueMarkerColor: "#ff7a01"
+                                        colorHigh: root.useFilteredOverview ? LateNightTheme.samplerWaveformFilteredHighColor : LateNightTheme.overviewRgbLowColor
+                                        colorLow: root.useFilteredOverview ? LateNightTheme.samplerWaveformFilteredLowColor : LateNightTheme.overviewRgbHighColor
+                                        colorMid: root.useFilteredOverview ? LateNightTheme.samplerWaveformFilteredMidColor : LateNightTheme.overviewRgbMidColor
+                                        cueMarkerColor: LateNightTheme.waveformCueColor
                                         group: root.group
-                                        introOutroMarkerColor: "#2c5c9a"
-                                        loopMarkerColor: "#00b400"
-                                        playPositionMarkerColor: "#00c6ff"
+                                        introOutroMarkerColor: LateNightTheme.waveformIntroOutroColor
+                                        loopMarkerColor: LateNightTheme.waveformLoopColor
+                                        playPositionMarkerColor: LateNightTheme.waveformPlayPositionColor.toString()
                                         renderer: root.useFilteredOverview ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.WaveformOverview.Renderer.RGB
                                     }
                                 }
@@ -231,14 +231,14 @@ Controls.Panel {
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 anchors.top: parent.top
-                                color: LateNightTheme.isClassic ? "#0c0c0c" : "#080808"
+                                color: LateNightTheme.samplerSettingsBorderTopColor
                                 height: 1
                             }
                             Rectangle {
                                 anchors.bottom: parent.bottom
                                 anchors.left: parent.left
                                 anchors.right: parent.right
-                                color: LateNightTheme.isClassic ? "#0c0c0c" : "#2a2a2a"
+                                color: LateNightTheme.samplerSettingsBorderBottomColor
                                 height: 1
                             }
                             GridLayout {
@@ -366,7 +366,7 @@ Controls.Panel {
                                     inactiveOpacity: 1
                                     key: "group_" + root.group + "_enable"
                                     label: show4EffectUnitsControl.value > 0 ? (index === 0 ? "\u200aFX\u200a1" : String(index + 1)) : "\u200aFX" + (index + 1)
-                                    labelColor: isActive ? "#000001" : (LateNightTheme.isClassic ? "#696969" : "#666666")
+                                    labelColor: isActive ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.samplerEffectAssignmentInactiveTextColor
                                     labelPixelSize: 12
                                     solidFillEnabled: true
                                     toggleable: true
@@ -391,21 +391,21 @@ Controls.Panel {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        color: "#0c0c0c"
+                        color: LateNightTheme.deckPanelBorderDark
                         height: 1
                     }
                     Rectangle {
                         anchors.bottom: parent.bottom
                         anchors.left: parent.left
                         anchors.top: parent.top
-                        color: "#0c0c0c"
+                        color: LateNightTheme.deckPanelBorderDark
                         width: 1
                     }
                     Rectangle {
                         anchors.bottom: parent.bottom
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        color: LateNightTheme.isClassic ? "#0c0c0c" : "#292929"
+                        color: LateNightTheme.isClassic ? LateNightTheme.deckPanelBorderDark : LateNightTheme.samplerBpmSeparatorLightColor
                         width: 1
                     }
                     RowLayout {
@@ -490,7 +490,7 @@ Controls.Panel {
                 Layout.preferredHeight: 65
                 Layout.preferredWidth: 30
                 backgroundMargin: 0
-                bar.color: "#888888"
+                bar.color: LateNightTheme.samplerPitchSliderBarColor
                 bar.margin: 5
                 bar.start: 0.5
                 bg: LateNightTheme.assetSamplerPitchSliderBackground

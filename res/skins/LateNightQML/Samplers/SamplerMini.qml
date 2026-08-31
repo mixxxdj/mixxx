@@ -13,14 +13,14 @@ Controls.Panel {
     readonly property bool loaded: trackLoadedControl.value > 0
     property var player: Mixxx.PlayerManager.getPlayer(group)
 
-    bottomBorderColor: LateNightTheme.isClassic ? "#0a0a0a" : "#0c0c0c"
+    bottomBorderColor: LateNightTheme.mixerPanelBorderBottom
     color: LateNightTheme.samplerPanelColor
     implicitHeight: 40
     implicitWidth: 150
-    leftBorderColor: LateNightTheme.isClassic ? "#333333" : "#282828"
+    leftBorderColor: LateNightTheme.mixerPanelBorderLeft
     radius: LateNightTheme.isClassic ? 2 : 1
-    rightBorderColor: LateNightTheme.isClassic ? "#0a0a0a" : "#181818"
-    topBorderColor: "#333333"
+    rightBorderColor: LateNightTheme.mixerPanelBorderRight
+    topBorderColor: LateNightTheme.mixerPanelBorderTop
 
     RowLayout {
         anchors.bottomMargin: 2
@@ -80,7 +80,7 @@ Controls.Panel {
                     font.pixelSize: 12
                     font.weight: Font.Medium
                     horizontalAlignment: Text.AlignLeft
-                    text: root.loaded ? visualBpmControl.value.toFixed(2) : ""
+                    text: root.loaded && visualBpmControl.value > 0 ? visualBpmControl.value.toFixed(2) : ""
                     verticalAlignment: Text.AlignVCenter
                 }
                 Item {

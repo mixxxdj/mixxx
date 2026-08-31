@@ -179,6 +179,9 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        // Create this before child controls are constructed so the toolbar
+        // toggle and sampler FX assignment proxies can bind reliably.
+        defaultValue: 0.0
         group: "[Skin]"
         key: "show_sampler_fx"
         persist: true
