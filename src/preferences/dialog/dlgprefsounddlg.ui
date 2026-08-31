@@ -521,20 +521,6 @@
           <widget class="QComboBox" name="boothRouteComboBox">
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="manualVolumeLabel">
-           <property name="text">
-            <string>Manual Volume</string>
-           </property>
-           <property name="buddy">
-            <cstring>manualDeviceComboBox</cstring>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QComboBox" name="manualDeviceComboBox">
-          </widget>
-         </item>
        </layout>
      </widget>
    </item>

@@ -152,13 +152,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
 #endif
 
     struct HardwareDevice {
-        struct Volume {
-            parented_ptr<QSlider> slider;
-            parented_ptr<ControlProxy> value;
-            QLabel* label;
-        };
         QString name;
-        std::unordered_map<uint32_t, Volume> volumes;
+        std::unordered_map<uint32_t, QString> volumes;
     };
     parented_ptr<ControlProxy> m_cpMainVolumeRoute;
     parented_ptr<ControlProxy> m_cpHeadVolumeRoute;
@@ -166,6 +161,5 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<ControlProxy> m_cpMainVolumeDevice;
     parented_ptr<ControlProxy> m_cpHeadVolumeDevice;
     parented_ptr<ControlProxy> m_cpBoothVolumeDevice;
-    parented_ptr<ControlProxy> m_cpManualVolumeDevice;
     std::unordered_map<uint32_t, HardwareDevice> m_hardwareDevices;
 };

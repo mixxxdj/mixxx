@@ -112,16 +112,15 @@ PipewireEnumerator::PipewireEnumerator(
           m_forceSamplerate(false),
           m_samplerate(48000),
           m_bufferSize(kDefaultBufferSize),
-          m_coMainVolume(ConfigKey("[Master]", "hwGain")),
-          m_coHeadVolume(ConfigKey("[Master]", "headHwGain")),
-          m_coBoothVolume(ConfigKey("[Master]", "boothHwGain")),
+          m_coMainVolume(ConfigKey("[Master]", "hwGain"), -32, 0, 1),
+          m_coHeadVolume(ConfigKey("[Master]", "headHwGain"), -32, 0, 1),
+          m_coBoothVolume(ConfigKey("[Master]", "boothHwGain"), -32, 0, 1),
           m_coMainVolumeRoute(ConfigKey(kAppGroup, "main_volume_route")),
           m_coHeadVolumeRoute(ConfigKey(kAppGroup, "head_volume_route")),
           m_coBoothVolumeRoute(ConfigKey(kAppGroup, "booth_volume_route")),
           m_coMainVolumeDevice(ConfigKey(kAppGroup, "main_volume_device")),
           m_coHeadVolumeDevice(ConfigKey(kAppGroup, "head_volume_device")),
           m_coBoothVolumeDevice(ConfigKey(kAppGroup, "booth_volume_device")),
-          m_coManualVolumeDevice(ConfigKey(kAppGroup, "manual_volume_device")),
           m_coGraphDriver(ConfigKey(kAppGroup, "pipewire_driver")) {
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
@@ -347,9 +346,6 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
         Device& device = m_devices.at(id);
         pw_device_add_listener(device.device, &device.listener, &deviceEvents, this);
         m_pSoundManager->addHardwareDevice(name, id);
-        if (m_coManualVolumeDevice.get() == 0) {
-            m_coManualVolumeDevice.set(id);
-        }
     } else if (strcmp(pType, PW_TYPE_INTERFACE_Metadata) == 0) {
         const char* name = spa_dict_lookup(pProps, PW_KEY_METADATA_NAME);
         if (strcmp(name, "settings") != 0) {
@@ -1320,13 +1316,7 @@ void PipewireEnumerator::deviceEventParam(int seq,
             return;
         }
 
-        float volumeSum = 0;
-        for (uint32_t i = 0; i < numChannels; i++) {
-            volumeSum += volumes[i];
-        }
-
         Device::Route& route = device.routes.at(routeIndex);
-        route.volume.set(volumeSum / numChannels);
         route.device = routeDevice;
         route.mute = mute;
         route.numChannels = numChannels;
@@ -1375,10 +1365,7 @@ void PipewireEnumerator::deviceEventParam(int seq,
             return;
         }
 
-        auto [it, didEmplace] = device.routes.try_emplace(routeIndex,
-                ConfigKey(QString::fromStdString(device.name), QString::number(routeIndex)),
-                description);
-
+        auto [it, didEmplace] = device.routes.try_emplace(routeIndex, description);
         Device::Route& route = it->second;
 
         if (!didEmplace) {
@@ -1386,13 +1373,6 @@ void PipewireEnumerator::deviceEventParam(int seq,
         }
 
         m_pSoundManager->addHardwareVolume(deviceId, description, routeIndex);
-        connect(&route.volume,
-                &ControlObject::valueChanged,
-                this,
-                [this, deviceId, routeIndex](double gain) {
-                    setHardwareGain(
-                            deviceId, routeIndex, static_cast<float>(gain));
-                });
 
         route.device = devices[0];
     }

@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 #include "audio/types.h"
+#include "control/controlaudiotaperpot.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
@@ -99,13 +100,11 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
         struct Route {
             bool mute;
             uint32_t device;
-            ControlPotmeter volume;
             uint32_t numChannels;
             QString description;
 
-            Route(const ConfigKey& key, const QString& description)
+            Route(const QString& description)
                     : mute(false),
-                      volume(key),
                       description(description) {
             }
         };
@@ -338,16 +337,15 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     uint32_t m_samplerate;
     uint32_t m_bufferSize;
 
-    ControlPotmeter m_coMainVolume;
-    ControlPotmeter m_coHeadVolume;
-    ControlPotmeter m_coBoothVolume;
+    ControlAudioTaperPot m_coMainVolume;
+    ControlAudioTaperPot m_coHeadVolume;
+    ControlAudioTaperPot m_coBoothVolume;
     ControlObject m_coMainVolumeRoute;
     ControlObject m_coHeadVolumeRoute;
     ControlObject m_coBoothVolumeRoute;
     ControlObject m_coMainVolumeDevice;
     ControlObject m_coHeadVolumeDevice;
     ControlObject m_coBoothVolumeDevice;
-    ControlObject m_coManualVolumeDevice;
     ControlObject m_coGraphDriver;
     uint32_t m_enumParamDeviceId;
     uint32_t m_coreSync;

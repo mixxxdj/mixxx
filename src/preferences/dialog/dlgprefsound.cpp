@@ -117,9 +117,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_cpHeadVolumeDevice(make_parented<ControlProxy>(
                   kAppGroup, "head_volume_device", this)),
           m_cpBoothVolumeDevice(make_parented<ControlProxy>(
-                  kAppGroup, "booth_volume_device", this)),
-          m_cpManualVolumeDevice(make_parented<ControlProxy>(
-                  kAppGroup, "manual_volume_device", this)) {
+                  kAppGroup, "booth_volume_device", this)) {
     setupUi(this);
     // Create text color for the wiki links
     createLinkColor();
@@ -257,7 +255,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     mainDeviceComboBox->addItem(name, id);
                     headDeviceComboBox->addItem(name, id);
                     boothDeviceComboBox->addItem(name, id);
-                    manualDeviceComboBox->addItem(name, id);
                 });
         connect(m_pSoundManager.get(),
                 &SoundManager::hardwareDeviceRemoved,
@@ -271,9 +268,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
                     removeIndex = boothDeviceComboBox->findData(id);
                     boothDeviceComboBox->removeItem(removeIndex);
-
-                    removeIndex = manualDeviceComboBox->findData(id);
-                    manualDeviceComboBox->removeItem(removeIndex);
 
                     m_hardwareDevices.erase(id);
                 });
@@ -606,7 +600,7 @@ void DlgPrefSound::initPipewire() {
         unsigned int deviceId = mainDeviceComboBox->currentData().toUInt();
         m_cpMainVolumeDevice->set(deviceId);
         for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
-            mainRouteComboBox->addItem(volume.label->text(), id);
+            mainRouteComboBox->addItem(volume, id);
         }
     });
     connect(headDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
@@ -614,7 +608,7 @@ void DlgPrefSound::initPipewire() {
         unsigned int deviceId = headDeviceComboBox->currentData().toUInt();
         m_cpHeadVolumeDevice->set(deviceId);
         for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
-            headRouteComboBox->addItem(volume.label->text(), id);
+            headRouteComboBox->addItem(volume, id);
         }
     });
     connect(boothDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
@@ -622,7 +616,7 @@ void DlgPrefSound::initPipewire() {
         unsigned int deviceId = boothDeviceComboBox->currentData().toUInt();
         m_cpBoothVolumeDevice->set(deviceId);
         for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
-            boothRouteComboBox->addItem(volume.label->text(), id);
+            boothRouteComboBox->addItem(volume, id);
         }
     });
 
@@ -635,35 +629,6 @@ void DlgPrefSound::initPipewire() {
     connect(boothRouteComboBox, &QComboBox::currentIndexChanged, this, [this]() {
         m_cpBoothVolumeRoute->set(boothRouteComboBox->currentData().toUInt());
     });
-
-    connect(manualDeviceComboBox,
-            &QComboBox::currentIndexChanged,
-            this,
-            [this](int value) {
-                uint32_t currentDeviceId = static_cast<uint32_t>(m_cpManualVolumeDevice->get());
-
-                if (m_hardwareDevices.contains(currentDeviceId)) {
-                    HardwareDevice& currentDevice = m_hardwareDevices.at(currentDeviceId);
-                    for (auto& volume : std::views::values(currentDevice.volumes)) {
-                        volume.slider->hide();
-                        volume.label->hide();
-                    }
-                }
-
-                uint32_t newDeviceId = manualDeviceComboBox->itemData(value).toUInt();
-                if (m_hardwareDevices.contains(newDeviceId)) {
-                    HardwareDevice& newDevice = m_hardwareDevices.at(newDeviceId);
-                    for (auto& volume : std::views::values(newDevice.volumes)) {
-                        volume.slider->show();
-                        volume.label->show();
-                    }
-                }
-
-                // the checkbox selection needs to immediately take effect
-                // so this setting is stored and broadcasted at same time
-                m_cpManualVolumeDevice->set(newDeviceId);
-                m_pSettings->setValue(ConfigKey{kAppGroup, "hardware_volume_device"}, newDeviceId);
-            });
 
     connect(m_pSoundManager.get(),
             &SoundManager::hardwareVolumeAdded,
@@ -700,43 +665,8 @@ void DlgPrefSound::updateGraphDriver(int driverId) {
 #endif
 
 void DlgPrefSound::addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index) {
-    constexpr unsigned int sliderRange = 100;
-
     HardwareDevice& device = m_hardwareDevices.at(deviceId);
-    auto [it, didEmplace] = device.volumes.try_emplace(index,
-            make_parented<QSlider>(hardwareVolumeGroupBox),
-            make_parented<ControlProxy>(device.name, QString::number(index), this),
-            new QLabel(name));
-    HardwareDevice::Volume& volume = it->second;
-    volume.slider->setOrientation(Qt::Horizontal);
-    volume.slider->setRange(0, sliderRange);
-    connect(volume.slider, &QSlider::valueChanged, this, [this, deviceId, index](int value) {
-        HardwareDevice& device = m_hardwareDevices.at(deviceId);
-        device.volumes.at(index).value->set(((float)value) / sliderRange);
-    });
-
-    volume.value->connectValueChanged(this, [this, deviceId, index](double value) {
-        int sliderValue = static_cast<int>(value * sliderRange);
-        HardwareDevice& device = m_hardwareDevices.at(deviceId);
-        auto& slider = device.volumes.at(index).slider;
-
-        QSignalBlocker blocker(*slider);
-        slider->setValue(sliderValue);
-    });
-
-    hardwareVolumeGrid->addWidget(volume.label, index + 4, 0);
-    hardwareVolumeGrid->addWidget(volume.slider, index + 4, 1);
-
-    {
-        QSignalBlocker blocker(*volume.slider);
-        int sliderValue = static_cast<int>(volume.value->get() * sliderRange);
-        volume.slider->setValue(sliderValue);
-    }
-
-    if (deviceId != m_cpManualVolumeDevice->get()) {
-        volume.label->hide();
-        volume.slider->hide();
-    }
+    device.volumes.insert_or_assign(index, name);
 
     if (deviceId == m_cpMainVolumeDevice->get()) {
         mainRouteComboBox->addItem(name, index);
@@ -1264,13 +1194,6 @@ void DlgPrefSound::refreshDevices() {
 }
 
 void DlgPrefSound::refreshHardwareDevices() {
-    for (HardwareDevice& hardwareDevice : std::views::values(m_hardwareDevices)) {
-        for (HardwareDevice::Volume& volume : std::views::values(hardwareDevice.volumes)) {
-            volume.label->deleteLater();
-            volume.slider->deleteLater();
-            volume.value->deleteLater();
-        }
-    }
     m_hardwareDevices.clear();
     mainRouteComboBox->clear();
     headRouteComboBox->clear();
@@ -1279,14 +1202,12 @@ void DlgPrefSound::refreshHardwareDevices() {
     mainDeviceComboBox->clear();
     headDeviceComboBox->clear();
     boothDeviceComboBox->clear();
-    manualDeviceComboBox->clear();
 
     for (const auto& [id, name] : m_pSoundManager->queryHardwareDevices()) {
         m_hardwareDevices.insert_or_assign(id, HardwareDevice{name, {}});
         mainDeviceComboBox->addItem(name, id);
         headDeviceComboBox->addItem(name, id);
         boothDeviceComboBox->addItem(name, id);
-        manualDeviceComboBox->addItem(name, id);
     }
 
     for (uint32_t deviceId : std::views::keys(m_hardwareDevices)) {
