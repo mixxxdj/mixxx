@@ -20,8 +20,8 @@ BulkReader::BulkReader(libusb_device_handle* handle,
         int length)
         : QThread(),
           m_stop(0),
-          m_context(context),
-          m_handle(handle),
+          m_pContext(context),
+          m_pHandle(handle),
           m_cb_data{this, 0, {}, {}},
           m_in_epaddr(in_epaddr),
           m_in_length(length) {
@@ -29,30 +29,30 @@ BulkReader::BulkReader(libusb_device_handle* handle,
 
 BulkReader::~BulkReader() {
     wait();
-    transfer_destroy(&m_in_transfer);
+    transfer_destroy(&m_pInTransfer);
 }
 
-void BulkReader::transferFinishedCb(libusb_transfer* transfer) {
-    bulk_transfer_cb_data* cb_data = static_cast<bulk_transfer_cb_data*>(transfer->user_data);
-    cb_data->reader->handleTransfer(transfer);
+void BulkReader::transferFinishedCb(libusb_transfer* pTransfer) {
+    bulk_transfer_cb_data* pCbData = static_cast<bulk_transfer_cb_data*>(pTransfer->user_data);
+    pCbData->pReader->handleTransfer(pTransfer);
 
-    std::unique_lock<std::mutex> lock(cb_data->mutex);
-    cb_data->completed = 1;
-    cb_data->cv.notify_one();
+    std::unique_lock<std::mutex> lock(pCbData->mutex);
+    pCbData->completed = 1;
+    pCbData->cv.notify_one();
 }
 
-void BulkReader::handleTransfer(libusb_transfer* transfer) {
-    switch (transfer->status) {
+void BulkReader::handleTransfer(libusb_transfer* pTransfer) {
+    switch (pTransfer->status) {
     case LIBUSB_TRANSFER_COMPLETED:
     case LIBUSB_TRANSFER_TIMED_OUT:
-        if (transfer->actual_length > 0) {
-            QByteArray byteArray(reinterpret_cast<char*>(transfer->buffer),
-                    transfer->actual_length);
+        if (pTransfer->actual_length > 0) {
+            QByteArray byteArray(reinterpret_cast<char*>(pTransfer->buffer),
+                    pTransfer->actual_length);
             emit incomingData(byteArray, mixxx::Time::elapsed());
         }
         if (m_stop.loadAcquire() == 0) {
-            if (libusb_submit_transfer(transfer)) {
-                transfer_destroy(&transfer);
+            if (libusb_submit_transfer(pTransfer)) {
+                transfer_destroy(&pTransfer);
             }
         }
         break;
@@ -66,12 +66,12 @@ void BulkReader::handleTransfer(libusb_transfer* transfer) {
     }
 }
 
-libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
+libusb_transfer* BulkReader::transfer_create(libusb_device_handle* pHandle,
         std::uint8_t epaddr,
         int length,
         unsigned int timeout) {
-    libusb_transfer* transfer = libusb_alloc_transfer(0);
-    if (transfer == nullptr) {
+    libusb_transfer* pTransfer = libusb_alloc_transfer(0);
+    if (pTransfer == nullptr) {
         return nullptr;
     }
 
@@ -79,12 +79,12 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
     auto* buffer = static_cast<unsigned char*>(std::malloc(
             static_cast<std::size_t>(length) * sizeof(unsigned char)));
     if (buffer == nullptr) {
-        libusb_free_transfer(transfer);
+        libusb_free_transfer(pTransfer);
         return nullptr;
     }
 
-    libusb_fill_bulk_transfer(transfer,
-            handle,
+    libusb_fill_bulk_transfer(pTransfer,
+            pHandle,
             epaddr,
             buffer,
             length,
@@ -93,24 +93,24 @@ libusb_transfer* BulkReader::transfer_create(libusb_device_handle* handle,
             timeout);
 
     // Automatically free the transfer buffer on exit
-    transfer->flags = LIBUSB_TRANSFER_FREE_BUFFER;
+    pTransfer->flags = LIBUSB_TRANSFER_FREE_BUFFER;
 
-    int error = libusb_submit_transfer(transfer); // Submit first transfer
+    int error = libusb_submit_transfer(pTransfer); // Submit first transfer
     if (error != 0) {
         qWarning() << "Cannot submit a bulk transfer:" << libusb_error_name(error);
-        libusb_free_transfer(transfer);
+        libusb_free_transfer(pTransfer);
         return nullptr;
     }
 
-    return transfer;
+    return pTransfer;
 }
 
-void BulkReader::transfer_destroy(libusb_transfer** transfer) {
-    VERIFY_OR_DEBUG_ASSERT(transfer != nullptr) {
+void BulkReader::transfer_destroy(libusb_transfer** ppTransfer) {
+    VERIFY_OR_DEBUG_ASSERT(ppTransfer != nullptr) {
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(*transfer != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(*ppTransfer != nullptr) {
         return;
     }
 
@@ -121,8 +121,8 @@ void BulkReader::transfer_destroy(libusb_transfer** transfer) {
         return m_cb_data.completed != 0;
     });
 
-    libusb_free_transfer(*transfer);
-    *transfer = nullptr;
+    libusb_free_transfer(*ppTransfer);
+    *ppTransfer = nullptr;
 }
 
 void BulkReader::stop() {
@@ -131,14 +131,14 @@ void BulkReader::stop() {
     }
 
     qInfo() << "Cancelling bulk transfer";
-    libusb_cancel_transfer(m_in_transfer);
+    libusb_cancel_transfer(m_pInTransfer);
 }
 
 void BulkReader::run() {
     m_stop.storeRelease(0);
 
-    m_in_transfer = transfer_create(m_handle, m_in_epaddr, m_in_length, 500);
-    if (m_in_transfer == nullptr) {
+    m_pInTransfer = transfer_create(m_pHandle, m_in_epaddr, m_in_length, 500);
+    if (m_pInTransfer == nullptr) {
         m_stop = 1;
         return;
     }
@@ -146,40 +146,40 @@ void BulkReader::run() {
     while (m_stop.loadAcquire() == 0) {
         m_cb_data.completed = 0;
         struct timeval tv{0, 500000}; // 500ms timeout
-        libusb_handle_events_timeout_completed(m_context, &tv, &m_cb_data.completed);
+        libusb_handle_events_timeout_completed(m_pContext, &tv, &m_cb_data.completed);
     }
 
     qDebug() << "Stopped Reader";
 }
 
 #ifndef Q_OS_ANDROID
-static QString get_string(libusb_device_handle* handle, uint8_t id) {
+static QString get_string(libusb_device_handle* pHandle, uint8_t id) {
     unsigned char buf[128] = { 0 };
 
     if (id) {
-        libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
+        libusb_get_string_descriptor_ascii(pHandle, id, buf, sizeof(buf));
     }
 
     return QString::fromLatin1((char*)buf);
 }
 
-BulkController::BulkController(libusb_context* context,
-        libusb_device_handle* handle,
-        struct libusb_device_descriptor* desc)
+BulkController::BulkController(libusb_context* pContext,
+        libusb_device_handle* pHandle,
+        struct libusb_device_descriptor* pDesc)
         : Controller(QString("%1 %2").arg(
-                  get_string(handle, desc->iProduct),
-                  get_string(handle, desc->iSerialNumber))),
-          m_context(context),
-          m_phandle(handle),
+                  get_string(pHandle, pDesc->iProduct),
+                  get_string(pHandle, pDesc->iSerialNumber))),
+          m_pContext(pContext),
+          m_pHandle(pHandle),
           m_inEndpointAddr(0),
           m_outEndpointAddr(0),
           m_pReader(nullptr) {
-    m_vendorId = desc->idVendor;
-    m_productId = desc->idProduct;
+    m_vendorId = pDesc->idVendor;
+    m_productId = pDesc->idProduct;
 
-    m_manufacturer = get_string(handle, desc->iManufacturer);
-    m_product = get_string(handle, desc->iProduct);
-    m_sUID = get_string(handle, desc->iSerialNumber);
+    m_manufacturer = get_string(pHandle, pDesc->iManufacturer);
+    m_product = get_string(pHandle, pDesc->iProduct);
+    m_sUID = get_string(pHandle, pDesc->iSerialNumber);
 
     setInputDevice(true);
     setOutputDevice(true);
@@ -189,8 +189,8 @@ BulkController::BulkController(const QJniObject& usbDevice)
         : Controller(QString("%1 %2").arg(
                   usbDevice.callMethod<jstring>("getProductName").toString(),
                   usbDevice.callMethod<jstring>("getSerialNumber").toString())),
-          m_context(nullptr),
-          m_phandle(nullptr),
+          m_pContext(nullptr),
+          m_pHandle(nullptr),
           m_androidUsbDevice(usbDevice),
           m_inEndpointAddr(0),
           m_outEndpointAddr(0),
@@ -361,38 +361,39 @@ int BulkController::open(const QString& resourcePath) {
                       << m_interfaceNumber;
 
     libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY);
-    libusb_init(&m_context);
-    int error = libusb_wrap_sys_device(nullptr, (intptr_t)fileDescriptor, &m_phandle);
+    libusb_init(&m_pContext);
+
+    int error = libusb_wrap_sys_device(nullptr, fileDescriptor, &m_pHandle);
     if (error < 0) {
         qCWarning(m_logBase) << "Cannot open interface for" << getName()
                              << ":" << libusb_error_name(error);
-        libusb_close(m_phandle);
+        libusb_close(m_pHandle);
         return -1;
     } else {
         qCDebug(m_logBase) << "Opened interface for" << getName();
     }
 #else
     // XXX: we should enumerate devices and match vendor, product, and serial
-    if (m_phandle == nullptr) {
-        m_phandle = libusb_open_device_with_vid_pid(
-                m_context, m_vendorId, m_productId);
+    if (m_pHandle == nullptr) {
+        m_pHandle = libusb_open_device_with_vid_pid(
+                m_pContext, m_vendorId, m_productId);
     }
 
-    if (m_phandle == nullptr) {
+    if (m_pHandle == nullptr) {
         qCWarning(m_logBase) << "Unable to open USB Bulk device" << getName();
         return -1;
     }
-    if (libusb_set_auto_detach_kernel_driver(m_phandle, true) == LIBUSB_ERROR_NOT_SUPPORTED) {
+    if (libusb_set_auto_detach_kernel_driver(m_pHandle, true) == LIBUSB_ERROR_NOT_SUPPORTED) {
         qCDebug(m_logBase) << "unable to automatically detach kernel driver for" << getName();
     }
 #endif
 
     if (m_interfaceNumber.has_value()) {
-        int error = libusb_claim_interface(m_phandle, *m_interfaceNumber);
+        int error = libusb_claim_interface(m_pHandle, *m_interfaceNumber);
         if (error < 0) {
             qCWarning(m_logBase) << "Cannot claim interface for" << getName()
                                  << ":" << libusb_error_name(error);
-            libusb_close(m_phandle);
+            libusb_close(m_pHandle);
             return -1;
         } else {
             qCDebug(m_logBase) << "Claimed interface for" << getName();
@@ -411,7 +412,7 @@ int BulkController::open(const QString& resourcePath) {
                     "setup.";
     } else {
         m_pReader = std::make_unique<BulkReader>(
-                m_phandle, m_context, m_inEndpointAddr, m_inLength);
+                m_pHandle, m_pContext, m_inEndpointAddr, m_inLength);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader.get(), &BulkReader::incomingData, this, &BulkController::receive);
@@ -452,21 +453,21 @@ int BulkController::close() {
 
     // Close device
     if (m_interfaceNumber.has_value()) {
-        int error = libusb_release_interface(m_phandle, *m_interfaceNumber);
+        int error = libusb_release_interface(m_pHandle, *m_interfaceNumber);
         if (error < 0) {
             qCWarning(m_logBase) << "Cannot release interface for" << getName()
                                  << ":" << libusb_error_name(error);
         }
     }
     qCInfo(m_logBase) << "  Closing device";
-    libusb_close(m_phandle);
+    libusb_close(m_pHandle);
 
 #ifdef Q_OS_ANDROID
     if (m_androidConnection.isValid()) {
         m_androidConnection.callMethod<void>("close");
     }
 #endif
-    m_phandle = nullptr;
+    m_pHandle = nullptr;
     setOpen(false);
     return 0;
 }
@@ -494,7 +495,7 @@ bool BulkController::sendBytes(const QByteArray& data) {
     int transferred;
 
     // XXX: don't get drunk again.
-    ret = libusb_bulk_transfer(m_phandle,
+    ret = libusb_bulk_transfer(m_pHandle,
             m_outEndpointAddr,
             (unsigned char*)data.constData(),
             data.size(),

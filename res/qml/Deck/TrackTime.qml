@@ -26,41 +26,12 @@ Skin.EmbeddedText {
     property double remaining: durationControl.value * (1 - playPositionControl.value)
 
     function toTime(value) {
-        let result = "";
-        switch (root.mode) {
-        case TrackTime.Mode.Seconds:
-        case TrackTime.Mode.SecondsLong:
-            {
-                let seconds = parseInt(value).toString();
-                let subs = value % 1;
-                return `${seconds.padStart(root.mode === TrackTime.Mode.SecondsLong ? 3 : 0, '0')}.${subs.toFixed(2).slice(-2)}`;
-            }
-        case TrackTime.Mode.KiloSeconds:
-            {
-                let kilos = parseInt(value / 1000);
-                let seconds = parseInt(value % 1000).toString();
-                let subs = value % 1;
-                return `${kilos}.${seconds.padStart(3, '0')} ${subs.toFixed(2).slice(-2)}`;
-            }
-        case TrackTime.Mode.HectoSeconds:
-            return `???`;
-        default:
-            console.warn(`Unsupported track time mode: ${root.mode}. Defaulting to traditional`);
-        case TrackTime.Mode.Traditional:
-        case TrackTime.Mode.TraditionalCoarse:
-            {
-                let component = [];
-                if (remaining + elapsed > 3600) {
-                    component.push(parseInt(value / 3600).toString().padStart(2, '0'));
-                }
-                component.push(parseInt(value / 60).toString().padStart(2, '0'));
-                component.push(parseInt(value % 60).toString().padStart(2, '0'));
-                if (root.mode !== TrackTime.Mode.TraditionalCoarse) {
-                    component[component.length - 1] += `.${(value % 1).toFixed(2).slice(-2)}`;
-                }
-                return component.join(':');
-            }
+        if (!Number.isFinite(value)) {
+            return "";
         }
+
+        const sign = value < 0 ? "-" : "";
+        return sign + Mixxx.DurationFormatter.format(Math.abs(value), root.mode);
     }
 
     text: {

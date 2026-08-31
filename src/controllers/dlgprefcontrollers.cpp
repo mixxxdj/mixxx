@@ -286,6 +286,7 @@ void DlgPrefControllers::destroyControllerWidgets() {
 
     for (auto& [key, value] : m_controllerMap) {
         DlgPrefController* pControllerDlg = value.first;
+        // this triggers the deletion of pControllerDlg, it no longer may be used
         m_pDlgPreferences->removePageWidget(pControllerDlg);
     }
 

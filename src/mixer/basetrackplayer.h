@@ -247,5 +247,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pHighFilterKill;
     parented_ptr<ControlProxy> m_pPreGain;
     parented_ptr<ControlProxy> m_pRateRatio;
+    parented_ptr<ControlProxy> m_pPitch;
     parented_ptr<ControlProxy> m_pPitchAdjust;
+    parented_ptr<ControlProxy> m_pKeylock;
+    parented_ptr<ControlProxy> m_pKeylockMode;
 };

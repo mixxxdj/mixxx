@@ -26,6 +26,13 @@
 #include "util/compatibility/qatomic.h"
 #include "util/logger.h"
 
+// SHOUT_ATTR_F_DEPRECATED was first introduced in libshout-idjc 2.4.6.
+// Since libshout-idjc provides no version macro, we probe for that symbol to
+// detect the 2.4.6+ API.
+#ifdef SHOUT_ATTR_F_DEPRECATED
+#define MIXXX_USE_SHOUT_API_246
+#endif
+
 namespace {
 
 constexpr int kConnectRetries = 30;
@@ -311,22 +318,24 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if (shout_set_name(m_pShout, baStreamName.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout, SHOUT_META_NAME, baStreamName.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream name!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_description(m_pShout, baStreamDesc.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout,
+                SHOUT_META_DESCRIPTION,
+                baStreamDesc.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream description!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_genre(m_pShout, baStreamGenre.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout, SHOUT_META_GENRE, baStreamGenre.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream genre!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
+    if (shout_set_meta(m_pShout, SHOUT_META_URL, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
         return;
     }
@@ -379,7 +388,20 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
+#ifdef MIXXX_USE_SHOUT_API_246
+    // Note: shout_set_format() in libshout-idjc < 2.4.6 Ogg uses mime type
+    // "application/ogg" Using here usage = SHOUT_USAGE_UNKNOWN keep that
+    // unchanged
+    // TODO: verify if we can us usage = SHOUT_USAGE_AUDIO for all, using for
+    // mime type "audio/ogg" for Ogg.
+    if (shout_set_content_format(m_pShout,
+                format,
+                format == SHOUT_FORMAT_OGG ? SHOUT_USAGE_UNKNOWN
+                                           : SHOUT_USAGE_AUDIO,
+                nullptr) != SHOUTERR_SUCCESS) {
+#else
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
+#endif
         errorDialog(tr("Error setting stream encoding format!"), shout_get_error(m_pShout));
         return;
     }
@@ -698,14 +720,14 @@ int ShoutConnection::filelen() {
 
 bool ShoutConnection::writeSingle(const unsigned char* data, std::size_t len) {
     setFunctionCode(8);
-    int ret = shout_send_raw(m_pShout, data, len);
+    ssize_t ret = shout_send_raw(m_pShout, data, len);
     if (ret == SHOUTERR_BUSY) {
         // in case of busy, frames are queued
         // try to flush queue after a short sleep
         kLogger.warning() << "writeSingle() SHOUTERR_BUSY, trying again";
         usleep(10000); // wait 10 ms until "busy" is over. TODO() tweak for an optimum.
         // if this fails, the queue is transmitted after the next regular shout_send_raw()
-        (void)shout_send_raw(m_pShout, nullptr, 0);
+        ret = shout_send_raw(m_pShout, nullptr, 0);
     } else if (ret < SHOUTERR_SUCCESS) {
         m_lastErrorStr = shout_get_error(m_pShout);
         kLogger.warning()
@@ -844,7 +866,11 @@ void ShoutConnection::updateMetaData() {
             setFunctionCode(10);
             insertMetaData("song", baSong.constData());
             setFunctionCode(11);
+#ifdef MIXXX_USE_SHOUT_API_246
+            int ret = shout_set_metadata_utf8(m_pShout, m_pShoutMetaData);
+#else
             int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
+#endif
             if (ret != SHOUTERR_SUCCESS) {
                 kLogger.warning() << "shout_set_metadata fails with error code" << ret;
             }
@@ -865,7 +891,14 @@ void ShoutConnection::updateMetaData() {
             }
 
             setFunctionCode(13);
-            shout_set_metadata(m_pShout, m_pShoutMetaData);
+#ifdef MIXXX_USE_SHOUT_API_246
+            int metaRet = shout_set_metadata_utf8(m_pShout, m_pShoutMetaData);
+#else
+            int metaRet = shout_set_metadata(m_pShout, m_pShoutMetaData);
+#endif
+            if (metaRet != SHOUTERR_SUCCESS) {
+                kLogger.warning() << "shout_set_metadata fails with error code" << metaRet;
+            }
             m_firstCall = true;
         }
     }

@@ -4,6 +4,7 @@
 #include "waveform/waveform.h"
 
 #ifdef MIXXX_USE_QOPENGL
+#include <QGuiApplication>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
 #else
@@ -20,6 +21,7 @@
 #include <QWidget>
 #include <QWindow>
 
+#include "control/controlobject.h"
 #include "moc_waveformwidgetfactory.cpp"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
@@ -136,6 +138,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextPointSize(24),
           m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(0)),
+          m_stemSplitTracks(false),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -146,6 +149,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
+    m_pStemSplitTracksControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")));
     m_visualGain[AllBand] = kVisualGainDefault[AllBand];
     m_visualGain[Low] = kVisualGainDefault[Low];
     m_visualGain[Mid] = kVisualGainDefault[Mid];
@@ -189,22 +194,33 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 
             m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(pContext);
 
-            m_openGLVersion = pContext->isOpenGLES() ? "ES " : "";
-            m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
+            // With EGLFS there is always exactly one native window and one EGL window surface
+            // OpenGL windows cannot be embedded into our QWidgets main window we already have.
+            // That's why m_openGlesAvailable is not set to true. TODO: use GL Widgets for all
+            // https://doc.qt.io/qt-6/embedded-linux.html
+            // See https://doc.qt.io/qt-6/qguiapplication.html#platformName-prop for possible values
+            bool isEglfs = QGuiApplication::platformName() == QStringLiteral("eglfs");
+            bool isOpenGles = pContext->isOpenGLES();
 
-            // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
-            if (pContext->isOpenGLES()) {
-                if (majorVersion * 100 + minorVersion >= 200) {
-                    m_openGlesAvailable = true;
-                }
-            } else {
-                if (majorVersion * 100 + minorVersion >= 201) {
-                    m_openGlAvailable = true;
-                }
+            if (isEglfs) {
+                m_openGLVersion = QStringLiteral("EGLFS ");
+            } else if (isOpenGles) {
+                m_openGLVersion = QStringLiteral("ES ");
+            }
+            // else m_openGLVersion is still empty
+
+            //: This refers to a missing openGL version
+            m_openGLVersion += majorVersion == 0 ? tr("None") : versionString;
+
+            if (!isEglfs) {
+                // Qt >= 5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+                int combinedVersion = majorVersion * 100 + minorVersion;
+                m_openGlesAvailable = isOpenGles && combinedVersion >= 200;
+                m_openGlAvailable = !isOpenGles && combinedVersion >= 201;
             }
 
             if (!rendererString.isEmpty()) {
-                m_openGLVersion += " (" + rendererString + ")";
+                m_openGLVersion += QStringLiteral(" (") + rendererString + QChar(')');
             }
         } else {
             qDebug() << "QOpenGLContext::currentContext() returns nullptr";
@@ -463,6 +479,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setStemOutlineOpacity(static_cast<float>(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_outline_opacity")),
                     0.15)));
+    setStemSplitTracks(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
+            false));
 
     return true;
 }
@@ -1375,10 +1394,12 @@ QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type ty
 }
 
 // static
-QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer config) {
+QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConfig) {
     // The first call should pass the config to set the vsync mode. Subsequent
     // calls will use the value as set on the first call.
-    static const auto vsyncMode = config->getValue(kVSyncKey, 0);
+    static const VSyncThread::VSyncMode vsyncMode = pConfig
+            ? pConfig->getValue(kVSyncKey, VSyncThread::ST_DEFAULT)
+            : VSyncThread::ST_DEFAULT;
 
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
@@ -1494,6 +1515,16 @@ void WaveformWidgetFactory::setStemOpacity(float value) {
                 static_cast<double>(value));
     }
     emit stemOpacityChanged(value);
+}
+
+void WaveformWidgetFactory::setStemSplitTracks(bool value) {
+    m_stemSplitTracks = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
+                value);
+    }
+    m_pStemSplitTracksControl->set(value ? 1.0 : 0.0);
+    emit stemSplitTracksChanged(value);
 }
 
 // static

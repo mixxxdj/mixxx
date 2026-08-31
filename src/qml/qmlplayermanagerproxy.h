@@ -30,6 +30,8 @@ class QmlPlayerManagerProxy : public QObject {
             mixxx::StemChannelSelection stemSelection,
 #endif
             bool play);
+    Q_INVOKABLE void showNoDeckPassthroughInputConfiguredWarning();
+    Q_INVOKABLE void showNoVinylControlInputConfiguredWarning();
 
     static QmlPlayerManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager) {

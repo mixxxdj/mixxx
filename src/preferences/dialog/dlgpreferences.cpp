@@ -1,11 +1,15 @@
 #include "preferences/dialog/dlgpreferences.h"
 
+#include <QApplication>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
+#include <QPalette>
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
+#include <QSlider>
+#include <QStyle>
 #include <QtGlobal>
 
 #include "controllers/dlgprefcontrollers.h"
@@ -29,6 +33,8 @@
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwaveform.h"
+#include "util/cmdlineargs.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -135,32 +141,37 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
-            pScreensaverManager,
-            pSkinLoader,
-            m_pConfig);
-    connect(pInterfacePage,
-            &DlgPrefInterface::tooltipModeChanged,
-            this,
-            &DlgPreferences::tooltipModeChanged);
-    connect(pInterfacePage,
-            &DlgPrefInterface::reloadUserInterface,
-            this,
-            &DlgPreferences::reloadUserInterface,
-            Qt::DirectConnection);
-    connect(pInterfacePage,
-            &DlgPrefInterface::menuBarAutoHideChanged,
-            this,
-            &DlgPreferences::menuBarAutoHideChanged,
-            Qt::DirectConnection);
-    addPageWidget(PreferencesPage(pInterfacePage,
-                          new QTreeWidgetItem(
-                                  contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Interface"),
-            "ic_preferences_interface.svg");
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+                pScreensaverManager,
+                pSkinLoader,
+                m_pConfig);
+        connect(pInterfacePage,
+                &DlgPrefInterface::tooltipModeChanged,
+                this,
+                &DlgPreferences::tooltipModeChanged);
+        connect(pInterfacePage,
+                &DlgPrefInterface::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+        connect(pInterfacePage,
+                &DlgPrefInterface::menuBarAutoHideChanged,
+                this,
+                &DlgPreferences::menuBarAutoHideChanged,
+                Qt::DirectConnection);
+        addPageWidget(PreferencesPage(pInterfacePage,
+                              new QTreeWidgetItem(
+                                      contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Interface"),
+                "ic_preferences_interface.svg");
+    }
 
-    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
-    if (pSkinLoader) {
+    // Check if the Waveform factory exists (it is not created in QML mode)
+    if (WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -272,10 +283,9 @@ DlgPreferences::~DlgPreferences() {
     }
 
     // When DlgPrefControllers is deleted it manually deletes the controller tree items,
-    // which makes QTreeWidgetItem trigger this signal. If we don't disconnect,
-    // &DlgPreferences::changePage iterates on the PreferencesPage instances in m_allPages,
-    // but the pDlg objects of the controller items are already destroyed by DlgPrefControllers,
-    // which causes a crash when accessed.
+    // which makes QTreeWidgetItem trigger this signal. Currently PreferencesPage
+    // instances in m_allPages are destroyed along with pDlg objects. This disconnect
+    // is kept as a safety measure.
     disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged, this, &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
@@ -294,7 +304,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
         return;
     }
 
-    for (PreferencesPage page : std::as_const(m_allPages)) {
+    for (const PreferencesPage& page : std::as_const(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
             switchToPage(pCurrent->text(0), page.pDlg);
             break;
@@ -325,6 +335,61 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     return QWidget::eventFilter(o, e);
 }
 
+void DlgPreferences::changeEvent(QEvent* pEvent) {
+    static bool s_inPaletteUpdate = false;
+    if (s_inPaletteUpdate) {
+        QDialog::changeEvent(pEvent);
+        return;
+    }
+
+    if (pEvent->type() == QEvent::PaletteChange ||
+            pEvent->type() == QEvent::ApplicationPaletteChange ||
+            pEvent->type() == QEvent::ThemeChange) {
+        struct ResetFlag {
+            bool& flag;
+            explicit ResetFlag(bool& f)
+                    : flag(f) {
+                flag = true;
+            }
+            ~ResetFlag() {
+                flag = false;
+            }
+        } resetFlag(s_inPaletteUpdate);
+
+        // Re-apply macOS system slider styles based on the current theme mode
+        fixSliderStyle();
+
+        const QPalette appPalette = QApplication::palette();
+        if (palette() != appPalette) {
+            setPalette(appPalette);
+        }
+        // Update m_iconsPath based on the new palette's text color
+        if (!Color::isDimColor(appPalette.text().color())) {
+            m_iconsPath.setPath(":/images/preferences/light/");
+        } else {
+            m_iconsPath.setPath(":/images/preferences/dark/");
+        }
+
+        // Reload tree item icons for all pages
+        for (const PreferencesPage& page : std::as_const(m_allPages)) {
+            if (page.pTreeItem && !page.iconFile.isEmpty()) {
+                page.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(page.iconFile)));
+            }
+        }
+
+        const QList<QWidget*> children = findChildren<QWidget*>();
+        for (QWidget* pChild : children) {
+            pChild->setPalette(appPalette);
+            if (pChild->style()) {
+                pChild->style()->unpolish(pChild);
+                pChild->style()->polish(pChild);
+            }
+            pChild->update();
+        }
+    }
+    QDialog::changeEvent(pEvent);
+}
+
 void DlgPreferences::onHide() {
     // Notify children that we are about to hide.
     emit closeDlg();
@@ -352,7 +417,8 @@ void DlgPreferences::onShow() {
     int newWidth = m_geometry[2].toInt();
     int newHeight = m_geometry[3].toInt();
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
@@ -466,37 +532,43 @@ bool DlgPreferences::pendingConfigValidOnAllPages() {
     return true;
 }
 
-void DlgPreferences::addPageWidget(PreferencesPage page,
+void DlgPreferences::addPageWidget(const PreferencesPage& page,
         const QString& pageTitle,
         const QString& iconFile) {
+    PreferencesPage pageCopy = page;
+    pageCopy.iconFile = iconFile;
     // Configure the tree button linked to the page
-    page.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
-    page.pTreeItem->setText(0, pageTitle);
-    page.pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    page.pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    pageCopy.pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
+    pageCopy.pTreeItem->setText(0, pageTitle);
+    pageCopy.pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    pageCopy.pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotShow);
-    connect(this, &DlgPreferences::closeDlg, page.pDlg, &DlgPreferencePage::slotHide);
-    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotUpdate);
+    connect(this, &DlgPreferences::showDlg, pageCopy.pDlg, &DlgPreferencePage::slotShow);
+    connect(this, &DlgPreferences::closeDlg, pageCopy.pDlg, &DlgPreferencePage::slotHide);
+    connect(this, &DlgPreferences::showDlg, pageCopy.pDlg, &DlgPreferencePage::slotUpdate);
 
-    connect(this, &DlgPreferences::applyPreferences, page.pDlg, &DlgPreferencePage::slotApply);
-    connect(this, &DlgPreferences::cancelPreferences, page.pDlg, &DlgPreferencePage::slotCancel);
+    connect(this, &DlgPreferences::applyPreferences, pageCopy.pDlg, &DlgPreferencePage::slotApply);
+    connect(this,
+            &DlgPreferences::cancelPreferences,
+            pageCopy.pDlg,
+            &DlgPreferencePage::slotCancel);
     connect(this,
             &DlgPreferences::resetToDefaults,
-            page.pDlg,
+            pageCopy.pDlg,
             &DlgPreferencePage::slotResetToDefaults);
 
     // Add a new scroll area to the stacked pages widget containing the page
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
 
-    sa->setWidget(page.pDlg);
+    sa->setWidget(pageCopy.pDlg);
     pagesWidget->addWidget(sa);
-    m_allPages.append(page);
+    m_allPages.append(pageCopy);
 
     int iframe = 2 * sa->frameWidth();
     m_pageSizeHint = m_pageSizeHint.expandedTo(
-            page.pDlg->sizeHint() + QSize(iframe, iframe));
+            pageCopy.pDlg->sizeHint() + QSize(iframe, iframe));
+    fixSliderStyle();
 }
 
 DlgPreferencePage* DlgPreferences::currentPage() {
@@ -515,8 +587,22 @@ DlgPreferencePage* DlgPreferences::currentPage() {
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
-    QWidget* pScrollArea = pWidget->parentWidget()->parentWidget();
-    m_allPages.removeAt(pagesWidget->indexOf(pScrollArea));
+    QWidget* pParent = pWidget->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pParent) {
+        return;
+    }
+
+    QWidget* pScrollArea = pParent->parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(pScrollArea) {
+        return;
+    }
+
+    const int index = pagesWidget->indexOf(pScrollArea);
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_allPages.size()) {
+        return;
+    }
+
+    m_allPages.removeAt(index);
     pagesWidget->removeWidget(pScrollArea);
     delete pScrollArea;
 }
@@ -574,7 +660,8 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 
 QRect DlgPreferences::getDefaultGeometry() {
     adjustSize();
-    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }
@@ -605,8 +692,7 @@ void DlgPreferences::fixSliderStyle() {
     //   - the groove is not correctly centered vertically
     //   - the handle is cut off at the top
     // The style below is based on sliders in the macOS system settings dialogs.
-    if (darkAppearance()) {
-        setStyleSheet(R"--(
+    const QString styleSheetStr = darkAppearance() ? R"--(
 QSlider::handle:horizontal {
     background-color: #8f8c8b; 
     border-radius: 4px;
@@ -623,9 +709,8 @@ QSlider::groove:horizontal {
     margin-left: 8px; 
     margin-right: 8px;
 }
-)--");
-    } else {
-        setStyleSheet(R"--(
+)--"
+                                                   : R"--(
 QSlider::handle:horizontal {
     background-color: #ffffff;
     border-radius: 4px;
@@ -643,7 +728,11 @@ QSlider::groove:horizontal {
     margin-left: 8px;
     margin-right: 8px;
 }
-)--");
+)--";
+
+    const QList<QSlider*> sliders = findChildren<QSlider*>();
+    for (QSlider* pSlider : sliders) {
+        pSlider->setStyleSheet(styleSheetStr);
     }
-#endif // __APPLE__
+#endif // Q_OS_MACOS
 }
