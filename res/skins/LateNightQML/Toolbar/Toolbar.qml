@@ -645,7 +645,10 @@ Rectangle {
         property real opacity: 1.0
     }
     ApplicationMenuShortcuts {
+        actions: root.applicationMenuActions
+
         onApplicationMenuRequested: root.openApplicationMenuFromKeyboard()
+        onMenuShortcutTriggered: root.dismissApplicationMenu()
     }
     RowLayout {
         anchors.fill: parent
