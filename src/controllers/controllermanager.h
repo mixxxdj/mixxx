@@ -45,6 +45,10 @@ class ControllerManager : public QObject {
 
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
+    void addDevice(Controller* pController);
+    void removeDevice(Controller* pController);
+    void setUpDevice(Controller& pController);
+
   signals:
     void initialized();
     void devicesChanged();
@@ -59,9 +63,6 @@ class ControllerManager : public QObject {
     void slotApplyMapping(Controller* pController,
             std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
-    void slotAddDevice(Controller* pController);
-    void slotRemoveDevice(Controller* pController);
-    void slotSetUpDevice(Controller* pController);
 
   private slots:
     /// Perform initialization that should be delayed until the ControllerManager

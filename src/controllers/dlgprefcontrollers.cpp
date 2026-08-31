@@ -266,8 +266,9 @@ void DlgPrefControllers::destroyControllerWidget(Controller* pController) {
     DEBUG_ASSERT(!value.empty());
 
     DlgPrefController* pControllerDlg = value.mapped().first;
+
+    // this triggers the deletion of pControllerDlg, it no longer may be used
     m_pDlgPreferences->removePageWidget(pControllerDlg);
-    delete pControllerDlg;
 
     QTreeWidgetItem* pControllerTreeItem = value.mapped().second;
     m_pControllersRootItem->removeChild(pControllerTreeItem);

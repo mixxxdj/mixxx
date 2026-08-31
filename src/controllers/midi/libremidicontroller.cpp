@@ -1,35 +1,14 @@
 #include "controllers/midi/libremidicontroller.h"
 
+#include <QMetaObject>
 #include <libremidi/libremidi.hpp>
 
 #include "controllers/midi/midiutils.h"
 #include "moc_libremidicontroller.cpp"
 #include "util/duration.h"
 
-namespace {
-const QString kUnknownControllerName = QStringLiteral("Unknown LibremidiController");
-const QString getDeviceName(const libremidi::input_port* pInput,
-        const libremidi::output_port* pOutput) {
-    if (pInput) {
-        return QString::fromLocal8Bit(pInput->port_name);
-    }
-    if (pOutput) {
-        return QString::fromLocal8Bit(pOutput->port_name);
-    }
-    return kUnknownControllerName;
-}
-} // namespace
-
-LibremidiController::LibremidiController(const libremidi::input_port* pInputPort,
-        const libremidi::output_port* pOutputPort)
-        : MidiController(getDeviceName(pInputPort, pOutputPort)) {
-    if (pInputPort) {
-        setInputPort(*pInputPort);
-    }
-
-    if (pOutputPort) {
-        setOutputPort(*pOutputPort);
-    }
+LibremidiController::LibremidiController(std::string name)
+        : MidiController(QString::fromStdString(name)) {
 }
 
 LibremidiController::~LibremidiController() {
@@ -38,37 +17,41 @@ LibremidiController::~LibremidiController() {
     }
 }
 
-void LibremidiController::setInputPort(std::optional<libremidi::input_port> port) {
-    m_pInputPort = port;
-
-    if (m_pInputPort) {
-        setInputDevice(true);
-        m_pInputDevice = libremidi::midi_in{
-                libremidi::input_configuration{
-                        .on_message = [this](const libremidi::message& m) {
-                            this->onMessage(m);
-                        },
-                }};
-    } else {
-        m_pInputDevice.reset();
-        setInputDevice(false);
-    }
+void LibremidiController::removeInputPort() {
+    m_pInputDevice.reset();
+    setInputDevice(false);
 }
 
-void LibremidiController::setOutputPort(std::optional<libremidi::output_port> port) {
+void LibremidiController::setInputPort(libremidi::observer& observer, libremidi::input_port port) {
+    m_pInputPort = port;
+
+    setInputDevice(true);
+    m_pInputDevice = libremidi::midi_in{
+            libremidi::input_configuration{
+                    .on_message = [this](const libremidi::message& m) {
+                        this->onMessage(m);
+                    },
+            },
+            libremidi::midi_in_configuration_for(observer)};
+}
+
+void LibremidiController::removeOutputPort() {
+    m_pOutputDevice.reset();
+    setOutputDevice(false);
+}
+
+void LibremidiController::setOutputPort(
+        libremidi::observer& observer, libremidi::output_port port) {
     m_pOutputPort = std::move(port);
-    if (port) {
-        m_pOutputDevice.emplace();
-        setOutputDevice(true);
-    } else {
-        m_pOutputDevice.reset();
-        setOutputDevice(false);
-    }
+    m_pOutputDevice.emplace(libremidi::output_configuration{},
+            libremidi::midi_out_configuration_for(observer));
+    setOutputDevice(true);
 }
 
 void LibremidiController::onMessage(const libremidi::message& m) {
     auto status = m.bytes[0];
     auto timestamp = mixxx::Duration::fromMillis(m.timestamp);
+    qDebug() << "LibremidiController::onMessage" << m.bytes[0] << m.bytes[1] << m.bytes[2];
 
     if ((status & 0xF8) == 0xF8) {
         // Handle real-time MIDI messages at any time
@@ -161,7 +144,7 @@ int LibremidiController::close() {
 
 void LibremidiController::sendShortMsg(
         unsigned char status, unsigned char byte1, unsigned char byte2) {
-    if (m_pOutputPort.has_value() || !m_pOutputDevice->is_port_open()) {
+    if (!m_pOutputPort || !m_pOutputDevice->is_port_open()) {
         return;
     }
 
@@ -177,18 +160,18 @@ void LibremidiController::sendShortMsg(
                                           MidiUtils::opCodeFromStatus(status));
         qCWarning(m_logOutput) << "Libremidi error:" << error.message().data();
     } else {
-        qCDebug(m_logOutput) << QStringLiteral("outgoing: ")
-                             << MidiUtils::formatMidiOpCode(getName(),
-                                        status,
-                                        byte1,
-                                        byte2,
-                                        MidiUtils::channelFromStatus(status),
-                                        MidiUtils::opCodeFromStatus(status));
+        qDebug(m_logOutput) << QStringLiteral("outgoing: ")
+                            << MidiUtils::formatMidiOpCode(getName(),
+                                       status,
+                                       byte1,
+                                       byte2,
+                                       MidiUtils::channelFromStatus(status),
+                                       MidiUtils::opCodeFromStatus(status));
     }
 }
 
 bool LibremidiController::sendBytes(const QByteArray& data) {
-    if (m_pOutputPort.has_value() || !m_pOutputDevice->is_port_open()) {
+    if (!m_pOutputPort || !m_pOutputDevice->is_port_open()) {
         return false;
     }
 

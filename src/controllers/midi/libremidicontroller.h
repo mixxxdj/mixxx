@@ -16,33 +16,39 @@
 /// why the constructor takes both arguments pertaining to both input and output ports.
 class LibremidiController : public MidiController {
     Q_OBJECT
-
-    friend class LibremidiEnumerator;
-
   public:
-    LibremidiController(const libremidi::input_port* pInputPort,
-            const libremidi::output_port* pOutputPort);
+    LibremidiController(std::string name);
     ~LibremidiController() override;
 
-    void setInputPort(std::optional<libremidi::input_port> port);
-    void setOutputPort(std::optional<libremidi::output_port> port);
+    void setInputPort(libremidi::observer& observer, libremidi::input_port port);
+    void setOutputPort(libremidi::observer& observer, libremidi::output_port port);
+    void removeInputPort();
+    void removeOutputPort();
 
     PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
         return PhysicalTransportProtocol::UNKNOWN;
     }
 
     QString getVendorString() const override {
-        return QString();
-    }
-    QString getProductString() const override {
         if (m_pInputPort) {
-            return QString::fromLocal8Bit(m_pInputPort->port_name);
+            return m_pInputPort->manufacturer.c_str();
         }
         if (m_pOutputPort) {
-            return QString::fromLocal8Bit(m_pOutputPort->port_name);
+            return m_pOutputPort->manufacturer.c_str();
         }
-        return QString();
+        return {};
     }
+
+    QString getProductString() const override {
+        if (m_pInputPort) {
+            return m_pInputPort->product.c_str();
+        }
+        if (m_pOutputPort) {
+            return m_pOutputPort->product.c_str();
+        }
+        return {};
+    }
+
     std::optional<uint16_t> getVendorId() const override {
         return std::nullopt;
     }
@@ -55,6 +61,34 @@ class LibremidiController : public MidiController {
 
     std::optional<uint8_t> getUsbInterfaceNumber() const override {
         return std::nullopt;
+    }
+
+    libremidi::midi_in* inputDevice() {
+        if (m_pInputDevice) {
+            return &m_pInputDevice.value();
+        }
+        return nullptr;
+    }
+
+    libremidi::midi_out* outputDevice() {
+        if (m_pOutputDevice) {
+            return &m_pOutputDevice.value();
+        }
+        return nullptr;
+    }
+
+    libremidi::input_port* inputPort() {
+        if (m_pInputPort) {
+            return &m_pInputPort.value();
+        }
+        return nullptr;
+    }
+
+    libremidi::output_port* outputPort() {
+        if (m_pOutputPort) {
+            return &m_pOutputPort.value();
+        }
+        return nullptr;
     }
 
   protected:

@@ -175,6 +175,7 @@ void ControllerManager::slotInitialize() {
     {
         auto locker = lockMutex(&m_mutex);
 
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
         QString midiAPI = m_pConfig->getValue(kMidiAPI, kDefaultMidiAPI);
 
         if (false) {
@@ -188,6 +189,7 @@ void ControllerManager::slotInitialize() {
         else if (midiAPI == "Libremidi") {
             m_enumerators.push_back(std::make_unique<LibremidiEnumerator>(m_pConfig, this));
         }
+#endif
 #endif
 
 #ifdef __HSS1394__
@@ -203,18 +205,18 @@ void ControllerManager::slotInitialize() {
     emit initialized();
 }
 
-void ControllerManager::slotAddDevice(Controller* pController) {
+void ControllerManager::addDevice(Controller* pController) {
     m_controllers.append(pController);
     emit deviceAdded(pController);
 
     if (pController->isInputDevice()) {
-        slotSetUpDevice(pController);
+        setUpDevice(*pController);
     }
 }
 
-void ControllerManager::slotRemoveDevice(Controller* pController) {
+void ControllerManager::removeDevice(Controller* pController) {
     emit deviceRemoved(pController);
-    m_controllers.removeAll(pController);
+    m_controllers.removeOne(pController);
 }
 
 void ControllerManager::slotShutdown() {
@@ -299,12 +301,12 @@ QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name
     return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
-void ControllerManager::slotSetUpDevice(Controller* pController) {
+void ControllerManager::setUpDevice(Controller& controller) {
     QStringList mappingPaths(getMappingPaths(m_pConfig));
-    QString name = pController->getName();
+    QString name = controller.getName();
 
-    if (pController->isOpen()) {
-        pController->close();
+    if (controller.isOpen()) {
+        controller.close();
     }
 
     // The filename for this device name.
@@ -336,10 +338,10 @@ void ControllerManager::slotSetUpDevice(Controller* pController) {
     if (!pMapping) {
         return;
     }
-    pMapping->loadSettings(m_pConfig, pController->getName());
+    pMapping->loadSettings(m_pConfig, controller.getName());
 
     // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
-    pController->setMapping(std::move(pMapping));
+    controller.setMapping(std::move(pMapping));
 
     // If we are in safe mode, skip opening controllers.
     if (CmdlineArgs::Instance().getSafeMode()) {
@@ -349,7 +351,7 @@ void ControllerManager::slotSetUpDevice(Controller* pController) {
 
     qDebug() << "Opening controller:" << name;
 
-    int value = pController->open(m_pConfig->getResourcePath());
+    int value = controller.open(m_pConfig->getResourcePath());
     if (value != 0) {
         qWarning() << "There was a problem opening" << name;
         return;
@@ -365,7 +367,7 @@ void ControllerManager::slotSetUpDevices() {
     // QStringList mappingPaths(getMappingPaths(m_pConfig));
 
     for (Controller* pController : deviceList) {
-        slotSetUpDevice(pController);
+        setUpDevice(*pController);
     }
 
     pollIfAnyControllersOpen();
