@@ -643,6 +643,10 @@ int PipewireEnumerator::metadataEventSetting(
 
 int PipewireEnumerator::metadataEventDefault(
         uint32_t id, const char* key, const char* type, const char* value) {
+    if (!key || !type || !value) {
+        return 0;
+    }
+
     bool defaultAudioSource = strcmp(key, "default.audio.source") == 0;
     bool defaultAudioSink = strcmp(key, "default.audio.sink") == 0;
     qDebug() << "PipewireEnumerator::metadataEventDefault" << id << key << type
@@ -656,6 +660,7 @@ int PipewireEnumerator::metadataEventDefault(
 
     VERIFY_OR_DEBUG_ASSERT(parseError.error == QJsonParseError::NoError) {
         qWarning() << "JSON Parse error: " << parseError.errorString();
+        return 0;
     }
 
     QJsonObject obj = doc.object();
