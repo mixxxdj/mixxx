@@ -3037,6 +3037,7 @@ if(BUILD_TESTING)
       PRIVATE
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
+        src/test/qml/qmlstartupsmoketest.cpp
         src/test/qmlcontrolproxytest.cpp
         src/test/qmldurationformattertest.cpp
         src/test/qmleffectsproxytest.cpp
@@ -3095,6 +3096,8 @@ if(BUILD_TESTING)
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     TEST_LIST testsuite
     DISCOVERY_MODE PRE_TEST
+    DISCOVERY_TIMEOUT 60
+    EXTRA_ARGS --developer
   )
 
   if(BUILD_BENCH)
@@ -4065,6 +4068,58 @@ if(QML)
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+
+  # Qt is statically linked in some CI environments. In that case the QML
+  # plugins used by the skins must be linked into the test executable too.
+  if(BUILD_TESTING)
+    set(
+      MIXXX_QML_STATIC_PLUGINS
+      effectsplugin
+      labsmodelsplugin
+      modelsplugin
+      qmlfolderlistmodelplugin
+      qmlplugin
+      qmlshapesplugin
+      qquicklayoutsplugin
+      qtgraphicaleffectsplugin
+      qtgraphicaleffectsprivate
+      qtqmlcoreplugin
+      qtquick2plugin
+      qtquickcontrols2basicstyleimplplugin
+      qtquickcontrols2basicstyleplugin
+      qtquickcontrols2fluentwinui3styleimplplugin
+      qtquickcontrols2fluentwinui3styleplugin
+      qtquickcontrols2fusionstyleimplplugin
+      qtquickcontrols2fusionstyleplugin
+      qtquickcontrols2imaginestyleimplplugin
+      qtquickcontrols2imaginestyleplugin
+      qtquickcontrols2implplugin
+      qtquickcontrols2iosstyleimplplugin
+      qtquickcontrols2iosstyleplugin
+      qtquickcontrols2macosstyleimplplugin
+      qtquickcontrols2macosstyleplugin
+      qtquickcontrols2materialstyleimplplugin
+      qtquickcontrols2materialstyleplugin
+      qtquickcontrols2nativestyleplugin
+      qtquickcontrols2plugin
+      qtquickcontrols2universalstyleimplplugin
+      qtquickcontrols2universalstyleplugin
+      qtquickdialogs2quickimplplugin
+      qtquickdialogsplugin
+      qtquicktemplates2plugin
+      quickmultimedia
+      quickwindow
+      workerscriptplugin
+    )
+    foreach(plugin IN LISTS MIXXX_QML_STATIC_PLUGINS)
+      if(TARGET Qt6::${plugin})
+        get_target_property(plugin_type Qt6::${plugin} TYPE)
+        if(plugin_type STREQUAL "STATIC_LIBRARY")
+          target_link_libraries(mixxx-test PRIVATE Qt6::${plugin})
+        endif()
+      endif()
+    endforeach()
+  endif()
 
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/qml"

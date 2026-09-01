@@ -79,6 +79,10 @@ class CmdlineArgs final {
     const QString& getSettingsPath() const { return m_settingsPath; }
     void setSettingsPath(const QString& newSettingsPath) {
         m_settingsPath = newSettingsPath;
+        if (!m_settingsPath.endsWith('/')) {
+            m_settingsPath.append('/');
+        }
+        m_settingsPathSet = true;
     }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
