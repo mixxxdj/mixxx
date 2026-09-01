@@ -8,7 +8,6 @@
 #include <QQuickWindow>
 #include <QTextDocument>
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "control/controlproxy.h"
@@ -18,7 +17,6 @@
 #include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "preferences/configobject.h"
-#include "preferences/constants.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlapplicationproxy.h"
 #include "qml/qmldlgpreferencesproxy.h"
@@ -161,13 +159,9 @@ QmlApplication::QmlApplication(
                 *inputWarningVisible = false;
                 if (accepted) {
                     pDlgPreferences->show();
-                    const auto inputTab = std::optional<mixxx::preferences::SoundHardwareTab>(
-                            mixxx::preferences::SoundHardwareTab::Input);
                     if (!QMetaObject::invokeMethod(pDlgPreferences.get(),
-                                "showSoundHardwarePage",
-                                Qt::DirectConnection,
-                                Q_ARG(std::optional<mixxx::preferences::SoundHardwareTab>,
-                                        inputTab))) {
+                                "showSoundHardwareInputPage",
+                                Qt::DirectConnection)) {
                         qWarning() << "QML input warning could not open Sound Hardware preferences";
                     }
                     pDlgPreferences->raise();

@@ -23,6 +23,7 @@ Rectangle {
             Layout.fillWidth: true
         }
         RowLayout {
+            Layout.alignment: Qt.AlignTop
             Layout.fillHeight: true
             Layout.leftMargin: 2
             Layout.rightMargin: 2
@@ -48,6 +49,7 @@ Rectangle {
             Layout.fillWidth: true
         }
         RowLayout {
+            Layout.alignment: Qt.AlignTop
             Layout.fillHeight: true
             Layout.leftMargin: 2
             Layout.rightMargin: 2

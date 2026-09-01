@@ -321,6 +321,10 @@ void DlgPreferences::showSoundHardwarePage(
     }
 }
 
+void DlgPreferences::showSoundHardwareInputPage() {
+    showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
+}
+
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide) {
