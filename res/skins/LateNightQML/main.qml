@@ -3,6 +3,7 @@ import "LateNightTheme"
 import "Deck" as LateNightDeck
 import "Effects" as LateNightEffects
 import "Mixer" as LateNightMixer
+import "Samplers" as LateNightSamplers
 import "Toolbar" as LateNightToolbar
 import "Waveforms" as LateNightWaveforms
 import Mixxx 1.0 as Mixxx
@@ -224,8 +225,107 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        // Create this before child controls are constructed so the toolbar
+        // toggle and sampler FX assignment proxies can bind reliably.
+        defaultValue: 0.0
         group: "[Skin]"
         key: "show_sampler_fx"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: 1.0
+        group: "[Skin]"
+        key: "sampler_rows"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_4samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: 1.0
+        group: "[Skin]"
+        key: "show_8samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_16samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_32samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_48samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_64samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_1-4"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_1-8"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_9-16"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_17-24"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_25-32"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_33-40"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_41-48"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_49-56"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_57-64"
         persist: true
     }
     Column {
@@ -306,7 +406,7 @@ ApplicationWindow {
 
                 readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
                 readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
-                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height
+                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height
                 readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
 
                 SplitView.fillHeight: library.active
@@ -609,6 +709,37 @@ ApplicationWindow {
                         anchors.top: parent.top
                     }
                 }
+                Item {
+                    id: samplersSection
+
+                    clip: true
+                    height: root.showSamplers && !root.maximizeLibrary ? samplers.implicitHeight : 0
+                    opacity: root.showSamplers && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: effectsSection.y + effectsSection.height
+                    z: 2
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    LateNightSamplers.SamplersRack {
+                        id: samplers
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+                }
                 Loader {
                     id: library
 
@@ -649,7 +780,7 @@ ApplicationWindow {
 
                     anchors {
                         bottom: parent.bottom
-                        top: effectsSection.bottom
+                        top: samplersSection.bottom
                     }
                 }
             }

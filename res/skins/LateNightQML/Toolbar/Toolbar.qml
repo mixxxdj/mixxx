@@ -526,25 +526,25 @@ Rectangle {
     Mixxx.ControlProxy {
         id: samplerRowsControl
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "sampler_rows"
     }
     Mixxx.ControlProxy {
         id: expandSamplers14Control
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "expand_samplers_1-4"
     }
     Mixxx.ControlProxy {
         id: expandSamplers18Control
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "expand_samplers_1-8"
     }
     Mixxx.ControlProxy {
         id: expandSamplers916Control
 
-        group: "[LateNight]"
+        group: "[Skin]"
         key: "expand_samplers_9-16"
     }
     Mixxx.ControlProxy {
