@@ -32,6 +32,8 @@ Item {
     property color latchOverlayColor: "transparent"
     property url latchOverlayBackgroundSource: backgroundSource
     property url latchOverlayIconSource: iconSource
+    property real iconAssetScale: 2
+    readonly property real effectiveIconAssetScale: Number.isFinite(root.iconAssetScale) && root.iconAssetScale > 0 ? root.iconAssetScale : 2
 
     property bool stretchIcon: false
     property int iconLeftPadding: 0
@@ -120,8 +122,8 @@ Item {
         id: iconImage
         x: root.stretchIcon ? root.iconLeftPadding : root.iconLeftPadding + (root.iconAvailableWidth - width) / 2
         y: root.stretchIcon ? root.iconTopPadding : root.iconTopPadding + (root.iconAvailableHeight - height) / 2
-        width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / 2 : root.iconAvailableWidth)
-        height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / 2 : root.iconAvailableHeight)
+        width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / root.effectiveIconAssetScale : root.iconAvailableWidth)
+        height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / root.effectiveIconAssetScale : root.iconAvailableHeight)
         source: root.effectiveIconSource
         fillMode: root.stretchIcon ? Image.Stretch : Image.PreserveAspectFit
         opacity: root.contentOpacity
@@ -157,8 +159,8 @@ Item {
         Image {
             x: root.stretchIcon ? root.iconLeftPadding - latchOverlay.x : root.iconLeftPadding + (root.iconAvailableWidth - width) / 2 - latchOverlay.x
             y: root.stretchIcon ? root.iconTopPadding : root.iconTopPadding + (root.iconAvailableHeight - height) / 2
-            width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / 2 : root.iconAvailableWidth)
-            height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / 2 : root.iconAvailableHeight)
+            width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / root.effectiveIconAssetScale : root.iconAvailableWidth)
+            height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / root.effectiveIconAssetScale : root.iconAvailableHeight)
             source: root.latchOverlayIconSource
             fillMode: root.stretchIcon ? Image.Stretch : Image.PreserveAspectFit
             opacity: root.contentOpacity

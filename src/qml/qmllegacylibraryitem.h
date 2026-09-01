@@ -1,17 +1,21 @@
 #pragma once
 
+#include <QMetaObject>
 #include <QPixmap>
 #include <QPointer>
 #include <QQmlEngine>
 #include <QQuickPaintedItem>
+#include <QRegion>
 #include <QTimer>
 #include <QWidget>
 #include <memory>
 
+#include "qml/qmldprutils.h"
+
 class ControlProxy;
-class ControlPushButton;
 class QAbstractItemView;
 class QHeaderView;
+class QScreen;
 class QScrollBar;
 class WLibrary;
 class WLibrarySidebar;
@@ -50,10 +54,14 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     void updatePolish() override;
 
   private:
+    using RenderInvalidationReason = mixxx::qml::RenderInvalidationReason;
+
     void updateWidgetSize();
+    void updateRenderWindow(QQuickWindow* pWindow);
+    void updateRenderScreen(QScreen* pScreen);
+    void updateEffectiveDpr();
     void renderOffscreen();
     void applyLegacyStylesheet();
-    void initializeOverviewTypeControl();
     void applyLegacySearchBoxSkinConfiguration();
     void applyLegacyLibrarySkinConfiguration();
     void enableEmbeddedWidgetInputTracking();
@@ -91,6 +99,12 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     void applyLegacyColorPickerBridgeOptions();
     void connectSortBypass();
     void requestRender();
+    void requestRenderWithReason(RenderInvalidationReason reason,
+            const QRegion& logicalRegion = {});
+    void requestViewportRender();
+    QRegion viewportRenderRegion() const;
+    static const char* renderInvalidationReasonName(
+            RenderInvalidationReason reason);
     void installEmbeddedWidgetEventFilters();
     void connectEmbeddedWidgetUpdateSignals();
     void syncEmbeddedTableGeometry(QAbstractItemView* pView);
@@ -160,11 +174,19 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     std::unique_ptr<ControlProxy> m_pPreviewDeckPlay;
     std::unique_ptr<ControlProxy> m_pPreviewDeckTrackLoaded;
 
-    // Owns the [Waveform],WaveformOverviewType ControlPushButton that is
-    // normally created by DlgPrefWaveform. In QML mode that dialog does not
-    // exist, so we create and own the CO here so that OverviewDelegate can
-    // read the correct overview type (RGB by default).
-    std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;
+    QPointer<QQuickWindow> m_renderWindow;
+    QPointer<QScreen> m_renderScreen;
+    QMetaObject::Connection m_renderWindowScreenConnection;
+    QMetaObject::Connection m_renderScreenPhysicalDpiConnection;
+    QMetaObject::Connection m_renderScreenLogicalDpiConnection;
+    QMetaObject::Connection m_renderScreenGeometryConnection;
+    qreal m_effectiveDpr = 1.0;
+    QSize m_logicalBackingSize;
+    QSize m_physicalBackingSize;
+    quint64 m_diagnosticsRenderRequests = 0;
+    mixxx::qml::RenderInvalidationState m_pendingInvalidation{true};
+    mixxx::qml::RenderInvalidationState m_lastRenderInvalidation;
+
     QPixmap m_offscreenPixmap;
     bool m_isRendering = false;
     bool m_componentComplete = false; // gates rendering until QML component is constructed

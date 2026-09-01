@@ -6,6 +6,7 @@
 
 #include "moc_qmlautoreload.cpp"
 #include "util/autofilereloader.h"
+#include "util/qmldiagnostics.h"
 
 namespace mixxx {
 
@@ -13,9 +14,17 @@ namespace qml {
 
 QmlAutoReload::QmlAutoReload()
         : m_autoReloader(RuntimeLoggingCategory(QStringLiteral("qml_auto_reload"))) {
-    // propagate inner signal outwards
-    connect(&m_autoReloader, &AutoFileReloader::fileChanged, this, &QmlAutoReload::triggered);
-};
+    connect(&m_autoReloader,
+            &AutoFileReloader::fileChanged,
+            this,
+            [this](const QString& changedFile) {
+                if (qmlRenderDiagnosticsEnabled()) {
+                    qCDebug(qmlRenderDiagnosticsCategory())
+                            << "QmlAutoReload triggered" << changedFile;
+                }
+                emit triggered();
+            });
+}
 
 QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType) {
     if (!url.isLocalFile()) {
@@ -24,6 +33,10 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
     QString filePath = url.toLocalFile();
     if (!QFileInfo(filePath).isFile()) {
         return url;
+    }
+    if (qmlRenderDiagnosticsEnabled()) {
+        qCDebug(qmlRenderDiagnosticsCategory())
+                << "QmlAutoReload watching" << filePath;
     }
     m_autoReloader.addPath(filePath);
     return url;

@@ -2900,6 +2900,7 @@ if(BUILD_TESTING)
     src/test/controllers/controller_columnid_regression_test.cpp
     src/test/controllerscriptenginelegacy_test.cpp
     src/test/controlobjecttest.cpp
+    src/test/qmldprutilstest.cpp
     src/test/controlobjectaliastest.cpp
     src/test/controlobjectscripttest.cpp
     src/test/controlpotmetertest.cpp
@@ -2950,6 +2951,7 @@ if(BUILD_TESTING)
     src/test/performancetimer_test.cpp
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
+    src/test/pixmapcachelimit_test.cpp
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
     src/test/portmidienumeratortest.cpp

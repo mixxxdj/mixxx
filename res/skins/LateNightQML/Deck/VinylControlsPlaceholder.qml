@@ -7,6 +7,8 @@ Item {
     id: root
 
     required property string group
+    property real vinylStatusAssetScale: 2
+    readonly property real effectiveVinylStatusAssetScale: Number.isFinite(root.vinylStatusAssetScale) && root.vinylStatusAssetScale > 0 ? root.vinylStatusAssetScale : 2
 
     implicitWidth: 158
     implicitHeight: 20
@@ -43,8 +45,8 @@ Item {
 
             Image {
                 anchors.centerIn: parent
-                width: Math.min(parent.width, sourceSize.width > 0 ? sourceSize.width / 2 : parent.width)
-                height: Math.min(parent.height, sourceSize.height > 0 ? sourceSize.height / 2 : parent.height)
+                width: Math.min(parent.width, sourceSize.width > 0 ? sourceSize.width / root.effectiveVinylStatusAssetScale : parent.width)
+                height: Math.min(parent.height, sourceSize.height > 0 ? sourceSize.height / root.effectiveVinylStatusAssetScale : parent.height)
                 source: {
                     var status = Math.round(vinylStatusProxy.value);
                     switch (status) {
