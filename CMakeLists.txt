@@ -3097,7 +3097,6 @@ if(BUILD_TESTING)
     TEST_LIST testsuite
     DISCOVERY_MODE PRE_TEST
     DISCOVERY_TIMEOUT 60
-    EXTRA_ARGS --developer
   )
 
   if(BUILD_BENCH)
