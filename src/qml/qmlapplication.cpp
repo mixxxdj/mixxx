@@ -166,8 +166,7 @@ QmlApplication::QmlApplication(
                     if (!QMetaObject::invokeMethod(pDlgPreferences.get(),
                                 "showSoundHardwarePage",
                                 Qt::DirectConnection,
-                                Q_ARG(std::optional<mixxx::preferences::
-                                                      SoundHardwareTab>,
+                                Q_ARG(std::optional<mixxx::preferences::SoundHardwareTab>,
                                         inputTab))) {
                         qWarning() << "QML input warning could not open Sound Hardware preferences";
                     }

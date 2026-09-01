@@ -21,6 +21,8 @@ Item {
     property bool inactiveFillEnabled: true
     property bool pressedActivatesFill: false
     property int fillMargin: 2
+    property real fillRadius: 1
+    property bool solidFillEnabled: false
     property bool useBorderImageBackground: false
     property int backgroundBorderTop: 0
     property int backgroundBorderBottom: 0
@@ -77,8 +79,8 @@ Item {
     Rectangle {
         anchors.fill: parent
         anchors.margins: root.fillMargin
-        radius: 1
-        visible: root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
+        radius: root.fillRadius
+        visible: !root.solidFillEnabled && root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
 
         gradient: Gradient {
             GradientStop {
@@ -96,6 +98,14 @@ Item {
                 color: Qt.darker(root.fillColor, 1.25)
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: root.fillMargin
+        color: root.fillColor
+        radius: root.fillRadius
+        visible: root.solidFillEnabled && root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
     }
 
     Image {
