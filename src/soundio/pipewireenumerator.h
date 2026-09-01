@@ -224,7 +224,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     }
 
     static constexpr pw_node_events nodeEvents{
-            .version = PW_VERSION_FILTER_EVENTS,
+            .version = PW_VERSION_NODE_EVENTS,
             .info = nodeEventInfo,
             .param = nullptr,
     };

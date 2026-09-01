@@ -598,6 +598,10 @@ void DlgPrefSound::initPipewire() {
     connect(mainDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
         mainRouteComboBox->clear();
         unsigned int deviceId = mainDeviceComboBox->currentData().toUInt();
+        if (!m_hardwareDevices.contains(deviceId)) {
+            return;
+        }
+
         m_cpMainVolumeDevice->set(deviceId);
         for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
             mainRouteComboBox->addItem(volume, id);
@@ -606,6 +610,10 @@ void DlgPrefSound::initPipewire() {
     connect(headDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
         headRouteComboBox->clear();
         unsigned int deviceId = headDeviceComboBox->currentData().toUInt();
+        if (!m_hardwareDevices.contains(deviceId)) {
+            return;
+        }
+
         m_cpHeadVolumeDevice->set(deviceId);
         for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
             headRouteComboBox->addItem(volume, id);
@@ -614,6 +622,10 @@ void DlgPrefSound::initPipewire() {
     connect(boothDeviceComboBox, &QComboBox::currentIndexChanged, this, [this](int) {
         boothRouteComboBox->clear();
         unsigned int deviceId = boothDeviceComboBox->currentData().toUInt();
+        if (!m_hardwareDevices.contains(deviceId)) {
+            return;
+        }
+
         m_cpBoothVolumeDevice->set(deviceId);
         for (auto& [id, volume] : m_hardwareDevices.at(deviceId).volumes) {
             boothRouteComboBox->addItem(volume, id);

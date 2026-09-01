@@ -341,7 +341,7 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                 0);
         m_devices.insert_or_assign(id, Device{
                                                static_cast<pw_device*>(pProxy),
-                                               name,
+                                               name ? name : std::to_string(id),
                                        });
         Device& device = m_devices.at(id);
         pw_device_add_listener(device.device, &device.listener, &deviceEvents, this);
@@ -613,6 +613,7 @@ void PipewireEnumerator::registryEventGlobalRemove(unsigned int id) {
         Device& device = m_devices.at(id);
         m_pSoundManager->removeHardwareDevice(id);
         spa_hook_remove(&device.listener);
+        pw_proxy_destroy(reinterpret_cast<pw_proxy*>(device.device));
         m_devices.erase(id);
     }
 }
@@ -999,7 +1000,7 @@ void PipewireEnumerator::registerInput(const AudioInput& input, AudioDestination
 }
 
 void PipewireEnumerator::registerOutput(const AudioOutput& output, AudioSource*) {
-    qWarning() << "PipewireEnumerator::registerOutput" << output.getString();
+    qDebug() << "PipewireEnumerator::registerOutput" << output.getString();
     if (output.isHidden()) {
         return;
     }
@@ -1374,7 +1375,9 @@ void PipewireEnumerator::deviceEventParam(int seq,
 
         m_pSoundManager->addHardwareVolume(deviceId, description, routeIndex);
 
-        route.device = devices[0];
+        if (devices && deviceCount) {
+            route.device = devices[0];
+        }
     }
     }
 }
@@ -1383,7 +1386,7 @@ std::vector<std::pair<uint32_t, QString>> PipewireEnumerator::queryHardwareDevic
     std::vector<std::pair<uint32_t, QString>> devices;
 
     for (const auto& [id, device] : m_devices) {
-        devices.emplace_back(id, device.name.c_str());
+        devices.emplace_back(id, QString::fromUtf8(device.name));
     }
     return devices;
 }
