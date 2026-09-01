@@ -15,7 +15,12 @@ Row {
         Item {
             id: cell
 
+            readonly property bool active: assignControl.value > 0
+            readonly property color activeColor: cell.index < 2
+                    ? (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor12 : LateNightTheme.effectsUnitDimColor12)
+                    : (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor34 : LateNightTheme.effectsUnitDimColor34)
             readonly property int buttonWidth: cell.index === 0 ? 26 : 20
+            readonly property color fillColor: cell.active ? cell.activeColor : LateNightTheme.mixerFxAssignInactiveColor
             required property int index
 
             height: 20
@@ -25,21 +30,24 @@ Row {
 
             Rectangle {
                 anchors.fill: parent
-                color: assignControl.value > 0 ? "#333335" : LateNightTheme.mixerFxAssignInactiveColor
+                color: cell.fillColor
             }
             Image {
                 anchors.fill: parent
                 fillMode: Image.Stretch
                 source: {
-                    const suffix = assignControl.value > 0 ? "_active" : "";
-                    return LateNightTheme.lateNightAsset("buttons", cell.index === 0 ? "btn_embedded_library" + suffix + ".svg" : "btn_embedded_grid" + suffix + ".svg");
+                    const suffix = cell.active ? "_active" : "";
+                    return LateNightTheme.lateNightButton(cell.index === 0 ? "btn_embedded_library" + suffix + ".svg" : "btn_embedded_grid" + suffix + ".svg");
                 }
             }
             Text {
                 anchors.centerIn: parent
-                color: assignControl.value > 0 ? LateNightTheme.mixerControlTextColor : LateNightTheme.mixerFxAssignInactiveTextColor
+                color: cell.active
+                        ? (LateNightTheme.isClassic ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.mixerControlTextColor)
+                        : LateNightTheme.mixerFxAssignInactiveTextColor
                 font.bold: true
-                font.pixelSize: 12
+                font.family: "Open Sans"
+                font.pixelSize: 10
                 text: cell.index === 0 ? "FX1" : cell.index + 1
             }
             TapHandler {

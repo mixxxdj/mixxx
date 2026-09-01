@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import "../Controls" as Controls
 import "../Deck" as DeckControls
 import "../LateNightTheme"
-import "../../../qml" as Shared
+import "../Mixer" as MixerControls
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Layouts
@@ -36,7 +36,7 @@ Item {
         Controls.Panel {
             color: LateNightTheme.micAuxPanelColor
             implicitHeight: 78
-            implicitWidth: 132
+            implicitWidth: 149
 
             RowLayout {
                 anchors.fill: parent
@@ -51,9 +51,10 @@ Item {
                     Text {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 18
-                        color: LateNightTheme.textColor
+                        color: LateNightTheme.micAuxLabelTextColor
+                        font.bold: true
                         font.family: "Open Sans"
-                        font.pixelSize: 10
+                        font.pixelSize: 14
                         horizontalAlignment: Text.AlignHCenter
                         text: "AUX " + root.unitNumber
                         verticalAlignment: Text.AlignVCenter
@@ -74,11 +75,11 @@ Item {
                         toggleable: true
                     }
                 }
-                Shared.VuMeter {
+                Controls.ImageVuMeter {
                     Layout.fillHeight: true
-                    Layout.preferredWidth: 5
+                    Layout.preferredWidth: 8
                     group: root.group
-                    key: "vu_meter"
+                    levelKey: "vu_meter"
                 }
                 ColumnLayout {
                     Layout.fillHeight: true
@@ -86,7 +87,7 @@ Item {
                     spacing: 1
 
                     RowLayout {
-                        Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignHCenter
                         Layout.preferredHeight: 34
                         spacing: 3
 
@@ -102,15 +103,8 @@ Item {
                             indicatorKind: "small"
                             key: "pregain"
                         }
-                        DeckControls.LateNightControlButton {
-                            Layout.preferredHeight: 26
-                            Layout.preferredWidth: 26
-                            activeColor: LateNightTheme.micAuxActiveColor
+                        MixerControls.PflButton {
                             group: root.group
-                            iconSource: LateNightTheme.lateNightAsset("buttons", "btn__pfl.svg")
-                            key: "pfl"
-                            stretchIcon: true
-                            toggleable: true
                         }
                     }
                     RowLayout {
@@ -118,21 +112,10 @@ Item {
                         Layout.preferredHeight: 22
                         spacing: 1
 
-                        Repeater {
-                            model: 4
-
-                            DeckControls.LateNightControlButton {
-                                required property int index
-
-                                Layout.fillWidth: true
-                                Layout.preferredHeight: 20
-                                activeColor: LateNightTheme.micAuxActiveColor
-                                group: "[EffectRack1_EffectUnit" + (index + 1) + "]"
-                                key: "group_" + root.group + "_enable"
-                                label: String(index + 1)
-                                labelPixelSize: 8
-                                toggleable: true
-                            }
+                        MixerControls.FxAssignButtons {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.preferredHeight: 20
+                            groupName: root.group
                         }
                     }
                 }
@@ -145,7 +128,7 @@ Item {
         Controls.Panel {
             color: LateNightTheme.micAuxPanelColor
             implicitHeight: 78
-            implicitWidth: 72
+            implicitWidth: 47
 
             ColumnLayout {
                 anchors.fill: parent
@@ -156,10 +139,11 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 21
                     color: LateNightTheme.micAuxUnconfiguredTextColor
+                    font.bold: true
                     font.family: "Open Sans"
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     horizontalAlignment: Text.AlignHCenter
-                    text: "Aux " + root.unitNumber
+                    text: "AUX " + root.unitNumber
                     verticalAlignment: Text.AlignVCenter
                 }
                 Item {
@@ -170,8 +154,10 @@ Item {
                     Layout.preferredHeight: 26
                     Layout.preferredWidth: 26
                     backgroundSource: LateNightTheme.assetMicAuxUnconfiguredBackground
+                    contentOpacity: 1.0
                     group: root.group
                     iconSource: LateNightTheme.assetMicAuxAddButton
+                    inactiveFillEnabled: false
                     key: "main_mix"
                     stretchIcon: true
                 }

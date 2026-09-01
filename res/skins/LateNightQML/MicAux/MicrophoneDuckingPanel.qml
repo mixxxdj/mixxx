@@ -1,6 +1,7 @@
 import "../Controls" as Controls
+import "../Deck" as DeckControls
 import "../LateNightTheme"
-import Mixxx 1.0 as Mixxx
+import "../../../qml" as Shared
 import QtQuick
 import QtQuick.Layouts
 
@@ -9,57 +10,56 @@ Controls.Panel {
 
     color: LateNightTheme.micAuxPanelColor
     implicitHeight: 78
-    implicitWidth: 50
+    implicitWidth: 48
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 2
         spacing: 2
 
-        Item {
+        DeckControls.LateNightIconButton {
+            id: duckModeButton
+
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: 24
             Layout.preferredWidth: 42
-
-            Image {
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectFit
-                source: {
-                    switch (Math.round(duckModeControl.value)) {
-                    case 1:
-                        return LateNightTheme.assetMicDuckAutoButton;
-                    case 2:
-                        return LateNightTheme.assetMicDuckManualButton;
-                    default:
-                        return LateNightTheme.assetMicDuckOffButton;
-                    }
+            activeBackgroundSuffix: "active"
+            activeColor: LateNightTheme.activePlayCueColor
+            activeState: duckModeBehavior.currentState > 0
+            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
+            contentOpacity: 1
+            iconSource: {
+                switch (duckModeBehavior.currentState) {
+                case 1:
+                    return LateNightTheme.assetMicDuckAutoButton;
+                case 2:
+                    return LateNightTheme.assetMicDuckManualButton;
+                default:
+                    return LateNightTheme.assetMicDuckOffButton;
                 }
             }
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
+            stretchIcon: true
 
-                onClicked: duckModeControl.value = (Math.round(duckModeControl.value) + 1) % 3
+            Shared.ControlCycleButtonBehavior {
+                id: duckModeBehavior
+
+                anchors.fill: parent
+                group: "[Master]"
+                key: "talkoverDucking"
             }
         }
         Controls.Knob {
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredHeight: 35
+            Layout.preferredHeight: 30
             Layout.preferredWidth: 35
             backgroundSource: LateNightTheme.assetMicAuxGainKnobBackground
             displayArc: true
-            displayArcColor: LateNightTheme.activePlayCueColor
+            displayArcColor: LateNightTheme.micAuxDuckingArcColor
             displayArcStart: Controls.Knob.ArcStart.Maximum
             group: "[Master]"
             indicatorColor: "red"
             indicatorKind: "small"
             key: "duckStrength"
         }
-    }
-    Mixxx.ControlProxy {
-        id: duckModeControl
-
-        group: "[Master]"
-        key: "talkoverDucking"
     }
 }

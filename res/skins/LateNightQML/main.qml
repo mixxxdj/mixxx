@@ -29,13 +29,59 @@ ApplicationWindow {
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
 
+    function focusLegacyLibrarySearch() {
+        Qt.callLater(function() {
+            if (library.item) {
+                library.item.focusSearch();
+            }
+        });
+    }
+
     color: LateNightTheme.backgroundColor
     height: 1008
+    menuBar: nativeApplicationMenuLoader.item
     minimumHeight: Math.max(668, toolbar.height + mixer.height + micAuxSection.height + (root.showWaveforms && !root.maximizeLibrary ? 40 : 0))
     minimumWidth: 1280
     visible: true
     width: 1792
 
+    Loader {
+        id: nativeApplicationMenuLoader
+
+        active: Qt.platform.os === "osx"
+
+        sourceComponent: Skin.MainMenuBar {
+            actions: applicationMenuActions
+        }
+    }
+    Skin.ApplicationMenuCommands {
+        id: applicationMenuCommands
+
+        applicationWindow: root
+
+        onShowDeveloperToolsRequested: {
+            developerToolsWindow.show();
+            developerToolsWindow.raise();
+            developerToolsWindow.requestActivate();
+        }
+    }
+    Skin.ApplicationMenuActions {
+        id: applicationMenuActions
+
+        applicationWindow: root
+        commands: applicationMenuCommands
+        numberOfDecks: root.show4decks ? root.numDecks : 2
+
+        onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
+    }
+    Skin.DeveloperToolsWindow {
+        id: developerToolsWindow
+
+        height: 480
+        width: 640
+    }
+    Skin.LibraryScanSummaryDialog {
+    }
     Mixxx.ControlProxy {
         group: "[App]"
         key: "num_decks"
@@ -199,8 +245,11 @@ ApplicationWindow {
         LateNightToolbar.Toolbar {
             id: toolbar
 
+            applicationMenuActions: applicationMenuActions
             show4decksAvailable: root.height > 515
             width: parent.width
+
+            onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
         }
         SplitView {
             id: splitView

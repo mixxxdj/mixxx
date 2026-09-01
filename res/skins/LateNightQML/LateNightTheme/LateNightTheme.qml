@@ -199,8 +199,8 @@ QtObject {
     readonly property color mixerControlTextColor: isClassic ? "#d2d2d1" : "#a7998b"
     readonly property color mixerDimTextColor: "#696969"
     readonly property color mixerEqKillActiveColor: isClassic ? "#db0000" : "#a80000"
-    readonly property color mixerFxAssignInactiveColor: isClassic ? deckEmbeddedButtonInactiveColor : "#151517"
-    readonly property color mixerFxAssignInactiveTextColor: isClassic ? mixerDimTextColor : "#555555"
+    readonly property color mixerFxAssignInactiveColor: deckEmbeddedButtonInactiveColor
+    readonly property color mixerFxAssignInactiveTextColor: isClassic ? effectsAssignmentInactiveTextColor : "#666666"
     readonly property color mixerMainSeparatorDarkColor: isPaleMoon ? "#0c0c0c" : mixerPanelBorderDark
     readonly property color mixerMainSeparatorLightColor: isPaleMoon ? "#222222" : mixerPanelBorderLight
     readonly property color mixerSplitActiveColor: isClassic ? "#888888" : "#555555"
@@ -219,9 +219,13 @@ QtObject {
     readonly property color mixerVuClipColor: mixerAccentRed
     readonly property color mixerVuLevelColor: mixerAccentRed
     readonly property color micAuxActiveColor: accentColor
+    readonly property color micAuxDuckingArcColor: "#a00000"
     readonly property color micAuxGainColor: isClassic ? "#db7700" : "#b24c12"
+    readonly property color micAuxLabelTextColor: primaryDeckTextColor
     readonly property color micAuxPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
-    readonly property color micAuxUnconfiguredTextColor: isClassic ? "#444444" : "#555555"
+    readonly property color micAuxRackGutterColor: isClassic ? "#0f0f0f" : "#080808"
+    readonly property color micAuxUnconfiguredTextColor: isClassic ? "#666666" : "#686666"
+    readonly property string micTalkActiveIconSuffix: isPaleMoon ? "active" : ""
     readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
     readonly property url optionalDeckRateCenterActive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_cyan.svg") : ""
     readonly property url optionalDeckRateCenterInactive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_off.svg") : ""
@@ -244,6 +248,10 @@ QtObject {
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
     readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
+    readonly property color rackFillerBorderColor: "#111111"
+    readonly property color rackFillerBottomBorderColor: isClassic ? "#111111" : "#020202"
+    readonly property color rackFillerLeftBorderColor: isClassic ? "#222222" : "#191919"
+    readonly property color rackFillerTopBorderColor: isClassic ? "#222222" : "#1c1c1c"
     readonly property color secondaryDeckTextColor: isClassic ? "#0bd9d1" : "#85bdbb"
     readonly property color secondaryOverviewBackgroundColor: "#001b23"
     readonly property color secondaryWaveformSignalColor: isClassic ? "#09b2ae" : "#7bc6c3"

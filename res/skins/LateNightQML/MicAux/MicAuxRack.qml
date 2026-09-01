@@ -6,22 +6,26 @@ import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Layouts
 
-Item {
+Rectangle {
     id: root
 
-    implicitHeight: 82
+    color: LateNightTheme.micAuxRackGutterColor
+    implicitHeight: 85
 
     RowLayout {
         anchors.fill: parent
-        spacing: 3
+        anchors.bottomMargin: 3
+        anchors.topMargin: 3
+        spacing: 0
 
-        Controls.Panel {
+        Controls.RackFiller {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            color: LateNightTheme.micAuxPanelColor
         }
         RowLayout {
             Layout.fillHeight: true
+            Layout.leftMargin: 2
+            Layout.rightMargin: 2
             spacing: 3
 
             MicrophoneDuckingPanel {
@@ -39,13 +43,14 @@ Item {
                 }
             }
         }
-        Controls.Panel {
+        Controls.RackFiller {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            color: LateNightTheme.micAuxPanelColor
         }
         RowLayout {
             Layout.fillHeight: true
+            Layout.leftMargin: 2
+            Layout.rightMargin: 2
             spacing: 3
 
             Repeater {
@@ -59,10 +64,9 @@ Item {
                 }
             }
         }
-        Controls.Panel {
+        Controls.RackFiller {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            color: LateNightTheme.micAuxPanelColor
         }
     }
     Mixxx.ControlProxy {
