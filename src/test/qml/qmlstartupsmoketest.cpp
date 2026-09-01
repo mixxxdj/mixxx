@@ -7,6 +7,8 @@
 #include <QTemporaryDir>
 #include <QTimer>
 #include <memory>
+#include <ostream>
+#include <string>
 
 #include "coreservices.h"
 #include "preferences/configobject.h"
@@ -22,6 +24,10 @@ struct QmlSkin {
     const char* name;
     bool useNewUi;
 };
+
+void PrintTo(const QmlSkin& skin, std::ostream* stream) {
+    *stream << skin.name << (skin.useNewUi ? " (--new-ui)" : " (--developer)");
+}
 
 class RejectFileDialogs final : public QObject {
   protected:
@@ -96,7 +102,7 @@ INSTANTIATE_TEST_SUITE_P(
                 QmlSkin{"LateNightQML", false},
                 QmlSkin{"NewUi", true}),
         [](const testing::TestParamInfo<QmlSkin>& info) {
-            return info.param.name;
+            return std::string(info.param.name);
         });
 
 } // namespace
