@@ -41,6 +41,8 @@ struct WaveformStride {
             SampleUtil::clear(m_averageFilteredData[i], BandCount);
             if (m_stemCount > 0) {
                 SampleUtil::clear(m_stemData[i], m_stemCount);
+            } else {
+                DEBUG_ASSERT(m_stemCount == 0);
             }
         }
     }
