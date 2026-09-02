@@ -3,6 +3,8 @@
 #include <QMutex>
 #include <QThread>
 #include <QWaitCondition>
+#include <atomic>
+#include <vector>
 
 class EngineWorker;
 

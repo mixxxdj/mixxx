@@ -14,6 +14,7 @@ ApplicationWindow {
 
     color: Theme.backgroundColor
     height: isMobile ? Screen.height : designHeight
+    menuBar: content.item ? content.item.menuBar : null
     minimumHeight: isMobile ? 0 : 300
     minimumWidth: isMobile ? 0 : 680
     visible: true
@@ -34,9 +35,10 @@ ApplicationWindow {
         active: Mixxx.Core.ready
         asynchronous: true
         sourceComponent: Component {
-            MainWindow { }
+            MainWindow {
+                applicationWindow: root
+            }
         }
-
     }
     Rectangle {
         id: splash

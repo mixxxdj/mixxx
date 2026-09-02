@@ -11,6 +11,9 @@ import "Theme"
 Item {
     id: root
 
+    required property ApplicationWindow applicationWindow
+    property alias menuBar: nativeApplicationMenuLoader.item
+
     property alias editDeck: editDeckButton.checked
     property var focusedDeck: null
     property alias maximizeLibrary: maximizeLibraryButton.checked
@@ -22,6 +25,41 @@ Item {
     property alias showEffects: showEffectsButton.checked
     property alias showSamplers: showSamplersButton.checked
 
+    Loader {
+        id: nativeApplicationMenuLoader
+
+        active: Qt.platform.os === "osx" || (Mixxx.Application.supportsGlobalMenuBar && root.applicationWindow.visibility !== Window.FullScreen)
+
+        sourceComponent: Skin.MainMenuBar {
+            actions: applicationMenuActions
+        }
+    }
+    Skin.ApplicationMenuCommands {
+        id: applicationMenuCommands
+
+        applicationWindow: root.applicationWindow
+
+        onShowDeveloperToolsRequested: {
+            devToolsWindow.show();
+            devToolsWindow.raise();
+            devToolsWindow.requestActivate();
+        }
+    }
+    Skin.ApplicationMenuActions {
+        id: applicationMenuActions
+
+        applicationWindow: root.applicationWindow
+        commands: applicationMenuCommands
+        numberOfDecks: root.show4decks ? root.numDecks : 2
+
+        onFocusLibrarySearchRequested: {
+            if (library.item) {
+                library.item.focusSearch();
+            }
+        }
+    }
+    Skin.LibraryScanSummaryDialog {
+    }
     Mixxx.ControlProxy {
         group: "[App]"
         key: "num_decks"

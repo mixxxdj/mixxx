@@ -10,6 +10,7 @@ ApplicationWindow {
 
     color: startupScreen.backgroundColor
     height: 1008
+    menuBar: mainWindowLoader.item ? mainWindowLoader.item.menuBar : null
     minimumHeight: 668
     minimumWidth: 1280
     visible: true
@@ -50,6 +51,7 @@ ApplicationWindow {
 
         sourceComponent: Component {
             MainWindow {
+                applicationWindow: root
                 anchors.fill: parent
             }
         }
