@@ -4,6 +4,7 @@
 #include <QEventLoop>
 #include <QLocale>
 #include <QMessageBox>
+#include <QMetaEnum>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
@@ -25,6 +26,7 @@
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
+#include "waveform/overviewtype.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 #if defined(Q_OS_ANDROID)
@@ -83,6 +85,17 @@ QmlApplication::QmlApplication(
     QJSEngine::setObjectOwnership(QmlCoreServices::createInstance(
                                           normalizedColorScheme(colorScheme), this),
             QJSEngine::CppOwnership);
+
+    const ConfigKey overviewTypeKey(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("WaveformOverviewType"));
+    m_pWaveformOverviewType = std::make_unique<ControlPushButton>(overviewTypeKey);
+    m_pWaveformOverviewType->setStates(QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+    m_pWaveformOverviewType->setReadOnly();
+    const auto overviewType = m_pCoreServices->getSettings()->getValue<mixxx::OverviewType>(
+            overviewTypeKey,
+            mixxx::OverviewType::RGB);
+    m_pWaveformOverviewType->forceSet(static_cast<double>(overviewType));
 
     m_loadSucceeded = loadQml(m_mainFilePath);
     if (!m_loadSucceeded) {

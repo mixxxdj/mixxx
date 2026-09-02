@@ -59,6 +59,7 @@ class QmlApplication : public QObject {
     std::unique_ptr<ControlPushButton> m_pSelectBigSpinnyCover;
     std::unique_ptr<ControlPushButton> m_pShowSmallSpinnyCover;
     std::unique_ptr<ControlPushButton> m_pShowBigSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pWaveformOverviewType;
 
     QString m_mainFilePath;
 

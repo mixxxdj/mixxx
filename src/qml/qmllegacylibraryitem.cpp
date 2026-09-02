@@ -32,6 +32,7 @@
 #include <cmath>
 #include <utility>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -1635,6 +1636,10 @@ void QmlLegacyLibraryItem::initializeOverviewTypeControl() {
     const ConfigKey overviewTypeCfgKey(
             QStringLiteral("[Waveform]"),
             QStringLiteral("WaveformOverviewType"));
+
+    if (ControlObject::exists(overviewTypeCfgKey)) {
+        return;
+    }
 
     m_pOverviewTypeControl = std::make_unique<ControlPushButton>(overviewTypeCfgKey);
     m_pOverviewTypeControl->setStates(
