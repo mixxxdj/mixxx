@@ -739,6 +739,8 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
             const float offset = 1.0f;
             const auto gain = static_cast<CSAMPLE_GAIN>(length() - 2) /
                     static_cast<CSAMPLE_GAIN>(trackSamples);
+    
+            m_marks.updateSafe();
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
