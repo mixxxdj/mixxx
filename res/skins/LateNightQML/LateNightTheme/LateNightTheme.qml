@@ -280,6 +280,7 @@ QtObject {
     readonly property color syncExplicitLeaderColor: activePlayCueColor
     readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
+    readonly property color specialCueActiveColor: isPaleMoon ? "#385678" : "#2f4f73"
     readonly property color textColor: white
     readonly property color textColorMuted: "#696969"
     readonly property color trackPropertyHighlightColor: "#151515"

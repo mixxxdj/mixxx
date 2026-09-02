@@ -2,6 +2,7 @@
 #include <qqmlintegration.h>
 
 #include <QObject>
+#include <QPoint>
 #include <QQmlEngine>
 #include <QString>
 #include <Qt>
