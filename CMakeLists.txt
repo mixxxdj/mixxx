@@ -3018,7 +3018,11 @@ if(BUILD_TESTING)
     )
   endif()
 
-  add_executable(mixxx-test ${src-mixxx-test})
+  if(QT6 AND QML)
+    qt_add_executable(mixxx-test ${src-mixxx-test} MANUAL_FINALIZATION)
+  else()
+    add_executable(mixxx-test ${src-mixxx-test})
+  endif()
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
@@ -4068,58 +4072,6 @@ if(QML)
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
 
-  # Qt is statically linked in some CI environments. In that case the QML
-  # plugins used by the skins must be linked into the test executable too.
-  if(BUILD_TESTING)
-    set(
-      MIXXX_QML_STATIC_PLUGINS
-      effectsplugin
-      labsmodelsplugin
-      modelsplugin
-      qmlfolderlistmodelplugin
-      qmlplugin
-      qmlshapesplugin
-      qquicklayoutsplugin
-      qtgraphicaleffectsplugin
-      qtgraphicaleffectsprivate
-      qtqmlcoreplugin
-      qtquick2plugin
-      qtquickcontrols2basicstyleimplplugin
-      qtquickcontrols2basicstyleplugin
-      qtquickcontrols2fluentwinui3styleimplplugin
-      qtquickcontrols2fluentwinui3styleplugin
-      qtquickcontrols2fusionstyleimplplugin
-      qtquickcontrols2fusionstyleplugin
-      qtquickcontrols2imaginestyleimplplugin
-      qtquickcontrols2imaginestyleplugin
-      qtquickcontrols2implplugin
-      qtquickcontrols2iosstyleimplplugin
-      qtquickcontrols2iosstyleplugin
-      qtquickcontrols2macosstyleimplplugin
-      qtquickcontrols2macosstyleplugin
-      qtquickcontrols2materialstyleimplplugin
-      qtquickcontrols2materialstyleplugin
-      qtquickcontrols2nativestyleplugin
-      qtquickcontrols2plugin
-      qtquickcontrols2universalstyleimplplugin
-      qtquickcontrols2universalstyleplugin
-      qtquickdialogs2quickimplplugin
-      qtquickdialogsplugin
-      qtquicktemplates2plugin
-      quickmultimedia
-      quickwindow
-      workerscriptplugin
-    )
-    foreach(plugin IN LISTS MIXXX_QML_STATIC_PLUGINS)
-      if(TARGET Qt6::${plugin})
-        get_target_property(plugin_type Qt6::${plugin} TYPE)
-        if(plugin_type STREQUAL "STATIC_LIBRARY")
-          target_link_libraries(mixxx-test PRIVATE Qt6::${plugin})
-        endif()
-      endif()
-    endforeach()
-  endif()
-
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/qml"
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
@@ -4452,6 +4404,13 @@ else()
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQml/WorkerScript"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQml"
+        COMPONENT applocal
+      )
+
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtCore"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
         COMPONENT applocal
       )
 
@@ -5507,6 +5466,10 @@ target_precompile_headers(
 )
 if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+endif()
+
+if(BUILD_TESTING AND QT6 AND QML)
+  qt_finalize_target(mixxx-test)
 endif()
 
 # Configure file with build options
