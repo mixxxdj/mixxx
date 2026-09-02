@@ -1,26 +1,29 @@
-import "." as Skin
+import "../../qml" as Skin
+import "LateNightTheme"
+import "Deck" as LateNightDeck
+import "Toolbar" as LateNightToolbar
+import "Waveforms" as LateNightWaveforms
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Window
-import QtQuick.Shapes
-import Qt5Compat.GraphicalEffects
-import "Theme"
 
 Item {
     id: root
 
-    property alias editDeck: editDeckButton.checked
+    property alias editDeck: toolbar.editDeck
     property var focusedDeck: null
-    property alias maximizeLibrary: maximizeLibraryButton.checked
+    property alias maximizeLibrary: toolbar.maximizeLibrary
+    readonly property int fullDeckHeight: 206
+    readonly property int minimizedDeckHeight: 80
     readonly property int numDecks: 4
-    readonly property int numPreviewDecks: 1
-    readonly property int numSamplers: 16
-    readonly property int waveformOverviewTypeRgb: 2
-    readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
-    property alias showEffects: showEffectsButton.checked
-    property alias showSamplers: showSamplersButton.checked
+    readonly property int numSamplers: 64
+    readonly property bool show4decks: toolbar.show4decks
+    readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
+    readonly property bool showMixer: toolbar.showMixer
+    property alias showEffects: toolbar.showEffects
+    property alias showSamplers: toolbar.showSamplers
+    readonly property bool showWaveforms: toolbar.showWaveforms
 
     Mixxx.ControlProxy {
         group: "[App]"
@@ -38,21 +41,130 @@ Item {
             value = root.numSamplers;
         }
     }
-    Mixxx.ControlProxy {
-        group: "[App]"
-        key: "num_preview_decks"
-
-        onInitializedChanged: {
-            value = root.numPreviewDecks;
-        }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_waveforms"
+        persist: true
+        defaultValue: 1.0
     }
-    Mixxx.ControlProxy {
-        group: "[Waveform]"
-        key: "WaveformOverviewType"
-
-        onInitializedChanged: {
-            value = root.waveformOverviewTypeRgb;
-        }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_hotcues"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_8_hotcues"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_intro_outro_cues"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_loop_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_beatjump_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_rate_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_rate_control_buttons"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_key_controls"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_vinylcontrol"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_spinnies"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_coverart"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "select_big_spinny_or_cover"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_4effectunits"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_eq_knobs"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_eq_kill_buttons"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_xfader"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_main_head_mixer"
+        persist: true
+        defaultValue: 1.0
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "equal_4deck_waveforms"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "timing_shift_buttons"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_superknobs"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        group: "[Skin]"
+        key: "show_sampler_fx"
+        persist: true
     }
     Column {
         id: content
@@ -66,120 +178,11 @@ Item {
             }
         }
 
-        Rectangle {
+        LateNightToolbar.Toolbar {
             id: toolbar
 
-            color: Theme.toolbarBackgroundColor
-            height: 36
-            radius: 1
+            show4decksAvailable: root.height > 515
             width: parent.width
-
-            RowLayout {
-                anchors.fill: parent
-
-                Skin.Button {
-                    id: show4DecksButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    text: "4 Decks"
-                    visible: root.height > 515
-                }
-                Skin.Button {
-                    id: maximizeLibraryButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    text: "Library"
-
-                    onCheckedChanged: () => {
-                        showMaximizedLibrary.value = this.checked;
-                    }
-
-                    Mixxx.ControlProxy {
-                        id: showMaximizedLibrary
-
-                        group: "[Skin]"
-                        key: "show_maximized_library"
-
-                        onValueChanged: () => {
-                            maximizeLibraryButton.checked = this.value;
-                        }
-                    }
-                }
-                Skin.Button {
-                    id: showEffectsButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    text: "Effects"
-                }
-                Skin.Button {
-                    id: showAuxButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    text: "Aux"
-                }
-                Skin.Button {
-                    id: showSamplersButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    text: "Sampler"
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                Skin.Button {
-                    id: editDeckButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    text: "Edit"
-                }
-                Skin.Button {
-                    id: showDevToolsButton
-
-                    activeColor: Theme.white
-                    checkable: true
-                    checked: devToolsWindow.visible
-                    text: "Develop"
-
-                    onClicked: {
-                        if (devToolsWindow.visible)
-                            devToolsWindow.close();
-                        else
-                            devToolsWindow.show();
-                    }
-
-                    DeveloperToolsWindow {
-                        id: devToolsWindow
-
-                        height: 480
-                        width: 640
-                    }
-                }
-                Skin.Button {
-                    id: showPreferencesButton
-
-                    activeColor: Theme.white
-                    checked: settingsPopup.opened
-                    icon.height: 16
-                    icon.source: "images/gear.svg"
-                    icon.width: 16
-                    implicitWidth: implicitHeight
-
-                    onClicked: {
-                        if (!settingsPopup.opened) {
-                            settingsPopup.open();
-                        }
-                    }
-                    onPressAndHold: {
-                        Mixxx.PreferencesDialog.show();
-                    }
-                }
-            }
         }
         SplitView {
             id: splitView
@@ -191,11 +194,11 @@ Item {
             handle: Rectangle {
                 id: handleDelegate
 
-                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.libraryPanelSplitterHandleActive : Theme.libraryPanelSplitterHandle
+                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? LateNightTheme.libraryPanelSplitterHandleActive : LateNightTheme.libraryPanelSplitterHandle
                 property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 3
 
                 clip: true
-                color: Theme.libraryPanelSplitterBackground
+                color: LateNightTheme.libraryPanelSplitterBackground
                 implicitHeight: 4
                 implicitWidth: 8
 
@@ -221,130 +224,34 @@ Item {
                 }
             }
 
-            Item {
+            LateNightWaveforms.WaveformStack {
                 id: waveforms
 
                 SplitView.fillHeight: !library.active
                 SplitView.preferredHeight: library.active ? 120 : undefined
-                visible: !root.maximizeLibrary
+                visible: root.showWaveforms && !root.maximizeLibrary
+                show4decks: root.show4decks
 
-                FadeBehavior on visible {
+                Skin.FadeBehavior on visible {
                     fadeTarget: waveforms
-                }
-
-                Loader {
-                    id: deck3waveform
-
-                    readonly property string group: "[Channel3]"
-
-                    active: root.show4decks
-                    anchors.top: parent.top
-                    height: parent.height / 4
-                    width: root.width
-
-                    sourceComponent: Component {
-                        Skin.WaveformDisplay {
-                            group: deck3waveform.group
-
-                            FadeBehavior on visible {
-                                fadeTarget: deck3waveform
-                            }
-                        }
-                    }
-                }
-                Skin.WaveformDisplay {
-                    id: deck1waveform
-
-                    anchors.top: root.show4decks ? deck3waveform.bottom : parent.top
-                    group: "[Channel1]"
-                    height: parent.height / (root.show4decks ? 4 : 2)
-                    width: root.width
-                }
-                Skin.WaveformDisplay {
-                    id: deck2waveform
-
-                    anchors.bottom: root.show4decks ? deck4waveform.top : parent.bottom
-                    group: "[Channel2]"
-                    height: parent.height / (root.show4decks ? 4 : 2)
-                    width: root.width
-                }
-                Loader {
-                    id: deck4waveform
-
-                    readonly property string group: "[Channel4]"
-
-                    active: root.show4decks
-                    anchors.bottom: parent.bottom
-                    height: parent.height / 4
-                    width: root.width
-
-                    sourceComponent: Component {
-                        Skin.WaveformDisplay {
-                            group: deck4waveform.group
-
-                            FadeBehavior on visible {
-                                fadeTarget: deck4waveform
-                            }
-                        }
-                    }
-                }
-                Rectangle {
-                    width: 125
-
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-
-                        GradientStop {
-                            color: Theme.darkGray
-                            position: 0
-                        }
-                        GradientStop {
-                            color: 'transparent'
-                            position: 1
-                        }
-                    }
-
-                    anchors {
-                        bottom: parent.bottom
-                        left: parent.left
-                        top: parent.top
-                    }
-                }
-                Rectangle {
-                    width: 125
-
-                    gradient: Gradient {
-                        orientation: Gradient.Horizontal
-
-                        GradientStop {
-                            color: 'transparent'
-                            position: 0
-                        }
-                        GradientStop {
-                            color: Theme.darkGray
-                            position: 1
-                        }
-                    }
-
-                    anchors {
-                        bottom: parent.bottom
-                        right: parent.right
-                        top: parent.top
-                    }
                 }
             }
             Item {
+                id: deckPane
+
                 SplitView.fillHeight: library.active
                 SplitView.maximumHeight: library.active ? undefined : mixer.height
                 SplitView.minimumHeight: mixer.height
+                width: splitView.width
 
-                Deck {
+                LateNightDeck.Deck {
                     id: deck1
 
                     editMode: root.editDeck
                     group: "[Channel1]"
-                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
                     minimized: root.maximizeLibrary
+                    visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
                         SpringAnimation {
@@ -376,14 +283,15 @@ Item {
                         top: parent.top
                     }
                 }
-                Mixer {
+                Skin.Mixer {
                     id: mixer
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     groups: [deck1.group, deck2.group, deck3.group, deck4.group]
+                    width: visible ? implicitWidth : 0
                     show4decks: root.show4decks
-                    visible: !root.maximizeLibrary
+                    visible: root.showMixer && !root.maximizeLibrary
 
                     Behavior on height {
                         SpringAnimation {
@@ -457,17 +365,18 @@ Item {
                             duration: 200
                         }
                     }
-                    FadeBehavior on visible {
+                    Skin.FadeBehavior on visible {
                         fadeTarget: mixer
                     }
                 }
-                Deck {
+                LateNightDeck.Deck {
                     id: deck2
 
                     editMode: root.editDeck
                     group: "[Channel2]"
-                    height: root.maximizeLibrary ? 80 : root.show4decks ? mixer.height / 2 : mixer.height
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
                     minimized: root.maximizeLibrary
+                    visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
                         SpringAnimation {
@@ -504,8 +413,9 @@ Item {
 
                     readonly property string group: "[Channel3]"
 
-                    active: root.show4decks
-                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
+                    active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
+                    clip: true
+                    height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
 
                     Behavior on height {
                         SpringAnimation {
@@ -517,7 +427,7 @@ Item {
                         }
                     }
                     sourceComponent: Component {
-                        Deck {
+                        LateNightDeck.Deck {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
                             editMode: root.editDeck
@@ -547,8 +457,9 @@ Item {
 
                     readonly property string group: "[Channel4]"
 
-                    active: root.show4decks
-                    height: active ? (root.maximizeLibrary ? 80 : mixer.height / 2) : 0
+                    active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
+                    clip: true
+                    height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
 
                     Behavior on height {
                         SpringAnimation {
@@ -560,7 +471,7 @@ Item {
                         }
                     }
                     sourceComponent: Component {
-                        Deck {
+                        LateNightDeck.Deck {
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
                             editMode: root.editDeck
@@ -611,13 +522,21 @@ Item {
                     width: parent.width
 
                     sourceComponent: Component {
-                        Skin.Library {
+                        Library {
                             anchors.fill: parent
                         }
                     }
                     states: [
                         State {
-                            when: root.maximizeLibrary && root.show4decks
+                            when: root.maximizeLibrary && !root.showMaximizedDecks
+
+                            AnchorChanges {
+                                anchors.top: parent.top
+                                target: library
+                            }
+                        },
+                        State {
+                            when: root.maximizeLibrary && root.showMaximizedDecks && root.show4decks
 
                             AnchorChanges {
                                 anchors.top: deck4.bottom
@@ -625,7 +544,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary && !root.show4decks
+                            when: root.maximizeLibrary && root.showMaximizedDecks && !root.show4decks
 
                             AnchorChanges {
                                 anchors.top: deck1.bottom
@@ -650,35 +569,5 @@ Item {
             }
         }
     }
-    Skin.Settings {
-        id: settingsPopup
 
-        height: Math.min(840, parent.height)
-        modal: true
-        width: Math.min(1400, parent.width)
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
-
-        Overlay.modal: Rectangle {
-            id: overlayModal
-
-            readonly property bool hasHardwareAcceleration: Mixxx.Config.useAcceleration
-            property real radius: 12
-
-            anchors.fill: parent
-            color: Qt.alpha('#00000010', hasHardwareAcceleration ? 1.0 : 0.6)
-
-            Repeater {
-                model: hasHardwareAcceleration ? 1 : 0
-
-                GaussianBlur {
-                    anchors.fill: overlayModal
-                    deviation: 4
-                    radius: Math.max(0, overlayModal.radius)
-                    samples: 16
-                    source: content
-                }
-            }
-        }
-    }
 }
