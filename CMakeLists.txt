@@ -403,14 +403,6 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
-cmake_dependent_option(
-  QML
-  "Build with QML"
-  ON
-  "QT6"
-  OFF
-)
-
 if(QT6)
   set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
 else()
@@ -419,10 +411,6 @@ endif()
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
-endif()
-
-if(QML)
-  add_compile_definitions(MIXXX_USE_QML)
 endif()
 
 if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
@@ -1988,26 +1976,6 @@ set(
   src/util/workerthreadscheduler.h
   src/util/xml.h
 )
-if(NOT QML)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
-      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
-      # main target
-      src/control/controlmodel.cpp
-      src/control/controlsortfiltermodel.cpp
-  )
-else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following source depends of QML being available but aren't part of the new QML UI
-      src/controllers/rendering/controllerrenderingengine.cpp
-      src/controllers/controllerenginethreadcontrol.cpp
-      src/controllers/controllerscreenpreview.cpp
-  )
-endif()
 if(QOPENGL)
   target_sources(
     mixxx-lib
@@ -2367,6 +2335,21 @@ if(QT6)
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
   endif()
+
+  # We need Qt 6.4 for ComponentBehavior: Bound
+  cmake_dependent_option(
+    QML
+    "Build with QML"
+    ON
+    "Qt6_VERSION VERSION_GREATER_EQUAL 6.4"
+    OFF
+  )
+  if(QML)
+    add_compile_definitions(MIXXX_USE_QML)
+  else()
+    message(STATUS "Building without QML")
+  endif()
+
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
@@ -2464,6 +2447,27 @@ else()
     fatal_error_missing_env()
   endif()
   add_executable(mixxx WIN32 src/main.cpp)
+endif()
+
+if(NOT QML)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+      # main target
+      src/control/controlmodel.cpp
+      src/control/controlsortfiltermodel.cpp
+  )
+else()
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following source depends of QML being available but aren't part of the new QML UI
+      src/controllers/rendering/controllerrenderingengine.cpp
+      src/controllers/controllerenginethreadcontrol.cpp
+      src/controllers/controllerscreenpreview.cpp
+  )
 endif()
 
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
@@ -3034,6 +3038,7 @@ if(BUILD_TESTING)
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
         src/test/qmlcontrolproxytest.cpp
+        src/test/qmldurationformattertest.cpp
         src/test/qmleffectsproxytest.cpp
         src/test/qmlkeyutilstest.cpp
         src/test/qmlskincontrolcreatortest.cpp
@@ -3924,6 +3929,12 @@ if(QML)
     PROPERTIES QT_RESOURCE_ALIAS MathUtils.mjs
   )
   set_source_files_properties(
+    res/qml/Mixxx/DurationFormatter.qml
+    PROPERTIES
+      QT_QML_SINGLETON_TYPE TRUE
+      QT_RESOURCE_ALIAS DurationFormatter.qml
+  )
+  set_source_files_properties(
     res/qml/Mixxx/PlayerDropArea.qml
     PROPERTIES QT_RESOURCE_ALIAS PlayerDropArea.qml
   )
@@ -3933,6 +3944,7 @@ if(QML)
     RESOURCE_PREFIX /mixxx.org/imports
     IMPORTS QtQuick
     QML_FILES
+      res/qml/Mixxx/DurationFormatter.qml
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
   )
@@ -3984,6 +3996,7 @@ if(QML)
     PRIVATE
       src/qml/asyncimageprovider.cpp
       src/qml/qmlapplication.cpp
+      src/qml/qmlapplicationproxy.cpp
       src/qml/qmlautoreload.cpp
       src/qml/qmlbatteryproxy.cpp
       src/qml/qmlbeatsmodel.cpp
@@ -4575,6 +4588,9 @@ elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE Qt${QT_VERSION_MAJOR}::DBus)
+  endif()
 elseif(WIN32)
   if(Qt_IS_STATIC)
     target_link_libraries(
@@ -5370,6 +5386,9 @@ if(VINYLCONTROL)
       src/engine/controls/vinylcontrolcontrol.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __VINYLCONTROL__)
+  endif()
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)

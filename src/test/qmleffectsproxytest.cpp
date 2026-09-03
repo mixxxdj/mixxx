@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "effects/backends/builtin/echoeffect.h"
+#include "effects/backends/builtin/parametriceqeffect.h"
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpreset.h"
@@ -121,6 +122,7 @@ TEST_F(QmlEffectsProxyTest, SlotEffectAndParameterVisibility) {
     EXPECT_GE(modelResetSpy.count(), 1);
 
     ASSERT_EQ(kExpectedParameterCount, pModel->rowCount({}));
+    EXPECT_TRUE(pModel->roleNames().values().contains("unitString"));
     EXPECT_EQ(QStringLiteral("parameter1"),
             pModel->get(kParameter1Index).toMap().value("controlKey").toString());
     EXPECT_EQ(QStringLiteral("parameter2"),
@@ -145,6 +147,10 @@ TEST_F(QmlEffectsProxyTest, SlotEffectAndParameterVisibility) {
     pSlot->setParameterVisible(QStringLiteral("feedback_amount"), true);
     EXPECT_TRUE(pModel->get(kParameter2Index).toMap().value("loaded").toBool());
     pSlot->saveDefaultSnapshot();
+
+    pSlot->setEffectId(ParametricEQEffect::getId());
+    EXPECT_EQ(QStringLiteral("dB"),
+            pModel->get(kParameter1Index).toMap().value("unitString").toString());
 }
 
 } // namespace

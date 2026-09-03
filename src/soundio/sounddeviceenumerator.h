@@ -15,9 +15,6 @@ class SoundDeviceEnumerator : public QObject {
     virtual QList<QString> getAPIs() const = 0;
     virtual void initialize() = 0;
     virtual void deinitialize() = 0;
-    virtual void setLatencyParams(
-            [[maybe_unused]] mixxx::audio::SampleRate sampleRate,
-            [[maybe_unused]] SINT framesPerBuffer) {};
 
     bool initialized() const {
         return m_initialized;

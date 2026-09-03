@@ -29,6 +29,7 @@ class QmlEffectSlotParametersModel : public QAbstractListModel {
         TypeRole,
         ControlKeyRole,
         LoadedRole,
+        UnitStringRole,
     };
     Q_ENUM(Roles)
 

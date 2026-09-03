@@ -46,6 +46,9 @@ class CmdlineArgs final {
         return m_controllerAbortOnWarning;
     }
     bool getDeveloper() const { return m_developer; }
+    bool getStats() const {
+        return m_developer || m_stats;
+    }
 #ifdef MIXXX_USE_QML
     bool isQml() const {
         return m_qml;
@@ -107,6 +110,7 @@ class CmdlineArgs final {
     bool m_controllerPreviewScreens;
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
     bool m_developer; // Developer Mode
+    bool m_stats;     // Enable stats collection
 #ifdef MIXXX_USE_QML
     bool m_qml;
     bool m_awareOfRisk;
