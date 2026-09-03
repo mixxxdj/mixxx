@@ -16,6 +16,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     Q_OBJECT
   public:
     void onTrackSummaryChanged(TrackId);
+    void invalidateAll();
 
     QPixmap requestCachedOverview(
             mixxx::OverviewType type,
@@ -76,6 +77,10 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             QImage* pImage,
             const QList<mixxx::CueInfo>& cueInfos,
             double trackDurationMillis);
+
+    static void drawMinuteMarkers(
+            QImage* pImage,
+            const QList<int>& markerXPositions);
 
   private:
     UserSettingsPointer m_pConfig;
