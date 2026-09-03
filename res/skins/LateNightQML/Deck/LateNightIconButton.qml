@@ -67,8 +67,13 @@ Item {
     }
     readonly property bool fillActive: root.activeState || (root.pressedState && root.pressedActivatesFill)
     readonly property color fillColor: {
-        if (root.pressedState && root.pressedActivatesFill && root.pressedColor.toString() !== "#00000000" && root.pressedColor.toString() !== "transparent") {
-            return root.pressedColor;
+        if (root.pressedState && root.pressedActivatesFill) {
+            if (root.pressedColor.toString() !== "#00000000" && root.pressedColor.toString() !== "transparent") {
+                return root.pressedColor;
+            }
+            if (root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent") {
+                return root.activeColor;
+            }
         }
         if (root.activeState && root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent") {
             return root.activeColor;

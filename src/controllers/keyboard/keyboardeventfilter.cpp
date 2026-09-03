@@ -2,6 +2,7 @@
 
 #include <QAction>
 #include <QEvent>
+#include <QGuiApplication>
 #include <QKeyEvent>
 #include <QtDebug>
 
@@ -41,6 +42,21 @@ QKeySequence safeKeySequence(const QString& str) {
 }
 
 mixxx::Logger kLogger("KeyboardEventFilter");
+
+bool isEditableTextInput(QObject* object) {
+    if (!object) {
+        return false;
+    }
+
+    const QMetaObject* metaObject = object->metaObject();
+    if (metaObject->indexOfProperty("text") < 0 ||
+            metaObject->indexOfProperty("cursorPosition") < 0 ||
+            metaObject->indexOfProperty("readOnly") < 0) {
+        return false;
+    }
+
+    return !object->property("readOnly").toBool();
+}
 } // anonymous namespace
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
@@ -87,6 +103,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
         QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+
+        if (isEditableTextInput(QGuiApplication::focusObject())) {
+            return false;
+        }
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode

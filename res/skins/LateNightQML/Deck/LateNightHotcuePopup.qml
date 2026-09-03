@@ -14,18 +14,15 @@ Popup {
 
     readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
     readonly property var currentTrack: deckPlayer?.currentTrack
+    property var popupTrack: null
     property int cueRevision: 0
-    readonly property string hotcueLabel: (currentTrack && root.hotcueNumber > 0)
-            // Depend on cueRevision so C++ cue mutations refresh this invocable binding.
-            ? (cueRevision, Mixxx.Library.deckHotcueLabel(currentTrack, root.hotcueNumber))
-            : ""
+    property int jumpDirectionRevision: 0
+    readonly property string hotcueLabel: root.getHotcueLabel(root.cueRevision)
     readonly property color selectedColor: colorProxy.value >= 0
             ? "#" + colorProxy.value.toString(16).padStart(6, "0")
             : LateNightTheme.accentColor
-    readonly property real currentFramePosition: playPositionProxy.value * trackSamplesProxy.value
-    readonly property bool savedJumpImpossible: hotcuePositionProxy.value >= 0 &&
-            Math.round(typeProxy.value) === 1 &&
-            Math.abs(currentFramePosition - hotcuePositionProxy.value) <= 150
+    readonly property string savedJumpDirection:
+        root.getSavedJumpDirection(root.jumpDirectionRevision)
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
     dim: false
@@ -47,6 +44,22 @@ Popup {
         return minutes + ":" + remainingSeconds.toFixed(2).padStart(5, "0");
     }
 
+    function getHotcueLabel(revision) {
+        if (revision < 0 || !popupTrack || root.hotcueNumber <= 0) {
+            return "";
+        }
+        return Mixxx.Library.deckHotcueLabel(popupTrack, root.hotcueNumber);
+    }
+
+    function getSavedJumpDirection(revision) {
+        if (revision < 0 || !popupTrack || root.hotcueNumber <= 0) {
+            return "impossible";
+        }
+        return Mixxx.Library.deckHotcueJumpDirection(popupTrack,
+                root.group,
+                root.hotcueNumber);
+    }
+
     function setHotcueColor(newColor) {
         colorProxy.value = (parseInt(newColor.r * 255) << 16) |
                 (parseInt(newColor.g * 255) << 8) |
@@ -60,35 +73,49 @@ Popup {
     }
 
     function setCueType(action) {
-        if (currentTrack && root.hotcueNumber > 0 && Mixxx.Library.setDeckHotcueType(currentTrack,
+        if (popupTrack && root.hotcueNumber > 0 && Mixxx.Library.setDeckHotcueType(popupTrack,
                 root.group,
                 root.hotcueNumber,
                 action)) {
             root.cueRevision += 1;
+            root.jumpDirectionRevision += 1;
         }
     }
 
     onOpened: {
+        popupTrack = currentTrack;
         labelInput.text = root.hotcueLabel;
-        labelInput.forceActiveFocus();
+        labelInput.forceActiveFocus(Qt.PopupFocusReason);
         labelInput.selectAll();
     }
 
     onClosed: {
-        if (currentTrack && root.hotcueNumber > 0) {
-            Mixxx.Library.cleanupDeckHotcuePopup(currentTrack, root.hotcueNumber);
+        if (popupTrack && root.hotcueNumber > 0) {
+            Mixxx.Library.cleanupDeckHotcuePopup(popupTrack, root.hotcueNumber);
         }
+        popupTrack = null;
+    }
+
+    Connections {
+        function onTrackChanged() {
+            if (root.opened) {
+                root.close();
+            }
+        }
+
+        target: root.deckPlayer
     }
 
     Connections {
         function onCuesChanged() {
             root.cueRevision += 1;
+            root.jumpDirectionRevision += 1;
             if (!labelInput.activeFocus) {
                 labelInput.text = root.hotcueLabel;
             }
         }
 
-        target: root.currentTrack
+        target: root.popupTrack
     }
 
     Mixxx.ControlProxy {
@@ -103,6 +130,8 @@ Popup {
 
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_position"
+
+        onValueChanged: root.jumpDirectionRevision += 1
     }
 
     Mixxx.ControlProxy {
@@ -110,6 +139,8 @@ Popup {
 
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_endposition"
+
+        onValueChanged: root.jumpDirectionRevision += 1
     }
 
     Mixxx.ControlProxy {
@@ -117,6 +148,8 @@ Popup {
 
         group: root.group
         key: "track_samples"
+
+        onValueChanged: root.jumpDirectionRevision += 1
     }
 
     Mixxx.ControlProxy {
@@ -124,6 +157,8 @@ Popup {
 
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_type"
+
+        onValueChanged: root.jumpDirectionRevision += 1
     }
 
     Mixxx.ControlProxy {
@@ -131,6 +166,17 @@ Popup {
 
         group: root.group
         key: "playposition"
+
+        onValueChanged: root.jumpDirectionRevision += 1
+    }
+
+    Mixxx.ControlProxy {
+        id: quantizeProxy
+
+        group: root.group
+        key: "quantize"
+
+        onValueChanged: root.jumpDirectionRevision += 1
     }
 
     Mixxx.ControlProxy {
@@ -153,8 +199,9 @@ Popup {
         border.width: 2
     }
 
-    contentItem: Item {
+    contentItem: FocusScope {
         anchors.fill: parent
+        focus: true
 
         Text {
             id: titleText
@@ -183,14 +230,17 @@ Popup {
             verticalAlignment: Text.AlignVCenter
         }
 
-        TextInput {
+        TextField {
             id: labelInput
 
             x: 20
             y: 52
             width: 137
             height: 25
+            focus: true
             text: root.hotcueLabel
+            placeholderText: "Label..."
+            placeholderTextColor: "#77716c"
             selectByMouse: true
             color: LateNightTheme.primaryDeckTextColor
             font.family: "Open Sans"
@@ -200,29 +250,21 @@ Popup {
             clip: true
 
             onTextEdited: {
-                if (root.currentTrack && root.hotcueNumber > 0) {
-                    Mixxx.Library.setDeckHotcueLabel(root.currentTrack,
+                if (root.popupTrack && root.hotcueNumber > 0) {
+                    Mixxx.Library.setDeckHotcueLabel(root.popupTrack,
                             root.hotcueNumber,
                             text);
                 }
             }
 
-            Rectangle {
-                anchors.fill: parent
-                z: -1
+            Keys.onReturnPressed: root.close()
+            Keys.onEnterPressed: root.close()
+            Keys.onEscapePressed: root.close()
+
+            background: Rectangle {
                 color: "#030303"
                 border.color: LateNightTheme.isClassic ? "#f0bb2b" : "#2e2e2e"
                 border.width: LateNightTheme.isClassic ? 1 : 0
-            }
-
-            Text {
-                anchors.fill: parent
-                anchors.leftMargin: 4
-                text: "Label..."
-                color: "#77716c"
-                font: labelInput.font
-                verticalAlignment: Text.AlignVCenter
-                visible: labelInput.text.length === 0 && !labelInput.activeFocus
             }
         }
 
@@ -323,14 +365,12 @@ Popup {
         }
 
         LateNightCueMenuButton {
-            readonly property bool forwardJump: hotcueEndPositionProxy.value < 0 ||
-                    trackSamplesProxy.value <= 0 ||
-                    hotcuePositionProxy.value > hotcueEndPositionProxy.value
+            readonly property bool forwardJump: root.savedJumpDirection === "forward"
 
             x: 176
             y: 183
             checked: Math.round(typeProxy.value) === 5
-            impossible: root.savedJumpImpossible
+            impossible: root.savedJumpDirection === "impossible"
             iconSource: LateNightTheme.lateNightButton(forwardJump ? "btn__beatjump_right.svg" : "btn__beatjump_left.svg")
             activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
             onClicked: root.setCueType("jump-auto")

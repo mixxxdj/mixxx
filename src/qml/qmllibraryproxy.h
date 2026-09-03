@@ -191,6 +191,10 @@ class QmlLibraryProxy : public QObject {
             const QString& group,
             int hotcueNumber,
             const QString& action);
+    Q_INVOKABLE QString deckHotcueJumpDirection(
+            mixxx::qml::QmlTrackProxy* track,
+            const QString& group,
+            int hotcueNumber) const;
     Q_INVOKABLE void cleanupDeckHotcuePopup(
             mixxx::qml::QmlTrackProxy* track,
             int hotcueNumber);
