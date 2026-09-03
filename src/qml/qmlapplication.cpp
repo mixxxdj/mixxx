@@ -110,6 +110,7 @@ QmlApplication::QmlApplication(
 
     m_pCoreServices->initialize(app);
     app->installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
+    registerImageProvider();
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");
@@ -362,10 +363,7 @@ bool QmlApplication::loadQml(const QString& path) {
     m_pAppEngine->addUrlInterceptor(&m_autoReload);
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
 
-    // No memory leak here, the QQmlEngine takes ownership of the provider
-    QQuickAsyncImageProvider* pImageProvider = new AsyncImageProvider(
-            m_pCoreServices->getTrackCollectionManager());
-    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
+    registerImageProvider();
 
     m_pAppEngine->load(path);
     if (m_pAppEngine->rootObjects().isEmpty()) {
@@ -385,6 +383,20 @@ bool QmlApplication::loadQml(const QString& path) {
     }
 #endif
     return true;
+}
+
+void QmlApplication::registerImageProvider() {
+    if (!m_pAppEngine) {
+        return;
+    }
+
+    const auto pTrackCollectionManager = m_pCoreServices->getTrackCollectionManager();
+    if (!pTrackCollectionManager) {
+        return;
+    }
+
+    auto* pImageProvider = new AsyncImageProvider(pTrackCollectionManager);
+    m_pAppEngine->addImageProvider(AsyncImageProvider::kProviderName, pImageProvider);
 }
 
 } // namespace qml

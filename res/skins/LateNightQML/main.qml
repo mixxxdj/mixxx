@@ -28,6 +28,14 @@ ApplicationWindow {
         }
     }
 
+    function handleMainWindowLoaderStatus() {
+        root.updateProgress()
+        if (mainWindowLoader.status === Loader.Error) {
+            console.error("Failed to load the LateNightQML main window")
+            Qt.quit()
+        }
+    }
+
     Connections {
         target: Mixxx.Core
 
@@ -47,7 +55,7 @@ ApplicationWindow {
         asynchronous: true
 
         onProgressChanged: root.updateProgress()
-        onStatusChanged: root.updateProgress()
+        onStatusChanged: root.handleMainWindowLoaderStatus()
 
         sourceComponent: Component {
             MainWindow {

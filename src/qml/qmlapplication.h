@@ -45,6 +45,7 @@ class QmlApplication : public QObject {
 #endif
 
   private:
+    void registerImageProvider();
     void setupSpinnyCoverControls();
     void updateSpinnyCoverControls();
 

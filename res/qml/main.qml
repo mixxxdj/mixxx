@@ -20,12 +20,23 @@ ApplicationWindow {
     visible: true
     width: isMobile ? Screen.width : designWidth
 
+    function updateVisibility() {
+        if (!Mixxx.Core.ready) {
+            return;
+        }
+        root.visibility = Mixxx.Config.configStartInFullscreenKey || isMobile
+                ? Window.FullScreen
+                : Window.Windowed;
+    }
+
     Connections {
         target: Mixxx.Core
-        function onReadyChanged(){
-            root.visibility = Mixxx.Config.configStartInFullscreenKey || isMobile ? Window.FullScreen : Window.Windowed
+        function onReadyChanged() {
+            root.updateVisibility();
         }
     }
+
+    Component.onCompleted: root.updateVisibility()
 
     Loader {
         id: content
@@ -34,6 +45,12 @@ ApplicationWindow {
 
         active: Mixxx.Core.ready
         asynchronous: true
+        onStatusChanged: {
+            if (status === Loader.Error) {
+                console.error("Failed to load the Mixxx main window")
+                Qt.quit()
+            }
+        }
         sourceComponent: Component {
             MainWindow {
                 applicationWindow: root
