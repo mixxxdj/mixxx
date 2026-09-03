@@ -182,9 +182,15 @@ void OverviewDelegate::paintItem(QPainter* painter,
         }
         paintItemBackground(painter, option, index);
     } else {
-        // We have a cached pixmap, paint it
+        // We have a cached pixmap, paint it.
+        // Draw at natural logical size from the cell's top-left, clipped to
+        // the cell rect. No scaling, so markers stay at 1:1. Short uniform
+        // tracks leave empty space on the right; long tracks clip overflow.
         pixmap.setDevicePixelRatio(scaleFactor);
-        painter->drawPixmap(option.rect, pixmap);
+        painter->save();
+        painter->setClipRect(option.rect);
+        painter->drawPixmap(option.rect.topLeft(), pixmap);
+        painter->restore();
     }
 
     // Draw a border if the cover art cell has focus

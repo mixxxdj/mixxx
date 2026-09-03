@@ -761,7 +761,51 @@ Select from different types of displays for the waveform overview, which differ 
       </widget>
      </item>
 
-     <item row="4" column="0">
+     <item row="4" column="1" colspan="4">
+      <widget class="QCheckBox" name="overviewUniformTimeBaseCheckBox">
+       <property name="toolTip">
+        <string>Scale all library overview waveforms to the same pixels-per-second ratio, so minute markers align across tracks regardless of duration. Shorter tracks occupy less than the full column width; longer tracks are clipped.</string>
+       </property>
+       <property name="text">
+        <string>Uniform time base for library overviews</string>
+       </property>
+      </widget>
+     </item>
+
+     <item row="5" column="1">
+      <widget class="QLabel" name="overviewTimeBaseMinutesLabel">
+       <property name="text">
+        <string>Minutes per column width</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QDoubleSpinBox" name="overviewTimeBaseMinutesSpinBox">
+       <property name="toolTip">
+        <string>How many minutes of audio fit across the full overview column width when uniform time base is enabled.</string>
+       </property>
+       <property name="suffix">
+        <string> min</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="minimum">
+        <double>0.500000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>60.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.500000000000000</double>
+       </property>
+       <property name="value">
+        <double>6.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+
+     <item row="6" column="0">
       <widget class="QLabel" name="overview_gain_label">
        <property name="toolTip">
         <string extracomment="Select a gain mode for the waveform overview."/>
@@ -771,7 +815,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="4" column="1" colspan="4">
+     <item row="6" column="1" colspan="4">
       <widget class="QRadioButton" name="overview_scale_normalize">
        <property name="text">
         <string>Normalize to peak</string>
@@ -781,7 +825,7 @@ Select from different types of displays for the waveform overview, which differ 
        </attribute>
       </widget>
      </item>
-     <item row="5" column="1" colspan="4">
+     <item row="7" column="1" colspan="4">
       <widget class="QRadioButton" name="overview_scale_allReplayGain">
        <property name="text">
         <string extracomment="'Global' refers to the 'Global' visual gain in the scrolling waveform settings">Use Waveform "Global" gain and ReplayGain (if enabled)</string>
@@ -938,6 +982,8 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>overviewStereoCheckBox</tabstop>
   <tabstop>overviewMinuteMarkersCheckBox</tabstop>
   <tabstop>overviewLibraryMinuteMarkersCheckBox</tabstop>
+  <tabstop>overviewUniformTimeBaseCheckBox</tabstop>
+  <tabstop>overviewTimeBaseMinutesSpinBox</tabstop>
   <tabstop>overview_scale_normalize</tabstop>
   <tabstop>overview_scale_allReplayGain</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
