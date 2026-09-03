@@ -398,7 +398,7 @@ Item {
 
         // Qt Quick Controls does not expose native menu roles. Prevent
         // macOS from treating this action as the application Preferences action.
-        text: qsTranslate("WMainMenuBar", "&Settings directory") + "\u200c"
+        text: "\u200c" + qsTranslate("WMainMenuBar", "&Settings directory")
 
         onTriggered: Qt.openUrlExternally(Mixxx.Application.settingsDirectoryUrl)
     }
