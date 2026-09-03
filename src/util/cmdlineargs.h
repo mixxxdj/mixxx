@@ -83,7 +83,7 @@ class CmdlineArgs final {
         if (m_settingsPath.isEmpty()) {
             return;
         }
-        if (!m_settingsPath.endsWith('/') && !m_settingsPath.endsWith('\\')) {
+        if (!m_settingsPath.endsWith(QDir::separator())) {
             m_settingsPath.append(QDir::separator());
         }
     }
