@@ -78,7 +78,14 @@ class CmdlineArgs final {
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
     void setSettingsPath(const QString& newSettingsPath) {
-        m_settingsPath = newSettingsPath;
+        m_settingsPath = QDir::toNativeSeparators(newSettingsPath);
+        m_settingsPathSet = true;
+        if (m_settingsPath.isEmpty()) {
+            return;
+        }
+        if (!m_settingsPath.endsWith(QDir::separator())) {
+            m_settingsPath.append(QDir::separator());
+        }
     }
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
