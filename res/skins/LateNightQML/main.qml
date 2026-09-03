@@ -14,19 +14,33 @@ import QtQuick.Layouts
 ApplicationWindow {
     id: root
 
+    readonly property int activeDeckState: layoutState.effectiveDeckSize
+    readonly property int activeDeckHeight: activeDeckState === 0 ? LateNightTheme.miniDeckHeight : (activeDeckState === 1 ? LateNightTheme.compactDeckHeight : LateNightTheme.fullDeckHeight)
     property alias editDeck: toolbar.editDeck
     property var focusedDeck: null
-    readonly property int fullDeckHeight: 206
     property alias maximizeLibrary: toolbar.maximizeLibrary
-    readonly property int minimizedDeckHeight: 80
+    readonly property int normalDeckState: layoutState.normalizedSavedDeckSize
     readonly property int numDecks: 4
     readonly property int numSamplers: 64
     readonly property bool show4decks: toolbar.show4decks
     property alias showEffects: toolbar.showEffects
+    readonly property bool showCompactVuMeters: layoutState.showCompactVuMeters
+    readonly property bool showDeckArea: layoutState.showDeckArea
     readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
     readonly property bool showMixer: toolbar.showMixer
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
+
+    LayoutState {
+        id: layoutState
+
+        maximizeLibrary: root.maximizeLibrary
+        mixerVisible: root.showMixer
+        savedDeckSize: toolbar.deckSizeWithoutMixer
+        show4decks: root.show4decks
+        showCompactVuMetersSetting: showCompactVuMetersProxy.value > 0
+        showMaximizedDecks: root.showMaximizedDecks
+    }
 
     function focusLegacyLibrarySearch() {
         Qt.callLater(function() {
@@ -96,6 +110,15 @@ ApplicationWindow {
         onInitializedChanged: {
             value = root.numSamplers;
         }
+    }
+    Mixxx.ControlProxy {
+        id: showCompactVuMetersProxy
+
+        group: "[Skin]"
+        key: "show_vumeters_compact"
+    }
+    SkinControlBootstrap {
+        id: skinControlBootstrap
     }
     Mixxx.SkinControlCreator {
         defaultValue: 1.0
@@ -406,8 +429,8 @@ ApplicationWindow {
 
                 readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
                 readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
-                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height
-                readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
+                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height + micAuxSection.height
+                readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
 
                 SplitView.fillHeight: library.active
                 SplitView.maximumHeight: library.active ? undefined : requiredPaneHeight
@@ -418,10 +441,10 @@ ApplicationWindow {
                 LateNightDeck.Deck {
                     id: deck1
 
+                    deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel1]"
-                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
-                    minimized: root.maximizeLibrary
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
                     visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
@@ -544,10 +567,10 @@ ApplicationWindow {
                 LateNightDeck.Deck {
                     id: deck2
 
+                    deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel2]"
-                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
-                    minimized: root.maximizeLibrary
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
                     visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
@@ -587,7 +610,7 @@ ApplicationWindow {
 
                     active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
-                    height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
+                    height: active ? (root.maximizeLibrary ? LateNightTheme.miniDeckHeight : root.activeDeckHeight) : 0
 
                     Behavior on height {
                         SpringAnimation {
@@ -602,9 +625,9 @@ ApplicationWindow {
                         LateNightDeck.Deck {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
+                            deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck3.group
-                            minimized: root.maximizeLibrary
                         }
                     }
                     states: [
@@ -631,7 +654,7 @@ ApplicationWindow {
 
                     active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
-                    height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
+                    height: active ? (root.maximizeLibrary ? LateNightTheme.miniDeckHeight : root.activeDeckHeight) : 0
 
                     Behavior on height {
                         SpringAnimation {
@@ -646,9 +669,9 @@ ApplicationWindow {
                         LateNightDeck.Deck {
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
+                            deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck4.group
-                            minimized: root.maximizeLibrary
                         }
                     }
                     states: [
@@ -740,6 +763,36 @@ ApplicationWindow {
                         anchors.top: parent.top
                     }
                 }
+                Item {
+                    id: micAuxSection
+
+                    clip: true
+                    height: root.showMicAux && !root.maximizeLibrary ? micAuxRack.implicitHeight : 0
+                    opacity: root.showMicAux && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: samplersSection.y + samplersSection.height
+                    z: 2
+
+                    Row {
+                        id: micAuxRack
+
+                        width: parent.width
+
+                        Skin.MicrophoneUnit {
+                            unitNumber: 1
+                        }
+                        Skin.MicrophoneUnit {
+                            unitNumber: 2
+                        }
+                        Skin.AuxiliaryUnit {
+                            unitNumber: 1
+                        }
+                        Skin.AuxiliaryUnit {
+                            unitNumber: 2
+                        }
+                    }
+                }
                 Loader {
                     id: library
 
@@ -780,7 +833,7 @@ ApplicationWindow {
 
                     anchors {
                         bottom: parent.bottom
-                        top: samplersSection.bottom
+                        top: micAuxSection.bottom
                     }
                 }
             }

@@ -18,6 +18,7 @@ Rectangle {
 
     property bool editDeck: false
     required property var applicationMenuActions
+    property int deckSizeWithoutMixer: Toolbar.Compact
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property bool show4decksAvailable: true
@@ -250,7 +251,9 @@ Rectangle {
         setControlValueIfInitialized(maxLibraryDecksControl, enabled ? 1.0 : 0.0);
     }
     function setDeckSize(size) {
-        deckSizeControl.value = size;
+        const normalizedSize = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(size)));
+        deckSizeWithoutMixer = normalizedSize;
+        setControlValueIfInitialized(deckSizeControl, normalizedSize);
     }
     function broadcastBackgroundColor(status) {
         if (status === 1.0) {
@@ -375,8 +378,8 @@ Rectangle {
     Mixxx.ControlProxy {
         id: maxLibraryDecksControl
 
-        group: "[LateNight]"
-        key: "max_lib_show_decks"
+        group: "[Skin]"
+        key: "latenight_max_lib_show_decks"
 
         onInitializedChanged: {
             maxLibraryDecksButton.checked = value > 0;
@@ -388,8 +391,17 @@ Rectangle {
     Mixxx.ControlProxy {
         id: deckSizeControl
 
-        group: "[LateNight]"
-        key: "deck_size_without_mixer"
+        group: "[Skin]"
+        key: "latenight_deck_size_without_mixer"
+
+        onInitializedChanged: {
+            if (initialized) {
+                root.deckSizeWithoutMixer = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(value)));
+            }
+        }
+        onValueChanged: {
+            root.deckSizeWithoutMixer = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(value)));
+        }
     }
     Mixxx.ControlProxy {
         id: showHotcuesControl
@@ -1413,8 +1425,12 @@ Rectangle {
                     text: "4"
 
                     onClicked: {
-                        showHotcuesControl.value = 1.0;
-                        show8HotcuesControl.value = 0.0;
+                        if (showHotcuesControl.value <= 0) {
+                            showHotcuesControl.value = 1.0;
+                        }
+                        if (show8HotcuesControl.value > 0) {
+                            show8HotcuesControl.value = 0.0;
+                        }
                     }
                 }
                 ToolbarMenuInlineChoice {
@@ -1423,8 +1439,12 @@ Rectangle {
                     text: "8"
 
                     onClicked: {
-                        showHotcuesControl.value = 1.0;
-                        show8HotcuesControl.value = 1.0;
+                        if (showHotcuesControl.value <= 0) {
+                            showHotcuesControl.value = 1.0;
+                        }
+                        if (show8HotcuesControl.value <= 0) {
+                            show8HotcuesControl.value = 1.0;
+                        }
                     }
                 }
             }

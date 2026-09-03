@@ -155,6 +155,15 @@ QtObject {
     readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
     readonly property color deckTimeTextColor: isClassic ? "#f0bb2b" : "#777777"
     readonly property color deckTopRowBackgroundColor: "#181818"
+    readonly property int deckOuterMargin: isClassic ? 2 : 1
+    readonly property int fullDeckHeight: 206
+    readonly property int compactDeckHeight: 168
+    readonly property int miniDeckHeight: 53
+    readonly property int fullBigSpinnySize: 114
+    readonly property int compactBigSpinnySize: 109
+    readonly property int smallSpinnySize: 63
+    readonly property int miniSpinnySize: 53
+    readonly property int deckTransportHeight: 55
     readonly property color effectsAssignmentActiveTextColor: isClassic ? "#000000" : "#a7998b"
     readonly property color effectsAssignmentInactiveColor: isClassic ? "#262626" : "#151517"
     readonly property color effectsAssignmentInactiveTextColor: isClassic ? "#d2d2d1" : "#555555"
