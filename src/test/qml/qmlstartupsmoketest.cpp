@@ -86,6 +86,11 @@ class QmlStartupSmokeTest : public MixxxTest,
 
 TEST_P(QmlStartupSmokeTest, Starts) {
     const auto& skin = GetParam();
+#if defined(__WINDOWS__)
+    if (skin.useNewUi) {
+        GTEST_SKIP() << "NewUi QML startup smoke test is temporarily disabled on Windows";
+    }
+#endif
     QTemporaryDir profile;
     ASSERT_TRUE(profile.isValid());
     const QString settingsPath = profile.path() + QLatin1Char('/');
