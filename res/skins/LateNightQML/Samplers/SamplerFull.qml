@@ -323,7 +323,7 @@ Controls.Panel {
                             spacing: 0
 
                             Repeater {
-                                model: root.show8Hotcues ? 8 : 4
+                                model: 8
 
                                 SamplerHotcueButton {
                                     required property int index
@@ -332,9 +332,10 @@ Controls.Panel {
                                     Layout.minimumHeight: 0
                                     Layout.minimumWidth: 0
                                     Layout.preferredHeight: 26 * samplerButtonsRow.buttonScale
-                                    Layout.preferredWidth: 26 * samplerButtonsRow.buttonScale
+                                    Layout.preferredWidth: root.show8Hotcues || index < 4 ? 26 * samplerButtonsRow.buttonScale : 0
                                     group: root.group
                                     hotcueNumber: index + 1
+                                    visible: root.show8Hotcues || index < 4
                                 }
                             }
                             Item {

@@ -10,6 +10,7 @@ import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 
 Item {
     id: root
@@ -17,19 +18,46 @@ Item {
     required property ApplicationWindow applicationWindow
     property alias menuBar: nativeApplicationMenuLoader.item
 
+    readonly property int activeDeckState: layoutState.effectiveDeckSize
+    readonly property int activeDeckHeight: activeDeckState === 0 ? LateNightTheme.miniDeckHeight : (activeDeckState === 1 ? LateNightTheme.compactDeckHeight : LateNightTheme.fullDeckHeight)
     property alias editDeck: toolbar.editDeck
     property var focusedDeck: null
-    readonly property int fullDeckHeight: 206
     property alias maximizeLibrary: toolbar.maximizeLibrary
-    readonly property int minimizedDeckHeight: 80
+    readonly property int normalDeckState: layoutState.normalizedSavedDeckSize
     readonly property int numDecks: 4
     readonly property int numSamplers: 64
     readonly property bool show4decks: toolbar.show4decks
     property alias showEffects: toolbar.showEffects
+    readonly property bool showCompactVuMeters: layoutState.showCompactVuMeters
+    readonly property bool showDeckArea: layoutState.showDeckArea
     readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
     readonly property bool showMixer: toolbar.showMixer
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
+
+    SkinControlBootstrap {
+        id: skinControlBootstrap
+    }
+
+    // Declare the compact-meter setting before LayoutState so its initial
+    // value is available when the effective layout is derived.
+    Mixxx.ControlProxy {
+        id: showCompactVuMetersProxy
+
+        group: "[Skin]"
+        key: "show_vumeters_compact"
+    }
+
+    LayoutState {
+        id: layoutState
+
+        maximizeLibrary: root.maximizeLibrary
+        mixerVisible: root.showMixer
+        savedDeckSize: toolbar.deckSizeWithoutMixer
+        show4decks: root.show4decks
+        showCompactVuMetersSetting: showCompactVuMetersProxy.value > 0
+        showMaximizedDecks: root.showMaximizedDecks
+    }
 
     function focusLegacyLibrarySearch() {
         Qt.callLater(function() {
@@ -92,6 +120,12 @@ Item {
             value = root.numSamplers;
         }
     }
+    // Kept as a non-instantiated compatibility component for downstream skin
+    // overlays. Runtime creators live exclusively in SkinControlBootstrap.
+    Component {
+        id: legacyCreatorCompatibility
+
+        Item {
     Mixxx.SkinControlCreator {
         defaultValue: 1.0
         group: "[Skin]"
@@ -323,6 +357,8 @@ Item {
         key: "expand_samplers_57-64"
         persist: true
     }
+        }
+    }
     Column {
         id: content
 
@@ -401,8 +437,8 @@ Item {
 
                 readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
                 readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
-                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height
-                readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
+                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height + micAuxSection.height
+                readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
 
                 SplitView.fillHeight: library.active
                 SplitView.maximumHeight: library.active ? undefined : requiredPaneHeight
@@ -413,10 +449,10 @@ Item {
                 LateNightDeck.Deck {
                     id: deck1
 
+                    deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel1]"
-                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
-                    minimized: root.maximizeLibrary
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
                     visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
@@ -428,7 +464,25 @@ Item {
                             spring: 2
                         }
                     }
+                    onToggleFocus: {
+                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
+                    }
+
+                    anchors {
+                        left: parent.left
+                        right: mixer.left
+                        top: parent.top
+                    }
+
                     states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.right: compactVuSlot.left
+                                target: deck1
+                            }
+                        },
                         State {
                             when: root.maximizeLibrary
 
@@ -438,15 +492,29 @@ Item {
                             }
                         }
                     ]
+                }
+                Item {
+                    id: compactVuSlot
 
-                    onToggleFocus: {
-                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    // deckRowsHeight belongs to deckPane. Referencing it
+                    // unqualified here caused a runtime ReferenceError and
+                    // left the entire compact VU slot with no valid height.
+                    height: root.showCompactVuMeters ? deckPane.deckRowsHeight : 0
+                    visible: root.showCompactVuMeters
+                    width: root.showCompactVuMeters ? LateNightTheme.compactVuSlotWidth : 0
+                    z: 10
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: LateNightTheme.compactVuGutterColor
                     }
-
-                    anchors {
-                        left: parent.left
-                        right: mixer.left
-                        top: parent.top
+                    LateNightMixer.CompactCenterVuMeters {
+                        anchors.bottom: parent.bottom
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        show4decks: root.show4decks
                     }
                 }
                 LateNightMixer.Mixer {
@@ -462,7 +530,7 @@ Item {
 
                     states: [
                         State {
-                            when: root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
+                            when: root.showMixer && root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.right
@@ -474,7 +542,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
+                            when: root.showMixer && root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.left
@@ -486,7 +554,7 @@ Item {
                             }
                         },
                         State {
-                            when: (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
+                            when: root.showMixer && (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -539,10 +607,10 @@ Item {
                 LateNightDeck.Deck {
                     id: deck2
 
+                    deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel2]"
-                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
-                    minimized: root.maximizeLibrary
+                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
                     visible: !root.maximizeLibrary || root.showMaximizedDecks
 
                     Behavior on height {
@@ -554,17 +622,6 @@ Item {
                             spring: 2
                         }
                     }
-                    states: [
-                        State {
-                            when: root.maximizeLibrary
-
-                            AnchorChanges {
-                                anchors.left: parent.horizontalCenter
-                                target: deck2
-                            }
-                        }
-                    ]
-
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2;
                     }
@@ -574,6 +631,25 @@ Item {
                         right: parent.right
                         top: parent.top
                     }
+
+                    states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: compactVuSlot.right
+                                target: deck2
+                            }
+                        },
+                        State {
+                            when: root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: parent.horizontalCenter
+                                target: deck2
+                            }
+                        }
+                    ]
                 }
                 Loader {
                     id: deck3
@@ -582,7 +658,7 @@ Item {
 
                     active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
-                    height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
+                    height: active ? (root.maximizeLibrary ? LateNightTheme.miniDeckHeight : root.activeDeckHeight) : 0
 
                     Behavior on height {
                         SpringAnimation {
@@ -597,12 +673,20 @@ Item {
                         LateNightDeck.Deck {
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
+                            deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck3.group
-                            minimized: root.maximizeLibrary
                         }
                     }
                     states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.right: compactVuSlot.left
+                                target: deck3
+                            }
+                        },
                         State {
                             when: root.maximizeLibrary
 
@@ -626,7 +710,7 @@ Item {
 
                     active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
-                    height: active ? (root.maximizeLibrary ? root.minimizedDeckHeight : root.fullDeckHeight) : 0
+                    height: active ? (root.maximizeLibrary ? LateNightTheme.miniDeckHeight : root.activeDeckHeight) : 0
 
                     Behavior on height {
                         SpringAnimation {
@@ -641,12 +725,20 @@ Item {
                         LateNightDeck.Deck {
                             anchors.bottom: parent.bottom
                             anchors.right: parent.right
+                            deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck4.group
-                            minimized: root.maximizeLibrary
                         }
                     }
                     states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: compactVuSlot.right
+                                target: deck4
+                            }
+                        },
                         State {
                             when: root.maximizeLibrary
 
@@ -735,6 +827,36 @@ Item {
                         anchors.top: parent.top
                     }
                 }
+                Item {
+                    id: micAuxSection
+
+                    clip: true
+                    height: root.showMicAux && !root.maximizeLibrary ? micAuxRack.implicitHeight : 0
+                    opacity: root.showMicAux && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: samplersSection.y + samplersSection.height
+                    z: 2
+
+                    Row {
+                        id: micAuxRack
+
+                        width: parent.width
+
+                        Skin.MicrophoneUnit {
+                            unitNumber: 1
+                        }
+                        Skin.MicrophoneUnit {
+                            unitNumber: 2
+                        }
+                        Skin.AuxiliaryUnit {
+                            unitNumber: 1
+                        }
+                        Skin.AuxiliaryUnit {
+                            unitNumber: 2
+                        }
+                    }
+                }
                 Loader {
                     id: library
 
@@ -775,7 +897,7 @@ Item {
 
                     anchors {
                         bottom: parent.bottom
-                        top: samplersSection.bottom
+                        top: micAuxSection.bottom
                     }
                 }
             }

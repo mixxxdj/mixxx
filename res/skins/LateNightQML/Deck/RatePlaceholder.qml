@@ -74,8 +74,16 @@ Item {
 
     Mixxx.ControlProxy {
         id: syncEnabledProxy
+
         group: root.group
         key: "sync_enabled"
+
+        onValueChanged: function(newValue) {
+            if (newValue > 0 && root.previousSyncEnabledValue <= 0) {
+                syncBtn.startLatchReveal();
+            }
+            root.previousSyncEnabledValue = newValue;
+        }
     }
 
     Mixxx.ControlProxy {
@@ -233,17 +241,6 @@ Item {
                         syncBtn.startLatchReveal();
                     }
                 }
-            }
-        }
-
-        Connections {
-            target: syncEnabledProxy
-
-            function onValueChanged(newValue) {
-                if (newValue > 0 && root.previousSyncEnabledValue <= 0) {
-                    syncBtn.startLatchReveal();
-                }
-                root.previousSyncEnabledValue = newValue;
             }
         }
 

@@ -50,7 +50,7 @@ Item {
                 activeColor: LateNightTheme.vinylStatusColor(vinylStatusProxy.value)
                 label: "VINYL"
                 labelPixelSize: 11
-                labelColor: activeState ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.textColorMuted
+                labelColor: activeState ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.vinylControlInactiveLabelColor
                 contentOpacity: activeState ? 0.95 : 0.72
                 useBorderImageBackground: true
                 backgroundBorderTop: 2
@@ -76,8 +76,8 @@ Item {
             Layout.preferredHeight: 20
             backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-            inactiveLabelColor: LateNightTheme.textColorMuted
-            activeLabelColor: LateNightTheme.textColorMuted
+            inactiveLabelColor: LateNightTheme.vinylControlInactiveLabelColor
+            activeLabelColor: LateNightTheme.vinylControlInactiveLabelColor
             activeOpacity: 0.72
             inactiveOpacity: 0.72
             labelPixelSize: 11
@@ -101,7 +101,7 @@ Item {
             activeWhenNonzero: true
             activeColor: LateNightTheme.vinylCueingActiveColor
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-            inactiveLabelColor: LateNightTheme.textColorMuted
+            inactiveLabelColor: LateNightTheme.vinylControlInactiveLabelColor
             activeLabelColor: LateNightTheme.deckActiveButtonTextColor
             activeOpacity: 0.95
             inactiveOpacity: 0.72
