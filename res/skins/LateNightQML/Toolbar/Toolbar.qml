@@ -1572,7 +1572,7 @@ Rectangle {
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
                         fillMode: Image.PreserveAspectFit
-                        source: effectUnitsHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                        source: effectUnitsHeader.checked ? LateNightTheme.lateNightAsset("buttons", LateNightTheme.isPaleMoon ? "btn__lib_checkmark_ivory.svg" : "btn__lib_checkmark_grey.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                     }
 
                     ToolbarMenuInlineChoice {
@@ -1660,7 +1660,7 @@ Rectangle {
                         Layout.preferredWidth: 14
                         Layout.rightMargin: 5
                         fillMode: Image.PreserveAspectFit
-                        source: samplersHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                        source: samplersHeader.checked ? LateNightTheme.lateNightAsset("buttons", LateNightTheme.isPaleMoon ? "btn__lib_checkmark_ivory.svg" : "btn__lib_checkmark_grey.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                     }
 
                     ToolbarMenuInlineChoice {
@@ -2444,7 +2444,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 fillMode: Image.PreserveAspectFit
                 height: 14
-                source: headerToggle.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                source: headerToggle.checked ? LateNightTheme.lateNightAsset("buttons", LateNightTheme.isPaleMoon ? "btn__lib_checkmark_ivory.svg" : "btn__lib_checkmark_grey.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
                 width: 14
             }
             Text {
@@ -2499,7 +2499,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             fillMode: Image.PreserveAspectFit
             height: 14
-            source: parent.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            source: parent.checked ? LateNightTheme.lateNightAsset("buttons", LateNightTheme.isPaleMoon ? "btn__lib_checkmark_ivory.svg" : "btn__lib_checkmark_grey.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
             width: 14
         }
         Text {
