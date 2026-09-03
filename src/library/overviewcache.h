@@ -34,14 +34,16 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
 
     struct FutureResult {
         FutureResult()
-                : requester(nullptr) {
+                : requester(nullptr),
+                  uniformTimeBase(false) {
         }
 
         TrackId trackId;
         mixxx::OverviewType type;
         QImage image;
-        QSize resizedToSize;
+        QSize requestedSize;
         const QObject* requester;
+        bool uniformTimeBase;
     };
 
   public slots:

@@ -20,12 +20,18 @@ namespace {
 
 mixxx::Logger kLogger("OverviewCache");
 
-QString pixmapCacheKey(TrackId trackId, QSize size, mixxx::OverviewType type) {
-    return QString("Overview_%1_%2_%3_%4")
+// The cache key includes the uniform time base mode flag so that toggling
+// the preference invalidates stale pixmaps.
+QString pixmapCacheKey(TrackId trackId,
+        QSize size,
+        mixxx::OverviewType type,
+        bool uniformTimeBase) {
+    return QString("Overview_%1_%2_%3_%4_%5")
             .arg(QString::number(static_cast<int>(type)),
                     trackId.toString(),
                     QString::number(size.width()),
-                    QString::number(size.height()));
+                    QString::number(size.height()),
+                    uniformTimeBase ? QLatin1String("u") : QLatin1String("s"));
 }
 
 // The transformation mode when scaling images
@@ -67,6 +73,8 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
 }
 
 void OverviewCache::invalidateAll() {
+    // Clear all cached overview pixmaps so they are re-rendered with the
+    // current settings.
     QSet<TrackId> affectedIds;
     for (auto it = m_cacheKeysByTrackId.constBegin();
             it != m_cacheKeysByTrackId.constEnd();
@@ -76,6 +84,7 @@ void OverviewCache::invalidateAll() {
     }
     m_cacheKeysByTrackId.clear();
     m_tracksWithoutOverview.clear();
+    // Notify delegates for each affected track
     for (const TrackId& trackId : std::as_const(affectedIds)) {
         emit overviewChanged(trackId);
     }
@@ -101,7 +110,9 @@ QPixmap OverviewCache::requestCachedOverview(
 
     // kLogger.info() << "requestCachedOverview()" << trackId << pRequester << desiredSize;
 
-    const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
+    const bool uniform = m_pConfig->getValue(
+            ConfigKey("[Waveform]", QStringLiteral("overview_uniform_time_base")), false);
+    const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type, uniform);
     QPixmap pixmap;
     QPixmapCache::find(cacheKey, &pixmap);
     return pixmap;
@@ -127,7 +138,9 @@ QPixmap OverviewCache::requestUncachedOverview(
         return QPixmap();
     }
 
-    const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
+    const bool uniform = m_pConfig->getValue(
+            ConfigKey("[Waveform]", QStringLiteral("overview_uniform_time_base")), false);
+    const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type, uniform);
     QPixmap pixmap;
     // Maybe it has been cached since the request for cached image?
     if (QPixmapCache::find(cacheKey, &pixmap)) {
@@ -174,11 +187,15 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
     result.type = type;
     result.requester = pRequester;
     result.image = QImage();
-    result.resizedToSize = desiredSize;
+    result.requestedSize = desiredSize;
 
     if (!trackId.isValid() || desiredSize.isEmpty()) {
         return result;
     }
+
+    const bool uniformTimeBase = pConfig->getValue(
+            ConfigKey("[Waveform]", QStringLiteral("overview_uniform_time_base")), false);
+    result.uniformTimeBase = uniformTimeBase;
 
     const bool bDrawMinuteMarkers = pConfig->getValue(
             ConfigKey("[Waveform]", QStringLiteral("draw_library_overview_minute_markers")), true);
@@ -205,23 +222,54 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
                     true /* mono, bottom-aligned */);
 
             if (!image.isNull()) {
-                image = resizeImageSize(image, desiredSize);
-                // draw markers on the resized image for crisp lines
-                // at the final display resolution
-                if (trackDurationMillis > 0) {
+                if (uniformTimeBase && trackDurationMillis > 0) {
+                    // scale to a fixed pixels-per-second ratio so the
+                    // waveform uses a consistent time scale across tracks.
+                    // short tracks occupy less than the full column width;
+                    // long tracks are clipped.
+                    const double timeBaseMinutes = pConfig->getValue(
+                            ConfigKey("[Waveform]",
+                                    QStringLiteral("overview_time_base_minutes")),
+                            6.0);
+                    const double pixelsPerSecond =
+                            desiredSize.width() / (timeBaseMinutes * 60.0);
+                    const double trackDurationSeconds = trackDurationMillis / 1000.0;
+                    const int uniformWidth = static_cast<int>(
+                            trackDurationSeconds * pixelsPerSecond);
+                    QSize uniformSize(uniformWidth, desiredSize.height());
+                    image = resizeImageSize(image, uniformSize);
                     if (bDrawMinuteMarkers) {
                         QList<int> markerXPositions;
-                        for (double currentMarkerMillis = 60000;
-                                currentMarkerMillis < trackDurationMillis;
-                                currentMarkerMillis += 60000) {
+                        for (double markerSeconds = 60.0;
+                                markerSeconds < trackDurationSeconds;
+                                markerSeconds += 60.0) {
                             markerXPositions.append(static_cast<int>(
-                                    (currentMarkerMillis / trackDurationMillis) *
-                                    image.width()));
+                                    markerSeconds * pixelsPerSecond));
                         }
                         drawMinuteMarkers(&image, markerXPositions);
                     }
                     if (!cueInfos.isEmpty()) {
                         drawHotcueMarkers(&image, cueInfos, trackDurationMillis);
+                    }
+                } else {
+                    image = resizeImageSize(image, desiredSize);
+                    // draw markers on the resized image for crisp lines
+                    // at the final display resolution
+                    if (trackDurationMillis > 0) {
+                        if (bDrawMinuteMarkers) {
+                            QList<int> markerXPositions;
+                            for (double currentMarkerMillis = 60000;
+                                    currentMarkerMillis < trackDurationMillis;
+                                    currentMarkerMillis += 60000) {
+                                markerXPositions.append(static_cast<int>(
+                                        (currentMarkerMillis / trackDurationMillis) *
+                                        image.width()));
+                            }
+                            drawMinuteMarkers(&image, markerXPositions);
+                        }
+                        if (!cueInfos.isEmpty()) {
+                            drawHotcueMarkers(&image, cueInfos, trackDurationMillis);
+                        }
                     }
                 }
             }
@@ -323,11 +371,14 @@ void OverviewCache::overviewPrepared() {
 
     // Create pixmap, GUI thread only
     QPixmap pixmap = QPixmap::fromImage(res.image);
-    if (!pixmap.isNull() && !res.resizedToSize.isEmpty()) {
+    if (!pixmap.isNull() && !res.requestedSize.isEmpty()) {
         // we have to be sure that cacheKey is unique
         // because insert replaces the images with the same key
+        // Use requestedSize (the cell size) so the key matches the lookup
+        // in requestCachedOverview/requestUncachedOverview. The actual image
+        // may be narrower in uniform mode, but the delegate handles that.
         const QString cacheKey = pixmapCacheKey(
-                res.trackId, res.resizedToSize, res.type);
+                res.trackId, res.requestedSize, res.type, res.uniformTimeBase);
         QPixmapCache::insert(cacheKey, pixmap);
         // Store the cached track id so we can clear ALL pixmaps of a track
         // in case the waveform has been cleared/updated.
