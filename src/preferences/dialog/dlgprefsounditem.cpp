@@ -96,16 +96,30 @@ void DlgPrefSoundItem::removeDevice(const SoundDevicePointer pDevice) {
 
 void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
     const auto& id = pDevice->getDeviceId();
-    int index = deviceComboBox->findData(QVariant::fromValue(id));
-    if (index >= 0 && deviceComboBox->currentIndex() == index) {
+    const SoundDeviceId& selectedDevice = deviceComboBox->currentData().value<SoundDeviceId>();
+    // not good, comparing int with uint32_t, but we cannot do much since
+    // SoundDeviceId stored int only
+    // NOTE(pri-yan-shu) copied PW_ID_ANY verbatim, any more sensible id may be used in future,
+    // with a dedicated identifier
+    const bool defaultDevice =
+            static_cast<uint32_t>(selectedDevice.deviceIndex) ==
+            (uint32_t)(0xffffffff);
+    int index = defaultDevice
+            ? deviceComboBox->currentIndex()
+            : deviceComboBox->findData(QVariant::fromValue(id));
+
+    if (defaultDevice || (index >= 0 && deviceComboBox->currentIndex() == index)) {
         // if changed device is not selected no need to update
         int currentIndex = channelComboBox->currentIndex();
         auto channelData = channelComboBox->itemData(currentIndex).value<QPoint>();
         deviceChanged(index);
-        auto newIndex = channelComboBox->findData(QVariant::fromValue(channelData));
+        int newIndex = channelComboBox->findData(QVariant::fromValue(channelData));
 
         m_emitSettingChanged = false;
-        channelComboBox->setCurrentIndex(newIndex);
+
+        if (!defaultDevice && newIndex >= 0) {
+            channelComboBox->setCurrentIndex(newIndex);
+        }
         m_emitSettingChanged = true;
     }
 }
