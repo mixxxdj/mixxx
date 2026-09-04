@@ -1618,6 +1618,7 @@ add_library(
   src/track/taglib/trackmetadata_common.cpp
   src/track/taglib/trackmetadata_file.cpp
   src/track/taglib/trackmetadata_id3v2.cpp
+  src/track/taglib/trackmetadata_matroska.cpp
   src/track/taglib/trackmetadata_mp4.cpp
   src/track/taglib/trackmetadata_riff.cpp
   src/track/taglib/trackmetadata_xiph.cpp

@@ -106,7 +106,10 @@ FileType stringToEnumFileType(
             TypePair{"xm"_L1, FileType::XM},
             TypePair{"dsf"_L1, FileType::DSF},
             TypePair{"dff"_L1, FileType::DSDIFF},
-            TypePair{"dsdiff"_L1, FileType::DSDIFF}};
+            TypePair{"dsdiff"_L1, FileType::DSDIFF},
+            TypePair{"mkv"_L1, FileType::Matroska},
+            TypePair{"mka"_L1, FileType::Matroska},
+            TypePair{"webm"_L1, FileType::Matroska}};
 
     // NOLINTNEXTLINE(readability-qualified-auto)
     const auto it = std::find_if(
