@@ -444,7 +444,40 @@
          <string> ms</string>
         </property>
         <property name="toolTip">
-         <string>The delay until sidebar items are expanded or collapsed hovered during drag'n'drop. -1 disables auto-expand.</string>
+         <string>The delay until sidebar items are expanded hovered during drag'n'drop. -1 disables auto-expand.</string>
+        </property>
+        <property name="minimum">
+         <number>-1</number>
+        </property>
+        <property name="maximum">
+         <number>5000</number>
+        </property>
+        <property name="singleStep">
+         <number>50</number>
+        </property>
+       </widget>
+      </item>
+
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_sidebar_hover_collapse_delay">
+        <property name="text">
+         <string>Hover collapse delay:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>spinBox_sidebar_hover_collapse_delay</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QSpinBox" name="spinBox_sidebar_hover_collapse_delay">
+        <property name="suffix">
+         <string> ms</string>
+        </property>
+        <property name="toolTip">
+         <string>The delay until sidebar items are collapsed hovered during drag'n'drop. -1 disables auto-expand.</string>
         </property>
         <property name="minimum">
          <number>-1</number>
