@@ -5,6 +5,8 @@
 // required for Qt-Macros
 #include <qobjectdefs.h>
 
+#include "waveform/waveformanalysisprofile.h"
+
 class WaveformWidgetType {
   public:
     enum Type {
@@ -17,8 +19,9 @@ class WaveformWidgetType {
         VSyncTest = 9, // 9  VSync GL
         RGB = 12,      // 12 RGB GLSL
         Stacked = 16,  // 16 RGB Stacked
-        Invalid,       // Don't use! Used to indicate invalid/unknown type, as
-                       // Count_WaveformWidgetType used to.
+        Perceptual3Band = 17,
+        Invalid, // Don't use! Used to indicate invalid/unknown type, as
+                 // Count_WaveformWidgetType used to.
     };
     static constexpr std::array kValues = {
             WaveformWidgetType::Empty,
@@ -28,7 +31,14 @@ class WaveformWidgetType {
             WaveformWidgetType::VSyncTest,
             WaveformWidgetType::RGB,
             WaveformWidgetType::Stacked,
+            WaveformWidgetType::Perceptual3Band,
     };
+
+    static constexpr mixxx::WaveformAnalysisProfile analysisProfile(Type type) {
+        return type == Perceptual3Band
+                ? mixxx::WaveformAnalysisProfile::Perceptual3Band
+                : mixxx::WaveformAnalysisProfile::Legacy;
+    }
 };
 
 enum class WaveformWidgetBackend {

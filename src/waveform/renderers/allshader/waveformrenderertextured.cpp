@@ -8,6 +8,7 @@
 #include "moc_waveformrenderertextured.cpp"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformanalysisprofile.h"
 
 namespace {
 const QString kPassthroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
@@ -24,6 +25,8 @@ QString WaveformRendererTextured::fragShaderForType(::WaveformWidgetType::Type t
         return QStringLiteral(":/shaders/rgbsignal.frag");
     case ::WaveformWidgetType::Stacked:
         return QStringLiteral(":/shaders/stackedsignal.frag");
+    case ::WaveformWidgetType::Perceptual3Band:
+        return QStringLiteral(":/shaders/perceptual3bandsignal.frag");
     default:
         break;
     }
@@ -333,6 +336,8 @@ void WaveformRendererTextured::paintGL() {
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
+    const bool usePerceptualThreeBand =
+            m_type == ::WaveformWidgetType::Perceptual3Band;
 
     const auto firstVisualIndex = static_cast<GLfloat>(
             m_waveformRenderer->getFirstDisplayedPosition(positionType) * trackSamples /
@@ -383,6 +388,11 @@ void WaveformRendererTextured::paintGL() {
         m_frameShaderProgram->setUniformValue("midGain", midGain);
         m_frameShaderProgram->setUniformValue("highGain", highGain);
 
+        if (usePerceptualThreeBand) {
+            m_frameShaderProgram->setUniformValue("perceptualValueScale",
+                    m_maxValue / mixxx::kPerceptual3BandMaximumValue);
+        }
+
         if (m_type == ::WaveformWidgetType::RGB) {
             m_frameShaderProgram->setUniformValue("splitStereoSignal",
                     m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal);
@@ -411,22 +421,43 @@ void WaveformRendererTextured::paintGL() {
                             static_cast<GLfloat>(m_rgbHighFilteredColor_b),
                             1.0));
         }
-        if (m_type == ::WaveformWidgetType::RGB || m_type == ::WaveformWidgetType::Stacked) {
-            m_frameShaderProgram->setUniformValue("lowColor",
-                    QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
-                            static_cast<GLfloat>(m_rgbLowColor_g),
-                            static_cast<GLfloat>(m_rgbLowColor_b),
-                            1.0));
-            m_frameShaderProgram->setUniformValue("midColor",
-                    QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
-                            static_cast<GLfloat>(m_rgbMidColor_g),
-                            static_cast<GLfloat>(m_rgbMidColor_b),
-                            1.0));
-            m_frameShaderProgram->setUniformValue("highColor",
-                    QVector4D(static_cast<GLfloat>(m_rgbHighColor_r),
-                            static_cast<GLfloat>(m_rgbHighColor_g),
-                            static_cast<GLfloat>(m_rgbHighColor_b),
-                            1.0));
+        if (m_type == ::WaveformWidgetType::RGB ||
+                m_type == ::WaveformWidgetType::Stacked ||
+                usePerceptualThreeBand) {
+            const QVector4D lowColor = usePerceptualThreeBand
+                    ? QVector4D(32.0f / 255.0f,
+                              83.0f / 255.0f,
+                              217.0f / 255.0f,
+                              1.0f)
+                    : QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
+                              static_cast<GLfloat>(m_rgbLowColor_g),
+                              static_cast<GLfloat>(m_rgbLowColor_b),
+                              1.0f);
+            const QVector4D midColor = usePerceptualThreeBand
+                    ? QVector4D(242.0f / 255.0f,
+                              170.0f / 255.0f,
+                              60.0f / 255.0f,
+                              1.0f)
+                    : QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
+                              static_cast<GLfloat>(m_rgbMidColor_g),
+                              static_cast<GLfloat>(m_rgbMidColor_b),
+                              1.0f);
+            const QVector4D highColor = usePerceptualThreeBand
+                    ? QVector4D(1.0f, 1.0f, 1.0f, 1.0f)
+                    : QVector4D(static_cast<GLfloat>(m_rgbHighColor_r),
+                              static_cast<GLfloat>(m_rgbHighColor_g),
+                              static_cast<GLfloat>(m_rgbHighColor_b),
+                              1.0f);
+            m_frameShaderProgram->setUniformValue("lowColor", lowColor);
+            m_frameShaderProgram->setUniformValue("midColor", midColor);
+            m_frameShaderProgram->setUniformValue("highColor", highColor);
+            if (usePerceptualThreeBand) {
+                m_frameShaderProgram->setUniformValue("overlapColor",
+                        QVector4D(169.0f / 255.0f,
+                                107.0f / 255.0f,
+                                39.0f / 255.0f,
+                                1.0f));
+            }
         } else {
             m_frameShaderProgram->setUniformValue("lowColor",
                     QVector4D(static_cast<GLfloat>(m_lowColor_r),
