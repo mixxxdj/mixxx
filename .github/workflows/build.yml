@@ -14,6 +14,9 @@ on:
       ref:
         type: string
         required: true
+      save_cache:
+        type: boolean
+        default: false
     secrets:
       AZURE_CLIENT_ID:
         required: false
@@ -708,6 +711,7 @@ jobs:
         with:
           manifest-path: packaging/flatpak/org.mixxx.Mixxx.yaml
           arch: ${{ matrix.variant.arch }}
+          save-cache: ${{ inputs.save_cache }}
           build-bundle: false
           upload-artifact: false
 
