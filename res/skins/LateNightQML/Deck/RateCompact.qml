@@ -24,8 +24,13 @@ Item {
         }
     }
 
-    implicitHeight: 168
-    implicitWidth: 62
+    // 42px BPM/rate editor + optional 22px sync row + the legacy 97/81px
+    // stacked slider/range region.
+    implicitHeight: root.showSyncButton ? 145 : 139
+    // Legacy RateContainer is 62px wide, with the separator and horizontal
+    // insets outside that row. Expose the full outer width so the 40px Sync
+    // plus 22px Leader pair is never clipped by the deck edge.
+    implicitWidth: LateNightTheme.compactRateControlWidth
 
     Mixxx.ControlProxy {
         id: bpmProxy
@@ -81,14 +86,14 @@ Item {
         anchors.leftMargin: 3
         spacing: 0
 
-        ColumnLayout {
+        Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 42
-            spacing: 0
 
             Text {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 24
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 24
                 color: root.displayColor
                 font.bold: true
                 font.family: "Open Sans"
@@ -98,8 +103,11 @@ Item {
                 verticalAlignment: Text.AlignVCenter
             }
             Text {
-                Layout.fillWidth: true
-                Layout.preferredHeight: 18
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.topMargin: 24
+                height: 18
                 color: root.displayColor
                 font.family: "Open Sans"
                 font.pixelSize: 12
@@ -107,18 +115,10 @@ Item {
                 text: ((rateRatioProxy.value - 1) * 100).toFixed(2)
                 verticalAlignment: Text.AlignVCenter
             }
-            TapHandler {
-                onTapped: {
-                    bpmTapProxy.value = 1.0;
-                    bpmTapProxy.value = 0.0;
-                }
+            LateNightBpmTapEditor {
+                anchors.fill: parent
+                group: root.group
             }
-        }
-        Mixxx.ControlProxy {
-            id: bpmTapProxy
-
-            group: root.group
-            key: "bpm_tap"
         }
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
@@ -159,7 +159,7 @@ Item {
         }
         Item {
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredHeight: root.sliderHeight + 24
+            Layout.preferredHeight: root.sliderHeight + 2
             Layout.preferredWidth: 58
 
             Text {
@@ -185,7 +185,7 @@ Item {
 
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
-                anchors.topMargin: 10
+                anchors.topMargin: 2
                 bar.color: LateNightTheme.deckRateSliderBarColor
                 bar.enabled: true
                 bar.margin: 7
@@ -217,7 +217,7 @@ Item {
                 radius: 1
                 width: 5
                 x: 4
-                y: 10 + (root.sliderHeight - height) / 2
+                y: 2 + (root.sliderHeight - height) / 2
             }
             Text {
                 anchors.bottom: parent.bottom

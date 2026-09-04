@@ -14,7 +14,8 @@ Controls.Panel {
     required property string group
     readonly property bool hasTrackColor: root.isLoaded && trackColor?.valid
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
-    readonly property bool showSpinnyOrCover: showSpinnyOrCoverProxy.value > 0
+    readonly property bool showSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0)
     readonly property color overviewColor: secondaryDeck ? LateNightTheme.secondaryOverviewBackgroundColor : LateNightTheme.primaryOverviewBackgroundColor
     readonly property int overviewType: Math.round(overviewTypeProxy.value)
     readonly property bool secondaryDeck: root.group === "[Channel3]" || root.group === "[Channel4]"
@@ -74,6 +75,18 @@ Controls.Panel {
         group: "[Skin]"
         key: "show_spinny_or_cover"
     }
+    Mixxx.ControlProxy {
+        id: showSpinniesProxy
+
+        group: "[Skin]"
+        key: "show_spinnies"
+    }
+    Mixxx.ControlProxy {
+        id: showCoverArtProxy
+
+        group: "[Skin]"
+        key: "show_coverart"
+    }
     RowLayout {
         anchors.fill: parent
         anchors.margins: 1
@@ -103,22 +116,12 @@ Controls.Panel {
                 pressedIconSuffix: LateNightTheme.playCueActiveIconSuffix
                 rightClickKey: "cue_gotoandstop"
             }
-            LateNightControlButton {
-                id: playButton
-
+            LateNightPlayButton {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 26
-                activeBackgroundSuffix: "active"
-                activeColor: LateNightTheme.activePlayCueColor
-                activeOpacity: 1.0
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("medium")
-                displayKey: "play_latched"
                 group: root.group
-                iconSource: playButton.isActive ? LateNightTheme.assetDeckPauseMiniButton : LateNightTheme.assetDeckPlayMiniButton
-                inactiveOpacity: 0.82
-                key: "play"
-                rightClickKey: "cue_set"
-                toggleable: true
+                rightClickKey: "cue_default"
             }
         }
         Rectangle {

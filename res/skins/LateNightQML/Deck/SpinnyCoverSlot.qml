@@ -10,15 +10,19 @@ Item {
     readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
     required property string group
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
-    readonly property bool showSpinnyOrCover: showSpinnyOrCoverProxy.initialized
-            ? showSpinnyOrCoverProxy.value > 0
-            : (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
-    readonly property bool showSmallSpinnyOrCover: showSmallSpinnyOrCoverProxy.initialized
-            ? showSmallSpinnyOrCoverProxy.value > 0
-            : (root.showSpinnyOrCover && selectBigSpinnyProxy.value <= 0)
-    readonly property bool showBigSpinnyOrCover: showBigSpinnyOrCoverProxy.initialized
-            ? showBigSpinnyOrCoverProxy.value > 0
-            : (root.showSpinnyOrCover && selectBigSpinnyProxy.value > 0)
+    // The derived controls choose the slot size, but the two source toggles
+    // remain the authority for whether a slot exists at all. This prevents a
+    // stale derived value from leaving an empty layout gap.
+    readonly property bool showSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0)
+    readonly property bool showSmallSpinnyOrCover: root.showSpinnyOrCover
+            && (!showSmallSpinnyOrCoverProxy.initialized
+                    ? selectBigSpinnyProxy.value <= 0
+                    : showSmallSpinnyOrCoverProxy.value > 0)
+    readonly property bool showBigSpinnyOrCover: root.showSpinnyOrCover
+            && (!showBigSpinnyOrCoverProxy.initialized
+                    ? selectBigSpinnyProxy.value > 0
+                    : showBigSpinnyOrCoverProxy.value > 0)
     readonly property bool showCover: root.showSpinnyOrCover && showCoverArtProxy.value > 0
     readonly property bool showSpinny: root.showSpinnyOrCover && showSpinniesProxy.value > 0
 
@@ -80,8 +84,10 @@ Item {
         Image {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
-            source: (root.isLoaded && root.currentTrack?.coverArtUrl) ? root.currentTrack.coverArtUrl : LateNightTheme.assetDeckCoverDefault
-            visible: root.showCover
+            // In legacy Spinny mode an unloaded deck remains the dark platter;
+            // the default cover is used only by the standalone cover-art mode.
+            source: root.currentTrack?.coverArtUrl ?? ""
+            visible: root.showCover && root.isLoaded && !!root.currentTrack?.coverArtUrl
         }
 
         // Rotating Platter Indicator (Active when track is loaded)

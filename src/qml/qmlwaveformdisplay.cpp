@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "control/controlproxy.h"
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlwaveformdisplay.cpp"
@@ -27,6 +28,7 @@ using namespace allshader;
 
 namespace {
 constexpr int kDefaultSyncInternalMs = 100;
+constexpr int kWaveformProgressUpdateIntervalMs = 150;
 } // namespace
 
 namespace mixxx {
@@ -39,6 +41,11 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
           m_pPlayer(nullptr),
           m_pTrack(nullptr),
           m_visualPlayPosition(QSharedPointer<VisualPlayPosition>::create()) {
+    m_waveformProgressTimer.setInterval(kWaveformProgressUpdateIntervalMs);
+    connect(&m_waveformProgressTimer,
+            &QTimer::timeout,
+            this,
+            &QmlWaveformDisplay::slotWaveformProgress);
     m_visualPlayPosition->set(0.0,
             0.0,
             0.0,
@@ -171,8 +178,9 @@ std::chrono::microseconds QmlWaveformDisplay::fromTimerToNextSync(const Performa
 void QmlWaveformDisplay::slotFrameSwapped() {
     m_timer.restart();
 
-    // continuous redraw
-    update();
+    if (m_pPlayControl && m_pPlayControl->toBool()) {
+        update();
+    }
 }
 
 void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
@@ -305,6 +313,27 @@ void QmlWaveformDisplay::setGroup(const QString& group) {
     }
 
     WaveformWidgetRenderer::setGroup(group);
+    m_pPlayControl.reset();
+    m_pPlayPositionControl.reset();
+    m_pScratchPositionControl.reset();
+    m_pScratchPositionEnableControl.reset();
+    if (!group.isEmpty()) {
+        m_pPlayControl = std::make_unique<ControlProxy>(group, QStringLiteral("play"));
+        m_pPlayControl->connectValueChanged(
+                this, &QmlWaveformDisplay::slotVisualPositionUpdated);
+        m_pPlayPositionControl =
+                std::make_unique<ControlProxy>(group, QStringLiteral("playposition"));
+        m_pPlayPositionControl->connectValueChanged(
+                this, &QmlWaveformDisplay::slotVisualPositionUpdated);
+        m_pScratchPositionControl =
+                std::make_unique<ControlProxy>(group, QStringLiteral("scratch_position"));
+        m_pScratchPositionControl->connectValueChanged(
+                this, &QmlWaveformDisplay::slotVisualPositionUpdated);
+        m_pScratchPositionEnableControl = std::make_unique<ControlProxy>(
+                group, QStringLiteral("scratch_position_enable"));
+        m_pScratchPositionEnableControl->connectValueChanged(
+                this, &QmlWaveformDisplay::slotVisualPositionUpdated);
+    }
     emit groupChanged(group);
 }
 
@@ -337,17 +366,47 @@ void QmlWaveformDisplay::setCurrentTrack(TrackPointer pTrack) {
     }
 
     setTrack(pTrack);
+    m_waveformProgressTimer.stop();
+    m_lastWaveformCompletion = -1;
     if (pTrack != nullptr) {
         connect(pTrack.get(),
-                &Track::waveformSummaryUpdated,
+                &Track::waveformUpdated,
                 this,
                 &QmlWaveformDisplay::slotWaveformUpdated);
     }
     slotWaveformUpdated();
 }
 
-void QmlWaveformDisplay::slotWaveformUpdated() {
+void QmlWaveformDisplay::slotVisualPositionUpdated() {
     update();
+}
+
+void QmlWaveformDisplay::slotWaveformUpdated() {
+    m_lastWaveformCompletion = -1;
+    slotWaveformProgress();
+}
+
+void QmlWaveformDisplay::slotWaveformProgress() {
+    const auto pWaveform = getWaveform();
+    if (!pWaveform) {
+        m_waveformProgressTimer.stop();
+        update();
+        return;
+    }
+
+    const int waveformCompletion = pWaveform->getCompletion();
+    if (waveformCompletion != m_lastWaveformCompletion) {
+        m_lastWaveformCompletion = waveformCompletion;
+        update();
+    }
+
+    if (waveformCompletion < pWaveform->getDataSize()) {
+        if (!m_waveformProgressTimer.isActive()) {
+            m_waveformProgressTimer.start();
+        }
+    } else {
+        m_waveformProgressTimer.stop();
+    }
 }
 
 QQmlListProperty<QmlWaveformRendererFactory> QmlWaveformDisplay::renderers() {

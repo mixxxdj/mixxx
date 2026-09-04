@@ -11,18 +11,20 @@ Controls.Panel {
     required property string group
     readonly property bool show8Hotcues: show8HotcuesProxy.value > 0
     readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
-    readonly property bool showBigSpinnyOrCover: showBigSpinnyOrCoverProxy.initialized
-            ? showBigSpinnyOrCoverProxy.value > 0
-            : (showSpinnyOrCoverProxy.value > 0 && selectBigSpinnyProxy.value > 0)
+    readonly property bool showBigSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showBigSpinnyOrCoverProxy.initialized
+                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value > 0
+                    : showBigSpinnyOrCoverProxy.value > 0)
     readonly property bool showHotcues: showHotcuesProxy.value > 0
     readonly property bool showIntroOutroCues: showIntroOutroCuesProxy.value > 0
     readonly property bool showKeyControls: showKeyControlsProxy.value > 0
     readonly property bool showLoopControls: showLoopControlsProxy.value > 0
     readonly property bool showRateControlButtons: showRateControlButtonsProxy.value > 0
     readonly property bool showRateControls: showRateControlsProxy.value > 0
-    readonly property bool showSmallSpinnyOrCover: showSmallSpinnyOrCoverProxy.initialized
-            ? showSmallSpinnyOrCoverProxy.value > 0
-            : (showSpinnyOrCoverProxy.value > 0 && selectBigSpinnyProxy.value <= 0)
+    readonly property bool showSmallSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showSmallSpinnyOrCoverProxy.initialized
+                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value <= 0
+                    : showSmallSpinnyOrCoverProxy.value > 0)
     readonly property bool showVinylControls: showVinylControlsProxy.value > 0
 
     signal toggleFocus
@@ -55,6 +57,8 @@ Controls.Panel {
         group: "[Skin]"
         key: "show_big_spinny_or_cover"
     }
+    Mixxx.ControlProxy { id: showSpinniesProxy; group: "[Skin]"; key: "show_spinnies" }
+    Mixxx.ControlProxy { id: showCoverArtProxy; group: "[Skin]"; key: "show_coverart" }
 
     Mixxx.ControlProxy {
         id: showKeyControlsProxy
@@ -142,69 +146,9 @@ Controls.Panel {
                 Layout.fillHeight: false
                 spacing: 0
 
-                // FX assignment buttons: toggle effect unit assignment for this deck
-                Row {
-                    spacing: 0
-
-                    Repeater {
-                        model: show4EffectUnitsProxy.value > 0 ? 4 : 2
-
-                        delegate: Item {
-                            id: fxAssignButton
-
-                            required property int index
-
-                            width: show4EffectUnitsProxy.value > 0 && index > 0 ? 20 : 26
-                            height: 20
-                            readonly property bool active: fxAssignProxy.value > 0
-                            readonly property color activeColor: index < 2 ? (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor12 : LateNightTheme.effectsUnitDimColor12) : (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor34 : LateNightTheme.effectsUnitDimColor34)
-                            readonly property color inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-                            readonly property color fillColor: active ? activeColor : inactiveColor
-
-                            Mixxx.ControlProxy {
-                                id: fxAssignProxy
-                                group: `[EffectRack1_EffectUnit${index + 1}]`
-                                key: `group_${root.group}_enable`
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: fxAssignButton.fillColor
-                            }
-
-                            Image {
-                                anchors.fill: parent
-                                source: {
-                                    if (index === 0) {
-                                        return fxAssignButton.active
-                                            ? LateNightTheme.lateNightButton("btn_embedded_library_active.svg")
-                                            : LateNightTheme.lateNightButton("btn_embedded_library.svg");
-                                    } else {
-                                        return fxAssignButton.active
-                                            ? LateNightTheme.lateNightButton("btn_embedded_grid_active.svg")
-                                            : LateNightTheme.lateNightButton("btn_embedded_grid.svg");
-                                    }
-                                }
-                                fillMode: Image.Stretch
-                            }
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: show4EffectUnitsProxy.value > 0 && index > 0 ? (index + 1).toString() : "FX" + (show4EffectUnitsProxy.value > 0 && index === 0 ? "1" : (index + 1).toString())
-                                font.family: "Open Sans"
-                                font.pixelSize: 10
-                                font.bold: true
-                                color: fxAssignButton.active ? (LateNightTheme.isClassic ? "#000000" : LateNightTheme.mixerControlTextColor) : (LateNightTheme.isClassic ? "#d2d2d1" : "#666666")
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    fxAssignProxy.value = !fxAssignProxy.value;
-                                }
-                            }
-                        }
-                    }
+                LateNightFxAssignmentButtons {
+                    group: root.group
+                    showFourEffectUnits: show4EffectUnitsProxy.value > 0
                 }
 
                 Item {

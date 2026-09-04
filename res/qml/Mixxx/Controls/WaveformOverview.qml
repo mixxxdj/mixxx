@@ -5,6 +5,7 @@ import QtQuick 2.12
 Mixxx.WaveformOverview {
     id: root
 
+    normalized: Mixxx.Config.waveformOverviewNormalized
     property color cueMarkerColor: "red"
     required property string group
     property color introOutroMarkerColor: "blue"

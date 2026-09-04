@@ -31,6 +31,19 @@ ApplicationWindow {
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
 
+    SkinControlBootstrap {
+        id: skinControlBootstrap
+    }
+
+    // Declare the compact-meter setting before LayoutState so its initial
+    // value is available when the effective layout is derived.
+    Mixxx.ControlProxy {
+        id: showCompactVuMetersProxy
+
+        group: "[Skin]"
+        key: "show_vumeters_compact"
+    }
+
     LayoutState {
         id: layoutState
 
@@ -111,15 +124,12 @@ ApplicationWindow {
             value = root.numSamplers;
         }
     }
-    Mixxx.ControlProxy {
-        id: showCompactVuMetersProxy
+    // Kept as a non-instantiated compatibility component for downstream skin
+    // overlays. Runtime creators live exclusively in SkinControlBootstrap.
+    Component {
+        id: legacyCreatorCompatibility
 
-        group: "[Skin]"
-        key: "show_vumeters_compact"
-    }
-    SkinControlBootstrap {
-        id: skinControlBootstrap
-    }
+        Item {
     Mixxx.SkinControlCreator {
         defaultValue: 1.0
         group: "[Skin]"
@@ -351,6 +361,8 @@ ApplicationWindow {
         key: "expand_samplers_57-64"
         persist: true
     }
+        }
+    }
     Column {
         id: content
 
@@ -456,7 +468,25 @@ ApplicationWindow {
                             spring: 2
                         }
                     }
+                    onToggleFocus: {
+                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
+                    }
+
+                    anchors {
+                        left: parent.left
+                        right: mixer.left
+                        top: parent.top
+                    }
+
                     states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.right: compactVuSlot.left
+                                target: deck1
+                            }
+                        },
                         State {
                             when: root.maximizeLibrary
 
@@ -466,15 +496,29 @@ ApplicationWindow {
                             }
                         }
                     ]
+                }
+                Item {
+                    id: compactVuSlot
 
-                    onToggleFocus: {
-                        root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    // deckRowsHeight belongs to deckPane. Referencing it
+                    // unqualified here caused a runtime ReferenceError and
+                    // left the entire compact VU slot with no valid height.
+                    height: root.showCompactVuMeters ? deckPane.deckRowsHeight : 0
+                    visible: root.showCompactVuMeters
+                    width: root.showCompactVuMeters ? LateNightTheme.compactVuSlotWidth : 0
+                    z: 10
+
+                    Rectangle {
+                        anchors.fill: parent
+                        color: LateNightTheme.compactVuGutterColor
                     }
-
-                    anchors {
-                        left: parent.left
-                        right: mixer.left
-                        top: parent.top
+                    LateNightMixer.CompactCenterVuMeters {
+                        anchors.bottom: parent.bottom
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.top: parent.top
+                        show4decks: root.show4decks
                     }
                 }
                 LateNightMixer.Mixer {
@@ -490,7 +534,7 @@ ApplicationWindow {
 
                     states: [
                         State {
-                            when: root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
+                            when: root.showMixer && root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.right
@@ -502,7 +546,7 @@ ApplicationWindow {
                             }
                         },
                         State {
-                            when: root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
+                            when: root.showMixer && root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.left
@@ -514,7 +558,7 @@ ApplicationWindow {
                             }
                         },
                         State {
-                            when: (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
+                            when: root.showMixer && (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -582,17 +626,6 @@ ApplicationWindow {
                             spring: 2
                         }
                     }
-                    states: [
-                        State {
-                            when: root.maximizeLibrary
-
-                            AnchorChanges {
-                                anchors.left: parent.horizontalCenter
-                                target: deck2
-                            }
-                        }
-                    ]
-
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2;
                     }
@@ -602,6 +635,25 @@ ApplicationWindow {
                         right: parent.right
                         top: parent.top
                     }
+
+                    states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: compactVuSlot.right
+                                target: deck2
+                            }
+                        },
+                        State {
+                            when: root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: parent.horizontalCenter
+                                target: deck2
+                            }
+                        }
+                    ]
                 }
                 Loader {
                     id: deck3
@@ -631,6 +683,14 @@ ApplicationWindow {
                         }
                     }
                     states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.right: compactVuSlot.left
+                                target: deck3
+                            }
+                        },
                         State {
                             when: root.maximizeLibrary
 
@@ -675,6 +735,14 @@ ApplicationWindow {
                         }
                     }
                     states: [
+                        State {
+                            when: root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: compactVuSlot.right
+                                target: deck4
+                            }
+                        },
                         State {
                             when: root.maximizeLibrary
 

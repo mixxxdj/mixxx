@@ -7,7 +7,9 @@
 #include <QQuickWindow>
 #include <QSGNode>
 #include <QSGSimpleRectNode>
+#include <QTimer>
 #include <chrono>
+#include <memory>
 
 #include "qml/qmlplayerproxy.h"
 #include "qml/qmlwaveformrenderer.h"
@@ -19,6 +21,7 @@
 #include "waveform/widgets/waveformwidgettype.h"
 
 class WaveformRendererAbstract;
+class ControlProxy;
 
 namespace allshader {
 class WaveformWidget;
@@ -48,6 +51,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     Q_PROPERTY(double position READ getPosition WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers READ renderers)
     Q_PROPERTY(double zoom READ getZoom WRITE setZoom NOTIFY zoomChanged)
+    Q_PROPERTY(double audioSamplePerPixel READ getAudioSamplePerPixel)
     Q_PROPERTY(QColor backgroundColor READ getBackgroundColor WRITE
                     setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(WaveformRendererSignalBaseOptions options READ
@@ -132,7 +136,9 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     void slotTrackLoaded(TrackPointer pLoadedTrack);
     void slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotTrackUnloaded();
+    void slotVisualPositionUpdated();
     void slotWaveformUpdated();
+    void slotWaveformProgress();
 
     void slotFrameSwapped();
     void slotWindowChanged(QQuickWindow* window);
@@ -150,10 +156,16 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     // Properties
     QPointer<QmlPlayerProxy> m_pPlayer;
+    std::unique_ptr<ControlProxy> m_pPlayControl;
+    std::unique_ptr<ControlProxy> m_pPlayPositionControl;
+    std::unique_ptr<ControlProxy> m_pScratchPositionControl;
+    std::unique_ptr<ControlProxy> m_pScratchPositionEnableControl;
     QColor m_backgroundColor{QColor(0, 0, 0, 255)};
 
     PerformanceTimer m_timer;
+    QTimer m_waveformProgressTimer;
     QmlTrackProxy* m_pTrack;
+    int m_lastWaveformCompletion{-1};
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
 
     std::chrono::milliseconds m_syncInterval;

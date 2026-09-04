@@ -1,10 +1,13 @@
 #pragma once
 
+#include <QImage>
+#include <QMutex>
 #include <QPainter>
 #include <QPointer>
 #include <QQmlEngine>
 #include <QQuickItem>
 #include <QQuickPaintedItem>
+#include <QTimer>
 
 #include "qmltrackproxy.h"
 #include "waveform/waveform.h"
@@ -24,6 +27,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Q_PROPERTY(QColor colorHigh MEMBER m_colorHigh NOTIFY colorHighChanged)
     Q_PROPERTY(QColor colorMid MEMBER m_colorMid NOTIFY colorMidChanged)
     Q_PROPERTY(QColor colorLow MEMBER m_colorLow NOTIFY colorLowChanged)
+    Q_PROPERTY(bool normalized MEMBER m_normalized NOTIFY normalizedChanged)
     QML_NAMED_ELEMENT(WaveformOverview)
 
   public:
@@ -60,6 +64,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     void colorHighChanged(const QColor& color);
     void colorMidChanged(const QColor& color);
     void colorLowChanged(const QColor& color);
+    void normalizedChanged();
 
   private:
     void drawFiltered(QPainter* pPainter,
@@ -71,12 +76,21 @@ class QmlWaveformOverview : public QQuickPaintedItem {
             ConstWaveformPointer pWaveform,
             int completion) const;
     QColor getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const;
+    bool drawNextWaveformPart();
+    void invalidateWaveformCache();
     QmlTrackProxy* m_pTrack;
     Channels m_channels;
     Renderer m_renderer;
     QColor m_colorHigh;
     QColor m_colorMid;
     QColor m_colorLow;
+    bool m_normalized{false};
+    QTimer m_waveformProgressTimer;
+    ConstWaveformPointer m_cachedWaveform;
+    QImage m_waveformImage;
+    int m_actualCompletion{0};
+    float m_waveformPeak{1.0f};
+    mutable QMutex m_waveformCacheMutex;
 };
 
 } // namespace qml

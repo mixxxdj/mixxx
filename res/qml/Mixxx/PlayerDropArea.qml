@@ -8,6 +8,11 @@ DropArea {
     required property string group
     property var player: Mixxx.PlayerManager.getPlayer(group)
 
+    // Keep the drop target above every visual deck variant. DropArea does not
+    // consume normal pointer clicks, so this cannot interfere with transport
+    // controls while making empty and loaded decks equally droppable.
+    z: 100
+
     function firstDroppedUrl(drop) {
         if (drop.hasUrls && drop.urls.length > 0) {
             return drop.urls[0];
@@ -30,19 +35,22 @@ DropArea {
     }
 
     onDropped: (drop) => {
-        if (drop.formats.includes("mixxx/player")) {
+        const formats = drop.formats || [];
+        if (formats.includes("mixxx/player")) {
             const sourceGroup = drop.getDataAsString("mixxx/player");
             // Prevent dropping a deck onto itself
             if (sourceGroup == root.group)
                 return ;
 
             console.log("Drag from group " + sourceGroup);
-            player.cloneFromGroup(sourceGroup);
+            if (root.player) {
+                root.player.cloneFromGroup(sourceGroup);
+            }
             drop.accepted = true;
             return ;
         }
         const url = root.firstDroppedUrl(drop);
-        if (url) {
+        if (url && root.player) {
             console.log("Dropped URL '" + url + "' on deck " + group);
             player.loadTrackFromLocationUrl(url);
             drop.accepted = true;

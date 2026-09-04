@@ -225,7 +225,7 @@ void QmlConfigProxy::set_useAcceleration(bool value) {
 }
 
 PROPERTY_IMPL(kWaveformGroup, kZoomSynchronizationKey, bool, waveformZoomSynchronization, true);
-PROPERTY_IMPL(kWaveformGroup, kOverviewNormalizedKey, bool, waveformOverviewNormalized, true);
+PROPERTY_IMPL(kWaveformGroup, kOverviewNormalizedKey, bool, waveformOverviewNormalized, false);
 PROPERTY_IMPL(kWaveformGroup, kDefaultZoomKey, double, waveformDefaultZoom, 3);
 PROPERTY_IMPL(kWaveformGroup, kPlayMarkerPositionKey, double, waveformPlayMarkerPosition, 0.5);
 PROPERTY_IMPL(kWaveformGroup, kUntilMarkShowBeatsKey, bool, waveformUntilMarkShowBeats, false);

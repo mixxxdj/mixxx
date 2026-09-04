@@ -51,9 +51,13 @@ QtObject {
     readonly property url assetDeckOutroEndButton: lateNightAsset("buttons", "btn__outro_end.svg")
     readonly property url assetDeckOutroStartButton: lateNightAsset("buttons", "btn__outro_start.svg")
     readonly property url assetDeckPlayButton: lateNightAsset("buttons", "btn__play_deck.svg")
+    readonly property url assetDeckPlayMiniButton: lateNightAsset("buttons", "btn__play_deck_mini.svg")
+    readonly property url assetDeckPauseMiniButton: lateNightAsset("buttons", "btn__pause_deck_mini.svg")
     readonly property url assetDeckPlusButton: lateNightAsset("buttons", "btn__plus.svg")
     readonly property url assetDeckQuantizeButton: lateNightAsset("buttons", "btn__quantize.svg")
     readonly property url assetDeckRateSliderBackground: lateNightAsset("sliders", "slider_pitch_deck.svg")
+    readonly property url assetDeckRateCompactSliderBackground: lateNightAsset("sliders", "slider_pitch_deck_compact.svg")
+    readonly property url assetDeckRateCompactSyncSliderBackground: lateNightAsset("sliders", "slider_pitch_deck_compact_sync.svg")
     readonly property url assetDeckRateSliderHandle: lateNightAsset("sliders", "knob_pitch_deck.svg")
     readonly property url assetDeckReloopButton: lateNightAsset("buttons", "btn__reloop.svg")
     readonly property url assetDeckRepeatButton: lateNightAsset("buttons", "btn__repeat.svg")
@@ -157,10 +161,25 @@ QtObject {
     readonly property color deckTopRowBackgroundColor: "#181818"
     readonly property int deckOuterMargin: isClassic ? 2 : 1
     readonly property int fullDeckHeight: 206
-    readonly property int compactDeckHeight: 168
+    // Legacy Compact is a 110px overview row plus a 30px transport shell,
+    // including the outer deck insets. Keep this separate from Full's 55px
+    // transport so hidden optional controls do not leave a phantom half-row.
+    readonly property int compactDeckHeight: 150
+    readonly property int compactDeckTransportHeight: 30
+    // Compact rate controls retain the legacy 62px sync row plus the
+    // separator and horizontal insets. Keeping the outer width explicit
+    // prevents the leader button from being clipped by the deck edge.
+    readonly property int compactRateControlWidth: 66
     readonly property int miniDeckHeight: 53
     readonly property int fullBigSpinnySize: 114
-    readonly property int compactBigSpinnySize: 109
+    readonly property int compactBigSpinnySize: 110
+    readonly property color compactVuPanelColor: isClassic ? "#1e1e1e" : "#151517"
+    readonly property color compactVuPanelBorderColor: isClassic ? "#333333" : "#212123"
+    readonly property color compactVuGutterColor: isClassic ? "#040404" : "#080808"
+    readonly property int compactVuMeterHeight: 96
+    readonly property int compactVuDeckGroupWidth: isClassic ? 19 : 18
+    readonly property int compactVuMainGroupWidth: 34
+    readonly property int compactVuSlotWidth: compactVuDeckGroupWidth * 2 + compactVuMainGroupWidth
     readonly property int smallSpinnySize: 63
     readonly property int miniSpinnySize: 53
     readonly property int deckTransportHeight: 55
@@ -328,6 +347,9 @@ QtObject {
     readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
     readonly property color vinylStatusSignalColor: isClassic ? "#659f08" : "#438225"
     readonly property color vinylStatusSpeedColor: "#d09300"
+    // Legacy #VinylControls buttons use light text in Classic and darker text
+    // in PaleMoon when inactive.
+    readonly property color vinylControlInactiveLabelColor: isClassic ? "#d2d2d1" : "#666666"
     readonly property color waveformBeatAxesColor: isPaleMoon ? "#999999" : "#ffffff"
     readonly property color waveformCueColor: isPaleMoon ? "#ff7a01" : "#ff001c"
     readonly property color waveformDefaultMarkColor: "#ff0000"

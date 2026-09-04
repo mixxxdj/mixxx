@@ -53,7 +53,7 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
-    const bool splitStemTracks = isStemTrack &&
+    const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip

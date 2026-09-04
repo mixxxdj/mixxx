@@ -35,45 +35,7 @@ Item {
         group: root.group
         key: "beatjump_size"
     }
-    Rectangle {
-        anchors.fill: parent
-        color: "#151515"
-        visible: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0
-
-        Image {
-            anchors.fill: parent
-            fillMode: Image.Tile
-            source: LateNightTheme.optionalDeckControlsBackgroundTile
-        }
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            color: LateNightTheme.deckPanelBorderDark
-            height: 1
-        }
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.top: parent.top
-            color: LateNightTheme.deckPanelBorderDark
-            width: 1
-        }
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            color: LateNightTheme.deckPanelBorderLight
-            height: 1
-        }
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            anchors.top: parent.top
-            color: LateNightTheme.deckPanelBorderLight
-            width: 1
-        }
-    }
+    DeckControlsBackground {}
     RowLayout {
         anchors.bottomMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 2 : 0
         anchors.fill: parent
@@ -128,25 +90,12 @@ Item {
                 stretchIcon: true
             }
 
-            // Play button: left-click = play (toggle via play_latched),
-            //              right-click = cue_set
-            LateNightControlButton {
-                id: playButton
-
+            LateNightPlayButton {
                 Layout.columnSpan: 2
                 Layout.preferredHeight: 26
                 Layout.preferredWidth: 68
-                activeBackgroundSuffix: "active"
-                activeColor: LateNightTheme.activePlayCueColor
-                activeOpacity: 1.0
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("play")
-                displayKey: "play_latched"
                 group: root.group
-                iconSource: playButton.isActive ? LateNightTheme.assetDeckPauseButton : LateNightTheme.assetDeckPlayMiniButton
-                inactiveOpacity: 0.82
-                key: "play"
-                rightClickKey: "cue_set"
-                toggleable: true
             }
         }
         Item {

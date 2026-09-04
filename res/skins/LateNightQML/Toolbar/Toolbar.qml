@@ -30,6 +30,12 @@ Rectangle {
     property alias showWaveforms: showWaveformsButton.checked
     readonly property string activeAppMenuSection: hoveredAppMenuSection.length > 0 ? hoveredAppMenuSection : selectedAppMenuSection
     readonly property string activeAppMenuSubmenu: hoveredAppMenuSubmenu.length > 0 ? hoveredAppMenuSubmenu : pinnedAppMenuSubmenu
+    readonly property bool compactDeckSettingsVisible: !maximizeLibraryButton.checked && !showMixerButton.checked && currentDeckSize === Toolbar.Compact
+    readonly property int currentDeckSize: deckSizeControl.initialized
+            ? Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(deckSizeControl.value)))
+            : root.deckSizeWithoutMixer
+    readonly property bool fullDeckSettingsVisible: !maximizeLibraryButton.checked && (showMixerButton.checked || currentDeckSize === Toolbar.Full)
+    readonly property bool miniDeckSettingsVisible: maximizeLibraryButton.checked || (!showMixerButton.checked && currentDeckSize === Toolbar.Mini)
     property string hoveredAppMenuSection: ""
     property string hoveredAppMenuSubmenu: ""
     property string pinnedAppMenuSubmenu: ""
@@ -295,7 +301,7 @@ Rectangle {
     Mixxx.ControlProxy {
         id: toolbarDefaultsControl
 
-        group: "[LateNightQML]"
+        group: "[Skin]"
         key: "initialized_toolbar_defaults"
 
         onInitializedChanged: {
@@ -395,7 +401,7 @@ Rectangle {
         key: "latenight_deck_size_without_mixer"
 
         onInitializedChanged: {
-            if (initialized) {
+            if (deckSizeControl.initialized) {
                 root.deckSizeWithoutMixer = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(value)));
             }
         }
@@ -428,16 +434,40 @@ Rectangle {
         key: "show_loop_controls"
     }
     Mixxx.ControlProxy {
+        id: showLoopControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_loop_controls_compact"
+    }
+    Mixxx.ControlProxy {
         id: showBeatjumpControlsControl
 
         group: "[Skin]"
         key: "show_beatjump_controls"
     }
     Mixxx.ControlProxy {
+        id: showBeatjumpControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_beatjump_controls_compact"
+    }
+    Mixxx.ControlProxy {
         id: showRateControlsControl
 
         group: "[Skin]"
         key: "show_rate_controls"
+    }
+    Mixxx.ControlProxy {
+        id: showRateControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_rate_controls_compact"
+    }
+    Mixxx.ControlProxy {
+        id: showSyncButtonCompactControl
+
+        group: "[Skin]"
+        key: "latenight_show_sync_button_compact"
     }
     Mixxx.ControlProxy {
         id: showRateControlButtonsControl
@@ -450,6 +480,18 @@ Rectangle {
 
         group: "[Skin]"
         key: "show_key_controls"
+    }
+    Mixxx.ControlProxy {
+        id: showKeyControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_key_controls_compact"
+    }
+    Mixxx.ControlProxy {
+        id: showVuMetersCompactControl
+
+        group: "[Skin]"
+        key: "show_vumeters_compact"
     }
     Mixxx.ControlProxy {
         id: showVinylControlsControl
@@ -1293,7 +1335,7 @@ Rectangle {
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.bottomMargin: 7
+            Layout.bottomMargin: 3
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             Layout.topMargin: 2
@@ -1413,6 +1455,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.minimumWidth: implicitWidth
                 spacing: 5
+                visible: root.fullDeckSettingsVisible
 
                 ToolbarMenuToggle {
                     Layout.fillWidth: false
@@ -1448,45 +1491,96 @@ Rectangle {
                     }
                 }
             }
+            // Compact deck settings intentionally follow the legacy compact
+            // ordering. Full-only rows remain in the same popup but are
+            // removed from the layout when Compact or Mini is selected.
             ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showLoopControlsCompactControl
+                text: "Loop Controls"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showBeatjumpControlsCompactControl
+                text: "Beatjump Controls"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showRateControlsCompactControl
+                text: "Rate Controls"
+            }
+            ToolbarMenuToggle {
+                enabled: showRateControlsCompactControl.value > 0
+                indent: 14
+                visible: root.compactDeckSettingsVisible
+                control: showSyncButtonCompactControl
+                text: "Sync Button"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showKeyControlsCompactControl
+                text: "Key Controls"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showVinylControlsControl
+                text: "Vinyl Control"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showVuMetersCompactControl
+                text: "VU meters"
+            }
+            ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showIntroOutroCuesControl
                 text: "Intro & Outro Cues"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showLoopControlsControl
                 text: "Loop Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showBeatjumpControlsControl
                 text: "Beatjump Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showRateControlsControl
                 text: "Rate Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showRateControlButtonsControl
                 enabled: showRateControlsControl.value > 0
                 indent: 14
                 text: "Rate Adjust Buttons"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showKeyControlsControl
                 text: "Key Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showVinylControlsControl
                 text: "Vinyl Control"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible || root.compactDeckSettingsVisible || root.miniDeckSettingsVisible
                 control: showSpinniesControl
                 text: "Spinny"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible || root.compactDeckSettingsVisible || root.miniDeckSettingsVisible
                 control: showCoverArtControl
                 text: "Cover Art"
             }
             ToolbarMenuToggle {
+                enabled: showSpinniesControl.value > 0 || showCoverArtControl.value > 0
+                visible: root.fullDeckSettingsVisible || root.compactDeckSettingsVisible
                 control: selectBigSpinnyOrCoverControl
                 indent: 14
                 text: "Big Spinny/Cover Art"
@@ -2247,7 +2341,9 @@ Rectangle {
         property bool checked: action ? action.checked : false
         property bool hasSubmenu: false
         property bool selected: false
-        property string shortcut: action ? action.shortcut : ""
+        // Menu actions without shortcuts expose an undefined QML value. Cast
+        // only real shortcuts so the QString property never receives undefined.
+        property string shortcut: action && action.shortcut !== undefined ? String(action.shortcut) : ""
         property string text: action ? root.menuText(action.text) : ""
 
         signal hovered

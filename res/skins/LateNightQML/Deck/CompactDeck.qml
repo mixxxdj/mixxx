@@ -9,15 +9,17 @@ Controls.Panel {
 
     required property string group
     readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
-    readonly property bool showBigSpinnyOrCover: showBigSpinnyOrCoverProxy.initialized
-            ? showBigSpinnyOrCoverProxy.value > 0
-            : (showSpinnyOrCoverProxy.value > 0 && selectBigSpinnyProxy.value > 0)
+    readonly property bool showBigSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showBigSpinnyOrCoverProxy.initialized
+                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value > 0
+                    : showBigSpinnyOrCoverProxy.value > 0)
     readonly property bool showKeyControls: showKeyControlsProxy.value > 0
     readonly property bool showLoopControls: showLoopControlsProxy.value > 0
     readonly property bool showRateControls: showRateControlsProxy.value > 0
-    readonly property bool showSmallSpinnyOrCover: showSmallSpinnyOrCoverProxy.initialized
-            ? showSmallSpinnyOrCoverProxy.value > 0
-            : (showSpinnyOrCoverProxy.value > 0 && selectBigSpinnyProxy.value <= 0)
+    readonly property bool showSmallSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showSmallSpinnyOrCoverProxy.initialized
+                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value <= 0
+                    : showSmallSpinnyOrCoverProxy.value > 0)
     readonly property bool showVinylControls: showVinylControlsProxy.value > 0
 
     signal toggleFocus
@@ -50,6 +52,8 @@ Controls.Panel {
         group: "[Skin]"
         key: "show_big_spinny_or_cover"
     }
+    Mixxx.ControlProxy { id: showSpinniesProxy; group: "[Skin]"; key: "show_spinnies" }
+    Mixxx.ControlProxy { id: showCoverArtProxy; group: "[Skin]"; key: "show_coverart" }
     Mixxx.ControlProxy {
         id: showVinylControlsProxy
 
@@ -139,7 +143,7 @@ Controls.Panel {
             }
             TransportLoopBeatjumpCompact {
                 Layout.fillWidth: true
-                Layout.preferredHeight: LateNightTheme.deckTransportHeight
+                Layout.preferredHeight: LateNightTheme.compactDeckTransportHeight
                 group: root.group
                 showBeatjumpControls: root.showBeatjumpControls
                 showKeyControls: root.showKeyControls
@@ -149,7 +153,7 @@ Controls.Panel {
         }
         RateCompact {
             Layout.fillHeight: true
-            Layout.preferredWidth: root.showRateControls ? 62 : 0
+            Layout.preferredWidth: root.showRateControls ? LateNightTheme.compactRateControlWidth : 0
             group: root.group
             visible: root.showRateControls
         }

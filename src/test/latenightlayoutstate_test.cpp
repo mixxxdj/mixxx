@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <QVariant>
 
+#include "qml/qmlconfigproxy.h"
 #include "test/mixxxtest.h"
 
 namespace {
@@ -78,6 +79,7 @@ TEST_F(LateNightLayoutStateTest, SavedSizeIsClampedToSupportedRange) {
 }
 
 TEST_F(LateNightLayoutStateTest, PlayerDropAreaParsesLibraryUriPayload) {
+    m_engine.addImportPath(QStringLiteral(RESOURCE_FOLDER "/qml"));
     QQmlComponent component(&m_engine);
     component.setData(R"(
 import QtQuick 2.12
@@ -110,6 +112,36 @@ Item {
     ASSERT_TRUE(QMetaObject::invokeMethod(
             object.get(), "parseUri", Q_RETURN_ARG(QVariant, parsedUrl)));
     EXPECT_EQ(QStringLiteral("/tmp/Late Night.wav"), parsedUrl.toUrl().toLocalFile());
+}
+
+TEST_F(LateNightLayoutStateTest, LateNightPlayButtonUsesToggleTransportSemantics) {
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    m_engine.addImportPath(QStringLiteral(RESOURCE_FOLDER "/qml"));
+
+    QQmlComponent component(&m_engine);
+    component.setData(R"(
+import QtQuick 2.12
+import "Deck"
+
+Item {
+    LateNightPlayButton {
+        id: playButton
+        group: "[Channel1]"
+    }
+    readonly property bool toggled: playButton.toggledTransport
+    readonly property string displayKey: playButton.displayControlKey
+    readonly property string rightClickKey: playButton.rightClickControlKey
+}
+)",
+            QUrl::fromLocalFile(QStringLiteral(
+                    RESOURCE_FOLDER "/skins/LateNightQML/play_button_test.qml")));
+
+    std::unique_ptr<QObject> object(component.create());
+    ASSERT_FALSE(component.isError()) << qPrintable(component.errorString());
+    ASSERT_TRUE(object);
+    EXPECT_TRUE(object->property("toggled").toBool());
+    EXPECT_EQ(QStringLiteral("play_latched"), object->property("displayKey").toString());
+    EXPECT_EQ(QStringLiteral("cue_set"), object->property("rightClickKey").toString());
 }
 
 } // namespace
