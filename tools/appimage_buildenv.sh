@@ -99,110 +99,98 @@ case "$1" in
         # come from the VCPKG buildenv. (The vcpkg toolchain prepends the
         # buildenv to CMAKE_PREFIX_PATH, so identical system packages are not used.)
         if command -v apt-get >/dev/null 2>&1; then
-            if [ -n "${GITHUB_ENV}" ]; then
-                sudo apt-get update
-                # libfuse2t64 is the t64-transitioned name (Debian 13 / Ubuntu 24.04+);
-                # libfuse2 is the older name (Ubuntu 22.04).  Install whichever is available.
-                FUSE_PKG="libfuse2t64"
-                if ! apt-cache show libfuse2t64 &>/dev/null; then
-                    FUSE_PKG="libfuse2"
-                fi
-                # XCB packages needed to link the static Qt plugin from the
-                # buildenv; keep in sync with the buildenv's Qt build.
-                sudo apt-get install -y --no-install-recommends \
-                    ccache \
-                    g++ \
-                    make \
-                    pkg-config \
-                    patchelf \
-                    file \
-                    desktop-file-utils \
-                    "${FUSE_PKG}" \
-                    unzip \
-                    squashfs-tools \
-                    libsecret-1-dev \
-                    libgcrypt20-dev \
-                    libgpg-error-dev \
-                    libgl1-mesa-dev \
-                    libx11-xcb-dev \
-                    libglu1-mesa-dev \
-                    libxrender-dev \
-                    libxi-dev \
-                    libxkbcommon-dev \
-                    libxkbcommon-x11-dev \
-                    libegl1-mesa-dev \
-                    libupower-glib-dev \
-                    libsm-dev \
-                    libxrandr-dev \
-                    libxext-dev \
-                    libudev-dev \
-                    libxcb1-dev \
-                    libxcb-cursor-dev \
-                    libxcb-glx0-dev \
-                    libxcb-icccm4-dev \
-                    libxcb-image0-dev \
-                    libxcb-keysyms1-dev \
-                    libxcb-randr0-dev \
-                    libxcb-render0-dev \
-                    libxcb-render-util0-dev \
-                    libxcb-shape0-dev \
-                    libxcb-shm0-dev \
-                    libxcb-sync-dev \
-                    libxcb-util-dev \
-                    libxcb-xfixes0-dev \
-                    libxcb-xkb-dev \
-                    libxcb-xinput-dev
-
-                # The CPack AppImage generator requires CMake >= 4.2 (added in
-                # CMake 4.2). Priority: system CMake >= 4.2, then apt-get
-                # satisfy, then download the latest from cmake.org.
-                if cmake --version 2>/dev/null | awk -F'[ .]' 'NR==1 {ok=($3>4 || ($3==4 && $4>=2)); exit !ok} END {if (NR==0) exit 1}'; then
-                    echo "Using system CMake (>= 4.2)"
-                elif sudo apt-get satisfy "cmake (>= 4.2)"; then
-                    echo "Installed CMake >= 4.2 via apt"
-                else
-                    echo "apt has no CMake >= 4.2 candidate, downloading latest from cmake.org..."
-                    CMAKE_FILE=$(curl -fsSL "https://cmake.org/files/LatestRelease/" \
-                        | grep -oE "cmake-[0-9.]+-linux-${HOST_ARCH}\.tar\.gz" \
-                        | sort -V | uniq | tail -1)
-                    if [ -n "${CMAKE_FILE}" ]; then
-                        sudo mkdir -p /opt/cmake
-                        curl -fsSL "https://cmake.org/files/LatestRelease/${CMAKE_FILE}" \
-                            | sudo tar -xz -C /opt/cmake --strip-components=1
-                        echo "/opt/cmake/bin" >> "${GITHUB_PATH}"
-                    fi
-                fi
-
-                # appimagetool is required by the CPack AppImage generator, which searches
-                # for an executable named "appimagetool" in the PATH (or via
-                # CPACK_APPIMAGE_TOOL_EXECUTABLE).  Install it to /usr/local/bin
-                # which is in the default PATH.  Running it on the runner requires
-                # FUSE (libfuse2t64 is installed above).
-                APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${HOST_ARCH}.AppImage"
-                sudo curl -fsSL --connect-timeout 15 --max-time 120 \
-                    -o /usr/local/bin/appimagetool \
-                    "${APPIMAGETOOL_URL}"
-                sudo chmod +x /usr/local/bin/appimagetool
-
-            else
-                # Local (non-CI) use: don't install or change anything on the
-                # machine. CMake >= 4.2 is required by the CPack AppImage
-                # generator; other build dependencies are checked by CMake
-                # itself during configuration.
-                if ! cmake --version 2>/dev/null | awk -F'[ .]' 'NR==1 {ok=($3>4 || ($3==4 && $4>=2)); exit !ok} END {if (NR==0) exit 1}'; then
-                    echo ""
-                    echo "CMake >= 4.2 is required for the AppImage CPack generator."
-                    echo "Please install CMake >= 4.2 (e.g. from https://cmake.org/download/)"
-                    echo "and re-source this script."
-                    return 1
-                fi
+            sudo apt-get update
+            # libfuse2t64 is the t64-transitioned name (Debian 13 / Ubuntu 24.04+);
+            # libfuse2 is the older name (Ubuntu 22.04).  Install whichever is available.
+            FUSE_PKG="libfuse2t64"
+            if ! apt-cache show libfuse2t64 &>/dev/null; then
+                FUSE_PKG="libfuse2"
             fi
+            # XCB packages needed to link the static Qt plugin from the
+            # buildenv; keep in sync with the buildenv's Qt build.
+            sudo apt-get install -y --no-install-recommends \
+                ccache \
+                g++ \
+                make \
+                pkg-config \
+                patchelf \
+                file \
+                desktop-file-utils \
+                "${FUSE_PKG}" \
+                unzip \
+                squashfs-tools \
+                libsecret-1-dev \
+                libgcrypt20-dev \
+                libgpg-error-dev \
+                libgl1-mesa-dev \
+                libx11-xcb-dev \
+                libglu1-mesa-dev \
+                libxrender-dev \
+                libxi-dev \
+                libxkbcommon-dev \
+                libxkbcommon-x11-dev \
+                libegl1-mesa-dev \
+                libupower-glib-dev \
+                libsm-dev \
+                libxrandr-dev \
+                libxext-dev \
+                libudev-dev \
+                libxcb1-dev \
+                libxcb-cursor-dev \
+                libxcb-glx0-dev \
+                libxcb-icccm4-dev \
+                libxcb-image0-dev \
+                libxcb-keysyms1-dev \
+                libxcb-randr0-dev \
+                libxcb-render0-dev \
+                libxcb-render-util0-dev \
+                libxcb-shape0-dev \
+                libxcb-shm0-dev \
+                libxcb-sync-dev \
+                libxcb-util-dev \
+                libxcb-xfixes0-dev \
+                libxcb-xkb-dev \
+                libxcb-xinput-dev
         else
             echo "WARNING: The AppImage buildenv system-dependency step currently only"
             echo "automates Debian-based systems. Please install the equivalent"
             echo "packages for your distribution, or consider contributing a"
             echo "script for it."
         fi
+
+        # The CPack AppImage generator requires CMake >= 4.2 (added in CMake
+        # 4.2).  Priority: system CMake >= 4.2, then apt-get satisfy, then
+        # fail with an install hint.  CI provides CMake via
+        # jwlawson/actions-setup-cmake@v2.2 in build.yml, so this only
+        # matters for local builds.
+        if cmake --version 2>/dev/null | awk -F'[ .]' 'NR==1 {ok=($3>4 || ($3==4 && $4>=2)); exit !ok} END {if (NR==0) exit 1}'; then
+            echo "Using system CMake (>= 4.2)"
+        elif command -v apt-get >/dev/null 2>&1 && sudo apt-get satisfy "cmake (>= 4.2)"; then
+            echo "CMake >= 4.2 installed via apt"
+        else
+            echo "CMake >= 4.2 is required for the AppImage CPack generator, but no"
+            echo "version >= 4.2 is available in the system package manager."
+            echo ""
+            if command -v snap >/dev/null 2>&1; then
+                echo "On Ubuntu, install it via snap:"
+                echo "  sudo snap install cmake --channel=4.2/stable --classic"
+            else
+                echo "Please install CMake >= 4.2 (e.g. from https://cmake.org/download/)"
+            fi
+            echo "and re-source this script."
+            return 1
+        fi
+
+        # appimagetool is required by the CPack AppImage generator, which searches
+        # for an executable named "appimagetool" in the PATH (or via
+        # CPACK_APPIMAGE_TOOL_EXECUTABLE).  Install it to /usr/local/bin
+        # which is in the default PATH.  Running it requires FUSE
+        # (libfuse2t64 is installed above where apt-get is available).
+        APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${HOST_ARCH}.AppImage"
+        sudo curl -fsSL --connect-timeout 15 --max-time 120 \
+            -o /usr/local/bin/appimagetool \
+            "${APPIMAGETOOL_URL}"
+        sudo chmod +x /usr/local/bin/appimagetool
 
         echo_exported_variables() {
             echo "BUILDENV_NAME=${BUILDENV_NAME}"

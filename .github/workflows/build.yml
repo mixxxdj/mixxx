@@ -348,6 +348,15 @@ jobs:
             echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
           fi
 
+      - name: "[AppImage] Set up cmake"
+        # The CPack AppImage generator requires CMake >= 4.2, which is not
+        # available from apt on the ubuntu-22.04 runner (kept for the glibc
+        # baseline).  Use the same action as the macOS/Windows builds.
+        if: matrix.buildenv_script == 'tools/appimage_buildenv.sh'
+        uses: jwlawson/actions-setup-cmake@v2.2
+        with:
+          cmake-version: "4.2.x"
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
