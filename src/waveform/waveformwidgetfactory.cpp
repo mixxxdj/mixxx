@@ -87,6 +87,10 @@ const ConfigKey kDefaultZoomKey =
 const ConfigKey kFrameRateKey =
         ConfigKey(kWaveformGroup, QStringLiteral("FrameRate"));
 const ConfigKey kVSyncKey = ConfigKey(kWaveformGroup, QStringLiteral("VSync"));
+const ConfigKey kDownbeatsEnabledKey = ConfigKey(kWaveformGroup, QStringLiteral("show_downbeats"));
+const ConfigKey kDownbeatsDistanceKey = ConfigKey(kWaveformGroup, QStringLiteral("downbeats_distance"));
+const ConfigKey kDownbeatsForNewTracksKey = ConfigKey(
+        kWaveformGroup, QStringLiteral("show_downbeats_for_new_tracks"));
 
 ConfigKey visualGainKey(int index) {
     return ConfigKey(kWaveformGroup, QStringLiteral("VisualGain_") + QString::number(index));
@@ -143,6 +147,9 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
+          m_downbeatsEnabled(downbeatsEnabledDefault()),
+          m_downbeatDistance(downbeatDistanceDefault()),
+          m_downbeatsForNewTracksEnabled(downbeatsForNewTracksEnabledDefault()),
           m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
@@ -483,6 +490,21 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
             false));
 
+    int downbeatsEnabled =
+            m_config->getValueString(kDownbeatsEnabledKey).toInt(&ok);
+    if (ok) {
+        setDownbeatsEnabled(static_cast<bool>(downbeatsEnabled));
+    }
+    int downbeatDistance = m_config->getValue(
+            kDownbeatsDistanceKey,
+            downbeatDistanceDefault());
+    setDownbeatDistance(math_clamp(downbeatDistance,
+            downbeatDistanceMin(),
+            downbeatDistanceMax()));
+    setDownbeatsForNewTracksEnabled(m_config->getValue(
+            kDownbeatsForNewTracksKey,
+            downbeatsForNewTracksEnabledDefault()));
+
     return true;
 }
 
@@ -754,6 +776,31 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    }
+}
+
+void WaveformWidgetFactory::setDownbeatsEnabled(bool enabled) {
+    m_downbeatsEnabled = enabled;
+    if (m_config) {
+        m_config->setValue(kDownbeatsEnabledKey, m_downbeatsEnabled);
+    }
+}
+
+void WaveformWidgetFactory::setDownbeatDistance(int downbeatDistance) {
+    VERIFY_OR_DEBUG_ASSERT(downbeatDistance >= downbeatDistanceMin() &&
+            downbeatDistance <= downbeatDistanceMax()) {
+        downbeatDistance = downbeatDistanceDefault();
+    }
+    m_downbeatDistance = downbeatDistance;
+    if (m_config) {
+        m_config->setValue(kDownbeatsDistanceKey, m_downbeatDistance);
+    }
+}
+
+void WaveformWidgetFactory::setDownbeatsForNewTracksEnabled(bool enabled) {
+    m_downbeatsForNewTracksEnabled = enabled;
+    if (m_config) {
+        m_config->setValue(kDownbeatsForNewTracksKey, m_downbeatsForNewTracksEnabled);
     }
 }
 
