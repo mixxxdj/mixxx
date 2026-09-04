@@ -1,0 +1,756 @@
+/**
+ * Novation Launchkey Mini MK4 - Controller Scripts for Mixxx
+ *
+ * Provides high-resolution 14-bit processing for touch strips,
+ * low-latency scratching with inertia, smooth beatmatching,
+ * library navigation, and multi-functional performance pads.
+ */
+
+// eslint-disable-next-line no-var
+var LaunchkeyJog = {};
+
+// Active deck and scratch position memory
+LaunchkeyJog.activeDeck = 1;
+LaunchkeyJog.lastPosDeck1 = null;
+LaunchkeyJog.lastTimeDeck1 = null;
+
+// Temporary storage for assembling 14-bit Mod Strip values
+LaunchkeyJog.modStrip14Bit = {
+    msb: 0,
+    lsb: 0,
+};
+
+// Physics parameters for slide gestures
+LaunchkeyJog.inertia = {
+    timerId: null,
+    velocity: 0,
+    friction: 0.95,
+    minVelocity: 0.05,
+    lastMidiTime: 0,
+    largeSlideThreshold: 0.8,
+    isLargeSlide: false,
+};
+
+// Toggle states for Shift for each Deck (1 and 2)
+LaunchkeyJog.deckState = {
+    1: {shiftActive: false},
+    2: {shiftActive: false},
+};
+
+// Input state tracking variables
+LaunchkeyJog.lastDirection = 0;
+LaunchkeyJog.watchdogTimerId = null;
+LaunchkeyJog.touchStartTime = 0;
+LaunchkeyJog.touchStartPos = 0;
+LaunchkeyJog.lastMidiControl = null;
+LaunchkeyJog.macroDirection = 0;
+
+/**
+ * Handles the Shift button state changes (D1: G#3, D2: A#3).
+ * When Shift is active, the associated deck becomes the active target,
+ * enabling secondary commands (e.g. track loading, hotcue clearing).
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The velocity/value received
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleShift = function(channel, control, value, _status, _group) {
+    const deck = control === 0x44 ? 1 : 2;
+    const state = LaunchkeyJog.deckState[deck];
+    state.shiftActive = value > 0;
+
+    if (state.shiftActive) {
+        LaunchkeyJog.activeDeck = deck;
+        LaunchkeyJog.lastPosDeck1 = null;
+        print(
+            `>>> Shift Deck ${  deck  } active: Mod Strip reassigned <<<`,
+        );
+    }
+};
+
+/**
+ * Handles all pad actions (Cue, Play, Hotcues, and Loop sizes).
+ * Determines the target deck based on MIDI control code and triggers
+ * standard or Shift-modified actions on press and release.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The velocity/value received
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
+    const isPress = value > 0;
+    let deck;
+    let groupTarget;
+    const d1Pads = [0x3c, 0x3d, 0x3e, 0x40, 0x3f, 0x42];
+
+    if (d1Pads.indexOf(control) !== -1) {
+        deck = 1;
+        groupTarget = "[Channel1]";
+    } else {
+        deck = 2;
+        groupTarget = "[Channel2]";
+    }
+
+    const state = LaunchkeyJog.deckState[deck];
+
+    switch (control) {
+    // Cue buttons
+    case 0x3c:
+    case 0x48:
+        engine.setValue(groupTarget, "cue_default", isPress ? 1 : 0);
+        break;
+
+    // Play/Pause buttons
+    case 0x3d:
+    case 0x4e: {
+        if (!isPress) { return; }
+        const currentPlay = engine.getValue(groupTarget, "play");
+
+        // Shift + Play triggers a 1-bar delayed pause
+        if (state.shiftActive && currentPlay === 1) {
+            let bpm = engine.getValue(groupTarget, "file_bpm");
+            if (bpm <= 0) { bpm = engine.getValue(groupTarget, "bpm"); }
+            if (bpm <= 0) { bpm = 120; }
+
+            const oneBarMs = (60000 / bpm) * 4;
+            print(
+                `>>> [SHIFT+PLAY] 1-bar delayed pause: stopping in ${
+                    Math.round(oneBarMs)
+                }ms <<<`,
+            );
+
+            engine.beginTimer(
+                oneBarMs,
+                function() {
+                    engine.setValue(groupTarget, "play", 0);
+                },
+                true,
+            );
+        } else {
+            engine.setValue(groupTarget, "play", !currentPlay);
+        }
+        break;
+    }
+
+    // Hotcue 1
+    case 0x3e:
+    case 0x45: {
+        const action1 = state.shiftActive ? "clear" : "activate";
+        engine.setValue(
+            groupTarget,
+            `hotcue_1_${  action1}`,
+            isPress ? 1 : 0,
+        );
+        break;
+    }
+
+    // Hotcue 2
+    case 0x40:
+    case 0x47: {
+        const action2 = state.shiftActive ? "clear" : "activate";
+        engine.setValue(
+            groupTarget,
+            `hotcue_2_${  action2}`,
+            isPress ? 1 : 0,
+        );
+        break;
+    }
+
+    // Loop Control Left
+    case 0x3f:
+    case 0x49: {
+        if (!isPress) { return; }
+        if (state.shiftActive) {
+            engine.setValue(groupTarget, "loop_exit", 1);
+        } else {
+            const isLooping = engine.getValue(groupTarget, "loop_enabled");
+            if (!isLooping) {
+                engine.setValue(groupTarget, "beatloop_size", 1);
+                engine.setValue(groupTarget, "beatloop_activate", 1);
+            } else {
+                const cmdLeft = deck === 1 ? "loop_double" : "loop_halve";
+                engine.setValue(groupTarget, cmdLeft, 1);
+            }
+        }
+        break;
+    }
+
+    // Loop Control Right
+    case 0x42:
+    case 0x4b: {
+        if (!isPress) { return; }
+        if (state.shiftActive) {
+            engine.setValue(groupTarget, "loop_exit", 1);
+        } else {
+            const isLooping = engine.getValue(groupTarget, "loop_enabled");
+            if (!isLooping) {
+                engine.setValue(groupTarget, "beatloop_size", 1);
+                engine.setValue(groupTarget, "beatloop_activate", 1);
+            } else {
+                const cmdRight = deck === 1 ? "loop_halve" : "loop_double";
+                engine.setValue(groupTarget, cmdRight, 1);
+            }
+        }
+        break;
+    }
+    }
+};
+
+/**
+ * Toggles the actively controlled deck between Deck 1 and Deck 2.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The button value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.toggleDeck = function(channel, control, value, _status, _group) {
+    if (value === 0) { return; }
+    LaunchkeyJog.activeDeck = LaunchkeyJog.activeDeck === 1 ? 2 : 1;
+    LaunchkeyJog.lastPosDeck1 = null;
+};
+
+// ====================================================
+// BEAT MATCHING / ENCODER NUDGING (14-BIT)
+// ====================================================
+
+LaunchkeyJog.BEATMATCH_CONST = {
+    // EMA Filter: 1.0 = raw/instantaneous, 0.5 = balanced, 0.2 = smooth but delayed.
+    EMA_ALPHA: 0.8,
+
+    // Speed scaling of the nudge.
+    SENSITIVITY: 0.05,
+
+    // Deadzone to ignore hardware noise when the encoder is resting.
+    DEADZONE: 1,
+};
+
+LaunchkeyJog.beatmatchState = {
+    1: {msb: 64, lsb: 0, lastPos: null, emaVelocity: 0},
+    2: {msb: 64, lsb: 0, lastPos: null, emaVelocity: 0},
+};
+
+/**
+ * MSB Receiver for Deck 1 Beatmatching.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The MSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleBeatmatchD1Msb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.beatmatchState[1].msb = value;
+};
+
+/**
+ * LSB Receiver for Deck 1 Beatmatching (triggers execution).
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The LSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleBeatmatchD1Lsb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.beatmatchState[1].lsb = value;
+    LaunchkeyJog.processBeatmatch(1);
+};
+
+/**
+ * MSB Receiver for Deck 2 Beatmatching.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The MSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleBeatmatchD2Msb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.beatmatchState[2].msb = value;
+};
+
+/**
+ * LSB Receiver for Deck 2 Beatmatching (triggers execution).
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The LSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleBeatmatchD2Lsb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.beatmatchState[2].lsb = value;
+    LaunchkeyJog.processBeatmatch(2);
+};
+
+/**
+ * Assembles and processes the 14-bit value to control the jog nudge parameter.
+ * Uses wrap-around detection and an EMA filter for smooth movements.
+ *
+ * @param {number} deck The targeted deck index (1 or 2)
+ */
+LaunchkeyJog.processBeatmatch = function(deck) {
+    const state = LaunchkeyJog.beatmatchState[deck];
+    const C = LaunchkeyJog.BEATMATCH_CONST;
+
+    const rawPos = (state.msb << 7) | state.lsb;
+
+    if (state.lastPos === null) {
+        state.lastPos = rawPos;
+        return;
+    }
+
+    let rawDelta = rawPos - state.lastPos;
+
+    // Handle wrap-around for infinite encoders
+    if (rawDelta > 8192) { rawDelta -= 16384; } else if (rawDelta < -8192) { rawDelta += 16384; }
+
+    state.lastPos = rawPos;
+
+    if (Math.abs(rawDelta) <= C.DEADZONE) {
+        state.emaVelocity = 0;
+        return;
+    }
+
+    // Smooth the velocity using Exponential Moving Average
+    state.emaVelocity =
+        C.EMA_ALPHA * rawDelta + (1.0 - C.EMA_ALPHA) * state.emaVelocity;
+
+    engine.setValue(
+        `[Channel${  deck  }]`,
+        "jog",
+        state.emaVelocity * C.SENSITIVITY,
+    );
+};
+
+// ====================================================
+// LIBRARY SCROLLING (14-BIT)
+// ====================================================
+
+LaunchkeyJog.LIBRARY_CONST = {
+    SCROLL_SENSITIVITY: 3,
+};
+
+LaunchkeyJog.lib = {msb: 64, lsb: 0, lastVal: null, accumulator: 0};
+
+/**
+ * MSB Receiver for Library scrolling.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The MSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleLibraryMsb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.lib.msb = value;
+};
+
+/**
+ * LSB Receiver for Library scrolling (triggers scroll calculation).
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The LSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleLibraryLsb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.lib.lsb = value;
+    LaunchkeyJog.processLibraryMovement(
+        LaunchkeyJog.lib,
+        "MoveDown",
+        "MoveUp",
+        LaunchkeyJog.LIBRARY_CONST.SCROLL_SENSITIVITY,
+    );
+};
+
+/**
+ * Translates continuous 14-bit absolute changes into discrete list selection moves.
+ *
+ * @param {object} state The library collection tracking object
+ * @param {string} cmdForward The forward command execution identifier
+ * @param {string} cmdBackward The backward command execution identifier
+ * @param {number} sensitivity Number of physical ticks required to jump
+ */
+LaunchkeyJog.processLibraryMovement = function(
+    state,
+    cmdForward,
+    cmdBackward,
+    sensitivity,
+) {
+    const currentVal = (state.msb << 7) | state.lsb;
+
+    if (state.lastVal === null) {
+        state.lastVal = currentVal;
+        return;
+    }
+
+    let delta = currentVal - state.lastVal;
+
+    // Handle 14-bit wrap-around
+    if (delta > 8192) { delta -= 16384; } else if (delta < -8192) { delta += 16384; }
+
+    state.lastVal = currentVal;
+    state.accumulator += delta;
+
+    if (state.accumulator >= sensitivity) {
+        engine.setValue("[Library]", cmdForward, 1);
+        engine.setValue("[Library]", cmdForward, 0);
+        state.accumulator = 0;
+    } else if (state.accumulator <= -sensitivity) {
+        engine.setValue("[Library]", cmdBackward, 1);
+        engine.setValue("[Library]", cmdBackward, 0);
+        state.accumulator = 0;
+    }
+};
+
+/**
+ * Performs track loading or sync toggle actions.
+ * If Shift is active: Loads the selected track to the deck.
+ * If Shift is inactive: Toggles sync lock on the deck.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The button value received
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleLoadTrack = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    if (value === 0) { return; }
+
+    const deck = control === 0x41 ? 1 : 2;
+    const state = LaunchkeyJog.deckState[deck];
+    const groupTarget = `[Channel${deck}]`;
+
+    if (state.shiftActive) {
+        engine.setValue(groupTarget, "LoadSelectedTrack", 1);
+        print(`>>> Loading track on Deck ${  deck  } <<<`);
+    } else {
+        engine.setValue(
+            groupTarget,
+            "sync_enabled",
+            !engine.getValue(groupTarget, "sync_enabled"),
+        );
+    }
+};
+
+// ========================
+// MOD STRIP SCRATCH ENGINE
+// ========================
+
+LaunchkeyJog.MODSTRIP_CONST = {
+    EMA_ALPHA: 0.35,
+    SCRATCH_SENSITIVITY: 0.08,
+    DEADZONE: 1,
+    WATCHDOG_INTERVAL_MS: 50,
+    INERTIA_THRESHOLD: 5.0,
+    INERTIA_INTERVAL_MS: 20, // Supported Mixxx timer interval (>= 20ms)
+    INERTIA_FRICTION: 0.938, // Tuned for 20ms frames (~133ms half-life)
+    INERTIA_MIN_VELOCITY: 1.5,
+};
+
+LaunchkeyJog.modStrip = {
+    msb: 64,
+    lsb: 0,
+    lastRawPos: null,
+    emaVelocity: 0,
+    isScratching: false,
+    midiPacketCount: 0,
+    watchdogTimerId: null,
+    inertiaTimerId: null,
+    inertiaVelocity: 0,
+    scratchDeck: 1, // Captured target deck for the scratch gesture
+};
+
+/**
+ * MSB Receiver for Mod Strip scratch control.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The MSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleModStripMsb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.modStrip.msb = value;
+};
+
+/**
+ * LSB Receiver for Mod Strip scratch control (triggers calculations).
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The LSB byte value
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleModStripLsb = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    LaunchkeyJog.modStrip.lsb = value;
+    LaunchkeyJog.updateModStripTarget();
+};
+
+/**
+ * Processes Mod Strip inputs to control scratching.
+ */
+LaunchkeyJog.updateModStripTarget = function() {
+    const m = LaunchkeyJog.modStrip;
+    const C = LaunchkeyJog.MODSTRIP_CONST;
+
+    const rawPos = (m.msb << 7) | m.lsb;
+    m.midiPacketCount++;
+
+    if (m.inertiaTimerId !== null) {
+        engine.stopTimer(m.inertiaTimerId);
+        m.inertiaTimerId = null;
+        m.inertiaVelocity = 0;
+    }
+
+    if (!m.isScratching) {
+        m.lastRawPos = rawPos;
+        m.emaVelocity = 0;
+        m.isScratching = true;
+        m.scratchDeck = LaunchkeyJog.activeDeck;
+
+        engine.scratchEnable(m.scratchDeck, 128, 33 + 1 / 3, 0.25, 1.0 / 256);
+
+        if (m.watchdogTimerId === null) {
+            m.watchdogTimerId = engine.beginTimer(
+                C.WATCHDOG_INTERVAL_MS,
+                function() {
+                    LaunchkeyJog.modStripWatchdog();
+                },
+                false,
+            );
+        }
+        return;
+    }
+
+    const rawDelta = rawPos - m.lastRawPos;
+    m.lastRawPos = rawPos;
+
+    if (Math.abs(rawDelta) <= C.DEADZONE) {
+        return;
+    }
+
+    m.emaVelocity =
+        C.EMA_ALPHA * rawDelta + (1.0 - C.EMA_ALPHA) * m.emaVelocity;
+    const scratchTicks = m.emaVelocity * C.SCRATCH_SENSITIVITY;
+    engine.scratchTick(m.scratchDeck, scratchTicks);
+};
+
+/**
+ * Runs a watchdog checking function periodically to manage finger releases.
+ */
+LaunchkeyJog.modStripWatchdog = function() {
+    const m = LaunchkeyJog.modStrip;
+    const C = LaunchkeyJog.MODSTRIP_CONST;
+    const deck = m.scratchDeck;
+
+    if (!m.isScratching) {
+        if (m.watchdogTimerId !== null) {
+            engine.stopTimer(m.watchdogTimerId);
+            m.watchdogTimerId = null;
+        }
+        return;
+    }
+
+    if (m.midiPacketCount > 0) {
+        m.midiPacketCount = 0;
+        return;
+    }
+
+    engine.stopTimer(m.watchdogTimerId);
+    m.watchdogTimerId = null;
+    m.isScratching = false;
+
+    const releaseVelocity = m.emaVelocity;
+    const releaseTickVelocity = releaseVelocity * C.SCRATCH_SENSITIVITY;
+
+    if (Math.abs(releaseVelocity) > C.INERTIA_THRESHOLD) {
+        m.inertiaVelocity = releaseTickVelocity;
+        m.inertiaTimerId = engine.beginTimer(
+            C.INERTIA_INTERVAL_MS,
+            function() {
+                LaunchkeyJog.applyModStripInertia();
+            },
+            false,
+        );
+    } else {
+        engine.scratchTick(deck, 0);
+        engine.scratchDisable(deck, false);
+    }
+
+    m.emaVelocity = 0;
+    m.lastRawPos = null;
+};
+
+/**
+ * Simulates slide friction tracking calculations.
+ */
+LaunchkeyJog.applyModStripInertia = function() {
+    const m = LaunchkeyJog.modStrip;
+    const C = LaunchkeyJog.MODSTRIP_CONST;
+    const deck = m.scratchDeck;
+
+    m.inertiaVelocity *= C.INERTIA_FRICTION;
+
+    if (Math.abs(m.inertiaVelocity) <= C.INERTIA_MIN_VELOCITY) {
+        engine.stopTimer(m.inertiaTimerId);
+        m.inertiaTimerId = null;
+        m.inertiaVelocity = 0;
+        engine.scratchTick(deck, 0);
+        engine.scratchDisable(deck, false);
+        return;
+    }
+
+    if (engine.isScratching(deck)) {
+        engine.scratchTick(deck, m.inertiaVelocity);
+    } else {
+        engine.stopTimer(m.inertiaTimerId);
+        m.inertiaTimerId = null;
+        m.inertiaVelocity = 0;
+    }
+};
+
+// ====================================================
+// CROSSFADER PITCH STRIP (STICKY + SOFT CATCH-UP)
+// ====================================================
+
+LaunchkeyJog.CROSSFADER_CONST = {
+    CATCHUP_THRESHOLD: 0.15,
+    EMA_ALPHA: 0.4,
+};
+
+LaunchkeyJog.pitchBendTmp = {
+    msb: 64,
+    lsb: 0,
+};
+
+LaunchkeyJog.crossfaderState = {
+    lastVirtualPos: 0.0,
+    isLocked: true,
+    isFirstTouch: true,
+};
+
+/**
+ * Processes Pitch Bend input as a sticky relative crossfader.
+ *
+ * @param {number} channel The MIDI channel
+ * @param {number} control The MIDI control number
+ * @param {number} value The execution data byte
+ * @param {number} _status The MIDI status byte (unused)
+ * @param {string} _group The Mixxx control group (unused)
+ */
+LaunchkeyJog.handleCrossfaderStrip = function(
+    channel,
+    control,
+    value,
+    _status,
+    _group,
+) {
+    const state = LaunchkeyJog.crossfaderState;
+    const C = LaunchkeyJog.CROSSFADER_CONST;
+
+    const lsb = control;
+    const msb = value;
+    const raw14Bit = (msb << 7) | lsb;
+
+    if (raw14Bit >= 8190 && raw14Bit <= 8194) {
+        state.isLocked = true;
+        state.isFirstTouch = true;
+        return;
+    }
+
+    let normalized = (raw14Bit - 8192) / 8192.0;
+
+    if (normalized < -1.0) { normalized = -1.0; }
+    if (normalized > 1.0) { normalized = 1.0; }
+
+    const currentCrossfader = engine.getValue("[Master]", "crossfader");
+
+    if (state.isFirstTouch) {
+        state.lastVirtualPos = currentCrossfader;
+        state.isFirstTouch = false;
+        state.isLocked = true;
+    }
+
+    if (state.isLocked) {
+        const distance = Math.abs(normalized - currentCrossfader);
+        if (distance <= C.CATCHUP_THRESHOLD) {
+            state.isLocked = false;
+            state.lastVirtualPos = currentCrossfader;
+        } else {
+            return;
+        }
+    }
+
+    let smoothed =
+        C.EMA_ALPHA * normalized + (1.0 - C.EMA_ALPHA) * state.lastVirtualPos;
+
+    if (smoothed < -1.0) { smoothed = -1.0; }
+    if (smoothed > 1.0) { smoothed = 1.0; }
+
+    engine.setValue("[Master]", "crossfader", smoothed);
+    state.lastVirtualPos = smoothed;
+};
