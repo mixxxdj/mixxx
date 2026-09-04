@@ -1278,6 +1278,7 @@ add_library(
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
+  src/effects/backends/builtin/trackereffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
   src/effects/backends/effectmanifest.cpp
   src/effects/backends/effectmanifestparameter.cpp
@@ -2976,6 +2977,7 @@ if(BUILD_TESTING)
     src/test/skincontext_test.cpp
     src/test/softtakeover_test.cpp
     src/test/soundproxy_test.cpp
+    src/test/soundsourceopenmpt_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
     src/test/sqliteliketest.cpp
     src/test/synccontroltest.cpp
@@ -2983,6 +2985,7 @@ if(BUILD_TESTING)
     src/test/tableview_test.cpp
     src/test/taglibtest.cpp
     src/test/trackdao_test.cpp
+    src/test/trackereffect_test.cpp
     src/test/trackexport_test.cpp
     src/test/trackmetadata_test.cpp
     src/test/trackmetadataexport_test.cpp
@@ -5245,9 +5248,43 @@ if(MEDIAFOUNDATION)
   )
 endif()
 
-# Modplug support
-find_package(Modplug)
-default_option(MODPLUG "Modplug module decoder support" "Modplug_FOUND")
+# tracker module support (openmpt preferred, modplug fallback)
+find_package(OpenMPT)
+default_option(OPENMPT "OpenMPT module decoder support" "OpenMPT_FOUND")
+
+# only search for modplug as fallback if openmpt is not available
+if(NOT OpenMPT_FOUND)
+  message(
+    STATUS
+    "libopenmpt not found, checking for fallback library libmodplug..."
+  )
+  find_package(Modplug)
+  default_option(MODPLUG "Modplug module decoder support (legacy)" "OFF")
+endif()
+
+if(OPENMPT OR MODPLUG)
+  # shared tracker preferences
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/preferences/dialog/dlgprefmodplugdlg.ui
+      src/preferences/dialog/dlgprefmodplug.cpp
+  )
+endif()
+
+if(OPENMPT)
+  if(NOT OpenMPT_FOUND)
+    message(
+      FATAL_ERROR
+      "OpenMPT module decoder support requires libopenmpt and its development headers."
+    )
+  endif()
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourceopenmpt.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __OPENMPT__)
+  target_link_libraries(mixxx-lib PRIVATE OpenMPT::OpenMPT)
+  message(STATUS "using libopenmpt for tracker module support")
+endif()
+
 if(MODPLUG)
   if(NOT Modplug_FOUND)
     message(
@@ -5255,15 +5292,14 @@ if(MODPLUG)
       "Modplug module decoder support requires libmodplug and its development headers."
     )
   endif()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/preferences/dialog/dlgprefmodplugdlg.ui
-      src/sources/soundsourcemodplug.cpp
-      src/preferences/dialog/dlgprefmodplug.cpp
-  )
+  target_sources(mixxx-lib PRIVATE src/sources/soundsourcemodplug.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __MODPLUG__)
   target_link_libraries(mixxx-lib PRIVATE Modplug::Modplug)
+  if(OPENMPT)
+    message(STATUS "libmodplug available as fallback (libopenmpt preferred)")
+  else()
+    message(STATUS "using libmodplug for tracker module support")
+  endif()
 endif()
 
 find_package(Microsoft.GSL CONFIG)
