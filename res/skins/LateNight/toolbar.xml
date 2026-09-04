@@ -138,6 +138,34 @@
       </StatusLight>
 
       <WidgetGroup>
+        <ObjectName>AbletonLinkWidget</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">35f,20f</SetVariable>
+            <SetVariable name="state_0_text">Link</SetVariable>
+            <SetVariable name="state_1_text">Link</SetVariable>
+            <SetVariable name="ConfigKey">[AbletonLink],sync_enabled</SetVariable>
+          </Template>
+          <Number>
+            <TooltipId>num_peers</TooltipId>
+            <ObjectName>AbletonLinkPeers</ObjectName>
+            <Size>25f,0min</Size>
+            <NumberOfDigits>0</NumberOfDigits>
+            <Alignment>center</Alignment>
+            <Connection>
+              <ConfigKey>[AbletonLink],num_peers</ConfigKey>
+            </Connection>
+          </Number>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup><Size>100f,1min</Size></WidgetGroup>
+
+      <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>

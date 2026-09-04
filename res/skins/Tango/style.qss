@@ -396,6 +396,14 @@ WWidgetGroup {
     color: #999;
   }
 
+#AbletonLinkPeers {
+  color: #d2d2d2;
+}
+
+#AbletonLinkWidget {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
 #ClockBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   padding: 2px 0px;
@@ -3296,7 +3304,7 @@ WTrackTableViewHeader QMenu::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator::unchecked,
-WEffectChainPresetSelector::indicator::unchecked:selected,
+WEffectChainPresetSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked,
 #fadeModeCombobox::indicator:unchecked:selected {
   image: none;
