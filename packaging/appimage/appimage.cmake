@@ -20,87 +20,98 @@ string(
   MIXXX_APPIMAGE_DESKTOP_CONTENT
   "${MIXXX_APPIMAGE_DESKTOP_CONTENT}"
 )
-file(
-  WRITE
-  "${MIXXX_APPIMAGE_DESKTOP_FILE}"
-  "${MIXXX_APPIMAGE_DESKTOP_CONTENT}"
-)
+file(WRITE "${MIXXX_APPIMAGE_DESKTOP_FILE}" "${MIXXX_APPIMAGE_DESKTOP_CONTENT}")
 install(
   FILES "${MIXXX_APPIMAGE_DESKTOP_FILE}"
   DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   RENAME "mixxx-appimage.desktop"
 )
 
-# Bundle the shared libraries from the VCPKG buildenv that Mixxx links
-# against (the binary's RUNPATH is $ORIGIN/../lib, set by CPack, so they
-# must end up in AppDir/lib).  The system libraries Mixxx depends on are
-# expected to be provided by the host system.
-# If a future buildenv build turns another dependency into a shared
-# library, add it to the exclusion list below.
-file(
-  GLOB
-  _appimage_buildenv_shared_libraries
-  "${MIXXX_VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/lib/*.so*"
+# Install the runtime dependencies of the mixxx binary into AppDir/lib
+# (the binary's RUNPATH is $ORIGIN/../lib, set by CPack, so bundled
+# libraries must end up in the top-level lib/).
+#
+# The library set is determined dynamically from the actual dependencies of
+# the mixxx binary at install time, so newly introduced dependencies are
+# bundled automatically without maintaining a per-library list.  Libraries
+# that must be provided by the host system are excluded, based on the
+# official AppImage excludelist (see linuxdeploy, which maintains it):
+# https://github.com/probonopd/AppImages/blob/master/excludelist
+# These are the C library and compiler runtime, GPU driver libraries, the
+# core X11 client libraries (which must match the running X server), and
+# sound server client libraries (which must match the local server).
+
+# Collect the runtime dependency set from the mixxx binary.  A target's
+# dependency set can only be populated by an install(TARGETS) call, so mixxx
+# is installed a second time here (to the same destination as the generic
+# rule above, which is a harmless idempotent copy).
+install(
+  TARGETS mixxx
+  # The RUNTIME_DEPENDENCY_SET keyword must precede the artifact options
+  # (RUNTIME/BUNDLE DESTINATION), or native install() rejects it.
+  RUNTIME_DEPENDENCY_SET mixxx_runtime_deps
+  RUNTIME DESTINATION "${MIXXX_INSTALL_BINDIR}"
+  BUNDLE DESTINATION .
 )
-# System/compiler libraries that must not be bundled into the AppImage.
-set(_appimage_system_libraries
-    libc.so
-    libm.so
-    libstdc++.so
-    libgcc_s.so
-    ld-linux
-    libX11.so
-    libXext.so
-    libXrandr.so
-    libxcb.so
-    libEGL.so
-    libGLX.so
-    libOpenGL.so
-    libX11-xcb.so
-    libxkbcommon.so
-    libSM.so
-    libICE.so
-    libglib-2.0.so
-    libgobject-2.0.so
-    libgio-2.0.so
-    libgirepository-2.0.so
-    libgmodule-2.0.so
-    libgthread-2.0.so
-    libdbus-1.so
-    libpipewire-0.3.so
-    libpulse.so
-    libpulse-simple.so
-    libpulse-mainloop-glib.so
-    libupower-glib.so
-    libudev.so
-    libGrantlee_Templates.so
-    libGrantlee_TextDocument.so
-    liblo.so
-    libtag_c.so
+install(
+  RUNTIME_DEPENDENCY_SET
+  mixxx_runtime_deps
+  # The resolution options (DIRECTORIES, PRE_EXCLUDE_REGEXES, ...) must
+  # precede the artifact group (LIBRARY DESTINATION), or install() rejects
+  # them as unknown arguments.
+  DIRECTORIES "${MIXXX_VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/lib"
+  PRE_EXCLUDE_REGEXES
+    # glibc and the compiler runtime
+    "^ld-linux.*"
+    "^libc\\.so.*"
+    "^libm\\.so.*"
+    "^libdl\\.so.*"
+    "^libpthread\\.so.*"
+    "^librt\\.so.*"
+    "^libresolv\\.so.*"
+    "^libutil\\.so.*"
+    "^libnss_.*"
+    "^libmvec\\.so.*"
+    "^libanl\\.so.*"
+    "^libthread_db\\.so.*"
+    "^libcidn\\.so.*"
+    "^libBrokenLocale\\.so.*"
+    "^libstdc\\+\\+\\.so.*"
+    "^libgcc_s\\.so.*"
+    # GPU / display driver stack
+    "^libGL\\.so.*"
+    "^libEGL\\.so.*"
+    "^libGLX\\.so.*"
+    "^libOpenGL\\.so.*"
+    "^libGLdispatch\\.so.*"
+    "^libdrm\\.so.*"
+    "^libglapi\\.so.*"
+    "^libgbm\\.so.*"
+    # Core X11 client libraries (must match the running X server)
+    "^libX11\\.so.*"
+    "^libX11-xcb\\.so.*"
+    "^libxcb\\.so.*"
+    "^libxcb-dri2\\.so.*"
+    "^libxcb-dri3\\.so.*"
+    "^libwayland-client\\.so.*"
+    # Sound server client libraries (must match the local sound server)
+    "^libasound\\.so.*"
+    "^libjack\\.so.*"
+    "^libpipewire.*"
+    # Low-level font stack and other system essentials
+    "^libfontconfig\\.so.*"
+    "^libfreetype\\.so.*"
+    "^libharfbuzz\\.so.*"
+    "^libICE\\.so.*"
+    "^libSM\\.so.*"
+    "^libuuid\\.so.*"
+    "^libz\\.so.*"
+    "^libexpat\\.so.*"
+    "^libcom_err\\.so.*"
+    "^libgpg-error\\.so.*"
+    "^libusb-1\\.0\\.so.*"
+    "^libgmp\\.so.*"
+  LIBRARY
+  DESTINATION
+  "${CMAKE_INSTALL_LIBDIR}"
 )
-set(_appimage_shared_libraries)
-foreach(_lib IN LISTS _appimage_buildenv_shared_libraries)
-  get_filename_component(_lib_name "${_lib}" NAME)
-  set(_excluded OFF)
-  foreach(_syslib IN LISTS _appimage_system_libraries)
-    # Match a leading substring (e.g. "libpulse.so" matches "libpulse.so.0.24.3").
-    # Use string(FIND) rather than MATCHES to avoid regex metacharacters
-    # like '+' in "libstdc++.so".
-    string(FIND "${_lib_name}" "${_syslib}" _lib_pos)
-    if(_lib_pos EQUAL 0)
-      set(_excluded ON)
-    endif()
-  endforeach()
-  if(NOT _excluded)
-    list(APPEND _appimage_shared_libraries "${_lib}")
-  endif()
-endforeach()
-if(_appimage_shared_libraries)
-  install(FILES ${_appimage_shared_libraries} DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-endif()
-unset(_appimage_buildenv_shared_libraries)
-unset(_appimage_system_libraries)
-unset(_appimage_shared_libraries)
-unset(_appimage_lib_name)
-unset(_appimage_excluded)
-unset(_appimage_syslib)
