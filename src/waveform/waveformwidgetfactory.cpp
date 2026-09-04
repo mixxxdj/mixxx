@@ -74,6 +74,8 @@ const ConfigKey kWaveformTypeKey =
         ConfigKey(kWaveformGroup, QStringLiteral("WaveformType"));
 const ConfigKey kHardwareAccelerationKey =
         ConfigKey(kWaveformGroup, QStringLiteral("use_hardware_acceleration"));
+const ConfigKey kWaveformOptionsKey(kWaveformGroup,
+        QStringLiteral("waveform_options"));
 const ConfigKey kZoomSyncKey = ConfigKey(
         kWaveformGroup, QStringLiteral("ZoomSynchronization"));
 const ConfigKey kEndOfTrackWarningKey = ConfigKey(
@@ -83,6 +85,7 @@ const ConfigKey kDefaultZoomKey =
 const ConfigKey kFrameRateKey =
         ConfigKey(kWaveformGroup, QStringLiteral("FrameRate"));
 const ConfigKey kVSyncKey = ConfigKey(kWaveformGroup, QStringLiteral("VSync"));
+const ConfigKey kBeatGridAlpha = ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha"));
 
 ConfigKey visualGainKey(int index) {
     return ConfigKey(kWaveformGroup, QStringLiteral("VisualGain_") + QString::number(index));
@@ -404,9 +407,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool zoomSync = m_config->getValue(kZoomSyncKey, m_zoomSync);
     setZoomSync(zoomSync);
 
-    int beatGridAlpha =
-            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")),
-                    m_beatGridAlpha);
+    int beatGridAlpha = m_config->getValue(kBeatGridAlpha, m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
@@ -714,6 +715,19 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
     return true;
 }
 
+WaveformWidgetBackend WaveformWidgetFactory::setAcceleration(bool enabled) {
+    WaveformWidgetBackend backend = WaveformWidgetBackend::None;
+    if (enabled && (isOpenGlAvailable() || isOpenGlesAvailable())) {
+#ifdef MIXXX_USE_QOPENGL
+        backend = WaveformWidgetBackend::AllShader;
+#else
+        backend = WaveformWidgetBackend::GL;
+#endif
+    }
+    m_config->setValue(kHardwareAccelerationKey, backend);
+    return backend;
+}
+
 void WaveformWidgetFactory::setDefaultZoom(double zoom) {
     m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom,
                                WaveformWidgetRenderer::s_waveformMaxZoom);
@@ -751,6 +765,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
+    m_config->setValue(kBeatGridAlpha, alpha);
 }
 
 void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
@@ -1108,9 +1123,10 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    allshader::WaveformRendererSignalBase::Options options =
-            m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
-                    allshader::WaveformRendererSignalBase::Option::None);
+    allshader::WaveformRendererSignalBase::Options options = m_config->getValue(
+            ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::Options(
+                    allshader::WaveformRendererSignalBase::Option::None));
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
 
@@ -1119,11 +1135,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
+    case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-    case WaveformWidgetBackend::AllShader: {
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer);
-    }
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1133,10 +1151,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveform
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new HSVWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1146,10 +1167,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new RGBWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1157,12 +1181,16 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer) {
-#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetBackend backend = getBackendFromConfig();
+
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1172,10 +1200,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
+#ifdef MIXXX_USE_QOPENGL
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
 #endif
+    case WaveformWidgetBackend::None:
+    case WaveformWidgetBackend::GL:
+    case WaveformWidgetBackend::GLSL:
     default:
         return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1334,9 +1365,33 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     // in case of issue when we release, we can communicate workaround on
     // editing the INI file to target a specific rendering backend. If no
     // complains come back, we can convert this safely to a backend eventually.
-    return m_config->getValue(
-            ConfigKey(QStringLiteral("[Waveform]"), QStringLiteral("use_hardware_acceleration")),
+    WaveformWidgetBackend backend = m_config->getValue(
+            kHardwareAccelerationKey,
             preferredBackend());
+    switch (backend) {
+    case WaveformWidgetBackend::None:
+        break;
+    case WaveformWidgetBackend::GL:
+        if (!m_openGlAvailable) {
+            backend = WaveformWidgetBackend::None;
+        }
+        break;
+    case WaveformWidgetBackend::GLSL:
+        if (!m_openGlAvailable || !m_openGLShaderAvailable) {
+            backend = WaveformWidgetBackend::None;
+        }
+        break;
+    case WaveformWidgetBackend::AllShader:
+        // Note: this might be a leftover of full QOpenGL builds even if this
+        // build does not support that setting.
+#ifdef MIXXX_USE_QOPENGL
+        if (!m_openGlAvailable && !m_openGlesAvailable) {
+            backend = WaveformWidgetBackend::None;
+        }
+#endif
+        break;
+    }
+    return backend;
 }
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
@@ -1355,6 +1410,45 @@ WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
 
 void WaveformWidgetFactory::setDefaultBackend() {
     m_config->setValue(kHardwareAccelerationKey, preferredBackend());
+}
+
+allshader::WaveformRendererSignalBase::Options WaveformWidgetFactory::getWaveformOptions() {
+    auto options = m_config->getValue(kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Options(
+                    allshader::WaveformRendererSignalBase::Option::None));
+    return options;
+}
+
+allshader::WaveformRendererSignalBase::Options
+WaveformWidgetFactory::getWaveformOptionsSupportedByType(
+        WaveformWidgetType::Type type, WaveformWidgetBackend backend) {
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            allshader::WaveformRendererSignalBase::Option::None;
+    int handleIdx = findHandleIndexFromType(type);
+    if (handleIdx != -1) {
+        supportedOptions = getAvailableTypes()[handleIdx].supportedOptions(backend);
+    }
+    return supportedOptions;
+}
+
+void WaveformWidgetFactory::setWaveformOption(
+        allshader::WaveformRendererSignalBase::Option option,
+        bool enabled,
+        WaveformWidgetType::Type type) {
+    WaveformWidgetBackend backend = getBackendFromConfig();
+    allshader::WaveformRendererSignalBase::Options currentOptions = getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options supportedOptions =
+            getWaveformOptionsSupportedByType(type, backend);
+
+    currentOptions.setFlag(option, enabled);
+    // clear unsupported options
+    currentOptions &= supportedOptions;
+    m_config->setValue(kWaveformOptionsKey, currentOptions);
+}
+
+void WaveformWidgetFactory::resetWaveformOptions() {
+    m_config->setValue(kWaveformOptionsKey,
+            allshader::WaveformRendererSignalBase::Option::None);
 }
 
 QString WaveformWidgetAbstractHandle::getDisplayName() const {
