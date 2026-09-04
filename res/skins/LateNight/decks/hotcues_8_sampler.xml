@@ -1,0 +1,15 @@
+<Template>
+  <WidgetGroup><!-- HotCues 1-8 -->
+    <Layout>horizontal</Layout>
+    <Children>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue1</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue2</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue3</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue4</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue5</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue6</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue7</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue8</ObjectName></SingletonContainer>
+    </Children>
+  </WidgetGroup>
+</Template>
