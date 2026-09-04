@@ -1591,28 +1591,36 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                 SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
     }
     DEBUG_ASSERT(!pTrack->isDirty());
-    const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
-    const auto result =
-            SoundSourceProxy(pTrack).updateTrackFromSource(
-                    updateTrackFromSourceMode,
-                    SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
-    if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
-        // At least the source synchronization time stamp must have changed
-        DEBUG_ASSERT(pTrack->isDirty());
-        const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
-        DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
-        if (sourceSynchronizedAtBefore.isValid()) {
-            // Only log subsequent re-imports but not the initial import of metadata
-            DEBUG_ASSERT(updateTrackFromSourceMode ==
-                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
-            DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
-            kLogger.info()
-                    << "Re-imported and updated outdated track metadata in library ("
-                    << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
-                    << ") with tags from modified file ("
-                    << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
-                    << "):"
-                    << pTrack->getMetadata();
+    // Skip constructing SoundSourceProxy (which may sniff file contents)
+    // when Once-mode has nothing to do.
+    const bool skipUpdateFromSource =
+            updateTrackFromSourceMode ==
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once &&
+            pTrack->hasImportedMetadataFromSource();
+    if (!skipUpdateFromSource) {
+        const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
+        const auto result =
+                SoundSourceProxy(pTrack).updateTrackFromSource(
+                        updateTrackFromSourceMode,
+                        SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
+        if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
+            // At least the source synchronization time stamp must have changed
+            DEBUG_ASSERT(pTrack->isDirty());
+            const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
+            DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
+            if (sourceSynchronizedAtBefore.isValid()) {
+                // Only log subsequent re-imports but not the initial import of metadata
+                DEBUG_ASSERT(updateTrackFromSourceMode ==
+                        SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
+                DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
+                kLogger.info()
+                        << "Re-imported and updated outdated track metadata in library ("
+                        << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
+                        << ") with tags from modified file ("
+                        << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
+                        << "):"
+                        << pTrack->getMetadata();
+            }
         }
     }
 

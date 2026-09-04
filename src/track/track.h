@@ -171,7 +171,12 @@ class Track : public QObject {
 
     /// Checks if the internal metadata is in-sync with the
     /// metadata stored in file tags.
+    /// Accesses the file system (mtime / exists).
     bool checkSourceSynchronized() const;
+
+    /// True if file tags have been imported at least once.
+    /// Does not access the file system.
+    bool hasImportedMetadataFromSource() const;
 
     // The date/time of the last import or export of metadata
     void setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt);
