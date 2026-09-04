@@ -772,11 +772,11 @@ void EngineMixer::process(const int iBufferSize) {
         }
     }
 
+    // Handle mono mixdown for the main output and booth.
+    // Headphone mixdown is handled separately since they have more complicated
+    // processing.
     if (m_pMainMonoMixdown->toBool()) {
         SampleUtil::mixStereoToMono(m_main.data(), iBufferSize);
-        if (headphoneEnabled) {
-            SampleUtil::mixStereoToMono(m_head.data(), iBufferSize);
-        }
         if (boothEnabled) {
             SampleUtil::mixStereoToMono(m_booth.data(), iBufferSize);
         }
@@ -839,6 +839,8 @@ void EngineMixer::processHeadphones(
             ph[i] = (ph[i] + ph[i + 1]) / 2;
             ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
         }
+    } else if (m_pMainMonoMixdown->toBool()) {
+        SampleUtil::mixStereoToMono(m_head.data(), iBufferSize);
     }
 
     // Apply headphone gain
