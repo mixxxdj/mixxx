@@ -1,5 +1,6 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
+import "../Controls" as Controls
 import "../LateNightTheme"
 
 Rectangle {
@@ -8,8 +9,8 @@ Rectangle {
     readonly property bool compactDiagonal: showFourUnits && ((unit1.expanded && !unit2.expanded && !unit3.expanded && unit4.expanded) || (!unit1.expanded && unit2.expanded && unit3.expanded && !unit4.expanded))
     readonly property real firstPairHeight: Math.max(unit1.implicitHeight, unit2.implicitHeight)
     readonly property int rowSpacing: LateNightTheme.isClassic ? 4 : 3
-    readonly property real secondRowTop: rowSpacing + firstPairHeight + rowSpacing
     readonly property real secondPairHeight: showFourUnits ? Math.max(unit3.implicitHeight, unit4.implicitHeight) : 0
+    readonly property real secondRowTop: rowSpacing + firstPairHeight + rowSpacing
     readonly property bool showFourUnits: showFourUnitsControl.value > 0
     readonly property real unit3Top: compactDiagonal ? unit1.y + unit1.height + rowSpacing : secondRowTop
     readonly property real unit4Top: compactDiagonal ? unit2.y + unit2.height + rowSpacing : secondRowTop
@@ -26,7 +27,7 @@ Rectangle {
         x: 0
         y: root.rowSpacing
     }
-    RackFiller {
+    Controls.RackFiller {
         height: Math.max(0, root.firstPairHeight - unit1.height - root.rowSpacing)
         visible: !root.compactDiagonal && height > 0
         width: unit1.width - 1
@@ -42,7 +43,7 @@ Rectangle {
         x: unit1.width + 4
         y: root.rowSpacing
     }
-    RackFiller {
+    Controls.RackFiller {
         height: Math.max(0, root.firstPairHeight - unit2.height - root.rowSpacing)
         visible: !root.compactDiagonal && height > 0
         width: unit2.width - 1
@@ -59,7 +60,7 @@ Rectangle {
         x: 0
         y: root.unit3Top
     }
-    RackFiller {
+    Controls.RackFiller {
         height: Math.max(0, root.secondPairHeight - unit3.height - root.rowSpacing)
         visible: root.showFourUnits && !root.compactDiagonal && height > 0
         width: unit3.width - 1
@@ -76,7 +77,7 @@ Rectangle {
         x: unit3.width + 4
         y: root.unit4Top
     }
-    RackFiller {
+    Controls.RackFiller {
         height: Math.max(0, root.secondPairHeight - unit4.height - root.rowSpacing)
         visible: root.showFourUnits && !root.compactDiagonal && height > 0
         width: unit4.width - 1
@@ -88,34 +89,5 @@ Rectangle {
 
         group: "[Skin]"
         key: "show_4effectunits"
-    }
-
-    component RackFiller: Rectangle {
-        border.color: "#111111"
-        border.width: 1
-        color: LateNightTheme.effectsFillerColor
-        radius: LateNightTheme.isClassic ? 2 : 1
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            color: LateNightTheme.isClassic ? "#222222" : "#1c1c1c"
-            height: 1
-        }
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.top: parent.top
-            color: LateNightTheme.isClassic ? "#222222" : "#191919"
-            width: 1
-        }
-        Rectangle {
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            color: LateNightTheme.isClassic ? "#111111" : "#020202"
-            height: 1
-        }
     }
 }

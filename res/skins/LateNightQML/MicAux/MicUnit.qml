@@ -1,0 +1,171 @@
+pragma ComponentBehavior: Bound
+
+import "../Controls" as Controls
+import "../Deck" as DeckControls
+import "../LateNightTheme"
+import "../Mixer" as MixerControls
+import Mixxx 1.0 as Mixxx
+import QtQuick
+import QtQuick.Layouts
+
+Item {
+    id: root
+
+    property string group: unitNumber === 1 ? "[Microphone]" : "[Microphone" + unitNumber + "]"
+    readonly property bool inputConfigured: inputConfiguredControl.value > 0
+    readonly property Item loadedUnit: unitLoader.item as Item
+    required property int unitNumber
+
+    implicitHeight: loadedUnit?.implicitHeight ?? 0
+    implicitWidth: loadedUnit?.implicitWidth ?? 0
+
+    Loader {
+        id: unitLoader
+
+        sourceComponent: root.inputConfigured ? configuredUnit : unconfiguredUnit
+    }
+    Mixxx.ControlProxy {
+        id: inputConfiguredControl
+
+        group: root.group
+        key: "input_configured"
+    }
+    Component {
+        id: configuredUnit
+
+        Controls.Panel {
+            color: LateNightTheme.micAuxPanelColor
+            implicitHeight: 78
+            implicitWidth: 149
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 2
+                spacing: 2
+
+                ColumnLayout {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 43
+                    spacing: 1
+
+                    Text {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 20
+                        color: LateNightTheme.micAuxLabelTextColor
+                        font.bold: true
+                        font.family: "Open Sans"
+                        font.pixelSize: 14
+                        horizontalAlignment: Text.AlignHCenter
+                        text: "MIC " + root.unitNumber
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                    Item {
+                        Layout.fillHeight: true
+                    }
+                    DeckControls.LateNightControlButton {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredHeight: 26
+                        Layout.preferredWidth: 42
+                        activeBackgroundSuffix: "active"
+                        activeColor: LateNightTheme.activePlayCueColor
+                        activeIconSuffix: LateNightTheme.micTalkActiveIconSuffix
+                        activeOpacity: 1
+                        backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
+                        group: root.group
+                        iconSource: LateNightTheme.assetMicTalkButton
+                        inactiveOpacity: 1
+                        key: "talkover"
+                        stretchIcon: true
+                        toggleable: true
+                    }
+                }
+                Controls.ImageVuMeter {
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: 8
+                    group: root.group
+                    levelKey: "vu_meter"
+                }
+                ColumnLayout {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    spacing: 1
+
+                    RowLayout {
+                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredHeight: 34
+                        spacing: 3
+
+                        Controls.Knob {
+                            Layout.preferredHeight: 30
+                            Layout.preferredWidth: 35
+                            backgroundSource: LateNightTheme.assetMicAuxGainKnobBackground
+                            displayArc: true
+                            displayArcColor: LateNightTheme.micAuxGainColor
+                            displayArcStart: Controls.Knob.ArcStart.Minimum
+                            group: root.group
+                            indicatorColor: "orange"
+                            indicatorKind: "small"
+                            key: "pregain"
+                        }
+                        MixerControls.PflButton {
+                            group: root.group
+                        }
+                    }
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 22
+                        spacing: 1
+
+                        MixerControls.FxAssignButtons {
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.preferredHeight: 20
+                            groupName: root.group
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Component {
+        id: unconfiguredUnit
+
+        Controls.Panel {
+            color: LateNightTheme.micAuxPanelColor
+            implicitHeight: 78
+            implicitWidth: 47
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 4
+                spacing: 2
+
+                Text {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 21
+                    color: LateNightTheme.micAuxUnconfiguredTextColor
+                    font.bold: true
+                    font.family: "Open Sans"
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "MIC " + root.unitNumber
+                    verticalAlignment: Text.AlignVCenter
+                }
+                Item {
+                    Layout.fillHeight: true
+                }
+                DeckControls.LateNightControlButton {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredHeight: 26
+                    Layout.preferredWidth: 26
+                    backgroundSource: LateNightTheme.assetMicAuxUnconfiguredBackground
+                    contentOpacity: 1.0
+                    group: root.group
+                    iconSource: LateNightTheme.assetMicAuxAddButton
+                    inactiveFillEnabled: false
+                    key: "talkover"
+                    stretchIcon: true
+                }
+            }
+        }
+    }
+}
