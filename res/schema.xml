@@ -593,4 +593,34 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
+  <revision version="41" min_compatible="3">
+    <description>
+      Add parent_id column to the crate table to allow for nested crates.
+    </description>
+    <sql>
+      ALTER TABLE crates ADD COLUMN parent_id INTEGER REFERENCES crates(id) DEFAULT NULL;
+    </sql>
+  </revision>
+  <revision version="42" min_compatible="3">
+    <description>
+      Change the uniqueness constraint of the crates table to depend on the parent_id AND the name.
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS crates_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name varchar(48) NOT NULL,
+        count INTEGER DEFAULT 0,
+        show INTEGER DEFAULT 1,
+        locked INTEGER DEFAULT 0,
+        autodj_source INTEGER DEFAULT 0,
+        parent_id INTEGER REFERENCES crates(id) DEFAULT NULL,
+        UNIQUE (parent_id, name));
+
+      INSERT INTO crates_new (id, name, count, show, locked, autodj_source, parent_id) SELECT id, name, count, show, locked, autodj_source, parent_id from crates;
+
+      DROP TABLE crates;
+
+      ALTER TABLE crates_new RENAME TO crates;
+    </sql>
+  </revision>
 </schema>
