@@ -724,8 +724,14 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
-        if(m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
+        const bool eqAutoReset = m_pConfig->getValue(
+                ConfigKey("[Mixer Profile]", "EqAutoReset"), false);
+        // Resetting the EQ knobs always resets the kill switches too, so the
+        // kill switches are additionally reset on their own when requested.
+        const bool eqKillAutoReset = eqAutoReset ||
+                m_pConfig->getValue(
+                        ConfigKey("[Mixer Profile]", "EqKillAutoReset"), false);
+        if (eqAutoReset) {
             if (m_pLowFilter) {
                 m_pLowFilter->set(1.0);
             }
@@ -735,6 +741,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             if (m_pHighFilter) {
                 m_pHighFilter->set(1.0);
             }
+        }
+        if (eqKillAutoReset) {
             if (m_pLowFilterKill) {
                 m_pLowFilterKill->set(0.0);
             }
