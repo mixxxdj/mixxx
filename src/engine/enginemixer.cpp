@@ -774,6 +774,12 @@ void EngineMixer::process(const int iBufferSize) {
 
     if (m_pMainMonoMixdown->toBool()) {
         SampleUtil::mixStereoToMono(m_main.data(), iBufferSize);
+        if (headphoneEnabled) {
+            SampleUtil::mixStereoToMono(m_head.data(), iBufferSize);
+        }
+        if (boothEnabled) {
+            SampleUtil::mixStereoToMono(m_booth.data(), iBufferSize);
+        }
     }
 
     if (mainEnabled) {
