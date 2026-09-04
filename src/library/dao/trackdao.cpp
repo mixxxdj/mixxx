@@ -442,6 +442,7 @@ void TrackDAO::addTracksPrepare() {
             "title,"
             "album,"
             "album_artist,"
+            "record_label,"
             "year,"
             "genre,"
             "tracknumber,"
@@ -491,6 +492,7 @@ void TrackDAO::addTracksPrepare() {
             ":title,"
             ":album,"
             ":album_artist,"
+            ":record_label,"
             ":year,"
             ":genre,"
             ":tracknumber,"
@@ -597,6 +599,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":title", trackInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album", albumInfo.getTitle());
     pTrackLibraryQuery->bindValue(":album_artist", albumInfo.getArtist());
+    pTrackLibraryQuery->bindValue(":record_label", albumInfo.getRecordLabel());
     pTrackLibraryQuery->bindValue(":year", trackInfo.getYear());
     pTrackLibraryQuery->bindValue(":genre", trackInfo.getGenre());
     pTrackLibraryQuery->bindValue(":composer", trackInfo.getComposer());
@@ -1174,6 +1177,10 @@ void setTrackAlbumArtist(const QSqlRecord& record, const int column, Track* pTra
     pTrack->setAlbumArtist(record.value(column).toString());
 }
 
+void setTrackRecordLabel(const QSqlRecord& record, const int column, Track* pTrack) {
+    pTrack->setRecordLabel(record.value(column).toString());
+}
+
 void setTrackYear(const QSqlRecord& record, const int column, Track* pTrack) {
     pTrack->setYear(record.value(column).toString());
 }
@@ -1391,6 +1398,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"title", setTrackTitle},
             {"album", setTrackAlbum},
             {"album_artist", setTrackAlbumArtist},
+            {"record_label", setTrackRecordLabel},
             {"year", setTrackYear},
             {"genre", setTrackGenre},
             {"composer", setTrackComposer},
@@ -1699,6 +1707,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "title=:title,"
             "album=:album,"
             "album_artist=:album_artist,"
+            "record_label=:record_label,"
             "year=:year,"
             "genre=:genre,"
             "composer=:composer,"

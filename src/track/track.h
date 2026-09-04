@@ -58,6 +58,8 @@ class Track : public QObject {
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist
                     NOTIFY albumArtistChanged)
+    Q_PROPERTY(QString recordLabel READ getRecordLabel WRITE setRecordLabel
+                    NOTIFY recordLabelChanged)
     Q_PROPERTY(QString genre READ getGenre STORED false NOTIFY genreChanged)
 #if defined(__EXTRA_METADATA__)
     Q_PROPERTY(QString mood READ getMood STORED false NOTIFY moodChanged)
@@ -191,6 +193,8 @@ class Track : public QObject {
     void setAlbum(const QString&);
     QString getAlbumArtist() const;
     void setAlbumArtist(const QString&);
+    QString getRecordLabel() const;
+    void setRecordLabel(const QString&);
 
     // Returns the content of the year library column.
     // This was original only the four digit (gregorian) calendar year of the release date
@@ -466,6 +470,7 @@ class Track : public QObject {
     void titleChanged(const QString&);
     void albumChanged(const QString&);
     void albumArtistChanged(const QString&);
+    void recordLabelChanged(const QString&);
     void genreChanged(const QString&);
 #if defined(__EXTRA_METADATA__)
     void moodChanged(const QString&);
