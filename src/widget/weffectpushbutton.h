@@ -26,7 +26,16 @@ class WEffectPushButton : public WPushButton {
     void slotActionChosen(QAction* action);
 
   private:
+    /// Returns the menu pointer.
+    QMenu* createConnectAndGetMenu();
+    /// Returns the menu pointer if it has been created, or nullptr
+    QMenu* getMenuIfCreated();
+    void setCheckedActionByValue(double value);
+
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
+    /// Note: the menu should not be used directly since it is created only on
+    /// demand to reduce skin loading time.
+    /// Use getMenuIfCreated() or createConnectAndGetMenu() instead.
     QMenu* m_pButtonMenu;
 };

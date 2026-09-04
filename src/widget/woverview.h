@@ -71,6 +71,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotMinuteMarkersChanged(bool v);
     void slotScalingChanged();
 
+    /// Returns the menu pointer.
+    WCueMenuPopup* createConnectAndGetMenu();
+    /// Returns the menu pointer if it has been created, or nullptr
+    WCueMenuPopup* getMenuIfCreated();
+
   private:
     // Append the waveform overview pixmap according to available data
     // in waveform
@@ -155,7 +160,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_endOfTrack;
     bool m_bPassthroughEnabled;
 
+    /// Note: the menu should not be used directly since it is created only on
+    /// demand to reduce skin loading time.
+    /// Use getMenuIfCreated() or createConnectAndGetMenu() instead.
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
