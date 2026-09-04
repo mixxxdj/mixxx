@@ -44,7 +44,7 @@ WWaveformViewer::WWaveformViewer(
 }
 
 WWaveformViewer::~WWaveformViewer() {
-    //qDebug() << "~WWaveformViewer";
+    // qDebug() << "~WWaveformViewer";
 }
 
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
@@ -91,8 +91,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_bBending = false;
         }
         m_bScratching = true;
-        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    event->pos().x() : event->pos().y();
+        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ? event->pos().x() : event->pos().y();
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
         m_pScratchPosition->set(targetPosition);
@@ -134,17 +133,15 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
 
     // Only send signals for mouse moving if the left button is pressed
     if (m_bScratching) {
-        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    event->pos().x() : event->pos().y();
+        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ? event->pos().x() : event->pos().y();
         // Adjusts for one-to-one movement.
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
-        //qDebug() << "Target:" << targetPosition;
+        // qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->set(targetPosition);
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
-        int diffValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    diff.x() : diff.y();
+        int diffValue = m_waveformWidget->getOrientation() == Qt::Horizontal ? diff.x() : diff.y();
         // Start at the middle of [0.0, 1.0], and emit values based on how far
         // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
         // this is tuned to 127.
@@ -194,9 +191,14 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
-        if (event->angleDelta().y() > 0) {
+        const bool invert = m_pConfig->getValue(
+                ConfigKey(QStringLiteral("[Waveform]"),
+                        QStringLiteral("invert_zoom_direction")),
+                false);
+        const int delta = invert ? -event->angleDelta().y() : event->angleDelta().y();
+        if (delta > 0) {
             onZoomChange(m_waveformWidget->getZoom() / 1.05);
-        } else if (event->angleDelta().y() < 0) {
+        } else if (delta < 0) {
             onZoomChange(m_waveformWidget->getZoom() * 1.05);
         }
     }
@@ -249,14 +251,14 @@ void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOld
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
-    //qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
+    // qDebug() << "WaveformWidgetRenderer::onZoomChange" << this << zoom;
     setZoom(zoom);
     // notify back the factory to sync zoom if needed
     WaveformWidgetFactory::instance()->notifyZoomChange(this);
 }
 
 void WWaveformViewer::setZoom(double zoom) {
-    //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
+    // qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     if (m_waveformWidget) {
         m_waveformWidget->setZoom(zoom);
     }
