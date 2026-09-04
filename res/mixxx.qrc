@@ -97,5 +97,9 @@
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
         <file>shaders/stackedsignal.frag</file>
+        <file>shaders/texturedfilteredsignal.frag</file>
+        <file>shaders/texturedrgbsignal.frag</file>
+        <file>shaders/texturedsignalpassthrough.vert</file>
+        <file>shaders/texturedstackedsignal.frag</file>
     </qresource>
 </RCC>
