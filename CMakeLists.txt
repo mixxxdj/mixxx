@@ -4752,6 +4752,26 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
         COMPONENT applocal
       )
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQml/Models"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQml"
+        COMPONENT applocal
+      )
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtCore"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
+        COMPONENT applocal
+      )
+
+      # Qt6QmlCore doesn't seem to be included in any defined target but it is required.
+      install(
+        FILES
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/bin/Qt6QmlCore$<$<CONFIG:Debug>:d>${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal
+      )
 
       # install qml6-module-qtquick-dialogs
       install(
