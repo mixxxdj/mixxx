@@ -347,7 +347,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             const QString locationPathWithTerminator =
                     locationPath + QChar('/');
             const QString searchQuery =
-                    QStringLiteral("loc:") +
+                    QStringLiteral("lo:") +
                     quoteSearchQueryText(locationPathWithTerminator);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
