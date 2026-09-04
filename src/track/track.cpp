@@ -394,6 +394,20 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         // they want to clear the beatgrid.
         return trySetBeatsWhileLocked(nullptr);
     } else if (!m_pBeats) {
+        if (!getSampleRate().isValid()) {
+            // The sample rate might still be unknown here, e.g. when
+            // importing a BPM from file tags while the audio properties
+            // could not be determined (seen with STEM files, #16846).
+            // A beat grid cannot be created without a valid sample rate,
+            // so keep the beat grid empty. The BPM will be set once the
+            // track has been analyzed or the stream info becomes known.
+            kLogger.warning()
+                    << "Cannot create beat grid for imported BPM"
+                    << bpm
+                    << "without a valid sample rate:"
+                    << getLocation();
+            return false;
+        }
         // No beat grid available -> create and initialize
         mixxx::audio::FramePos cuePosition = m_record.getMainCuePosition();
         if (!cuePosition.isValid()) {
