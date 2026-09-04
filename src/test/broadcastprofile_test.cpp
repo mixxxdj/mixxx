@@ -120,6 +120,10 @@ TEST(BroadcastProfileTest, SetGetValues) {
     profile.setHost(hostname);
     ASSERT_TRUE(profile.getHost() == hostname);
 
+    BroadcastProfile::EncryptionMode mode = BroadcastProfile::EncryptionMode::Required;
+    profile.setEncryptionMode(mode);
+    ASSERT_TRUE(profile.getEncryptionMode() == mode);
+
     int port = 1238;
     profile.setPort(port);
     ASSERT_EQ(profile.getPort(), port);
