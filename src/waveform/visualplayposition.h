@@ -3,7 +3,9 @@
 #include <QAtomicPointer>
 #include <QMap>
 #include <QTime>
+#include <array>
 #include <atomic>
+#include <cstring>
 
 #include "control/controlvalue.h"
 #include "engine/slipmodestate.h"
@@ -68,7 +70,6 @@ class VisualPlayPosition : public QObject {
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
-    double getAtNextVSync(VSyncTimeProvider* pSyncTimeProvider);
     void getPlaySlipAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             double* playPosition,
             double* slipPosition);
@@ -85,17 +86,82 @@ class VisualPlayPosition : public QObject {
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
     void setInvalid() {
-        m_valid.store(false);
+        m_data.reset();
     };
-    bool isValid() const {
-        return m_valid.load();
-    }
 
   private:
+    /// This is a single producer single consumer ring buffer that allows
+    /// to access historic (delayed) values
+    class DelayRing {
+        static_assert(std::is_trivially_copyable_v<VisualPlayPositionData>);
+
+      public:
+        /// Push new data to the ring
+        /// Must be called from a single thread only
+        void push(const VisualPlayPositionData& data) {
+            size_t write = m_writeIndex.load(std::memory_order_relaxed);
+            std::memcpy(&m_ring[write % kRingSize], &data, sizeof(VisualPlayPositionData));
+            m_writeIndex.store(write + 1, std::memory_order_release);
+            if (m_level.load(std::memory_order_relaxed) < kRingSize) {
+                m_level.fetch_add(1, std::memory_order_release);
+            }
+            return;
+        }
+
+        /// returns true on success and a delayed value via pData
+        /// getAt(0) returns the most recent value
+        /// getAt(1) returns the value that has been pushed before
+        /// keep 'at' small compared to kRingSize to make a ring lap during the
+        /// call of getAt() unlikely
+        /// Must be called from a single thread only
+        bool getAt(std::size_t at, VisualPlayPositionData* pData) {
+            // not enough data available
+            if (m_level.load(std::memory_order_acquire) <= at) {
+                return false;
+            }
+
+            size_t writeBefore;
+            size_t writeAfter;
+            do {
+                // snapshot the published write count (acquire)
+                writeBefore = m_writeIndex.load(std::memory_order_acquire);
+
+                // compute read index (unsigned arithmetic handles wrap)
+                const size_t read = writeBefore - 1 - at;
+
+                // copy the payload (non-atomic)
+                std::memcpy(pData, &m_ring[read % kRingSize], sizeof(VisualPlayPositionData));
+
+                // re-check the published write count (acquire)
+                writeAfter = m_writeIndex.load(std::memory_order_acquire);
+
+                // loop condition below will retry only if producer could have overwritten the slot
+            } while (writeAfter - writeBefore >= kRingSize - at);
+
+            // At this point the producer did not advance enough to have
+            // overwritten the slot we copied. Extra guard: ensure level didn't
+            // drop below 'at' while we retried.
+            if (m_level.load(std::memory_order_relaxed) <= at) {
+                return false;
+            }
+            return true;
+        }
+
+        /// Clears the ring, can be called from any thread
+        void reset() {
+            m_level.store(0, std::memory_order_release);
+        }
+
+      private:
+        static constexpr size_t kRingSize = 16;
+        std::array<VisualPlayPositionData, kRingSize> m_ring;
+        std::atomic<std::size_t> m_writeIndex{0};
+        std::atomic<std::size_t> m_level{0};
+    };
+
     double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             const VisualPlayPositionData& data);
-    ControlValueAtomic<VisualPlayPositionData> m_data;
-    std::atomic<bool> m_valid;
+    DelayRing m_data;
     QString m_key;
     bool m_noTransport;
 
