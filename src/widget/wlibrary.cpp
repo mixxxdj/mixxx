@@ -86,17 +86,18 @@ void WLibrary::pasteFromSidebar() {
     }
 }
 
-void WLibrary::search(const QString& name) {
+void WLibrary::search(const QString& text) {
     auto lock = lockMutex(&m_mutex);
     QWidget* pCurrent = currentWidget();
     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
     if (pView == nullptr) {
-        qDebug() << "WARNING: Attempted to search in view" << name << "with WLibrary "
+        qDebug() << "WARNING: Attempted to search in view" << pCurrent << "with WLibrary "
                  << "which does not implement the LibraryView interface. Ignoring.";
         return;
     }
+    // qDebug() << "----------- search" << text << "in view:" << pCurrent;
     lock.unlock();
-    pView->onSearch(name);
+    pView->onSearch(text);
 }
 
 LibraryView* WLibrary::getActiveView() const {
