@@ -1,12 +1,9 @@
 #include "mixxxmainwindow.h"
 
-#include <QApplication>
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
-#include <QDropEvent>
 #include <QFileDialog>
-#include <QMimeData>
 #include <QOpenGLContext>
 #include <QUrl>
 
@@ -54,7 +51,6 @@
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/cmdlineargs.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
 #include "util/menubarhelper.h"
@@ -62,17 +58,12 @@
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
-#include "widget/wmainmenubar.h"
-
-#ifdef Q_OS_MACOS
-#include "util/filepromisedrophelper.h"
-#endif
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wglwidget.h"
-
+#include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -463,45 +454,6 @@ void MixxxMainWindow::initialize() {
         // AutoDj is second from the top by default, all features collapsed).
         pLibrary->showAutoDJ();
     }
-
-#ifdef Q_OS_MACOS
-    mixxx::mac::FilePromiseDropHelper::purgeStaleCache();
-    mixxx::mac::FilePromiseDropHelper::initialize(
-            [this](const QList<QUrl>& urls, const QPoint& globalDropPos) {
-                QWidget* pTargetWidget = QApplication::widgetAt(globalDropPos);
-                QWidget* pWidget = pTargetWidget;
-                while (pWidget) {
-                    if (pWidget->acceptDrops()) {
-                        QMimeData* pMimeData = new QMimeData();
-                        pMimeData->setUrls(urls);
-                        QDropEvent dropEvent(
-                                pWidget->mapFromGlobal(globalDropPos),
-                                Qt::CopyAction,
-                                pMimeData,
-                                Qt::LeftButton,
-                                Qt::NoModifier);
-                        if (QCoreApplication::sendEvent(pWidget, &dropEvent) &&
-                                dropEvent.isAccepted()) {
-                            delete pMimeData;
-                            return;
-                        }
-                        delete pMimeData;
-                    }
-                    pWidget = pWidget->parentWidget();
-                }
-
-                auto pTrackCollectionManager =
-                        m_pCoreServices->getTrackCollectionManager();
-                if (pTrackCollectionManager) {
-                    for (const QUrl& url : urls) {
-                        if (url.isLocalFile()) {
-                            pTrackCollectionManager->getOrAddTrack(
-                                    TrackRef::fromFilePath(url.toLocalFile()));
-                        }
-                    }
-                }
-            });
-#endif
 }
 
 MixxxMainWindow::~MixxxMainWindow() {

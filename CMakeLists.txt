@@ -1911,7 +1911,6 @@ set(
   src/util/fileaccess.h
   src/util/fileinfo.h
   src/util/filename.h
-  src/util/filepromisedrophelper.h
   src/util/font.h
   src/util/fpclassify.h
   src/util/gitinfostore.h
@@ -2078,12 +2077,7 @@ if(APPLE)
       target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
     endif()
   else()
-    target_sources(
-      mixxx-lib
-      PRIVATE
-        src/util/darkappearance.mm
-        src/util/filepromisedrophelper.mm
-    )
+    target_sources(mixxx-lib PRIVATE src/util/darkappearance.mm)
 
     option(
       MACOS_ITUNES_LIBRARY
