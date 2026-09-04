@@ -1,3 +1,4 @@
+#include <QFile>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtDebug>
@@ -981,6 +982,59 @@ TEST_F(SoundSourceProxyTest, getTypeFromAiffFile) {
     EXPECT_STREQ(qPrintable("aiff"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(aiffFilePathWithShortenedSuffix))));
+}
+
+TEST_F(SoundSourceProxyTest, getTypeFromMpeg4AudioFile) {
+    // .m4a and .mp4 are the same ISO BMFF container. Qt may sniff the
+    // contents as audio/mp4 or video/mp4 depending on the ftyp brand,
+    // which Mixxx maps to file types "m4a" and "mp4" respectively.
+    // Either result is correct; a mismatched suffix must not matter.
+    if (!SoundSourceProxy::isFileTypeSupported(QStringLiteral("m4a")) &&
+            !SoundSourceProxy::isFileTypeSupported(QStringLiteral("mp4"))) {
+        return;
+    }
+
+    const QString m4aFilePath = getTestDir().filePath(
+            QStringLiteral("id3-test-data/cover-test-itunes-12.3.0-aac.m4a"));
+    ASSERT_TRUE(QFileInfo::exists(m4aFilePath));
+
+    const QString typeFromM4aSuffix =
+            mixxx::SoundSource::getTypeFromFile(QFileInfo(m4aFilePath));
+    EXPECT_TRUE(typeFromM4aSuffix == QLatin1String("m4a") ||
+            typeFromM4aSuffix == QLatin1String("mp4"))
+            << qPrintable(typeFromM4aSuffix);
+
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString mp4FilePath = tempDir.filePath(QStringLiteral("cover-test.mp4"));
+    mixxxtest::copyFile(m4aFilePath, mp4FilePath);
+
+    const QString typeFromMp4Suffix =
+            mixxx::SoundSource::getTypeFromFile(QFileInfo(mp4FilePath));
+    EXPECT_EQ(typeFromM4aSuffix, typeFromMp4Suffix);
+
+    // Streaming downloads often use a generic ISO BMFF ftyp (isom/mp42)
+    // instead of Apple's "M4A " brand. Qt then reports video/mp4 for a
+    // .m4a file. Mixxx should still accept that without treating it as a
+    // mismatched suffix.
+    QFile srcFile(m4aFilePath);
+    ASSERT_TRUE(srcFile.open(QIODevice::ReadOnly));
+    QByteArray bytes = srcFile.readAll();
+    srcFile.close();
+    const int ftypOffset = bytes.indexOf("ftyp");
+    ASSERT_GE(ftypOffset, 0);
+    bytes.replace(ftypOffset + 4, 4, "isom");
+    const QString isomM4aPath = tempDir.filePath(QStringLiteral("generic-isom.m4a"));
+    QFile destFile(isomM4aPath);
+    ASSERT_TRUE(destFile.open(QIODevice::WriteOnly));
+    ASSERT_EQ(destFile.write(bytes), bytes.size());
+    destFile.close();
+
+    const QString typeFromIsomM4a =
+            mixxx::SoundSource::getTypeFromFile(QFileInfo(isomM4aPath));
+    EXPECT_TRUE(typeFromIsomM4a == QLatin1String("m4a") ||
+            typeFromIsomM4a == QLatin1String("mp4"))
+            << qPrintable(typeFromIsomM4a);
 }
 
 TEST_F(SoundSourceProxyTest, updateTrackFromSourceFileMissing) {
