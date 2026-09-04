@@ -38,7 +38,9 @@ class BaseTrackPlayer : public BasePlayer {
         RESET_NONE,
         RESET_PITCH,
         RESET_PITCH_AND_SPEED,
-        RESET_SPEED
+        RESET_SPEED,
+        RESET_ULTRASPEED,
+        RESET_PITCH_AND_ULTRASPEED
     };
     Q_ENUM(TrackLoadReset);
 
