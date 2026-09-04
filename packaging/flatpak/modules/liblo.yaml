@@ -1,0 +1,14 @@
+name: liblo
+buildsystem: autotools
+sources:
+  - type: git
+    url: https://github.com/radarsat1/liblo.git
+    tag: 0.32
+    x-checker-data:
+      type: anitya
+      project-id: 2724
+      stable-only: true
+      tag-template: $version
+cleanup:
+  - /include
+  - /lib/pkgconfig
