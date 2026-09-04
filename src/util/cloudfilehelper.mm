@@ -4,15 +4,35 @@
 
 #import <Foundation/Foundation.h>
 
+#include <QCoreApplication>
+#include <QMetaObject>
+#include <QThreadPool>
+
 #include "util/logger.h"
 
 namespace {
 mixxx::Logger kLogger("CloudFileHelper");
 
 NSURL* toNSURL(const QUrl& url) {
-    if (url.isLocalFile()) {
-        return [NSURL fileURLWithPath:url.toLocalFile().toNSString()];
+    if (url.isEmpty()) {
+        return nil;
     }
+    QString localPath = url.toLocalFile();
+    if (localPath.isEmpty()) {
+        const QString str = url.toString();
+        if (str.startsWith(QLatin1String("file://"))) {
+            localPath = str.mid(7);
+        } else if (str.startsWith(QLatin1Char('/'))) {
+            localPath = str;
+        } else if (url.scheme().isEmpty()) {
+            localPath = url.path().isEmpty() ? str : url.path();
+        }
+    }
+
+    if (!localPath.isEmpty()) {
+        return [NSURL fileURLWithPath:localPath.toNSString()];
+    }
+
     return [NSURL URLWithString:url.toString().toNSString()];
 }
 } // namespace
@@ -23,7 +43,7 @@ namespace mac {
 bool CloudFileHelper::isCloudFile(const QUrl& url) {
     @autoreleasepool {
         NSURL* nsUrl = toNSURL(url);
-        if (!nsUrl) {
+        if (!nsUrl || !nsUrl.scheme) {
             return false;
         }
 
@@ -43,7 +63,7 @@ bool CloudFileHelper::isCloudFile(const QUrl& url) {
 CloudFileHelper::DownloadStatus CloudFileHelper::getDownloadStatus(const QUrl& url) {
     @autoreleasepool {
         NSURL* nsUrl = toNSURL(url);
-        if (!nsUrl) {
+        if (!nsUrl || !nsUrl.scheme) {
             return DownloadStatus::NotUbiquitous;
         }
 
@@ -79,7 +99,7 @@ CloudFileHelper::DownloadStatus CloudFileHelper::getDownloadStatus(const QUrl& u
 bool CloudFileHelper::startDownloading(const QUrl& url, QString* pErrorMessage) {
     @autoreleasepool {
         NSURL* nsUrl = toNSURL(url);
-        if (!nsUrl) {
+        if (!nsUrl || !nsUrl.scheme) {
             if (pErrorMessage) {
                 *pErrorMessage = QStringLiteral("Invalid URL");
             }
@@ -98,7 +118,7 @@ bool CloudFileHelper::startDownloading(const QUrl& url, QString* pErrorMessage) 
             return false;
         }
 
-        kLogger.info() << "Triggered in-place download for cloud item:" << url.toLocalFile();
+        kLogger.debug() << "Triggered in-place download for cloud item:" << url.toLocalFile();
         return true;
     }
 }
@@ -106,7 +126,7 @@ bool CloudFileHelper::startDownloading(const QUrl& url, QString* pErrorMessage) 
 bool CloudFileHelper::ensureHydratedSync(const QUrl& url, QString* pErrorMessage) {
     @autoreleasepool {
         NSURL* nsUrl = toNSURL(url);
-        if (!nsUrl) {
+        if (!nsUrl || !nsUrl.scheme) {
             if (pErrorMessage) {
                 *pErrorMessage = QStringLiteral("Invalid file URL");
             }
@@ -116,6 +136,17 @@ bool CloudFileHelper::ensureHydratedSync(const QUrl& url, QString* pErrorMessage
         if (!isCloudFile(url)) {
             return true;
         }
+
+        // Safety guard: Never block the Main GUI thread!
+        if ([NSThread isMainThread]) {
+            return startDownloading(url, pErrorMessage);
+        }
+
+        kLogger.debug() << "Coordinating in-place hydration for:"
+                        << (nsUrl.path ? nsUrl.path.UTF8String : url.toLocalFile().toUtf8().constData());
+
+        // Ensure background downloading daemon is active for this item
+        [[NSFileManager defaultManager] startDownloadingUbiquitousItemAtURL:nsUrl error:nil];
 
         NSFileCoordinator* coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
         NSError* coordError = nil;
@@ -139,7 +170,8 @@ bool CloudFileHelper::ensureHydratedSync(const QUrl& url, QString* pErrorMessage
             return false;
         }
 
-        kLogger.info() << "File successfully hydrated in-place at canonical path:" << url.toLocalFile();
+        kLogger.debug() << "File successfully hydrated in-place at canonical path:"
+                        << (nsUrl.path ? nsUrl.path.UTF8String : url.toLocalFile().toUtf8().constData());
         return true;
     }
 }
@@ -147,7 +179,9 @@ bool CloudFileHelper::ensureHydratedSync(const QUrl& url, QString* pErrorMessage
 void CloudFileHelper::ensureHydratedAsync(
         const QList<QUrl>& urls,
         HydrationCallback completionCallback) {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    kLogger.debug() << "Asynchronously hydrating" << urls.size() << "URL(s)...";
+
+    QThreadPool::globalInstance()->start([urls, cb = std::move(completionCallback)]() {
         QList<QUrl> readyUrls;
         QStringList errors;
 
@@ -156,15 +190,26 @@ void CloudFileHelper::ensureHydratedAsync(
             if (ensureHydratedSync(url, &errorMsg)) {
                 readyUrls.append(url);
             } else {
-                errors.append(QStringLiteral("%1: %2").arg(url.toLocalFile(), errorMsg));
+                QString localPath = url.toLocalFile();
+                if (localPath.isEmpty()) {
+                    localPath = url.toString();
+                }
+                errors.append(QStringLiteral("%1: %2").arg(localPath, errorMsg));
             }
         }
 
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (completionCallback) {
-                completionCallback(readyUrls, errors);
-            }
-        });
+        QMetaObject::invokeMethod(
+                qApp,
+                [cb = std::move(cb),
+                 readyUrls = std::move(readyUrls),
+                 errors = std::move(errors)]() {
+                    kLogger.debug() << "Hydration completed. Ready:" << readyUrls.size()
+                                    << "Errors:" << errors.size();
+                    if (cb) {
+                        cb(readyUrls, errors);
+                    }
+                },
+                Qt::QueuedConnection);
     });
 }
 

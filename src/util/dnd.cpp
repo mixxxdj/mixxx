@@ -40,8 +40,15 @@ bool addFileToList(
 
     // Filter out invalid URLs (eg. files that aren't supported audio
     // filetypes, etc.)
-    if (!SoundSourceProxy::isFileSupported(fileInfo)) {
-        return false;
+    if (mixxx::mac::CloudFileHelper::isCloudFile(fileInfo.toQUrl())) {
+        if (!SoundSourceProxy::isFileSuffixSupported(fileInfo.suffix())) {
+            return false;
+        }
+        mixxx::mac::CloudFileHelper::startDownloading(fileInfo.toQUrl());
+    } else {
+        if (!SoundSourceProxy::isFileSupported(fileInfo)) {
+            return false;
+        }
     }
 
     fileInfos->append(std::move(fileInfo));
@@ -309,14 +316,32 @@ void DragAndDropHelper::handleTrackDropEvent(
             pEvent->accept();
             target.emitCloneDeck(pEvent->mimeData()->text(), group);
             return;
-        } else {
-            const QList<mixxx::FileInfo> files = dropEventFiles(
-                    *pEvent->mimeData(), group, true, false);
-            if (!files.isEmpty()) {
-                pEvent->accept();
-                target.emitTrackDropped(files.at(0).location(), group);
-                return;
-            }
+        } else if (pEvent->mimeData()->hasUrls()) {
+            pEvent->accept();
+            const QList<QUrl> urls = pEvent->mimeData()->urls();
+            QPointer<QWidget> pSafeTarget = dynamic_cast<QWidget*>(&target);
+            mixxx::mac::CloudFileHelper::ensureHydratedAsync(
+                    urls,
+                    [pSafeTarget, group](
+                            const QList<QUrl>& readyUrls,
+                            const QStringList& /*errors*/) {
+                        if (!pSafeTarget) {
+                            return;
+                        }
+                        auto* pDropTarget = dynamic_cast<TrackDropTarget*>(pSafeTarget.data());
+                        if (!pDropTarget) {
+                            return;
+                        }
+                        for (const QUrl& url : readyUrls) {
+                            mixxx::FileInfo fileInfo = mixxx::FileInfo::fromQUrl(url);
+                            if (fileInfo.checkFileExists() &&
+                                    SoundSourceProxy::isFileSupported(fileInfo)) {
+                                pDropTarget->emitTrackDropped(fileInfo.location(), group);
+                                break;
+                            }
+                        }
+                    });
+            return;
         }
     }
     pEvent->ignore();
