@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDir>
+#include <QLoggingCategory>
 #include <QPixmapCache>
 #include <QString>
 #include <QStringList>
@@ -34,6 +35,7 @@
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
+#include "util/pixmapcachelimit.h"
 #include "util/sandbox.h"
 #include "util/versionstore.h"
 
@@ -48,18 +50,18 @@ const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kNotifyMaxDbgTimeKey = QStringLiteral("notify_max_dbg_time");
 
-// The default initial QPixmapCache limit is 10MB.
-// But this is used for all CoverArts in all used sizes and
-// as rendering cache for all SVG icons by Qt behind the scenes.
-// Consequently coverArt cache will always have less than those
-// 10MB available to store the pixmaps.
-// Profiling at 100% HiDPI zoom on Windows, that with 20MByte,
-// the SVG rendering happens sometimes during normal operation.
-// An indicator that the QPixmapCache was too small.
-constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
+Q_LOGGING_CATEGORY(kPixmapCacheLogger, "application.pixmapcache")
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
+
+    const double applicationDevicePixelRatio = pApp->devicePixelRatio();
+    const int pixmapCacheLimitKiB = mixxx::pixmapcache::cacheLimitKiB(
+            applicationDevicePixelRatio);
+    QPixmapCache::setCacheLimit(pixmapCacheLimitKiB);
+    qCInfo(kPixmapCacheLogger) << "Configured global QPixmapCache"
+                               << "applicationDpr=" << applicationDevicePixelRatio
+                               << "cacheLimitKiB=" << pixmapCacheLimitKiB;
 
     int exitCode;
     auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
@@ -105,11 +107,6 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &mixxx::CoreServices::initializationProgressUpdate,
                 &mainWindow,
                 &MixxxMainWindow::initializationProgressUpdate);
-
-        // The size of cached pixmaps increases with the square of devicePixelRatio
-        // (this covers both, operating system scaling and Mixxx preferences scaling)
-        QPixmapCache::setCacheLimit(static_cast<int>(kPixmapCacheLimitAt100PercentZoom *
-                pow(pApp->devicePixelRatio(), 2.0f)));
 
         pCoreServices->initialize(pApp);
 

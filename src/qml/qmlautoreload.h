@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QQmlAbstractUrlInterceptor>
+#include <atomic>
 
 #include "util/autofilereloader.h"
 
@@ -16,6 +17,7 @@ class QmlAutoReload : public QObject, public QQmlAbstractUrlInterceptor {
     QUrl intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType type) override;
 
     void clear() {
+        ++m_generation;
         m_autoReloader.clear();
     }
 
@@ -24,6 +26,7 @@ class QmlAutoReload : public QObject, public QQmlAbstractUrlInterceptor {
 
   private:
     AutoFileReloader m_autoReloader;
+    std::atomic<quint64> m_generation{0};
 };
 
 } // namespace qml

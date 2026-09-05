@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QApplication>
+#include <QMetaObject>
 #include <QQmlApplicationEngine>
 #include <QString>
 #include <QTimer>
@@ -12,10 +13,11 @@
 
 class ControlProxy;
 class ControlPushButton;
+class QEvent;
 class GuiTick;
+class QQuickWindow;
 class VisualsManager;
 #if defined(Q_OS_ANDROID)
-class QQuickWindow;
 class APerformanceHintSession;
 #endif
 
@@ -46,7 +48,11 @@ class QmlApplication : public QObject {
 
   private:
     void setupSpinnyCoverControls();
+    void setupOverviewTypeControl();
     void updateSpinnyCoverControls();
+    void installRenderDiagnostics(QQuickWindow* window);
+
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
     std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
@@ -61,9 +67,11 @@ class QmlApplication : public QObject {
     std::unique_ptr<ControlPushButton> m_pShowBigSpinnyCover;
 
     QString m_mainFilePath;
+    std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
     bool m_loadSucceeded;
+    quint64 m_qmlLoadGeneration = 0;
     QmlAutoReload m_autoReload;
 
 #if defined(Q_OS_ANDROID)

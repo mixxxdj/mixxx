@@ -6,6 +6,7 @@
 
 #include "moc_qmlautoreload.cpp"
 #include "util/autofilereloader.h"
+#include "util/qmldiagnostics.h"
 
 namespace mixxx {
 
@@ -13,11 +14,20 @@ namespace qml {
 
 QmlAutoReload::QmlAutoReload()
         : m_autoReloader(RuntimeLoggingCategory(QStringLiteral("qml_auto_reload"))) {
-    // propagate inner signal outwards
-    connect(&m_autoReloader, &AutoFileReloader::fileChanged, this, &QmlAutoReload::triggered);
-};
+    connect(&m_autoReloader,
+            &AutoFileReloader::fileChanged,
+            this,
+            [this](const QString& changedFile) {
+                if (qmlRenderDiagnosticsEnabled()) {
+                    qCDebug(qmlRenderDiagnosticsCategory())
+                            << "QmlAutoReload triggered" << changedFile;
+                }
+                emit triggered();
+            });
+}
 
 QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType) {
+    const auto generation = m_generation.load();
     if (!url.isLocalFile()) {
         return url;
     }
@@ -25,7 +35,15 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
     if (!QFileInfo(filePath).isFile()) {
         return url;
     }
-    m_autoReloader.addPath(filePath);
+    QMetaObject::invokeMethod(this, [this, filePath, generation]() {
+                if (generation == m_generation.load()) {
+                    if (qmlRenderDiagnosticsEnabled()) {
+                        qCDebug(qmlRenderDiagnosticsCategory())
+                                << "QmlAutoReload watching" << filePath
+                                << "watchGeneration=" << generation;
+                    }
+                    m_autoReloader.addPath(filePath);
+                } }, Qt::AutoConnection);
     return url;
 }
 
