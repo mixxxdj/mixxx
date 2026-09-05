@@ -10,6 +10,7 @@ import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 
 ApplicationWindow {
     id: root
@@ -69,6 +70,7 @@ ApplicationWindow {
     minimumHeight: 668
     minimumWidth: 1280
     visible: true
+    visibility: Mixxx.Config.configStartInFullscreenKey ? Window.FullScreen : Window.Windowed
     width: 1792
 
     Loader {
