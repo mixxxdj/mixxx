@@ -197,7 +197,7 @@ jobs:
           # Ubuntu 22.04 (glibc 2.35) is the lowest viable glibc baseline: the
           # AppImage must run on as many distributions as possible. Qt 6.11
           # requires glibc >= 2.34, and the buildenv itself is built on 22.04.
-          # CMake >= 4.2 is provided by tools/appimage_buildenv.sh.
+          # CMake >= 4.2 is provided by the "[AppImage] Set up cmake" step below.
           - name: AppImage Linux x86_64
             os: ubuntu-22.04
             cmake_args: >-

@@ -91,7 +91,6 @@ case "$1" in
         export BUILDENV_NAME
         export BUILDENV_BASEPATH
         export MIXXX_VCPKG_ROOT
-        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
         export CMAKE_PREFIX_PATH="${BUILDENV_PATH}/installed/${VCPKG_TARGET_TRIPLET}"
 
         # System packages required for the build: build tools plus X11/Mesa/GL
