@@ -17,6 +17,7 @@ Item {
     property string pressedBackgroundSuffix: ""
     property string pressedIconSuffix: ""
     property color activeColor: "transparent"
+    property color pressedColor: "transparent"
     property color inactiveColor: LateNightTheme.deckButtonInactiveColor
     property bool inactiveFillEnabled: true
     property bool pressedActivatesFill: false
@@ -65,11 +66,20 @@ Item {
         return iconSource;
     }
     readonly property bool fillActive: root.activeState || (root.pressedState && root.pressedActivatesFill)
-    readonly property color fillColor: root.fillActive && root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent"
-            ? root.activeColor
-            : root.inactiveFillEnabled
-                ? root.inactiveColor
-                : "transparent"
+    readonly property color fillColor: {
+        if (root.pressedState && root.pressedActivatesFill) {
+            if (root.pressedColor.toString() !== "#00000000" && root.pressedColor.toString() !== "transparent") {
+                return root.pressedColor;
+            }
+            if (root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent") {
+                return root.activeColor;
+            }
+        }
+        if (root.activeState && root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent") {
+            return root.activeColor;
+        }
+        return root.inactiveFillEnabled ? root.inactiveColor : "transparent";
+    }
     readonly property real iconAvailableWidth: Math.max(0, width - iconLeftPadding - iconRightPadding)
     readonly property real iconAvailableHeight: Math.max(0, height - iconTopPadding - iconBottomPadding)
 

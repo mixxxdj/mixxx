@@ -1,5 +1,3 @@
-pragma ComponentBehavior: Bound
-
 import QtQuick
 import Mixxx 1.0 as Mixxx
 import "../LateNightTheme"
@@ -8,7 +6,7 @@ Item {
     id: root
 
     required property string group
-    required property Mixxx.Track track
+    required property var track
     required property string text
     required property string displayProperty
     property string editProperty: displayProperty
@@ -25,7 +23,6 @@ Item {
 
     property bool selected: false
     property bool editing: false
-    readonly property bool highlighted: root.selected || mouseArea.containsMouse || root.editing
 
     implicitWidth: textLabel.implicitWidth + horizontalPadding * 2
     implicitHeight: textLabel.implicitHeight
@@ -129,10 +126,10 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: root.highlighted ? LateNightTheme.trackPropertyHighlightColor : "transparent"
+        color: root.selected || mouseArea.containsMouse || root.editing ? "#151515" : "transparent"
         border.width: root.editing ? 1 : 0
         border.color: LateNightTheme.secondaryWaveformSignalColor
-        visible: root.highlighted
+        visible: root.selected || mouseArea.containsMouse || root.editing
     }
 
     Text {
@@ -159,8 +156,8 @@ Item {
         font.family: "Open Sans"
         font.pixelSize: root.pixelSize
         color: root.textColor
-        selectedTextColor: LateNightTheme.trackPropertySelectedTextColor
-        selectionColor: LateNightTheme.trackPropertySelectionColor
+        selectedTextColor: "#111111"
+        selectionColor: "#d9d9d9"
         horizontalAlignment: root.horizontalAlignment
         verticalAlignment: TextInput.AlignVCenter
         selectByMouse: true

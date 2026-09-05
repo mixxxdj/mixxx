@@ -27,7 +27,7 @@ Item {
         key: "show_coverart"
     }
 
-    readonly property bool showSpinny: showSpinniesProxy.value > 0 || showCoverArtProxy.value <= 0
+    readonly property bool showSpinny: showSpinniesProxy.value > 0
     readonly property bool showCover: !showSpinny && showCoverArtProxy.value > 0
 
     // Spinny Platter Mode
