@@ -59,10 +59,8 @@ Item {
         y: 27
         z: 1
 
-        MouseArea {
-            anchors.fill: parent
-
-            onClicked: eqKillButton.toggle()
+        TapHandler {
+            onTapped: eqKillButton.toggle()
         }
     }
 }

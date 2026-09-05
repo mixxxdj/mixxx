@@ -1,13 +1,16 @@
 import "../../qml" as Skin
 import "LateNightTheme"
 import "Deck" as LateNightDeck
+import "Effects" as LateNightEffects
 import "Mixer" as LateNightMixer
+import "Samplers" as LateNightSamplers
 import "Toolbar" as LateNightToolbar
 import "Waveforms" as LateNightWaveforms
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 
 ApplicationWindow {
     id: root
@@ -26,13 +29,60 @@ ApplicationWindow {
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
 
+    function focusLegacyLibrarySearch() {
+        Qt.callLater(function() {
+            if (library.item) {
+                library.item.focusSearch();
+            }
+        });
+    }
+
     color: LateNightTheme.backgroundColor
     height: 1008
+    menuBar: nativeApplicationMenuLoader.item
     minimumHeight: 668
     minimumWidth: 1280
     visible: true
+    visibility: Mixxx.Config.configStartInFullscreenKey ? Window.FullScreen : Window.Windowed
     width: 1792
 
+    Loader {
+        id: nativeApplicationMenuLoader
+
+        active: Qt.platform.os === "osx"
+
+        sourceComponent: Skin.MainMenuBar {
+            actions: applicationMenuActions
+        }
+    }
+    Skin.ApplicationMenuCommands {
+        id: applicationMenuCommands
+
+        applicationWindow: root
+
+        onShowDeveloperToolsRequested: {
+            developerToolsWindow.show();
+            developerToolsWindow.raise();
+            developerToolsWindow.requestActivate();
+        }
+    }
+    Skin.ApplicationMenuActions {
+        id: applicationMenuActions
+
+        applicationWindow: root
+        commands: applicationMenuCommands
+        numberOfDecks: root.show4decks ? root.numDecks : 2
+
+        onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
+    }
+    Skin.DeveloperToolsWindow {
+        id: developerToolsWindow
+
+        height: 480
+        width: 640
+    }
+    Skin.LibraryScanSummaryDialog {
+    }
     Mixxx.ControlProxy {
         group: "[App]"
         key: "num_decks"
@@ -126,8 +176,20 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        defaultValue: 1.0
+        group: "[Skin]"
+        key: "show_effectrack"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
         group: "[Skin]"
         key: "show_4effectunits"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: 0.0
+        group: "[Skin]"
+        key: "show_superknobs"
         persist: true
     }
     Mixxx.SkinControlCreator {
@@ -165,13 +227,107 @@ ApplicationWindow {
         persist: true
     }
     Mixxx.SkinControlCreator {
+        // Create this before child controls are constructed so the toolbar
+        // toggle and sampler FX assignment proxies can bind reliably.
+        defaultValue: 0.0
         group: "[Skin]"
-        key: "show_superknobs"
+        key: "show_sampler_fx"
         persist: true
     }
     Mixxx.SkinControlCreator {
+        defaultValue: 1.0
         group: "[Skin]"
-        key: "show_sampler_fx"
+        key: "sampler_rows"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_4samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: 1.0
+        group: "[Skin]"
+        key: "show_8samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_16samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_32samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_48samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "show_64samplers"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_1-4"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_1-8"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_9-16"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_17-24"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_25-32"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_33-40"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_41-48"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_49-56"
+        persist: true
+    }
+    Mixxx.SkinControlCreator {
+        defaultValue: -1.0
+        group: "[Skin]"
+        key: "expand_samplers_57-64"
         persist: true
     }
     Column {
@@ -189,8 +345,11 @@ ApplicationWindow {
         LateNightToolbar.Toolbar {
             id: toolbar
 
+            applicationMenuActions: applicationMenuActions
             show4decksAvailable: root.height > 515
             width: parent.width
+
+            onFocusLibrarySearchRequested: root.focusLegacyLibrarySearch()
         }
         SplitView {
             id: splitView
@@ -247,8 +406,9 @@ ApplicationWindow {
             Item {
                 id: deckPane
 
+                readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
                 readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
-                readonly property real requiredPaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
+                readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height
                 readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? root.minimizedDeckHeight : 0) : root.fullDeckHeight
 
                 SplitView.fillHeight: library.active
@@ -520,19 +680,72 @@ ApplicationWindow {
                 //         fadeTarget: samplers
                 //     }
                 // }
-                // Skin.EffectRow {
-                //     id: effects
-                //     visible: root.showEffects
-                //     width: parent.width
+                Item {
+                    id: effectsSection
 
-                //     Skin.FadeBehavior on visible {
-                //         fadeTarget: effects
-                //     }
-                // }
+                    clip: true
+                    height: root.showEffects && !root.maximizeLibrary ? effectsRack.implicitHeight : 0
+                    opacity: root.showEffects && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: deckPane.basePaneHeight
+                    z: 2
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    LateNightEffects.EffectsRack {
+                        id: effectsRack
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+                }
+                Item {
+                    id: samplersSection
+
+                    clip: true
+                    height: root.showSamplers && !root.maximizeLibrary ? samplers.implicitHeight : 0
+                    opacity: root.showSamplers && !root.maximizeLibrary ? 1 : 0
+                    visible: height > 0
+                    width: parent.width
+                    y: effectsSection.y + effectsSection.height
+                    z: 2
+
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    LateNightSamplers.SamplersRack {
+                        id: samplers
+
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+                }
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - deckPane.requiredPaneHeight >= 400
+                    active: true
                     width: parent.width
 
                     sourceComponent: Component {
@@ -564,20 +777,12 @@ ApplicationWindow {
                                 anchors.top: deck1.bottom
                                 target: library
                             }
-                        },
-                        State {
-                            when: !root.maximizeLibrary && root.height - deckPane.requiredPaneHeight < 400
-
-                            PropertyChanges {
-                                target: library
-                                visible: false
-                            }
                         }
                     ]
 
                     anchors {
                         bottom: parent.bottom
-                        top: root.show4decks ? deck4.bottom : deck1.bottom
+                        top: samplersSection.bottom
                     }
                 }
             }

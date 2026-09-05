@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -7,14 +9,12 @@ Item {
     id: root
 
     required property string group
-    property real vinylStatusAssetScale: 2
-    readonly property real effectiveVinylStatusAssetScale: Number.isFinite(root.vinylStatusAssetScale) && root.vinylStatusAssetScale > 0 ? root.vinylStatusAssetScale : 2
 
     implicitWidth: 158
     implicitHeight: 20
 
     Mixxx.ControlProxy {
-        id: vinylEnabledProxy
+        id: vinylEnabledControl
         group: root.group
         key: "vinylcontrol_enabled"
     }
@@ -25,49 +25,47 @@ Item {
         key: "vinylcontrol_status"
     }
 
+    Mixxx.ControlProxy {
+        id: passthroughControl
+        group: root.group
+        key: "passthrough"
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
 
         // Vinyl enable/disable toggle with status display.
-        // Left-click toggles vinylcontrol_enabled.
-        // Display shows vinylcontrol_status (0=off, 1=ok, 2=speed, 3=both ok).
+        // The click requests vinylcontrol_enabled; the fill displays vinylcontrol_status.
         Item {
             Layout.preferredWidth: 40
             Layout.preferredHeight: 20
 
-            Image {
+            LateNightIconButton {
                 anchors.fill: parent
-                source: LateNightTheme.lateNightTopRegionButton("medium")
-                fillMode: Image.Stretch
-                opacity: vinylEnabledProxy.value > 0 ? 0.95 : 0.72
-            }
-
-            Image {
-                anchors.centerIn: parent
-                width: Math.min(parent.width, sourceSize.width > 0 ? sourceSize.width / root.effectiveVinylStatusAssetScale : parent.width)
-                height: Math.min(parent.height, sourceSize.height > 0 ? sourceSize.height / root.effectiveVinylStatusAssetScale : parent.height)
-                source: {
-                    var status = Math.round(vinylStatusProxy.value);
-                    switch (status) {
-                    case 1:
-                        return LateNightTheme.assetDeckVinylControl1;
-                    case 2:
-                        return LateNightTheme.assetDeckVinylControl2;
-                    case 3:
-                        return LateNightTheme.assetDeckVinylControl3;
-                    default:
-                        return LateNightTheme.assetDeckVinylControl0;
-                    }
-                }
-                fillMode: Image.PreserveAspectFit
-                opacity: vinylEnabledProxy.value > 0 ? 0.95 : 0.72
+                backgroundSource: LateNightTheme.lateNightButton("btn_embedded_library.svg")
+                activeBackgroundSuffix: "active"
+                activeState: vinylStatusProxy.value > 0
+                inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
+                activeColor: LateNightTheme.vinylStatusColor(vinylStatusProxy.value)
+                label: "VINYL"
+                labelPixelSize: 11
+                labelColor: activeState ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.textColorMuted
+                contentOpacity: activeState ? 0.95 : 0.72
+                useBorderImageBackground: true
+                backgroundBorderTop: 2
+                backgroundBorderBottom: 2
+                backgroundBorderLeft: 2
+                backgroundBorderRight: 2
             }
 
             MouseArea {
                 anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                preventStealing: true
+
                 onClicked: {
-                    vinylEnabledProxy.value = !vinylEnabledProxy.value;
+                    vinylEnabledControl.parameter = vinylEnabledControl.value > 0 ? 0 : 1;
                 }
             }
         }
@@ -76,8 +74,18 @@ Item {
         LateNightCycleButton {
             Layout.preferredWidth: 46
             Layout.preferredHeight: 20
-            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
+            backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
+            inactiveLabelColor: LateNightTheme.textColorMuted
+            activeLabelColor: LateNightTheme.textColorMuted
+            activeOpacity: 0.72
+            inactiveOpacity: 0.72
+            labelPixelSize: 11
+            useBorderImageBackground: true
+            backgroundBorderTop: 2
+            backgroundBorderBottom: 2
+            backgroundBorderLeft: 1
+            backgroundBorderRight: 2
             group: root.group
             key: "vinylcontrol_mode"
             numStates: 3
@@ -88,8 +96,21 @@ Item {
         LateNightCycleButton {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 20
-            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
+            backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
+            activeBackgroundSuffix: "active"
+            activeWhenNonzero: true
+            activeColor: LateNightTheme.vinylCueingActiveColor
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
+            inactiveLabelColor: LateNightTheme.textColorMuted
+            activeLabelColor: LateNightTheme.deckActiveButtonTextColor
+            activeOpacity: 0.95
+            inactiveOpacity: 0.72
+            labelPixelSize: 11
+            useBorderImageBackground: true
+            backgroundBorderTop: 2
+            backgroundBorderBottom: 2
+            backgroundBorderLeft: 1
+            backgroundBorderRight: 2
             group: root.group
             key: "vinylcontrol_cueing"
             numStates: 3
@@ -97,19 +118,65 @@ Item {
         }
 
         // Passthrough toggle
-        LateNightControlButton {
+        Item {
             Layout.preferredWidth: 35
             Layout.preferredHeight: 20
-            backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
-            label: "PASS"
-            labelPixelSize: 9
-            inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-            group: root.group
-            key: "passthrough"
-            toggleable: true
-            activeOpacity: 0.95
-            inactiveOpacity: 0.72
-            activeOverlayColor: LateNightTheme.accentColor
+
+            property bool rejectedPress: false
+
+            Timer {
+                id: passthroughPowerWindowTimer
+                interval: 300
+                repeat: false
+            }
+
+            LateNightIconButton {
+                anchors.fill: parent
+                backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
+                activeBackgroundSuffix: "active"
+                activeState: passthroughControl.value > 0
+                inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
+                activeColor: LateNightTheme.passthroughActiveColor
+                label: "PASS"
+                labelPixelSize: 11
+                labelColor: activeState ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.textColorMuted
+                contentOpacity: activeState ? 0.95 : 0.72
+                useBorderImageBackground: true
+                backgroundBorderTop: 2
+                backgroundBorderBottom: 2
+                backgroundBorderLeft: 1
+                backgroundBorderRight: 2
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.LeftButton
+                preventStealing: true
+
+                onPressed: {
+                    const targetValue = passthroughControl.value > 0 ? 0 : 1;
+                    passthroughControl.parameter = targetValue;
+                    parent.rejectedPress = targetValue > 0 && passthroughControl.value <= 0;
+                    passthroughPowerWindowTimer.restart();
+                }
+
+                onReleased: {
+                    if (parent.rejectedPress) {
+                        parent.rejectedPress = false;
+                        passthroughPowerWindowTimer.stop();
+                        return;
+                    }
+                    if (!passthroughPowerWindowTimer.running) {
+                        passthroughControl.parameter = passthroughControl.value > 0 ? 0 : 1;
+                    }
+                    passthroughPowerWindowTimer.stop();
+                }
+
+                onCanceled: {
+                    parent.rejectedPress = false;
+                    passthroughPowerWindowTimer.stop();
+                }
+            }
         }
     }
 }

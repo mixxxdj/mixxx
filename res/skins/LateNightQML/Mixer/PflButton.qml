@@ -6,6 +6,7 @@ Item {
     id: root
 
     required property string group
+    property string key: "pfl"
 
     implicitHeight: 26
     implicitWidth: 26
@@ -27,15 +28,13 @@ Item {
         source: pflControl.value > 0 ? LateNightTheme.assetMixerPflActiveIcon : LateNightTheme.assetMixerPflIcon
         width: 26
     }
-    MouseArea {
-        anchors.fill: parent
-
-        onClicked: pflControl.value = pflControl.value > 0 ? 0 : 1
+    TapHandler {
+        onTapped: pflControl.value = pflControl.value > 0 ? 0 : 1
     }
     Mixxx.ControlProxy {
         id: pflControl
 
         group: root.group
-        key: "pfl"
+        key: root.key
     }
 }

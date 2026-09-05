@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import "../LateNightTheme"
 
 Item {
@@ -20,6 +21,8 @@ Item {
     property bool inactiveFillEnabled: true
     property bool pressedActivatesFill: false
     property int fillMargin: 2
+    property real fillRadius: 1
+    property bool solidFillEnabled: false
     property bool useBorderImageBackground: false
     property int backgroundBorderTop: 0
     property int backgroundBorderBottom: 0
@@ -40,6 +43,7 @@ Item {
     property int iconRightPadding: 0
     property int iconTopPadding: 0
     property int iconBottomPadding: 0
+    property bool rasterizeIconAtPaintedSize: false
 
     readonly property url effectiveBackgroundSource: {
         var src = backgroundSource.toString();
@@ -77,8 +81,8 @@ Item {
     Rectangle {
         anchors.fill: parent
         anchors.margins: root.fillMargin
-        radius: 1
-        visible: root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
+        radius: root.fillRadius
+        visible: !root.solidFillEnabled && root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
 
         gradient: Gradient {
             GradientStop {
@@ -96,6 +100,14 @@ Item {
                 color: Qt.darker(root.fillColor, 1.25)
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: root.fillMargin
+        color: root.fillColor
+        radius: root.fillRadius
+        visible: root.solidFillEnabled && root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
     }
 
     Image {
@@ -125,6 +137,9 @@ Item {
         width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / root.effectiveIconAssetScale : root.iconAvailableWidth)
         height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / root.effectiveIconAssetScale : root.iconAvailableHeight)
         source: root.effectiveIconSource
+        sourceSize: root.rasterizeIconAtPaintedSize
+                ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+                : Qt.size(-1, -1)
         fillMode: root.stretchIcon ? Image.Stretch : Image.PreserveAspectFit
         opacity: root.contentOpacity
         visible: root.effectiveIconSource.toString().length > 0
@@ -162,6 +177,9 @@ Item {
             width: root.stretchIcon ? root.iconAvailableWidth : Math.min(root.iconAvailableWidth, sourceSize.width > 0 ? sourceSize.width / root.effectiveIconAssetScale : root.iconAvailableWidth)
             height: root.stretchIcon ? root.iconAvailableHeight : Math.min(root.iconAvailableHeight, sourceSize.height > 0 ? sourceSize.height / root.effectiveIconAssetScale : root.iconAvailableHeight)
             source: root.latchOverlayIconSource
+            sourceSize: root.rasterizeIconAtPaintedSize
+                    ? Qt.size(Math.ceil(width * Screen.devicePixelRatio), Math.ceil(height * Screen.devicePixelRatio))
+                    : Qt.size(-1, -1)
             fillMode: root.stretchIcon ? Image.Stretch : Image.PreserveAspectFit
             opacity: root.contentOpacity
             visible: root.latchOverlayIconSource.toString().length > 0

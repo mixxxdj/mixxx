@@ -130,10 +130,8 @@ Item {
                 font.pixelSize: 12
                 text: "SPLIT"
             }
-            MouseArea {
-                anchors.fill: parent
-
-                onClicked: splitControl.value = splitControl.value > 0 ? 0 : 1
+            TapHandler {
+                onTapped: splitControl.value = splitControl.value > 0 ? 0 : 1
             }
         }
         FxAssignButtons {

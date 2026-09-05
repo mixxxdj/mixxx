@@ -16,7 +16,7 @@ Skin.ControlKnob {
     property string indicatorColor: "orange"
     property string indicatorKind: "regular"
 
-    angle: 135
+    angle: LateNightTheme.isClassic ? 135 : 130
     arc: false
     arcStart: displayArcStart
     color: displayArcColor

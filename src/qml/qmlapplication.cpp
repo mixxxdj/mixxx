@@ -1,11 +1,8 @@
 #include "qmlapplication.h"
 
-#include <QAction>
 #include <QCoreApplication>
 #include <QEvent>
-#include <QKeySequence>
-#include <QMenu>
-#include <QMenuBar>
+#include <QLocale>
 #include <QMessageBox>
 #include <QMetaEnum>
 #include <QQmlContext>
@@ -19,10 +16,12 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
+#include "qml/qmlapplicationproxy.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
 #include "soundio/soundmanager.h"
@@ -86,6 +85,7 @@ QmlApplication::QmlApplication(
     QQuickStyle::setStyle("Basic");
 
     m_pCoreServices->initialize(app);
+    app->installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");
@@ -196,16 +196,10 @@ QmlApplication::QmlApplication(
     QmlDlgPreferencesProxy::s_pInstance =
             std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
     QmlRecordingProxy::s_pRecordingManager = m_pCoreServices->getRecordingManager();
-
-    m_pMenuBar = std::make_unique<QMenuBar>();
-    QMenu* pApplicationMenu = m_pMenuBar->addMenu(QCoreApplication::applicationName());
-    QAction* pPreferencesAction = pApplicationMenu->addAction(tr("&Preferences"));
-    pPreferencesAction->setMenuRole(QAction::PreferencesRole);
-    pPreferencesAction->setShortcut(QKeySequence::Preferences);
-    connect(pPreferencesAction, &QAction::triggered, this, [pDlgPreferences]() {
-        pDlgPreferences->show();
-        pDlgPreferences->raise();
-        pDlgPreferences->activateWindow();
+    QmlApplicationProxy::registerReloadCallback([this]() {
+        QTimer::singleShot(0, this, [this]() {
+            loadQml(m_mainFilePath);
+        });
     });
 
     const QStringList visualGroups =
@@ -288,6 +282,7 @@ void QmlApplication::slotFrameSwapped() {
 }
 
 QmlApplication::~QmlApplication() {
+    QmlApplicationProxy::registerReloadCallback({});
     if (qmlRenderDiagnosticsEnabled()) {
         qCInfo(qmlRenderDiagnosticsCategory())
                 << "QmlApplication destroying"
@@ -299,7 +294,7 @@ QmlApplication::~QmlApplication() {
     m_guiTickTimer.stop();
     disconnect(&m_autoReload, nullptr, this, nullptr);
     m_pAppEngine.reset();
-    m_pMenuBar.reset();
+    // Delete all the QML singletons in order to prevent leak detection in CoreService
     QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
     m_visualsManager.reset();
@@ -409,6 +404,7 @@ bool QmlApplication::loadQml(const QString& path) {
     // QQmlApplicationEngine::load creates a new window but also leaves the old one,
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
+    m_pAppEngine->setUiLanguage(QLocale().name());
 
     if (diagnosticsEnabled) {
         m_pAppEngine->rootContext()->setContextProperty(

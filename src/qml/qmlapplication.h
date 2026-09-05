@@ -15,7 +15,6 @@ class ControlProxy;
 class ControlPushButton;
 class QEvent;
 class GuiTick;
-class QMenuBar;
 class QQuickWindow;
 class VisualsManager;
 #if defined(Q_OS_ANDROID)
@@ -71,7 +70,6 @@ class QmlApplication : public QObject {
     std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
-    std::unique_ptr<QMenuBar> m_pMenuBar;
     bool m_loadSucceeded;
     quint64 m_qmlLoadGeneration = 0;
     QmlAutoReload m_autoReload;
