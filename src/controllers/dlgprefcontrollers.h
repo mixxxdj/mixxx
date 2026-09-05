@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
+#include "controllers/controller.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
@@ -41,16 +43,21 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
 
   private slots:
     void rescanControllers();
-#ifdef __PORTMIDI__
+    void slotSetupControllerWidget(Controller* pController);
+    void slotDestroyControllerWidget(Controller* pController);
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
+    void slotMidiAPIChanged(const QString& api);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     void slotMidiThroughChanged(Qt::CheckState state);
 #else
     void slotMidiThroughChanged(bool checked);
 #endif
 #endif
-    void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
+    void slotHighlightDevice(Controller* pController, bool enabled);
 
   private:
+    void destroyControllerWidget(Controller* pController);
+    void setupControllerWidget(Controller* pController);
     void destroyControllerWidgets();
     void setupControllerWidgets();
     void openLocalFile(const QString& file);
@@ -59,8 +66,9 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     UserSettingsPointer m_pConfig;
     std::shared_ptr<ControllerManager> m_pControllerManager;
     QTreeWidgetItem* m_pControllersRootItem;
-    QList<DlgPrefController*> m_controllerPages;
-    QList<QTreeWidgetItem*> m_controllerTreeItems;
+    std::unordered_map<Controller*,
+            std::pair<DlgPrefController*, QTreeWidgetItem*>>
+            m_controllerMap;
 
     const parented_ptr<ControlProxy> m_pNumDecks;
     const parented_ptr<ControlProxy> m_pNumSamplers;

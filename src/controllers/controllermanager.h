@@ -45,6 +45,10 @@ class ControllerManager : public QObject {
 
     static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
+    void addDevice(Controller* pController);
+    void removeDevice(Controller* pController);
+    void setUpDevice(Controller& pController);
+
   signals:
     void initialized();
     void devicesChanged();
@@ -52,6 +56,8 @@ class ControllerManager : public QObject {
     void requestShutdown();
     void requestInitialize();
     void mappingApplied(bool applied);
+    void deviceAdded(Controller* pController);
+    void deviceRemoved(Controller* pController);
 
   public slots:
     void slotApplyMapping(Controller* pController,
