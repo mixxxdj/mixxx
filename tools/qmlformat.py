@@ -47,7 +47,7 @@ def find_build_dir():
         return path if (path / "CMakeCache.txt").is_file() else None
 
     candidates = []
-    for pattern in ("build", "build*", "cmake_build*", "cmake-build*"):
+    for pattern in ("build*", "cmake_build*", "cmake-build*"):
         for path in REPO_ROOT.glob(pattern):
             cache = path / "CMakeCache.txt"
             if cache.is_file():
