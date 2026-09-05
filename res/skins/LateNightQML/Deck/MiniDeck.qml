@@ -139,6 +139,8 @@ Controls.Panel {
                 colorMid: root.overviewType === 0 ? root.waveformColor : "#00ff00"
                 group: root.group
                 renderer: root.overviewType === 0 ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.WaveformOverview.Renderer.RGB
+                analyzerStatusColor: root.waveformColor
+                showAnalyzerStatus: true
             }
         }
         SpinnyCoverSlot {

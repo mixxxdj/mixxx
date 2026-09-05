@@ -7,9 +7,7 @@
 #include <QQuickWindow>
 #include <QSGNode>
 #include <QSGSimpleRectNode>
-#include <QTimer>
 #include <chrono>
-#include <memory>
 
 #include "qml/qmlplayerproxy.h"
 #include "qml/qmlwaveformrenderer.h"
@@ -21,7 +19,6 @@
 #include "waveform/widgets/waveformwidgettype.h"
 
 class WaveformRendererAbstract;
-class ControlProxy;
 
 namespace allshader {
 class WaveformWidget;
@@ -136,9 +133,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     void slotTrackLoaded(TrackPointer pLoadedTrack);
     void slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotTrackUnloaded();
-    void slotVisualPositionUpdated();
     void slotWaveformUpdated();
-    void slotWaveformProgress();
 
     void slotFrameSwapped();
     void slotWindowChanged(QQuickWindow* window);
@@ -156,16 +151,10 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     // Properties
     QPointer<QmlPlayerProxy> m_pPlayer;
-    std::unique_ptr<ControlProxy> m_pPlayControl;
-    std::unique_ptr<ControlProxy> m_pPlayPositionControl;
-    std::unique_ptr<ControlProxy> m_pScratchPositionControl;
-    std::unique_ptr<ControlProxy> m_pScratchPositionEnableControl;
     QColor m_backgroundColor{QColor(0, 0, 0, 255)};
 
     PerformanceTimer m_timer;
-    QTimer m_waveformProgressTimer;
     QmlTrackProxy* m_pTrack;
-    int m_lastWaveformCompletion{-1};
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
 
     std::chrono::milliseconds m_syncInterval;

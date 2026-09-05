@@ -1,6 +1,5 @@
 #include "qml/qmlwaveformoverview.h"
 
-#include <QMutexLocker>
 #include <algorithm>
 
 #include "moc_qmlwaveformoverview.cpp"
@@ -11,7 +10,6 @@
 namespace {
 constexpr double kDesiredChannelHeight = 255;
 constexpr int kWaveformImageHeight = 2 * static_cast<int>(kDesiredChannelHeight);
-constexpr int kWaveformProgressUpdateIntervalMs = 60;
 } // namespace
 
 namespace mixxx {
@@ -24,30 +22,15 @@ QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
           m_renderer(Renderer::RGB),
           m_colorHigh(0xFF0000),
           m_colorMid(0x00FF00),
-          m_colorLow(0x0000FF),
-          m_waveformProgressTimer() {
-    m_waveformProgressTimer.setInterval(kWaveformProgressUpdateIntervalMs);
-    connect(&m_waveformProgressTimer,
-            &QTimer::timeout,
-            this,
-            &QmlWaveformOverview::slotWaveformUpdated);
-    connect(this, &QmlWaveformOverview::rendererChanged, this, [this] {
+          m_colorLow(0x0000FF) {
+    const auto invalidate = [this] {
         invalidateWaveformCache();
-        slotWaveformUpdated();
-    });
-    connect(this, &QmlWaveformOverview::colorHighChanged, this, [this](const QColor&) {
-        invalidateWaveformCache();
-        slotWaveformUpdated();
-    });
-    connect(this, &QmlWaveformOverview::colorMidChanged, this, [this](const QColor&) {
-        invalidateWaveformCache();
-        slotWaveformUpdated();
-    });
-    connect(this, &QmlWaveformOverview::colorLowChanged, this, [this](const QColor&) {
-        invalidateWaveformCache();
-        slotWaveformUpdated();
-    });
-    connect(this, &QmlWaveformOverview::normalizedChanged, this, &QQuickItem::update);
+        update();
+    };
+    connect(this, &QmlWaveformOverview::rendererChanged, this, invalidate);
+    connect(this, &QmlWaveformOverview::colorHighChanged, this, invalidate);
+    connect(this, &QmlWaveformOverview::colorMidChanged, this, invalidate);
+    connect(this, &QmlWaveformOverview::colorLowChanged, this, invalidate);
 }
 
 QmlTrackProxy* QmlWaveformOverview::getTrack() const {
@@ -64,15 +47,7 @@ void QmlWaveformOverview::setTrack(QmlTrackProxy* pTrack) {
     }
 
     m_pTrack = pTrack;
-
-    m_waveformProgressTimer.stop();
-    {
-        const QMutexLocker locker(&m_waveformCacheMutex);
-        m_cachedWaveform.clear();
-        m_waveformImage = QImage();
-        m_actualCompletion = 0;
-        m_waveformPeak = 1.0f;
-    }
+    invalidateWaveformCache();
 
     if (m_pTrack != nullptr && pTrack->internal() != nullptr) {
         connect(pTrack->internal().get(),
@@ -95,60 +70,46 @@ void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
     m_channels = channels;
     emit channelsChanged(channels);
     invalidateWaveformCache();
-    slotWaveformUpdated();
+    update();
+}
+
+double QmlWaveformOverview::analyzerProgress() const {
+    return m_analyzerProgress;
+}
+
+void QmlWaveformOverview::setAnalyzerProgress(double analyzerProgress) {
+    if (m_analyzerProgress == analyzerProgress) {
+        return;
+    }
+    m_analyzerProgress = analyzerProgress;
+    emit analyzerProgressChanged();
+    // Analyzer progress is the legacy update source for partial overview data.
+    // The next paint only appends samples that became available since the last one.
+    update();
 }
 
 void QmlWaveformOverview::slotWaveformUpdated() {
-    if (!m_pTrack || !m_pTrack->internal()) {
-        invalidateWaveformCache();
-        m_waveformProgressTimer.stop();
-        update();
-        return;
-    }
-
-    const ConstWaveformPointer pWaveform = m_pTrack->internal()->getWaveformSummary();
-    if (!pWaveform) {
-        invalidateWaveformCache();
-        m_cachedWaveform.clear();
-        m_waveformProgressTimer.stop();
-        update();
-        return;
-    }
-
-    const QMutexLocker locker(&m_waveformCacheMutex);
-    const bool cacheReset = pWaveform != m_cachedWaveform ||
-            m_waveformImage.isNull() ||
-            m_waveformImage.width() != pWaveform->getDataSize() / 2 + 1;
-    if (cacheReset) {
-        m_cachedWaveform = pWaveform;
-        m_waveformImage = QImage(pWaveform->getDataSize() / 2 + 1,
-                kWaveformImageHeight,
-                QImage::Format_ARGB32_Premultiplied);
-        m_waveformImage.fill(Qt::transparent);
-        m_actualCompletion = 0;
-        m_waveformPeak = 1.0f;
-    }
-
-    const bool waveformChanged = drawNextWaveformPart();
-    if (pWaveform->getCompletion() < pWaveform->getDataSize()) {
-        if (!m_waveformProgressTimer.isActive()) {
-            m_waveformProgressTimer.start();
-        }
-    } else {
-        m_waveformProgressTimer.stop();
-    }
-
-    if (cacheReset || waveformChanged) {
-        update();
-    }
+    update();
 }
 
 void QmlWaveformOverview::paint(QPainter* pPainter) {
-    const QMutexLocker locker(&m_waveformCacheMutex);
-    if (!m_pTrack || m_waveformImage.isNull()) {
+    if (!m_pTrack) {
         return;
     }
-    const QRectF targetRect = boundingRect();
+    TrackPointer pTrack = m_pTrack->internal();
+    if (!pTrack) {
+        return;
+    }
+
+    ConstWaveformPointer pWaveform = pTrack->getWaveformSummary();
+    if (!pWaveform) {
+        return;
+    }
+
+    if (!drawNextWaveformPart(pWaveform) || m_waveformImage.isNull()) {
+        return;
+    }
+
     QRectF sourceRect(0, 0, m_waveformImage.width(), m_waveformImage.height());
     if (m_channels == static_cast<int>(ChannelFlag::LeftChannel)) {
         sourceRect.setHeight(kDesiredChannelHeight);
@@ -156,43 +117,31 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         sourceRect.setTop(kDesiredChannelHeight);
         sourceRect.setHeight(kDesiredChannelHeight);
     }
-    if (m_normalized && m_actualCompletion >= m_cachedWaveform->getDataSize() - 2 &&
-            m_waveformPeak > 1.0f) {
-        const int diffGain = std::clamp(
-                static_cast<int>(255.0f - m_waveformPeak - 1.0f),
-                0,
-                static_cast<int>((m_waveformImage.height() - 1) / 2));
-        sourceRect.adjust(0, diffGain, 0, -diffGain);
-    }
-    pPainter->drawImage(targetRect, m_waveformImage, sourceRect);
+    pPainter->drawImage(boundingRect(), m_waveformImage, sourceRect);
 }
 
-void QmlWaveformOverview::invalidateWaveformCache() {
-    const QMutexLocker locker(&m_waveformCacheMutex);
-    m_actualCompletion = 0;
-    m_waveformPeak = 1.0f;
-    if (!m_waveformImage.isNull()) {
-        m_waveformImage.fill(Qt::transparent);
-    }
-}
-
-bool QmlWaveformOverview::drawNextWaveformPart() {
-    if (!m_cachedWaveform || m_waveformImage.isNull()) {
-        return false;
-    }
-
-    const int dataSize = m_cachedWaveform->getDataSize();
+bool QmlWaveformOverview::drawNextWaveformPart(ConstWaveformPointer pWaveform) {
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 0) {
         return false;
     }
 
-    const int waveformCompletion = std::min(m_cachedWaveform->getCompletion(), dataSize);
-    const int completionIncrement = waveformCompletion - m_actualCompletion;
-    const double visiblePixelIncrement =
-            completionIncrement * width() / static_cast<double>(dataSize);
-    if (waveformCompletion < dataSize - 2 &&
-            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
-        return false;
+    const int imageWidth = std::max(1, dataSize / 2);
+    if (m_cachedWaveform != pWaveform || m_waveformImage.width() != imageWidth) {
+        m_cachedWaveform = pWaveform;
+        m_waveformImage = QImage(
+                imageWidth, kWaveformImageHeight, QImage::Format_ARGB32_Premultiplied);
+        m_waveformImage.fill(Qt::transparent);
+        m_actualCompletion = 0;
+    }
+
+    const int waveformCompletion = std::clamp(pWaveform->getCompletion(), 0, dataSize) & ~1;
+    if (waveformCompletion < m_actualCompletion) {
+        m_waveformImage.fill(Qt::transparent);
+        m_actualCompletion = 0;
+    }
+    if (waveformCompletion <= m_actualCompletion) {
+        return !m_waveformImage.isNull();
     }
 
     QPainter painter(&m_waveformImage);
@@ -200,20 +149,22 @@ bool QmlWaveformOverview::drawNextWaveformPart() {
     for (int currentCompletion = m_actualCompletion;
             currentCompletion < waveformCompletion;
             currentCompletion += 2) {
-        m_waveformPeak = std::max(
-                m_waveformPeak,
-                std::max(static_cast<float>(m_cachedWaveform->getAll(currentCompletion)),
-                        static_cast<float>(m_cachedWaveform->getAll(currentCompletion + 1))));
         switch (m_renderer) {
         case Renderer::Filtered:
-            drawFiltered(&painter, m_channels, m_cachedWaveform, currentCompletion);
+            drawFiltered(&painter, m_channels, pWaveform, currentCompletion);
             break;
         default:
-            drawRgb(&painter, m_channels, m_cachedWaveform, currentCompletion);
+            drawRgb(&painter, m_channels, pWaveform, currentCompletion);
         }
     }
     m_actualCompletion = waveformCompletion;
-    return completionIncrement > 0;
+    return true;
+}
+
+void QmlWaveformOverview::invalidateWaveformCache() {
+    m_cachedWaveform.clear();
+    m_waveformImage = QImage();
+    m_actualCompletion = 0;
 }
 
 void QmlWaveformOverview::drawRgb(QPainter* pPainter,
@@ -249,26 +200,33 @@ void QmlWaveformOverview::drawFiltered(QPainter* pPainter,
         int completion) const {
     const double offsetX = completion / 2.0;
 
-    const auto drawBand = [pPainter, offsetX, channels](const QColor& color,
-                                  uint8_t leftValue,
-                                  uint8_t rightValue) {
-        pPainter->setPen(color);
-        pPainter->drawLine(QPointF(offsetX,
-                                   channels.testFlag(ChannelFlag::LeftChannel)
-                                           ? -leftValue
-                                           : 0),
-                QPointF(offsetX,
-                        channels.testFlag(ChannelFlag::RightChannel) ? rightValue : 0));
-    };
-    drawBand(m_colorLow,
-            pWaveform->getLow(completion),
-            pWaveform->getLow(completion + 1));
-    drawBand(m_colorMid,
-            pWaveform->getMid(completion),
-            pWaveform->getMid(completion + 1));
-    drawBand(m_colorHigh,
-            pWaveform->getHigh(completion),
-            pWaveform->getHigh(completion + 1));
+    if (channels.testFlag(ChannelFlag::LeftChannel)) {
+        const uint8_t leftHigh = pWaveform->getHigh(completion);
+        pPainter->setPen(m_colorHigh);
+        pPainter->drawLine(QPointF(offsetX, 2 * -leftHigh), QPointF(offsetX, 0.0));
+
+        const uint8_t leftMid = pWaveform->getMid(completion);
+        pPainter->setPen(m_colorMid);
+        pPainter->drawLine(QPointF(offsetX, 1.5 * -leftMid), QPointF(offsetX, 0.0));
+
+        const uint8_t leftLow = pWaveform->getLow(completion);
+        pPainter->setPen(m_colorLow);
+        pPainter->drawLine(QPointF(offsetX, -leftLow), QPointF(offsetX, 0.0));
+    }
+
+    if (channels.testFlag(ChannelFlag::RightChannel)) {
+        const uint8_t rightHigh = pWaveform->getHigh(completion + 1);
+        pPainter->setPen(m_colorHigh);
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, 2 * rightHigh));
+
+        const uint8_t rightMid = pWaveform->getMid(completion + 1) * 2;
+        pPainter->setPen(m_colorMid);
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, 1.5 * rightMid));
+
+        const uint8_t rightLow = pWaveform->getLow(completion + 1);
+        pPainter->setPen(m_colorLow);
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, rightLow));
+    }
 }
 
 QColor QmlWaveformOverview::getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const {
