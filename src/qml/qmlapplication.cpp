@@ -296,11 +296,13 @@ QmlApplication::~QmlApplication() {
                 << "engine=" << m_pAppEngine.get()
                 << "rootCount=" << (m_pAppEngine ? m_pAppEngine->rootObjects().size() : 0);
     }
-    // Delete all the QML singletons in order to prevent leak detection in CoreService
+    m_guiTickTimer.stop();
+    disconnect(&m_autoReload, nullptr, this, nullptr);
+    m_pAppEngine.reset();
+    m_pMenuBar.reset();
     QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
     m_visualsManager.reset();
-    m_pAppEngine.reset();
     m_pCoreServices.reset();
 }
 

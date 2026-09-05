@@ -27,6 +27,7 @@ QmlAutoReload::QmlAutoReload()
 }
 
 QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType) {
+    const auto generation = m_generation.load();
     if (!url.isLocalFile()) {
         return url;
     }
@@ -34,11 +35,15 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
     if (!QFileInfo(filePath).isFile()) {
         return url;
     }
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QmlAutoReload watching" << filePath;
-    }
-    m_autoReloader.addPath(filePath);
+    QMetaObject::invokeMethod(this, [this, filePath, generation]() {
+                if (generation == m_generation.load()) {
+                    if (qmlRenderDiagnosticsEnabled()) {
+                        qCDebug(qmlRenderDiagnosticsCategory())
+                                << "QmlAutoReload watching" << filePath
+                                << "watchGeneration=" << generation;
+                    }
+                    m_autoReloader.addPath(filePath);
+                } }, Qt::AutoConnection);
     return url;
 }
 

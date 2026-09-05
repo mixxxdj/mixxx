@@ -41,6 +41,7 @@
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmldprutils.h"
 #include "qml/qmllibraryproxy.h"
+#include "qml/qmlwidgetrendering.h"
 #include "skin/legacy/skincontext.h"
 #include "util/qmldiagnostics.h"
 #include "widget/wcolorpicker.h"
@@ -100,6 +101,37 @@ QmlLegacyLibraryItem::~QmlLegacyLibraryItem() {
                 << "physicalBackingSize=" << m_physicalBackingSize
                 << "pixmapDpr=" << m_offscreenPixmap.devicePixelRatio()
                 << "renderRequests=" << m_diagnosticsRenderRequests;
+    }
+    m_toolTipTimer.stop();
+    m_headerAutoScrollTimer.stop();
+    disconnect(this, nullptr, this, nullptr);
+    QObject::disconnect(m_renderWindowScreenConnection);
+    QObject::disconnect(m_renderScreenPhysicalDpiConnection);
+    QObject::disconnect(m_renderScreenLogicalDpiConnection);
+    QObject::disconnect(m_renderScreenGeometryConnection);
+    if (m_renderWindow) {
+        m_renderWindow->removeEventFilter(this);
+    }
+    if (auto* pLibrary = QmlLibraryProxy::get()) {
+        pLibrary->disconnect(this);
+    }
+    if (QmlConfigProxyBase::s_pInstance) {
+        QmlConfigProxyBase::s_pInstance->disconnect(this);
+    }
+    if (m_pRootWidget) {
+        const auto children = m_pRootWidget->findChildren<QObject*>();
+        for (auto* pChild : children) {
+            pChild->removeEventFilter(this);
+            pChild->disconnect(this);
+        }
+        m_pRootWidget->removeEventFilter(this);
+        m_pRootWidget->disconnect(this);
+        m_pRootWidget.reset();
+    }
+    if (qmlRenderDiagnosticsEnabled()) {
+        qCInfo(qmlRenderDiagnosticsCategory())
+                << "QmlLegacyLibraryItem widget tree destroyed"
+                << "item=" << this;
     }
 }
 
@@ -317,8 +349,7 @@ void QmlLegacyLibraryItem::renderOffscreen() {
     }
     syncRootWidgetGlobalPosition();
     updateWidgetSize();
-    const QSize logicalSize(qMax(1, qRound(width())),
-            qMax(1, qRound(height())));
+    const QSize logicalSize = widgetSizeForItemSize(size());
     const QSize physicalSize = physicalSizeForLogicalSize(logicalSize, m_effectiveDpr);
     m_logicalBackingSize = logicalSize;
     m_physicalBackingSize = physicalSize;
@@ -366,12 +397,10 @@ void QmlLegacyLibraryItem::renderOffscreen() {
     if (fullSurface) {
         m_pRootWidget->render(&painter);
     } else {
-        painter.save();
-        painter.setClipRegion(renderRegion);
-        painter.fillRect(QRect(QPoint(0, 0), logicalSize),
+        renderWidgetRegion(m_pRootWidget.get(),
+                &painter,
+                renderRegion,
                 kLegacyLibraryBackgroundColor);
-        m_pRootWidget->render(&painter, QPoint(), renderRegion);
-        painter.restore();
     }
     if (diagnosticsEnabled) {
         const auto invalidationReasonName = [invalidationReason] {
@@ -1582,9 +1611,7 @@ void QmlLegacyLibraryItem::updateWidgetSize() {
         return;
     }
 
-    const QSize widgetSize(
-            qMax(1, qRound(width())),
-            qMax(1, qRound(height())));
+    const QSize widgetSize = widgetSizeForItemSize(size());
     if (m_pRootWidget->size() == widgetSize) {
         return;
     }
@@ -1859,6 +1886,9 @@ void QmlLegacyLibraryItem::requestRender() {
 void QmlLegacyLibraryItem::requestRenderWithReason(
         RenderInvalidationReason reason,
         const QRegion& logicalRegion) {
+    if (!m_pRootWidget) {
+        return;
+    }
     m_isDirty = true;
     if (qmlRenderDiagnosticsEnabled()) {
         ++m_diagnosticsRenderRequests;
@@ -1902,8 +1932,7 @@ QRegion QmlLegacyLibraryItem::viewportRenderRegion() const {
         addWidgetRegion(pScrollBar);
     }
 
-    const QSize logicalSize(qMax(1, qRound(width())),
-            qMax(1, qRound(height())));
+    const QSize logicalSize = widgetSizeForItemSize(size());
     return region.intersected(QRegion(QRect(QPoint(0, 0), logicalSize)));
 }
 

@@ -2,7 +2,9 @@
 
 #include <QRegion>
 #include <QSize>
+#include <QSizeF>
 #include <QtGlobal>
+#include <QtMath>
 #include <cmath>
 
 namespace mixxx {
@@ -66,6 +68,11 @@ struct RenderInvalidationState {
     RenderInvalidationReason invalidationReason =
             RenderInvalidationReason::Unknown;
 };
+
+inline QSize widgetSizeForItemSize(const QSizeF& itemSize) {
+    return QSize(qMax(1, qCeil(itemSize.width())),
+            qMax(1, qCeil(itemSize.height())));
+}
 
 inline QSize physicalSizeForLogicalSize(const QSize& logicalSize, qreal dpr) {
     if (!qIsFinite(dpr) || dpr <= 0.0) {

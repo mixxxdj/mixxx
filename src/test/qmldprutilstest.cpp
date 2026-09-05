@@ -1,11 +1,55 @@
 #include <gtest/gtest.h>
 
 #include "qml/qmldprutils.h"
+#include "qml/qmlwidgetrendering.h"
 
 namespace {
 
 using mixxx::qml::RenderInvalidationReason;
 using mixxx::qml::RenderInvalidationState;
+
+class PatternWidget : public QWidget {
+  protected:
+    void paintEvent(QPaintEvent*) override {
+        QPainter painter(this);
+        painter.fillRect(rect(), Qt::white);
+        for (int y = 0; y < height(); y += 4) {
+            for (int x = 0; x < width(); x += 4) {
+                painter.fillRect(QRect(x, y, 4, 4),
+                        QColor((x * 7) % 256, (y * 11) % 256, (x + y) % 256));
+            }
+        }
+    }
+};
+
+class QmlWidgetRenderingTest : public testing::TestWithParam<qreal> {
+};
+
+TEST_P(QmlWidgetRenderingTest, PartialRepaintMatchesFullAtNonOriginRegions) {
+    PatternWidget widget;
+    widget.resize(80, 60);
+    widget.ensurePolished();
+    const qreal dpr = GetParam();
+    QPixmap full(mixxx::qml::physicalSizeForLogicalSize(widget.size(), dpr));
+    full.setDevicePixelRatio(dpr);
+    full.fill(Qt::white);
+    {
+        QPainter painter(&full);
+        widget.render(&painter);
+    }
+    QPixmap partial = full.copy();
+    const QRegion dirty = QRegion(QRect(16, 12, 24, 16)) +
+            QRegion(QRect(48, 36, 16, 12));
+    {
+        QPainter painter(&partial);
+        mixxx::qml::renderWidgetRegion(&widget, &painter, dirty, Qt::magenta);
+    }
+    EXPECT_EQ(full.toImage(), partial.toImage());
+}
+
+INSTANTIATE_TEST_SUITE_P(ScaleFactors,
+        QmlWidgetRenderingTest,
+        testing::Values(1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 4.0));
 
 TEST(QmlRenderInvalidationTest, InitialFullSurfaceDominatesDirtyRegion) {
     RenderInvalidationState state(true);
@@ -102,6 +146,13 @@ TEST(QmlDprUtilsTest, ConvertsLogicalSizeUsingCeiling) {
             mixxx::qml::physicalSizeForLogicalSize(QSize(100, 50), 1.5));
     EXPECT_EQ(QSize(4, 5),
             mixxx::qml::physicalSizeForLogicalSize(QSize(3, 4), 1.25));
+}
+
+TEST(QmlDprUtilsTest, WidgetBoundsCoverFractionalItemEdges) {
+    EXPECT_EQ(QSize(4, 5),
+            mixxx::qml::widgetSizeForItemSize(QSizeF(3.2, 4.2)));
+    EXPECT_EQ(QSize(1, 1),
+            mixxx::qml::widgetSizeForItemSize(QSizeF(0, 0)));
 }
 
 TEST(QmlDprUtilsTest, RepairsInvalidDpr) {
