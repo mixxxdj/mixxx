@@ -191,7 +191,7 @@ wiki page.
 The Mixxx UI is currently being rewritten in QML. This new code is in a high state of flux and will change rapidly.
 
 - Source in `res/qml/` and `src/qml/`.
-- `qmlformat` and `qmllint` are available as _manual_ pre-commit hooks, because
+- `qmlformat` and `qmllint` are available as *manual* pre-commit hooks, because
   they need the Qt 6 tools installed:
 
       pre-commit run qmlformat --hook-stage manual --all-files
@@ -260,8 +260,8 @@ The Mixxx UI is currently being rewritten in QML. This new code is in a high sta
   2. Missing `std::chrono::duration` for time values.
   3. Manual `static_cast<int>` instead of `Q_ENUM` +
      `QVariant::fromValue`.
-  4. Insufficiently descriptive commit messages — document _why_, not just
-     _what_.
+  4. Insufficiently descriptive commit messages — document *why*, not just
+     *what*.
   5. SVG assets not matching existing conventions (full-size, borderless).
 
 ## Merging
@@ -279,7 +279,7 @@ wiki page for core-team policies on merging, force-pushing, and branch
 management.
 
 - Enable [two-factor authentication (2FA)](https://help.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa) for your GitHub account.
-- _Never_ force push to an upstream repository (mixxxdj). If you encounter an error from Git saying you would need to force push, stop what you are doing and discuss the situation on Zulip.
+- *Never* force push to an upstream repository (mixxxdj). If you encounter an error from Git saying you would need to force push, stop what you are doing and discuss the situation on Zulip.
 - All non-trivial contributions should be made with a pull request, just like any other contributor who does not have write access. Do not merge your own pull requests.
 - You may merge someone else's pull request as the only reviewer if no other contributors have expressed concerns about the changes or said they want to review the code. Please do not merge pull requests immediately; allow at least a day or two for others to comment. Remember we are all volunteers and cannot respond to everything immediately.
 - If there is disagreement about changes in a pull request, do not merge it until a consensus has been reached.
