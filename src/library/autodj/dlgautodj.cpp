@@ -142,6 +142,11 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "seconds before the end of the track. A negative crossfade time adds\n"
             "silence between tracks.\n"
             "\n"
+            "Cue to Track End:\n"
+            "Play the track from the main cue point to the end of the track. Begin\n"
+            "crossfading from the selected number of seconds before the end of the\n"
+            "track. A negative crossfade time adds silence between tracks.\n"
+            "\n"
             "Skip Silence:\n"
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
@@ -180,6 +185,8 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             static_cast<int>(AutoDJProcessor::TransitionMode::FadeAtOutroStart));
     fadeModeCombobox->addItem(tr("Full Track"),
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
+    fadeModeCombobox->addItem(tr("Cue to Track End"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedCueToTrackEnd));
     fadeModeCombobox->addItem(tr("Skip Silence"),
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->addItem(tr("Skip Silence Start Full Volume"),
