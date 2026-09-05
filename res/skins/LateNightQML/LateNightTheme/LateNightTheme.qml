@@ -339,6 +339,7 @@ QtObject {
     readonly property color toolbarRecordingColor: "#db0000"
     readonly property color toolbarRecordingTextColor: "#ff7373"
     readonly property color toolbarRootBackgroundColor: "#151517"
+    readonly property color toolbarSettingsTextColor: "#d2d2d2"
     readonly property color toolbarStatusErrorColor: "#f856e7"
     readonly property color toolbarStatusOkColor: "#54c76a"
     readonly property color toolbarStatusWarnColor: "#d89124"
