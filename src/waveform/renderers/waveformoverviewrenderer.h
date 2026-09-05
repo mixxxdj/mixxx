@@ -41,4 +41,11 @@ void drawWaveformPartHSV(
         int end,
         const WaveformSignalColors& signalColors,
         bool mono = false);
+void drawWaveformPartSimple(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono = false);
 } // namespace waveformOverviewRenderer
