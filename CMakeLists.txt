@@ -3047,6 +3047,8 @@ if(BUILD_TESTING)
         src/test/qmleffectsproxytest.cpp
         src/test/qmlkeyutilstest.cpp
         src/test/qmlskincontrolcreatortest.cpp
+        src/test/qmlwaveformoverviewtest.cpp
+        src/test/latenightlayoutstate_test.cpp
         src/test/themeqml_test.cpp
     )
   endif()

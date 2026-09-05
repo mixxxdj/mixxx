@@ -7,33 +7,58 @@ import "../LateNightTheme"
 Controls.Panel {
     id: root
 
-    implicitHeight: root.minimized ? 80 : 206
-    implicitWidth: 620
-
-    required property string group
-    property bool minimized: false
     property bool editMode: false
-    readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
-    readonly property bool showBigSpinnyOrCover: selectBigSpinnyProxy.value > 0
-    readonly property bool showHotcues: showHotcuesProxy.value > 0
+    required property string group
     readonly property bool show8Hotcues: show8HotcuesProxy.value > 0
+    readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
+    readonly property bool showBigSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showBigSpinnyOrCoverProxy.initialized
+                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value > 0
+                    : showBigSpinnyOrCoverProxy.value > 0)
+    readonly property bool showHotcues: showHotcuesProxy.value > 0
     readonly property bool showIntroOutroCues: showIntroOutroCuesProxy.value > 0
     readonly property bool showKeyControls: showKeyControlsProxy.value > 0
     readonly property bool showLoopControls: showLoopControlsProxy.value > 0
     readonly property bool showRateControlButtons: showRateControlButtonsProxy.value > 0
     readonly property bool showRateControls: showRateControlsProxy.value > 0
-    readonly property bool showSmallSpinnyOrCover: selectBigSpinnyProxy.value <= 0 && !root.minimized
+    readonly property bool showSmallSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
+            && (!showSmallSpinnyOrCoverProxy.initialized
+                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value <= 0
+                    : showSmallSpinnyOrCoverProxy.value > 0)
     readonly property bool showVinylControls: showVinylControlsProxy.value > 0
 
     signal toggleFocus
 
     color: LateNightTheme.deckPanelColor
+    implicitHeight: LateNightTheme.fullDeckHeight
+    implicitWidth: 620
 
     Mixxx.ControlProxy {
         id: selectBigSpinnyProxy
+
         group: "[Skin]"
         key: "select_big_spinny_or_cover"
     }
+    Mixxx.ControlProxy {
+        id: showSpinnyOrCoverProxy
+
+        group: "[Skin]"
+        key: "show_spinny_or_cover"
+    }
+    Mixxx.ControlProxy {
+        id: showSmallSpinnyOrCoverProxy
+
+        group: "[Skin]"
+        key: "show_small_spinny_or_cover"
+    }
+    Mixxx.ControlProxy {
+        id: showBigSpinnyOrCoverProxy
+
+        group: "[Skin]"
+        key: "show_big_spinny_or_cover"
+    }
+    Mixxx.ControlProxy { id: showSpinniesProxy; group: "[Skin]"; key: "show_spinnies" }
+    Mixxx.ControlProxy { id: showCoverArtProxy; group: "[Skin]"; key: "show_coverart" }
 
     Mixxx.ControlProxy {
         id: showKeyControlsProxy
@@ -97,10 +122,10 @@ Controls.Panel {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 1
-        anchors.topMargin: 2
-        anchors.rightMargin: 1
-        anchors.bottomMargin: 2
+        anchors.leftMargin: LateNightTheme.deckOuterMargin
+        anchors.topMargin: LateNightTheme.deckOuterMargin
+        anchors.rightMargin: LateNightTheme.deckOuterMargin
+        anchors.bottomMargin: LateNightTheme.deckOuterMargin + 1
         spacing: 2
 
         // Central main deck column
@@ -119,72 +144,11 @@ Controls.Panel {
                 Layout.minimumHeight: 20
                 Layout.maximumHeight: 20
                 Layout.fillHeight: false
-                visible: !root.minimized
                 spacing: 0
 
-                // FX assignment buttons: toggle effect unit assignment for this deck
-                Row {
-                    spacing: 0
-
-                    Repeater {
-                        model: show4EffectUnitsProxy.value > 0 ? 4 : 2
-
-                        delegate: Item {
-                            id: fxAssignButton
-
-                            required property int index
-
-                            width: show4EffectUnitsProxy.value > 0 && index > 0 ? 20 : 26
-                            height: 20
-                            readonly property bool active: fxAssignProxy.value > 0
-                            readonly property color activeColor: index < 2 ? (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor12 : LateNightTheme.effectsUnitDimColor12) : (LateNightTheme.isClassic ? LateNightTheme.effectsUnitColor34 : LateNightTheme.effectsUnitDimColor34)
-                            readonly property color inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-                            readonly property color fillColor: active ? activeColor : inactiveColor
-
-                            Mixxx.ControlProxy {
-                                id: fxAssignProxy
-                                group: `[EffectRack1_EffectUnit${index + 1}]`
-                                key: `group_${root.group}_enable`
-                            }
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: fxAssignButton.fillColor
-                            }
-
-                            Image {
-                                anchors.fill: parent
-                                source: {
-                                    if (index === 0) {
-                                        return fxAssignButton.active
-                                            ? LateNightTheme.lateNightButton("btn_embedded_library_active.svg")
-                                            : LateNightTheme.lateNightButton("btn_embedded_library.svg");
-                                    } else {
-                                        return fxAssignButton.active
-                                            ? LateNightTheme.lateNightButton("btn_embedded_grid_active.svg")
-                                            : LateNightTheme.lateNightButton("btn_embedded_grid.svg");
-                                    }
-                                }
-                                fillMode: Image.Stretch
-                            }
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: show4EffectUnitsProxy.value > 0 && index > 0 ? (index + 1).toString() : "FX" + (show4EffectUnitsProxy.value > 0 && index === 0 ? "1" : (index + 1).toString())
-                                font.family: "Open Sans"
-                                font.pixelSize: 10
-                                font.bold: true
-                                color: fxAssignButton.active ? (LateNightTheme.isClassic ? "#000000" : LateNightTheme.mixerControlTextColor) : (LateNightTheme.isClassic ? "#d2d2d1" : "#666666")
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    fxAssignProxy.value = !fxAssignProxy.value;
-                                }
-                            }
-                        }
-                    }
+                LateNightFxAssignmentButtons {
+                    group: root.group
+                    showFourEffectUnits: show4EffectUnitsProxy.value > 0
                 }
 
                 Item {
@@ -229,18 +193,18 @@ Controls.Panel {
                 id: middleDeckRow
                 Layout.fillWidth: true
                 Layout.fillHeight: false
-                Layout.minimumHeight: root.minimized ? 68 : 122
-                Layout.preferredHeight: root.minimized ? 68 : 122
-                Layout.maximumHeight: root.minimized ? 68 : 122
+                Layout.minimumHeight: 122
+                Layout.preferredHeight: 122
+                Layout.maximumHeight: 122
                 spacing: 8
 
                 // Big Spinny/Cover Slot (Large mode)
                 SpinnyCoverSlot {
                     id: leftSpinnyBig
-                    Layout.preferredHeight: 114
-                    Layout.preferredWidth: 114
+                    Layout.preferredHeight: root.showBigSpinnyOrCover ? LateNightTheme.fullBigSpinnySize : 0
+                    Layout.preferredWidth: root.showBigSpinnyOrCover ? LateNightTheme.fullBigSpinnySize : 0
                     group: root.group
-                    visible: root.showBigSpinnyOrCover && !root.minimized
+                    visible: root.showBigSpinnyOrCover
                 }
 
                 // Column containing Title rows and Overview row
@@ -248,16 +212,16 @@ Controls.Panel {
                     id: titleOverviewColumn
                     Layout.fillWidth: true
                     Layout.fillHeight: false
-                    Layout.preferredHeight: root.minimized ? 68 : 122
+                    Layout.preferredHeight: 122
                     spacing: 2
 
                     // Title, Time, Artist, Duration Rows
                     TitleTimeRows {
                         id: titleTimeRows
                         Layout.fillWidth: true
-                        Layout.minimumHeight: root.minimized ? 48 : 55
-                        Layout.preferredHeight: root.minimized ? 48 : 55
-                        Layout.maximumHeight: root.minimized ? 48 : 55
+                        Layout.minimumHeight: 55
+                        Layout.preferredHeight: 55
+                        Layout.maximumHeight: 55
                         group: root.group
 
                         TapHandler {
@@ -270,16 +234,16 @@ Controls.Panel {
                         id: overviewAndSpinnyRow
                         Layout.fillWidth: true
                         Layout.fillHeight: false
-                        Layout.minimumHeight: root.minimized ? 20 : 63
-                        Layout.preferredHeight: root.minimized ? 20 : 63
-                        Layout.maximumHeight: root.minimized ? 20 : 63
+                        Layout.minimumHeight: 63
+                        Layout.preferredHeight: 63
+                        Layout.maximumHeight: 63
                         spacing: 1
 
                         // Small Spinny/Cover Slot (Small mode)
                         SpinnyCoverSlot {
                             id: leftSpinnySmall
-                            Layout.preferredHeight: 63
-                            Layout.preferredWidth: 63
+                            Layout.preferredHeight: root.showSmallSpinnyOrCover ? LateNightTheme.smallSpinnySize : 0
+                            Layout.preferredWidth: root.showSmallSpinnyOrCover ? LateNightTheme.smallSpinnySize : 0
                             group: root.group
                             visible: root.showSmallSpinnyOrCover
                         }
@@ -300,37 +264,31 @@ Controls.Panel {
                 id: transportRow
                 Layout.fillWidth: true
                 Layout.fillHeight: false
-                Layout.minimumHeight: 55
-                Layout.preferredHeight: 55
-                Layout.maximumHeight: 55
+                Layout.minimumHeight: LateNightTheme.deckTransportHeight
+                Layout.preferredHeight: LateNightTheme.deckTransportHeight
+                Layout.maximumHeight: LateNightTheme.deckTransportHeight
                 group: root.group
                 showHotcues: root.showHotcues
                 show8Hotcues: root.show8Hotcues
                 showIntroOutroCues: root.showIntroOutroCues
                 showLoopControls: root.showLoopControls
                 showBeatjumpControls: root.showBeatjumpControls
-                visible: !root.minimized
             }
         }
 
         // Right Rate controls placeholder
         RatePlaceholder {
             id: rateControls
-            Layout.preferredWidth: 90
             Layout.fillHeight: false
             Layout.minimumHeight: 202
             Layout.preferredHeight: 202
             Layout.maximumHeight: 202
             Layout.alignment: Qt.AlignTop
+            Layout.preferredWidth: root.showRateControls ? 90 : 0
             group: root.group
             showRateControlButtons: root.showRateControlButtons
-            visible: !root.minimized && root.showRateControls
+            visible: root.showRateControls
         }
-    }
-
-    Mixxx.PlayerDropArea {
-        anchors.fill: parent
-        group: root.group
     }
 
 }

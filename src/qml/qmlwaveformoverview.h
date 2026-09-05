@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QImage>
 #include <QPainter>
 #include <QPointer>
 #include <QQmlEngine>
@@ -24,6 +25,8 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Q_PROPERTY(QColor colorHigh MEMBER m_colorHigh NOTIFY colorHighChanged)
     Q_PROPERTY(QColor colorMid MEMBER m_colorMid NOTIFY colorMidChanged)
     Q_PROPERTY(QColor colorLow MEMBER m_colorLow NOTIFY colorLowChanged)
+    Q_PROPERTY(double analyzerProgress READ analyzerProgress WRITE setAnalyzerProgress
+                    NOTIFY analyzerProgressChanged)
     QML_NAMED_ELEMENT(WaveformOverview)
 
   public:
@@ -50,6 +53,8 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
     void setChannels(Channels channels);
     Channels getChannels() const;
+    double analyzerProgress() const;
+    void setAnalyzerProgress(double analyzerProgress);
   private slots:
     void slotWaveformUpdated();
 
@@ -60,6 +65,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     void colorHighChanged(const QColor& color);
     void colorMidChanged(const QColor& color);
     void colorLowChanged(const QColor& color);
+    void analyzerProgressChanged();
 
   private:
     void drawFiltered(QPainter* pPainter,
@@ -71,12 +77,18 @@ class QmlWaveformOverview : public QQuickPaintedItem {
             ConstWaveformPointer pWaveform,
             int completion) const;
     QColor getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const;
+    bool drawNextWaveformPart(ConstWaveformPointer pWaveform);
+    void invalidateWaveformCache();
     QmlTrackProxy* m_pTrack;
     Channels m_channels;
     Renderer m_renderer;
     QColor m_colorHigh;
     QColor m_colorMid;
     QColor m_colorLow;
+    double m_analyzerProgress{-1.0};
+    ConstWaveformPointer m_cachedWaveform;
+    QImage m_waveformImage;
+    int m_actualCompletion{0};
 };
 
 } // namespace qml

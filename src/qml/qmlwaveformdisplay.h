@@ -48,6 +48,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     Q_PROPERTY(double position READ getPosition WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers READ renderers)
     Q_PROPERTY(double zoom READ getZoom WRITE setZoom NOTIFY zoomChanged)
+    Q_PROPERTY(double audioSamplePerPixel READ getAudioSamplePerPixel)
     Q_PROPERTY(QColor backgroundColor READ getBackgroundColor WRITE
                     setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(WaveformRendererSignalBaseOptions options READ

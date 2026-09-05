@@ -18,6 +18,7 @@ Rectangle {
 
     property bool editDeck: false
     required property var applicationMenuActions
+    property int deckSizeWithoutMixer: Toolbar.Compact
     property alias maximizeLibrary: maximizeLibraryButton.checked
     readonly property bool show4decks: show4DecksButton.checked && show4DecksButton.visible
     property bool show4decksAvailable: true
@@ -29,6 +30,12 @@ Rectangle {
     property alias showWaveforms: showWaveformsButton.checked
     readonly property string activeAppMenuSection: hoveredAppMenuSection.length > 0 ? hoveredAppMenuSection : selectedAppMenuSection
     readonly property string activeAppMenuSubmenu: hoveredAppMenuSubmenu.length > 0 ? hoveredAppMenuSubmenu : pinnedAppMenuSubmenu
+    readonly property bool compactDeckSettingsVisible: !maximizeLibraryButton.checked && !showMixerButton.checked && currentDeckSize === Toolbar.Compact
+    readonly property int currentDeckSize: deckSizeControl.initialized
+            ? Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(deckSizeControl.value)))
+            : root.deckSizeWithoutMixer
+    readonly property bool fullDeckSettingsVisible: !maximizeLibraryButton.checked && (showMixerButton.checked || currentDeckSize === Toolbar.Full)
+    readonly property bool miniDeckSettingsVisible: maximizeLibraryButton.checked || (!showMixerButton.checked && currentDeckSize === Toolbar.Mini)
     property string hoveredAppMenuSection: ""
     property string hoveredAppMenuSubmenu: ""
     property string pinnedAppMenuSubmenu: ""
@@ -250,7 +257,9 @@ Rectangle {
         setControlValueIfInitialized(maxLibraryDecksControl, enabled ? 1.0 : 0.0);
     }
     function setDeckSize(size) {
-        deckSizeControl.value = size;
+        const normalizedSize = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(size)));
+        deckSizeWithoutMixer = normalizedSize;
+        setControlValueIfInitialized(deckSizeControl, normalizedSize);
     }
     function broadcastBackgroundColor(status) {
         if (status === 1.0) {
@@ -292,7 +301,7 @@ Rectangle {
     Mixxx.ControlProxy {
         id: toolbarDefaultsControl
 
-        group: "[LateNightQML]"
+        group: "[Skin]"
         key: "initialized_toolbar_defaults"
 
         onInitializedChanged: {
@@ -375,8 +384,8 @@ Rectangle {
     Mixxx.ControlProxy {
         id: maxLibraryDecksControl
 
-        group: "[LateNight]"
-        key: "max_lib_show_decks"
+        group: "[Skin]"
+        key: "latenight_max_lib_show_decks"
 
         onInitializedChanged: {
             maxLibraryDecksButton.checked = value > 0;
@@ -388,8 +397,17 @@ Rectangle {
     Mixxx.ControlProxy {
         id: deckSizeControl
 
-        group: "[LateNight]"
-        key: "deck_size_without_mixer"
+        group: "[Skin]"
+        key: "latenight_deck_size_without_mixer"
+
+        onInitializedChanged: {
+            if (deckSizeControl.initialized) {
+                root.deckSizeWithoutMixer = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(value)));
+            }
+        }
+        onValueChanged: {
+            root.deckSizeWithoutMixer = Math.max(Toolbar.Mini, Math.min(Toolbar.Full, Math.round(value)));
+        }
     }
     Mixxx.ControlProxy {
         id: showHotcuesControl
@@ -416,16 +434,40 @@ Rectangle {
         key: "show_loop_controls"
     }
     Mixxx.ControlProxy {
+        id: showLoopControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_loop_controls_compact"
+    }
+    Mixxx.ControlProxy {
         id: showBeatjumpControlsControl
 
         group: "[Skin]"
         key: "show_beatjump_controls"
     }
     Mixxx.ControlProxy {
+        id: showBeatjumpControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_beatjump_controls_compact"
+    }
+    Mixxx.ControlProxy {
         id: showRateControlsControl
 
         group: "[Skin]"
         key: "show_rate_controls"
+    }
+    Mixxx.ControlProxy {
+        id: showRateControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_rate_controls_compact"
+    }
+    Mixxx.ControlProxy {
+        id: showSyncButtonCompactControl
+
+        group: "[Skin]"
+        key: "latenight_show_sync_button_compact"
     }
     Mixxx.ControlProxy {
         id: showRateControlButtonsControl
@@ -438,6 +480,18 @@ Rectangle {
 
         group: "[Skin]"
         key: "show_key_controls"
+    }
+    Mixxx.ControlProxy {
+        id: showKeyControlsCompactControl
+
+        group: "[Skin]"
+        key: "show_key_controls_compact"
+    }
+    Mixxx.ControlProxy {
+        id: showVuMetersCompactControl
+
+        group: "[Skin]"
+        key: "show_vumeters_compact"
     }
     Mixxx.ControlProxy {
         id: showVinylControlsControl
@@ -1281,7 +1335,7 @@ Rectangle {
 
         ColumnLayout {
             Layout.fillWidth: true
-            Layout.bottomMargin: 7
+            Layout.bottomMargin: 3
             Layout.leftMargin: 5
             Layout.rightMargin: 5
             Layout.topMargin: 2
@@ -1310,7 +1364,7 @@ Rectangle {
                     }
                 }
                 Text {
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 13
                     text: "decks"
@@ -1323,7 +1377,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     text: "Deck Size:"
@@ -1346,7 +1400,7 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: 4
                         anchors.verticalCenter: parent.verticalCenter
-                        color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "hide mixer to select"
@@ -1401,6 +1455,7 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.minimumWidth: implicitWidth
                 spacing: 5
+                visible: root.fullDeckSettingsVisible
 
                 ToolbarMenuToggle {
                     Layout.fillWidth: false
@@ -1413,8 +1468,12 @@ Rectangle {
                     text: "4"
 
                     onClicked: {
-                        showHotcuesControl.value = 1.0;
-                        show8HotcuesControl.value = 0.0;
+                        if (showHotcuesControl.value <= 0) {
+                            showHotcuesControl.value = 1.0;
+                        }
+                        if (show8HotcuesControl.value > 0) {
+                            show8HotcuesControl.value = 0.0;
+                        }
                     }
                 }
                 ToolbarMenuInlineChoice {
@@ -1423,50 +1482,105 @@ Rectangle {
                     text: "8"
 
                     onClicked: {
-                        showHotcuesControl.value = 1.0;
-                        show8HotcuesControl.value = 1.0;
+                        if (showHotcuesControl.value <= 0) {
+                            showHotcuesControl.value = 1.0;
+                        }
+                        if (show8HotcuesControl.value <= 0) {
+                            show8HotcuesControl.value = 1.0;
+                        }
                     }
                 }
             }
+            // Compact deck settings intentionally follow the legacy compact
+            // ordering. Full-only rows remain in the same popup but are
+            // removed from the layout when Compact or Mini is selected.
             ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showLoopControlsCompactControl
+                text: "Loop Controls"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showBeatjumpControlsCompactControl
+                text: "Beatjump Controls"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showRateControlsCompactControl
+                text: "Rate Controls"
+            }
+            ToolbarMenuToggle {
+                enabled: showRateControlsCompactControl.value > 0
+                indent: 14
+                visible: root.compactDeckSettingsVisible
+                control: showSyncButtonCompactControl
+                text: "Sync Button"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showKeyControlsCompactControl
+                text: "Key Controls"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showVinylControlsControl
+                text: "Vinyl Control"
+            }
+            ToolbarMenuToggle {
+                visible: root.compactDeckSettingsVisible
+                control: showVuMetersCompactControl
+                text: "VU meters"
+            }
+            ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showIntroOutroCuesControl
                 text: "Intro & Outro Cues"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showLoopControlsControl
                 text: "Loop Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showBeatjumpControlsControl
                 text: "Beatjump Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showRateControlsControl
                 text: "Rate Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showRateControlButtonsControl
                 enabled: showRateControlsControl.value > 0
                 indent: 14
                 text: "Rate Adjust Buttons"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showKeyControlsControl
                 text: "Key Controls"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible
                 control: showVinylControlsControl
                 text: "Vinyl Control"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible || root.compactDeckSettingsVisible || root.miniDeckSettingsVisible
                 control: showSpinniesControl
                 text: "Spinny"
             }
             ToolbarMenuToggle {
+                visible: root.fullDeckSettingsVisible || root.compactDeckSettingsVisible || root.miniDeckSettingsVisible
                 control: showCoverArtControl
                 text: "Cover Art"
             }
             ToolbarMenuToggle {
+                enabled: showSpinniesControl.value > 0 || showCoverArtControl.value > 0
+                visible: root.fullDeckSettingsVisible || root.compactDeckSettingsVisible
                 control: selectBigSpinnyOrCoverControl
                 indent: 14
                 text: "Big Spinny/Cover Art"
@@ -1567,12 +1681,12 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 5
 
-                    Image {
+                    ToolbarMenuCheckIndicator {
                         Layout.leftMargin: 2
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
-                        fillMode: Image.PreserveAspectFit
-                        source: effectUnitsHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                        checked: effectUnitsHeader.checked
+                        hovered: effectUnitsHeaderMouseArea.containsMouse
                     }
 
                     ToolbarMenuInlineChoice {
@@ -1594,7 +1708,7 @@ Rectangle {
                         }
                     }
                     Text {
-                        color: effectUnitsHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: effectUnitsHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "units"
@@ -1654,13 +1768,13 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 0
 
-                    Image {
+                    ToolbarMenuCheckIndicator {
                         Layout.leftMargin: 2
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
                         Layout.rightMargin: 5
-                        fillMode: Image.PreserveAspectFit
-                        source: samplersHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                        checked: samplersHeader.checked
+                        hovered: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered
                     }
 
                     ToolbarMenuInlineChoice {
@@ -1742,7 +1856,7 @@ Rectangle {
                     }
                     Text {
                         Layout.leftMargin: 5
-                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "sample decks"
@@ -1778,7 +1892,7 @@ Rectangle {
                     Text {
                         id: loadBankText
                         anchors.centerIn: parent
-                        color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "Load"
@@ -1796,7 +1910,7 @@ Rectangle {
                 }
 
                 Text {
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     text: "/"
@@ -1816,7 +1930,7 @@ Rectangle {
                     Text {
                         id: saveBankText
                         anchors.centerIn: parent
-                        color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "Save"
@@ -1835,7 +1949,7 @@ Rectangle {
 
                 Text {
                     id: samplerBankText
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     text: "Sampler Bank"
@@ -2227,7 +2341,9 @@ Rectangle {
         property bool checked: action ? action.checked : false
         property bool hasSubmenu: false
         property bool selected: false
-        property string shortcut: action ? action.shortcut : ""
+        // Menu actions without shortcuts expose an undefined QML value. Cast
+        // only real shortcuts so the QString property never receives undefined.
+        property string shortcut: action && action.shortcut !== undefined ? String(action.shortcut) : ""
         property string text: action ? root.menuText(action.text) : ""
 
         signal hovered
@@ -2374,7 +2490,7 @@ Rectangle {
             id: inlineChoiceText
 
             anchors.centerIn: parent
-            color: inlineMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : (inlineChoice.checked ? LateNightTheme.toolbarMenuTextColor : LateNightTheme.toolbarMenuDisabledTextColor)
+            color: inlineMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : (inlineChoice.checked ? LateNightTheme.toolbarSettingsTextColor : LateNightTheme.toolbarMenuDisabledTextColor)
             font.family: "Open Sans"
             font.pixelSize: 13
             font.underline: inlineChoice.checked && !inlineMouseArea.containsMouse
@@ -2393,12 +2509,23 @@ Rectangle {
 
         Text {
             Layout.fillWidth: true
-            color: LateNightTheme.toolbarMenuTextColor
+            color: LateNightTheme.toolbarSettingsTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
             text: parent.title
         }
+    }
+    component ToolbarMenuCheckIndicator: Text {
+        property bool checked: false
+        property bool hovered: false
+
+        color: hovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
+        font.family: "Open Sans"
+        font.pixelSize: 13
+        horizontalAlignment: Text.AlignHCenter
+        text: checked ? "\u2714" : "\u2610"
+        verticalAlignment: Text.AlignVCenter
     }
     component ToolbarMenuSectionToggle: ColumnLayout {
         id: sectionToggle
@@ -2438,13 +2565,13 @@ Rectangle {
                     }
                 }
             }
-            Image {
+            ToolbarMenuCheckIndicator {
                 anchors.left: parent.left
                 anchors.leftMargin: 2
                 anchors.verticalCenter: parent.verticalCenter
-                fillMode: Image.PreserveAspectFit
                 height: 14
-                source: headerToggle.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                checked: headerToggle.checked
+                hovered: headerToggleMouseArea.containsMouse
                 width: 14
             }
             Text {
@@ -2453,7 +2580,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 anchors.verticalCenter: parent.verticalCenter
-                color: headerToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                color: headerToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                 elide: Text.ElideRight
                 font.family: "Open Sans"
                 font.pixelSize: 13
@@ -2493,13 +2620,13 @@ Rectangle {
                 }
             }
         }
-        Image {
+        ToolbarMenuCheckIndicator {
             anchors.left: parent.left
             anchors.leftMargin: parent.indent + 2
             anchors.verticalCenter: parent.verticalCenter
-            fillMode: Image.PreserveAspectFit
             height: 14
-            source: parent.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            checked: menuToggle.checked
+            hovered: menuToggleMouseArea.containsMouse
             width: 14
         }
         Text {
@@ -2508,7 +2635,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: parent.indent + 20
             anchors.verticalCenter: parent.verticalCenter
-            color: menuToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: menuToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
