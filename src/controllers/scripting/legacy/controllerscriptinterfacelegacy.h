@@ -64,6 +64,11 @@ class ControllerScriptInterfaceLegacy : public QObject {
     Q_INVOKABLE double getParameterForValue(
             const QString& group, const QString& name, double value);
     Q_INVOKABLE void reset(const QString& group, const QString& name);
+
+    /// Load an arbitrary file path into the deck/sampler identified by
+    /// `group` (e.g. "[Channel1]"). Added by mixxx-mcp.
+    Q_INVOKABLE bool loadTrack(const QString& group, const QString& path);
+
     Q_INVOKABLE double getDefaultValue(const QString& group, const QString& name);
     Q_INVOKABLE double getDefaultParameter(const QString& group, const QString& name);
     Q_INVOKABLE QJSValue makeConnection(const QString& group,
