@@ -1162,6 +1162,7 @@ add_library(
   STATIC
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
+  src/analyzer/analyzerchromaprint.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
@@ -1402,6 +1403,7 @@ add_library(
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/dao/trackfingerprintdao.cpp
   src/library/tabledelegates/defaultdelegate.cpp
   src/library/dlgcoverartfullsize.cpp
   src/library/dlgcoverartfullsize.ui
