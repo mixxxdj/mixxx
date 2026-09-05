@@ -1364,7 +1364,7 @@ Rectangle {
                     }
                 }
                 Text {
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 13
                     text: "decks"
@@ -1377,7 +1377,7 @@ Rectangle {
                 spacing: 5
 
                 Text {
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     text: "Deck Size:"
@@ -1400,7 +1400,7 @@ Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: 4
                         anchors.verticalCenter: parent.verticalCenter
-                        color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "hide mixer to select"
@@ -1681,12 +1681,12 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 5
 
-                    Image {
+                    ToolbarMenuCheckIndicator {
                         Layout.leftMargin: 2
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
-                        fillMode: Image.PreserveAspectFit
-                        source: effectUnitsHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                        checked: effectUnitsHeader.checked
+                        hovered: effectUnitsHeaderMouseArea.containsMouse
                     }
 
                     ToolbarMenuInlineChoice {
@@ -1708,7 +1708,7 @@ Rectangle {
                         }
                     }
                     Text {
-                        color: effectUnitsHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: effectUnitsHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "units"
@@ -1768,13 +1768,13 @@ Rectangle {
                     anchors.fill: parent
                     spacing: 0
 
-                    Image {
+                    ToolbarMenuCheckIndicator {
                         Layout.leftMargin: 2
                         Layout.preferredHeight: 14
                         Layout.preferredWidth: 14
                         Layout.rightMargin: 5
-                        fillMode: Image.PreserveAspectFit
-                        source: samplersHeader.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                        checked: samplersHeader.checked
+                        hovered: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered
                     }
 
                     ToolbarMenuInlineChoice {
@@ -1856,7 +1856,7 @@ Rectangle {
                     }
                     Text {
                         Layout.leftMargin: 5
-                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "sample decks"
@@ -1892,7 +1892,7 @@ Rectangle {
                     Text {
                         id: loadBankText
                         anchors.centerIn: parent
-                        color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "Load"
@@ -1910,7 +1910,7 @@ Rectangle {
                 }
 
                 Text {
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     text: "/"
@@ -1930,7 +1930,7 @@ Rectangle {
                     Text {
                         id: saveBankText
                         anchors.centerIn: parent
-                        color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                        color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
                         text: "Save"
@@ -1949,7 +1949,7 @@ Rectangle {
 
                 Text {
                     id: samplerBankText
-                    color: LateNightTheme.toolbarMenuTextColor
+                    color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
                     text: "Sampler Bank"
@@ -2490,7 +2490,7 @@ Rectangle {
             id: inlineChoiceText
 
             anchors.centerIn: parent
-            color: inlineMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : (inlineChoice.checked ? LateNightTheme.toolbarMenuTextColor : LateNightTheme.toolbarMenuDisabledTextColor)
+            color: inlineMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : (inlineChoice.checked ? LateNightTheme.toolbarSettingsTextColor : LateNightTheme.toolbarMenuDisabledTextColor)
             font.family: "Open Sans"
             font.pixelSize: 13
             font.underline: inlineChoice.checked && !inlineMouseArea.containsMouse
@@ -2509,12 +2509,23 @@ Rectangle {
 
         Text {
             Layout.fillWidth: true
-            color: LateNightTheme.toolbarMenuTextColor
+            color: LateNightTheme.toolbarSettingsTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
             text: parent.title
         }
+    }
+    component ToolbarMenuCheckIndicator: Text {
+        property bool checked: false
+        property bool hovered: false
+
+        color: hovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
+        font.family: "Open Sans"
+        font.pixelSize: 13
+        horizontalAlignment: Text.AlignHCenter
+        text: checked ? "\u2714" : "\u2610"
+        verticalAlignment: Text.AlignVCenter
     }
     component ToolbarMenuSectionToggle: ColumnLayout {
         id: sectionToggle
@@ -2554,13 +2565,13 @@ Rectangle {
                     }
                 }
             }
-            Image {
+            ToolbarMenuCheckIndicator {
                 anchors.left: parent.left
                 anchors.leftMargin: 2
                 anchors.verticalCenter: parent.verticalCenter
-                fillMode: Image.PreserveAspectFit
                 height: 14
-                source: headerToggle.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+                checked: headerToggle.checked
+                hovered: headerToggleMouseArea.containsMouse
                 width: 14
             }
             Text {
@@ -2569,7 +2580,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: 20
                 anchors.verticalCenter: parent.verticalCenter
-                color: headerToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+                color: headerToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                 elide: Text.ElideRight
                 font.family: "Open Sans"
                 font.pixelSize: 13
@@ -2609,13 +2620,13 @@ Rectangle {
                 }
             }
         }
-        Image {
+        ToolbarMenuCheckIndicator {
             anchors.left: parent.left
             anchors.leftMargin: parent.indent + 2
             anchors.verticalCenter: parent.verticalCenter
-            fillMode: Image.PreserveAspectFit
             height: 14
-            source: parent.checked ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            checked: menuToggle.checked
+            hovered: menuToggleMouseArea.containsMouse
             width: 14
         }
         Text {
@@ -2624,7 +2635,7 @@ Rectangle {
             anchors.left: parent.left
             anchors.leftMargin: parent.indent + 20
             anchors.verticalCenter: parent.verticalCenter
-            color: menuToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
+            color: menuToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
