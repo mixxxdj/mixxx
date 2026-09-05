@@ -99,7 +99,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
 endif()
 
 if(
-  ((APPLE AND NOT IOS) OR WIN32 OR ANDROID)
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32 OR ANDROID)
   AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
 )
   if(NOT DEFINED BUILDENV_BASEPATH)
@@ -357,13 +357,21 @@ if(NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
   endif()
 endif()
-set(
-  X_VCPKG_APPLOCAL_DEPS_INSTALL
-  ON
-  CACHE BOOL
-  "Automatically copy dependencies into the install target directory for executables."
-  FORCE
-)
+# vcpkg's applocal dependency copying is a Windows mechanism (it walks the
+# DLL dependency graph of installed executables).  It only does something on
+# Windows/uwp/xbox platforms, but vcpkg's toolchain hijacks the install()
+# command whenever this variable is ON, so keep it OFF elsewhere (in
+# particular on Linux, where the AppImage packaging uses install(...)
+# RUNTIME_DEPENDENCY_SET).
+if(WIN32)
+  set(
+    X_VCPKG_APPLOCAL_DEPS_INSTALL
+    ON
+    CACHE BOOL
+    "Automatically copy dependencies into the install target directory for executables."
+    FORCE
+  )
+endif()
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
@@ -403,6 +411,11 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(
+  MIXXX_APPIMAGE
+  "Build for AppImage distribution (install AppImage-specific desktop file)"
+  OFF
+)
 if(QT6)
   set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
 else()
@@ -2635,6 +2648,11 @@ if(UNIX AND NOT APPLE)
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   )
+
+  # AppImage-specific install rules (desktop file, shared libraries).
+  if(MIXXX_APPIMAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/appimage.cmake")
+  endif()
 
   # Icon files for menu entry
   install(

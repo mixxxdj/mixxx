@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
+name: AppImage
+
+on:
+  workflow_call:
+    inputs:
+      run_id:
+        type: string
+        required: true
+      ref:
+        type: string
+        required: true
+    secrets:
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY:
+        required: false
+      DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD:
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish-appimage:
+    name: Publish AppImage
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Download AppImage artifact"
+        uses: actions/download-artifact@v4
+        with:
+          name: Mixxx-AppImage-x86_64
+          path: build/
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Publish AppImage"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+        if: env.SSH_PRIVATE_KEY != null
+        run: |
+          # TODO: Publish to downloads.mixxx.org
+          #
+          # Implementation steps (when secrets are available):
+          #
+          # 1. Set up SSH agent with DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY
+          #    (see flatpak.yml for the SSH agent setup pattern)
+          #
+          # 2. Determine deploy path (same logic as build.yml's prepare_deploy):
+          #    - Tags:  releases/{git_describe}/mixxx-{git_describe}-linux-appimage{ext}
+          #    - Main:  snapshots/{git_branch}/mixxx-{git_describe}-linux-appimage{ext}
+          #
+          # 3. Upload to downloads.mixxx.org using:
+          #    - rsync over SSH
+          #    - or tools/deploy.py prepare-deployment + rsync
+          #
+          # 4. After upload, update the download manifest (tools/deploy.py or similar).
+          echo "Publishing AppImage for ref: ${{ inputs.ref }}"
+          ls -la build/
