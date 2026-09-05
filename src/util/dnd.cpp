@@ -8,6 +8,7 @@
 #include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/cloudfilehelper.h"
 
 namespace {
 
