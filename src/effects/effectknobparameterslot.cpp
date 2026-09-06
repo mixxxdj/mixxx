@@ -231,3 +231,9 @@ void EffectKnobParameterSlot::syncSofttakeover() {
 double EffectKnobParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
+
+bool EffectKnobParameterSlot::isLinkedToMetaKnob() const {
+    auto linkType = static_cast<EffectManifestParameter::LinkType>(
+            static_cast<int>(m_pControlLinkType->get()));
+    return linkType != EffectManifestParameter::LinkType::None;
+}
