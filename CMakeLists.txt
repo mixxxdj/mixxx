@@ -2363,10 +2363,7 @@ if(ANDROID)
     PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
   )
   set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
-  target_compile_definitions(
-    mixxx-lib
-    PUBLIC ANDROID_PACKAGE_NAME="org.mixxx"
-  )
+  target_compile_definitions(mixxx-lib PUBLIC ANDROID_PACKAGE_NAME="org.mixxx")
   qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
   set_property(
     TARGET mixxx
