@@ -65,6 +65,7 @@ class DurationBase {
 
     enum class Precision {
         SECONDS,
+        DECISECONDS,
         CENTISECONDS,
         MILLISECONDS
     };
