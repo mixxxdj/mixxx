@@ -218,8 +218,10 @@ case "$1" in
             echo ""
             echo "Exported environment variables:"
             echo_exported_variables
-            echo "You can now configure cmake from the command line in an EMPTY build directory via:"
-            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake ${MIXXX_ROOT}"
+            echo "You can now configure, build and package the Mixxx AppImage in an EMPTY build directory via:"
+            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake -DCPACK_GENERATOR=AppImage ${MIXXX_ROOT}"
+            echo "cmake --build ."
+            echo "cpack"
         fi
         ;;
     *)
