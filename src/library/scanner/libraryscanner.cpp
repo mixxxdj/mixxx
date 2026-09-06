@@ -106,6 +106,7 @@ LibraryScanner::LibraryScanner(
           m_state(IDLE),
           m_numRelocatedTracks(0),
           m_pProgressDlg(std::make_unique<LibraryScannerDlg>()),
+          m_canceled(false),
           m_manualScan(true) {
     // Move LibraryScanner to its own thread so that our signals/slots will
     // queue to our event loop.
@@ -150,6 +151,10 @@ LibraryScanner::LibraryScanner(
             &TrackDAO::progressCoverArt,
             m_pProgressDlg.get(),
             &LibraryScannerDlg::slotUpdateCover);
+    connect(&m_trackDao,
+            &TrackDAO::progressLookingForSubstituteTracks,
+            m_pProgressDlg.get(),
+            &LibraryScannerDlg::slotUpdateSubstitute);
 }
 
 LibraryScanner::~LibraryScanner() {
@@ -189,6 +194,7 @@ void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
 
+    m_canceled = false;
     cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
@@ -327,16 +333,22 @@ void LibraryScanner::cleanUpScan() {
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     ScopedTransaction transaction(dbConnection);
 
-    kLogger.debug() << "Marking tracks in changed directories as verified";
+    // verifiedTracks() now contains both:
+    // - tracks emitted by ImportFilesTask for changed-hash directories, and
+    // - tracks observed by RecursiveScanDirectoryTask in unchanged-hash
+    //   directories (slotDirectoryUnchanged feeds them in).
+    // markTrackLocationsAsVerified clears needs_verification AND fs_deleted
+    // for exactly those locations, so a track row whose file was deleted
+    // before the saved directory hash was last updated stays fs_deleted=1
+    // (its location is not in the present-files list).
+    kLogger.debug() << "Marking verified track locations as present";
     m_trackDao.markTrackLocationsAsVerified(m_scannerGlobal->verifiedTracks());
 
-    kLogger.debug() << "Marking unchanged directories and tracks as verified";
+    kLogger.debug() << "Marking unchanged directories as verified";
     m_libraryHashDao.updateDirectoryStatuses(
             m_scannerGlobal->verifiedDirectories(),
             false,
             true);
-    m_trackDao.markTracksInDirectoriesAsVerified(
-            m_scannerGlobal->verifiedDirectories());
 
     // After verifying tracks and directories via recursive scanning of the
     // library directories the only unverified tracks will be files that are
@@ -531,7 +543,7 @@ void LibraryScanner::cancelAndQuit() {
 void LibraryScanner::cancel() {
     DEBUG_ASSERT(m_state == CANCELING);
 
-
+    m_canceled = true;
     // we need to make a local copy because cancel is called
     // from any thread but m_scannerGlobal may be cleared
     // in the LibraryScanner thread in the meanwhile
@@ -597,8 +609,23 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, mixxx::cache_key_t hash) {
     ScopedTimer timer(QStringLiteral("LibraryScanner::slotDirectoryHashedAndScanned"));
-    //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
-    //          << newDirectory << hash;
+    // kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
+    //           << newDirectory << hash;
+    // Don't write dir hashes after the scan has been canceled!
+    // Reason: after canceling we may still receive signals from ImportFilesTask,
+    // eg. addNewTrack() and directoryHashedAndScanned(). However, canceled
+    // means we probably didn't add all tracks. In order to allow "resuming"
+    // the incomplete scan of this directory, we need to keep the old hash
+    // (see slotAddNewTrack) and prevent the directoryHashedAndScanned() signal
+    // from undoing this (what we'd do in this slot by saving a valid hash).
+
+    if (!m_scannerGlobal || m_scannerGlobal->shouldCancel()) {
+        kLogger.warning() << "--> should cancel --> clear hash for" << directoryPath;
+        // Clearing the hash is not strictly required but let's keep it as
+        // safety net in case signals get mixed up?
+        m_libraryHashDao.clearDirectoryHash(directoryPath);
+        return;
+    }
 
     // For statistics tracking -- if we hashed a directory then we scanned it
     // (it was changed or new).
@@ -614,11 +641,21 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
     emit progressHashing(directoryPath);
 }
 
-void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
+void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath,
+        const QStringList& presentTrackLocations) {
     ScopedTimer timer(QStringLiteral("LibraryScanner::slotDirectoryUnchanged"));
     //kLogger.debug() << "slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
+        // The directory hash matched the saved one, so every file currently
+        // present in this directory is verified to exist on disk. Feed those
+        // locations into the same verified-tracks list that ImportFilesTask
+        // populates, so the cleanup phase clears fs_deleted/needs_verification
+        // for them — without touching rows whose file was genuinely removed
+        // before the saved hash was last updated.
+        for (const QString& location : presentTrackLocations) {
+            m_scannerGlobal->addVerifiedTrack(location);
+        }
     }
     emit progressHashing(directoryPath);
 }

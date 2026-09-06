@@ -42,6 +42,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
         DlgPreferencePage* pDlg;
         QTreeWidgetItem* pTreeItem;
+        QString iconFile;
     };
 
     DlgPreferences(
@@ -55,7 +56,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(PreferencesPage page,
+    void addPageWidget(const PreferencesPage& page,
             const QString& pageTitle,
             const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
@@ -84,9 +85,10 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void menuBarAutoHideChanged();
 
   protected:
-    bool eventFilter(QObject*, QEvent*);
-    void moveEvent(QMoveEvent* e);
-    void resizeEvent(QResizeEvent* e);
+    bool eventFilter(QObject*, QEvent*) override;
+    void changeEvent(QEvent* pEvent) override;
+    void moveEvent(QMoveEvent* e) override;
+    void resizeEvent(QResizeEvent* e) override;
 
   private:
     DlgPreferencePage* currentPage();

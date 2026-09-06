@@ -18,8 +18,10 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     Q_FLAGS(Channels)
     Q_PROPERTY(mixxx::qml::QmlPlayerProxy* player READ getPlayer WRITE setPlayer
                     NOTIFY playerChanged REQUIRED)
-    Q_PROPERTY(Channels channels READ getChannels WRITE setChannels NOTIFY channelsChanged)
-    Q_PROPERTY(Renderer renderer MEMBER m_renderer NOTIFY rendererChanged)
+    Q_PROPERTY(mixxx::qml::QmlWaveformOverview::Channels channels READ
+                    getChannels WRITE setChannels NOTIFY channelsChanged)
+    Q_PROPERTY(mixxx::qml::QmlWaveformOverview::Renderer renderer MEMBER
+                    m_renderer NOTIFY rendererChanged)
     Q_PROPERTY(QColor colorHigh MEMBER m_colorHigh NOTIFY colorHighChanged)
     Q_PROPERTY(QColor colorMid MEMBER m_colorMid NOTIFY colorMidChanged)
     Q_PROPERTY(QColor colorLow MEMBER m_colorLow NOTIFY colorLowChanged)
@@ -58,11 +60,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
   signals:
     void playerChanged();
     void channelsChanged(mixxx::qml::QmlWaveformOverview::Channels channels);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void rendererChanged(Renderer renderer);
-#else
     void rendererChanged(mixxx::qml::QmlWaveformOverview::Renderer renderer);
-#endif
     void colorHighChanged(const QColor& color);
     void colorMidChanged(const QColor& color);
     void colorLowChanged(const QColor& color);

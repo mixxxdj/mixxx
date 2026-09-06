@@ -56,7 +56,7 @@ class HotcueControlTest : public BaseSignalPathTest {
     }
 
     void loadTrack(TrackPointer pTrack) {
-        BaseSignalPathTest::loadTrack(m_pMixerDeck1, pTrack);
+        BaseSignalPathTest::loadTrack(m_pMixerDeck1.get(), pTrack);
         ProcessBuffer();
     }
 

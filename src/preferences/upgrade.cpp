@@ -607,6 +607,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                 correctedWaveformBacked);
         config->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
                 correctedWaveformOption);
+        // Schedule fix for an inconsistency in the database (it will be run in
+        // TrackCollectionManager ctor):
+        // in `track_locations` table the `directory` column may be incorrect,
+        // see https://github.com/mixxxdj/mixxx/pull/16578
+        config->setValue(mixxx::library::prefs::kRepairDatabaseOnNextRestartConfigKey, true);
+
         // mark the configuration as updated
         configVersion = "2.6.0";
         config->set(ConfigKey("[Config]", "Version"),

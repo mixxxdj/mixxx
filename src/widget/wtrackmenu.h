@@ -393,6 +393,8 @@ class WTrackMenu : public QMenu {
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
+    bool m_bSearchRelatedMenuLoaded;
+    bool m_bFindOnWebMenuLoaded;
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 

@@ -1,5 +1,6 @@
 #include "engine/enginemixer.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "audio/types.h"

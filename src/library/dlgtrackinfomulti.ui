@@ -25,7 +25,7 @@
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="main_layout">
+  <layout class="QVBoxLayout" name="main_layout" stretch="1,0,0">
 
    <item>
     <widget class="QGroupBox" name="tags_groupBox">
@@ -397,7 +397,7 @@
       <item row="8" column="1" colspan="3">
        <widget class="QPlainTextEdit" name="txtComment">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -421,7 +421,7 @@
       <item row="9" column="1" colspan="3">
        <widget class="QPushButton" name="btnColorPicker">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -457,12 +457,12 @@
    <item>
     <widget class="QGroupBox" name="properties_groupBox">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QGridLayout" name="properties_layout" rowstretch="0,0,0,0,0,0" columnstretch="0,1,0,1">
+     <layout class="QGridLayout" name="properties_layout" columnstretch="0,1,0,1">
 
       <item row="0" column="0">
        <widget class="QLabel" name="lblDuration">
@@ -628,20 +628,6 @@
          </spacer>
         </item>
        </layout>
-      </item>
-
-      <item row="5" column="1" colspan="3">
-       <spacer name="properties_bottom_spacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>10</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>

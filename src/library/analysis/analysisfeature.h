@@ -18,7 +18,7 @@ class AnalysisFeature : public LibraryFeature {
   public:
     AnalysisFeature(Library* pLibrary,
                     UserSettingsPointer pConfig);
-    ~AnalysisFeature() override = default;
+    ~AnalysisFeature() override;
 
     QVariant title() override {
         return m_title;

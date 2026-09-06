@@ -76,7 +76,6 @@ void QmlWaveformOverview::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void QmlWaveformOverview::slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     setCurrentTrack(pNewTrack);
 }

@@ -950,6 +950,8 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
         pTreeItem->setBold(crateContainsSelectedTrack);
     }
 
+    pRootItem->setBold(m_selectedTrackId.isValid() && sortedTrackCrates.size() > 0);
+
     m_pSidebarModel->triggerRepaint();
 }
 

@@ -49,6 +49,7 @@ class SidebarModel : public QAbstractItemModel {
 
     void clear(const QModelIndex& index);
     void paste(const QModelIndex& index);
+
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);

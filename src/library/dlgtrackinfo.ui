@@ -47,7 +47,7 @@
       <attribute name="title">
        <string>Summary</string>
       </attribute>
-      <layout class="QVBoxLayout" name="summary_layout">
+      <layout class="QVBoxLayout" name="summary_layout" stretch="1,0,0">
        <item>
         <widget class="QGroupBox" name="groupBox">
          <layout class="QGridLayout" name="tags_layout" columnstretch="0,10,0,2">
@@ -414,7 +414,7 @@
           <item row="8" column="1" colspan="3">
            <widget class="QPushButton" name="btnColorPicker">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -683,22 +683,6 @@
 
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>2</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

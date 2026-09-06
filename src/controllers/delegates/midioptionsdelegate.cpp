@@ -19,7 +19,11 @@ const QList<MidiOption> kMidiOptions = {
         // Furthermore, the mapping list is cleaner without it, mappings that
         // have options set are much easier to spot.
         // MidiOption::None,
+        MidiOption::Script,
         MidiOption::Invert,
+        MidiOption::SoftTakeover,
+        MidiOption::FourteenBitMSB,
+        MidiOption::FourteenBitLSB,
         MidiOption::Rot64,
         MidiOption::Rot64Invert,
         MidiOption::Rot64Fast,
@@ -28,11 +32,8 @@ const QList<MidiOption> kMidiOptions = {
         MidiOption::Switch,
         MidiOption::Spread64,
         MidiOption::HercJog,
+        MidiOption::HercJogFast,
         MidiOption::SelectKnob,
-        MidiOption::SoftTakeover,
-        MidiOption::Script,
-        MidiOption::FourteenBitMSB,
-        MidiOption::FourteenBitLSB,
 };
 
 } // namespace
@@ -81,12 +82,20 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
     // * clicking an option or pressing Enter on a selected option toggles it,
     //   closes the list view and commits the updated data
     // * pressing Space on a selected option toggles it, list remains open
-    // * clicking outside the listview closes it, and another click causing the
+    // * clicking outside the list view closes it, and another click causing the
     //   combobox to lose focus closes that and commits pending changes
     connect(pComboBox,
             QOverload<int>::of(&QComboBox::activated),
             this,
             &MidiOptionsDelegate::commitAndCloseEditor);
+
+    // Uncheck other exclusive options whenever one is checked, whether by
+    // clicking, pressing Enter, or toggling with Space (which keeps the list
+    // open and doesn't emit activated()).
+    connect(pModel,
+            &QStandardItemModel::itemChanged,
+            this,
+            &MidiOptionsDelegate::slotItemChanged);
 
     return pComboBox;
 }
@@ -161,21 +170,46 @@ void MidiOptionsDelegate::commitAndCloseEditor(int index) {
     DEBUG_ASSERT(pItem);
     if (pItem->isCheckable()) {
         pItem->setCheckState(pItem->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked);
-        // TODO Concurrent option scan be selected. Implement a compatibility
-        // matrix and uncheck all options that are incompatible with the last
-        // checked option. Store initial check state for/in each item and
-        // hook up to QStandardItemModel::itemChanged()
     } else {
         // Clear was selected. Uncheck all other items
         for (int row = 0; row < pModel->rowCount() - 1; row++) {
             if (row == index) { // Actually it's the last item, but this is safer.
                 continue;
             }
-            pItem = pModel->item(row, 0);
-            pItem->setCheckState(Qt::Unchecked);
+            auto* pOtherItem = pModel->item(row, 0);
+            pOtherItem->setCheckState(Qt::Unchecked);
         }
     }
 
     emit commitData(pComboBox);
     emit closeEditor(pComboBox);
+}
+
+void MidiOptionsDelegate::slotItemChanged(QStandardItem* pItem) {
+    // Return if we unchecked an item
+    if (!pItem || !pItem->isCheckable() || pItem->checkState() != Qt::Checked) {
+        return;
+    }
+    auto option = static_cast<MidiOption>(pItem->data().toUInt());
+    // Nothing to do for non-exclusive options
+    if (!midiOptionIsExclusive(option)) {
+        return;
+    }
+
+    // This is an exclusive option, so uncheck all other exclusive options,
+    // but keep state of "modifiers" (Invert, SoftTakeover).
+    // This happens on the fly so it covers toggling items with Spacebar,
+    // as well as clicks committed via activated().
+    const auto* pModel = qobject_cast<QStandardItemModel*>(pItem->model());
+    DEBUG_ASSERT(pModel);
+    for (int row = 0; row < pModel->rowCount() - 1; row++) {
+        auto* pOtherItem = pModel->item(row, 0);
+        if (pOtherItem == pItem || !pOtherItem->isCheckable()) {
+            continue;
+        }
+        auto otherOption = static_cast<MidiOption>(pOtherItem->data().toUInt());
+        if (midiOptionIsExclusive(otherOption)) {
+            pOtherItem->setCheckState(Qt::Unchecked);
+        }
+    }
 }

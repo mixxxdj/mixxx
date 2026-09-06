@@ -4,25 +4,25 @@
  **********************************************************************/
 // TrackEndWarning: "true": when you reach the end of the track,
 // the jog wheel Button will flash. "false": No flash of Jog Wheel Button
-const TrackEndWarning = engine.getSetting("TrackEndWarning") === "true";
+const TrackEndWarning = engine.getSetting("TrackEndWarning") === true;
 
 //iCutEnabled: iCut mode will automatically cut your track with the cross fader
 // when SHIFT enabled and scratching with the jog wheel
-const iCutEnabled = engine.getSetting("iCutEnabled") === "true";
+const iCutEnabled = engine.getSetting("iCutEnabled") === true;
 
 //activate PFL of deck on track load
-const smartPFL = engine.getSetting("smartPFL") === "true";
+const smartPFL = engine.getSetting("smartPFL") === true;
 
 //Disable Play on Sync button Double Press
-const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === "true";
+const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === true;
 
 // Shift+Filter control behavior
 // true (default) - FX parameter 4 (when the FX is focused)
 // false - Channel Gain
-const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === "true";
+const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === true;
 
 // allow pitch bend with wheel when wheel is not active
-const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === "true";
+const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === true;
 
 /**************************
  *  scriptpause

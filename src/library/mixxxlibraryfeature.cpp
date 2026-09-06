@@ -141,6 +141,20 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &DlgHidden::trackSelected,
             this,
             &MixxxLibraryFeature::trackSelected);
+    connect(m_pHiddenView,
+            &DlgHidden::loadTrack,
+            this,
+            &MixxxLibraryFeature::loadTrack);
+    connect(m_pHiddenView,
+            &DlgHidden::loadTrackToPlayer,
+            this,
+            [=, this](TrackPointer track, const QString& group) {
+                emit loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        mixxx::StemChannelSelection(),
+#endif
+                        false);
+            });
 
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
                                     pKeyboard);

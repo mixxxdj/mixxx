@@ -60,9 +60,7 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
     }
 
     DEBUG_ASSERT(n > 0);
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-    const auto origValue = m_value;
-#endif
+    const audio::FramePos origValue = m_value;
 
     // Detect integer overflow in `m_beatOffset + n`
     const int maxBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
@@ -108,9 +106,7 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
     }
 
     DEBUG_ASSERT(n > 0);
-#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-    const auto origValue = m_value;
-#endif
+    const audio::FramePos origValue = m_value;
 
     // Detect integer overflow
     const int minBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();

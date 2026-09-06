@@ -31,7 +31,7 @@ MiniMixxx.DebugMode = false;
 
 // Set to true to only allow adjustments to the pitch sliders if Shift is held.
 // This can prevent accidental adjustments.
-MiniMixxx.ShiftPitch = false;
+MiniMixxx.ShiftPitch = engine.getSetting("shiftPitch") || false;
 
 // An Encoder represents a single encoder knob and tracks the active mode.
 MiniMixxx.Encoder = class {
@@ -1457,8 +1457,8 @@ MiniMixxx.Controller = class {
             return;
         }
 
-        // If shift is pressed, don't update any values.
-        if (!this.shiftActive() && !this.keylockPressed(group)) {
+        // Only adjust pitch based on ShiftPitch setting.
+        if ((MiniMixxx.ShiftPitch === !this.shiftActive()) && !this.keylockPressed(group)) {
             this.pitchSliderLastValue[group] = value;
             return;
         }

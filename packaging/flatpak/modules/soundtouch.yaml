@@ -5,8 +5,8 @@ config-opts:
   - -DSOUNDSTRETCH=OFF
 sources:
   - type: archive
-    url: https://codeberg.org/soundtouch/soundtouch/archive/2.4.0.tar.gz
-    sha256: 3dda3c9ab1e287f15028c010a66ab7145fa855dfa62763538f341e70b4d10abd
+    url: https://codeberg.org/soundtouch/soundtouch/archive/2.4.1.tar.gz
+    sha256: 35d404e6e8c2ebd12fb4000da6fadd75c99e37eed2126a04721828c11c0377ec
     x-checker-data:
       type: anitya
       project-id: 115722
