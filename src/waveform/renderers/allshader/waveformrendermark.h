@@ -76,6 +76,9 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     float getMaxHeightForText(float proportion) const;
     void updateRangeNode(rendergraph::GeometryNode* pNode,
             const QRectF& rect,
+            int numBoxes,
+            float boxBreadth,
+            float yOffset,
             QColor color);
 
     int m_beatsUntilMark;
