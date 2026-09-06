@@ -363,6 +363,19 @@ jobs:
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
+      - name: "[AppImage] Cache buildenv"
+        # The buildenv is downloaded and extracted during the configure step
+        # (several GB).  Cache the extracted tree so re-runs of the AppImage
+        # job do not re-download it every time.  Keyed by BUILDENV_NAME, so a
+        # new buildenv (new hash suffix) naturally invalidates the entry.
+        # This step must come after "Set up build environment", which exports
+        # BUILDENV_NAME; the restore happens before "Configure" below.
+        if: matrix.buildenv_script == 'tools/appimage_buildenv.sh'
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.BUILDENV_BASEPATH }}/${{ env.BUILDENV_NAME }}
+          key: buildenv-${{ env.BUILDENV_NAME }}
+
       - name: "[Windows] Set up build environment"
         if: matrix.buildenv_script != null && runner.os == 'Windows'
         # With the cmd shell the ERRORLEVEL is checked

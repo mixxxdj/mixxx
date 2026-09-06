@@ -195,7 +195,9 @@ case "$1" in
         # CPACK_APPIMAGE_TOOL_EXECUTABLE).  Install it to /usr/local/bin
         # which is in the default PATH.  Running it requires FUSE
         # (libfuse2t64 is installed above where apt-get is available).
-        APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${HOST_ARCH}.AppImage"
+        # Pinned to a tagged release — the "continuous" tag is a moving
+        # target that would make builds non-reproducible.
+        APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-${HOST_ARCH}.AppImage"
         sudo curl -fsSL --connect-timeout 15 --max-time 120 \
             -o /usr/local/bin/appimagetool \
             "${APPIMAGETOOL_URL}"
