@@ -786,6 +786,7 @@ void EngineMixer::process(const int iBufferSize) {
         m_pMainDelay->process(m_main.data(), iBufferSize);
     } else {
         m_main.clear(iBufferSize);
+        m_booth.clear(iBufferSize);
     }
     if (headphoneEnabled) {
         m_pHeadDelay->process(m_head.data(), iBufferSize);
