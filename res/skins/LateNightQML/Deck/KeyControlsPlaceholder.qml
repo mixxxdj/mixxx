@@ -28,39 +28,12 @@ Item {
         key: "key_notation"
     }
 
-    Mixxx.ControlProxy {
-        id: visualKeyDistanceProxy
-        group: root.group
-        key: "visual_key_distance"
-    }
-
-    function keyToOpenKeyNumber(key) {
-        return Mixxx.KeyUtils.keyToOpenKeyNumber(key);
-    }
-
-    function scaledKey(key, steps) {
-        return Mixxx.KeyUtils.scaleKeySteps(key, steps);
-    }
-
-    function colorForKey(key) {
-        const openKeyNumber = keyToOpenKeyNumber(key);
-        const palette = Mixxx.Config.keyColorPalette;
-        if (openKeyNumber <= 0 || !palette || palette.length < openKeyNumber) {
-            return LateNightTheme.accentColor;
-        }
-        return palette[openKeyNumber - 1];
-    }
-
     function keyDisplayText(key, notationRevision) {
         return Mixxx.KeyUtils.keyToString(key, notationRevision);
     }
 
-    readonly property real keyDistance: visualKeyDistanceProxy.value
-    readonly property real splitPoint: Math.max(0, Math.min(1, keyDistance < 0 ? keyDistance + 1 : keyDistance))
-    readonly property color stripTopColor: keyDistance < 0 ? colorForKey(keyProxy.value) : colorForKey(scaledKey(keyProxy.value, 1))
-    readonly property color stripBottomColor: keyDistance < 0 ? colorForKey(scaledKey(keyProxy.value, -1)) : colorForKey(keyProxy.value)
     readonly property string displayKeyText: keyDisplayText(keyProxy.value, keyNotationProxy.value)
-    readonly property bool showKeyColorStrip: trackLoadedProxy.value > 0 && displayKeyText.length > 0
+    readonly property bool showKeyColorStrip: Mixxx.Config.configKeyColorsEnabled && trackLoadedProxy.value > 0 && displayKeyText.length > 0
     readonly property int keyTextX: showKeyColorStrip ? 30 : 26
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color keyTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
@@ -94,29 +67,13 @@ Item {
         backgroundBorderRight: 2
     }
 
-    // Visual key distance strip
-    Rectangle {
+    KeyColorIndicator {
         x: 26
         y: 0
         width: 4
         height: 20
+        group: root.group
         visible: root.showKeyColorStrip
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            height: parent.height * root.splitPoint
-            color: root.stripTopColor
-        }
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: parent.height - parent.height * root.splitPoint
-            color: root.stripBottomColor
-        }
     }
 
     // Key text display
