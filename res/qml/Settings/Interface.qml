@@ -16,6 +16,7 @@ Category {
         loadInterface();
         loadWaveform();
         loadDeck();
+        loadAuxiliarySurface();
         errorMessage.text = "";
     }
     function loadDeck() {
@@ -78,6 +79,12 @@ Category {
     }
     function loadWaveform() {
     }
+    function loadAuxiliarySurface() {
+        auxiliarySurfaceEnabledInput.selected = Mixxx.Config.auxiliarySurfaceEnabled ? "on" : "off";
+        auxiliarySurfaceScreenInput.currentIndex = auxiliarySurfaceTab.screenIds.indexOf(Mixxx.Config.auxiliarySurfaceScreenId);
+        auxiliarySurfaceFullscreenInput.selected = Mixxx.Config.auxiliarySurfaceFullscreen ? "on" : "off";
+        auxiliarySurfaceTab.dirty = false;
+    }
     function resetDeck() {
     }
     function resetInterface() {
@@ -138,15 +145,57 @@ Category {
     function saveWaveform() {
         loadWaveform();
     }
+    function saveAuxiliarySurface() {
+        const enabled = auxiliarySurfaceEnabledInput.selected === "on";
+        const screenIndex = auxiliarySurfaceScreenInput.currentIndex;
+
+        if (enabled && screenIndex < 0) {
+            errorMessage.text = "Select an available screen.";
+            return;
+        }
+
+        if (!enabled)
+            Mixxx.Config.auxiliarySurfaceEnabled = false;
+
+        if (screenIndex >= 0)
+            Mixxx.Config.auxiliarySurfaceScreenId = auxiliarySurfaceTab.screenIds[screenIndex];
+
+        Mixxx.Config.auxiliarySurfaceFullscreen = auxiliarySurfaceFullscreenInput.selected === "on";
+
+        if (enabled)
+            Mixxx.Config.auxiliarySurfaceEnabled = true;
+
+        loadAuxiliarySurface();
+    }
 
     label: "Interface"
     selectedIndex: 0
-    tabs: ["theme & color", "waveform", "decks"]
+    tabs: ["theme & color", "waveform", "decks", "auxiliary surface"]
 
     Component.onCompleted: {
+        auxiliarySurfaceTab.refreshScreens();
         root.load();
     }
 
+    Connections {
+        target: Mixxx.Config
+
+        function onAuxiliarySurfaceEnabledChanged() {
+            if (!auxiliarySurfaceTab.dirty)
+                root.loadAuxiliarySurface();
+        }
+    }
+    Connections {
+        target: Mixxx.ScreenManager
+
+        function onScreenAdded() {
+            Qt.callLater(auxiliarySurfaceTab.handleScreensChanged);
+        }
+
+        function onScreenRemoved() {
+            Qt.callLater(auxiliarySurfaceTab.handleScreensChanged);
+        }
+    }
     Mixxx.ControlProxy {
         id: numDecks
 
@@ -1540,6 +1589,135 @@ Category {
             }
         }
     }
+    Mixxx.SettingGroup {
+        id: auxiliarySurfaceTab
+
+        property bool dirty: false
+        property var screenIds: []
+        property var screenNames: []
+
+        function refreshScreens() {
+            const ids = [];
+            const names = [];
+            const screens = Qt.application.screens;
+            for (let i = 0; i < screens.length; ++i) {
+                const screen = screens[i];
+                ids.push(Mixxx.ScreenManager.screenId(screen.name, screen.serialNumber));
+                names.push(screen.name);
+            }
+            screenIds = ids;
+            screenNames = names;
+        }
+
+        function handleScreensChanged() {
+            const wasDirty = dirty;
+            refreshScreens();
+
+            if (!wasDirty)
+                root.loadAuxiliarySurface();
+        }
+
+        anchors.fill: parent
+        label: "Auxiliary Surface"
+        visible: root.selectedIndex == 3
+
+        onActivated: {
+            root.selectedIndex = 3;
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 14
+            anchors.rightMargin: 14
+            anchors.topMargin: 20
+            spacing: 15
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Mixxx.SettingParameter {
+                    Layout.fillWidth: true
+                    label: "Enable auxiliary surface"
+
+                    Text {
+                        anchors.fill: parent
+                        color: Theme.white
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        horizontalAlignment: Text.AlignLeft
+                        text: parent.label
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                RatioChoice {
+                    id: auxiliarySurfaceEnabledInput
+
+                    options: ["on", "off"]
+
+                    onSelectedChanged: auxiliarySurfaceTab.dirty = true
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                enabled: auxiliarySurfaceEnabledInput.selected === "on"
+                opacity: enabled ? 1.0 : 0.4
+
+                Mixxx.SettingParameter {
+                    Layout.fillWidth: true
+                    label: "Screen"
+
+                    Text {
+                        anchors.fill: parent
+                        color: Theme.white
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        horizontalAlignment: Text.AlignLeft
+                        text: parent.label
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                Skin.ComboBox {
+                    id: auxiliarySurfaceScreenInput
+
+                    implicitWidth: 200
+                    model: auxiliarySurfaceTab.screenNames
+
+                    onCurrentIndexChanged: auxiliarySurfaceTab.dirty = true
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                enabled: auxiliarySurfaceEnabledInput.selected === "on"
+                opacity: enabled ? 1.0 : 0.4
+
+                Mixxx.SettingParameter {
+                    Layout.fillWidth: true
+                    label: "Fullscreen"
+
+                    Text {
+                        anchors.fill: parent
+                        color: Theme.white
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        horizontalAlignment: Text.AlignLeft
+                        text: parent.label
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+                RatioChoice {
+                    id: auxiliarySurfaceFullscreenInput
+
+                    options: ["on", "off"]
+
+                    onSelectedChanged: auxiliarySurfaceTab.dirty = true
+                }
+            }
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+            }
+        }
+    }
     Item {
         id: buttonActions
 
@@ -1586,7 +1764,7 @@ Category {
             SettingComponents.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty || root.selectedIndex == 3 && auxiliarySurfaceTab.dirty
                 opacity: enabled ? 1.0 : 0.5
                 text: "Cancel"
 
@@ -1601,13 +1779,16 @@ Category {
                     case 2:
                         root.loadDeck();
                         break;
+                    case 3:
+                        root.loadAuxiliarySurface();
+                        break;
                     }
                 }
             }
             SettingComponents.FormButton {
                 activeColor: "#999999"
                 backgroundColor: root.hasChanges ? "#3a60be" : "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty || root.selectedIndex == 3 && auxiliarySurfaceTab.dirty
                 opacity: enabled ? 1.0 : 0.5
                 text: "Save"
 
@@ -1622,6 +1803,9 @@ Category {
                         break;
                     case 2:
                         root.saveDeck();
+                        break;
+                    case 3:
+                        root.saveAuxiliarySurface();
                         break;
                     }
                 }
