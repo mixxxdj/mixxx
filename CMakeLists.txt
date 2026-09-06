@@ -3994,7 +3994,7 @@ target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 
 # PipeWire
 find_package(PipeWire)
-default_option(PIPEWIRE "Enable the PipeWire backend" "PipeWire_FOUND")
+option(PIPEWIRE "Enable the PipeWire backend" OFF)
 if(PIPEWIRE)
   target_link_libraries(mixxx-lib PUBLIC PipeWire::PipeWire)
   target_compile_definitions(mixxx-lib PUBLIC __PIPEWIRE__)
