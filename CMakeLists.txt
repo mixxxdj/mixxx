@@ -227,7 +227,16 @@ function(fatal_error_missing_env)
     endif()
   elseif(UNIX AND NOT APPLE AND NOT ANDROID)
     # Linux, BSD, Solaris, Minix
-    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+    if(DEFINED MIXXX_VCPKG_ROOT)
+      # On Linux a vcpkg build environment is currently only used for the
+      # AppImage build.  Point the user at the right setup script instead of
+      # the generic distro dev-package hint below.
+      message(
+        FATAL_ERROR
+        "The Mixxx vcpkg build environment is not set up correctly. Download and\n"
+        "set it up via `source ${CMAKE_SOURCE_DIR}/tools/appimage_buildenv.sh setup`"
+      )
+    elseif(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
         "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"

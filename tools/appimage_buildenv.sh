@@ -85,13 +85,46 @@ case "$1" in
         BUILDENV_PATH="${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
 
         # vcpkg.cmake is at BUILDENV_PATH/scripts/buildsystems/, matching the
-        # macos/android buildenv pattern.
+        # macos/android buildenv pattern.  Export the full variable set so a
+        # child cmake process sees BUILDENV_URL too — it gates the buildenv
+        # download in CMakeLists.txt — and VCPKG_TARGET_TRIPLET.
         export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
-
-        export BUILDENV_NAME
-        export BUILDENV_BASEPATH
-        export MIXXX_VCPKG_ROOT
+        export BUILDENV_NAME="${BUILDENV_NAME}"
+        export BUILDENV_BASEPATH="${BUILDENV_BASEPATH}"
+        export BUILDENV_URL="${BUILDENV_URL}"
+        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
         export CMAKE_PREFIX_PATH="${BUILDENV_PATH}/installed/${VCPKG_TARGET_TRIPLET}"
+
+        # The CPack AppImage generator requires CMake >= 4.2 (added in CMake
+        # 4.2).  Resolve this before installing any system packages, so a
+        # machine that cannot provide CMake >= 4.2 fails fast without
+        # touching anything.  Priority: system CMake >= 4.2, then a snap
+        # CMake, then apt-get satisfy, then fail with an install hint.  CI
+        # provides CMake via jwlawson/actions-setup-cmake@v2.2 in build.yml,
+        # so this only matters for local builds.
+        if cmake --version 2>/dev/null | awk -F'[ .]' 'NR==1 {ok=($3>4 || ($3==4 && $4>=2)); exit !ok} END {if (NR==0) exit 1}'; then
+            echo "Using system CMake (>= 4.2)"
+        elif /snap/bin/cmake --version 2>/dev/null | awk -F'[ .]' 'NR==1 {ok=($3>4 || ($3==4 && $4>=2)); exit !ok} END {if (NR==0) exit 1}'; then
+            # snap installs to /snap/bin, which comes after /usr/bin in the
+            # default PATH, so a snap-installed CMake does not shadow the
+            # system one; put it on PATH explicitly.
+            export PATH="/snap/bin:$PATH"
+            echo "Using Snap CMake (>= 4.2)"
+        elif command -v apt-get >/dev/null 2>&1 && sudo apt-get update && sudo apt-get satisfy "cmake (>= 4.2)"; then
+            echo "CMake >= 4.2 installed via apt"
+        else
+            echo "CMake >= 4.2 is required for the AppImage CPack generator, but no"
+            echo "version >= 4.2 is available in the system package manager."
+            echo ""
+            if command -v snap >/dev/null 2>&1; then
+                echo "On Ubuntu, install it via snap:"
+                echo "  sudo snap install cmake --channel=4.2/stable --classic"
+            else
+                echo "Please install CMake >= 4.2 (e.g. from https://cmake.org/download/)"
+            fi
+            echo "and re-source this script."
+            return 1
+        fi
 
         # System packages required for the build: build tools plus X11/Mesa/GL
         # headers and utilities (Qt platform). All other third-party libraries
@@ -155,29 +188,6 @@ case "$1" in
             echo "automates Debian-based systems. Please install the equivalent"
             echo "packages for your distribution, or consider contributing a"
             echo "script for it."
-        fi
-
-        # The CPack AppImage generator requires CMake >= 4.2 (added in CMake
-        # 4.2).  Priority: system CMake >= 4.2, then apt-get satisfy, then
-        # fail with an install hint.  CI provides CMake via
-        # jwlawson/actions-setup-cmake@v2.2 in build.yml, so this only
-        # matters for local builds.
-        if cmake --version 2>/dev/null | awk -F'[ .]' 'NR==1 {ok=($3>4 || ($3==4 && $4>=2)); exit !ok} END {if (NR==0) exit 1}'; then
-            echo "Using system CMake (>= 4.2)"
-        elif command -v apt-get >/dev/null 2>&1 && sudo apt-get satisfy "cmake (>= 4.2)"; then
-            echo "CMake >= 4.2 installed via apt"
-        else
-            echo "CMake >= 4.2 is required for the AppImage CPack generator, but no"
-            echo "version >= 4.2 is available in the system package manager."
-            echo ""
-            if command -v snap >/dev/null 2>&1; then
-                echo "On Ubuntu, install it via snap:"
-                echo "  sudo snap install cmake --channel=4.2/stable --classic"
-            else
-                echo "Please install CMake >= 4.2 (e.g. from https://cmake.org/download/)"
-            fi
-            echo "and re-source this script."
-            return 1
         fi
 
         # appimagetool is required by the CPack AppImage generator, which searches
