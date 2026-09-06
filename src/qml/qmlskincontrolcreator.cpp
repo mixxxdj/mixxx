@@ -18,6 +18,7 @@ QmlSkinControlCreator::QmlSkinControlCreator(QObject* parent)
           m_persist(false),
           m_persistConfigured(false),
           m_defaultValue(0.0),
+          m_defaultValueConfigured(false),
           m_buttonMode(ButtonMode::Toggle),
           m_isComponentComplete(false) {
 }
@@ -73,11 +74,12 @@ bool QmlSkinControlCreator::getPersist() const {
 }
 
 void QmlSkinControlCreator::setDefaultValue(double defaultValue) {
-    if (m_defaultValue == defaultValue) {
-        return;
-    }
+    const bool changed = m_defaultValue != defaultValue;
     m_defaultValue = defaultValue;
-    emit defaultValueChanged(defaultValue);
+    m_defaultValueConfigured = true;
+    if (changed) {
+        emit defaultValueChanged(defaultValue);
+    }
     createDefaultControlBeforeComponentComplete();
     createControl();
 }
@@ -147,8 +149,9 @@ void QmlSkinControlCreator::createControl(bool allowBeforeComponentComplete) {
 }
 
 void QmlSkinControlCreator::createDefaultControlBeforeComponentComplete() {
-    if (m_isComponentComplete || m_pControl || m_defaultValue == 0.0 ||
-            !m_persistConfigured || !m_key.isValid() || m_key.group != kSkinGroup ||
+    if (m_isComponentComplete || m_pControl || !m_persistConfigured ||
+            !m_defaultValueConfigured ||
+            !m_key.isValid() || m_key.group != kSkinGroup ||
             ControlObject::exists(m_key)) {
         return;
     }

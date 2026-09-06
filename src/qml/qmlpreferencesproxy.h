@@ -162,6 +162,9 @@ class QmlControllerSettingGroup : public QmlControllerSettingElement {
 };
 
 class QmlControllerDeviceProxy;
+
+using QmlControllerScreenElementList = QList<QmlControllerScreenElement*>;
+
 class QmlControllerMappingProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString name READ getName CONSTANT)
@@ -185,7 +188,7 @@ class QmlControllerMappingProxy : public QObject {
             const mixxx::qml::QmlConfigProxy* pConfig,
             mixxx::qml::QmlControllerDeviceProxy* pController);
 
-    Q_INVOKABLE QList<mixxx::qml::QmlControllerScreenElement*> loadScreens(
+    Q_INVOKABLE mixxx::qml::QmlControllerScreenElementList loadScreens(
             const mixxx::qml::QmlConfigProxy* pConfig,
             mixxx::qml::QmlControllerDeviceProxy* pController);
 
@@ -304,13 +307,10 @@ class QmlControllerDeviceProxy : public QObject {
             std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
 
-    void mappingCreated(QmlControllerDeviceProxy::Type type, const MappingInfo& mapping);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void mappingUpdated(QmlControllerMappingProxy* pMapping, const MappingInfo& mapping);
-#else
+    void mappingCreated(mixxx::qml::QmlControllerDeviceProxy::Type type,
+            const MappingInfo& mapping);
     void mappingUpdated(mixxx::qml::QmlControllerMappingProxy* pMapping,
             const MappingInfo& mapping);
-#endif
     void deviceLearned();
 
   private:
@@ -325,6 +325,8 @@ class QmlControllerDeviceProxy : public QObject {
 
     QHash<QString, std::shared_ptr<LegacyControllerMapping>> m_mappingInstance;
 };
+
+using QmlControllerMappingProxyList = QList<QmlControllerMappingProxy*>;
 
 class QmlControllerManagerProxy : public QObject {
     Q_OBJECT
@@ -347,7 +349,7 @@ class QmlControllerManagerProxy : public QObject {
 
     std::shared_ptr<ControllerManager> internal() const;
 
-    Q_INVOKABLE QList<mixxx::qml::QmlControllerMappingProxy*> mappings(
+    Q_INVOKABLE mixxx::qml::QmlControllerMappingProxyList mappings(
             mixxx::qml::QmlControllerDeviceProxy::Type type) const {
         return m_knownMappings.value(type);
     }
@@ -362,13 +364,10 @@ class QmlControllerManagerProxy : public QObject {
   private slots:
     void refreshKnownDevices();
     void refreshMappings();
-    void loadNewMapping(QmlControllerDeviceProxy::Type type, const MappingInfo& mapping);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-    void updateExistingMapping(QmlControllerMappingProxy* pMapping, const MappingInfo& mapping);
-#else
+    void loadNewMapping(mixxx::qml::QmlControllerDeviceProxy::Type type,
+            const MappingInfo& mapping);
     void updateExistingMapping(mixxx::qml::QmlControllerMappingProxy* pMapping,
             const MappingInfo& mapping);
-#endif
 
   signals:
     void deviceListChanged();

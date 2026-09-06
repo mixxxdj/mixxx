@@ -578,7 +578,8 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-            qPrintable(QString("bpm BETWEEN 94 AND 106")),
+            qPrintable(QString("(bpm >= 94 AND bpm < 106) OR (bpm >= 47 AND "
+                               "bpm < 53) OR (bpm >= 188 AND bpm < 212)")),
             qPrintable(pQuery->toSql()));
 
     // Test empty BPM (incomplete query)

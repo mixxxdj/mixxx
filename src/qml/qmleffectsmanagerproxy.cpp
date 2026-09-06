@@ -13,11 +13,34 @@ namespace qml {
 QmlEffectsManagerProxy::QmlEffectsManagerProxy(
         std::shared_ptr<EffectsManager> pEffectsManager, QObject* parent)
         : QObject(parent),
-          m_pEffectsManager(pEffectsManager),
+          m_pEffectsManager(std::move(pEffectsManager)),
           m_pVisibleEffectsModel(
-                  new QmlVisibleEffectsModel(pEffectsManager, this)),
+                  new QmlVisibleEffectsModel(m_pEffectsManager, this)),
           m_pQuickChainPresetModel(
-                  new QmlChainPresetModel(m_pEffectsManager->getChainPresetManager(), this)) {
+                  new QmlChainPresetModel(m_pEffectsManager,
+                          QmlChainPresetModel::PresetType::Quick,
+                          this)),
+          m_pStandardChainPresetModel(
+                  new QmlChainPresetModel(m_pEffectsManager,
+                          QmlChainPresetModel::PresetType::Standard,
+                          this)) {
+    for (int unitIndex = 0; unitIndex < kNumStandardEffectUnits; ++unitIndex) {
+        const auto pEffectUnit = m_pEffectsManager->getStandardEffectChain(unitIndex);
+        if (pEffectUnit) {
+            m_effectUnitProxies.append(new QmlEffectUnitProxy(
+                    m_pEffectsManager, unitIndex + 1, pEffectUnit, this));
+        }
+    }
+}
+
+QmlEffectUnitProxy* QmlEffectsManagerProxy::getEffectUnit(int unitNumber) const {
+    const int unitIndex = unitNumber - 1;
+    if (unitIndex < 0 || unitIndex >= m_effectUnitProxies.size()) {
+        qWarning() << "QmlEffectsManagerProxy: Effect Unit" << unitNumber
+                   << "not found!";
+        return nullptr;
+    }
+    return m_effectUnitProxies.at(unitIndex);
 }
 
 QmlEffectSlotProxy* QmlEffectsManagerProxy::getEffectSlot(int unitNumber, int effectNumber) const {

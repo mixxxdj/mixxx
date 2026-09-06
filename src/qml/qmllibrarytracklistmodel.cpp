@@ -198,6 +198,15 @@ TrackModel::Capabilities QmlLibraryTrackListModel::getCapabilities() const {
 bool QmlLibraryTrackListModel::hasCapabilities(TrackModel::Capabilities caps) const {
     return (getCapabilities() & caps) == caps;
 }
+
+void QmlLibraryTrackListModel::search(const QString& searchText) {
+    auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
+        return;
+    }
+    pTrackModel->search(searchText);
+}
+
 void QmlLibraryTrackListModel::sort(int column, Qt::SortOrder order) {
     VERIFY_OR_DEBUG_ASSERT(column >= 0 || column < m_columns.size()) {
         return;

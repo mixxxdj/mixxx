@@ -5,7 +5,11 @@ import QtQuick 2.12
 Mixxx.WaveformOverview {
     id: root
 
+    property color cueMarkerColor: "red"
     required property string group
+    property color introOutroMarkerColor: "blue"
+    property color loopMarkerColor: "green"
+    property string playPositionMarkerColor: "white"
     readonly property var player: Mixxx.PlayerManager.getPlayer(root.group)
 
     track: player?.currentTrack
@@ -34,13 +38,13 @@ Mixxx.WaveformOverview {
 
         MixxxControls.WaveformOverviewMarkerLayer {
             anchors.fill: parent
-            cueColor: "red"
+            cueColor: root.cueMarkerColor
             cueText: "C"
             group: root.group
-            introOutroColor: "blue"
+            introOutroColor: root.introOutroMarkerColor
             introStartText: "IN"
             labelColor: "white"
-            loopColor: "green"
+            loopColor: root.loopMarkerColor
             loopStartText: "LOOP"
             outroStartText: "OUT"
             showHotcueLabels: false
@@ -51,6 +55,7 @@ Mixxx.WaveformOverview {
             id: playPositionMarker
 
             anchors.fill: parent
+            color: root.playPositionMarkerColor
             group: root.group
             key: "playposition"
         }

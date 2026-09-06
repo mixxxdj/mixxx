@@ -31,10 +31,10 @@ SoundDeviceId QmlSoundDeviceProxy::getDeviceId() const {
     return m_pInternal->getDeviceId();
 }
 
-QList<QmlSoundDeviceConnection*> QmlSoundInputDeviceProxy::connections(
+QmlSoundDeviceConnectionList QmlSoundInputDeviceProxy::connections(
         mixxx::qml::QmlSoundManagerProxy* manager) {
     DEBUG_ASSERT(qml_owned_ptr<mixxx::qml::QmlSoundManagerProxy>(manager));
-    QList<QmlSoundDeviceConnection*> connections;
+    QmlSoundDeviceConnectionList connections;
 
     auto pManager = manager->internal();
     auto config = pManager->getConfig();
@@ -49,10 +49,10 @@ QList<QmlSoundDeviceConnection*> QmlSoundInputDeviceProxy::connections(
     return connections;
 }
 
-QList<QmlSoundDeviceConnection*> QmlSoundOutputDeviceProxy::connections(
+QmlSoundDeviceConnectionList QmlSoundOutputDeviceProxy::connections(
         mixxx::qml::QmlSoundManagerProxy* manager) {
     DEBUG_ASSERT(qml_owned_ptr<mixxx::qml::QmlSoundManagerProxy>(manager));
-    QList<QmlSoundDeviceConnection*> connections;
+    QmlSoundDeviceConnectionList connections;
 
     auto pManager = manager->internal();
     auto config = pManager->getConfig();
@@ -121,8 +121,8 @@ QList<QString> QmlSoundManagerProxy::getHostAPIList() const {
     return m_pSoundManager->getHostAPIList();
 }
 
-QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableInputDevices(const QString& filterAPI) {
-    QList<QmlSoundDeviceProxy*> devicesQml;
+QmlSoundDeviceProxyList QmlSoundManagerProxy::availableInputDevices(const QString& filterAPI) {
+    QmlSoundDeviceProxyList devicesQml;
     const QList<SoundDevicePointer> devices =
             m_pSoundManager->getDeviceList(filterAPI, false, true);
     for (const auto& device : devices) {
@@ -131,8 +131,8 @@ QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableInputDevices(const QS
     return devicesQml;
 }
 
-QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableOutputDevices(const QString& filterAPI) {
-    QList<QmlSoundDeviceProxy*> devicesQml;
+QmlSoundDeviceProxyList QmlSoundManagerProxy::availableOutputDevices(const QString& filterAPI) {
+    QmlSoundDeviceProxyList devicesQml;
     const QList<SoundDevicePointer> devices =
             m_pSoundManager->getDeviceList(filterAPI, true, false);
     for (const auto& device : devices) {

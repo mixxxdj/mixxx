@@ -30,7 +30,11 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QComboBox" name="apiComboBox"/>
+      <layout class="QHBoxLayout" name="apiHBox">
+        <item>
+          <widget class="QComboBox" name="apiComboBox"/>
+        </item>
+      </layout>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="sampleRateLabel">
@@ -43,7 +47,11 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QComboBox" name="sampleRateComboBox"/>
+      <layout class="QHBoxLayout" name="sampleRateHBox">
+        <item>
+          <widget class="QComboBox" name="sampleRateComboBox"/>
+        </item>
+      </layout>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="audioBufferLabel">
@@ -56,7 +64,11 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="audioBufferComboBox"/>
+      <layout class="QHBoxLayout" name="audioBufferHBox">
+        <item>
+          <widget class="QComboBox" name="audioBufferComboBox"/>
+        </item>
+      </layout>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="deviceSyncLabel">

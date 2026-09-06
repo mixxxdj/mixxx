@@ -2,11 +2,18 @@
 
 #include <QAbstractItemModel>
 #include <QQmlEngine>
+#include <QStringList>
 #include <cmath>
 
 #include "control/controlobject.h"
 #include "library/library.h"
+#include "library/library_prefs.h"
 #include "library/librarytablemodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#ifdef __ENGINEPRIME__
+#include "library/export/libraryexporter.h"
+#endif
 #include "moc_qmllibraryproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "qml/qmlconfigproxy.h"
@@ -99,23 +106,228 @@ mixxx::audio::FramePos getCurrentPlayPositionWithQuantize(
 }
 } // namespace
 
+QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner,
+        TrackCollectionManager* trackCollectionManager,
+        QObject* parent)
+        : QObject(parent),
+          m_pLibraryScanner(libraryScanner),
+          m_running(trackCollectionManager->isLibraryScanActive()),
+          m_cancelling(false) {
+    connect(libraryScanner,
+            &LibraryScanner::progressLoading,
+            this,
+            &QmlLibraryScannerProxy::progress);
+    connect(libraryScanner,
+            &LibraryScanner::scanStarted,
+            this,
+            &QmlLibraryScannerProxy::started);
+    connect(libraryScanner,
+            &LibraryScanner::scanFinished,
+            this,
+            &QmlLibraryScannerProxy::finished);
+    connect(this,
+            &QmlLibraryScannerProxy::requestCancel,
+            libraryScanner,
+            &LibraryScanner::slotCancel);
+
+    // Properties
+    connect(libraryScanner,
+            &LibraryScanner::scanStarted,
+            this,
+            [this]() {
+                m_cancelling = false;
+                m_running = true;
+                emit stateChanged();
+            });
+    connect(libraryScanner,
+            &LibraryScanner::scanFinished,
+            this,
+            [this]() {
+                m_cancelling = false;
+                m_running = false;
+                emit stateChanged();
+            });
+}
+
 QmlLibraryProxy::QmlLibraryProxy(QObject* parent)
-        : QObject(parent) {
+        : QObject(parent),
+          m_pModelProperty(new QmlLibraryTrackListModel(
+                  QList<QmlLibraryTrackListColumn*>{}, s_pLibrary->trackTableModel(), this)),
+          m_pScanner(new QmlLibraryScannerProxy(
+                  s_pLibrary->trackCollectionManager()->scanner(),
+                  s_pLibrary->trackCollectionManager(),
+                  this)),
+          m_pTrackCollectionManager(s_pLibrary->trackCollectionManager()) {
+    connect(m_pScanner,
+            &QmlLibraryScannerProxy::stateChanged,
+            this,
+            &QmlLibraryProxy::libraryScanActiveChanged);
+    TrackCollectionManager* pTrackCollectionManager =
+            s_pLibrary->trackCollectionManager();
+    VERIFY_OR_DEBUG_ASSERT(pTrackCollectionManager) {
+        return;
+    }
+    connect(pTrackCollectionManager,
+            &TrackCollectionManager::libraryScanSummary,
+            this,
+            [this](const LibraryScanResultSummary&) {
+                deliverPendingLibraryScanSummary();
+            });
+    deliverPendingLibraryScanSummary();
+#ifdef __ENGINEPRIME__
+    m_pLibraryExporter = s_pLibrary->makeLibraryExporter(nullptr);
+    connect(s_pLibrary.get(),
+            &Library::exportLibrary,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExport);
+    connect(s_pLibrary.get(),
+            &Library::exportCrate,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
+    connect(s_pLibrary.get(),
+            &Library::exportPlaylist,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialPlaylist);
+#endif
 }
 
 QmlLibraryProxy::~QmlLibraryProxy() = default;
+
+void QmlLibraryProxy::deliverPendingLibraryScanSummary() {
+    const auto pendingResult = m_pTrackCollectionManager->takePendingLibraryScanSummary();
+    if (!pendingResult) {
+        return;
+    }
+    const auto& result = *pendingResult;
+    const UserSettingsPointer pConfig = QmlConfigProxy::get();
+    if (!pConfig ||
+            !pConfig->getValue<bool>(
+                    mixxx::library::prefs::kShowScanSummaryConfigKey, true)) {
+        return;
+    }
+    if (result.autoscan &&
+            result.numNewTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        return;
+    }
+
+    const QString title = tr("Library scan finished");
+    if (result.noDirectoriesConfigured) {
+        emit libraryScanSummaryAvailable(title,
+                tr("No music directories configured for scanning."),
+                tr("Add directories in the library preferences."));
+        return;
+    }
+
+    const QString text = tr("Scan took %1").arg(result.durationString);
+    QStringList details;
+    if (result.numNewTracks == 0 &&
+            result.numMovedTracks == 0 &&
+            result.numNewMissingTracks == 0 &&
+            result.numRediscoveredTracks == 0) {
+        details.append(tr("No changes detected."));
+    } else {
+        if (result.numNewTracks != 0) {
+            details.append(tr("%n new track(s) found", nullptr, result.numNewTracks));
+        }
+        if (result.numMovedTracks != 0) {
+            details.append(
+                    tr("%n moved track(s) detected", nullptr, result.numMovedTracks));
+        }
+        if (result.numNewMissingTracks != 0) {
+            details.append(tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks)
+                            .arg(result.numMissingTracks));
+        }
+        if (result.numRediscoveredTracks != 0) {
+            details.append(tr("%n track(s) rediscovered",
+                    nullptr,
+                    result.numRediscoveredTracks));
+        }
+    }
+    details.append(tr("%n track(s) in total", nullptr, result.tracksTotal));
+    emit libraryScanSummaryAvailable(title, text, details.join(QLatin1Char('\n')));
+}
 
 QmlLibraryTrackListModel* QmlLibraryProxy::model() const {
     return make_qml_owned<QmlLibraryTrackListModel>(
             QList<QmlLibraryTrackListColumn*>{}, s_pLibrary->trackTableModel())
             .get();
 }
-
 void QmlLibraryProxy::analyze(const QmlTrackProxy* track) const {
     VERIFY_OR_DEBUG_ASSERT(track && track->internal()) {
         return;
     }
     emit s_pLibrary->analyzeTracks({track->internal()->getId()});
+}
+
+void QmlLibraryProxy::createCrate() {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    s_pLibrary->slotCreateCrate();
+}
+
+void QmlLibraryProxy::createPlaylist() {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    s_pLibrary->slotCreatePlaylist();
+}
+
+bool QmlLibraryProxy::enginePrimeExportAvailable() const {
+#ifdef __ENGINEPRIME__
+    return true;
+#else
+    return false;
+#endif
+}
+
+void QmlLibraryProxy::exportLibrary() {
+#ifdef __ENGINEPRIME__
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    emit s_pLibrary->exportLibrary();
+#endif
+}
+
+void QmlLibraryProxy::rescanLibrary() {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    if (libraryScanActive()) {
+        return;
+    }
+    TrackCollectionManager* pTrackCollectionManager =
+            s_pLibrary->trackCollectionManager();
+    VERIFY_OR_DEBUG_ASSERT(pTrackCollectionManager) {
+        return;
+    }
+    pTrackCollectionManager->startLibraryScan();
+}
+
+void QmlLibraryProxy::searchInCurrentView() {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    s_pLibrary->slotSearchInCurrentView();
+}
+
+void QmlLibraryProxy::searchInTracksLibrary() {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    s_pLibrary->slotSearchInAllTracks();
+}
+
+void QmlLibraryProxy::showAutoDJ() {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return;
+    }
+    s_pLibrary->showAutoDJ();
 }
 
 QString QmlLibraryProxy::deckHotcueLabel(
@@ -267,6 +479,94 @@ QmlLibraryProxy* QmlLibraryProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsE
         return nullptr;
     }
     return new QmlLibraryProxy(pQmlEngine);
+}
+
+QmlLibraryProxy::AddResult QmlLibraryProxy::addSource(
+        const QUrl& newPath) {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        qWarning() << "Library hasn't been registered yet!";
+        return QmlLibraryProxy::AddResult::InvalidOrMissingDirectory;
+    }
+    QDir directory(newPath.toLocalFile());
+    Sandbox::createSecurityTokenForDir(directory);
+    return static_cast<QmlLibraryProxy::AddResult>(
+            s_pLibrary->trackCollectionManager()->addDirectory(
+                    mixxx::FileInfo(newPath.toLocalFile())));
+}
+
+QmlLibraryProxy::RemoveResult QmlLibraryProxy::removeSource(
+        const QUrl& oldPath, SourceRemovalType removalType) {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        qWarning() << "Library hasn't been registered yet!";
+        return QmlLibraryProxy::RemoveResult::NotFound;
+    }
+
+    DirectoryDAO::RemoveResult result =
+            s_pLibrary->trackCollectionManager()->removeDirectory(
+                    mixxx::FileInfo(oldPath.toLocalFile()));
+    if (result != DirectoryDAO::RemoveResult::Ok) {
+        return static_cast<QmlLibraryProxy::RemoveResult>(result);
+    }
+
+    switch (removalType) {
+    case SourceRemovalType::KeepTracks:
+        break;
+    case SourceRemovalType::HideTracks:
+        // Mark all tracks in this directory as deleted but DON'T purge them
+        // in case the user re-adds them manually.
+        s_pLibrary->trackCollectionManager()->hideAllTracks(oldPath.toLocalFile());
+        break;
+    case SourceRemovalType::PurgeTracks:
+        // The user requested that we purge all metadata.
+        s_pLibrary->trackCollectionManager()->purgeAllTracks(oldPath.toLocalFile());
+        break;
+    default:
+        DEBUG_ASSERT(!"unreachable");
+    }
+    return static_cast<QmlLibraryProxy::RemoveResult>(result);
+}
+
+QmlLibraryProxy::RelocateResult QmlLibraryProxy::relinkSource(
+        const QUrl& oldPath, const QUrl& newPath) {
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        qWarning() << "Library hasn't been registered yet!";
+        return QmlLibraryProxy::RelocateResult::SqlError;
+    }
+    return static_cast<QmlLibraryProxy::RelocateResult>(
+            s_pLibrary->trackCollectionManager()->relocateDirectory(
+                    oldPath.toLocalFile(), newPath.toLocalFile()));
+}
+
+// Static
+qsizetype QmlLibraryProxy::sources_count(QQmlListProperty<QmlLibrarySource>* pList) {
+    VERIFY_OR_DEBUG_ASSERT(pList && pList->object && s_pLibrary) {
+        return 0;
+    }
+    return s_pLibrary->trackCollectionManager()
+            ->internalCollection()
+            ->getRootDirectories()
+            .size();
+}
+
+// Static
+QmlLibrarySource* QmlLibraryProxy::sources_at(
+        QQmlListProperty<QmlLibrarySource>* pList, qsizetype index) {
+    VERIFY_OR_DEBUG_ASSERT(pList && pList->object) {
+        return nullptr;
+    }
+    VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {
+        return nullptr;
+    }
+    return make_qml_owned<QmlLibrarySource>(
+            s_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->getRootDirectories()
+                    .at(index));
+}
+
+// Static
+void QmlLibraryProxy::sources_clear(QQmlListProperty<QmlLibrarySource>*) {
+    DEBUG_ASSERT(!"unsupported operation");
 }
 
 } // namespace qml

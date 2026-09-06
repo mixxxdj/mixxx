@@ -29,6 +29,7 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     ~QmlLegacyLibraryItem() override;
 
     void paint(QPainter* pPainter) override;
+    Q_INVOKABLE void focusSearch();
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;

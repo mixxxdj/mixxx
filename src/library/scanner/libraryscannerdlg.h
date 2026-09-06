@@ -18,6 +18,7 @@ class LibraryScannerDlg : public QDialog {
   public slots:
     void slotUpdate(const QString& path);
     void slotUpdateCover(const QString& path);
+    void slotUpdateSubstitute(const QString& path);
     void slotCancel();
     void slotScanFinished();
     void slotScanStarted();

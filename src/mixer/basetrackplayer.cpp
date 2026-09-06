@@ -542,7 +542,9 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     // Do not reset m_pReplayGain here, because the track might be still
     // playing and the last buffer will be processed.
 
-    m_pPlay->set(0.0);
+    if (m_pPlay->toBool()) {
+        m_pPlay->set(0.0);
+    }
 
 #ifdef __STEM__
     if (m_pStemColors.size()) {

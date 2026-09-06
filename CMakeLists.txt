@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.21)
+# Qt 6.10 requires minimum CMake 3.22: https://doc.qt.io/qt-6.10/cmake-supported-cmake-versions.html
+cmake_minimum_required(VERSION 3.22)
 # lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
@@ -1561,7 +1562,6 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
-  src/soundio/networkenumerator.cpp
   src/soundio/portaudioenumerator.cpp
   src/soundio/sounddeviceenumerator.cpp
   src/soundio/sounddevice.cpp
@@ -2338,6 +2338,21 @@ find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
 if(NOT Qt6_FOUND)
   fatal_error_missing_env()
 endif()
+
+# We need Qt 6.4 for ComponentBehavior: Bound
+cmake_dependent_option(
+  QML
+  "Build with QML"
+  ON
+  "Qt6_VERSION VERSION_GREATER_EQUAL 6.4"
+  OFF
+)
+if(QML)
+  add_compile_definitions(MIXXX_USE_QML)
+else()
+  message(STATUS "Building without QML")
+endif()
+
 # qt_add_executable() is the recommended initial call for qt_finalize_target()
 # below that takes care of the correct object order in the resulting binary
 # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
@@ -2348,7 +2363,10 @@ if(ANDROID)
     PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
   )
   set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
-  target_compile_definitions(mixxx-lib PUBLIC ANDROID_PACKAGE_NAME="org.mixxx")
+  target_compile_definitions(
+    mixxx-lib
+    PUBLIC ANDROID_PACKAGE_NAME="org.mixxx"
+  )
   qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
   set_property(
     TARGET mixxx
@@ -2424,6 +2442,27 @@ if(ANDROID)
   target_link_libraries(mixxx PUBLIC omp)
 else()
   qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
+endif()
+
+if(NOT QML)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+      # main target
+      src/control/controlmodel.cpp
+      src/control/controlsortfiltermodel.cpp
+  )
+else()
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following source depends of QML being available but aren't part of the new QML UI
+      src/controllers/rendering/controllerrenderingengine.cpp
+      src/controllers/controllerenginethreadcontrol.cpp
+      src/controllers/controllerscreenpreview.cpp
+  )
 endif()
 
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
@@ -2708,11 +2747,11 @@ endif()
 
 # FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
+find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFmpeg_FOUND")
 if(FFMPEG)
-  if(NOT FFMPEG_FOUND)
-    message(FATAL_ERROR "FFMPEG was not found")
+  if(NOT FFmpeg_FOUND)
+    message(FATAL_ERROR "FFmpeg was not found")
   endif()
 
   # Check minimum required versions
@@ -2720,39 +2759,56 @@ if(FFMPEG)
   # Windows: Version numbers are not available!?
   # macOS: Untested
   if(
-    FFMPEG_libavcodec_VERSION
-    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
+    NOT FFmpeg_AVCODEC_VERSION
+    OR FFmpeg_AVCODEC_VERSION VERSION_LESS 58.35.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
+      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFmpeg_AVCODEC_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVCODEC: ${FFmpeg_AVCODEC_LIBRARIES} (found version \"${FFmpeg_AVCODEC_VERSION}\")"
     )
   endif()
   if(
-    FFMPEG_libavformat_VERSION
-    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
+    NOT FFmpeg_AVFORMAT_VERSION
+    OR FFmpeg_AVFORMAT_VERSION VERSION_LESS 58.20.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
+      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFmpeg_AVFORMAT_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVFORMAT: ${FFmpeg_AVFORMAT_LIBRARIES} (found version \"${FFmpeg_AVFORMAT_VERSION}\")"
+    )
+  endif()
+  if(NOT FFmpeg_AVUTIL_VERSION OR FFmpeg_AVUTIL_VERSION VERSION_LESS 56.22.100)
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFmpeg_AVUTIL_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVUTIL: ${FFmpeg_AVUTIL_LIBRARIES} (found version \"${FFmpeg_AVUTIL_VERSION}\")"
     )
   endif()
   if(
-    FFMPEG_libavutil_VERSION
-    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
+    NOT FFmpeg_SWRESAMPLE_VERSION
+    OR FFmpeg_SWRESAMPLE_VERSION VERSION_LESS 3.3.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
+      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFmpeg_SWRESAMPLE_VERSION})."
     )
-  endif()
-  if(
-    FFMPEG_libswresample_VERSION
-    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
-  )
+  else()
     message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
+      STATUS
+      "Found FFmpeg SWRESAMPLE: ${FFmpeg_SWRESAMPLE_LIBRARIES} (found version \"${FFmpeg_SWRESAMPLE_VERSION}\")"
     )
   endif()
 
@@ -2766,15 +2822,16 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
-  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
+
+  target_link_libraries(mixxx-lib PRIVATE FFmpeg::FFmpeg)
+  target_include_directories(mixxx-lib PUBLIC "${FFmpeg_INCLUDE_DIRS}")
 endif()
 
 # STEM file support
-default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+default_option(STEM "STEM file support" "FFmpeg_FOUND;FFMPEG")
 if(STEM)
   if(NOT FFMPEG)
-    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+    message(FATAL_ERROR "STEM requires that also FFmpeg is enabled")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
@@ -2937,7 +2994,11 @@ if(BUILD_TESTING)
     )
   endif()
 
-  add_executable(mixxx-test ${src-mixxx-test})
+  if(QT6 AND QML)
+    qt_add_executable(mixxx-test ${src-mixxx-test} MANUAL_FINALIZATION)
+  else()
+    add_executable(mixxx-test ${src-mixxx-test})
+  endif()
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
@@ -2956,7 +3017,10 @@ if(BUILD_TESTING)
       PRIVATE
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
+        src/test/qml/qmlstartupsmoketest.cpp
         src/test/qmlcontrolproxytest.cpp
+        src/test/qmldurationformattertest.cpp
+        src/test/qmleffectsproxytest.cpp
         src/test/qmlkeyutilstest.cpp
         src/test/qmlskincontrolcreatortest.cpp
         src/test/themeqml_test.cpp
@@ -3012,6 +3076,7 @@ if(BUILD_TESTING)
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     TEST_LIST testsuite
     DISCOVERY_MODE PRE_TEST
+    DISCOVERY_TIMEOUT 60
   )
 
   if(BUILD_BENCH)
@@ -3683,9 +3748,9 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 
 # PipeWire
-default_option(PIPEWIRE "Enable the PipeWire backend" "UNIX AND NOT APPLE AND NOT ANDROID")
+find_package(PipeWire)
+default_option(PIPEWIRE "Enable the PipeWire backend" "PipeWire_FOUND")
 if(PIPEWIRE)
-  find_package(PipeWire REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC PipeWire::PipeWire)
   target_compile_definitions(mixxx-lib PUBLIC __PIPEWIRE__)
   target_sources(
@@ -3842,6 +3907,12 @@ if(QML)
     PROPERTIES QT_RESOURCE_ALIAS MathUtils.mjs
   )
   set_source_files_properties(
+    res/qml/Mixxx/DurationFormatter.qml
+    PROPERTIES
+      QT_QML_SINGLETON_TYPE TRUE
+      QT_RESOURCE_ALIAS DurationFormatter.qml
+  )
+  set_source_files_properties(
     res/qml/Mixxx/PlayerDropArea.qml
     PROPERTIES QT_RESOURCE_ALIAS PlayerDropArea.qml
   )
@@ -3851,6 +3922,7 @@ if(QML)
     RESOURCE_PREFIX /mixxx.org/imports
     IMPORTS QtQuick
     QML_FILES
+      res/qml/Mixxx/DurationFormatter.qml
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
   )
@@ -3902,6 +3974,7 @@ if(QML)
     PRIVATE
       src/qml/asyncimageprovider.cpp
       src/qml/qmlapplication.cpp
+      src/qml/qmlapplicationproxy.cpp
       src/qml/qmlautoreload.cpp
       src/qml/qmlbatteryproxy.cpp
       src/qml/qmlbeatsmodel.cpp
@@ -3911,8 +3984,9 @@ if(QML)
       src/qml/qmlcontrolproxy.cpp
       src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
-      src/qml/qmleffectmanifestparametersmodel.cpp
+      src/qml/qmleffectslotparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp
+      src/qml/qmleffectunitproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp
       src/qml/qmlkeyutils.cpp
       src/qml/qmllegacylibraryitem.cpp
@@ -4305,6 +4379,13 @@ else()
         COMPONENT applocal
       )
 
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtCore"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
+        COMPONENT applocal
+      )
+
       # install qml6-module-qtquick-controls
       install(
         DIRECTORY
@@ -4358,6 +4439,14 @@ else()
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Window"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # qml6-module-qtquick-effects
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Effects"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Effects"
         COMPONENT applocal
       )
 
@@ -4477,6 +4566,9 @@ elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE Qt${QT_VERSION_MAJOR}::DBus)
+  endif()
 elseif(WIN32)
   if(Qt_IS_STATIC)
     target_link_libraries(
@@ -5260,6 +5352,9 @@ if(VINYLCONTROL)
       src/engine/controls/vinylcontrolcontrol.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __VINYLCONTROL__)
+  endif()
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
@@ -5325,6 +5420,10 @@ target_precompile_headers(
 )
 if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+endif()
+
+if(BUILD_TESTING AND QT6 AND QML)
+  qt_finalize_target(mixxx-test)
 endif()
 
 # Configure file with build options
@@ -5449,7 +5548,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute stonking)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble resolute stonking)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

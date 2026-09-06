@@ -165,8 +165,8 @@ TEST_F(AdjustReplayGainTest, AdjustReplayGainUpdatesPregain) {
 
     // Load the same track in decks 1 and 2 so we can see that the pregain is adjusted on both
     // decks.
-    loadTrack(m_pMixerDeck1, pTrack);
-    loadTrack(m_pMixerDeck2, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
+    loadTrack(m_pMixerDeck2.get(), pTrack);
 
     // Initialize fake track replaygain so it's not zero.
     mixxx::ReplayGain replayGain;

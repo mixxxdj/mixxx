@@ -59,7 +59,7 @@ class QmlSkinControlCreator : public QObject, public QQmlParserStatus {
     void keyChanged(const QString& key);
     void persistChanged(bool persist);
     void defaultValueChanged(double defaultValue);
-    void buttonModeChanged(ButtonMode buttonMode);
+    void buttonModeChanged(mixxx::qml::QmlSkinControlCreator::ButtonMode buttonMode);
 
   private:
     static mixxx::control::ButtonMode toControlButtonMode(ButtonMode buttonMode);
@@ -70,6 +70,7 @@ class QmlSkinControlCreator : public QObject, public QQmlParserStatus {
     bool m_persist;
     bool m_persistConfigured;
     double m_defaultValue;
+    bool m_defaultValueConfigured;
     ButtonMode m_buttonMode;
     bool m_isComponentComplete;
     std::unique_ptr<ControlPushButton> m_pControl;

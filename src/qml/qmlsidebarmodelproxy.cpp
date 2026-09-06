@@ -62,7 +62,7 @@ QmlSidebarModelProxy::QmlSidebarModelProxy(QObject* parent)
 }
 QmlSidebarModelProxy::~QmlSidebarModelProxy() = default;
 
-void QmlSidebarModelProxy::update(const QList<QmlLibrarySource*>& sources) {
+void QmlSidebarModelProxy::update(const QList<QmlLibraryAbstractSource*>& sources) {
     beginResetModel();
     qDeleteAll(m_sFeatures);
     for (const auto& librarySource : sources) {
@@ -70,7 +70,7 @@ void QmlSidebarModelProxy::update(const QList<QmlLibrarySource*>& sources) {
             continue;
         }
         connect(librarySource,
-                &QmlLibrarySource::requestTrackModel,
+                &QmlLibraryAbstractSource::requestTrackModel,
                 this,
                 &QmlSidebarModelProxy::slotShowTrackModel);
         auto* pLibrarySource = librarySource->internal();

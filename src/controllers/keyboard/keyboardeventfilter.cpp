@@ -432,6 +432,7 @@ void KeyboardEventFilter::reloadKeyboardConfig() {
     updateWidgetShortcuts();
     updateSearchBarShortcuts();
     updateMenuBarActionShortcuts();
+    emit keyboardConfigReloaded();
 }
 
 void KeyboardEventFilter::createKeyboardConfig() {

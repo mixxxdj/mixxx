@@ -64,7 +64,7 @@ class WBpmEditor : public WWidget {
     void setEditButtonTooltip(const QString& tooltip);
 
   private slots:
-    void switchMode(Mode mode);
+    void switchMode(WBpmEditor::Mode mode);
 
   private:
     bool eventFilter(QObject* pObj, QEvent* pEvent) override;

@@ -67,48 +67,4 @@ Item {
             }
         }
     }
-    Rectangle {
-        width: 125
-
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-
-            GradientStop {
-                color: LateNightTheme.darkGray
-                position: 0
-            }
-            GradientStop {
-                color: "transparent"
-                position: 1
-            }
-        }
-
-        anchors {
-            bottom: parent.bottom
-            left: parent.left
-            top: parent.top
-        }
-    }
-    Rectangle {
-        width: 125
-
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-
-            GradientStop {
-                color: "transparent"
-                position: 0
-            }
-            GradientStop {
-                color: LateNightTheme.darkGray
-                position: 1
-            }
-        }
-
-        anchors {
-            bottom: parent.bottom
-            right: parent.right
-            top: parent.top
-        }
-    }
 }

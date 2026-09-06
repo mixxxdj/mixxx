@@ -12,12 +12,16 @@ LateNightIconButton {
     property var stateLabels: []
     property real activeOpacity: 0.95
     property real inactiveOpacity: 0.72
+    property color activeLabelColor: LateNightTheme.textColor
+    property color inactiveLabelColor: LateNightTheme.textColorMuted
+    property bool activeWhenNonzero: false
 
     readonly property int currentState: cycleBehavior.currentState
 
+    activeState: root.activeWhenNonzero && root.currentState > 0
     label: cycleBehavior.label
     labelPixelSize: 9
-    labelColor: root.currentState > 0 ? LateNightTheme.textColor : LateNightTheme.textColorMuted
+    labelColor: root.currentState > 0 ? root.activeLabelColor : root.inactiveLabelColor
     contentOpacity: root.currentState > 0 ? root.activeOpacity : root.inactiveOpacity
 
     Skin.ControlCycleButtonBehavior {

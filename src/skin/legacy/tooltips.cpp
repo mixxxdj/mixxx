@@ -1004,6 +1004,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Audio Latency Overload Indicator")
             << tr("Indicates that the audio buffer is too small to do all audio processing.");
 
+    // Note: Some of the coverart strings below are reused in src/widget/wcoverartlabel.cpp.
+    // Please sync changes made here to wcoverartlabel.cpp, and vice versa.
     add("coverart")
             << tr("Cover Art")
             << tr("Displays cover artwork of the loaded track.")

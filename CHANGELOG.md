@@ -624,6 +624,92 @@
 * README: add link to OS-specific build instructions [#14779](https://github.com/mixxxdj/mixxx/pull/14779)
 * Improve debug output for missing WWidget pixmaps [#14473](https://github.com/mixxxdj/mixxx/pull/14473)
 
+## 2.5.7 (unreleased)
+
+### Controller Mappings
+
+* Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
+* Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
+
+### Library
+
+* Fix color column sorting for dirty tracks
+  [#16662](https://github.com/mixxxdj/mixxx/pull/16662)
+* Fix relocate directory: remove old dir if new is child of a root dir [#16203](https://github.com/mixxxdj/mixxx/pull/16203)
+* Fix library scanner: allow resuming canceled scan by clearing hashes of unfinished dirs
+  [#16300](https://github.com/mixxxdj/mixxx/pull/16300)
+  [#16198](https://github.com/mixxxdj/mixxx/issues/16198)
+* Fix missing tracks showing up in Hidden, Missing empty [#16419](https://github.com/mixxxdj/mixxx/pull/16419)
+* Adjust FocusWidget: GoToItem emulates Space key in WSearchRelatedTracksMenu [#13282](https://github.com/mixxxdj/mixxx/pull/13282)
+* Fixing last played time being wiped on history deletion
+  [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
+  [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+* Fix false-positive missing tracks
+  [#16685](https://github.com/mixxxdj/mixxx/pull/16685)
+  [#13533](https://github.com/mixxxdj/mixxx/issues/13533)
+
+### Target support
+
+* Support Ubuntu Stonking 26.10
+  [#16507](https://github.com/mixxxdj/mixxx/pull/16507)
+  [#16619](https://github.com/mixxxdj/mixxx/pull/16619)
+  [#16614](https://github.com/mixxxdj/mixxx/issues/16614)
+* Retire Ubuntu Questing 25.10 [#16780](https://github.com/mixxxdj/mixxx/pull/16780)
+* Support Windows 11 25H2
+  [#16401](https://github.com/mixxxdj/mixxx/pull/16401)
+* Add Arch Linux build environment script [#16594](https://github.com/mixxxdj/mixxx/pull/16594)
+* Fix race condition in fonts-ubuntu check in Debian environment script [#16575](https://github.com/mixxxdj/mixxx/pull/16575)
+* Fix various warnings when using recent build environments
+  [#16537](https://github.com/mixxxdj/mixxx/pull/16537)
+  [#16514](https://github.com/mixxxdj/mixxx/pull/16514)
+  [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+  [#16368](https://github.com/mixxxdj/mixxx/pull/16368)
+* Flatpak: fix building with Soundtouch, update to 2.4.1
+  [#16720](https://github.com/mixxxdj/mixxx/pull/16720)
+* Flatpack: prevent branches to delete each other
+  [#16779](https://github.com/mixxxdj/mixxx/pull/16779)
+  [#16810](https://github.com/mixxxdj/mixxx/pull/16810)
+
+### Miscellaneous
+
+* macOS: fix system theme in preferences after switch rendering and icons
+  [#16661](https://github.com/mixxxdj/mixxx/pull/16661)
+  [#13643](https://github.com/mixxxdj/mixxx/issues/13643)
+* macOS: request security scoped bookmark for files in imported playlists
+  [#16369](https://github.com/mixxxdj/mixxx/pull/16369)
+* macOS: Discover both Effect and MusicEffect AudioUnits in one pass [#16287](https://github.com/mixxxdj/mixxx/pull/16287)
+* Fix killing Analysis worker threads during shutdown, possible data loss. [#16064](https://github.com/mixxxdj/mixxx/pull/16064)
+* MIDI: guard against null script engine in makeInputHandler [#16003](https://github.com/mixxxdj/mixxx/pull/16003)
+* EngineBuffer: Reset sample counter after indicator update [#16245](https://github.com/mixxxdj/mixxx/pull/16245)
+* libfdk_aac: SoundSourceProxyTest.seekBoundaries fix
+  [#16440](https://github.com/mixxxdj/mixxx/pull/16440)
+  [#16440](https://github.com/mixxxdj/mixxx/issues/14624)
+* FFmpeg: fix of gap bug fix
+  [#16439](https://github.com/mixxxdj/mixxx/pull/16439)
+  [#10464](https://github.com/mixxxdj/mixxx/issues/10464)
+* Fix flaky unittests test
+  [#16275](https://github.com/mixxxdj/mixxx/pull/16275)
+  [#12554](https://github.com/mixxxdj/mixxx/issues/12554)
+  [#16332](https://github.com/mixxxdj/mixxx/pull/16332)
+  [#16290](https://github.com/mixxxdj/mixxx/pull/16290)
+  [#16162](https://github.com/mixxxdj/mixxx/issues/16162)
+  [#16693](https://github.com/mixxxdj/mixxx/pull/16693)
+* Fix warning/violated debug assertion when opening Preferences (backport [#16257](https://github.com/mixxxdj/mixxx/pull/16257)) [#16274](https://github.com/mixxxdj/mixxx/pull/16274)
+* Don't reset `beatloop_size` to 1/32 when loop doesn't match any of the pre-defined sizes
+  [#16881](https://github.com/mixxxdj/mixxx/pull/16881)
+  [#16880](https://github.com/mixxxdj/mixxx/issues/16880)
+* Fix last played time being wiped on history deletion
+  [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
+  [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+* Fix Hotcue 350 hours before song start, caused by a race condition with quantize control
+  [#16743](https://github.com/mixxxdj/mixxx/pull/16743)
+  [#16320](https://github.com/mixxxdj/mixxx/issues/16320)
+* Skins: Fix tiny battery icons [#16801](https://github.com/mixxxdj/mixxx/pull/16801)
+* Fix broadcasting using libshout-idjc >= 2.4.6, by using the correct usage flag
+  [#16816](https://github.com/mixxxdj/mixxx/pull/16816)
+  [#16783](https://github.com/mixxxdj/mixxx/issues/16783)
+  [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+
 ## [2.5.6](https://github.com/mixxxdj/mixxx/milestone/53) (2026-03-25)
 
 ### Library

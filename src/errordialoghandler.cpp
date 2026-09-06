@@ -166,8 +166,8 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
             // Therefore we must consider the expanded size for positioning the dialog initially.
             auto* pScreen = pMsgBox->screen();
             if (!pScreen) {
-                // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
-                // determine the screen. This happens always with Qt <5.14
+                // Fallback to obtain the primary screen when QWidget::screen() can't
+                // determine the screen. This happened always with Qt <5.14
                 pScreen = qGuiApp->primaryScreen();
             }
             DEBUG_ASSERT(pScreen);

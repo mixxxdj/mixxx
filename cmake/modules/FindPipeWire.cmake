@@ -23,7 +23,7 @@ This will define the following variables:
 #]=======================================================================]
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(PIPEWIRE REQUIRED IMPORTED_TARGET libpipewire-0.3)
+pkg_check_modules(PIPEWIRE QUIET IMPORTED_TARGET libpipewire-0.3)
 
 include(FindPackageHandleStandardArgs)
 

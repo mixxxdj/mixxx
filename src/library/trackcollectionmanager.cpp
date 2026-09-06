@@ -14,13 +14,11 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
 
+using namespace mixxx::library::prefs;
+
 namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
-
-const QString kConfigGroup = QStringLiteral("[TrackCollection]");
-
-const ConfigKey kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
 inline
 parented_ptr<TrackCollection> createInternalTrackCollection(
@@ -47,10 +45,10 @@ TrackCollectionManager::TrackCollectionManager(
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
     // and repairing the database on the next restart of the application.
-    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
+    if (pConfig->getValue(kRepairDatabaseOnNextRestartConfigKey, false)) {
         m_pInternalCollection->repairDatabase(dbConnection);
         // Reset config value
-        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
+        pConfig->setValue(kRepairDatabaseOnNextRestartConfigKey, false);
     }
 
     m_pInternalCollection->connectDatabase(dbConnection);
@@ -73,6 +71,28 @@ TrackCollectionManager::TrackCollectionManager(
         kLogger.info() << "Library scanner is disabled in test mode";
     } else {
         m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
+
+        connect(
+                m_pScanner.get(),
+                &LibraryScanner::scanStarted,
+                this,
+                [this]() { m_libraryScanActive.store(true); },
+                Qt::DirectConnection);
+        connect(
+                m_pScanner.get(),
+                &LibraryScanner::scanFinished,
+                this,
+                [this]() { m_libraryScanActive.store(false); },
+                Qt::DirectConnection);
+        connect(
+                m_pScanner.get(),
+                &LibraryScanner::scanSummary,
+                this,
+                [this](const LibraryScanResultSummary& result) {
+                    const std::lock_guard lock(m_libraryScanSummaryMutex);
+                    m_pendingLibraryScanSummary = result;
+                },
+                Qt::DirectConnection);
 
         // Forward signals
         connect(m_pScanner.get(),
@@ -170,6 +190,14 @@ TrackCollectionManager::~TrackCollectionManager() {
     m_pInternalCollection->disconnectDatabase();
 
     GlobalTrackCache::destroyInstance();
+}
+
+std::optional<LibraryScanResultSummary>
+TrackCollectionManager::takePendingLibraryScanSummary() {
+    const std::lock_guard lock(m_libraryScanSummaryMutex);
+    auto result = std::move(m_pendingLibraryScanSummary);
+    m_pendingLibraryScanSummary.reset();
+    return result;
 }
 
 void TrackCollectionManager::startLibraryAutoScan() {
@@ -313,7 +341,7 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
             (pTrack->isDirty() &&
                     m_pConfig &&
                     m_pConfig->getValueString(
-                                     mixxx::library::prefs::kSyncTrackMetadataConfigKey)
+                                     kSyncTrackMetadataConfigKey)
                                     .toInt() == 1)) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {

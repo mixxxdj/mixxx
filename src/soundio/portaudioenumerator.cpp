@@ -27,16 +27,13 @@
 typedef PaError (*SetJackClientName)(const char* name);
 
 PortAudioEnumerator::PortAudioEnumerator(UserSettingsPointer config, SoundManager* sm)
-        : m_initialized(false),
-          m_pConfig(config),
+        : m_pConfig(config),
           m_pSoundManager(sm) {
     initialize();
 }
 
 PortAudioEnumerator::~PortAudioEnumerator() {
-    if (m_initialized) {
-        Pa_Terminate();
-    }
+    deinitialize();
 }
 
 void PortAudioEnumerator::initialize() {
@@ -45,7 +42,6 @@ void PortAudioEnumerator::initialize() {
         return;
     }
 
-    m_devices.clear();
     m_jackSampleRate = mixxx::audio::SampleRate();
 
 #if defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
@@ -255,20 +251,26 @@ void PortAudioEnumerator::initialize() {
         auto currentDevice = QSharedPointer<SoundDevicePortAudio>::create(
                 m_pConfig, m_pSoundManager, deviceInfo, deviceTypeId, i);
         m_devices.push_back(currentDevice);
-        if (!strcmp(Pa_GetHostApiInfo(deviceInfo->hostApi)->name,
-                    MIXXX_PORTAUDIO_JACK_STRING)) {
+        if (Pa_GetHostApiInfo(deviceInfo->hostApi)->name == SoundManagerConfig::kAPIJack) {
             m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
                     deviceInfo->defaultSampleRate);
+        }
+    }
+
+    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
+        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
+        if (api && std::strcmp(api->name, "skeleton implementation")) {
+            m_apis.push_back(api->name);
         }
     }
 }
 
 std::vector<SoundDevicePointer> PortAudioEnumerator::queryDevices() const {
-    std::vector<SoundDevicePointer> devices{};
     if (!m_initialized) {
-        return devices;
+        return {};
     }
 
+    std::vector<SoundDevicePointer> devices;
     for (const auto& device : m_devices) {
         devices.push_back(device);
     }
@@ -301,46 +303,23 @@ void PortAudioEnumerator::setJACKName() const {
 #endif
 }
 
-std::vector<std::string> PortAudioEnumerator::getAPIs() const {
-    std::vector<std::string> apiList;
-
-    int apiCount = Pa_GetHostApiCount();
-    if (apiCount < 0) {
-        return std::vector<std::string>{};
+void PortAudioEnumerator::deinitialize() {
+    if (!m_initialized) {
+        return;
     }
 
-    for (PaHostApiIndex i = 0; i < apiCount; i++) {
-        const PaHostApiInfo* api = Pa_GetHostApiInfo(i);
-        if (api && QString(api->name) != "skeleton implementation") {
-            apiList.push_back(api->name);
-        }
-    }
+    m_devices.clear();
 
-    return apiList;
+    PaError err = Pa_Terminate();
+    if (err == paNoError) {
+        m_initialized = false;
+    }
 }
 
-QList<mixxx::audio::SampleRate> PortAudioEnumerator::getSampleRates() const {
-    // Hack because PortAudio samplerate enumeration is slow as hell on Linux
-    // (ALSA dmix sucks, so we can't blame PortAudio)
-    return QList<mixxx::audio::SampleRate>{};
-}
-
-QList<mixxx::audio::SampleRate> PortAudioEnumerator::getJackSampleRates() const {
-    QList<mixxx::audio::SampleRate> samplerates;
-    if (m_jackSampleRate.isValid()) {
-        samplerates.append(m_jackSampleRate);
+QList<mixxx::audio::SampleRate> PortAudioEnumerator::getSampleRates(bool jackSampleRate) const {
+    if (jackSampleRate and m_jackSampleRate.isValid()) {
+        return {m_jackSampleRate};
     }
 
-    return samplerates;
-}
-
-void PortAudioEnumerator::terminate() {
-    PaError err = paNoError;
-
-    if (m_initialized) {
-        err = Pa_Terminate();
-        if (err == paNoError) {
-            m_initialized = false;
-        }
-    }
+    return {};
 }

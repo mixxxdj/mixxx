@@ -1809,23 +1809,6 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const 
     }
 }
 
-void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) const {
-    // kLogger.debug()<< "markTracksInDirectoryAsVerified" <<
-    // QThread::currentThread() << m_database.connectionName();
-
-    QSqlQuery query(m_database);
-    query.prepare(
-        QString("UPDATE track_locations "
-                "SET needs_verification=0 "
-                "WHERE directory IN (%1)").arg(
-                        SqlStringFormatter::formatList(m_database, directories)));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
-        DEBUG_ASSERT(!"Failed query");
-    }
-}
-
 void TrackDAO::markUnverifiedTracksAsDeleted() {
     // kLogger.debug()<< "markUnverifiedTracksAsDeleted" <<
     // QThread::currentThread() << m_database.connectionName();
@@ -1942,6 +1925,8 @@ bool TrackDAO::detectMovedTracks(
         kLogger.info()
                 << "Looking for substitute of missing track location"
                 << oldTrackLocation;
+
+        emit mixxx::thisAsNonConst(this)->progressLookingForSubstituteTracks(oldTrackLocation);
 
         newTrackQuery.bindValue(":filename", filename);
         newTrackQuery.bindValue(":duration", duration);
@@ -2404,8 +2389,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 m_database,
                 QStringLiteral(
                         "UPDATE library SET "
-                        "timesplayed=0,"
-                        "last_played_at=NULL "
+                        "timesplayed=0 "
                         "WHERE id NOT IN("
                         "SELECT PlaylistTracks.track_id "
                         "FROM PlaylistTracks "
@@ -2470,6 +2454,12 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 // Never played and timesplayed should not be NULL
                 DEBUG_ASSERT(last_played_at.isNull());
                 timesplayed = 0;
+
+                // Fetch the actual last played date from older history sessions
+                QString lastTimeAdded = findLastTimeAddedToHistory(trackId);
+                if (!lastTimeAdded.isEmpty()) {
+                    last_played_at = lastTimeAdded;
+                }
             }
             trackUpdateQuery.bindValue(
                     QStringLiteral(":trackId"),
@@ -2513,4 +2503,39 @@ void TrackDAO::setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed) {
 //static
 bool TrackDAO::getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord) {
     return trackRecord.m_headerParsed;
+}
+
+QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
+    // A track ID might be invalid if the track was just added and hasn't been
+    // saved to the database yet, or if it represents a missing or deleted track.
+    if (!trackId.isValid()) {
+        return QString();
+    }
+
+    // Lazy Prepare: Only prepare the query if it has not been prepared yet
+    if (m_lastAddedToHistoryQuery.lastQuery().isEmpty()) {
+        m_lastAddedToHistoryQuery = QSqlQuery(m_database);
+        m_lastAddedToHistoryQuery.prepare(
+                "SELECT MAX(PlaylistTracks.pl_datetime_added) "
+                "FROM PlaylistTracks "
+                "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
+                "WHERE PlaylistTracks.track_id = :id "
+                "AND Playlists.hidden = " +
+                QString::number(PlaylistDAO::PLHT_SET_LOG));
+    }
+
+    m_lastAddedToHistoryQuery.bindValue(":id", trackId.toVariant());
+
+    if (!m_lastAddedToHistoryQuery.exec()) {
+        LOG_FAILED_QUERY(m_lastAddedToHistoryQuery)
+                << "Failed to find last time added to history for track"
+                << trackId;
+        return QString();
+    }
+
+    if (m_lastAddedToHistoryQuery.next()) {
+        return m_lastAddedToHistoryQuery.value(0).toString();
+    }
+
+    return QString();
 }
