@@ -75,7 +75,7 @@ QWidget* LegacyControllerSettingsLayoutItem::build(QWidget* parent) {
 }
 
 void WLegacyControllerSettingsContainer::resizeEvent(QResizeEvent* event) {
-    if (m_preferredOrientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
+    if (m_preferredOrientation == LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL) {
         return;
     }
 
@@ -88,12 +88,12 @@ void WLegacyControllerSettingsContainer::resizeEvent(QResizeEvent* event) {
             pLayout->direction() == QBoxLayout::LeftToRight) {
         pLayout->setDirection(QBoxLayout::TopToBottom);
         pLayout->setSpacing(6);
-        emit orientationChanged(LegacyControllerSettingsLayoutContainer::VERTICAL);
+        emit orientationChanged(LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL);
     } else if (event->size().width() >=
                     kMinScreenSizeForControllerSettingRow &&
             pLayout->direction() == QBoxLayout::TopToBottom) {
         pLayout->setDirection(QBoxLayout::LeftToRight);
         pLayout->setSpacing(16);
-        emit orientationChanged(LegacyControllerSettingsLayoutContainer::HORIZONTAL);
+        emit orientationChanged(LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL);
     }
 }

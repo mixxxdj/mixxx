@@ -79,8 +79,9 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
             Qt::UniqueConnection);
     setHorizontalHeader(m_pHeader);
 
-    m_pCOTGuiTick = new ControlProxy(
-            QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
+    m_pCOTGuiTick = new ControlProxy(QStringLiteral("[App]"),
+            QStringLiteral("gui_tick_50ms_period_s"),
+            this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
@@ -408,6 +409,21 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     return pTrackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
+void WTrackTableView::toggleBpmLock(bool locked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QModelIndexList indices = getSelectedRows();
+    for (const auto& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setBpmLocked(locked);
+        }
+    }
+}
+
 void WTrackTableView::assignPreviousTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
@@ -445,6 +461,27 @@ void WTrackTableView::assignNextTrackColor() {
         ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
         mixxx::RgbColor::optional_t color = pTrack->getColor();
         pTrack->setColor(colorPalette.nextColor(color));
+    }
+}
+
+void WTrackTableView::trackRatingChangeRequestRelative(int change) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    const QModelIndexList indices = getSelectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex index = indices.at(0);
+    TrackPointer pTrack = pTrackModel->getTrack(index);
+    if (pTrack) {
+        int newRating = pTrack->getRating() + change;
+        if (mixxx::TrackRecord::isValidRating(newRating) &&
+                newRating != pTrack->getRating()) {
+            pTrack->setRating(newRating);
+        }
     }
 }
 
@@ -562,6 +599,7 @@ void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) 
         return;
     }
     m_pTrackMenu->loadTrackModelIndices(indices);
+    m_pTrackMenu->updateMenus();
     m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
@@ -1197,6 +1235,8 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     case kHideRemoveShortcutKey: {
         if (event->modifiers() == kHideRemoveShortcutModifier) {
             hideOrRemoveSelectedTracks();
+        } else if (event->modifiers().testFlag(Qt::ShiftModifier)) {
+            slotDeleteTracksFromDisk();
         }
         return;
     }
@@ -1625,7 +1665,7 @@ void WTrackTableView::moveSelection(int delta) {
 
     while (delta != 0) {
         QItemSelectionModel* currentSelection = selectionModel();
-        if (currentSelection->selectedRows().length() > 0) {
+        if (!currentSelection->selectedRows().isEmpty()) {
             if (delta > 0) {
                 // i is positive, so we want to move the highlight down
                 int row = currentSelection->selectedRows().last().row();

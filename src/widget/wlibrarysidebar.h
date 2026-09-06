@@ -18,6 +18,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void contextMenuEvent(QContextMenuEvent* pEvent) override;
     void dragMoveEvent(QDragMoveEvent* pEvent) override;
     void dragEnterEvent(QDragEnterEvent* pEvent) override;
+    void dragLeaveEvent(QDragLeaveEvent* pEvent) override;
     void dropEvent(QDropEvent* pEvent) override;
     void keyPressEvent(QKeyEvent* pEvent) override;
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -33,6 +34,7 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void selectIndex(const QModelIndex& index, bool scrollToIndex = true);
     void selectChildIndex(const QModelIndex&, bool selectItem = true);
     void slotSetFont(const QFont& font);
+    void slotSetExpandOnHoverDelay(int delay);
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
@@ -48,9 +50,11 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void focusSelectedIndex();
     QModelIndex selectedIndex();
 
+    void toggleDragHoverPropertyAndUpdateStyle(bool enabled);
     void resetHoverIndexAndDragMoveResult();
 
     QBasicTimer m_expandTimer;
+    int m_hoverExpandDelay;
     QModelIndex m_hoverIndex;
     bool m_lastDragMoveAccepted;
 };

@@ -374,6 +374,9 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) == column) {
         return QVariant{static_cast<int>(pTrack->getKey())};
     }
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY) == column) {
+        return QVariant{pTrack->getTuningFrequencyHz()};
+    }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         return QVariant{pTrack->isBpmLocked()};
     }
@@ -687,8 +690,8 @@ int BaseTrackCache::compareColumnValues(int sortColumn,
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)
-    ) {
+            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) ||
+            sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 

@@ -1,18 +1,22 @@
 <Template>
   <WidgetGroup>
-    <RequiresStem>true</RequiresStem>
     <ObjectName>StemControls</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>max,me</SizePolicy>
     <Children>
       <WidgetGroup>
         <Size>0me,1me</Size>
+        <Connection>
+          <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>
         <!-- StemControlsInner -->
         <Layout>horizontal</Layout>
-        <SizePolicy>f,f</SizePolicy>
+        <Size>260f,min</Size>
         <Children>
 
           <WidgetGroup>
@@ -22,67 +26,99 @@
           <WidgetGroup>
             <!-- StemControls 4ch -->
             <Layout>vertical</Layout>
+            <SizePolicy>f,me</SizePolicy>
             <Children>
+              <!-- Show controls if stems exist -->
               <WidgetGroup>
-                <!-- StemCh1 controls  -->
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
-                    <Size>1min,2me</Size>
+                    <!-- StemCh1 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="StemNum">1</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
                   </WidgetGroup>
-                  <Template src="skins:Deere/stem_channel.xml">
-                    <SetVariable name="StemNum">1</SetVariable>
-                  </Template>
                   <WidgetGroup>
-                    <Size>1min,3f</Size>
+                    <!-- StemCh2 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="StemNum">2</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh3 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="StemNum">3</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <!-- StemCh4 controls  -->
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <Size>1min,2me</Size>
+                      </WidgetGroup>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="StemNum">4</SetVariable>
+                      </Template>
+                      <WidgetGroup>
+                        <Size>1min,3f</Size>
+                      </WidgetGroup>
+                    </Children>
                   </WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
+
+              <!-- Show Label if no stems -->
               <WidgetGroup>
-                <!-- StemCh2 controls  -->
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <WidgetGroup>
-                    <Size>1min,2me</Size>
-                  </WidgetGroup>
-                  <Template src="skins:Deere/stem_channel.xml">
-                    <SetVariable name="StemNum">2</SetVariable>
-                  </Template>
-                  <WidgetGroup>
-                    <Size>1min,3f</Size>
-                  </WidgetGroup>
+                  <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
+                  <Label>
+                    <ObjectName>StemLabelEmpty</ObjectName>
+                    <Text>Track has no STEMs</Text>
+                    <Alignment>center</Alignment>
+                  </Label>
+                  <WidgetGroup><Size>0min,1me</Size></WidgetGroup>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Channel<Variable name="ChanNum"/>],stem_count</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
-              <WidgetGroup>
-                <!-- StemCh3 controls  -->
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <Size>1min,2me</Size>
-                  </WidgetGroup>
-                  <Template src="skins:Deere/stem_channel.xml">
-                    <SetVariable name="StemNum">3</SetVariable>
-                  </Template>
-                  <WidgetGroup>
-                    <Size>1min,3f</Size>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-              <WidgetGroup>
-                <!-- StemCh4 controls  -->
-                <Layout>horizontal</Layout>
-                <Children>
-                  <WidgetGroup>
-                    <Size>1min,2me</Size>
-                  </WidgetGroup>
-                  <Template src="skins:Deere/stem_channel.xml">
-                    <SetVariable name="StemNum">4</SetVariable>
-                  </Template>
-                  <WidgetGroup>
-                    <Size>1min,3f</Size>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
+
             </Children>
           </WidgetGroup>
           <!-- /StemControls 4ch -->
@@ -93,6 +129,11 @@
 
       <WidgetGroup>
         <Size>1me,1me</Size>
+        <Connection>
+          <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
     </Children>
     <Connection>

@@ -6,4 +6,6 @@ Mixxx.SettingGroup {
 
     property int selectedIndex: 0
     property list<string> tabs: []
+
+    signal deactivated
 }

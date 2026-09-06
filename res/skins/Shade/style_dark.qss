@@ -40,12 +40,15 @@ WEffectSelector::indicator:unchecked,
   WBeatSpinBox,
   #spinBoxTransition::up-button,
   #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button,
   #fadeModeCombobox,
   #fadeModeCombobox::down-arrow {
     color: #000;
     background-color: #5C5B5D;
   }
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     background-color: #444546;
   }
 #MainMenu::item:selected,
@@ -144,10 +147,10 @@ WEffectSelector::indicator:unchecked:selected,
 }
 
 #EffectSelectorGroup[highlight="1"]{
-	border: 1px solid #3c8bb2;
+  border: 1px solid #3c8bb2;
 }
 #EffectSelectorGroup[highlight="0"]{
-	border: 0px solid #3c8bb2;
+  border: 0px solid #3c8bb2;
 }
 
 #CueDeleteButton {

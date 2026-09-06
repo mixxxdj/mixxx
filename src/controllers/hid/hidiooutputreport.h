@@ -5,6 +5,7 @@
 #include "util/compatibility/qmutex.h"
 
 struct RuntimeLoggingCategory;
+struct hid_device_;
 typedef struct hid_device_ hid_device;
 
 class HidIoOutputReport {

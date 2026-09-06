@@ -2,17 +2,23 @@
 
 #include <QQmlEngine>
 
+#include "library/library_prefs.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlplayermanagerproxy.cpp"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlplayerproxy.h"
+#include "sources/soundsourceproxy.h"
 #include "track/track_decl.h"
+#include "util/fileinfo.h"
+#include "util/sandbox.h"
 
 namespace mixxx {
 namespace qml {
 
 QmlPlayerManagerProxy::QmlPlayerManagerProxy(
         std::shared_ptr<PlayerManager> pPlayerManager, QObject* parent)
-        : QObject(parent), m_pPlayerManager(pPlayerManager) {
+        : QObject(parent),
+          m_pPlayerManager(pPlayerManager) {
 }
 
 QmlPlayerProxy* QmlPlayerManagerProxy::getPlayer(const QString& group) {
@@ -69,6 +75,18 @@ void QmlPlayerManagerProxy::loadLocationUrlIntoNextAvailableDeck(
     }
 }
 
+void QmlPlayerManagerProxy::loadLocationUrlToDeck(
+        const QUrl& locationUrl, int deck) {
+    if (!locationUrl.isLocalFile()) {
+        qWarning() << "QmlPlayerManagerProxy: URL" << locationUrl
+                   << "is not a local file!";
+        return;
+    }
+    mixxx::FileInfo fileInfo(locationUrl.toLocalFile());
+    Sandbox::createSecurityToken(&fileInfo);
+    m_pPlayerManager->slotLoadToDeck(fileInfo.location(), deck);
+}
+
 void QmlPlayerManagerProxy::loadLocationToPlayer(
         const QString& location, const QString& group, bool play) {
     m_pPlayerManager->slotLoadLocationToPlayer(location, group, play);
@@ -85,6 +103,27 @@ void QmlPlayerManagerProxy::loadTrackToPlayer(TrackPointer track,
             stemSelection,
 #endif
             play);
+}
+
+void QmlPlayerManagerProxy::showNoDeckPassthroughInputConfiguredWarning() {
+    emit m_pPlayerManager->noDeckPassthroughInputConfigured();
+}
+
+void QmlPlayerManagerProxy::showNoVinylControlInputConfiguredWarning() {
+    emit m_pPlayerManager->noVinylControlInputConfigured();
+}
+
+QStringList QmlPlayerManagerProxy::supportedAudioFileNameFilters() const {
+    return {tr("Audio (%1)")
+                    .arg(SoundSourceProxy::getSupportedFileNamePatterns().join(QLatin1Char(' ')))};
+}
+
+QUrl QmlPlayerManagerProxy::initialTrackDirectoryUrl() const {
+    const UserSettingsPointer pConfig = QmlConfigProxy::get();
+    return pConfig
+            ? QUrl::fromLocalFile(pConfig->getValueString(
+                      mixxx::library::prefs::kLegacyDirectoryConfigKey))
+            : QUrl();
 }
 
 // static

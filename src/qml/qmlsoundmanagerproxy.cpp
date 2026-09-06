@@ -31,10 +31,10 @@ SoundDeviceId QmlSoundDeviceProxy::getDeviceId() const {
     return m_pInternal->getDeviceId();
 }
 
-QList<QmlSoundDeviceConnection*> QmlSoundInputDeviceProxy::connections(
+QmlSoundDeviceConnectionList QmlSoundInputDeviceProxy::connections(
         mixxx::qml::QmlSoundManagerProxy* manager) {
     DEBUG_ASSERT(qml_owned_ptr<mixxx::qml::QmlSoundManagerProxy>(manager));
-    QList<QmlSoundDeviceConnection*> connections;
+    QmlSoundDeviceConnectionList connections;
 
     auto pManager = manager->internal();
     auto config = pManager->getConfig();
@@ -49,10 +49,10 @@ QList<QmlSoundDeviceConnection*> QmlSoundInputDeviceProxy::connections(
     return connections;
 }
 
-QList<QmlSoundDeviceConnection*> QmlSoundOutputDeviceProxy::connections(
+QmlSoundDeviceConnectionList QmlSoundOutputDeviceProxy::connections(
         mixxx::qml::QmlSoundManagerProxy* manager) {
     DEBUG_ASSERT(qml_owned_ptr<mixxx::qml::QmlSoundManagerProxy>(manager));
-    QList<QmlSoundDeviceConnection*> connections;
+    QmlSoundDeviceConnectionList connections;
 
     auto pManager = manager->internal();
     auto config = pManager->getConfig();
@@ -121,24 +121,24 @@ QList<QString> QmlSoundManagerProxy::getHostAPIList() const {
     return m_pSoundManager->getHostAPIList();
 }
 
-QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableInputDevices(const QString& filterAPI) {
-    QList<QmlSoundDeviceProxy*> devices;
-
-    for (const auto& device : m_pSoundManager->getDeviceList(filterAPI, false, true)) {
-        devices.push_back(make_qml_owned<QmlSoundInputDeviceProxy>(device, this));
+QmlSoundDeviceProxyList QmlSoundManagerProxy::availableInputDevices(const QString& filterAPI) {
+    QmlSoundDeviceProxyList devicesQml;
+    const QList<SoundDevicePointer> devices =
+            m_pSoundManager->getDeviceList(filterAPI, false, true);
+    for (const auto& device : devices) {
+        devicesQml.push_back(make_qml_owned<QmlSoundInputDeviceProxy>(device, this));
     }
-
-    return devices;
+    return devicesQml;
 }
 
-QList<QmlSoundDeviceProxy*> QmlSoundManagerProxy::availableOutputDevices(const QString& filterAPI) {
-    QList<QmlSoundDeviceProxy*> devices;
-
-    for (const auto& device : m_pSoundManager->getDeviceList(filterAPI, true, false)) {
-        devices.push_back(make_qml_owned<QmlSoundOutputDeviceProxy>(device, this));
+QmlSoundDeviceProxyList QmlSoundManagerProxy::availableOutputDevices(const QString& filterAPI) {
+    QmlSoundDeviceProxyList devicesQml;
+    const QList<SoundDevicePointer> devices =
+            m_pSoundManager->getDeviceList(filterAPI, true, false);
+    for (const auto& device : devices) {
+        devicesQml.push_back(make_qml_owned<QmlSoundOutputDeviceProxy>(device, this));
     }
-
-    return devices;
+    return devicesQml;
 }
 
 QList<EngineBuffer::KeylockEngine> QmlSoundManagerProxy::getKeylockEngines() const {
@@ -186,13 +186,14 @@ void QmlSoundManagerProxy::setSampleRate(uint32_t sampleRate) {
 }
 
 QList<uint32_t> QmlSoundManagerProxy::getSampleRates(const QString& filterAPI) const {
-    QList<uint32_t> sampleRates;
-    for (const auto& sampleRate : m_pSoundManager->getSampleRates(filterAPI)) {
+    QList<uint32_t> sampleRatesU32;
+    const QList<mixxx::audio::SampleRate> sampleRates = m_pSoundManager->getSampleRates(filterAPI);
+    for (const auto& sampleRate : sampleRates) {
         if (sampleRate.isValid()) {
-            sampleRates.append(sampleRate);
+            sampleRatesU32.append(sampleRate);
         }
     }
-    return sampleRates;
+    return sampleRatesU32;
 }
 
 bool QmlSoundManagerProxy::getForceNetworkClock() const {

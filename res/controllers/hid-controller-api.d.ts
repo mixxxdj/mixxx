@@ -1,4 +1,3 @@
-
 /** HidControllerJSProxy */
 
 declare namespace controller {

@@ -15,7 +15,7 @@ class MissingTableModel final : public BaseSqlTableModel {
     MissingTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
     ~MissingTableModel() final;
 
-    void setTableModel(int id = -1);
+    void setTableModel();
 
     bool isColumnInternal(int column) final;
     void purgeTracks(const QModelIndexList& indices) final;

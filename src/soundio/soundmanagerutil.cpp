@@ -373,8 +373,9 @@ void AudioInput::setType(AudioPathType type) {
 
 QString SoundDeviceId::debugName() const {
     if (alsaHwDevice.isEmpty()) {
-        return name + QStringLiteral(", ") + QString::number(portAudioIndex);
+        return name + QStringLiteral(", ") + QString::number(deviceIndex);
     } else {
-        return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
+        return name + QStringLiteral(", ") + alsaHwDevice +
+                QStringLiteral(", ") + QString::number(deviceIndex);
     }
 }

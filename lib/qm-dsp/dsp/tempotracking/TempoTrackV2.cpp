@@ -100,7 +100,7 @@ TempoTrackV2::filter_df(d_vec_t &df)
 // as it was before
 void
 TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
-                                  vector<double> &beat_period,
+                                  vector<int> &beat_period,
                                   double inputtempo, bool constraintempo)
 {
     // to follow matlab.. split into 512 sample frames with a 128 hop size
@@ -240,7 +240,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
 }
 
 void
-TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &beat_period)
+TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &beat_period)
 {
     // following Kevin Murphy's Viterbi decoding to get best path of
     // beat periods through rfcmat
@@ -307,7 +307,7 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
         }
     }
 
-    i_vec_t bestpath(T);
+    i_vec_t &bestpath = beat_period;
     // find starting point - best beat period for "last" frame
     bestpath[T-1] = get_max_ind(delta[T-1]);
 
@@ -318,11 +318,6 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
 
     // weird but necessary hack -- couldn't get above loop to terminate at t >= 0
     bestpath[0] = psi[1][bestpath[1]];
-
-    for (std::size_t i = 0; i < beat_period.size(); i++) {
-        beat_period[i] = bestpath[i/Q];
-        //        std::cerr << "bestpath[" << i << "] = " << bestpath[i] << " (used for beat_periods " << i*step << " to " << i*step+step-1 << ")" << std::endl;
-    }
 }
 
 double
@@ -378,7 +373,7 @@ TempoTrackV2::normalise_vec(d_vec_t &df)
 // the default value of alpha = 0.9 and tightness = 4
 void
 TempoTrackV2::calculateBeats(const vector<double> &df,
-                             const vector<double> &beat_period,
+                             const vector<int> &beat_period,
                              vector<double> &beats, double alpha, double tightness)
 {
     if (df.empty() || beat_period.empty()) return;
@@ -401,37 +396,56 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 //    std::cerr << "alpha" << alpha << std::endl;
 //    std::cerr << "tightness" << tightness << std::endl;
 
+    int old_period = 0;
+    int txwt_len = 0;
+    d_vec_t txwt;
+
     // main loop
     for (int i = 0; i < df_len; i++) {
-        
-        int prange_min = -2*beat_period[i];
-        int prange_max = round(-0.5*beat_period[i]);
+        // df contains the magnitude of the onsets
+        //
+        // beat_period is the viterbi path following the most likely bpm in a
+        // 128 steps window of ~1,5 s. This is optimized to follow gentle tempo
+        // changes that may happen in live recordings.
+        //
+        // This method is tricked by beat less bridges, changes in instrumentation
+        // or grove or intended abrupt tempo changes. It may follow a previous
+        // dominant even if we are in a new tempo window with lower onsets.
 
-        // transition range
-        int txwt_len = prange_max - prange_min + 1;
-        d_vec_t txwt (txwt_len);
-        d_vec_t scorecands (txwt_len);
+        int period = beat_period[i/128];
+        int prange_min = period * -2;
+        if (period != old_period)  {
+            old_period = period;
+            int prange_max = period / -2;
 
+            // transition range
+            txwt_len = prange_max - prange_min + 1;
+
+	        txwt.clear();
+	        txwt.reserve(txwt_len);
+	        for (int j = 0; j < txwt_len; j++) {
+	            double mu = double(period);
+                txwt.push_back(exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2)));
+	        }
+	    }
+	    
+        // loop over the region in cumscore of one period in the past
+        // to check for resonance using the txwt pattern.
+        double vv = 0; // the maximum value, high if there is likely beat
+        int xx = 0; // index of the maximum
         for (int j = 0; j < txwt_len; j++) {
-            
-            double mu = double(beat_period[i]);
-            txwt[j] = exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2));
-
-            // IF IN THE ALLOWED RANGE, THEN LOOK AT CUMSCORE[I+PRANGE_MIN+J
-            // ELSE LEAVE AT DEFAULT VALUE FROM INITIALISATION:  D_VEC_T SCORECANDS (TXWT.SIZE());
-
             int cscore_ind = i + prange_min + j;
             if (cscore_ind >= 0) {
-                scorecands[j] = txwt[j] * cumscore[cscore_ind];
+                double scorecands = txwt[j] * cumscore[cscore_ind];
+                if (scorecands > vv) {
+                    vv = scorecands;
+                    xx = cscore_ind;
+                }
             }
         }
 
-        // find max value and index of maximum value
-        double vv = get_max_val(scorecands);
-        int xx = get_max_ind(scorecands);
-
-        cumscore[i] = alpha*vv + (1.-alpha)*localscore[i];
-        backlink[i] = i+prange_min+xx;
+        cumscore[i] = alpha * vv + (1. - alpha) * localscore[i];
+        backlink[i] = xx;
 
 //        std::cerr << "backlink[" << i << "] <= " << backlink[i] << std::endl;
     }

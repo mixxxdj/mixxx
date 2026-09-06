@@ -124,6 +124,10 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID){&LIBRARYTABLE_KEY_ID,
                 nullptr,
                 0},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY){
+                &LIBRARYTABLE_TUNING_FREQUENCY,
+                QT_TRANSLATE_NOOP("BaseTrackTableModel", "A4 Pitch (Hz)"),
+                kDefaultColumnWidth},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK){&LIBRARYTABLE_BPM_LOCK,
                 nullptr,
                 0},
@@ -163,6 +167,9 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION){&TRACKLOCATIONSTABLE_LOCATION,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Location"),
                 kDefaultColumnWidth * 6},
+        DI(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY){&TRACKLOCATIONSTABLE_DIRECTORY,
+                nullptr,
+                0},
         DI(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED){&TRACKLOCATIONSTABLE_FSDELETED,
                 nullptr,
                 0},
@@ -192,8 +199,9 @@ ColumnCache::ColumnCache() {
     m_pKeyNotationCP = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
+    // Used in BaseTrackTableModel() along with a later setColumns() call.
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
-    // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
+    // again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
     // KeyUtils::CUSTOM as Mixxx is starting.
 }
 
@@ -243,6 +251,10 @@ void ColumnCache::setColumns(QStringList columns) {
 }
 
 void ColumnCache::slotSetKeySortOrder(double notationValue) {
+    if (m_columnsByIndex.isEmpty()) {
+        // we are not caching columns yet
+        return;
+    }
     const int keyColumnIndex = m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY];
     if (keyColumnIndex < 0) {
         return;

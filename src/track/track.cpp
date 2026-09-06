@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <atomic>
+#include <cmath>
 
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
@@ -16,6 +17,9 @@ namespace {
 const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
+
+constexpr double kCentsPerOctave = 1200.0;
+constexpr double kStandardTuningHz = 440.0;
 
 // Count the number of currently existing instances for detecting
 // memory leaks.
@@ -299,6 +303,7 @@ bool Track::replaceRecord(
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
     const auto newRating = newRecord.getRating();
+    const bool newBpmLocked = newRecord.getBpmLocked();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -309,6 +314,7 @@ bool Track::replaceRecord(
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
     const auto oldRating = m_record.getRating();
+    const bool oldBpmLocked = m_record.getBpmLocked();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -334,6 +340,9 @@ bool Track::replaceRecord(
 
     if (bpmUpdatedFlag) {
         emit beatsUpdated();
+    }
+    if (oldBpmLocked != newBpmLocked) {
+        emit bpmLockChanged(newBpmLocked);
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -428,11 +437,6 @@ bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
     return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, false);
 }
 
-bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
-    auto locked = lockMutex(&m_qMutex);
-    return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, true);
-}
-
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     if (m_pBeats == pBeats) {
         return false;
@@ -461,9 +465,10 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
 bool Track::trySetBeatsWhileLocked(
         mixxx::BeatsPointer pBeats,
         bool lockBpmAfterSet) {
-    if (m_pBeats && m_record.getBpmLocked()) {
-        // Track has already a valid and locked beats object, abort.
-        qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
+    if (m_record.getBpmLocked()) {
+        // The BPM is locked, so the beatgrid must not be changed - regardless
+        // of whether one currently exists.
+        qDebug() << "Track is BPM-locked. Discarding new beats";
         return false;
     }
 
@@ -923,7 +928,7 @@ const ConstWaveformPointer& Track::getWaveform() const {
 }
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
+    m_waveform = std::move(pWaveform);
     emit waveformUpdated();
 }
 
@@ -945,12 +950,12 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     }
 
     // Store the cue point as main cue
-    CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
+    CuePointer pMainCue = findCueByType(mixxx::CueType::MainCue);
     if (position.isValid()) {
-        if (pLoadCue) {
-            pLoadCue->setStartPosition(position);
+        if (pMainCue) {
+            pMainCue->setStartPosition(position);
         } else {
-            pLoadCue = CuePointer(new Cue(
+            pMainCue = CuePointer(new Cue(
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
                     position,
@@ -959,16 +964,16 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
-            pLoadCue->moveToThread(thread());
-            connect(pLoadCue.get(),
+            pMainCue->moveToThread(thread());
+            connect(pMainCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
-            m_cuePoints.push_back(pLoadCue);
+            m_cuePoints.push_back(pMainCue);
         }
-    } else if (pLoadCue) {
-        disconnect(pLoadCue.get(), nullptr, this, nullptr);
-        m_cuePoints.removeOne(pLoadCue);
+    } else if (pMainCue) {
+        disconnect(pMainCue.get(), nullptr, this, nullptr);
+        m_cuePoints.removeOne(pMainCue);
     }
 
     markDirtyAndUnlock(&locked);
@@ -1175,11 +1180,11 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
-    // If loop cues are removed, also clear the last active loop
-    if (type == mixxx::CueType::Loop) {
-        emit loopRemove();
-    }
     if (dirty) {
+        // If loop cues have been removed, also clear the last active loop
+        if (type == mixxx::CueType::Loop) {
+            emit loopRemove();
+        }
         markDirtyAndUnlock(&locked);
         emit cuesUpdated();
     }
@@ -1576,6 +1581,19 @@ QString Track::getKeyText() const {
     return KeyUtils::keyToString(getKey());
 }
 
+void Track::setTuningFrequencyHz(double tuningFrequencyHz) {
+    auto locked = lockMutex(&m_qMutex);
+    Keys keys = m_record.getKeys();
+    keys.setGlobalTuningFrequencyHz(tuningFrequencyHz);
+    m_record.setKeys(std::move(keys));
+    afterKeysUpdated(&locked);
+}
+
+double Track::getTuningFrequencyHz() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getKeys().getGlobalTuningFrequencyHz();
+}
+
 // normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
@@ -1759,6 +1777,27 @@ ExportTrackMetadataResult Track::exportMetadata(
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();
         normalizedFromRecord.normalizeBeforeExport();
+        // Encode tuning offset (RapidEvolution style) into key text for tag roundtrip.
+        // Keep the database value untouched; only the exported metadata is modified.
+        const double tuningHz = m_record.getKeys().getGlobalTuningFrequencyHz();
+        if (tuningHz > 0.0) {
+            QString keyText = normalizedFromRecord.getTrackInfo().getKeyText();
+            if (keyText.isEmpty()) {
+                const auto key = m_record.getKeys().getGlobalKey();
+                if (key != mixxx::track::io::key::INVALID) {
+                    keyText = KeyUtils::keyToString(key);
+                }
+            }
+            if (!keyText.isEmpty()) {
+                const double cents = kCentsPerOctave * std::log2(tuningHz / kStandardTuningHz);
+                const int centsRounded = static_cast<int>(std::lround(cents));
+                const QString offsetText = centsRounded >= 0
+                        ? QStringLiteral("+%1").arg(centsRounded)
+                        : QString::number(centsRounded);
+                normalizedFromRecord.refTrackInfo().setKeyText(
+                        QStringLiteral("%1 %2").arg(keyText, offsetText));
+            }
+        }
 
         // Finally the track's current metadata and the imported/adjusted metadata
         // can be compared for differences to decide whether the tags in the file

@@ -19,10 +19,10 @@ jobs:
     permissions:
       contents: read # for actions/labeler to determine modified files
       pull-requests: write # for actions/labeler to add labels to PRs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     steps:
-      - uses: actions/labeler@v6.0.1
+      - uses: actions/labeler@v7.0.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           sync-labels: false

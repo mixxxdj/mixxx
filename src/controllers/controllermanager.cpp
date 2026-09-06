@@ -93,10 +93,13 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
         : QObject(),
           m_pConfig(pConfig),
           // WARNING: Do not parent m_pControllerLearningEventFilter to
-          // ControllerManager because the CM is moved to its own thread and runs
-          // its own event loop.
-          m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
+          // ControllerManager because the CM, together with all its children,
+          // is moved to the ControllerManager thread (m_pThread) and
+          // runs its own event loop there.
+          m_pControllerLearningEventFilter(
+                  std::make_unique<ControllerLearningEventFilter>()),
           m_pollTimer(this),
+          m_pThread(std::make_unique<QThread>()),
           m_skipPoll(false) {
     qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
             "std::shared_ptr<LegacyControllerMapping>");
@@ -111,14 +114,14 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     m_pollTimer.setInterval(kPollInterval.toIntegerMillis());
     connect(&m_pollTimer, &QTimer::timeout, this, &ControllerManager::slotPollDevices);
 
-    m_pThread = new QThread;
-    m_pThread->setObjectName("Controller");
+    m_pThread->setObjectName("ControllerManager");
 
-    // Moves all children (including the poll timer) to m_pThread
-    moveToThread(m_pThread);
+    // Move the entire ControllerManager object and all its children (including
+    // the poll timer) onto the ControllerManager thread.
+    moveToThread(m_pThread.get());
 
-    // Controller processing needs to be prioritized since it can affect the
-    // audio directly, like when scratching
+    // The ControllerManager thread is high-priority because controller input can
+    // affect audio output directly (e.g. scratching).
     m_pThread->start(QThread::HighPriority);
 
     connect(this, &ControllerManager::requestInitialize, this, &ControllerManager::slotInitialize);
@@ -129,76 +132,96 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
     connect(this, &ControllerManager::requestShutdown, this, &ControllerManager::slotShutdown);
 
     // Signal that we should run slotInitialize once our event loop has started
-    // up.
-    emit requestInitialize(); // clazy:exclude=incorrect-emit
+    // up. invokeMethod with QueuedConnection will post an event to our event loop,
+    // so slotInitialize will not run until after the ControllerManager thread is fully
+    // started and ready to process events.
+    QMetaObject::invokeMethod(this, &ControllerManager::slotInitialize, Qt::QueuedConnection);
 }
 
 ControllerManager::~ControllerManager() {
-    emit requestShutdown();
+    // slotShutdown() closes controllers, deletes enumerators and calls
+    // m_pThread->quit(). We must wait for the thread to finish before our
+    // members (m_pollTimer, m_pControllerLearningEventFilter, …) are destroyed,
+    // because they may still be accessed by the thread's event loop.
+    emit requestShutdown(); // clazy:exclude=incorrect-emit
     m_pThread->wait();
-    delete m_pThread;
-    delete m_pControllerLearningEventFilter;
+    // m_pThread and m_pControllerLearningEventFilter are released by unique_ptr
+    // after this point, in reverse declaration order.
 }
 
 ControllerLearningEventFilter* ControllerManager::getControllerLearningEventFilter() const {
-    return m_pControllerLearningEventFilter;
+    return m_pControllerLearningEventFilter.get();
 }
 
 void ControllerManager::slotInitialize() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     qDebug() << "ControllerManager:slotInitialize";
 
     // Initialize mapping info parsers. This object is only for use in the main
     // thread. Do not touch it from within ControllerManager.
-    m_pMainThreadUserMappingEnumerator = QSharedPointer<MappingInfoEnumerator>(
-            new MappingInfoEnumerator(userMappingsPath(m_pConfig)));
-    m_pMainThreadSystemMappingEnumerator = QSharedPointer<MappingInfoEnumerator>(
-            new MappingInfoEnumerator(resourceMappingsPath(m_pConfig)));
+    m_pMainThreadUserMappingEnumerator =
+            QSharedPointer<MappingInfoEnumerator>::create(
+                    userMappingsPath(m_pConfig));
+    m_pMainThreadSystemMappingEnumerator =
+            QSharedPointer<MappingInfoEnumerator>::create(
+                    resourceMappingsPath(m_pConfig));
 
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
+    {
+        auto locker = lockMutex(&m_mutex);
 #ifdef __PORTMIDI__
-    m_enumerators.append(new PortMidiEnumerator(m_pConfig));
+        m_enumerators.push_back(std::make_unique<PortMidiEnumerator>(m_pConfig));
 #endif
 #ifdef __HSS1394__
-    m_enumerators.append(new Hss1394Enumerator());
+        m_enumerators.push_back(std::make_unique<Hss1394Enumerator>());
 #endif
 #ifdef __BULK__
-    m_enumerators.append(new BulkEnumerator());
+        m_enumerators.push_back(std::make_unique<BulkEnumerator>());
 #endif
 #ifdef __HID__
-    m_enumerators.append(new HidEnumerator());
+        m_enumerators.push_back(std::make_unique<HidEnumerator>());
 #endif
+    } // Mutex locker released here
+    emit initialized();
 }
 
 void ControllerManager::slotShutdown() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     stopPolling();
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
-    // paths from accessing them.
+    // paths from accessing them during teardown.
     auto locker = lockMutex(&m_mutex);
-    QList<ControllerEnumerator*> enumerators = m_enumerators;
-    m_enumerators.clear();
+    std::vector<std::unique_ptr<ControllerEnumerator>> enumerators =
+            std::move(m_enumerators); // m_enumerators is guaranteed empty after move
     locker.unlock();
 
-    // Delete enumerators and they'll delete their Devices
-    for (ControllerEnumerator* pEnumerator : enumerators) {
-        delete pEnumerator;
-    }
+    // Delete enumerators (and their owned Controllers) by letting unique_ptrs
+    // go out of scope here — no raw deletes needed.
+    enumerators.clear();
 
-    // Stop the processor after the enumerators since the engines live in it
+    // Stop the event loop after the enumerators are torn down, since the
+    // controller scripting engines live inside the enumerators.
     m_pThread->quit();
 }
 
 void ControllerManager::updateControllerList() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
     // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
     // and possible crashes.
     auto locker = lockMutex(&m_mutex);
-    if (m_enumerators.isEmpty()) {
+    if (m_enumerators.empty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
     }
-    QList<ControllerEnumerator*> enumerators = m_enumerators;
+    // Take a snapshot of the enumerator pointers while holding the lock.
+    std::vector<ControllerEnumerator*> enumerators;
+    enumerators.reserve(m_enumerators.size());
+    for (const auto& pEnumerator : m_enumerators) {
+        enumerators.push_back(pEnumerator.get());
+    }
     locker.unlock();
 
     QList<Controller*> newDeviceList;
@@ -207,11 +230,12 @@ void ControllerManager::updateControllerList() {
     }
 
     locker.relock();
-    if (newDeviceList != m_controllers) {
-        m_controllers = newDeviceList;
-        locker.unlock();
-        emit devicesChanged();
+    if (newDeviceList == m_controllers) {
+        return;
     }
+    m_controllers = std::move(newDeviceList);
+    locker.unlock();
+    emit devicesChanged();
 }
 
 QList<Controller*> ControllerManager::getControllers() const {
@@ -239,11 +263,13 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
     return filteredDeviceList;
 }
 
-QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name) {
+QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name) const {
+    // Thread-Safe : ConfigObject<ValueType>::getValueString/get is protected by QWriteLocker
     return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
 void ControllerManager::slotSetUpDevices() {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     qDebug() << "ControllerManager: Setting up devices";
 
     updateControllerList();
@@ -310,6 +336,8 @@ void ControllerManager::slotSetUpDevices() {
 }
 
 void ControllerManager::pollIfAnyControllersOpen() {
+    // Not Thread-Safe because calls startPolling()/stopPolling()
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     auto locker = lockMutex(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
@@ -328,6 +356,8 @@ void ControllerManager::pollIfAnyControllersOpen() {
 }
 
 void ControllerManager::startPolling() {
+    // Not Thread-Safe because QTimer::start() must be called from the thread that owns the timer.
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     // Start the polling timer.
     if (!m_pollTimer.isActive()) {
         m_pollTimer.start();
@@ -336,11 +366,15 @@ void ControllerManager::startPolling() {
 }
 
 void ControllerManager::stopPolling() {
+    // Not Thread-Safe because QTimer::stop() must be called from the thread that owns the timer.
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     m_pollTimer.stop();
     qDebug() << "Controller polling stopped.";
 }
 
 void ControllerManager::slotPollDevices() {
+    // Not Thread-Safe because it accesses m_controllers and m_skipPoll without a mutex.
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     // Note: this function is called from a high priority thread which
     // may stall the GUI or may reduce the available CPU time for other
     // High Priority threads like caching reader or broadcasting more
@@ -383,7 +417,7 @@ void ControllerManager::slotPollDevices() {
 }
 
 void ControllerManager::openController(Controller* pController) {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     if (!pController) {
         return;
     }
@@ -403,7 +437,7 @@ void ControllerManager::openController(Controller* pController) {
 }
 
 void ControllerManager::closeController(Controller* pController) {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     if (!pController) {
         return;
     }
@@ -419,6 +453,7 @@ void ControllerManager::closeController(Controller* pController) {
 void ControllerManager::slotApplyMapping(Controller* pController,
         std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     VERIFY_OR_DEBUG_ASSERT(pController) {
         qWarning() << "slotApplyMapping got invalid controller!";
         return;

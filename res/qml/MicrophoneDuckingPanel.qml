@@ -4,6 +4,7 @@ import QtQuick 2.12
 import "Theme"
 
 Column {
+    id: root
 
     enum DuckingMode {
         Off,
@@ -12,49 +13,49 @@ Column {
         NumModes // This always needs to be the last value
     }
 
-    Skin.ControlSlider {
-        width: 50
-        height: 26
-        orientation: Qt.Horizontal
-        group: "[Master]"
-        key: "duckStrength"
-        barColor: Theme.crossfaderBarColor
-        barStart: 1
-        fg: Theme.imgMicDuckingSliderHandle
-        bg: Theme.imgMicDuckingSlider
-    }
+    property string duckingModeKey: "talkoverDucking"
+    property string duckingStrengthKey: "duckStrength"
+    property string group: "[Master]"
+
+    spacing: 2
 
     Skin.Button {
-        id: pflButton
-
-        text: duckingControl.duckingModeName
         activeColor: Theme.pflActiveButtonColor
         highlight: duckingControl.duckingEnabled
+        text: duckingControl.duckingModeName
+        width: 50
+
         onClicked: duckingControl.nextMode()
+    }
+    Skin.ControlKnob {
+        anchors.horizontalCenter: parent.horizontalCenter
+        arcStart: Knob.ArcStart.Maximum
+        color: Theme.effectUnitColor
+        group: root.group
+        height: 35
+        key: root.duckingStrengthKey
+        width: 35
+    }
+    Mixxx.ControlProxy {
+        id: duckingControl
 
-        Mixxx.ControlProxy {
-            id: duckingControl
-
-            property string duckingModeName: {
-                switch (this.value) {
-                    case MicrophoneDuckingPanel.DuckingMode.Auto:
-                        return "Auto";
-                    case MicrophoneDuckingPanel.DuckingMode.Manual:
-                        return "Manual";
-                    default:
-                        return "Off";
-                }
+        readonly property bool duckingEnabled: value === MicrophoneDuckingPanel.DuckingMode.Auto || value === MicrophoneDuckingPanel.DuckingMode.Manual
+        readonly property string duckingModeName: {
+            switch (value) {
+            case MicrophoneDuckingPanel.DuckingMode.Auto:
+                return "Auto";
+            case MicrophoneDuckingPanel.DuckingMode.Manual:
+                return "Manual";
+            default:
+                return "Off";
             }
-            property bool duckingEnabled: {
-                return (this.value == MicrophoneDuckingPanel.DuckingMode.Auto || this.value == MicrophoneDuckingPanel.DuckingMode.Manual);
-            }
-
-            function nextMode() {
-                this.value = (this.value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
-            }
-
-            group: "[Master]"
-            key: "talkoverDucking"
         }
+
+        function nextMode() {
+            value = (value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
+        }
+
+        group: root.group
+        key: root.duckingModeKey
     }
 }

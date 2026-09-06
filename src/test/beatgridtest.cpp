@@ -75,33 +75,65 @@ TEST(BeatGridTest, Scale) {
     EXPECT_DOUBLE_EQ(bpm.value(),
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
-    pGrid = *pGrid->tryScale(Beats::BpmScale::Double);
-    EXPECT_DOUBLE_EQ(2 * bpm.value(),
-            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
-                    .value());
 
     pGrid = *pGrid->tryScale(Beats::BpmScale::Halve);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    EXPECT_DOUBLE_EQ(bpm.value() / 2,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
     pGrid = *pGrid->tryScale(Beats::BpmScale::TwoThirds);
     EXPECT_DOUBLE_EQ(bpm.value() * 2 / 3,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
-    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
-    EXPECT_DOUBLE_EQ(bpm.value(),
-            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
-                    .value());
-
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
     pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeFourths);
     EXPECT_DOUBLE_EQ(bpm.value() * 3 / 4,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FourFifths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 4 / 5,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    pGrid = *pGrid->tryScale(Beats::BpmScale::FiveFourths);
+    EXPECT_DOUBLE_EQ(bpm.value() * 5 / 4,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
     pGrid = *pGrid->tryScale(Beats::BpmScale::FourThirds);
-    EXPECT_DOUBLE_EQ(bpm.value(),
+    EXPECT_DOUBLE_EQ(bpm.value() * 4 / 3,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    pGrid = *pGrid->tryScale(Beats::BpmScale::ThreeHalves);
+    EXPECT_DOUBLE_EQ(bpm.value() * 3 / 2,
+            pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
+                    .value());
+
+    pGrid = Beats::fromConstTempo(pTrack->getSampleRate(),
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(bpm));
+    pGrid = *pGrid->tryScale(Beats::BpmScale::Double);
+    EXPECT_DOUBLE_EQ(bpm.value() * 2,
             pGrid->getBpmInRange(audio::kStartFramePos, trackEndPosition)
                     .value());
 }
@@ -211,6 +243,26 @@ TEST(BeatGridTest, FromMetadata) {
 
     pBeats = pTrack->getBeats();
     EXPECT_EQ(nullptr, pBeats);
+}
+
+// A BPM-locked track must not have its beatgrid changed, even when it has no
+// beatgrid yet: trySetBeats() must reject the new beats and leave the lock
+// untouched.
+// Related to https://github.com/mixxxdj/mixxx/issues/15196
+TEST(BeatGridTest, BpmLockRejectsBeatsForTrackWithoutBeats) {
+    TrackPointer pTrack = newTrack(kSampleRate);
+    pTrack->setBpmLocked(true);
+    ASSERT_FALSE(pTrack->getBeats());
+
+    const auto pBeats = Beats::fromConstTempo(
+            kSampleRate,
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(120.0));
+    ASSERT_TRUE(pBeats);
+
+    EXPECT_FALSE(pTrack->trySetBeats(pBeats));
+    EXPECT_FALSE(pTrack->getBeats());
+    EXPECT_TRUE(pTrack->isBpmLocked());
 }
 
 }  // namespace

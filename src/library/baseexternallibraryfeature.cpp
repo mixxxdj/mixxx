@@ -7,6 +7,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
+#include "library/treeitem.h"
 #include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
 #include "widget/wlibrarysidebar.h"
@@ -157,30 +158,41 @@ void BaseExternalLibraryFeature::slotImportAsMixxxCrate() {
     }
 }
 
-// This is a common function for all external Librarys copied to Mixxx DB
+// This is a common function for all external libraries copied to Mixxx DB
 void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         QList<TrackId>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
 
-    DEBUG_ASSERT(pPlaylist);
-    *pPlaylist = m_lastRightClickedIndex.data().toString();
-    std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd(
-            createPlaylistModelForPlaylist(*pPlaylist));
-
-    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
-                "could not initialize a playlist model for playlist:" << *pPlaylist;
+    const auto* pTreeItem = static_cast<TreeItem*>(
+            m_lastRightClickedIndex.internalPointer());
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
         return;
     }
 
-    pPlaylistModelToAdd->setSort(pPlaylistModelToAdd->fieldIndex(
-            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+    DEBUG_ASSERT(pPlaylist);
+    *pPlaylist = pTreeItem->getLabel();
+    const std::unique_ptr<BaseSqlTableModel> pPlaylistModelToAdd =
+            createPlaylistModelForPlaylist(pTreeItem->getData());
+
+    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+        qDebug() << "BaseExternalLibraryFeature::"
+                    "appendTrackIdsFromRightClickIndex "
+                    "could not initialize a playlist model for "
+                    "playlist:"
+                 << *pPlaylist;
+        return;
+    }
+
+    pPlaylistModelToAdd->setSort(
+            pPlaylistModelToAdd->fieldIndex(
+                    ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
+            Qt::AscendingOrder);
     pPlaylistModelToAdd->select();
 
     // Copy Tracks
-    int rows = pPlaylistModelToAdd->rowCount();
+    const int rows = pPlaylistModelToAdd->rowCount();
     for (int i = 0; i < rows; ++i) {
         QModelIndex index = pPlaylistModelToAdd->index(i, 0);
         VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
@@ -208,7 +220,6 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
 
 std::unique_ptr<BaseSqlTableModel>
 BaseExternalLibraryFeature::createPlaylistModelForPlaylist(
-        const QString& playlist) {
-    Q_UNUSED(playlist);
+        const QVariant&) {
     return {};
 }

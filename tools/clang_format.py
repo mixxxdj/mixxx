@@ -11,7 +11,6 @@ import typing
 
 import githelper
 
-
 # We recommend a maximum line length of 80, but do allow up to 100 characters
 # if deemed necessary by the developer. Lines that exceed that limit will
 # be wrapped after 80 characters automatically.

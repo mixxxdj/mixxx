@@ -673,13 +673,15 @@ WTrackProperty[selected="true"],
 /********************** Loop Controls / AutoDJ spinbox ************************/
 WBeatSpinBox,
 WBpmEditor QDoubleSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   selection-color: #a7998b;
   selection-background-color: #111;
   }
   WBeatSpinBox:focus,
   WBpmEditor QDoubleSpinBox:focus,
   #spinBoxTransition:focus,
+  #spinBoxRecentDays:focus,
   #LibraryBPMSpinBox:focus  {
     selection-color: #000;
     selection-background-color: #d2d2d2;
@@ -691,23 +693,35 @@ WBeatSpinBox {
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox.svg) 3 19 2 3;
 }
 
-#spinBoxTransition {
-  width: 24px;
+#spinBoxTransition,
+#spinBoxRecentDays {
   height: 19px;
   padding: 0px -15px 0px 0px;
   margin: 0px 2px 3px 5px;
   border-width: 3px 19px 2px 3px;
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_autodj.svg) 3 19 2 3;
 }
+#spinBoxTransition {
+  width: 24px;
+}
+#spinBoxRecentDays {
+  width: 45px;
+}
 WBeatSpinBox:focus,
-#spinBoxTransition:focus {
+#spinBoxTransition:focus,
+#spinBoxRecentDays:focus {
   border-image: url(skins:LateNight/palemoon/buttons/btn_embedded_spinbox_focus_blue.svg) 3 19 2 3;
+}
+#spinBoxRecentDays:disabled {
+  color: #494949;
 }
 
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 #spinBoxTransition::up-button,
-#spinBoxTransition::down-button {
+#spinBoxTransition::down-button,
+#spinBoxRecentDays::up-button,
+#spinBoxRecentDays::down-button {
   subcontrol-origin: content;
   position: relative;
   padding: 0px;
@@ -715,7 +729,8 @@ WBeatSpinBox::down-button,
   }
 
   WBeatSpinBox::up-button,
-  #spinBoxTransition::up-button {
+  #spinBoxTransition::up-button,
+  #spinBoxRecentDays::up-button {
     subcontrol-position: top right;
     image: url(skins:LateNight/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
     height: 11px;
@@ -723,18 +738,21 @@ WBeatSpinBox::down-button,
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
     }
-    #spinBoxTransition::up-button {
+    #spinBoxTransition::up-button,
+    #spinBoxRecentDays::up-button {
       margin: -2px -3px 0px 0px;
     }
 
   WBeatSpinBox::down-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-position: bottom right;
     image: url(skins:LateNight/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
     height: 11px;
     margin: 0px -1px -3px 0px;
     }
-    #spinBoxTransition::down-button {
+    #spinBoxTransition::down-button,
+    #spinBoxRecentDays::down-button {
       margin: 0px -3px -1px 0px;
     }
 
@@ -1360,7 +1378,8 @@ WEffectChainPresetSelector:!editable:on,
 
   WBeatSpinBox,
   WBpmEditor QDoubleSpinBox,
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     color: #a7998b;
   }
 
@@ -1667,7 +1686,6 @@ WPushButton#CueDeck[displayValue="0"],
 WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
-WPushButton#StemMuteButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
@@ -1693,6 +1711,7 @@ WBpmEditor QDoubleSpinBox {
   }
   /* make Fx parameter buttons brighter so they stand out in 'fx focus' mode
     (parameters row of focused effect is marked = dark bg, colored border) */
+  WPushButton#StemMuteButton[displayValue="0"],
   WPushButton#FxParameterButton[displayValue="0"] {
     background-color: #2a2a2c;
   }
@@ -1729,6 +1748,8 @@ WBpmEditor QDoubleSpinBox {
   /* library controls */
   #spinBoxTransition::up-button,
   #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button,
   QPushButton#pushButtonAutoDJ:enabled:!checked,
   #LibraryFeatureControls QPushButton:enabled {
     background-color: #222;
@@ -1816,7 +1837,9 @@ WBpmEditor QDoubleSpinBox::down-button:pressed,
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
-#spinBoxTransition::down-button:pressed {
+#spinBoxTransition::down-button:pressed,
+#spinBoxRecentDays::up-button:pressed,
+#spinBoxRecentDays::down-button:pressed {
   background-color: #257b82;
   }
   /* Dim blue for assign buttons Fx34 */
@@ -1950,8 +1973,6 @@ WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
 WPushButton#FxExpand[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
-WPushButton#CrossfaderButton[displayValue="0"],
-WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
 #RecDot,
@@ -2517,13 +2538,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
   }
 
-#StemMuteButton[displayValue="0"] {
-  image: url(skins:LateNight/palemoon/buttons/btn__stem_mute.svg) no-repeat center center;
-}
-
 #QuickEffectButton[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__star.svg) no-repeat center center;
-}
+  }
+  #QuickEffectButton[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__star_active.svg) no-repeat center center;
+  }
 
 /* EQ Kill button icons H / M / L */
 #EQKillButton_High[displayValue="0"] {
@@ -2954,6 +2974,7 @@ WTrackPropertyEditor,
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 #spinBoxTransition,
+#spinBoxRecentDays,
 #LibraryBPMSpinBox {
   background-color: #0f0f0f;
 }
@@ -2998,7 +3019,9 @@ WTrackTableView::item:selected,
 WLibrarySidebar::item:selected:focus {
   outline: none;
 }
-WLibrarySidebar::item:!selected:focus {
+WLibrarySidebar::item:!selected:focus,
+/* This, in conjunction with the c++ counterpart, styles only items hovered while dragging */
+WLibrarySidebar[dragHover="true"]::item:hover {
   outline: none;
   border: 1px solid white;
 }
@@ -3245,7 +3268,8 @@ WSearchLineEdit {
   selection-color: #000;
   selection-background-color: #ccc;
   }
-  WSearchLineEdit:focus {
+  WSearchLineEdit:focus,
+  WSearchLineEdit[qmlBridgeFocused="true"] {
     padding: 1px;
     border: 2px solid #257b82;
     border-radius: 0px;
@@ -3319,7 +3343,8 @@ WSearchLineEdit {
 /* add margin to compensate for frameless library table */
 #LibraryFeatureControls QPushButton,
 /* #fadeModeCombobox set below */
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   margin-top: 4px;
 }
 QLabel#labelProgress, /* Analysis progress */

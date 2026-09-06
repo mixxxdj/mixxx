@@ -47,7 +47,7 @@ Variables:
       <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_3_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
-	<State>
+  <State>
       <Number>4</Number>
       <Text><Variable name="state_4_text"/></Text>
       <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_4_icon"/></Pressed>

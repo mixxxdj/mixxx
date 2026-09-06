@@ -1,10 +1,13 @@
 #include "javascriptplayerproxy.h"
 
+#include "library/library_prefs.h"
 #include "moc_javascriptplayerproxy.cpp"
+#include "track/track.h"
 
 JavascriptPlayerProxy::JavascriptPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
         : QObject(parent),
-          m_pTrackPlayer(pTrackPlayer) {
+          m_pTrackPlayer(pTrackPlayer),
+          m_keyNotation(mixxx::library::prefs::kKeyNotationConfigKey, this) {
     if (m_pTrackPlayer && m_pTrackPlayer->getLoadedTrack()) {
         slotTrackLoaded(pTrackPlayer->getLoadedTrack());
     }
@@ -73,6 +76,16 @@ void JavascriptPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
             &Track::trackTotalChanged,
             this,
             &JavascriptPlayerProxy::trackTotalChanged);
+    connect(pTrack.get(),
+            &Track::keyChanged,
+            this,
+            &JavascriptPlayerProxy::slotKeyChanged);
+
+    // Re-emit keyChanged when the user changes the notation setting,
+    // so JS listeners stay in sync even without a track reload.
+    m_keyNotation.connectValueChanged(this, [this](double) {
+        slotKeyChanged();
+    });
 
     emit artistChanged(m_pCurrentTrack->getArtist());
     emit titleChanged(m_pCurrentTrack->getTitle());
@@ -84,6 +97,7 @@ void JavascriptPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     emit yearChanged(m_pCurrentTrack->getYear());
     emit trackNumberChanged(m_pCurrentTrack->getTrackNumber());
     emit trackTotalChanged(m_pCurrentTrack->getTrackTotal());
+    emit keyChanged(getKeyText());
 }
 
 void JavascriptPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -105,6 +119,20 @@ void JavascriptPlayerProxy::disconnectTrack() {
     if (m_pCurrentTrack != nullptr) {
         m_pCurrentTrack->disconnect(this);
     }
+}
+
+void JavascriptPlayerProxy::slotKeyChanged() {
+    if (m_pCurrentTrack != nullptr) {
+        emit keyChanged(getKeyText());
+    }
+}
+
+QString JavascriptPlayerProxy::getKeyText() const {
+    if (m_pCurrentTrack == nullptr) {
+        return QString();
+    }
+    return KeyUtils::formatGlobalKey(m_pCurrentTrack->getKeys(),
+            KeyUtils::keyNotationFromNumericValue(m_keyNotation.get()));
 }
 
 PROPERTY_IMPL_GETTER(JavascriptPlayerProxy, QString, artist, getArtist)

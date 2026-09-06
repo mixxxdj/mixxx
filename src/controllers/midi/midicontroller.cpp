@@ -11,6 +11,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
 #include "util/make_const_iterator.h"
@@ -170,7 +171,7 @@ void MidiController::createOutputHandlers() {
             if (m_logBase().isDebugEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
-                int numDecks = PlayerManager::numDecks();
+                int numDecks = PlayerInfo::instance().numDecks();
                 if (deckNum <= numDecks) {
                     failures.append(errorLog);
                 }
@@ -501,7 +502,7 @@ double MidiController::computeValue(
     }
 
     if (options.testFlag(MidiOption::Invert)) {
-        return 127. - newmidivalue;
+        newmidivalue = 127. - newmidivalue;
     }
 
     if (options & (MidiOption::Rot64 | MidiOption::Rot64Invert)) {
@@ -517,73 +518,53 @@ double MidiController::computeValue(
         } else {
             tempval -= diff;
         }
-        return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
-    }
-
-    if (options.testFlag(MidiOption::Rot64Fast)) {
+        newmidivalue = tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval);
+    } else if (options.testFlag(MidiOption::Rot64Fast)) {
         tempval = prevmidivalue;
         diff = newmidivalue - 64.;
         diff *= 1.5;
         tempval += diff;
-        return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
-    }
-
-    if (options.testFlag(MidiOption::Diff)) {
-        //Interpret 7-bit signed value using two's compliment.
+        newmidivalue = tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval);
+    } else if (options.testFlag(MidiOption::Diff)) {
+        // Interpret 7-bit signed value using two's compliment.
         if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
         }
-        //Apply sensitivity to signed value. FIXME
-       // if(sensitivity > 0)
+        // Apply sensitivity to signed value. FIXME
+        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
-        //Apply new value to current value.
+        // Apply new value to current value.
         newmidivalue = prevmidivalue + newmidivalue;
-    }
-
-    if (options.testFlag(MidiOption::SelectKnob)) {
-        //Interpret 7-bit signed value using two's compliment.
+    } else if (options.testFlag(MidiOption::SelectKnob)) {
+        // Interpret 7-bit signed value using two's compliment.
+        // Since this is a selection knob, we do not want to inherit previous values.
         if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
         }
-        //Apply sensitivity to signed value. FIXME
-        //if(sensitivity > 0)
+        // FIXME Apply sensitivity to signed value
+        // if (sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
-        //Since this is a selection knob, we do not want to inherit previous values.
-    }
-
-    if (options.testFlag(MidiOption::Button)) {
-        newmidivalue = newmidivalue != 0;
-    }
-
-    if (options.testFlag(MidiOption::Switch)) {
-        newmidivalue = 1;
-    }
-
-    if (options.testFlag(MidiOption::Spread64)) {
-        //qDebug() << "MIDI_OPT_SPREAD64";
-        // BJW: Spread64: Distance away from centre point (aka "relative CC")
-        // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
-        // but with added sensitivity adjustment. This formula is still experimental.
-
+    } else if (options.testFlag(MidiOption::Button)) {
+        return newmidivalue != 0;
+    } else if (options.testFlag(MidiOption::Switch)) {
+        return 1;
+    } else if (options.testFlag(MidiOption::Spread64)) {
+        // Distance away from centre point (aka "relative CC")
         newmidivalue = newmidivalue - 64.;
-        //FIXME
-        //double distance = _newmidivalue - 64.;
+
+        // FIXME
+        // Use a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
+        // but with added sensitivity adjustment. This formula is still experimental.
+        // double distance = _newmidivalue - 64.;
         // _newmidivalue = distance * distance * sensitivity / 50000.;
-        //if (distance < 0.)
+        // if (distance < 0.)
         //    _newmidivalue = -newmidivalue;
-
-        //qDebug() << "Spread64: in " << distance << "  out " << newmidivalue;
-    }
-
-    if (options.testFlag(MidiOption::HercJog)) {
+    } else if (options.testFlag(MidiOption::HercJog)) {
         if (newmidivalue > 64.) {
             newmidivalue -= 128.;
         }
         newmidivalue += prevmidivalue;
-        //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << prevmidivalue; }
-    }
-
-    if (options.testFlag(MidiOption::HercJogFast)) {
+    } else if (options.testFlag(MidiOption::HercJogFast)) {
         if (newmidivalue > 64.) {
             newmidivalue -= 128.;
         }
@@ -642,7 +623,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 QJSValue MidiController::makeInputHandler(unsigned char status,
         unsigned char control,
         const QJSValue& scriptCode) {
-    auto pJsEngine = getScriptEngine()->jsEngine();
+    auto pEngine = getScriptEngine();
+    if (pEngine == nullptr) {
+        return QJSValue();
+    }
+    auto pJsEngine = pEngine->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }

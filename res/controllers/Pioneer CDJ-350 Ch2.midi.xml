@@ -2,7 +2,7 @@
     <info>
         <name>Pioneer CDJ-350 CH2</name>
         <author>Kazuaki and DJ Tiger</author>
-        <description>This is an incomplete mapping for a single Pioneer CDJ 350.</description>
+        <description>This is an incomplete mapping for a single Pioneer CDJ 350, for the Channel2 (Deck2)</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1917</forums>
         <manual>pioneer_cdj_350</manual>
     </info>
@@ -138,7 +138,7 @@
                 <key>rate</key>
                 <description></description>
                 <options>
-                    <normal/>
+                    <invert/>
                 </options>
             </control>
             <control>

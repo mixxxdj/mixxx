@@ -1,4 +1,3 @@
-
 /**
      Mixxx installs the QJSEngine::ConsoleExtension for the use in controller mapping scripts.
     See also:
@@ -118,7 +117,7 @@ declare namespace console {
      * @param label measurement label
      * @deprecated Not usable for controller mappings for now [see QTBUG-65419]{@link https://bugreports.qt.io/browse/QTBUG-65419}
      */
-     function profile(label?: string): void;
+    function profile(label?: string): void;
 
     /**
      *  Turns off the JavaScript profiler.
@@ -136,5 +135,4 @@ declare namespace console {
      *    - Or a string containing zero or more substitution strings followed by a list of objects to replace them
      */
     function exception(...data: any[]): void;
-
 }

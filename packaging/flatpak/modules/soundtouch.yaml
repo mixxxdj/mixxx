@@ -1,0 +1,20 @@
+name: soundtouch
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  - -DSOUNDSTRETCH=OFF
+sources:
+  - type: archive
+    url: https://codeberg.org/soundtouch/soundtouch/archive/2.4.1.tar.gz
+    sha256: 35d404e6e8c2ebd12fb4000da6fadd75c99e37eed2126a04721828c11c0377ec
+    x-checker-data:
+      type: anitya
+      project-id: 115722
+      stable-only: true
+      url-template: https://codeberg.org/soundtouch/soundtouch/archive/$version.tar.gz
+cleanup:
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/soundtouch COPYING.TXT

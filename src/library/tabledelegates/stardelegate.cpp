@@ -48,7 +48,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     // state changes, the polygon color will not be updated (though that's a
     // confusing situation anyway since changed index (row) data will trigger a
     // paint event which resets the pending (unsaved) rating anyway.
-    setHighlightedTextColor(newOption, index);
+    setTextColor(newOption, index);
 
     StarEditor* editor =
             new StarEditor(parent, m_pTableView, index, newOption, m_focusBorderColor);

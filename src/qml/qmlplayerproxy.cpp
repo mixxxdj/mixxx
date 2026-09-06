@@ -35,6 +35,9 @@ void QmlPlayerProxy::loadTrack(QmlTrackProxy* track, bool play) {
     if (track == nullptr || track->internal() == nullptr) {
         return;
     }
+    if (m_pCurrentTrack == track->internal()) {
+        return;
+    }
     emit loadTrackRequested(track->internal(),
 #ifdef __STEM__
             mixxx::StemChannel::All,
@@ -43,6 +46,9 @@ void QmlPlayerProxy::loadTrack(QmlTrackProxy* track, bool play) {
 }
 
 void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation, bool play) {
+    if (m_pCurrentTrack && m_pCurrentTrack->getLocation() == trackLocation) {
+        return;
+    }
     emit loadTrackFromLocationRequested(trackLocation, play);
 }
 

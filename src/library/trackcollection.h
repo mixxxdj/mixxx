@@ -46,6 +46,7 @@ class TrackCollection : public QObject,
     QList<mixxx::FileInfo> loadRootDirs(
             bool skipInvalidOrMissing = false) const;
     QStringList getRootDirStrings() const;
+    QList<DirectoryDAO::RootDirectoryInfo> getRootDirectories() const;
 
     const CrateStorage& crates() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -150,6 +151,8 @@ class TrackCollection : public QObject,
             bool* pAlreadyInLibrary = nullptr);
     FRIEND_TEST(DirectoryDAOTest, relocateDirectory);
     FRIEND_TEST(TrackDAOTest, detectMovedTracks);
+    FRIEND_TEST(TrackDAOTest, bpmLockPreservedForTrackWithoutBeats);
+    FRIEND_TEST(TrackDAOTest, markTrackLocationsAsVerifiedRecoversPresentFilesOnly);
     TrackId addTrack(
             const TrackPointer& pTrack,
             bool unremove);

@@ -6,6 +6,7 @@
 #include "moc_findonwebmenusoundcloud.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
+#include "widget/findonweblast.h"
 
 namespace {
 const QString kServiceTitle = QStringLiteral("Soundcloud");
@@ -27,8 +28,10 @@ const QUrl composeSoundcloudUrl(const QString& serviceSearchUrl,
 } // namespace
 
 FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
-        QMenu* pFindOnWebMenu, const Track& track)
-        : WFindOnWebMenu(pFindOnWebMenu) {
+        const QPointer<QMenu>& pFindOnWebMenu,
+        QPointer<FindOnWebLast> pFindOnWebLast,
+        const Track& track)
+        : WFindOnWebMenu(pFindOnWebMenu, std::move(pFindOnWebLast)) {
     const QString artist = track.getArtist();
     const QString trackTitle = track.getTitle();
     const QString album = track.getAlbum();
@@ -36,39 +39,40 @@ FindOnWebMenuSoundcloud::FindOnWebMenuSoundcloud(
     pFindOnWebMenu->addMenu(this);
     addSeparator();
     if (!artist.isEmpty()) {
-        const QUrl SoundcloudUrlArtist = composeSoundcloudUrl(kSearchUrlArtist, artist);
-        addActionToServiceMenu(
-                composeActionText(tr("Artist"), artist),
-                SoundcloudUrlArtist);
-    }
-    if (!trackTitle.isEmpty()) {
-        if (!artist.isEmpty()) {
-            const QString artistWithTrackTitle = composeSearchQuery(artist, trackTitle);
+        if (!trackTitle.isEmpty()) {
             const QUrl SoundcloudUrlArtistWithTrackTitle =
-                    composeSoundcloudUrl(kSearchUrlTitle, artistWithTrackTitle);
+                    composeSoundcloudUrl(kSearchUrlTitle, composeSearchQuery(artist, trackTitle));
             addActionToServiceMenu(
-                    composeActionText(
-                            tr("Artist + Title"), artistWithTrackTitle),
+                    kServiceTitle + QStringLiteral(",Artist,Title"),
+                    tr("Artist + Title"),
                     SoundcloudUrlArtistWithTrackTitle);
         }
+        if (!album.isEmpty()) {
+            const QUrl SoundcloudUrlArtistWithAlbum =
+                    composeSoundcloudUrl(kSearchUrlAlbum, composeSearchQuery(artist, album));
+            addActionToServiceMenu(
+                    kServiceTitle + QStringLiteral(",Artist,Album"),
+                    tr("Artist + Album"),
+                    SoundcloudUrlArtistWithAlbum);
+        }
+        const QUrl SoundcloudUrlArtist = composeSoundcloudUrl(kSearchUrlArtist, artist);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Artist"),
+                tr("Artist"),
+                SoundcloudUrlArtist);
+    }
+    if (!album.isEmpty() && artist.isEmpty()) {
+        const QUrl SoundcloudUrlAlbum = composeSoundcloudUrl(kSearchUrlAlbum, album);
+        addActionToServiceMenu(
+                kServiceTitle + QStringLiteral(",Artist,Album"),
+                tr("Album"),
+                SoundcloudUrlAlbum);
+    }
+    if (!trackTitle.isEmpty()) {
         const QUrl SoundcloudUrlTrackTitle = composeSoundcloudUrl(kSearchUrlTitle, trackTitle);
         addActionToServiceMenu(
-                composeActionText(tr("Title"), trackTitle),
+                kServiceTitle + QStringLiteral(",Title"),
+                tr("Title"),
                 SoundcloudUrlTrackTitle);
-    }
-    if (!album.isEmpty()) {
-        if (!artist.isEmpty()) {
-            const QString artistWithAlbum = composeSearchQuery(artist, album);
-            const QUrl SoundcloudUrlArtistWithAlbum =
-                    composeSoundcloudUrl(kSearchUrlAlbum, artistWithAlbum);
-            addActionToServiceMenu(
-                    composeActionText(tr("Artist + Album"), artistWithAlbum),
-                    SoundcloudUrlArtistWithAlbum);
-        } else {
-            const QUrl SoundcloudUrlAlbum = composeSoundcloudUrl(kSearchUrlAlbum, album);
-            addActionToServiceMenu(
-                    composeActionText(tr("Album"), album),
-                    SoundcloudUrlAlbum);
-        }
     }
 }

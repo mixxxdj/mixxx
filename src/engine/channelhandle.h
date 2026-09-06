@@ -59,6 +59,14 @@ class ChannelHandle {
     friend class ChannelHandleFactory;
 };
 
+inline bool operator<(const ChannelHandle& h1, const int& h2) {
+    return h1.handle() < h2;
+}
+
+inline bool operator<(const ChannelHandle& h1, const std::size_t& h2) {
+    return static_cast<std::size_t>(h1.handle()) < h2;
+}
+
 inline bool operator>(const ChannelHandle& h1, const ChannelHandle& h2) {
     return h1.handle() > h2.handle();
 }

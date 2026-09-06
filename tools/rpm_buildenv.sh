@@ -47,6 +47,7 @@ case "$1" in
             libmad-devel \
             libmodplug-devel \
             libmp4v2-devel \
+            pipewire0.2-devel \
             libsndfile-devel \
             libusb1-devel \
             libvorbis-devel \
@@ -61,7 +62,7 @@ case "$1" in
             portmidi-devel \
             protobuf-compiler \
             protobuf-lite-devel \
-            qt6-qt{5compat,base,base-private,declarative,shadertools,svg}-devel \
+            qt6-qt{5compat,base,base-private,declarative,multimedia,shadertools,svg}-devel \
             qtkeychain-qt6-devel \
             rubberband-devel \
             soundtouch-devel \

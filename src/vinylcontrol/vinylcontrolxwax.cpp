@@ -12,6 +12,7 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 #include "vinylcontrol/vinylsignalquality.h"
+#include "waveform/visualplayposition.h"
 
 /****** TODO *******
    Stuff to maybe implement here
@@ -88,10 +89,10 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         // Set up very sensitive steady monitors for CDJs.
         m_pSteadySubtle = new SteadyPitch(0.06, true);
         m_pSteadyGross = new SteadyPitch(0.25, true);
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEA) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEA_XWAX_NAME;
-    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHSIDEB) {
-        timecode = MIXXX_VINYL_TRAKTORSCRATCHSIDEB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB) {
+        timecode = MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
         timecode = MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
@@ -106,6 +107,10 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         timecode = MIXXX_VINYL_PIONEERA_XWAX_NAME;
     } else if (strVinylType == MIXXX_VINYL_PIONEERB) {
         timecode = MIXXX_VINYL_PIONEERB_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_ALGORIDDIMA) {
+        timecode = MIXXX_VINYL_ALGORIDDIMA_XWAX_NAME;
+    } else if (strVinylType == MIXXX_VINYL_ALGORIDDIMB) {
+        timecode = MIXXX_VINYL_ALGORIDDIMB_XWAX_NAME;
     } else {
         qDebug() << "Unknown vinyl type, defaulting to" << MIXXX_VINYL_DEFAULT_XWAX_NAME;
         timecode = MIXXX_VINYL_DEFAULT_XWAX_NAME;
@@ -321,7 +326,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     }
 
     // Get the playback position in the file in seconds.
-    double filePosition = playPos->get() * m_dOldDuration;
+    const double fractionalPos = m_visualPlayPos->getEnginePlayPos();
+    const double filePosition = fractionalPos * m_dOldDuration;
 
     int reportedMode = static_cast<int>(mode->get());
     bool reportedPlayButton = playButton->toBool();
@@ -387,8 +393,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                    m_iPosition <= static_cast<int>(m_uiSafeZone) &&
                    m_dVinylPosition > 0 &&
                    checkSteadyPitch(dVinylPitch, filePosition) > 0.5) {
-            //if good position, and safe, and not in leadin, and steady,
-            //disable
+            // if good position, and safe, and not in lead-in, and steady,
+            // disable
             disableRecordEndMode();
         }
 
@@ -454,9 +460,9 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 m_bForceResync = false;
             } else if (fabs(m_dDriftAmt) > 0.1 &&
                     m_dVinylPosition < -2.0) {
-                //At first I thought it was a bug to resync to leadin in relative mode,
-                //but after using it that way it's actually pretty convenient.
-                //qDebug() << "Vinyl leadin";
+                // At first I thought it was a bug to resync to lead-in in relative mode,
+                // but after using it that way it's actually pretty convenient.
+                // qDebug() << "Vinyl lead-in";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
                 if (uiUpdateTime(filePosition)) {
@@ -474,7 +480,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 //qDebug() << "CDJ resync position (>0.1 sec)";
                 syncPosition();
                 resetSteadyPitch(dVinylPitch, m_dVinylPosition);
-            } else if (playPos->get() >= 1.0 && dVinylPitch > 0) {
+            } else if (fractionalPos >= 1.0 && dVinylPitch > 0) {
                 //end of track, force stop
                 togglePlayButton(false);
                 resetSteadyPitch(0.0, 0.0);
@@ -492,7 +498,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             //if we don't have valid position, we're not playing so reset time to current
             //estimate vinyl position
 
-            if (playPos->get() >= 1.0 && dVinylPitch > 0) {
+            if (fractionalPos >= 1.0 && dVinylPitch > 0) {
                 //end of track, force stop
                 togglePlayButton(false);
                 resetSteadyPitch(0.0, 0.0);

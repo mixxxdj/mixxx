@@ -1421,14 +1421,14 @@ Item {
         readonly property bool stemSelected: propStemSelected.active
         readonly property var stemSelectedIdx: propStemSelected.idx
 
-        readonly property string stemSelectedName: viewModel.currentPlayer?.stemsModel.get(viewModel.stemSelectedIdx).label || "Unknown"
+        readonly property string stemSelectedName: viewModel.currentPlayer?.stemsModel?.get(viewModel.stemSelectedIdx)?.label || "Unknown"
         readonly property real stemSelectedVolume: isStemsActive ? [propStem1Volume,propStem2Volume,propStem3Volume,propStem4Volume][viewModel.stemSelectedIdx].value : 0.0
         readonly property bool stemSelectedMuted: isStemsActive ? [propStem1Muted,propStem2Muted,propStem3Muted,propStem4Muted][viewModel.stemSelectedIdx].value : false
         readonly property int stemSelectedQuickFXId: isStemsActive ? [propStem1FX,propStem2FX,propStem3FX,propStem4FX][viewModel.stemSelectedIdx].value : 0
         readonly property real stemSelectedQuickFXValue: isStemsActive ? [propStem1FXValue,propStem2FXValue,propStem3FXValue,propStem4FXValue][viewModel.stemSelectedIdx].value : 0.0
         readonly property bool stemSelectedQuickFXOn: isStemsActive ? [propStem1FXOn,propStem2FXOn,propStem3FXOn,propStem4FXOn][viewModel.stemSelectedIdx].value : false
         readonly property string stemSelectedQuickFXName: Mixxx.EffectsManager.quickChainPresetModel.get(viewModel.stemSelectedQuickFXId).display || "---"
-        readonly property color stemSelectedBrightColor: viewModel.currentPlayer?.stemsModel.get(viewModel.stemSelectedIdx).color ?? "grey"
+        readonly property color stemSelectedBrightColor: viewModel.currentPlayer?.stemsModel?.get(viewModel.stemSelectedIdx)?.color ?? "grey"
         readonly property color stemSelectedMidColor: isStemsActive ? stemSelectedBrightColor : "black"
 
         Mixxx.ControlProxy {

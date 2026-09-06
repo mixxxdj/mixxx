@@ -12,6 +12,7 @@ WStemLabel::WStemLabel(QWidget* pParent)
 }
 
 void WStemLabel::setup(const QDomNode& node, const SkinContext& context) {
+    WLabel::setup(node, context);
     m_stemNo = context.selectInt(node, "StemNum");
 
     VERIFY_OR_DEBUG_ASSERT(m_stemNo >= 1 && m_stemNo <= mixxx::kMaxSupportedStems) {

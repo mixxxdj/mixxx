@@ -1,0 +1,19 @@
+name: gsl
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  - -DGSL_TEST=OFF
+sources:
+  - type: archive
+    url: https://github.com/microsoft/GSL/archive/refs/tags/v4.2.0.tar.gz
+    sha256: 2c717545a073649126cb99ebd493fa2ae23120077968795d2c69cbab821e4ac6
+    x-checker-data:
+      type: anitya
+      project-id: 230453
+      stable-only: true
+      url-template: https://github.com/microsoft/GSL/archive/refs/tags/v$version.tar.gz
+cleanup:
+  - /include
+  - /share/cmake
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/gsl LICENSE

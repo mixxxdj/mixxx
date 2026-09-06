@@ -46,4 +46,10 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
     UserSettingsPointer m_pConfig;
     QList<int> m_qualList;
     QList<OptionsGroup> m_radioList;
+
+  protected:
+    // Provide config to base class
+    UserSettingsPointer getConfig() const override {
+        return m_pConfig;
+    }
 };

@@ -63,8 +63,10 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotStemOpacity(float value);
     void slotStemReorderOnChange(bool value);
     void slotStemOutlineOpacity(float value);
+    void slotStemDisplayMode(int index);
     // overview options
     void slotSetWaveformOverviewType();
+    void slotSetOverviewStereoMode(bool mono);
     void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotSetOverviewScaling();
 
@@ -84,6 +86,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
+    std::unique_ptr<ControlObject> m_pOverviewStereoControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

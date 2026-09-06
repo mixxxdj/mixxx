@@ -9,7 +9,7 @@ namespace qml {
 
 class QmlSettingGroup : public QQuickItem {
     Q_OBJECT
-    Q_PROPERTY(QString label MEMBER m_label FINAL)
+    Q_PROPERTY(QString label MEMBER m_label NOTIFY labelChanged)
     QML_NAMED_ELEMENT(SettingGroup)
   public:
     explicit QmlSettingGroup(QQuickItem* parent = nullptr);
@@ -20,6 +20,9 @@ class QmlSettingGroup : public QQuickItem {
   signals:
     Q_INVOKABLE void activated();
 
+  signals:
+    void labelChanged();
+
   private:
     QString m_label;
 };
@@ -27,7 +30,7 @@ class QmlSettingGroup : public QQuickItem {
 class QmlSettingParameterManager;
 class QmlSettingParameter : public QmlSettingGroup {
     Q_OBJECT
-    Q_PROPERTY(QStringList keywords MEMBER m_keywords FINAL)
+    Q_PROPERTY(QStringList keywords MEMBER m_keywords NOTIFY keywordsChanged)
     QML_NAMED_ELEMENT(SettingParameter)
     Q_INTERFACES(QQmlParserStatus)
   public:
@@ -38,6 +41,9 @@ class QmlSettingParameter : public QmlSettingGroup {
     const QStringList& keywords() const {
         return m_keywords;
     }
+
+  signals:
+    void keywordsChanged();
 
   private:
     QStringList m_keywords;

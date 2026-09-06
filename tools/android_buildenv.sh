@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Ignored in case of a source call, but needed for bash specific sourcing detection
 
-set -eo pipefail
+set -o pipefail
 
 # shellcheck disable=SC2091
 if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
@@ -31,13 +31,15 @@ HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
 
 if [ "$HOST_ARCH" == "x86_64" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
-        echo "ERROR: No release VCPKG for Android yet!"
-        exit 1
+        VCPKG_TARGET_TRIPLET="arm64-android-rel"
+        BUILDENV_BRANCH="2.7-rel"
+        BUILDENV_NAME="mixxx-deps-2.7-arm64-android-rel-ee6dc7fe"
+        BUILDENV_SHA256="35e68a27bf0a8b1298a141cd69f2a509978b45eea810fd7a9c262ec8e556a131"
     else
         VCPKG_TARGET_TRIPLET="arm64-android"
         BUILDENV_BRANCH="2.7"
-        BUILDENV_NAME="mixxx-deps-2.7-arm64-android-9dcfaf7"
-        BUILDENV_SHA256="0821e7d4f6b989ed5acc3c9a8dafa00f479d9d8bfc8dea9f9b512816070c9bba"
+        BUILDENV_NAME="mixxx-deps-2.7-arm64-android-1c20f84a"
+        BUILDENV_SHA256="6786c09f491166352880984842ffa6f554e974f30a3766a2392298444c1be83c"
     fi
 else
     echo "ERROR: Unsupported architecture detected: $HOST_ARCH"

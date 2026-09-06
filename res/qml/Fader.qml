@@ -3,47 +3,58 @@ import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import "Theme"
 
-MixxxControls.Slider {
+MixxxControls.Fader {
     id: root
 
-    property alias fg: handleImage.source
+    property real backgroundMargin: bar.margin
     property alias bg: backgroundImage.source
+    property alias fg: handleImage.source
+    property alias handleImage: handleImage
+    property bool showDefaultHandle: true
+    property bool showHandleShadow: true
 
-    bar: true
-    barMargin: 10
-    implicitWidth: backgroundImage.implicitWidth
+    bar.enabled: true
+    bar.margin: 10
     implicitHeight: backgroundImage.implicitHeight
-
-    Image {
-        id: handleImage
-
-        visible: false
-        source: Theme.imgSliderHandle
-        fillMode: Image.PreserveAspectFit
-    }
-
-    handle: Item {
-        id: handleItem
-
-        width: handleImage.paintedWidth
-        height: handleImage.paintedHeight
-        x: root.horizontal ? (root.visualPosition * (root.width - width)) : ((root.width - width) / 2)
-        y: root.vertical ? (root.visualPosition * (root.height - height)) : ((root.height - height) / 2)
-
-        DropShadow {
-            source: handleImage
-            width: parent.width + 5
-            height: parent.height + 5
-            radius: 5
-            verticalOffset: 5
-            color: "#80000000"
-        }
-    }
+    implicitWidth: backgroundImage.implicitWidth
 
     background: Image {
         id: backgroundImage
 
         anchors.fill: parent
-        anchors.margins: root.barMargin
+        anchors.margins: root.backgroundMargin
+    }
+    handle: Item {
+        id: handleItem
+
+        height: handleImage.paintedHeight
+        visible: root.showDefaultHandle
+        width: handleImage.paintedWidth
+        x: root.horizontal ? (root.visualPosition * (root.width - width)) : ((root.width - width) / 2)
+        y: root.vertical ? (root.visualPosition * (root.height - height)) : ((root.height - height) / 2)
+
+        Image {
+            anchors.fill: parent
+            fillMode: Image.PreserveAspectFit
+            source: handleImage.source
+            visible: !root.showHandleShadow
+        }
+        DropShadow {
+            color: "#80000000"
+            height: parent.height + 5
+            radius: 5
+            source: handleImage
+            verticalOffset: 5
+            visible: root.showHandleShadow
+            width: parent.width + 5
+        }
+    }
+
+    Image {
+        id: handleImage
+
+        fillMode: Image.PreserveAspectFit
+        source: Theme.imgSliderHandle
+        visible: false
     }
 }

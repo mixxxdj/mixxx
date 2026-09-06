@@ -46,8 +46,10 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void previous();
 
   protected:
-    // used to set the maximum size of the cover label
+    /// These two call adjustWidgetSizes() in order to fix some layout
+    /// quirks and set the minimum height of the Comment editor
     void resizeEvent(QResizeEvent* pEvent) override;
+    void showEvent(QShowEvent* pEvent) override;
 
   private slots:
     void slotNextButton();
@@ -60,6 +62,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotBpmScale(mixxx::Beats::BpmScale bpmScale);
     void slotBpmClear();
+    void slotBpmLockClicked();
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
     void slotBpmConstChanged(Qt::CheckState state);
 #else
@@ -69,6 +72,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotSpinBpmValueChanged(double value);
 
     void slotKeyTextChanged();
+    void slotTuningValueChanged(double value);
     void slotRatingChanged(int rating);
     void slotImportMetadataFromFile();
     void slotImportMetadataFromMusicBrainz();
@@ -93,9 +97,12 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void saveTrack();
     void clear();
     void init();
+    void adjustWidgetSizes();
+    void maybeMakeDialogScrollable();
 
     void updateKeyText();
     void displayKeyText();
+    void displayTuningFields();
 
     void updateFromTrack(const Track& track);
 
@@ -110,20 +117,19 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void updateTrackMetadataFields();
     void updateSpinBpmFromBeats();
+    void updateBpmEditControls();
+    void updateBpmScaleButtonLabels();
 
     const UserSettingsPointer m_pUserSettings;
-
     const TrackModel* const m_pTrackModel;
 
     TrackPointer m_pLoadedTrack;
-
     QModelIndex m_currentTrackIndex;
-
     mixxx::TrackRecord m_trackRecord;
 
     mixxx::BeatsPointer m_pBeatsClone;
     bool m_trackHasBeatMap;
-
+    bool m_bpmLocked;
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
 
@@ -135,4 +141,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     parented_ptr<WColorPickerAction> m_pColorPicker;
 
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
+
+    bool m_widgetSizesFixed;
 };

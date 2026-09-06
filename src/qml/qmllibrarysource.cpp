@@ -23,7 +23,7 @@
 #include "track/track.h"
 
 AllTrackLibraryFeature::AllTrackLibraryFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("")),
+        : LibraryFeature(pLibrary, pConfig, QString()),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pLibraryTableModel(pLibrary->trackTableModel()) {
     m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
@@ -36,25 +36,25 @@ void AllTrackLibraryFeature::activate() {
 namespace mixxx {
 namespace qml {
 
-QmlLibrarySource::QmlLibrarySource(
+QmlLibraryAbstractSource::QmlLibraryAbstractSource(
         QObject* parent, const QList<QmlLibraryTrackListColumn*>& columns)
         : QObject(parent),
           m_columns(columns) {
 }
 
-void QmlLibrarySource::slotShowTrackModel(QAbstractItemModel* pModel) {
+void QmlLibraryAbstractSource::slotShowTrackModel(QAbstractItemModel* pModel) {
     emit requestTrackModel(std::make_shared<QmlLibraryTrackListModel>(columns(), pModel));
 }
 
 QmlLibraryAllTrackSource::QmlLibraryAllTrackSource(
         QObject* parent, const QList<QmlLibraryTrackListColumn*>& columns)
-        : QmlLibrarySource(parent, columns),
+        : QmlLibraryAbstractSource(parent, columns),
           m_pLibraryFeature(std::make_unique<AllTrackLibraryFeature>(
                   QmlLibraryProxy::get(), QmlConfigProxy::get())) {
     connect(m_pLibraryFeature.get(),
             &LibraryFeature::showTrackModel,
             this,
-            &QmlLibrarySource::slotShowTrackModel);
+            &QmlLibraryAbstractSource::slotShowTrackModel);
 }
 
 } // namespace qml

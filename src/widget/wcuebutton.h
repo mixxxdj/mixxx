@@ -1,5 +1,6 @@
 #pragma once
 
+#include "control/pollingcontrolproxy.h"
 #include "widget/wpushbutton.h"
 
 /// This is a pushbutton that can be dragged and dropped onto a WPlayButton.
@@ -19,4 +20,5 @@ class WCueButton : public WPushButton {
 
     QString m_group;
     QMargins m_dndRectMargins;
+    PollingControlProxy m_playControl;
 };

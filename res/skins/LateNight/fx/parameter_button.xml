@@ -47,7 +47,7 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </EffectPushButton>
-	     </Children>
+       </Children>
       </WidgetGroup>
 
       <WidgetGroup><Size>1min,2f</Size></WidgetGroup>

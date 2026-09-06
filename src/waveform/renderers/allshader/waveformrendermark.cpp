@@ -32,6 +32,8 @@ using namespace rendergraph;
 
 namespace {
 
+const double kDefaultNextMarkPosition = std::numeric_limits<double>::max();
+
 class WaveformMarkNode : public rendergraph::GeometryNode {
   public:
     WaveformMark* m_pOwner{};
@@ -51,6 +53,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
                 .setTexture(std::make_unique<Texture>(pContext, image));
         m_textureWidth = image.width();
         m_textureHeight = image.height();
+        markDirtyMaterial();
     }
     void update(float x, float y, float devicePixelRatio) {
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
@@ -66,6 +69,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
                         y + m_textureHeight / devicePixelRatio},
                 {0.f, 0.f},
                 {1.f, 1.f});
+        markDirtyGeometry();
     }
     float textureWidth() const {
         return m_textureWidth;
@@ -157,7 +161,8 @@ allshader::WaveformRenderMark::WaveformRenderMark(
         : ::WaveformRenderMarkBase(waveformWidget, false),
           m_beatsUntilMark(0),
           m_timeUntilMark(0.0),
-          m_pTimeRemainingControl(nullptr),
+          m_currentBeatPosition(0.0),
+          m_nextBeatPosition(0.0),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_playPosHeight(0.f),
           m_playPosDevicePixelRatio(0.f),
@@ -165,7 +170,8 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
           m_untilMarkTextSize(0),
-          m_untilMarkTextHeightLimit(0.0) {
+          m_untilMarkTextHeightLimit(0.0),
+          m_defaultNextMarkPosition(kDefaultNextMarkPosition) {
     {
         auto pNode = std::make_unique<Node>();
         m_pRangeNodesParent = pNode.get();
@@ -271,6 +277,8 @@ void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
             {posx1, posy1}, {posx2, posy2}, {r, g, b, a}, {r, g, b, 0.f});
     vertexUpdater.addRectangleVGradient(
             {posx1, posy4}, {posx2, posy3}, {r, g, b, a}, {r, g, b, 0.f});
+    pNode->markDirtyGeometry();
+    pNode->markDirtyMaterial();
 }
 
 bool allshader::WaveformRenderMark::isSubtreeBlocked() const {
@@ -325,7 +333,7 @@ void allshader::WaveformRenderMark::update() {
     updateMarkImages();
 
     const double playPosition = m_waveformRenderer->getTruePosSample(positionType);
-    double nextMarkPosition = std::numeric_limits<double>::max();
+    double nextMarkPosition = m_defaultNextMarkPosition;
 
     GeometryNode* pRangeChild = static_cast<GeometryNode*>(m_pRangeNodesParent->firstChild());
 
@@ -446,7 +454,7 @@ void allshader::WaveformRenderMark::update() {
 
     const float playMarkerPos = static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
             m_waveformRenderer->getLength());
-    {
+    if (m_lastPlayMarkerPos != playMarkerPos) {
         const float drawOffset = roundToPixel(playMarkerPos + kPlayPosOffset);
         TexturedVertexUpdater vertexUpdater{
                 m_pPlayPosNode->geometry()
@@ -455,6 +463,8 @@ void allshader::WaveformRenderMark::update() {
                 {drawOffset + kPlayPosWidth, static_cast<float>(m_waveformRenderer->getBreadth())},
                 {0.f, 0.f},
                 {1.f, 1.f});
+        m_pPlayPosNode->markDirtyGeometry();
+        m_lastPlayMarkerPos = playMarkerPos;
     }
 
     if (m_untilMarkShowBeats || m_untilMarkShowTime) {
@@ -463,6 +473,10 @@ void allshader::WaveformRenderMark::update() {
     } else {
         m_pDigitsRenderNode->clear();
     }
+}
+
+void allshader::WaveformRenderMark::setDefaultNextMarkPosition(double nextMarkPosition) {
+    m_defaultNextMarkPosition = nextMarkPosition >= 0 ? nextMarkPosition : kDefaultNextMarkPosition;
 }
 
 void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
@@ -583,6 +597,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
 
     dynamic_cast<TextureMaterial&>(m_pPlayPosNode->material())
             .setTexture(std::make_unique<Texture>(pContext, image));
+    m_pPlayPosNode->markDirtyMaterial();
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
@@ -634,7 +649,7 @@ void allshader::WaveformRenderMark::updateUntilMark(
         double playPosition, double nextMarkPosition) {
     m_beatsUntilMark = 0;
     m_timeUntilMark = 0.0;
-    if (nextMarkPosition == std::numeric_limits<double>::max()) {
+    if (nextMarkPosition == kDefaultNextMarkPosition) {
         return;
     }
 
@@ -643,9 +658,6 @@ void allshader::WaveformRenderMark::updateUntilMark(
     if (!trackInfo) {
         return;
     }
-
-    const double endPosition = m_waveformRenderer->getTrackSamples();
-    const double remainingTime = m_pTimeRemainingControl ? m_pTimeRemainingControl->get() : 0;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
@@ -680,9 +692,16 @@ void allshader::WaveformRenderMark::updateUntilMark(
     }
     // As endPosition - playPosition corresponds with remainingTime,
     // we calculate the proportional part of nextMarkPosition - playPosition
-    m_timeUntilMark = std::max(0.0,
-            remainingTime * (nextMarkPosition - playPosition) /
-                    (endPosition - playPosition));
+    if (m_pTimeRemainingControl) {
+        const double endPosition = m_waveformRenderer->getTrackSamples();
+        const double remainingTime = m_pTimeRemainingControl->get();
+        m_timeUntilMark = std::max(0.0,
+                remainingTime * (nextMarkPosition - playPosition) /
+                        (endPosition - playPosition));
+    } else {
+        m_timeUntilMark = std::max(0.0,
+                (nextMarkPosition - playPosition) / trackInfo->getSampleRate());
+    }
 }
 
 float allshader::WaveformRenderMark::getMaxHeightForText(float proportion) const {
