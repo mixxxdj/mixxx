@@ -4,10 +4,11 @@
 // lockers. This allows us to use Clang thread safety analysis in Mixxx.
 // See: http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
 
+#include <QDebug>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QReadWriteLock>
 
-#include "util/compatibility/qmutex.h"
 #include "util/thread_annotations.h"
 
 class CAPABILITY("mutex") MMutex {
@@ -57,7 +58,7 @@ class SCOPED_CAPABILITY MMutexLocker {
     inline void unlock() RELEASE() { m_locker.unlock(); }
 
   private:
-    QT_MUTEX_LOCKER m_locker;
+    QMutexLocker<QMutex> m_locker;
 };
 
 class SCOPED_CAPABILITY MMutexLockerDebug {
