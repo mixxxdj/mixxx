@@ -215,6 +215,10 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
+            # The AppImage build is fully static and produces far more ccache
+            # data than the default 2G; give it the actions/cache per-entry
+            # maximum so repeated runs can reuse the compiled objects.
+            compiler_cache_max_size: 10G
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/appimage_buildenv.sh
             artifacts_name: AppImage Linux x86_64
@@ -390,17 +394,20 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          # Key by source state (not run number) so runs that only change the
+          # workflow — or repeat the same source — reuse the compiled objects
+          # instead of creating a fresh cache entry every time.
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ env.BUILDENV_NAME || 'system' }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # GitHub Actions gives us 10 GB of cache.
-        # 4 runs * 2 GB = 8 GB
+        # Default to 2G; larger builds (e.g. the static AppImage build) can
+        # override via compiler_cache_max_size in the matrix.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=2G
+          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -554,6 +561,35 @@ jobs:
           if-no-files-found: error
           # Match the other artifacts: upload the AppImage uncompressed.
           archive: "false"
+
+      - name: "[AppImage] Smoke test"
+        # Run the packaged AppImage once.  This catches loader-level failures
+        # (e.g. the ld.so assertion a broken linker produces, or missing
+        # bundled libraries) that a build-only pipeline cannot see.  The
+        # runner has no display, so --version may exit non-zero after
+        # initializing Qt — reaching Mixxx startup is what matters.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          # The AppImage does not bundle libpipewire (it is excluded), so the
+          # host must provide it; the bare runner image lacks it.
+          sudo apt-get install -y --no-install-recommends libpipewire-0.3-0
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Smoke-testing ${APPIMAGE}"
+          set +e
+          APPIMAGE_EXTRACT_AND_RUN=1 timeout 60 "${APPIMAGE}" --version >/tmp/smoke.log 2>&1
+          rc=$?
+          set -e
+          if grep -qE "Inconsistency detected by ld.so|error while loading shared libraries|cannot open shared object file" /tmp/smoke.log; then
+            echo "FAIL: AppImage failed at loader level (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          if ! grep -qE "Mixxx [0-9]|Using preferences|Selected Qt style|ConfigObject:" /tmp/smoke.log; then
+            echo "FAIL: AppImage did not reach Mixxx startup (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          echo "SMOKE OK"
 
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
