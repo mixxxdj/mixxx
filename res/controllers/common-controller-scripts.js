@@ -222,6 +222,14 @@ script.deckFromGroup = function(group) {
     return parseInt(deck);
 };
 
+// Returns the current play position of the given group as an absolute engine
+// sample position (the same unit as "loop_end_position" and other absolute
+// position controls), computed from the relative "playposition" control and
+// "track_samples". Returns 0 if no track is loaded.
+script.getPlaypositionSamples = function(group) {
+    return engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
+};
+
 /* -------- ------------------------------------------------------
      script.bindConnections
    Purpose: Binds multiple controls at once. See an example in Pioneer-DDJ-SB-scripts.js
