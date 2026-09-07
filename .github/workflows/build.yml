@@ -552,6 +552,8 @@ jobs:
           name: Mixxx-AppImage-${{ matrix.arch }}
           path: ${{ matrix.artifacts_path }}
           if-no-files-found: error
+          # Match the other artifacts: upload the AppImage uncompressed.
+          archive: "false"
 
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
