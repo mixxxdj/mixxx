@@ -31,8 +31,6 @@ class WaveformWidgetType {
     };
 };
 
-// Note: all values are also available in builds without MIXXX_USE_QOPENGL
-// This is required to reset an unsupported backend from config
 enum class WaveformWidgetBackend {
     None = 0,
     GL,

@@ -1,8 +1,9 @@
+#include "widget/wglwidgetqopengl.h"
+
 #include <QResizeEvent>
 
 #include "widget/openglwindow.h"
 #include "widget/tooltipqopengl.h"
-#include "widget/wglwidget.h"
 
 WGLWidget::WGLWidget(QWidget* pParent)
         : QWidget(pParent),
