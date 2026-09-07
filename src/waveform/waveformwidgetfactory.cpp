@@ -1122,10 +1122,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    allshader::WaveformRendererSignalBase::Options options = m_config->getValue(
-            ConfigKey("[Waveform]", "waveform_options"),
-            allshader::WaveformRendererSignalBase::Options(
-                    allshader::WaveformRendererSignalBase::Option::None));
+    allshader::WaveformRendererSignalBase::Options options = getWaveformOptions();
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
 
