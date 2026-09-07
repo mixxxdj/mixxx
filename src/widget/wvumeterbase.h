@@ -2,7 +2,7 @@
 
 #include "util/duration.h"
 #include "widget/wbasewidget.h"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 #include "widget/wpixmapstore.h"
 
 class VSyncThread;

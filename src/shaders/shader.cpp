@@ -4,11 +4,7 @@
 
 using namespace mixxx;
 
-#ifdef MIXXX_USE_QOPENGL
 using GLShader = QOpenGLShader;
-#else
-using GLShader = QGLShader;
-#endif
 
 Shader::Shader() = default;
 

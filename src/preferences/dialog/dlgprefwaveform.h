@@ -6,9 +6,7 @@
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 #include "waveform/widgets/waveformwidgettype.h"
-#ifdef MIXXX_USE_QOPENGL
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
-#endif
 
 class ControlPushButton;
 class ControlObject;
@@ -33,7 +31,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformType(int index);
     void slotSetWaveformEnabled(bool checked);
     void slotSetWaveformAcceleration(bool checked);
-#ifdef MIXXX_USE_QOPENGL
     void slotSetWaveformOptions(WaveformRendererSignalBase::Option option, bool enabled);
     void slotSetWaveformOptionSplitStereoSignal(bool checked) {
         slotSetWaveformOptions(WaveformRendererSignalBase::Option::
@@ -43,7 +40,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformOptionHighDetail(bool checked) {
         slotSetWaveformOptions(WaveformRendererSignalBase::Option::HighDetail, checked);
     }
-#endif
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);

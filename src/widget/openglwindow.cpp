@@ -7,7 +7,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/tooltipqopengl.h"
 #include "widget/trackdroptarget.h"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
         : m_pWidget(pWidget),
