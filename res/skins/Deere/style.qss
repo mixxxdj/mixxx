@@ -960,7 +960,6 @@ WOverview #PassthroughLabel {
 }
 
 #WaveformZoomContainer {
-  background-color: #333333;
   padding: 1px;
   qproperty-layoutSpacing: 2;
 }
