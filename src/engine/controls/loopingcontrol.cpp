@@ -50,7 +50,7 @@ LoopingControl::LoopingControl(const QString& group,
         : EngineControl(group, pConfig),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
-          m_bLoopWasEnabledBeforeSlipEnable(false),
+          m_bLoopOrRepeatWasEnabledBeforeSlipEnable(false),
           m_bAdjustingLoopIn(false),
           m_bAdjustingLoopOut(false),
           m_bAdjustingLoopInOld(false),
@@ -246,6 +246,10 @@ LoopingControl::LoopingControl(const QString& group,
     m_pPlayButton = ControlObject::getControl(ConfigKey(group, "play"));
 
     m_pRepeatButton = ControlObject::getControl(ConfigKey(group, "repeat"));
+    connect(m_pRepeatButton,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::repeatToggled);
 }
 
 LoopingControl::~LoopingControl() {
@@ -1204,8 +1208,10 @@ void LoopingControl::notifySeek(mixxx::audio::FramePos newPosition) {
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
-    m_bLoopWasEnabledBeforeSlipEnable =
-            !m_pSlipEnabled->toBool() && enabled && !m_bLoopRollActive;
+    m_bLoopOrRepeatWasEnabledBeforeSlipEnable =
+            !m_pSlipEnabled->toBool() &&
+            !m_bLoopRollActive &&
+            (enabled || m_pRepeatButton->toBool());
     if (m_bLoopingEnabled == enabled) {
         return;
     }
@@ -1222,6 +1228,14 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     }
 
     emit loopEnabledChanged(enabled);
+}
+
+void LoopingControl::repeatToggled(double value) {
+    if (m_bLoopingEnabled) {
+        return;
+    }
+    m_bLoopOrRepeatWasEnabledBeforeSlipEnable =
+            value > 0 && !m_pSlipEnabled->toBool() && !m_bLoopRollActive;
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1849,13 +1863,19 @@ void LoopingControl::slotLoopMove(double beats) {
 }
 
 // Used to simulate looping while slip mode is enabled
-mixxx::audio::FramePos LoopingControl::adjustedPositionForCurrentLoop(
+mixxx::audio::FramePos LoopingControl::adjustedPositionForCurrentLoopOrRepeat(
         mixxx::audio::FramePos currentPosition,
         bool reverse) {
-    if (!m_bLoopingEnabled) {
+    if (!m_bLoopingEnabled && !m_pRepeatButton->toBool()) {
         return currentPosition;
     }
-    LoopInfo loopInfo = m_loopInfo.getValue();
+    LoopInfo loopInfo;
+    if (m_bLoopingEnabled) {
+        loopInfo = m_loopInfo.getValue();
+    } else {
+        loopInfo.startPosition = mixxx::audio::kStartFramePos;
+        loopInfo.endPosition = frameInfo().trackEndPosition;
+    }
     const auto targetPosition = adjustedPositionInsideAdjustedLoop(
             currentPosition,
             reverse,

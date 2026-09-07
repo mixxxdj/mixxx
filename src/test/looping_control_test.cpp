@@ -27,6 +27,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pQuantizeEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "quantize");
         m_pQuantizeEnabled->set(1.0);
         m_pSlipEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "slip_enabled");
+        m_pRepeatEnabled = std::make_unique<PollingControlProxy>(m_sGroup1, "repeat");
         m_pNextBeat = std::make_unique<PollingControlProxy>(m_sGroup1, "beat_next");
 
         m_pNextBeat->set(-1);
@@ -92,6 +93,19 @@ class LoopingControlTest : public MockedEngineBackendTest {
         return m_pChannel1->getEngineBuffer()->m_pLoopingControl->frameInfo().currentPosition;
     }
 
+    bool loopOrRepeatWasEnabledBeforeSlipEnable() {
+        return m_pChannel1->getEngineBuffer()
+                ->m_pLoopingControl->loopOrRepeatWasEnabledBeforeSlipEnable();
+    }
+
+    mixxx::audio::FramePos adjustedPositionForCurrentLoopOrRepeat(
+            mixxx::audio::FramePos position,
+            bool reverse) {
+        return m_pChannel1->getEngineBuffer()
+                ->m_pLoopingControl->adjustedPositionForCurrentLoopOrRepeat(
+                        position, reverse);
+    }
+
     bool isLoopEnabled() {
         return m_pLoopEnabled->get() > 0.0;
     }
@@ -105,6 +119,7 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<PollingControlProxy> m_pClosestBeat;
     std::unique_ptr<PollingControlProxy> m_pQuantizeEnabled;
     std::unique_ptr<PollingControlProxy> m_pSlipEnabled;
+    std::unique_ptr<PollingControlProxy> m_pRepeatEnabled;
     std::unique_ptr<PollingControlProxy> m_pTrackSamples;
     std::unique_ptr<PollingControlProxy> m_pButtonLoopIn;
     std::unique_ptr<PollingControlProxy> m_pButtonLoopOut;
@@ -1331,4 +1346,33 @@ TEST_F(LoopingControlTest, LoopBeatloopReverse) {
         EXPECT_FALSE(isLoopEnabled());
         EXPECT_EQ(0.0, m_pSlipEnabled->get());
     }
+}
+
+TEST_F(LoopingControlTest, RepeatPositionIsAdjustedWhileInSlipMode) {
+    m_pRepeatEnabled->set(1.0);
+    EXPECT_TRUE(loopOrRepeatWasEnabledBeforeSlipEnable());
+
+    m_pSlipEnabled->set(1.0);
+    EXPECT_FRAMEPOS_EQ(
+            mixxx::audio::FramePos{1},
+            adjustedPositionForCurrentLoopOrRepeat(kTrackEndPosition + 1, false));
+}
+
+TEST_F(LoopingControlTest, DisablingLoopPreservesRepeatForSlipMode) {
+    m_pTrack1->trySetBpm(120.0);
+    m_pBeatLoopSize->set(4.0);
+    m_pButtonBeatLoopActivate->set(1.0);
+    m_pButtonBeatLoopActivate->set(0.0);
+    ASSERT_TRUE(isLoopEnabled());
+
+    m_pRepeatEnabled->set(1.0);
+    m_pLoopEnabled->set(0.0);
+
+    EXPECT_FALSE(isLoopEnabled());
+    EXPECT_TRUE(loopOrRepeatWasEnabledBeforeSlipEnable());
+
+    m_pSlipEnabled->set(1.0);
+    EXPECT_FRAMEPOS_EQ(
+            mixxx::audio::FramePos{1},
+            adjustedPositionForCurrentLoopOrRepeat(kTrackEndPosition + 1, false));
 }

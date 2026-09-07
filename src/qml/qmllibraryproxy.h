@@ -2,7 +2,6 @@
 #include <qqmlintegration.h>
 
 #include <QObject>
-#include <QPoint>
 #include <QQmlEngine>
 #include <QString>
 #include <Qt>
@@ -127,6 +126,12 @@ class QmlLibraryProxy : public QObject {
         PurgeTracks
     };
     Q_ENUM(SourceRemovalType);
+    enum class JumpDirection {
+        Impossible,
+        Forward,
+        Backward,
+    };
+    Q_ENUM(JumpDirection);
 
     explicit QmlLibraryProxy(QObject* parent = nullptr);
     ~QmlLibraryProxy() override;
@@ -191,7 +196,7 @@ class QmlLibraryProxy : public QObject {
             const QString& group,
             int hotcueNumber,
             const QString& action);
-    Q_INVOKABLE QString deckHotcueJumpDirection(
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::JumpDirection deckHotcueJumpDirection(
             mixxx::qml::QmlTrackProxy* track,
             const QString& group,
             int hotcueNumber) const;

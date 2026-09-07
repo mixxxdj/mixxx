@@ -1313,15 +1313,15 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
         DEBUG_ASSERT(bufferFrameCount * m_channelCount == bufferSize);
         const mixxx::audio::FrameDiff_t slipDelta =
                 static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
-        // Simulate looping if a regular loop is active
-        if (m_pLoopingControl->isLoopingEnabled() &&
-                m_pLoopingControl->loopWasEnabledBeforeSlipEnable() &&
+        const bool looping = m_pLoopingControl->isLoopingEnabled();
+        if ((looping || m_pRepeat->toBool()) &&
+                m_pLoopingControl->loopOrRepeatWasEnabledBeforeSlipEnable() &&
                 !m_pLoopingControl->isLoopRollActive()) {
             const mixxx::audio::FramePos newPos = m_slipPos + slipDelta;
-            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
+            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoopOrRepeat(
                     newPos,
                     m_dSlipRate < 0);
-            m_slipModeState = SlipModeState::Armed;
+            m_slipModeState = looping ? SlipModeState::Armed : SlipModeState::Running;
         } else {
             m_slipPos += slipDelta;
             m_slipModeState = SlipModeState::Running;

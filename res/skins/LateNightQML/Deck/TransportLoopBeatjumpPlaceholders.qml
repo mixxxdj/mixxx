@@ -33,7 +33,7 @@ Item {
             anchors.top: parent.top
             anchors.right: parent.right
             height: 1
-            color: "#0a0a0a"
+            color: LateNightTheme.deckPanelBorderDark
         }
 
         Rectangle {
@@ -41,7 +41,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: 1
-            color: "#0a0a0a"
+            color: LateNightTheme.deckPanelBorderDark
         }
 
         Rectangle {
@@ -49,7 +49,7 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: 1
-            color: "#333333"
+            color: LateNightTheme.deckPanelBorderLight
         }
 
         Rectangle {
@@ -57,7 +57,7 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: 1
-            color: "#333333"
+            color: LateNightTheme.deckPanelBorderLight
         }
     }
 

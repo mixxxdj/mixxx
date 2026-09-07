@@ -44,20 +44,6 @@ Item {
             fillMode: Image.PreserveAspectFit
         }
 
-        // Rotating Platter Indicator (Active when track is loaded)
-        MixxxControls.Spinny {
-            id: spinnyIndicator
-            anchors.fill: parent
-            group: root.group
-            indicatorVisible: root.isLoaded
-
-            indicator: Image {
-                anchors.fill: parent
-                source: LateNightTheme.assetDeckSpinnyIndicator
-                fillMode: Image.PreserveAspectFit
-            }
-        }
-
         // Vinyl Grooves Overlay (Mask)
         Image {
             id: spinnyMask
@@ -67,6 +53,27 @@ Item {
                 return isDeck12 ? LateNightTheme.assetDeckSpinnyMask12 : LateNightTheme.assetDeckSpinnyMask34;
             }
             fillMode: Image.PreserveAspectFit
+        }
+
+        // Rotating Platter Indicator (Active when track is loaded)
+        MixxxControls.Spinny {
+            id: spinnyIndicator
+            anchors.fill: parent
+            group: root.group
+            indicatorVisible: root.isLoaded
+            ghostIndicatorVisible: root.isLoaded
+
+            ghostIndicator: Image {
+                anchors.fill: parent
+                source: LateNightTheme.assetDeckSpinnyGhostIndicator
+                fillMode: Image.PreserveAspectFit
+            }
+
+            indicator: Image {
+                anchors.fill: parent
+                source: LateNightTheme.assetDeckSpinnyIndicator
+                fillMode: Image.PreserveAspectFit
+            }
         }
     }
 

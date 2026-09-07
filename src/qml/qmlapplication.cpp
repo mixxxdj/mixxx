@@ -1,11 +1,7 @@
 #include "qmlapplication.h"
 
-#include <QAction>
 #include <QCoreApplication>
-#include <QKeySequence>
 #include <QLocale>
-#include <QMenu>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
@@ -184,18 +180,6 @@ QmlApplication::QmlApplication(
     QmlDlgPreferencesProxy::s_pInstance =
             std::make_unique<QmlDlgPreferencesProxy>(pDlgPreferences, this);
     QmlRecordingProxy::s_pRecordingManager = m_pCoreServices->getRecordingManager();
-
-    m_pMenuBar = std::make_unique<QMenuBar>();
-    QMenu* pApplicationMenu = m_pMenuBar->addMenu(QCoreApplication::applicationName());
-    QAction* pPreferencesAction = pApplicationMenu->addAction(tr("&Preferences"));
-    pPreferencesAction->setMenuRole(QAction::PreferencesRole);
-    pPreferencesAction->setShortcut(QKeySequence::Preferences);
-    connect(pPreferencesAction, &QAction::triggered, this, [pDlgPreferences]() {
-        pDlgPreferences->show();
-        pDlgPreferences->raise();
-        pDlgPreferences->activateWindow();
-    });
-
     QmlApplicationProxy::registerReloadCallback([this]() {
         QTimer::singleShot(0, this, [this]() {
             loadQml(m_mainFilePath);

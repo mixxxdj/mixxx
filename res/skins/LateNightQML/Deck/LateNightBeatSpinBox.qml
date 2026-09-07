@@ -11,6 +11,7 @@ Item {
     property string decrementKey: ""
     property string incrementKey: ""
     property int preferredWidth: 78
+    property bool handlingEditResult: false
     readonly property bool useStepControls: decrementKey.length > 0 && incrementKey.length > 0
     readonly property var beatSizes: [
         1 / 32,
@@ -26,36 +27,95 @@ Item {
         32,
         64
     ]
+    readonly property var beatFractions: [
+        [1, 2],
+        [1, 4],
+        [3, 4],
+        [1, 3],
+        [2, 3],
+        [1, 8],
+        [3, 8],
+        [5, 8],
+        [7, 8],
+        [1, 16],
+        [3, 16],
+        [5, 16],
+        [7, 16],
+        [9, 16],
+        [11, 16],
+        [13, 16],
+        [15, 16],
+        [1, 32],
+        [3, 32],
+        [5, 32],
+        [7, 32],
+        [9, 32],
+        [11, 32],
+        [13, 32],
+        [15, 32],
+        [17, 32],
+        [19, 32],
+        [21, 32],
+        [23, 32],
+        [25, 32],
+        [27, 32],
+        [29, 32],
+        [31, 32]
+    ]
     readonly property string valueText: formatBeatSize(valueProxy.value)
 
     implicitWidth: preferredWidth
     implicitHeight: 26
 
     function formatBeatSize(value) {
-        if (value <= 0) {
+        if (!isFinite(value) || value <= 0) {
             return "";
         }
-        if (value < 1) {
-            return "1/" + Math.round(1 / value);
-        }
-        if (Math.abs(value - Math.round(value)) < 0.0001) {
+
+        if (value >= 1 && Math.abs(value - Math.round(value)) < 0.0001) {
             return Math.round(value).toString();
         }
+
+        var wholePart = Math.floor(value);
+        var fractionalPart = value - wholePart;
+        for (var i = 0; i < beatFractions.length; ++i) {
+            var numerator = beatFractions[i][0];
+            var denominator = beatFractions[i][1];
+            if (Math.abs(fractionalPart - numerator / denominator) < 0.0001) {
+                var fractionText = numerator + "/" + denominator;
+                return wholePart > 0 ? wholePart + " " + fractionText : fractionText;
+            }
+        }
+
         return value.toString();
     }
 
     function parseBeatSize(text) {
-        var parts = text.split("/");
-        if (parts.length === 2) {
-            var numerator = Number(parts[0]);
-            var denominator = Number(parts[1]);
+        var trimmedText = text.trim();
+        var mixedParts = trimmedText.match(
+                /^([0-9]+)\s+([0-9]+)\s*\/\s*([0-9]+)$/);
+        if (mixedParts) {
+            var wholePart = Number(mixedParts[1]);
+            var mixedNumerator = Number(mixedParts[2]);
+            var mixedDenominator = Number(mixedParts[3]);
+            if (mixedNumerator > 0 && mixedDenominator > 0) {
+                return wholePart + mixedNumerator / mixedDenominator;
+            }
+            return valueProxy.value;
+        }
+
+        var fractionParts = trimmedText.match(/^([0-9]+)\s*\/\s*([0-9]+)$/);
+        if (fractionParts) {
+            var numerator = Number(fractionParts[1]);
+            var denominator = Number(fractionParts[2]);
             if (numerator > 0 && denominator > 0) {
                 return numerator / denominator;
             }
             return valueProxy.value;
         }
-        var parsed = Number(text);
-        return parsed > 0 ? parsed : valueProxy.value;
+
+        var parsed = Number(trimmedText);
+        return isFinite(parsed) && parsed > 0 ? parsed : valueProxy.value;
     }
 
     function nearestBeatSizeIndex(value) {
@@ -86,9 +146,29 @@ Item {
     }
 
     function commitText() {
-        valueProxy.value = parseBeatSize(valueInput.text);
+        if (root.handlingEditResult) {
+            return;
+        }
+
+        root.handlingEditResult = true;
+        var parsedValue = parseBeatSize(valueInput.text);
+        if (isFinite(parsedValue) && parsedValue > 0) {
+            valueProxy.value = parsedValue;
+        }
         valueInput.text = root.valueText;
         valueInput.focus = false;
+        root.handlingEditResult = false;
+    }
+
+    function cancelText() {
+        if (root.handlingEditResult) {
+            return;
+        }
+
+        root.handlingEditResult = true;
+        valueInput.text = root.valueText;
+        valueInput.focus = false;
+        root.handlingEditResult = false;
     }
 
     Mixxx.ControlProxy {
@@ -152,9 +232,13 @@ Item {
             clip: true
 
             onAccepted: root.commitText()
+            Keys.onEscapePressed: event => {
+                root.cancelText();
+                event.accepted = true;
+            }
             onActiveFocusChanged: {
-                if (!activeFocus) {
-                    text = root.valueText;
+                if (!activeFocus && !root.handlingEditResult) {
+                    root.commitText();
                 }
             }
 
