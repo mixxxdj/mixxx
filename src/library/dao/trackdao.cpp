@@ -476,6 +476,7 @@ void TrackDAO::addTracksPrepare() {
             "beats_sub_version,"
             "beats,"
             "bpm_lock,"
+            "show_downbeats,"
             "keys_version,"
             "keys_sub_version,"
             "keys,"
@@ -525,6 +526,7 @@ void TrackDAO::addTracksPrepare() {
             ":beats_sub_version,"
             ":beats,"
             ":bpm_lock,"
+            ":show_downbeats,"
             ":keys_version,"
             ":keys_sub_version,"
             ":keys,"
@@ -611,6 +613,7 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":cuepoint",
             track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
+    pTrackLibraryQuery->bindValue(":show_downbeats", track.getShowDownbeats() ? 1 : 0);
     pTrackLibraryQuery->bindValue(":tuning_frequency_hz",
             track.getKeys().getGlobalTuningFrequencyHz());
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
@@ -1325,6 +1328,10 @@ void setTrackBpmLock(const QSqlRecord& record, const int column, Track* pTrack) 
     pTrack->setBpmLocked(record.value(column).toBool());
 }
 
+void setTrackShowDownbeats(const QSqlRecord& record, const int column, Track* pTrack) {
+    pTrack->setShowDownbeats(record.value(column).toBool());
+}
+
 void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
     QString keyText = record.value(column).toString();
     QString keysVersion = record.value(column + 1).toString();
@@ -1426,6 +1433,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"beats_sub_version", nullptr},
             {"beats", nullptr},
             {"bpm_lock", setTrackBpmLock},
+            {"show_downbeats", setTrackShowDownbeats},
 
             // Key detection columns are handled by setTrackKey. Do not change the
             // ordering of these columns or put other columns in between them!
@@ -1731,6 +1739,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "beats_sub_version=:beats_sub_version,"
             "beats=:beats,"
             "bpm_lock=:bpm_lock,"
+            "show_downbeats=:show_downbeats,"
             "keys_version=:keys_version,"
             "keys_sub_version=:keys_sub_version,"
             "keys=:keys,"

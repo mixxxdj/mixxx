@@ -304,6 +304,7 @@ bool Track::replaceRecord(
     const auto newColor = newRecord.getColor();
     const auto newRating = newRecord.getRating();
     const bool newBpmLocked = newRecord.getBpmLocked();
+    const bool newShowDownbeats = newRecord.getShowDownbeats();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -315,6 +316,7 @@ bool Track::replaceRecord(
     const auto oldColor = m_record.getColor();
     const auto oldRating = m_record.getRating();
     const bool oldBpmLocked = m_record.getBpmLocked();
+    const bool oldShowDownbeats = m_record.getShowDownbeats();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -343,6 +345,9 @@ bool Track::replaceRecord(
     }
     if (oldBpmLocked != newBpmLocked) {
         emit bpmLockChanged(newBpmLocked);
+    }
+    if (oldShowDownbeats != newShowDownbeats) {
+        emit showDownbeatsChanged(newShowDownbeats);
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -1614,6 +1619,19 @@ void Track::setBpmLocked(bool bpmLocked) {
 bool Track::isBpmLocked() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_record.getBpmLocked();
+}
+
+void Track::setShowDownbeats(bool showDownbeats) {
+    auto locked = lockMutex(&m_qMutex);
+    if (compareAndSet(m_record.ptrShowDownbeats(), showDownbeats)) {
+        markDirtyAndUnlock(&locked);
+        emit showDownbeatsChanged(showDownbeats);
+    }
+}
+
+bool Track::getShowDownbeats() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.getShowDownbeats();
 }
 
 void Track::setCoverInfo(const CoverInfoRelative& coverInfo) {

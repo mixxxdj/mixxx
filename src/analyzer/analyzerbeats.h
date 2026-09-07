@@ -33,6 +33,7 @@ class AnalyzerBeats : public Analyzer {
             const QString& pluginId, bool bPreferencesFastAnalysis);
 
     BeatDetectionSettings m_bpmSettings;
+    UserSettingsPointer m_pConfig;
     std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
     QString m_pluginId;

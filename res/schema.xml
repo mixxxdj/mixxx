@@ -593,4 +593,12 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
+  <revision version="41" min_compatible="3">
+    <description>
+    Add show_downbeats column to persist whether the user wants to see downbeats in the waveform for each track.
+    </description>
+    <sql>
+      ALTER TABLE library ADD COLUMN show_downbeats INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>

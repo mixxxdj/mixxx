@@ -31,6 +31,7 @@ mixxx::AnalyzerPluginInfo AnalyzerBeats::defaultPlugin() {
 
 AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
         : m_bpmSettings(pConfig),
+          m_pConfig(pConfig),
           m_enforceBpmDetection(enforceBpmDetection),
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesReanalyzeImported(false),
@@ -282,6 +283,13 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     }
 
     pTrack->trySetBeats(pBeats);
+
+    if (m_pConfig->getValue(
+                ConfigKey(QStringLiteral("[Waveform]"),
+                        QStringLiteral("show_downbeats_for_new_tracks")),
+                false)) {
+        pTrack->setShowDownbeats(true);
+    }
 }
 
 // static

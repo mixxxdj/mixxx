@@ -163,6 +163,9 @@ class Track : public QObject {
     void setBpmLocked(bool bpmLocked);
     bool isBpmLocked() const;
 
+    void setShowDownbeats(bool showDownbeats);
+    bool getShowDownbeats() const;
+
     void setReplayGain(const mixxx::ReplayGain&);
     // Adjust ReplayGain by multiplying the given gain amount.
     void adjustReplayGainFromPregain(double gain, const QString& requestingPlayerGroup);
@@ -478,6 +481,7 @@ class Track : public QObject {
     void commentChanged(const QString&);
     void bpmChanged();
     void bpmLockChanged(bool locked);
+    void showDownbeatsChanged(bool showDownbeats);
     void keyChanged();
     void timesPlayedChanged();
     void durationChanged();
