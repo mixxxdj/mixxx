@@ -770,29 +770,27 @@ void EngineMixer::process(const int iBufferSize) {
         if (m_pVumeter != nullptr) {
             m_pVumeter->process(m_main.data(), iBufferSize);
         }
-    }
 
-    // Handle mono mixdown for the main output and booth.
-    // Headphone mixdown is handled separately since they have more complicated
-    // processing.
-    if (m_pMainMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_main.data(), iBufferSize);
-        if (boothEnabled) {
-            SampleUtil::mixStereoToMono(m_booth.data(), iBufferSize);
+        // Handle mono mixdown for the main output and booth.
+        // Headphone mixdown is handled separately since they have more
+        // complicated processing.
+        if (m_pMainMonoMixdown->toBool()) {
+            SampleUtil::mixStereoToMono(m_main.data(), iBufferSize);
+            if (boothEnabled) {
+                SampleUtil::mixStereoToMono(m_booth.data(), iBufferSize);
+            }
         }
-    }
-
-    if (mainEnabled) {
         m_pMainDelay->process(m_main.data(), iBufferSize);
+
+        if (boothEnabled) {
+            m_pBoothDelay->process(m_booth.data(), iBufferSize);
+        }
     } else {
         m_main.clear(iBufferSize);
         m_booth.clear(iBufferSize);
     }
     if (headphoneEnabled) {
         m_pHeadDelay->process(m_head.data(), iBufferSize);
-    }
-    if (boothEnabled) {
-        m_pBoothDelay->process(m_booth.data(), iBufferSize);
     }
 
     // We're close to the end of the callback. Wake up the engine worker
