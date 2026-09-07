@@ -14,6 +14,7 @@
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "library/dao/settingsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
@@ -1115,6 +1116,25 @@ RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
                   kRekordboxPlaylistsTable,
                   kRekordboxPlaylistTracksTable,
                   trackSource) {
+}
+
+QString RekordboxPlaylistModel::getModelSetting(const QString& name) {
+    if (name == QStringLiteral("header_state_pb")) {
+        SettingsDAO settings(m_database);
+        return settings.getValue(
+                mixxx::rekordboxconstants::kRekordboxHeaderStateKey);
+    }
+    return BaseExternalPlaylistModel::getModelSetting(name);
+}
+
+bool RekordboxPlaylistModel::setModelSetting(
+        const QString& name, const QVariant& value) {
+    if (name == QStringLiteral("header_state_pb")) {
+        SettingsDAO settings(m_database);
+        return settings.setValue(
+                mixxx::rekordboxconstants::kRekordboxHeaderStateKey, value);
+    }
+    return BaseExternalPlaylistModel::setModelSetting(name, value);
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
