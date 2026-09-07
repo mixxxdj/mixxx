@@ -3,14 +3,9 @@
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/waveform.h"
 
-#ifdef MIXXX_USE_QOPENGL
 #include <QGuiApplication>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLWindow>
-#else
-#include <QGLFormat>
-#include <QGLShaderProgram>
-#endif
 #ifdef Q_OS_ANDROID
 #include <GLES3/gl3.h>
 #endif
@@ -31,11 +26,9 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
-#ifdef MIXXX_USE_QOPENGL
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/allshader/waveformwidget.h"
 #include "waveform/widgets/glvsynctestwidget.h"
-#endif
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
@@ -156,7 +149,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
     m_visualGain[Mid] = kVisualGainDefault[Mid];
     m_visualGain[High] = kVisualGainDefault[High];
 
-#ifdef MIXXX_USE_QOPENGL
     WGLWidget* widget = SharedGLContext::getWidget();
     if (widget) {
         widget->makeCurrentIfNeeded();
@@ -228,148 +220,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         widget->doneCurrent();
         widget->hide();
     }
-#else
-    QGLWidget* pGlWidget = SharedGLContext::getWidget();
-    if (pGlWidget && pGlWidget->isValid()) {
-        // will be false if SafeMode is enabled
-
-        pGlWidget->show();
-        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
-        // and QGLFormat::openGLVersionFlags() returns the maximum known version
-        pGlWidget->makeCurrent();
-
-        QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
-
-        auto rendererString = QString();
-        if (QOpenGLContext::currentContext()) {
-            auto glFunctions = QOpenGLFunctions();
-
-            glFunctions.initializeOpenGLFunctions();
-            QString versionString(QLatin1String(
-                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
-            QString vendorString(QLatin1String(
-                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
-            rendererString = QString(QLatin1String(
-                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
-
-            // Either GL or GL ES Version is set, not both.
-            qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
-        } else {
-            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
-            qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
-        }
-
-        int majorGlVersion = 0;
-        int minorGlVersion = 0;
-        int majorGlesVersion = 0;
-        int minorGlesVersion = 0;
-        if (version == QGLFormat::OpenGL_Version_None) {
-            m_openGLVersion = "None";
-        } else if (version & QGLFormat::OpenGL_Version_4_3) {
-            majorGlVersion = 4;
-            minorGlVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_4_2) {
-            majorGlVersion = 4;
-            minorGlVersion = 2;
-        } else if (version & QGLFormat::OpenGL_Version_4_1) {
-            majorGlVersion = 4;
-            minorGlVersion = 1;
-        } else if (version & QGLFormat::OpenGL_Version_4_0) {
-            majorGlVersion = 4;
-            minorGlVersion = 0;
-        } else if (version & QGLFormat::OpenGL_Version_3_3) {
-            majorGlVersion = 3;
-            minorGlVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_3_2) {
-            majorGlVersion = 3;
-            minorGlVersion = 2;
-        } else if (version & QGLFormat::OpenGL_Version_3_1) {
-            majorGlVersion = 3;
-            minorGlVersion = 1;
-        } else if (version & QGLFormat::OpenGL_Version_3_0) {
-            majorGlVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_2_1) {
-            majorGlVersion = 2;
-            minorGlVersion = 1;
-        } else if (version & QGLFormat::OpenGL_Version_2_0) {
-            majorGlVersion = 2;
-            minorGlVersion = 0;
-        } else if (version & QGLFormat::OpenGL_Version_1_5) {
-            majorGlVersion = 1;
-            minorGlVersion = 5;
-        } else if (version & QGLFormat::OpenGL_Version_1_4) {
-            majorGlVersion = 1;
-            minorGlVersion = 4;
-        } else if (version & QGLFormat::OpenGL_Version_1_3) {
-            majorGlVersion = 1;
-            minorGlVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_1_2) {
-            majorGlVersion = 1;
-            minorGlVersion = 2;
-        } else if (version & QGLFormat::OpenGL_Version_1_1) {
-            majorGlVersion = 1;
-            minorGlVersion = 1;
-        } else if (version & QGLFormat::OpenGL_ES_Version_2_0) {
-            m_openGLVersion = "ES 2.0";
-            majorGlesVersion = 2;
-            minorGlesVersion = 0;
-        } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_1) {
-            if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
-                m_openGLVersion = "ES 1.1";
-            } else {
-                m_openGLVersion = "ES Common Lite 1.1";
-            }
-            majorGlesVersion = 1;
-            minorGlesVersion = 1;
-        } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
-            m_openGLVersion = "ES Common Lite 1.1";
-            majorGlesVersion = 1;
-            minorGlesVersion = 1;
-        } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_0) {
-            if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
-                m_openGLVersion = "ES 1.0";
-            } else {
-                m_openGLVersion = "ES Common Lite 1.0";
-            }
-            majorGlesVersion = 1;
-            minorGlesVersion = 0;
-        } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
-            m_openGLVersion = "ES Common Lite 1.0";
-            majorGlesVersion = 1;
-            minorGlesVersion = 0;
-        } else {
-            m_openGLVersion = QString("Unknown 0x%1")
-                .arg(version, 0, 16);
-        }
-
-        if (majorGlVersion != 0) {
-            m_openGLVersion = QString::number(majorGlVersion) + "."
-                    + QString::number(minorGlVersion);
-
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-            if (majorGlVersion * 100 + minorGlVersion >= 201) {
-                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
-                m_openGlAvailable = true;
-            }
-#endif
-        } else {
-            if (majorGlesVersion * 100 + minorGlesVersion >= 200) {
-                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
-                m_openGlesAvailable = true;
-            }
-        }
-
-        m_openGLShaderAvailable =
-                QGLShaderProgram::hasOpenGLShaderPrograms(
-                        pGlWidget->context());
-
-        if (!rendererString.isEmpty()) {
-            m_openGLVersion += " (" + rendererString + ")";
-        }
-
-        pGlWidget->hide();
-    }
-#endif
     evaluateWidgets();
     m_time.start();
 }
@@ -949,7 +799,6 @@ void WaveformWidgetFactory::swapAndRender() {
 }
 
 void WaveformWidgetFactory::slotFrameSwapped() {
-#ifdef MIXXX_USE_QOPENGL
     if (m_vsyncThread->pllInitializing()) {
         // continuously trigger redraws during PLL init
         WGLWidget* widget = SharedGLContext::getWidget();
@@ -957,7 +806,6 @@ void WaveformWidgetFactory::slotFrameSwapped() {
     }
     // update the phase-locked-loop
     m_vsyncThread->updatePLL();
-#endif
 }
 
 void WaveformWidgetFactory::addHandle(
@@ -990,11 +838,9 @@ void WaveformWidgetFactory::addHandle(
             !CmdlineArgs::Instance().getDeveloper()) {
         active = false;
     }
-#ifdef MIXXX_USE_QOPENGL
     else if (vars.m_category == WaveformWidgetCategory::AllShader) {
         backend = WaveformWidgetBackend::AllShader;
     }
-#endif
     else if (vars.m_category == WaveformWidgetCategory::Legacy && vars.m_useGLSL) {
         backend = WaveformWidgetBackend::GLSL;
     } else if (vars.m_category == WaveformWidgetCategory::Legacy) {
@@ -1037,53 +883,43 @@ void WaveformWidgetFactory::evaluateWidgets() {
             addHandle(collectedHandles, type, waveformWidgetVars<EmptyWaveformWidget>());
             break;
         case WaveformWidgetType::Simple:
-#ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
                             type, useGles);
-#endif
             addHandle(collectedHandles, type, waveformWidgetVars<SimpleSignalWaveformWidget>());
             break;
         case WaveformWidgetType::Filtered:
-#ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
                             type, useGles);
-#endif
             addHandle(collectedHandles, type, waveformWidgetVars<SoftwareWaveformWidget>());
             break;
         case WaveformWidgetType::VSyncTest:
-#if defined(MIXXX_USE_QOPENGL) && !defined(QT_OPENGL_ES_2)
+#if !defined(QT_OPENGL_ES_2)
             addHandle(collectedHandles, type, waveformWidgetVars<GLVSyncTestWidget>());
 #endif
             break;
         case WaveformWidgetType::RGB:
-#ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
                             type, useGles);
-#endif
             addHandle(collectedHandles, type, waveformWidgetVars<RGBWaveformWidget>());
             break;
         case WaveformWidgetType::HSV:
-#ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
                             type, useGles);
-#endif
             addHandle(collectedHandles, type, waveformWidgetVars<HSVWaveformWidget>());
             break;
         case WaveformWidgetType::Stacked:
-#ifdef MIXXX_USE_QOPENGL
             addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
             supportedOptions[type] =
                     allshader::WaveformWidget::supportedOptions(
                             type, useGles);
-#endif
             break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
@@ -1101,12 +937,10 @@ void WaveformWidgetFactory::evaluateWidgets() {
         const auto& type = handleIter.key();
         const auto& backends = handleIter.value();
 #endif
-        m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(type, backends
-#ifdef MIXXX_USE_QOPENGL
-                ,
-                supportedOptions.value(type, WaveformRendererSignalBase::Option::None)
-#endif
-                        ));
+        m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(
+                type,
+                backends,
+                supportedOptions.value(type, WaveformRendererSignalBase::Option::None)));
     }
 }
 
@@ -1122,11 +956,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader: {
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer, options);
     }
-#endif
     default:
         return new SoftwareWaveformWidget(viewer->getGroup(), viewer, options);
     }
@@ -1137,10 +969,8 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer, options);
-#endif
     default:
         return new HSVWaveformWidget(viewer->getGroup(), viewer, options);
     }
@@ -1151,10 +981,8 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer, options);
-#endif
     default:
         return new RGBWaveformWidget(viewer->getGroup(), viewer, options);
     }
@@ -1162,12 +990,10 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
-#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetBackend backend = getBackendFromConfig();
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer, options);
-#endif
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1178,10 +1004,8 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
-#ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader:
         return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
-#endif
     default:
         return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1189,11 +1013,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
         WWaveformViewer* pViewer) {
-#ifdef MIXXX_USE_QOPENGL
     return new GLVSyncTestWidget(pViewer->getGroup(), pViewer);
-#else
-    return new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
-#endif
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
@@ -1268,7 +1088,6 @@ void WaveformWidgetFactory::startVSync(
     m_vsyncThread->setObjectName(QStringLiteral("VSync"));
     m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
-#ifdef MIXXX_USE_QOPENGL
     if (m_vsyncThread->vsyncMode() == VSyncThread::ST_PLL) {
         WGLWidget* widget = SharedGLContext::getWidget();
         if (widget) {
@@ -1280,7 +1099,6 @@ void WaveformWidgetFactory::startVSync(
             widget->show();
         }
     }
-#endif
 
     connect(m_vsyncThread,
             &VSyncThread::vsyncRender,
@@ -1350,11 +1168,9 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
 }
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
-#ifdef MIXXX_USE_QOPENGL
     if (m_openGlAvailable || m_openGlesAvailable) {
         return WaveformWidgetBackend::AllShader;
     }
-#endif
     if (m_openGlAvailable && m_openGLShaderAvailable) {
         return WaveformWidgetBackend::GLSL;
     } else if (m_openGlAvailable) {

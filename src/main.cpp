@@ -118,13 +118,9 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             qInfo() << "User previously ran the unstable version on this profile";
         }
 
-#ifdef MIXXX_USE_QOPENGL
         // Will call initialize when the initial wglwidget's
         // qopenglwindow has been exposed
         mainWindow.initializeQOpenGL();
-#else
-        mainWindow.initialize();
-#endif
 
         pCoreServices->getControllerManager()->setUpDevices();
 
@@ -215,9 +211,7 @@ int main(int argc, char * argv[]) {
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
-#ifdef MIXXX_USE_QOPENGL
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-#endif
 
     // Follow whatever factor the user has selected in the system settings
     // By default the value is always rounded to the nearest int.

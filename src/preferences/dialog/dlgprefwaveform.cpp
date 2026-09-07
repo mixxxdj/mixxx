@@ -272,14 +272,12 @@ void DlgPrefWaveform::slotSetWaveformOptions(
     WaveformRendererSignalBase::Options supportedOptions =
             WaveformRendererSignalBase::Option::None;
 
-#ifdef MIXXX_USE_QOPENGL
     auto* pFactory = WaveformWidgetFactory::instance();
     auto backend = m_pConfig->getValue(kHardwareAccelerationKey, pFactory->preferredBackend());
     int handleIdx = pFactory->findHandleIndexFromType(type);
     if (handleIdx >= 0 && handleIdx < pFactory->getAvailableTypes().size()) {
         supportedOptions = pFactory->getAvailableTypes()[handleIdx].supportedOptions(backend);
     }
-#endif
 
     WaveformRendererSignalBase::Options currentOption = m_pConfig->getValue(
             kWaveformOptionsKey,
@@ -498,13 +496,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     // slotSetWaveformAcceleration(useAccelerationCheckBox->isChecked()) just
     // without the redundant actions
     if (useAccelerationCheckBox->isChecked()) {
-        backend =
-#ifdef MIXXX_USE_QOPENGL
-                WaveformWidgetBackend::AllShader
-#else
-                WaveformWidgetBackend::GL
-#endif
-                ;
+        backend = WaveformWidgetBackend::AllShader;
     }
     m_pConfig->setValue(kHardwareAccelerationKey, backend);
 
@@ -536,13 +528,7 @@ void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
 void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
     WaveformWidgetBackend backend = WaveformWidgetBackend::None;
     if (checked) {
-        backend =
-#ifdef MIXXX_USE_QOPENGL
-                WaveformWidgetBackend::AllShader
-#else
-                WaveformWidgetBackend::GL
-#endif
-                ;
+        backend = WaveformWidgetBackend::AllShader;
     }
     m_pConfig->setValue(kHardwareAccelerationKey, backend);
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
@@ -590,7 +576,6 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
     splitLeftRightCheckBox->blockSignals(true);
     highDetailCheckBox->blockSignals(true);
 
-#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     WaveformRendererSignalBase::Options supportedOptions =
             WaveformRendererSignalBase::Option::None;
@@ -612,26 +597,18 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform,
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
             (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
-#else
-    splitLeftRightCheckBox->setVisible(false);
-    highDetailCheckBox->setVisible(false);
-#endif
 
     splitLeftRightCheckBox->blockSignals(false);
     highDetailCheckBox->blockSignals(false);
 }
 
 void DlgPrefWaveform::updateEnableUntilMark() {
-#ifndef MIXXX_USE_QOPENGL
-    const bool enabled = false;
-#else
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const bool enabled =
             WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark() &&
             m_pConfig->getValue(kHardwareAccelerationKey,
                     factory->preferredBackend()) !=
                     WaveformWidgetBackend::None;
-#endif
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
     // Disable the beats/time options if neither beats nor time is enabled
@@ -662,14 +639,10 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
 }
 
 void DlgPrefWaveform::updateStemOptionsEnabled() {
-#ifndef MIXXX_USE_QOPENGL
-    const bool stemsSupported = false;
-#else
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const bool stemsSupported =
             factory->widgetTypeSupportsStems() &&
             factory->getBackendFromConfig() == WaveformWidgetBackend::AllShader;
-#endif
     bool enabled = useWaveformCheckBox->isChecked();
     stemOpacityMainLabel->setEnabled(stemsSupported && enabled);
     stemOpacityOutlineLabel->setEnabled(stemsSupported && enabled);

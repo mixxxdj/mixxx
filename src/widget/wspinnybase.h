@@ -8,7 +8,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 
 class ConfigKey;
 class ControlProxy;

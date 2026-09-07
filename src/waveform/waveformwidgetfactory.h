@@ -28,18 +28,11 @@ class WaveformWidgetAbstractHandle {
   public:
     WaveformWidgetAbstractHandle();
     WaveformWidgetAbstractHandle(WaveformWidgetType::Type type,
-            QList<WaveformWidgetBackend> backends
-#ifdef MIXXX_USE_QOPENGL
-            ,
-            int supportedOptions
-#endif
-            )
-            : m_type(type), m_backends(std::move(backends))
-#ifdef MIXXX_USE_QOPENGL
-              ,
-              m_supportedOption(supportedOptions)
-#endif
-    {
+            QList<WaveformWidgetBackend> backends,
+            int supportedOptions)
+            : m_type(type),
+              m_backends(std::move(backends)),
+              m_supportedOption(supportedOptions) {
     }
 
     WaveformWidgetType::Type getType() const { return m_type;}
@@ -49,11 +42,8 @@ class WaveformWidgetAbstractHandle {
     bool supportAcceleration() const {
         for (auto backend : m_backends) {
             if (backend == WaveformWidgetBackend::GL ||
-                    backend == WaveformWidgetBackend::GLSL
-#ifdef MIXXX_USE_QOPENGL
-                    || backend == WaveformWidgetBackend::AllShader
-#endif
-            ) {
+                    backend == WaveformWidgetBackend::GLSL ||
+                    backend == WaveformWidgetBackend::AllShader) {
                 return true;
             }
         }
@@ -63,14 +53,12 @@ class WaveformWidgetAbstractHandle {
         return m_backends.contains(WaveformWidgetBackend::None);
     }
 
-#ifdef MIXXX_USE_QOPENGL
     WaveformRendererSignalBase::Options supportedOptions(
             WaveformWidgetBackend backend) const {
         return backend == WaveformWidgetBackend::AllShader
                 ? m_supportedOption
                 : WaveformRendererSignalBase::Option::None;
     }
-#endif
 
     QString getDisplayName() const;
     static QString getDisplayName(WaveformWidgetType::Type type);
@@ -78,10 +66,8 @@ class WaveformWidgetAbstractHandle {
   private:
     WaveformWidgetType::Type m_type;
     QList<WaveformWidgetBackend> m_backends;
-#ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
     WaveformRendererSignalBase::Options m_supportedOption;
-#endif
 
     friend class WaveformWidgetFactory;
 };
@@ -130,8 +116,6 @@ class WaveformWidgetFactory : public QObject,
 
     /// Returns whether Mixxx has started with Open GL support. In this case
     /// isOpenGlesAvailable() returns false.
-    /// Note: The Macro MIXXX_USE_QOPENGL selects the Qt6 openGL implementation
-    /// Of Qt inside the Mixxx source.
     bool isOpenGlAvailable() const { return m_openGlAvailable;}
     /// Returns whether Mixxx has started with Open GLES support. In this case
     /// isOpenGlAvailable() returns false. It may also happen that

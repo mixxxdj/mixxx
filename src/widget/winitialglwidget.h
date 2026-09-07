@@ -1,6 +1,6 @@
 #pragma once
 
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 
 class WInitialGLWidget : public WGLWidget {
     Q_OBJECT

@@ -1,13 +1,8 @@
 #include "waveform/renderers/deprecated/glslwaveformrenderersignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#ifdef MIXXX_USE_QOPENGL
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
-#else
-#include <QGLFramebufferObject>
-#include <QGLShaderProgram>
-#endif
 
 #include "moc_glslwaveformrenderersignal.cpp"
 #include "track/track.h"
