@@ -1895,7 +1895,6 @@ set(
   src/util/color/colorpalette.h
   src/util/color/predefinedcolorpalettes.h
   src/util/color/rgbcolor.h
-  src/util/compatibility/qmutex.h
   src/util/console.h
   src/util/counter.h
   src/util/datetime.h

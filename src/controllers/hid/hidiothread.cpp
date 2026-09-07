@@ -1,6 +1,6 @@
 #include "controllers/hid/hidiothread.h"
 
-#include "util/assert.h"
+#include <QMutexLocker>
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -9,6 +9,7 @@
 #include <hidapi.h>
 #endif
 #include "moc_hidiothread.cpp"
+#include "util/assert.h"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
@@ -97,7 +98,7 @@ void HidIoThread::run() {
 
 void HidIoThread::pollBufferedInputReports() {
     Trace hidRead("HidIoThread pollBufferedInputReports");
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
     // This function reads the available HID Input Reports using hidapi.
     // Important to know is, that this reading is not a hardware operation,
     // instead it reads previously received HID Input Reports from a ring buffer.
@@ -185,7 +186,7 @@ void HidIoThread::processInputReport(int bytesRead) {
 
 QByteArray HidIoThread::getInputReport(quint8 reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
     int bytesRead = hid_get_input_report(
@@ -229,7 +230,7 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
 void HidIoThread::updateCachedOutputReportData(quint8 reportID,
         const QByteArray& data,
         bool useNonSkippingFIFO) {
-    auto mapLock = lockMutex(&m_outputReportMapMutex);
+    auto mapLock = QMutexLocker(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoOutputReport> pNewOutputReport;
         m_outputReports[reportID] = std::make_unique<HidIoOutputReport>(
@@ -273,7 +274,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
     // If the map size increases, this loop will execute one iteration more,
     // which only has the effect, that one additional lookup operation for unsent data will be executed.
     for (std::size_t i = 0; i < m_outputReports.size(); i++) {
-        auto mapLock = lockMutex(&m_outputReportMapMutex);
+        auto mapLock = QMutexLocker(&m_outputReportMapMutex);
         if (m_outputReportIterator == m_outputReports.end()) {
             m_outputReportIterator = m_outputReports.begin();
         } else {
@@ -308,7 +309,7 @@ void HidIoThread::sendFeatureReport(
     dataArray.append(reportID);
     dataArray.append(reportData);
 
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
     int result = hid_send_feature_report(m_pHidDevice,
             reinterpret_cast<const unsigned char*>(dataArray.constData()),
             dataArray.size());
@@ -339,7 +340,7 @@ QByteArray HidIoThread::getFeatureReport(
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
     int bytesRead = hid_get_feature_report(m_pHidDevice,
             dataRead,
             kReportIdSize + kBufferSize);
