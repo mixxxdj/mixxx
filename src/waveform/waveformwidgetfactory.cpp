@@ -765,7 +765,6 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
-    m_config->setValue(kBeatGridAlpha, alpha);
 }
 
 void WaveformWidgetFactory::setVisualGain(BandIndex index, double gain) {
