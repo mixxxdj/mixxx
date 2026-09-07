@@ -2,6 +2,7 @@ import "../../qml" as Skin
 import "LateNightTheme"
 import "Deck" as LateNightDeck
 import "Effects" as LateNightEffects
+import "MicAux" as LateNightMicAux
 import "Mixer" as LateNightMixer
 import "Samplers" as LateNightSamplers
 import "Toolbar" as LateNightToolbar
@@ -30,6 +31,7 @@ Item {
     property alias showEffects: toolbar.showEffects
     readonly property bool showCompactVuMeters: layoutState.showCompactVuMeters
     readonly property bool showDeckArea: layoutState.showDeckArea
+    property alias showMicAux: toolbar.showMicAux
     readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
     readonly property bool showMixer: toolbar.showMixer
     property alias showSamplers: toolbar.showSamplers
@@ -599,23 +601,24 @@ Item {
                     y: samplersSection.y + samplersSection.height
                     z: 2
 
-                    Row {
+                    Behavior on height {
+                        NumberAnimation {
+                            duration: 150
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 120
+                        }
+                    }
+
+                    LateNightMicAux.MicAuxRack {
                         id: micAuxRack
 
-                        width: parent.width
-
-                        Skin.MicrophoneUnit {
-                            unitNumber: 1
-                        }
-                        Skin.MicrophoneUnit {
-                            unitNumber: 2
-                        }
-                        Skin.AuxiliaryUnit {
-                            unitNumber: 1
-                        }
-                        Skin.AuxiliaryUnit {
-                            unitNumber: 2
-                        }
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
                     }
                 }
                 Loader {
