@@ -355,7 +355,9 @@ class WaveformWidgetFactory : public QObject,
     std::unique_ptr<ControlObject> m_pStemSplitTracksControl;
 
     bool m_openGlAvailable;
+#ifdef MIXXX_USE_QOPENGL
     bool m_openGlesAvailable;
+#endif
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;

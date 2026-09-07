@@ -1364,26 +1364,30 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
     WaveformWidgetBackend backend = m_config->getValue(
             kHardwareAccelerationKey,
             preferredBackend());
+
+    // Validate and reset an unsupported backend (from config)
     switch (backend) {
     case WaveformWidgetBackend::None:
         break;
     case WaveformWidgetBackend::GL:
-        if (!m_openGlAvailable) {
+        // GL is acceptable if either OpenGL or OpenGLES is available
+        if (!m_openGlAvailable && !m_openGlesAvailable) {
             backend = WaveformWidgetBackend::None;
         }
         break;
     case WaveformWidgetBackend::GLSL:
-        if (!m_openGlAvailable || !m_openGLShaderAvailable) {
+        // GLSL requires both shader support and GL/GLES availability
+        if (!m_openGLShaderAvailable || (!m_openGlAvailable && !m_openGlesAvailable)) {
             backend = WaveformWidgetBackend::None;
         }
         break;
     case WaveformWidgetBackend::AllShader:
-        // Note: this might be a leftover of full QOpenGL builds even if this
-        // build does not support that setting.
 #ifdef MIXXX_USE_QOPENGL
         if (!m_openGlAvailable && !m_openGlesAvailable) {
             backend = WaveformWidgetBackend::None;
         }
+#else
+        backend = WaveformWidgetBackend::None;
 #endif
         break;
     }
