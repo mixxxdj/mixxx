@@ -42,8 +42,8 @@ Item {
     function formatPositionTime() {
         const elapsed = durationProxy.value * playpositionProxy.value;
         const remaining = durationProxy.value * (1 - playpositionProxy.value);
-        const mode = timeFormatProxy.value;
-        switch (positionDisplayProxy.value) {
+        const mode = Mixxx.Config.controlTimeFormat;
+        switch (Mixxx.Config.controlPositionDisplay) {
         case SharedDeck.TrackTime.Display.Remaining:
             return "-" + root.formatTrackTime(remaining, mode);
         case SharedDeck.TrackTime.Display.Both:
@@ -56,7 +56,7 @@ Item {
 
     function cyclePositionDisplay() {
         let nextDisplay;
-        switch (positionDisplayProxy.value) {
+        switch (Mixxx.Config.controlPositionDisplay) {
         case SharedDeck.TrackTime.Display.Elapsed:
             nextDisplay = SharedDeck.TrackTime.Display.Remaining;
             break;
@@ -68,7 +68,6 @@ Item {
             nextDisplay = SharedDeck.TrackTime.Display.Elapsed;
             break;
         }
-        positionDisplayProxy.value = nextDisplay;
         Mixxx.Config.controlPositionDisplay = nextDisplay;
     }
 
@@ -82,18 +81,6 @@ Item {
         id: playpositionProxy
         group: root.group
         key: "playposition"
-    }
-
-    Mixxx.ControlProxy {
-        id: timeFormatProxy
-        group: "[Controls]"
-        key: "TimeFormat"
-    }
-
-    Mixxx.ControlProxy {
-        id: positionDisplayProxy
-        group: "[Controls]"
-        key: "PositionDisplay"
     }
 
     ColumnLayout {
