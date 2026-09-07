@@ -1230,8 +1230,12 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     emit loopEnabledChanged(enabled);
 }
 
+/// Update m_bLoopOrRepeatWasEnabledBeforeSlipEnable for use in
+/// EngineBuffer::processSlip()
 void LoopingControl::repeatToggled(double value) {
     if (m_bLoopingEnabled) {
+        // m_bLoopOrRepeatWasEnabledBeforeSlipEnable has been set in
+        // setLoopingEnabled(), nothing to do
         return;
     }
     m_bLoopOrRepeatWasEnabledBeforeSlipEnable =
@@ -1862,7 +1866,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 }
 
-// Used to simulate looping while slip mode is enabled
+/// Used to simulate looping while slip mode is enabled
 mixxx::audio::FramePos LoopingControl::adjustedPositionForCurrentLoopOrRepeat(
         mixxx::audio::FramePos currentPosition,
         bool reverse) {

@@ -1314,6 +1314,7 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
         const mixxx::audio::FrameDiff_t slipDelta =
                 static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
         const bool looping = m_pLoopingControl->isLoopingEnabled();
+        // Simulate looping if a regular loop is active or repeat is enabled
         if ((looping || m_pRepeat->toBool()) &&
                 m_pLoopingControl->loopOrRepeatWasEnabledBeforeSlipEnable() &&
                 !m_pLoopingControl->isLoopRollActive()) {
