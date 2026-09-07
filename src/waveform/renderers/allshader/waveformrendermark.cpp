@@ -70,11 +70,11 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
         for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
             const float y = boxIdx * boxBreadth + yOffset;
             if (boxIdx == labelBoxIdx) {
-        vertexUpdater.addRectangle({x, y},
-                {x + m_textureWidth / devicePixelRatio,
-                        y + m_textureHeight / devicePixelRatio},
-                {0.f, 0.f},
-                {1.f, 1.f});
+                vertexUpdater.addRectangle({x, y},
+                        {x + m_textureWidth / devicePixelRatio,
+                                y + m_textureHeight / devicePixelRatio},
+                        {0.f, 0.f},
+                        {1.f, 1.f});
             } else {
                 const float lineX = x + m_pOwner->m_linePosition;
                 vertexUpdater.addRectangle({lineX - 1.5f, y},
