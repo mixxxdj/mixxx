@@ -27,11 +27,7 @@ QKeySequence safeKeySequence(const QString& str) {
     }
     const QKeySequence ks(str);
     for (int i = 0; i < ks.count(); ++i) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         const Qt::Key key = ks[i].key();
-#else
-        const int key = ks[i] & ~Qt::KeyboardModifierMask;
-#endif
         if (key == Qt::Key_unknown) {
             qWarning() << "Ignoring invalid keyboard shortcut:" << str;
             return {};
