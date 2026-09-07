@@ -3,6 +3,7 @@
 #include <QAtomicInt>
 #include <QByteArray>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QSharedPointer>
 #include <QString>
 #include <vector>
@@ -10,7 +11,6 @@
 #include "analyzer/constants.h"
 #include "audio/signalinfo.h"
 #include "util/class.h"
-#include "util/compatibility/qmutex.h"
 
 enum BandIndex { AllBand = 0,
     Low = 1,
@@ -50,32 +50,32 @@ class Waveform {
     virtual ~Waveform();
 
     int getId() const {
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         return m_id;
     }
 
     void setId(int id) {
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         m_id = id;
     }
 
     QString getVersion() const {
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         return m_version;
     }
 
     void setVersion(const QString& version) {
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         m_version = version;
     }
 
     QString getDescription() const {
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         return m_description;
     }
 
     void setDescription(const QString& description) {
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         m_description = description;
     }
 
