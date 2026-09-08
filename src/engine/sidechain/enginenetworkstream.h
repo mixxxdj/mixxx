@@ -49,7 +49,6 @@ class EngineNetworkStream {
     mixxx::audio::ChannelCount m_numInputChannels;
     mixxx::audio::SampleRate m_sampleRate;
     qint64 m_inputStreamStartTimeUs;
-    qint64 m_inputStreamFramesWritten;
     qint64 m_inputStreamFramesRead;
 
     // EngineNetworkStream can't use locking mechanisms to protect its

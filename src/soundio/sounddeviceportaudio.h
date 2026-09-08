@@ -76,8 +76,8 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_inputParams;
     std::unique_ptr<FIFO<CSAMPLE>> m_outputFifo;
     std::unique_ptr<FIFO<CSAMPLE>> m_inputFifo;
-    bool m_outputDrift;
-    bool m_inputDrift;
+    int m_outputDrift;
+    int m_inputDrift;
 
     // A string describing the last PortAudio error to occur.
     QString m_lastError;
