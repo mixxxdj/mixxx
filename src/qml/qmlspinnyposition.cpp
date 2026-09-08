@@ -10,6 +10,13 @@
 namespace mixxx {
 namespace qml {
 
+namespace {
+
+constexpr auto kMinimumSyncInterval = std::chrono::microseconds(1000);
+constexpr auto kMaximumSyncInterval = std::chrono::microseconds(100000);
+
+} // namespace
+
 QmlSpinnyPosition::QmlSpinnyPosition(QQuickItem* parent)
         : QQuickItem(parent) {
     setFlag(QQuickItem::ItemHasContents, true);
@@ -21,7 +28,7 @@ QmlSpinnyPosition::QmlSpinnyPosition(QQuickItem* parent)
             Qt::DirectConnection);
     connect(this, &QQuickItem::visibleChanged, this, [this]() {
         if (isVisible()) {
-            m_timer.restart();
+            resetFrameTiming();
             refresh();
             update();
         }
@@ -61,7 +68,7 @@ void QmlSpinnyPosition::slotWindowChanged(QQuickWindow* window) {
             update();
         }
     }
-    m_timer.restart();
+    resetFrameTiming();
 }
 
 void QmlSpinnyPosition::slotFrameSwapped() {
@@ -69,7 +76,13 @@ void QmlSpinnyPosition::slotFrameSwapped() {
         return;
     }
 
-    m_timer.restart();
+    const auto frameInterval = std::chrono::microseconds(
+            m_timer.restart().toIntegerMicros());
+    if (m_haveFrameInterval && frameInterval >= kMinimumSyncInterval &&
+            frameInterval <= kMaximumSyncInterval) {
+        m_syncInterval = frameInterval;
+    }
+    m_haveFrameInterval = true;
     refresh();
     update();
 }
@@ -77,13 +90,20 @@ void QmlSpinnyPosition::slotFrameSwapped() {
 std::chrono::microseconds QmlSpinnyPosition::fromTimerToNextSync(
         const PerformanceTimer& timer) {
     if (!m_timer.running()) {
-        return kSyncInterval;
+        return kDefaultSyncInterval;
     }
-    return kSyncInterval + std::chrono::microseconds(m_timer.difference(timer).toIntegerMicros());
+    return m_syncInterval +
+            std::chrono::microseconds(m_timer.difference(timer).toIntegerMicros());
 }
 
 std::chrono::microseconds QmlSpinnyPosition::getSyncInterval() const {
-    return kSyncInterval;
+    return m_syncInterval;
+}
+
+void QmlSpinnyPosition::resetFrameTiming() {
+    m_timer.restart();
+    m_syncInterval = kDefaultSyncInterval;
+    m_haveFrameInterval = false;
 }
 
 void QmlSpinnyPosition::refresh() {

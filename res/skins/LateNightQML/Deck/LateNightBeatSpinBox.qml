@@ -140,14 +140,13 @@ Item {
     function step(delta) {
         var nextValue;
         if (root.useStepControls) {
-            nextValue = valueProxy.value * Math.pow(2, delta);
             if (delta < 0) {
                 decrementControl.trigger();
             } else {
                 incrementControl.trigger();
             }
             root.valueInputDirty = false;
-            valueInput.text = root.formatBeatSize(nextValue);
+            valueInput.text = root.valueText;
             root.focusAndSelectValue();
             return;
         }

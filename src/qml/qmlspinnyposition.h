@@ -60,17 +60,20 @@ class QmlSpinnyPosition : public QQuickItem, public VSyncTimeProvider {
     void validChanged(bool valid);
 
   private:
+    void resetFrameTiming();
     void resetPositions();
     void updatePositions();
 
-    static constexpr auto kSyncInterval = std::chrono::microseconds(16667);
+    static constexpr auto kDefaultSyncInterval = std::chrono::microseconds(16667);
 
     QString m_group;
     PerformanceTimer m_timer;
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     QMetaObject::Connection m_frameConnection;
+    std::chrono::microseconds m_syncInterval{kDefaultSyncInterval};
     double m_playPosition{0.0};
     double m_slipPosition{0.0};
+    bool m_haveFrameInterval{false};
     bool m_valid{false};
 };
 

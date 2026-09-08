@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QMetaObject>
+#include <QTest>
 #include <memory>
 
 #include "qml/qmlspinnyposition.h"
@@ -75,6 +76,18 @@ TEST_F(QmlSpinnyPositionTest, ClearsPositionsWhenSnapshotBecomesInvalid) {
     EXPECT_FALSE(m_position->isValid());
     EXPECT_DOUBLE_EQ(0.0, m_position->getPlayPosition());
     EXPECT_DOUBLE_EQ(0.0, m_position->getSlipPosition());
+}
+
+TEST_F(QmlSpinnyPositionTest, AdaptsSyncIntervalToFrameCadence) {
+    m_position->setVisible(true);
+    ASSERT_TRUE(QMetaObject::invokeMethod(
+            m_position.get(), "slotFrameSwapped", Qt::DirectConnection));
+
+    QTest::qWait(30);
+
+    ASSERT_TRUE(QMetaObject::invokeMethod(
+            m_position.get(), "slotFrameSwapped", Qt::DirectConnection));
+    EXPECT_GT(m_position->getSyncInterval().count(), 20000);
 }
 
 } // namespace

@@ -303,7 +303,9 @@ Item {
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-                iconSource: LateNightTheme.assetDeckLoopAnchorStartButton
+                iconSource: isActive
+                        ? LateNightTheme.assetDeckLoopAnchorEndButton
+                        : LateNightTheme.assetDeckLoopAnchorStartButton
                 group: root.group
                 key: "loop_anchor"
                 toggleable: true
