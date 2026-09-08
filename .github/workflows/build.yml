@@ -211,7 +211,10 @@ jobs:
               -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
             ctest_args: []
             cpack_generator: AppImage
-            crosscompile: true
+            # Not a cross-compile: this is a native x86_64 build, so the
+            # shared Test step must run.  The PPA steps are excluded for the
+            # AppImage separately below.
+            crosscompile: false
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
@@ -601,7 +604,7 @@ jobs:
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
