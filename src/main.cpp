@@ -121,6 +121,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         // Will call initialize when the initial wglwidget's
         // qopenglwindow has been exposed
         mainWindow.initializeQOpenGL();
+        // TODO remove mainWindow.initialize();
 
         pCoreServices->getControllerManager()->setUpDevices();
 

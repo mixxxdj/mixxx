@@ -45,7 +45,7 @@ class MixxxMainWindow : public QMainWindow {
 
     void initializeQOpenGL();
     /// Initialize main window after creation. Should only be called once.
-    void initialize();
+    void initialize(); // TODO remove ??
     /// creates the menu_bar and inserts the file Menu
     void createMenuBar();
     void connectMenuBar();
