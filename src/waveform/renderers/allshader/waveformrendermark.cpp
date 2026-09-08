@@ -530,7 +530,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
     const float height = m_waveformRenderer->getBreadth();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    if (height == m_playPosHeight && devicePixelRatio == m_playPosDevicePixelRatio) {
+    if (!m_playPosColorsDirty && height == m_playPosHeight &&
+            devicePixelRatio == m_playPosDevicePixelRatio) {
         return;
     }
     m_playPosHeight = height;
@@ -598,6 +599,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
     dynamic_cast<TextureMaterial&>(m_pPlayPosNode->material())
             .setTexture(std::make_unique<Texture>(pContext, image));
     m_pPlayPosNode->markDirtyMaterial();
+    m_playPosColorsDirty = false;
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,

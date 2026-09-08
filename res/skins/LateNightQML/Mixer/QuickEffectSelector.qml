@@ -9,14 +9,27 @@ ComboBox {
     property bool arrowOnRight: false
     readonly property bool compact: width <= 40
     required property string group
-    property int popupMaxItem: 44
+    readonly property int popupMaxItem: count
     property int popupWidth: 160
     readonly property string quickEffectGroup: "[QuickEffectRack1_" + group + "]"
+    property bool textAlignRight: arrowOnRight
 
-    currentIndex: root.count > 0 ? Math.max(0, Math.min(root.count - 1, Math.round(presetControl.value))) : -1
+    function syncCurrentPreset() {
+        if (root.count === 0) {
+            root.currentIndex = -1
+            return
+        }
+
+        const presetIndex = presetControl && presetControl.initialized
+                ? Math.round(presetControl.value)
+                : -1
+        root.currentIndex = Math.max(-1, Math.min(root.count - 1, presetIndex))
+    }
+
+    currentIndex: -1
     font.family: "Open Sans"
-    font.pixelSize: 13
-    font.weight: Font.Medium
+    font.pixelSize: LateNightTheme.isClassic ? 12 : 14
+    font.weight: LateNightTheme.isClassic ? Font.Bold : Font.Medium
     implicitHeight: 18
     implicitWidth: 62
     model: Mixxx.EffectsManager.quickChainPresetModel
@@ -45,10 +58,10 @@ ComboBox {
             color: LateNightTheme.mixerQuickEffectSelectorTextColor
             elide: Text.ElideRight
             font: root.font
-            horizontalAlignment: root.arrowOnRight ? Text.AlignRight : Text.AlignLeft
+            horizontalAlignment: root.textAlignRight ? Text.AlignRight : Text.AlignLeft
             leftPadding: root.arrowOnRight ? 0 : (root.compact ? 10 : 13)
             rightPadding: root.arrowOnRight ? (root.compact ? 10 : 13) : 0
-            text: root.displayText || qsTr("Filter")
+            text: root.displayText
             verticalAlignment: Text.AlignVCenter
         }
     }
@@ -65,11 +78,13 @@ ComboBox {
         width: ListView.view ? ListView.view.width : root.popupWidth
 
         background: Rectangle {
-            color: presetDelegate.highlighted ? "#2c454f" : "transparent"
+            color: presetDelegate.highlighted ? LateNightTheme.mixerQuickEffectSelectorHighlightColor : "transparent"
             radius: presetDelegate.highlighted ? 1 : 0
         }
         contentItem: Text {
-            color: presetDelegate.checked || presetDelegate.highlighted ? "#ffffff" : LateNightTheme.mixerQuickEffectSelectorTextColor
+            color: presetDelegate.checked || presetDelegate.highlighted
+                    ? LateNightTheme.mixerQuickEffectSelectorHighlightTextColor
+                    : LateNightTheme.mixerQuickEffectSelectorTextColor
             elide: Text.ElideRight
             font: root.font
             leftPadding: 20
@@ -89,10 +104,10 @@ ComboBox {
         y: root.height
 
         background: Rectangle {
-            border.color: "#333333"
+            border.color: LateNightTheme.mixerQuickEffectSelectorPopupBorderColor
             border.width: 1
-            color: "#151517"
-            radius: 1
+            color: LateNightTheme.mixerQuickEffectSelectorPopupBackgroundColor
+            radius: LateNightTheme.isClassic ? 2 : 1
         }
         contentItem: ListView {
             id: presetList
@@ -110,7 +125,29 @@ ComboBox {
         onOpened: presetList.contentY = 0
     }
 
+    Component.onCompleted: root.syncCurrentPreset()
     onActivated: index => presetControl.value = index
+    onCountChanged: root.syncCurrentPreset()
+
+    Connections {
+        function onModelReset() {
+            root.syncCurrentPreset()
+        }
+
+        target: root.model
+    }
+
+    Connections {
+        function onValueChanged() {
+            root.syncCurrentPreset()
+        }
+
+        function onInitializedChanged() {
+            root.syncCurrentPreset()
+        }
+
+        target: presetControl
+    }
 
     Mixxx.ControlProxy {
         id: presetControl

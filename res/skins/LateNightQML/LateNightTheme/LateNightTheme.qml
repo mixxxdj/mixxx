@@ -12,6 +12,8 @@ QtObject {
     readonly property url assetDeckBeatSpinBoxBorder: isClassic ? lateNightAsset("buttons", "spinbox_elevated_border.svg") : lateNightSubRegionButton("wide")
     readonly property url assetDeckBeatSpinBoxDownButton: isClassic ? lateNightAsset("buttons", "spinbox_down.svg") : lateNightAsset("buttons", "btn__spinbox_down.svg")
     readonly property url assetDeckBeatSpinBoxUpButton: isClassic ? lateNightAsset("buttons", "spinbox_up.svg") : lateNightAsset("buttons", "btn__spinbox_up.svg")
+    readonly property url assetDeckBeatgridControlsCollapseButton: lateNightAsset("buttons", "btn__beatgrid_controls_collapse.svg")
+    readonly property url assetDeckBeatgridControlsExpandButton: lateNightAsset("buttons", "btn__beatgrid_controls_expand.svg")
     readonly property url assetDeckBeatjumpLeftButton: lateNightAsset("buttons", "btn__beatjump_left.svg")
     readonly property url assetDeckBeatjumpRightButton: lateNightAsset("buttons", "btn__beatjump_right.svg")
     readonly property url assetDeckBeatsEarlierButton: lateNightAsset("buttons", "btn__beats_earlier.svg")
@@ -70,6 +72,10 @@ QtObject {
     readonly property url assetDeckSpinnyIndicator: lateNightAsset("style", "spinny_indicator.svg")
     readonly property url assetDeckSpinnyMask12: lateNightAsset("style", "spinny_mask_12.svg")
     readonly property url assetDeckSpinnyMask34: lateNightAsset("style", "spinny_mask_34.svg")
+    readonly property url assetDeckStemControlsCollapseButton: lateNightAsset("buttons", "btn__stem_controls_collapse.svg")
+    readonly property url assetDeckStemControlsExpandButton: lateNightAsset("buttons", "btn__stem_controls_expand.svg")
+    readonly property url assetWaveformSplitterHandle: lateNightAsset("style", isClassic ? "splitter_handle_horizontal.png" : "splitter_handle_horizontal.svg")
+    readonly property url assetWaveformSplitterHandlePressed: lateNightAsset("style", isClassic ? "splitter_handle_horizontal_pressed.png" : "splitter_handle_horizontal_pressed.svg")
     readonly property url assetDeckSyncActiveButton: isPaleMoon ? lateNightAsset("buttons", "btn__sync_deck_active.svg") : lateNightAsset("buttons", "btn__sync_deck.svg")
     readonly property url assetDeckSyncBackground: lateNightAsset("buttons", "btn_embedded_library.svg")
     readonly property url assetDeckSyncButton: lateNightAsset("buttons", "btn__sync_deck.svg")
@@ -130,6 +136,7 @@ QtObject {
     readonly property url assetMixerQuickEffectIcon: lateNightAsset("buttons", "btn__star.svg")
     readonly property url assetMixerSplitActiveIcon: lateNightAsset("buttons", isClassic ? "btn_elevated_headsplit_active.svg" : "btn_embedded_headsplit_active.svg")
     readonly property url assetMixerSplitIcon: lateNightAsset("buttons", isClassic ? "btn_elevated_headsplit.svg" : "btn_embedded_headsplit.svg")
+    readonly property url assetMixerStemMuteIcon: lateNightAsset("buttons", "btn__stem_mute.svg")
     readonly property url assetMixerVolumeSliderBackground: lateNightAsset("sliders", "slider_volume_deck.svg")
     readonly property url assetMixerVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
     readonly property url assetRegularKnobBackground: lateNightAsset("knobs", "knob_bg_regular.svg")
@@ -228,7 +235,7 @@ QtObject {
     readonly property bool isPaleMoon: ColorScheme.name === "palemoon"
     readonly property color keyControlsPressedColor: isPaleMoon ? "#7d350d" : "#db0000"
     readonly property string keyControlsPressedIconSuffix: isPaleMoon ? "active" : ""
-    readonly property color libraryPanelSplitterBackground: "#1e1e1e"
+    readonly property color libraryPanelSplitterBackground: isPaleMoon ? "#080808" : "#0f0f0f"
     readonly property color libraryPanelSplitterHandle: "#5f5f5f"
     readonly property color libraryPanelSplitterHandleActive: "#7a7a7a"
     readonly property color mixerAccentCyan: "#0bd9d1"
@@ -249,8 +256,6 @@ QtObject {
     readonly property color mixerFxAssignInactiveTextColor: isClassic ? effectsAssignmentInactiveTextColor : "#666666"
     readonly property color mixerMainSeparatorDarkColor: isPaleMoon ? "#0c0c0c" : mixerPanelBorderDark
     readonly property color mixerMainSeparatorLightColor: isPaleMoon ? "#222222" : mixerPanelBorderLight
-    readonly property color mixerSplitActiveColor: isClassic ? "#888888" : "#555555"
-    readonly property color mixerSplitInactiveColor: isClassic ? deckEmbeddedButtonInactiveColor : "#222222"
     readonly property color mixerPanelBorderBottom: isPaleMoon ? "#0c0c0c" : "#0a0a0a"
     readonly property color mixerPanelBorderDark: "#080808"
     readonly property color mixerPanelBorderLeft: isPaleMoon ? "#282828" : "#333333"
@@ -260,8 +265,15 @@ QtObject {
     readonly property color mixerPanelColor: "#1d1d1f"
     readonly property color mixerPflActiveFillColor: isClassic ? "#db0000" : "#666666"
     readonly property color mixerQuickEffectActiveColor: isClassic ? "#659f08" : "#236b00"
-    readonly property color mixerQuickEffectSelectorTextColor: "#918273"
+    readonly property color mixerQuickEffectSelectorHighlightColor: isClassic ? "#5e4507" : "#2c454f"
+    readonly property color mixerQuickEffectSelectorPopupBackgroundColor: isClassic ? "#0f0f0f" : "#151517"
+    readonly property color mixerQuickEffectSelectorPopupBorderColor: isClassic ? "#888888" : "#333333"
+    readonly property color mixerQuickEffectSelectorHighlightTextColor: white
+    readonly property color mixerQuickEffectSelectorTextColor: isClassic ? "#888888" : "#918273"
     readonly property color mixerSliderBarColor: "#257b82"
+    readonly property color mixerSplitActiveColor: isClassic ? "#888888" : "#555555"
+    readonly property color mixerSplitInactiveColor: isClassic ? deckEmbeddedButtonInactiveColor : "#222222"
+    readonly property color mixerStemMuteInactiveColor: isClassic ? "#262626" : "#2a2a2c"
     readonly property color mixerVuClipColor: mixerAccentRed
     readonly property color mixerVuLevelColor: mixerAccentRed
     readonly property color micAuxDuckingArcColor: "#a00000"
@@ -278,17 +290,18 @@ QtObject {
     readonly property url optionalMixerEqKillDotActiveRed: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_active_red.svg") : ""
     readonly property url optionalMixerEqKillDotOff: isPaleMoon ? lateNightAsset("buttons", "btn__eq_kill_dot_off.svg") : ""
     readonly property url optionalMixerQuickEffectActiveIcon: isPaleMoon ? lateNightAsset("buttons", "btn__star_active.svg") : ""
+    readonly property color overviewBorderBottomColor: "#2a2a2a"
+    readonly property color overviewBorderLeftColor: "#121212"
+    readonly property color overviewBorderRightColor: "#252525"
+    readonly property color overviewBorderTopColor: "#0d0d0d"
     readonly property color overviewHotcueBrightTextColor: "#000000"
     readonly property int overviewHotcueBrightnessThreshold: 127
     readonly property color overviewMarkerTextColor: "#ffffff"
     readonly property color overviewRgbHighColor: "#ff0000"
     readonly property color overviewRgbLowColor: "#0000ff"
     readonly property color overviewRgbMidColor: "#00ff00"
-    readonly property color overviewBorderBottomColor: "#2a2a2a"
-    readonly property color overviewBorderLeftColor: "#121212"
-    readonly property color overviewBorderRightColor: "#252525"
-    readonly property color overviewBorderTopColor: "#0d0d0d"
     readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
+    readonly property color passthroughActiveColor: vinylStatusSpeedColor
     readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
@@ -336,9 +349,6 @@ QtObject {
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
     readonly property color textColor: white
     readonly property color textColorMuted: "#696969"
-    readonly property color trackPropertyHighlightColor: "#151515"
-    readonly property color trackPropertySelectedTextColor: "#111111"
-    readonly property color trackPropertySelectionColor: white
     readonly property color toolbarActiveColor: white
     readonly property color toolbarBackgroundColor: "#242424"
     readonly property color toolbarBottomBorderColor: "#020202"
@@ -368,7 +378,9 @@ QtObject {
     readonly property color toolbarStatusErrorColor: "#f856e7"
     readonly property color toolbarStatusOkColor: "#54c76a"
     readonly property color toolbarStatusWarnColor: "#d89124"
-    readonly property color passthroughActiveColor: vinylStatusSpeedColor
+    readonly property color trackPropertyHighlightColor: "#151515"
+    readonly property color trackPropertySelectedTextColor: "#111111"
+    readonly property color trackPropertySelectionColor: white
     readonly property color vinylCueingActiveColor: "#888888"
     readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
     readonly property color vinylStatusSignalColor: isClassic ? "#659f08" : "#438225"
@@ -380,16 +392,23 @@ QtObject {
     readonly property color waveformCueColor: isPaleMoon ? "#ff7a01" : "#ff001c"
     readonly property color waveformDefaultMarkColor: "#ff0000"
     readonly property color waveformDisabledMarkColor: "#ffffff"
-    readonly property color waveformEndOfTrackWarningColor: "#ff8872"
+    readonly property color waveformEndOfTrackWarningColor: "#f856e7"
     readonly property color waveformFilteredHighColor: "#d5c2a2"
     readonly property color waveformFilteredLowColor: "#2154d7"
     readonly property color waveformFilteredMidColor: "#97632d"
     readonly property color waveformIntroOutroColor: isPaleMoon ? "#2c5c9a" : "#0000ff"
     readonly property color waveformLoopColor: isPaleMoon ? "#00b400" : "#00ff00"
     readonly property color waveformMarkerTextColor: "#ffffff"
+    readonly property color waveformNoStemLabelColor: isPaleMoon ? "#444444" : "#f0bb2b"
+    readonly property color waveformContainerColor: isPaleMoon ? "#151517" : "#1e1e1e"
+    readonly property color waveformContainerBottomBorderColor: isPaleMoon ? "#0c0c0c" : "#0a0a0a"
+    readonly property color waveformDeckBottomBorderColor: isPaleMoon ? "#2a2a2a" : "#333333"
+    readonly property color waveformOverlayColor: isPaleMoon ? "#151517" : "#171717"
     readonly property color waveformPlayPositionColor: isPaleMoon ? "#00c6ff" : "#00c8ff"
     readonly property color waveformPrimaryBackgroundColor: "#0f0f0e"
+    readonly property color waveformPrimarySignalColor: isPaleMoon ? "#d9b28c" : "#e7c413"
     readonly property color waveformSecondaryBackgroundColor: "#001b23"
+    readonly property color waveformSecondarySignalColor: isPaleMoon ? "#7bc6c3" : "#09b2ae"
     readonly property color white: "#D9D9D9"
 
     function lateNightAsset(directory, fileName) {
@@ -421,9 +440,7 @@ QtObject {
         const green = hotcueColor.g * 255;
         const blue = hotcueColor.b * 255;
         const brightness = Math.sqrt(red * red * 0.241 + green * green * 0.691 + blue * blue * 0.068);
-        return brightness <= overviewHotcueBrightnessThreshold
-                ? overviewMarkerTextColor
-                : overviewHotcueBrightTextColor;
+        return brightness <= overviewHotcueBrightnessThreshold ? overviewMarkerTextColor : overviewHotcueBrightTextColor;
     }
     function sharedImage(fileName) {
         return Qt.resolvedUrl("../../../qml/images/" + fileName);

@@ -881,7 +881,8 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
-std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+std::shared_ptr<QDialog> CoreServices::makeDlgPreferences(
+        bool includeWaveformPreferences) const {
     // Note: We return here the base class pointer to make the coreservices.h usable
     // in test classes where header included from dlgpreferences.h are not accessible.
     auto pSkinLoader = std::make_shared<mixxx::skin::SkinLoader>(getSettings());
@@ -893,7 +894,8 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary());
+            getLibrary(),
+            includeWaveformPreferences);
     return pDlgPreferences;
 }
 
