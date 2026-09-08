@@ -203,23 +203,23 @@ script.channelFromStem = function(stem) {
     return `${stem.substring(0, 9)}]`;
 };
 
-// Returns the deck number of a "ChannelN" or "SamplerN" group
+// Returns the deck number of a "[ChannelN]" group
 script.deckFromGroup = function(group) {
     let deck = 0;
     if (group === undefined) {
         return undefined;
     }
-    if (group.substring(2, 8) === "hannel") {
+    if (group.startsWith("[Channel")) {
         // Extract deck number from the group text
-        deck = group.substring(8, group.length - 1);
+        deck = group.slice(8, -1);
     }
     /*
-        else if (group.substring(2,8)=="ampler") {
+        else if (group.startsWith("[Sampler")) {
             // Extract sampler number from the group text
-            deck = group.substring(8,group.length-1);
+            deck = group.slice(8, -1);
         }
     */
-    return parseInt(deck);
+    return parseInt(deck, 10);
 };
 
 /* -------- ------------------------------------------------------
