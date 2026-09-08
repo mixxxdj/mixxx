@@ -554,12 +554,14 @@ jobs:
 
       - name: "[AppImage] Upload AppImage"
         if: matrix.cpack_generator == 'AppImage'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: Mixxx-AppImage-${{ matrix.arch }}
           path: ${{ matrix.artifacts_path }}
           if-no-files-found: error
-          # Match the other artifacts: upload the AppImage uncompressed.
+          # Match the other artifacts and upload uncompressed.  With
+          # archive=false the AppImage is uploaded as-is and the artifact
+          # name becomes the file name (the AppImage already is compressed,
+          # so re-zipping it is wasted work).
           archive: "false"
 
       - name: "[AppImage] Smoke test"
@@ -654,8 +656,9 @@ jobs:
         # Copy the desired directory structure to the deploy/ directory. This
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
+        # The AppImage publishes via appimage.yml, not via the generic path.
         id: prepare_deploy
-        if: inputs.publish && matrix.artifacts_path != null
+        if: inputs.publish && matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         shell: bash
         run: >
           if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
@@ -734,8 +737,9 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
-        # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
+        # Skip deploying Ubuntu builds to downloads.mixxx.org (these are
+        # deployed to the PPA) and the AppImage (published via appimage.yml).
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
