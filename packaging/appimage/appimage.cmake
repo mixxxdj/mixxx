@@ -27,6 +27,16 @@ install(
   RENAME "mixxx-appimage.desktop"
 )
 
+# Custom AppRun: the CPack AppImage generator uses an AppRun installed in
+# the AppDir root if present, falling back to a generated one otherwise.
+# The desktop file must use Exec=mixxx (a plain basename), so the
+# pasuspender convenience of the original Exec line is reproduced in AppRun
+# instead.
+install(
+  PROGRAMS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/AppRun"
+  DESTINATION .
+)
+
 # Install the runtime dependencies of the mixxx binary into AppDir/lib
 # (the binary's RUNPATH is $ORIGIN/../lib, set by CPack, so bundled
 # libraries must end up in the top-level lib/).

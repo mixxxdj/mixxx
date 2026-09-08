@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# The desktop file must use Exec=mixxx (CPack AppImage requires a plain
+# basename), so the pasuspender convenience is reproduced here instead.
+set -e
+
+this_dir="$(readlink -f "$(dirname "$0")")"
+
+# Suspending PulseAudio gives Mixxx direct access to the audio device
+# (lower latency); fall back to a plain launch when unavailable or when
+# pasuspender cannot suspend PulseAudio.
+if command -v pasuspender >/dev/null 2>&1; then
+  pasuspender -- "$this_dir/bin/mixxx" "$@" || exec "$this_dir/bin/mixxx" "$@"
+else
+  exec "$this_dir/bin/mixxx" "$@"
+fi
