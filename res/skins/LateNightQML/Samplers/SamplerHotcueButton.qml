@@ -39,13 +39,8 @@ DeckControls.LateNightIconButton {
             popup.open();
         }
     }
-    Shared.HotcuePopup {
+    DeckControls.LateNightHotcuePopup {
         id: popup
-
-        hotcue: hotcue
-    }
-    Shared.Hotcue {
-        id: hotcue
 
         group: root.group
         hotcueNumber: root.hotcueNumber

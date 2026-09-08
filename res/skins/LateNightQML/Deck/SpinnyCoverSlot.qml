@@ -8,8 +8,8 @@ Item {
 
     required property string group
 
-    readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
-    readonly property var currentTrack: deckPlayer?.currentTrack
+    readonly property Mixxx.Player deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property Mixxx.Track currentTrack: deckPlayer?.currentTrack
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
 
     // Maintain a 1:1 aspect ratio (square)
@@ -28,7 +28,8 @@ Item {
     }
 
     readonly property bool showSpinny: showSpinniesProxy.value > 0
-    readonly property bool showCover: !showSpinny && showCoverArtProxy.value > 0
+    readonly property bool showCoverArt: showCoverArtProxy.value > 0
+    readonly property bool showCover: !showSpinny && root.showCoverArt
 
     // Spinny Platter Mode
     Item {
@@ -42,6 +43,16 @@ Item {
             anchors.fill: parent
             source: LateNightTheme.assetDeckSpinnyBackground
             fillMode: Image.PreserveAspectFit
+        }
+
+        Image {
+            id: spinnyCoverArt
+            anchors.fill: parent
+            source: (root.isLoaded && root.currentTrack?.coverArtUrl)
+                    ? root.currentTrack.coverArtUrl
+                    : ""
+            fillMode: Image.PreserveAspectFit
+            visible: root.showCoverArt
         }
 
         // Vinyl Grooves Overlay (Mask)

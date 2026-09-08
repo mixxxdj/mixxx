@@ -50,7 +50,7 @@ LoopingControl::LoopingControl(const QString& group,
         : EngineControl(group, pConfig),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
-          m_bLoopOrRepeatWasEnabledBeforeSlipEnable(false),
+          m_bloopOrRepeatWasEnabledBeforeSlipEnable(false),
           m_bAdjustingLoopIn(false),
           m_bAdjustingLoopOut(false),
           m_bAdjustingLoopInOld(false),
@@ -1208,10 +1208,8 @@ void LoopingControl::notifySeek(mixxx::audio::FramePos newPosition) {
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
-    m_bLoopOrRepeatWasEnabledBeforeSlipEnable =
-            !m_pSlipEnabled->toBool() &&
-            !m_bLoopRollActive &&
-            (enabled || m_pRepeatButton->toBool());
+    m_bloopOrRepeatWasEnabledBeforeSlipEnable =
+            !m_pSlipEnabled->toBool() && enabled && !m_bLoopRollActive;
     if (m_bLoopingEnabled == enabled) {
         return;
     }
@@ -1230,15 +1228,15 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     emit loopEnabledChanged(enabled);
 }
 
-/// Update m_bLoopOrRepeatWasEnabledBeforeSlipEnable for use in
+/// Update m_bloopOrRepeatWasEnabledBeforeSlipEnable for use in
 /// EngineBuffer::processSlip()
 void LoopingControl::repeatToggled(double value) {
     if (m_bLoopingEnabled) {
-        // m_bLoopOrRepeatWasEnabledBeforeSlipEnable has been set in
+        // m_bloopOrRepeatWasEnabledBeforeSlipEnable has been set in
         // setLoopingEnabled(), nothing to do
         return;
     }
-    m_bLoopOrRepeatWasEnabledBeforeSlipEnable =
+    m_bloopOrRepeatWasEnabledBeforeSlipEnable =
             value > 0 && !m_pSlipEnabled->toBool() && !m_bLoopRollActive;
 }
 

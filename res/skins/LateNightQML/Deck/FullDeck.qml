@@ -11,6 +11,9 @@ Controls.Panel {
     implicitWidth: 620
 
     required property string group
+    readonly property Mixxx.Player deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property Mixxx.Track currentTrack: root.deckPlayer?.currentTrack
+    readonly property bool isLoaded: root.deckPlayer?.isLoaded ?? false
     property bool minimized: false
     property bool editMode: false
     readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0

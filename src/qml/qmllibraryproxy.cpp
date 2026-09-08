@@ -355,7 +355,7 @@ bool QmlLibraryProxy::setDeckHotcueType(
         int hotcueNumber,
         const QString& action) {
     const CuePointer pCue = findDeckHotcue(track, hotcueNumber);
-    if (!track || !track->internal() || !pCue) {
+    if (!pCue) {
         return false;
     }
 

@@ -10,6 +10,7 @@ QtObject {
     readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
     readonly property url assetDeckBeatCurposLargeButton: lateNightAsset("buttons", "btn__beat_curpos_large.svg")
     readonly property url assetDeckBeatSpinBoxBorder: isClassic ? lateNightAsset("buttons", "spinbox_elevated_border.svg") : lateNightSubRegionButton("wide")
+    readonly property url assetDeckBeatSpinBoxFocusBorder: isClassic ? lateNightAsset("buttons", "spinbox_elevated_border_focus.svg") : lateNightAsset("buttons", "btn_embedded_spinbox_focus_blue.svg")
     readonly property url assetDeckBeatSpinBoxDownButton: isClassic ? lateNightAsset("buttons", "spinbox_down.svg") : lateNightAsset("buttons", "btn__spinbox_down.svg")
     readonly property url assetDeckBeatSpinBoxUpButton: isClassic ? lateNightAsset("buttons", "spinbox_up.svg") : lateNightAsset("buttons", "btn__spinbox_up.svg")
     readonly property url assetDeckBeatjumpLeftButton: lateNightAsset("buttons", "btn__beatjump_left.svg")
@@ -143,6 +144,10 @@ QtObject {
     readonly property color buttonPressedColor: white
     readonly property color darkGray: "#0f0f0f"
     readonly property color deckActiveButtonTextColor: "#000000"
+    readonly property color deckBeatSpinBoxFocusedSelectedTextColor: "#000000"
+    readonly property color deckBeatSpinBoxFocusedSelectionColor: "#d2d2d2"
+    readonly property color deckBeatSpinBoxSelectedTextColor: isClassic ? "#000000" : "#a7998b"
+    readonly property color deckBeatSpinBoxSelectionColor: isClassic ? "#d2d2d2" : "#111111"
     readonly property color deckBeatSpinBoxTextColor: isClassic ? "#888888" : "#a7998b"
     readonly property color deckButtonInactiveColor: isClassic ? "#262626" : "#121213"
     readonly property color deckDimButtonInactiveColor: isClassic ? "#262626" : "#171719"
@@ -281,6 +286,9 @@ QtObject {
     readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
     readonly property color specialCueActiveColor: isPaleMoon ? "#385678" : "#2f4f73"
+    readonly property color cueMenuCheckedColor: isClassic ? "#db0000" : "#b24c12"
+    readonly property color cueMenuDeleteHoverColor: "#6c2e2e"
+    readonly property color cueMenuDeletePressedColor: "#dc4141"
     readonly property color textColor: white
     readonly property color textColorMuted: "#696969"
     readonly property color trackPropertyHighlightColor: "#151515"

@@ -12,6 +12,7 @@ Item {
     property string incrementKey: ""
     property int preferredWidth: 78
     property bool handlingEditResult: false
+    property bool valueInputDirty: false
     readonly property bool useStepControls: decrementKey.length > 0 && incrementKey.length > 0
     readonly property var beatSizes: [
         1 / 32,
@@ -131,18 +132,32 @@ Item {
         return nearestIndex;
     }
 
+    function focusAndSelectValue() {
+        valueInput.forceActiveFocus();
+        valueInput.selectAll();
+    }
+
     function step(delta) {
+        var nextValue;
         if (root.useStepControls) {
+            nextValue = valueProxy.value * Math.pow(2, delta);
             if (delta < 0) {
                 decrementControl.trigger();
             } else {
                 incrementControl.trigger();
             }
+            root.valueInputDirty = false;
+            valueInput.text = root.formatBeatSize(nextValue);
+            root.focusAndSelectValue();
             return;
         }
         var index = nearestBeatSizeIndex(valueProxy.value);
         index = Math.max(0, Math.min(beatSizes.length - 1, index + delta));
-        valueProxy.value = beatSizes[index];
+        nextValue = beatSizes[index];
+        valueProxy.value = nextValue;
+        root.valueInputDirty = false;
+        valueInput.text = root.formatBeatSize(nextValue);
+        root.focusAndSelectValue();
     }
 
     function commitText() {
@@ -155,6 +170,7 @@ Item {
         if (isFinite(parsedValue) && parsedValue > 0) {
             valueProxy.value = parsedValue;
         }
+        root.valueInputDirty = false;
         valueInput.text = root.valueText;
         valueInput.focus = false;
         root.handlingEditResult = false;
@@ -166,6 +182,7 @@ Item {
         }
 
         root.handlingEditResult = true;
+        root.valueInputDirty = false;
         valueInput.text = root.valueText;
         valueInput.focus = false;
         root.handlingEditResult = false;
@@ -200,7 +217,9 @@ Item {
 
     BorderImage {
         anchors.fill: parent
-        source: LateNightTheme.assetDeckBeatSpinBoxBorder
+        source: valueInput.activeFocus
+                ? LateNightTheme.assetDeckBeatSpinBoxFocusBorder
+                : LateNightTheme.assetDeckBeatSpinBoxBorder
         border {
             top: 2
             left: 2
@@ -226,12 +245,19 @@ Item {
             font.pixelSize: 13
             font.bold: true
             color: LateNightTheme.deckBeatSpinBoxTextColor
+            selectedTextColor: valueInput.activeFocus
+                                ? LateNightTheme.deckBeatSpinBoxFocusedSelectedTextColor
+                                : LateNightTheme.deckBeatSpinBoxSelectedTextColor
+            selectionColor: valueInput.activeFocus
+                            ? LateNightTheme.deckBeatSpinBoxFocusedSelectionColor
+                            : LateNightTheme.deckBeatSpinBoxSelectionColor
             horizontalAlignment: TextInput.AlignHCenter
             verticalAlignment: TextInput.AlignVCenter
             selectByMouse: true
             clip: true
 
             onAccepted: root.commitText()
+            onTextEdited: root.valueInputDirty = true
             Keys.onEscapePressed: event => {
                 root.cancelText();
                 event.accepted = true;
@@ -244,8 +270,9 @@ Item {
 
             Connections {
                 function onValueChanged() {
-                    if (!valueInput.activeFocus) {
+                    if (!valueInput.activeFocus || !root.valueInputDirty) {
                         valueInput.text = root.valueText;
+                        root.valueInputDirty = false;
                     }
                 }
 

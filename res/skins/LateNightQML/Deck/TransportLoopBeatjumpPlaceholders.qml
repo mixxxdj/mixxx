@@ -115,9 +115,9 @@ Item {
                 activeColor: LateNightTheme.activePlayCueColor
             }
 
-            // Play button: left-click = play (toggle via play_latched),
+            // Play button: left-click = play,
             //              right-click = cue_set
-            //              Display from play_latched
+            //              Display from play_indicator
             LateNightControlButton {
                 Layout.columnSpan: 2
                 Layout.preferredWidth: 68
@@ -127,7 +127,7 @@ Item {
                 group: root.group
                 key: "play"
                 rightClickKey: "cue_set"
-                displayKey: "play_latched"
+                displayKey: "play_indicator"
                 toggleable: true
                 activeOpacity: 1.0
                 inactiveOpacity: 0.82

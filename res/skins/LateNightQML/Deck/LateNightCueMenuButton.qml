@@ -8,9 +8,9 @@ LateNightIconButton {
     property bool impossible: false
     property bool deleteButton: false
     property int iconSize: LateNightTheme.isClassic ? 20 : 24
-    property color checkedColor: LateNightTheme.isClassic ? "#db0000" : "#b24c12"
-    property color deleteHoverColor: "#6c2e2e"
-    property color deletePressedColor: "#dc4141"
+    property color checkedColor: LateNightTheme.cueMenuCheckedColor
+    property color deleteHoverColor: LateNightTheme.cueMenuDeleteHoverColor
+    property color deletePressedColor: LateNightTheme.cueMenuDeletePressedColor
 
     signal clicked
     signal rightClicked

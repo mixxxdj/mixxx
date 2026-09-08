@@ -101,6 +101,7 @@ Item {
                 track: root.currentTrack
                 text: root.isLoaded ? (root.currentTrack?.title || "Unknown Title") : ""
                 displayProperty: "titleInfo"
+                dragEnabled: true
                 editProperty: "title"
                 editable: true
                 pixelSize: 18
@@ -158,6 +159,7 @@ Item {
                 track: root.currentTrack
                 text: root.isLoaded ? (root.currentTrack?.artist || "Unknown Artist") : ""
                 displayProperty: "artist"
+                dragEnabled: true
                 editProperty: "artist"
                 editable: true
                 pixelSize: 18
@@ -171,6 +173,7 @@ Item {
                 track: root.currentTrack
                 text: root.isLoaded ? root.formatDuration(durationProxy.value) : ""
                 displayProperty: "durationTextSeconds"
+                dragEnabled: true
                 editable: false
                 pixelSize: 14
                 textColor: root.isLoaded ? LateNightTheme.deckTimeTextColor : LateNightTheme.textColorMuted

@@ -27,6 +27,7 @@ class QmlLibrarySource : public QObject {
     Q_PROPERTY(uint totalSecond MEMBER m_totalSecond CONSTANT)
     Q_PROPERTY(uint trackCount MEMBER m_trackCount CONSTANT)
     QML_NAMED_ELEMENT(LibrarySource)
+    QML_UNCREATABLE("Only accessible via Mixxx.Library.sources")
   public:
     QmlLibrarySource(const DirectoryDAO::RootDirectoryInfo& record)
             : m_path(record.path),

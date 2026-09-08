@@ -12,16 +12,16 @@ Popup {
     required property string group
     required property int hotcueNumber
 
-    readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
-    readonly property var currentTrack: deckPlayer?.currentTrack
-    property var popupTrack: null
+    readonly property Mixxx.Player deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property Mixxx.Track currentTrack: deckPlayer?.currentTrack
+    property Mixxx.Track popupTrack: null
     property int cueRevision: 0
     property int jumpDirectionRevision: 0
     readonly property string hotcueLabel: root.getHotcueLabel(root.cueRevision)
     readonly property color selectedColor: colorProxy.value >= 0
             ? "#" + colorProxy.value.toString(16).padStart(6, "0")
             : LateNightTheme.accentColor
-    readonly property var savedJumpDirection:
+    readonly property int savedJumpDirection:
         root.getSavedJumpDirection(root.jumpDirectionRevision)
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside

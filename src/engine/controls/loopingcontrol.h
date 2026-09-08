@@ -97,7 +97,7 @@ class LoopingControl : public EngineControl {
         return m_bLoopRollActive;
     }
     bool loopOrRepeatWasEnabledBeforeSlipEnable() {
-        return m_bLoopOrRepeatWasEnabledBeforeSlipEnable;
+        return m_bloopOrRepeatWasEnabledBeforeSlipEnable;
     }
 
     void trackLoaded(TrackPointer pNewTrack) override;
@@ -227,7 +227,7 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
-    bool m_bLoopOrRepeatWasEnabledBeforeSlipEnable;
+    bool m_bloopOrRepeatWasEnabledBeforeSlipEnable;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
     bool m_bAdjustingLoopInOld;
