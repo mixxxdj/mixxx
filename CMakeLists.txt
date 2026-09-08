@@ -1959,26 +1959,6 @@ set(
   src/util/workerthreadscheduler.h
   src/util/xml.h
 )
-if(NOT QML)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
-      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
-      # main target
-      src/control/controlmodel.cpp
-      src/control/controlsortfiltermodel.cpp
-  )
-else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following source depends of QML being available but aren't part of the new QML UI
-      src/controllers/rendering/controllerrenderingengine.cpp
-      src/controllers/controllerenginethreadcontrol.cpp
-      src/controllers/controllerscreenpreview.cpp
-  )
-endif()
 if(QOPENGL)
   target_sources(
     mixxx-lib
@@ -2990,7 +2970,7 @@ if(BUILD_TESTING)
     )
   endif()
 
-  if(QT6 AND QML)
+  if(QML)
     qt_add_executable(mixxx-test ${src-mixxx-test} MANUAL_FINALIZATION)
   else()
     add_executable(mixxx-test ${src-mixxx-test})
@@ -4555,7 +4535,7 @@ if(APPLE)
     target_link_libraries(mixxx-lib PRIVATE "-weak_framework IOKit")
   endif()
 elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
-  find_package(X11 REQUIRED)
+  find_package(X11)
   if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
     target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
@@ -5419,7 +5399,7 @@ if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 endif()
 
-if(BUILD_TESTING AND QT6 AND QML)
+if(BUILD_TESTING AND QML)
   qt_finalize_target(mixxx-test)
 endif()
 
