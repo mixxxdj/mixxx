@@ -48,6 +48,7 @@ case "$HOST_ARCH" in
             : "${VCPKG_TARGET_TRIPLET:=x64-linux}"
             : "${BUILDENV_BRANCH:=2.7}"
             : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-969b62ea}"
+            : "${BUILDENV_SHA256:=ca7144f2bd3c3154e64c55b066acd1027f8cd9f150dc6b4df266beca3b50cf23}"
         fi
         ;;
     aarch64)
@@ -99,6 +100,7 @@ case "$1" in
         export BUILDENV_NAME="${BUILDENV_NAME}"
         export BUILDENV_BASEPATH="${BUILDENV_BASEPATH}"
         export BUILDENV_URL="${BUILDENV_URL}"
+        export BUILDENV_SHA256="${BUILDENV_SHA256}"
         export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
         export CMAKE_PREFIX_PATH="${BUILDENV_PATH}/installed/${VCPKG_TARGET_TRIPLET}"
 
@@ -217,6 +219,7 @@ case "$1" in
             echo "BUILDENV_NAME=${BUILDENV_NAME}"
             echo "BUILDENV_BASEPATH=${BUILDENV_BASEPATH}"
             echo "BUILDENV_URL=${BUILDENV_URL}"
+            echo "BUILDENV_SHA256=${BUILDENV_SHA256}"
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
