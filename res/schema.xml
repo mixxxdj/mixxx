@@ -584,4 +584,64 @@ reapplying those migrations.
       UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
+  <revision version="40" min_compatible="3">
+    <description>
+      Replace incorrectly named foreign keys.
+    </description>
+    <sql>
+      <!--
+        Cleanup broken entries that can never work or be restored that would
+        cause the foreign key constraint to fail.
+        TODO: should we back these up to new tables to make it possible to roll
+        back, even though they're already broken?
+      -->
+      DELETE FROM PlaylistTracks WHERE track_id NOT IN (SELECT id FROM library);
+      DELETE FROM cues WHERE track_id NOT IN (SELECT id FROM library);
+      DELETE FROM crate_tracks WHERE track_id NOT IN (SELECT id FROM library);
+      DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations);
+
+      ALTER TABLE library RENAME TO library_old;
+
+      <!--
+        Create an identical library table but fix the foreign key to point to
+        the 'id' column.
+      -->
+      CREATE TABLE IF NOT EXISTS library (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        artist varchar(64),
+        title varchar(64),
+        album varchar(64),
+        year varchar(16),
+        genre varchar(64),
+        tracknumber varchar(3),
+        location INTEGER REFERENCES track_locations(id),
+        comment varchar(256),
+        url varchar(256),
+        duration FLOAT,
+        bitrate INTEGER,
+        samplerate INTEGER,
+        cuepoint INTEGER,
+        bpm FLOAT,
+        wavesummaryhex BLOB,
+        channels INTEGER,
+        datetime_added DEFAULT CURRENT_TIMESTAMP,
+        mixxx_deleted INTEGER,
+        played INTEGER,
+        header_parsed INTEGER DEFAULT 0);
+
+      INSERT INTO library (id, artist, title, album, year, genre, tracknumber, location, comment, url, duration, bitrate, samplerate, bpm, cuepoint, bpm, wavesummaryhex, channels, datetime_added, mixxx_deleted, played, header_parsed) SELECT id, artist, title, album, year, genre, tracknumber, location, comment, url, duration, bitrate, samplerate, bpm, cuepoint, bpm, wavesummaryhex, channels, datetime_added, mixxx_deleted, played, header_parsed from library_old;
+
+      DROP TABLE library_old;
+
+      <!--
+        This may look like a noop, but on versions of sqlite >= 3.25.0 this will
+        rename existing foreign keys to point to the new table name (even if
+        foreign keys are off as of 3.26.0).
+      -->
+      ALTER TABLE rhythmbox_playlists RENAME TO rhythmbox_playlist;
+      ALTER TABLE rhythmbox_playlist RENAME TO rhythmbox_playlists;
+      ALTER TABLE library RENAME TO library_old;
+      ALTER TABLE library_old RENAME TO library;
+    </sql>
+  </revision>
 </schema>
