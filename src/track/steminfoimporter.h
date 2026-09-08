@@ -12,11 +12,10 @@ class StemInfoImporter {
     static QList<StemInfo> importStemInfos(
             const QString& filePath);
 
-    static bool maybeStemFile(
-            const QString& aFileName, QMimeType mimeType = QMimeType());
-
-    static bool hasStemAtom(
-            const QString& aFileName);
+    static bool maybeStemFile(const QString& filePath);
+    static bool hasStemAtom(const QString& filePath);
+    static bool hasStemFileExtension(const QString& filePath);
+    static bool isStemMimeType(const QMimeType& mimeType);
 };
 
 } // namespace mixxx
