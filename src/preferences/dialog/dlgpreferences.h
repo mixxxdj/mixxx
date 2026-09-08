@@ -68,6 +68,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void showSoundHardwarePage(
             std::optional<mixxx::preferences::SoundHardwareTab> tab =
                     std::nullopt);
+    void showSoundHardwareInputPage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();

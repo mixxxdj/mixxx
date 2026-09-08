@@ -9,6 +9,7 @@
 #include <QQuickStyle>
 #include <QQuickWindow>
 #include <QTextDocument>
+#include <memory>
 #include <utility>
 
 #include "control/controlproxy.h"
@@ -226,24 +227,38 @@ QmlApplication::QmlApplication(
     // the QQmlApplicationEngine.
     pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
 
-    auto showNoInputConfiguredWarning = [pDlgPreferences](
-                                                const QString& message) {
-        QMessageBox msgBox(QMessageBox::Warning,
-                VersionStore::applicationName(),
-                message,
-                QMessageBox::Ok | QMessageBox::Cancel);
+    auto inputWarningVisible = std::make_shared<bool>(false);
+    auto showNoInputConfiguredWarning =
+            [pDlgPreferences, inputWarningVisible](const QString& message) {
+                if (*inputWarningVisible) {
+                    return;
+                }
+                *inputWarningVisible = true;
+
+                QMessageBox msgBox(QMessageBox::Warning,
+                        VersionStore::applicationName(),
+                        message,
+                        QMessageBox::Ok | QMessageBox::Cancel);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-        msgBox.setOption(QMessageBox::Option::DontUseNativeDialog);
+                msgBox.setOption(QMessageBox::Option::DontUseNativeDialog);
 #endif
-        msgBox.setWindowModality(Qt::ApplicationModal);
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-        msgBox.exec();
-        if (msgBox.clickedButton() == msgBox.button(QMessageBox::Ok)) {
-            pDlgPreferences->show();
-            pDlgPreferences->raise();
-            pDlgPreferences->activateWindow();
-        }
-    };
+                msgBox.setWindowModality(Qt::ApplicationModal);
+                msgBox.setDefaultButton(QMessageBox::Cancel);
+                msgBox.exec();
+
+                const bool accepted = msgBox.clickedButton() == msgBox.button(QMessageBox::Ok);
+                *inputWarningVisible = false;
+                if (accepted) {
+                    pDlgPreferences->show();
+                    if (!QMetaObject::invokeMethod(pDlgPreferences.get(),
+                                "showSoundHardwareInputPage",
+                                Qt::DirectConnection)) {
+                        qWarning() << "QML input warning could not open Sound Hardware preferences";
+                    }
+                    pDlgPreferences->raise();
+                    pDlgPreferences->activateWindow();
+                }
+            };
 
     connect(m_pCoreServices->getPlayerManager().get(),
             &PlayerManager::noDeckPassthroughInputConfigured,
@@ -264,6 +279,22 @@ QmlApplication::QmlApplication(
                            "control.\n"
                            "Please select an input device in the sound "
                            "hardware preferences first."));
+            });
+    connect(m_pCoreServices->getPlayerManager().get(),
+            &PlayerManager::noMicrophoneInputConfigured,
+            this,
+            [showNoInputConfiguredWarning]() {
+                showNoInputConfiguredWarning(
+                        tr("There is no input device selected for this microphone.\n"
+                           "Do you want to select an input device?"));
+            });
+    connect(m_pCoreServices->getPlayerManager().get(),
+            &PlayerManager::noAuxiliaryInputConfigured,
+            this,
+            [showNoInputConfiguredWarning]() {
+                showNoInputConfiguredWarning(
+                        tr("There is no input device selected for this auxiliary.\n"
+                           "Do you want to select an input device?"));
             });
 
     // Since DlgPreferences is only meant to be used in the main QML engine, it
