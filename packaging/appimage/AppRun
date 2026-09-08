@@ -5,13 +5,12 @@ set -e
 
 this_dir="$(readlink -f "$(dirname "$0")")"
 
-# pasuspender propagates the launched command's exit status, so we cannot
-# use its result as a retry signal (a Mixxx crash would relaunch it).  Only
-# use pasuspender when a PulseAudio server is actually reachable; otherwise
-# launch Mixxx plainly.
-if command -v pasuspender >/dev/null 2>&1 \
-   && command -v pactl >/dev/null 2>&1 \
-   && pactl info >/dev/null 2>&1; then
+# Probe pasuspender's suspend ability directly: "pasuspender -- true" only
+# exits 0 when it can actually suspend PulseAudio.  Do not use the exit
+# status of the launched command as a retry signal — pasuspender propagates
+# it, so a Mixxx crash would relaunch Mixxx.  Falling back to a plain launch
+# covers hosts where PulseAudio cannot be suspended (e.g. PipeWire-pulse).
+if command -v pasuspender >/dev/null 2>&1 && pasuspender -- true >/dev/null 2>&1; then
   exec pasuspender -- "$this_dir/bin/mixxx" "$@"
 fi
 
