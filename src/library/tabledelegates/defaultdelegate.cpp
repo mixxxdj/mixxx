@@ -4,6 +4,7 @@
 
 #include "moc_defaultdelegate.cpp"
 #include "util/assert.h"
+#include "util/timer.h"
 
 DefaultDelegate::DefaultDelegate(QTableView* pTableView)
         : QStyledItemDelegate(pTableView) {
@@ -13,6 +14,8 @@ void DefaultDelegate::paint(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
+    ScopedTimer t(QStringLiteral("DefaultDelegate::paint"));
+
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
