@@ -33,7 +33,7 @@ class WaveformWidgetType {
 
 enum class WaveformWidgetBackend {
     None = 0,
-    GL,
+    GL, // can remove ??
     GLSL,
     AllShader,
 };
