@@ -8,11 +8,14 @@ if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
   exit 1
 fi
 
-realpath() {
+mixxx_realpath() {
+    # Local helper; a plain "realpath" would shadow the system command for
+    # the sourced shell session.  return instead of exit so a failure does
+    # not terminate the caller's shell.
     OLDPWD="${PWD}"
-    cd "$1" || exit 1
+    cd "$1" || return 1
     pwd
-    cd "${OLDPWD}" || exit 1
+    cd "${OLDPWD}" || return 1
 }
 
 # Get script file location, compatible with bash and zsh
@@ -50,12 +53,16 @@ case "$HOST_ARCH" in
     aarch64)
         VCPKG_TARGET_TRIPLET="arm64-linux"
         : "${BUILDENV_BRANCH:=2.7}"
-        : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux}"
-        echo "ERROR: arm64-linux buildenv is not yet published by Mixxx."
-        echo "Once a mixxx-deps-<version>-arm64-linux-XXXXXXXX.zip appears on"
-        echo "https://downloads.mixxx.org/dependencies/<version>/Linux/,"
-        echo "set BUILDENV_NAME via the environment or in this script and re-run."
-        exit 1
+        # The arm64-linux buildenv is not yet published by Mixxx, but an
+        # explicit BUILDENV_NAME / BUILDENV_URL override (e.g. a CI artifact)
+        # is still honoured.
+        if [ -z "${BUILDENV_NAME+x}" ] && [ -z "${BUILDENV_URL+x}" ]; then
+            echo "ERROR: arm64-linux buildenv is not yet published by Mixxx."
+            echo "Once a mixxx-deps-<version>-arm64-linux-XXXXXXXX.zip appears on"
+            echo "https://downloads.mixxx.org/dependencies/<version>/Linux/,"
+            echo "set BUILDENV_NAME via the environment or in this script and re-run."
+            exit 1
+        fi
         ;;
     *)
         echo "ERROR: Unsupported architecture detected: $HOST_ARCH"
@@ -69,7 +76,7 @@ esac
 # Allow overriding the buildenv download URL (e.g. to point at a CI artifact
 # while testing a not-yet-published buildenv).
 : "${BUILDENV_URL:=https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/Linux/${BUILDENV_NAME}.zip}"
-MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
+MIXXX_ROOT="$(mixxx_realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -182,7 +189,8 @@ case "$1" in
                 libxcb-util-dev \
                 libxcb-xfixes0-dev \
                 libxcb-xkb-dev \
-                libxcb-xinput-dev
+                libxcb-xinput-dev \
+                || { echo "ERROR: Failed to install AppImage system packages"; return 1; }
         else
             echo "WARNING: The AppImage buildenv system-dependency step currently only"
             echo "automates Debian-based systems. Please install the equivalent"
@@ -200,8 +208,10 @@ case "$1" in
         APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-${HOST_ARCH}.AppImage"
         sudo curl -fsSL --connect-timeout 15 --max-time 120 \
             -o /usr/local/bin/appimagetool \
-            "${APPIMAGETOOL_URL}"
-        sudo chmod +x /usr/local/bin/appimagetool
+            "${APPIMAGETOOL_URL}" \
+            || { echo "ERROR: Failed to download appimagetool"; return 1; }
+        sudo chmod +x /usr/local/bin/appimagetool \
+            || { echo "ERROR: Failed to make appimagetool executable"; return 1; }
 
         echo_exported_variables() {
             echo "BUILDENV_NAME=${BUILDENV_NAME}"
