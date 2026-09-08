@@ -76,6 +76,10 @@ QtObject {
     readonly property url assetDeckVinylControl3: lateNightAsset("style", "vinyl_control_3.svg")
     readonly property url assetDeckVolumeSliderBackground: lateNightAsset("sliders", "slider_volume_deck.svg")
     readonly property url assetDeckVolumeSliderHandle: lateNightAsset("sliders", "knob_volume_deck.svg")
+    readonly property url assetAuxMainMixButton: lateNightAsset("buttons", "btn__aux_play.svg")
+    readonly property url assetAuxXfaderLeft: lateNightAsset("buttons", "btn__xfader_deck_left_default.svg")
+    readonly property url assetAuxXfaderMain: lateNightAsset("buttons", "btn__xfader_deck_mid_default.svg")
+    readonly property url assetAuxXfaderRight: lateNightAsset("buttons", "btn__xfader_deck_right_default.svg")
     readonly property url assetFxCollapseButton: lateNightAsset("buttons", isClassic ? "btn__collapse.svg" : "btn__collapse_dim.svg")
     readonly property url assetFxExpandButton: lateNightAsset("buttons", isClassic ? "btn__expand.svg" : "btn__expand_dim.svg")
     readonly property url assetFxFlowHorizontal: lateNightAsset("style", isClassic ? "fx_separator.svg" : "fx_flow_horizontal.svg")
@@ -97,6 +101,17 @@ QtObject {
     readonly property url assetFxToggleActiveButton: lateNightAsset("buttons", "btn__fx_toggle_active.svg")
     readonly property url assetFxToggleButton: lateNightAsset("buttons", "btn__fx_toggle.svg")
     readonly property url assetMainKnobBackground: lateNightAsset("knobs", "knob_bg_main.svg")
+    readonly property url assetMicAuxAddButton: lateNightAsset("buttons", "btn__plus_flat.svg")
+    readonly property url assetMicAuxGainKnobBackground: lateNightAsset("knobs", "knob_bg_small.svg")
+    readonly property url assetMicAuxUnconfiguredBackground: lateNightAsset("buttons", "btn_flat_square.svg")
+    readonly property url assetMicAuxVuClippingActive: lateNightAsset("style", "vu_micaux_clipping_active.png")
+    readonly property url assetMicAuxVuClippingBackground: lateNightAsset("style", "vu_micaux_clipping_bg_.png")
+    readonly property url assetMicAuxVuLevelActive: lateNightAsset("style", "vu_micaux_level_active.png")
+    readonly property url assetMicAuxVuLevelBackground: lateNightAsset("style", "vu_micaux_level_bg_.png")
+    readonly property url assetMicDuckAutoButton: lateNightAsset("buttons", "btn__mic_duck_auto.svg")
+    readonly property url assetMicDuckManualButton: lateNightAsset("buttons", "btn__mic_duck_manual.svg")
+    readonly property url assetMicDuckOffButton: lateNightAsset("buttons", "btn__mic_duck_off.svg")
+    readonly property url assetMicTalkButton: lateNightAsset("buttons", "btn__mic_talk.svg")
     readonly property url assetMixerCrossfaderBackground: lateNightAsset("sliders", "slider_crossfader.svg")
     readonly property url assetMixerCrossfaderHandle: lateNightAsset("sliders", "knob_crossfader.svg")
     readonly property url assetMixerCrossfaderSmallBackground: lateNightAsset("sliders", "slider_crossfader_small.svg")
@@ -202,8 +217,8 @@ QtObject {
     readonly property color mixerControlTextColor: isClassic ? "#d2d2d1" : "#a7998b"
     readonly property color mixerDimTextColor: "#696969"
     readonly property color mixerEqKillActiveColor: isClassic ? "#db0000" : "#a80000"
-    readonly property color mixerFxAssignInactiveColor: isClassic ? deckEmbeddedButtonInactiveColor : "#151517"
-    readonly property color mixerFxAssignInactiveTextColor: isClassic ? mixerDimTextColor : "#555555"
+    readonly property color mixerFxAssignInactiveColor: deckEmbeddedButtonInactiveColor
+    readonly property color mixerFxAssignInactiveTextColor: isClassic ? effectsAssignmentInactiveTextColor : "#666666"
     readonly property color mixerMainSeparatorDarkColor: isPaleMoon ? "#0c0c0c" : mixerPanelBorderDark
     readonly property color mixerMainSeparatorLightColor: isPaleMoon ? "#222222" : mixerPanelBorderLight
     readonly property color mixerSplitActiveColor: isClassic ? "#888888" : "#555555"
@@ -221,6 +236,13 @@ QtObject {
     readonly property color mixerSliderBarColor: "#257b82"
     readonly property color mixerVuClipColor: mixerAccentRed
     readonly property color mixerVuLevelColor: mixerAccentRed
+    readonly property color micAuxDuckingArcColor: "#a00000"
+    readonly property color micAuxGainColor: isClassic ? "#db7700" : "#b24c12"
+    readonly property color micAuxLabelTextColor: primaryDeckTextColor
+    readonly property color micAuxPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
+    readonly property color micAuxRackGutterColor: isClassic ? "#0f0f0f" : "#080808"
+    readonly property color micAuxUnconfiguredTextColor: isClassic ? "#666666" : "#686666"
+    readonly property string micTalkActiveIconSuffix: isPaleMoon ? "active" : ""
     readonly property url optionalDeckControlsBackgroundTile: isClassic ? lateNightAsset("style", "background_tile.png") : ""
     readonly property url optionalDeckRateCenterActive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_cyan.svg") : ""
     readonly property url optionalDeckRateCenterInactive: isPaleMoon ? lateNightAsset("buttons", "btn__rate_center_off.svg") : ""
@@ -243,6 +265,10 @@ QtObject {
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
     readonly property color primaryWaveformSignalColor: isClassic ? "#e7c413" : "#d9b28c"
+    readonly property color rackFillerBorderColor: "#111111"
+    readonly property color rackFillerBottomBorderColor: isClassic ? "#111111" : "#020202"
+    readonly property color rackFillerLeftBorderColor: isClassic ? "#222222" : "#191919"
+    readonly property color rackFillerTopBorderColor: isClassic ? "#222222" : "#1c1c1c"
     readonly property color samplerBpmColor: isClassic ? "#f0bb2b" : "#766b65"
     readonly property color samplerBpmSeparatorLightColor: "#292929"
     readonly property color samplerColor: accentColor

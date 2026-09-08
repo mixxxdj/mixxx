@@ -47,6 +47,7 @@ class QmlApplication : public QObject {
 #endif
 
   private:
+    void registerImageProvider();
     void setupSpinnyCoverControls();
     void setupOverviewTypeControl();
     void updateSpinnyCoverControls();
@@ -65,6 +66,7 @@ class QmlApplication : public QObject {
     std::unique_ptr<ControlPushButton> m_pSelectBigSpinnyCover;
     std::unique_ptr<ControlPushButton> m_pShowSmallSpinnyCover;
     std::unique_ptr<ControlPushButton> m_pShowBigSpinnyCover;
+    std::unique_ptr<ControlPushButton> m_pWaveformOverviewType;
 
     QString m_mainFilePath;
     std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;

@@ -32,6 +32,7 @@
 #include <cmath>
 #include <utility>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
