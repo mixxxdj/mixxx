@@ -127,7 +127,8 @@ class QmlSoundManagerProxy : public QObject {
             QObject* parent = nullptr);
 
     Q_INVOKABLE QList<QString> getHostAPIList() const;
-    Q_INVOKABLE mixxx::qml::QmlSoundDeviceProxyList availableInputDevices(const QString& filterAPI);
+    Q_INVOKABLE mixxx::qml::QmlSoundDeviceProxyList availableInputDevices(
+            const QString& filterAPI);
     Q_INVOKABLE mixxx::qml::QmlSoundDeviceProxyList availableOutputDevices(
             const QString& filterAPI);
 
