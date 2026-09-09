@@ -79,6 +79,9 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     parented_ptr<ControlProxy> m_pPassthroughEnabled;
     bool m_bScratching;
     bool m_bBending;
+    bool m_hotcueDragging;
+    int m_draggedHotcue;
+    double m_hotcueDragMouseOffset;
     QPoint m_mouseAnchor;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     WaveformMarkPointer m_pHoveredMark;
@@ -92,5 +95,6 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
     void highlightMark(WaveformMarkPointer pMark);
     void unhighlightMark(WaveformMarkPointer pMark);
+    void stopHotcueDragging();
     bool isPlaying() const;
 };

@@ -33,8 +33,19 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
-            const double currentMarkPoint =
-                    m_waveformRenderer->transformSamplePositionInRendererWorld(samplePosition);
+            // If this is the hotcue we are currently dragging (starts on left click)
+            // we adopt the position registered by WWaveformViewer
+            double currentMarkPoint = 0.0;
+            if (m_waveformRenderer->hotcueDragInProgress() &&
+                    pMark->getHotCue() != Cue::kNoHotCue &&
+                    pMark->getHotCue() == m_waveformRenderer->getHotcueDragIndex()) {
+                currentMarkPoint = m_waveformRenderer->getHotcueDragPos();
+            } else {
+                currentMarkPoint =
+                        m_waveformRenderer
+                                ->transformSamplePositionInRendererWorld(
+                                        samplePosition);
+            }
             const double sampleEndPosition = pMark->getSampleEndPosition();
             if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
                 const int markWidth = std::lround(image.width() /

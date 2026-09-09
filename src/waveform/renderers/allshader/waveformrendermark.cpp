@@ -354,9 +354,19 @@ void allshader::WaveformRenderMark::update() {
             continue;
         }
 
-        const float currentMarkPos = static_cast<float>(
-                m_waveformRenderer->transformSamplePositionInRendererWorld(
-                        samplePosition, positionType));
+        // If this is the hotcue we are currently dragging (starts on left click)
+        // we adopt the position registered by WWaveformViewer
+        float currentMarkPos = 0.f;
+        if (pMark->getHotCue() != Cue::kNoHotCue &&
+                m_waveformRenderer->hotcueDragInProgress() &&
+                pMark->getHotCue() == m_waveformRenderer->getHotcueDragIndex()) {
+            currentMarkPos = static_cast<float>(m_waveformRenderer->getHotcueDragPos());
+        } else {
+            currentMarkPos = static_cast<float>(
+                    m_waveformRenderer->transformSamplePositionInRendererWorld(
+                            samplePosition, positionType));
+        }
+
         auto* pMarkEndGraphics = pMark->m_pEndGraphics.get();
         auto* pMarkEndNodeGraphics = static_cast<WaveformMarkNodeGraphics*>(pMarkEndGraphics);
         VERIFY_OR_DEBUG_ASSERT(pMarkEndNodeGraphics) {
