@@ -16,7 +16,33 @@ Item {
     required property string group
     property bool splitStemTracks: false
     readonly property int activeWaveformType: Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Simple || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Filtered || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.HSV || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.RGB || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Stacked ? Mixxx.Config.waveformType : Mixxx.WaveformDisplay.Type.RGB
+    // Renderer factories are created once by QmlWaveformDisplay. Keep track
+    // of the type that was used for the scene-graph stack so a change from
+    // the legacy preferences dialog can recreate that stack explicitly.
+    property int renderedWaveformType: -1
     readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
+
+    Connections {
+        target: Mixxx.Config
+
+        function onWaveformTypeChanged() {
+            // Defer until activeWaveformType has been reevaluated, then
+            // rebuild the renderer list on the scene-graph thread.
+            Qt.callLater(function() {
+                if (root.activeWaveformType === root.renderedWaveformType) {
+                    return;
+                }
+                root.renderedWaveformType = root.activeWaveformType;
+                waveformDisplay.refreshRenderers();
+            });
+        }
+
+        function onWaveformDefaultZoomChanged() {
+            if (zoomControl.group === root.group) {
+                zoomControl.value = Mixxx.Config.waveformDefaultZoom;
+            }
+        }
+    }
 
     MixxxControls.WaveformDisplay {
         id: waveformDisplay

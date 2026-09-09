@@ -169,6 +169,15 @@ void QmlWaveformDisplay::setOptions(mixxx::qml::WaveformRendererSignalBaseOption
     m_rendererStack.clear();
 
     m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    update();
+}
+
+void QmlWaveformDisplay::refreshRenderers() {
+    // Renderer objects and their render-graph nodes live on the scene-graph
+    // thread. Only mark the item dirty here; updatePaintNode() clears and
+    // rebuilds the stack on that thread.
+    m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    update();
 }
 
 std::chrono::microseconds QmlWaveformDisplay::fromTimerToNextSync(const PerformanceTimer& timer) {

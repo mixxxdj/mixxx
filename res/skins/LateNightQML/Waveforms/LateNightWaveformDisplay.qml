@@ -16,6 +16,10 @@ Item {
 
     required property string group
     readonly property int activeWaveformType: Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Simple || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Filtered || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.HSV || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.RGB || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Stacked ? Mixxx.Config.waveformType : Mixxx.WaveformDisplay.Type.RGB
+    // Renderer factories are created once by QmlWaveformDisplay. Keep track
+    // of the type that was used for the scene-graph stack so a change from
+    // the legacy preferences dialog can recreate that stack explicitly.
+    property int renderedWaveformType: -1
     property bool splitStemTracks: false
     readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
 
@@ -29,6 +33,34 @@ Item {
     readonly property color introOutroColor: LateNightTheme.waveformIntroOutroColor
     readonly property color playPosColor: LateNightTheme.waveformPlayPositionColor
     readonly property color beatAxesColor: LateNightTheme.waveformBeatAxesColor
+
+    Connections {
+        target: Mixxx.Config
+
+        function onWaveformTypeChanged() {
+            // The legacy QWidget preferences page writes UserSettings
+            // directly and then emits the proxy notification. Defer until
+            // the binding for activeWaveformType has settled, then rebuild
+            // the renderer list on the scene-graph thread.
+            Qt.callLater(function() {
+                if (root.activeWaveformType === root.renderedWaveformType) {
+                    return;
+                }
+                root.renderedWaveformType = root.activeWaveformType;
+                waveformDisplay.refreshRenderers();
+            });
+        }
+
+        function onWaveformDefaultZoomChanged() {
+            // Component.onCompleted initializes this value only once. Make
+            // changing the default zoom in the legacy page affect existing
+            // decks as well, while leaving a shared [Channel1] zoom alone on
+            // secondary decks.
+            if (zoomControl.group === root.group) {
+                zoomControl.value = Mixxx.Config.waveformDefaultZoom;
+            }
+        }
+    }
 
     MixxxControls.WaveformDisplay {
         id: waveformDisplay

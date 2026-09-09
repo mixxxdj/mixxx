@@ -133,6 +133,11 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     }
     void setOptions(WaveformRendererSignalBaseOptions options);
 
+    // Recreate the scene-graph renderer stack after a setting changes which
+    // renderer is enabled. The renderer factories are declared in QML, while
+    // their scene-graph nodes are created lazily by updatePaintNode().
+    Q_INVOKABLE void refreshRenderers();
+
   protected:
     QSGNode* updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNodeData*) override;
     void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
