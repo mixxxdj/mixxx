@@ -248,9 +248,11 @@ void DlgAutoDJ::onShow() {
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
-    // Do not allow filtering the Auto DJ playlist, because
-    // Auto DJ will work from the filtered table
-    Q_UNUSED(text);
+    m_pTrackTableView->onSearch(text);
+}
+
+QString DlgAutoDJ::currentSearch() {
+    return m_pAutoDJTableModel->currentSearch();
 }
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {
