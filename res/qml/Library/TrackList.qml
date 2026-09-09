@@ -14,6 +14,10 @@ Rectangle {
 
     required property var model
 
+    function focusView() {
+        view.forceActiveFocus();
+    }
+
     color: Theme.darkGray
 
     LibraryComponent.Control {
