@@ -18,6 +18,8 @@ Item {
     readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
 
     MixxxControls.WaveformDisplay {
+        id: waveformDisplay
+
         anchors.fill: parent
         backgroundColor: "transparent"
         group: root.group
@@ -213,8 +215,7 @@ Item {
                 }
                 ;
             case WaveformDisplay.MouseStatus.Scratching:
-                // TODO: Calculate position properly
-                scratchPositionControl.value = -diff * zoomControl.value * 200;
+                scratchPositionControl.value = -mouse.x * waveformDisplay.audioSamplePerPixel * 2;
                 break;
             }
         }
@@ -225,7 +226,7 @@ Item {
                     wheelControl.parameter = 0.5;
 
                 mouseStatus = WaveformDisplay.MouseStatus.Scratching;
-                scratchPositionControl.value = 0;
+                scratchPositionControl.value = -mouse.x * waveformDisplay.audioSamplePerPixel * 2;
                 scratchPositionEnableControl.value = 1;
             } else {
                 if (mouseStatus == WaveformDisplay.MouseStatus.Scratching)

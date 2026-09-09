@@ -33,6 +33,7 @@ using WaveformRendererSignalBaseOptions = WaveformRendererSignalBase::Options;
 
 class QmlWaveformRendererFactory : public QObject {
     Q_OBJECT
+    Q_PROPERTY(bool enabled MEMBER m_enabled NOTIFY enabledChanged)
     Q_PROPERTY(WaveformRendererAbstract::PositionSource position MEMBER
                     m_position NOTIFY positionChanged)
     QML_ANONYMOUS
@@ -45,15 +46,20 @@ class QmlWaveformRendererFactory : public QObject {
     virtual bool isSupported() const {
         return true;
     }
+    bool isEnabled() const {
+        return m_enabled;
+    }
 
     virtual Renderer create(WaveformWidgetRenderer* waveformWidget,
             mixxx::qml::WaveformRendererSignalBaseOptions options) const = 0;
 
   signals:
     void positionChanged(WaveformRendererAbstract::PositionSource);
+    void enabledChanged(bool);
 
   protected:
     WaveformRendererPositionSource m_position{::WaveformRendererAbstract::Play};
+    bool m_enabled{true};
 };
 
 class QmlWaveformRendererEndOfTrack
@@ -522,6 +528,11 @@ class QmlWaveformRendererStem
         : public QmlWaveformRendererFactory {
     Q_OBJECT
     Q_PROPERTY(double gainAll MEMBER m_gainAll NOTIFY gainAllChanged)
+    Q_PROPERTY(double opacity MEMBER m_opacity NOTIFY opacityChanged)
+    Q_PROPERTY(double outlineOpacity MEMBER m_outlineOpacity NOTIFY
+                    outlineOpacityChanged)
+    Q_PROPERTY(bool reorderOnChange MEMBER m_reorderOnChange NOTIFY
+                    reorderOnChangeChanged)
     Q_PROPERTY(bool splitStemTracks MEMBER m_splitStemTracks NOTIFY splitStemTracksChanged)
     QML_NAMED_ELEMENT(WaveformRendererStem)
 
@@ -548,10 +559,16 @@ class QmlWaveformRendererStem
 
   signals:
     void gainAllChanged(double);
+    void opacityChanged(double);
+    void outlineOpacityChanged(double);
+    void reorderOnChangeChanged(bool);
     void splitStemTracksChanged(bool);
 
   private:
     double m_gainAll{1.0};
+    double m_opacity{0.75};
+    double m_outlineOpacity{0.15};
+    bool m_reorderOnChange{true};
     bool m_splitStemTracks{false};
 
     ::WaveformRendererAbstract::PositionSource m_position{::WaveformRendererAbstract::Play};

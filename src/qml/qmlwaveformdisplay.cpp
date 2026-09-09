@@ -26,7 +26,7 @@
 using namespace allshader;
 
 namespace {
-constexpr int kDefaultSyncInternalMs = 100;
+constexpr int kDefaultFrameRate = 60;
 } // namespace
 
 namespace mixxx {
@@ -35,7 +35,8 @@ namespace qml {
 QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
         : QQuickItem(parent),
           WaveformWidgetRenderer(),
-          m_syncInterval(kDefaultSyncInternalMs),
+          m_syncInterval(1'000'000 / kDefaultFrameRate),
+          m_frameRate(kDefaultFrameRate),
           m_pPlayer(nullptr),
           m_pTrack(nullptr),
           m_visualPlayPosition(QSharedPointer<VisualPlayPosition>::create()) {
@@ -60,6 +61,17 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
             &QmlWaveformDisplay::slotWindowChanged,
             Qt::DirectConnection);
     slotWindowChanged(window());
+}
+
+void QmlWaveformDisplay::setFrameRate(int frameRate) {
+    const int clampedFrameRate = std::clamp(frameRate, 1, 240);
+    if (m_frameRate == clampedFrameRate) {
+        return;
+    }
+    m_frameRate = clampedFrameRate;
+    m_syncInterval = std::chrono::microseconds(
+            std::max(1, 1'000'000 / m_frameRate));
+    emit frameRateChanged();
 }
 
 QmlWaveformDisplay::~QmlWaveformDisplay() {
@@ -216,7 +228,7 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
 
         m_rendererStack.clear();
         for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
-            if (!pQmlRenderer->isSupported()) {
+            if (!pQmlRenderer->isEnabled() || !pQmlRenderer->isSupported()) {
                 qWarning() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
                 continue;
             }
@@ -369,6 +381,13 @@ void QmlWaveformDisplay::renderers_append(
     }
     pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     pWaveform->m_waveformRenderers.append(value);
+    QObject::connect(value,
+            &QmlWaveformRendererFactory::enabledChanged,
+            pWaveform,
+            [pWaveform]() {
+                pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+                pWaveform->update();
+            });
 }
 
 // Static

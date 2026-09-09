@@ -73,6 +73,8 @@ Item {
                 colorMid: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbMidColor
                 colorHigh: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbHighColor
                 renderer: root.useFilteredOverview ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.WaveformOverview.Renderer.RGB
+                analyzerStatusColor: root.waveformSignalColor
+                showAnalyzerStatus: true
             }
 
             Item {

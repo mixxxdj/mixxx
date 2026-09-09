@@ -30,6 +30,8 @@ Item {
     readonly property color beatAxesColor: LateNightTheme.waveformBeatAxesColor
 
     MixxxControls.WaveformDisplay {
+        id: waveformDisplay
+
         anchors.fill: parent
         backgroundColor: root.waveformBgColor
         group: root.group
@@ -267,7 +269,7 @@ Item {
                     break;
                 }
             case LateNightWaveformDisplay.MouseStatus.Scratching:
-                scratchPositionControl.value = -diff * zoomControl.value * 200;
+                scratchPositionControl.value = -mouse.x * waveformDisplay.audioSamplePerPixel * 2;
                 break;
             }
         }
@@ -278,7 +280,7 @@ Item {
                     wheelControl.parameter = 0.5;
 
                 mouseStatus = LateNightWaveformDisplay.MouseStatus.Scratching;
-                scratchPositionControl.value = 0;
+                scratchPositionControl.value = -mouse.x * waveformDisplay.audioSamplePerPixel * 2;
                 scratchPositionEnableControl.value = 1;
             } else {
                 if (mouseStatus === LateNightWaveformDisplay.MouseStatus.Scratching)
