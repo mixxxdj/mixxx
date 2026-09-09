@@ -122,6 +122,7 @@ Item {
             Layout.preferredWidth: 35
             Layout.preferredHeight: 20
 
+            property bool targetEnabled: false
             property bool rejectedPress: false
 
             Timer {
@@ -155,24 +156,30 @@ Item {
 
                 onPressed: {
                     const targetValue = passthroughControl.value > 0 ? 0 : 1;
+                    parent.targetEnabled = targetValue > 0;
                     passthroughControl.parameter = targetValue;
-                    parent.rejectedPress = targetValue > 0 && passthroughControl.value <= 0;
+                    parent.rejectedPress = parent.targetEnabled && passthroughControl.value <= 0;
                     passthroughPowerWindowTimer.restart();
                 }
 
                 onReleased: {
-                    if (parent.rejectedPress) {
-                        parent.rejectedPress = false;
-                        passthroughPowerWindowTimer.stop();
+                    const shortPress = passthroughPowerWindowTimer.running;
+                    const targetEnabled = parent.targetEnabled;
+                    const rejectedPress = parent.rejectedPress;
+                    parent.targetEnabled = false;
+                    parent.rejectedPress = false;
+                    passthroughPowerWindowTimer.stop();
+
+                    if (rejectedPress) {
                         return;
                     }
-                    if (!passthroughPowerWindowTimer.running) {
-                        passthroughControl.parameter = passthroughControl.value > 0 ? 0 : 1;
+                    if (!shortPress && targetEnabled && passthroughControl.value > 0) {
+                        passthroughControl.parameter = 0;
                     }
-                    passthroughPowerWindowTimer.stop();
                 }
 
                 onCanceled: {
+                    parent.targetEnabled = false;
                     parent.rejectedPress = false;
                     passthroughPowerWindowTimer.stop();
                 }

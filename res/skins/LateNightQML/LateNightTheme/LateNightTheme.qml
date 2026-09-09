@@ -323,7 +323,9 @@ QtObject {
     readonly property color toolbarStatusErrorColor: "#f856e7"
     readonly property color toolbarStatusOkColor: "#54c76a"
     readonly property color toolbarStatusWarnColor: "#d89124"
-    readonly property color passthroughActiveColor: vinylStatusSpeedColor
+    readonly property color passthroughActiveColor: isClassic ? "#d09300" : "#b24c12"
+    readonly property color passthroughLabelColor: passthroughActiveColor
+    readonly property color passthroughOverlayColor: "#bb000000"
     readonly property color vinylCueingActiveColor: "#888888"
     readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
     readonly property color vinylStatusSignalColor: isClassic ? "#659f08" : "#438225"

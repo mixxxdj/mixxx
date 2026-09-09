@@ -27,6 +27,18 @@ Item {
         key: "show_coverart"
     }
 
+    Mixxx.ControlProxy {
+        id: vinylControlEnabledControl
+        group: root.group
+        key: "vinylcontrol_enabled"
+    }
+
+    Mixxx.ControlProxy {
+        id: vinylSignalEnabledControl
+        group: root.group
+        key: "vinylcontrol_signal_enabled"
+    }
+
     readonly property bool showSpinny: showSpinniesProxy.value > 0
     readonly property bool showCoverArt: showCoverArtProxy.value > 0
     readonly property bool showCover: !showSpinny && root.showCoverArt
@@ -66,6 +78,17 @@ Item {
             fillMode: Image.PreserveAspectFit
         }
 
+        Mixxx.VinylSignalQuality {
+            id: vinylSignalQuality
+            anchors.fill: parent
+            group: root.group
+            visible: root.showSpinny
+            active: root.showSpinny
+                    && vinylControlEnabledControl.value > 0
+                    && vinylSignalEnabledControl.value > 0
+            z: 1
+        }
+
         // Rotating Platter Indicator (Active when track is loaded)
         MixxxControls.Spinny {
             id: spinnyIndicator
@@ -73,6 +96,7 @@ Item {
             group: root.group
             indicatorVisible: root.isLoaded
             ghostIndicatorVisible: root.isLoaded
+            z: 2
 
             ghostIndicator: Image {
                 anchors.fill: parent

@@ -4033,6 +4033,7 @@ if(QML)
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp
       src/qml/qmlspinnyposition.cpp
+      src/qml/qmlvinylsignalquality.cpp
       src/qml/qmlvisibleeffectsmodel.cpp
       src/qml/qmlwaveformdisplay.cpp
       src/qml/qmlwaveformoverview.cpp

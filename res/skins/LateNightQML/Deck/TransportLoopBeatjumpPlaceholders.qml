@@ -151,17 +151,64 @@ Item {
             Layout.preferredHeight: 52
             visible: root.showHotcues
 
-            Repeater {
-                model: root.show8Hotcues ? 8 : 4
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 1
+            }
 
-                delegate: LateNightHotcueButton {
-                    required property int index
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 2
+            }
 
-                    Layout.preferredWidth: 26
-                    Layout.preferredHeight: 26
-                    group: root.group
-                    hotcueNumber: index + 1
-                }
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 3
+            }
+
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 4
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 5
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 6
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 7
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 8
             }
         }
 
@@ -179,22 +226,32 @@ Item {
             Layout.preferredHeight: 52
             visible: root.showIntroOutroCues
 
-            Repeater {
-                model: [
-                    "intro_start",
-                    "intro_end",
-                    "outro_start",
-                    "outro_end"
-                ]
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "intro_start"
+            }
 
-                delegate: LateNightSpecialCueButton {
-                    required property string modelData
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "intro_end"
+            }
 
-                    Layout.preferredWidth: 26
-                    Layout.preferredHeight: 26
-                    group: root.group
-                    cueType: modelData
-                }
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "outro_start"
+            }
+
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "outro_end"
             }
         }
 
