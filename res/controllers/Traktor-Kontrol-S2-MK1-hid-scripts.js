@@ -20,12 +20,57 @@ const ShiftCueButtonAction = "REWIND";
 const ButtonBrightnessOff = 0x00;
 const ButtonBrightnessOn = 0x1F;
 
+// If the difference of one of the calibration values and the corresponding
+// ideal value is larger than the threshold, then the whole calibration is
+// discarded and default values will be used instead. Both knobs and faders have
+// values in the range 0..4095. Both have a calibration point for minimum and
+// maximum. Knobs additionally have a calibration point for the center. Ideal
+// values are 0 for minimum, 2047 for the center and 4095 for the maximum.
+const ReasonableCalibrationThreshold = 200;
+
+// ==== End of User Configuration ====
+
 const padModes = {
     "hotcue": 0,
     "introOutro": 1,
     "sampler": 2
 };
 
+const introOutroKeys = [
+    "intro_start",
+    "intro_end",
+    "outro_start",
+    "outro_end"
+];
+
+const introOutroColors = [
+    {green: 0x1F, blue: 0},
+    {green: 0x1F, blue: 0},
+    {green: 0, blue: 0x1F},
+    {green: 0, blue: 0x1F}
+];
+
+const introOutroColorsDim = [
+    {green: 0x05, blue: 0},
+    {green: 0x05, blue: 0},
+    {green: 0, blue: 0x05},
+    {green: 0, blue: 0x05}
+];
+
+const setFaderParameter = function(group, key, value, calibration) {
+    const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
+    engine.setParameter(group, key, calibratedValue);
+};
+
+const setKnobParameter = function(group, key, value, calibration) {
+    let calibratedValue;
+    if (value <= calibration.center) {
+        calibratedValue = script.absoluteLin(value, 0, 0.5, calibration.min, calibration.center);
+    } else {
+        calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
+    }
+    engine.setParameter(group, key, calibratedValue);
+};
 
 class DeckClass {
     constructor(parent, number) {
@@ -1277,7 +1322,37 @@ class TraktorS2MK1Class {
         this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD2)), 0x20);
         this.rawCalibration.knobs.set(new Uint8Array(controller.getFeatureReport(0xD3)), 0x40);
         this.rawCalibration.jogWheels = new Uint8Array(controller.getFeatureReport(0xD4));
+        console.log("rawCalibration.faders", this.rawCalibration.faders);
+        console.log("rawCalibration.knobs", this.rawCalibration.knobs);
+        console.log("rawCalibration.jogWheels", this.rawCalibration.jogWheels);
         this.calibration = this.parseRawCalibration();
+        if (!this.isCalibrationReasonable()) {
+            const defaultKnob = {min: 0x10, center: 0x7FF, max: 0xFEF};
+            const defaultFader = {min: 0x10, max: 0xFEF};
+            const defaultDeck = {
+                volume: defaultFader,
+                eq: {
+                    hi: defaultKnob,
+                    mid: defaultKnob,
+                    low: defaultKnob,
+                },
+                jogPress: 3328,
+            };
+            const defaultEffectUnit = {
+                mix: defaultKnob,
+                params: [
+                    defaultKnob,
+                    defaultKnob,
+                    defaultKnob,
+                ],
+            };
+            this.calibration = {
+                decks: [defaultDeck, defaultDeck],
+                effectUnits: [defaultEffectUnit, defaultEffectUnit],
+                crossfader: defaultFader,
+                sampler: defaultKnob,
+            };
+        }
         for (let i = 0; i < 2; i++) {
             this.decks[i].calibrate(this.calibration.decks[i]);
         }
@@ -1500,6 +1575,54 @@ class TraktorS2MK1Class {
     parseUint16Be(data, index) {
         return (data[index]<<8) + data[index+1];
     }
+    isCalibrationReasonable() {
+        // "disable" && short circuiting
+        return [
+            this.isDeckCalibrationReasonable(this.calibration.decks[0], 0),
+            this.isDeckCalibrationReasonable(this.calibration.decks[1], 1),
+            this.isEffectUnitCalibrationReasonable(this.calibration.effectUnits[0], 0),
+            this.isEffectUnitCalibrationReasonable(this.calibration.effectUnits[1], 1),
+            this.isFaderCalibrationReasonable(this.calibration.crossfader, "crossfader"),
+            this.isKnobCalibrationReasonable(this.calibration.sampler, "sampler"),
+        ].every(x=>x);
+    }
+    isDeckCalibrationReasonable(deck, index) {
+        return [
+            this.isFaderCalibrationReasonable(deck.volume, `deck[${index}].volume`),
+            this.isKnobCalibrationReasonable(deck.eq.hi, `deck[${index}].eq.hi`),
+            this.isKnobCalibrationReasonable(deck.eq.mid, `deck[${index}].eq.mid`),
+            this.isKnobCalibrationReasonable(deck.eq.low, `deck[${index}].eq.low`),
+            // I don’t know a reasonable value for jogpress
+        ].every(x=>x);
+    }
+    isEffectUnitCalibrationReasonable(effectUnit, index) {
+        return [
+            this.isKnobCalibrationReasonable(effectUnit.mix, `effectUnit[${index}].mix`),
+            this.isKnobCalibrationReasonable(effectUnit.params[0], `effectUnit[${index}].params[0]`),
+            this.isKnobCalibrationReasonable(effectUnit.params[1], `effectUnit[${index}].params[1]`),
+            this.isKnobCalibrationReasonable(effectUnit.params[2], `effectUnit[${index}].params[2]`)
+        ].every(x=>x);
+    }
+    isKnobCalibrationReasonable(knob, name) {
+        const valid = knob.min < ReasonableCalibrationThreshold
+              && knob.max > 0xFFF - ReasonableCalibrationThreshold
+              && knob.max <= 0xFFF
+              && knob.center > 0x7FF - ReasonableCalibrationThreshold
+              && knob.center < 0x7FF + ReasonableCalibrationThreshold;
+        if (!valid) {
+            console.log(`Calibration of ${name} is probably wrong. min: ${knob.min}, center: ${knob.center}, max: ${knob.max}`);
+        }
+        return valid;
+    }
+    isFaderCalibrationReasonable(fader, name) {
+        const valid = fader.min < ReasonableCalibrationThreshold
+              && fader.max > 0xFFF - ReasonableCalibrationThreshold
+              && fader.max <= 0xFFF;
+        if (!valid) {
+            console.log(`Calibration of ${name} is probably wrong. min: ${fader.min}, max: ${fader.max}`);
+        }
+        return valid;
+    }
 
     shiftPressed() {
         return this.decks[0].shiftPressed || this.decks[1].shiftPressed;
@@ -1528,43 +1651,6 @@ class Encoder {
         return dir;
     }
 }
-
-const introOutroKeys = [
-    "intro_start",
-    "intro_end",
-    "outro_start",
-    "outro_end"
-];
-
-const introOutroColors = [
-    {green: 0x1F, blue: 0},
-    {green: 0x1F, blue: 0},
-    {green: 0, blue: 0x1F},
-    {green: 0, blue: 0x1F}
-];
-
-const introOutroColorsDim = [
-    {green: 0x05, blue: 0},
-    {green: 0x05, blue: 0},
-    {green: 0, blue: 0x05},
-    {green: 0, blue: 0x05}
-];
-
-const setKnobParameter = function(group, key, value, calibration) {
-    let calibratedValue;
-    if (value <= calibration.center) {
-        calibratedValue = script.absoluteLin(value, 0, 0.5, calibration.min, calibration.center);
-    } else {
-        calibratedValue = script.absoluteLin(value, 0.5, 1, calibration.center, calibration.max);
-    }
-    engine.setParameter(group, key, calibratedValue);
-};
-
-const setFaderParameter = function(group, key, value, calibration) {
-    const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
-    engine.setParameter(group, key, calibratedValue);
-};
-
 
 var TraktorS2MK1 = new TraktorS2MK1Class(); // eslint-disable-line no-var, no-unused-vars
 
