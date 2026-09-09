@@ -4,11 +4,17 @@
 #include <QList>
 #include <QPair>
 
+#include "audio/frame.h"
 #include "proto/keys.pb.h"
 
 #define KEY_MAP_VERSION "KeyMap-1.0"
 
-typedef QList<QPair<mixxx::track::io::key::ChromaticKey, double>> KeyChangeList;
+struct KeyChange {
+    mixxx::track::io::key::ChromaticKey key;
+    double tuningFrequencyHz;
+    mixxx::audio::FramePos framePos;
+};
+typedef QList<KeyChange> KeyChangeList;
 
 class Keys final {
   public:

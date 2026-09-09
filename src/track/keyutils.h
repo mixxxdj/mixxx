@@ -97,7 +97,7 @@ class KeyUtils {
 
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
-    static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
+    static KeyChange calculateGlobalKey(
             const KeyChangeList& key_changes,
             SINT totalFrames,
             mixxx::audio::SampleRate sampleRate);

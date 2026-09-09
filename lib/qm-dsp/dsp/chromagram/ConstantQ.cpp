@@ -64,12 +64,14 @@ void ConstantQ::sparsekernel()
 
         const double samplesPerCycle =
             m_FS / (m_FMin * pow(2, (double)j / (double)m_BPO));
-        int windowLength = (int)ceil(m_dQ * samplesPerCycle);
+        int windowLength = (int)ceil(m_dQ * samplesPerCycle / 2) * 2;
 
-        int origin = m_FFTLength/2 - windowLength/2;
+        int origin = m_FFTLength / 2 - windowLength / 2;
+        double center = (windowLength - 1) / 2.0;
 
         for (int i = 0; i < windowLength; ++i) {
-            double angle = (2.0 * M_PI * i) / samplesPerCycle;
+            double centered_i = i - center;
+            double angle = (2.0 * M_PI * centered_i) / samplesPerCycle;
             windowRe[origin + i] = cos(angle);
             windowIm[origin + i] = sin(angle);
         }
