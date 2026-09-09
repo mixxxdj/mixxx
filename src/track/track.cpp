@@ -551,6 +551,11 @@ bool Track::checkSourceSynchronized() const {
             mixxx::TrackRecord::SourceSyncStatus::Synchronized;
 }
 
+bool Track::hasImportedMetadataFromSource() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.hasImportedMetadataFromSource();
+}
+
 void Track::setSourceSynchronizedAt(const QDateTime& sourceSynchronizedAt) {
     DEBUG_ASSERT(!sourceSynchronizedAt.isValid() ||
             sourceSynchronizedAt.timeSpec() == Qt::UTC);

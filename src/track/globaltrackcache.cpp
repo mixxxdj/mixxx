@@ -32,6 +32,12 @@ constexpr bool kLogStats = false;
 
 inline
 TrackRef createTrackRef(const Track& track) {
+    // Tracks already in the library are identified by database id. Resolving
+    // the canonical path would hit the file system (costly on remote mounts)
+    // and is only required to detect duplicate files not yet stored in the DB.
+    if (track.getId().isValid()) {
+        return TrackRef::fromLocationAndId(track.getLocation(), track.getId());
+    }
     return TrackRef::fromFileInfo(track.getFileInfo(), track.getId());
 }
 
@@ -215,7 +221,8 @@ void GlobalTrackCacheResolver::initTrackIdAndUnlockCache(TrackId trackId) {
         DEBUG_ASSERT(m_trackRef.getId() == trackId);
     }
     unlockCache();
-    DEBUG_ASSERT(m_trackRef == createTrackRef(*m_strongPtr));
+    DEBUG_ASSERT(m_trackRef.getId() == m_strongPtr->getId());
+    DEBUG_ASSERT(m_trackRef.getLocation() == m_strongPtr->getLocation());
 }
 
 //static
@@ -594,6 +601,17 @@ void GlobalTrackCache::resolve(
                     std::move(trackRef));
             return;
         }
+        // Known library track, not yet in the cache. Identify it by database
+        // id and stored location without resolving the canonical path.
+        TrackRef trackRef = TrackRef::fromLocationAndId(
+                fileAccess.info().location(), trackId);
+        if (debugLogEnabled()) {
+            kLogger.debug()
+                    << "Cache miss - allocating library track without canonical path"
+                    << trackRef;
+        }
+        allocateNewTrack(pCacheResolver, std::move(fileAccess), std::move(trackRef));
+        return;
     }
     // Secondary lookup by canonical location
     // The TrackRef is constructed now after the lookup by ID failed to
@@ -638,6 +656,13 @@ void GlobalTrackCache::resolve(
             return;
         }
     }
+    allocateNewTrack(pCacheResolver, std::move(fileAccess), std::move(trackRef));
+}
+
+void GlobalTrackCache::allocateNewTrack(
+        GlobalTrackCacheResolver* pCacheResolver,
+        mixxx::FileAccess fileAccess,
+        TrackRef trackRef) {
     if (!m_pSaver) {
         // Do not allocate any new tracks once the cache
         // has been deactivated
@@ -652,10 +677,11 @@ void GlobalTrackCache::resolve(
                 << "Cache miss - allocating track"
                 << trackRef;
     }
+    const TrackId trackId = trackRef.getId();
     auto deletingPtr = std::unique_ptr<Track, GlobalTrackCacheEntry::TrackDeleter>(
             new Track(
                     std::move(fileAccess),
-                    std::move(trackId)),
+                    trackId),
             GlobalTrackCacheEntry::TrackDeleter(m_deleteTrackFn));
 
     auto cacheEntryPtr = std::make_shared<GlobalTrackCacheEntry>(
@@ -787,7 +813,10 @@ TrackRef GlobalTrackCache::initTrackId(
             pDel->getCacheEntryPointer()));
 
     strongPtr->initId(trackId);
-    DEBUG_ASSERT(createTrackRef(*strongPtr) == trackRefWithId);
+    // Library tracks are identified by id + location. Canonical path is
+    // not required after the id has been assigned.
+    DEBUG_ASSERT(strongPtr->getId() == trackId);
+    DEBUG_ASSERT(strongPtr->getLocation() == trackRefWithId.getLocation());
     DEBUG_ASSERT(m_tracksById.find(trackId) != m_tracksById.end());
 
     return trackRefWithId;
@@ -892,6 +921,19 @@ bool GlobalTrackCache::tryEvict(Track* plainPtr) {
                 evicted = true;
             } else {
                 notEvicted = true;
+            }
+        }
+    } else {
+        // Library tracks may have been inserted into the canonical-location
+        // index before they received a database id. createTrackRef() no longer
+        // resolves that path for id-based tracks, so fall back to a pointer scan.
+        for (auto it = m_tracksByCanonicalLocation.begin();
+                it != m_tracksByCanonicalLocation.end();
+                ++it) {
+            if (it->second->getPlainPtr() == plainPtr) {
+                m_tracksByCanonicalLocation.erase(it);
+                evicted = true;
+                break;
             }
         }
     }

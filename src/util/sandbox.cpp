@@ -242,6 +242,12 @@ SecurityTokenPointer Sandbox::openSecurityToken(mixxx::FileInfo* pFileInfo, bool
     VERIFY_OR_DEBUG_ASSERT(pFileInfo) {
         return nullptr;
     }
+    // Canonical path resolution hits the file system. Skip it when the
+    // process is not sandboxed (Linux/Windows) so library operations on
+    // remote mounts do not block on stat/realpath.
+    if (!enabled()) {
+        return nullptr;
+    }
     const auto canonicalLocation = pFileInfo->resolveCanonicalLocation();
     if (canonicalLocation.isEmpty()) {
         return nullptr;
@@ -253,10 +259,6 @@ SecurityTokenPointer Sandbox::openSecurityToken(mixxx::FileInfo* pFileInfo, bool
 
     if (sDebug) {
         qDebug() << "openSecurityToken for file" << canonicalLocation << create;
-    }
-
-    if (!enabled()) {
-        return nullptr;
     }
 
     const auto locker = lockMutex(&s_mutex);

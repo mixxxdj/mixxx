@@ -183,6 +183,7 @@ class WTrackMenu : public QMenu {
     // Playlist and crate
     void slotPopulatePlaylistMenu();
     void slotPopulateCrateMenu();
+    void slotPopulateLoadToMenu();
     void addSelectionToNewCrate();
 
     // Auto DJ
@@ -401,6 +402,7 @@ class WTrackMenu : public QMenu {
     bool m_bFindOnWebMenuLoaded;
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
+    bool m_bLoadToMenuLoaded;
 
     Features m_eActiveFeatures;
     const Features m_eTrackModelFeatures;
