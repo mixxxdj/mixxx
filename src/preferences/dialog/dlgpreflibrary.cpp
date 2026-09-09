@@ -25,6 +25,9 @@
 
 namespace {
 constexpr int kDefaultFuzzyRateRangePercent = 75;
+const ConfigKey kDimColumnsCfgkey(
+        QStringLiteral("[Library]"), QStringLiteral("dim_columns"));
+const char* kColumnIdPropName = "colId";
 } // namespace
 
 using namespace mixxx::library::prefs;
@@ -134,6 +137,68 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(btn_library_font, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
+    // Dim columns checkboxes
+    // Collect all relevant columns (all visible columns with text data, and Rating)
+    // Note(ronso0) Let's assume that Artist and Title columns are never dimmed.
+    const QList<ColumnCache::Column> columns{
+            ColumnCache::COLUMN_LIBRARYTABLE_ALBUM,
+            ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST,
+            ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER,
+            ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER,
+            ColumnCache::COLUMN_LIBRARYTABLE_COMMENT,
+            ColumnCache::COLUMN_LIBRARYTABLE_GENRE,
+            ColumnCache::COLUMN_LIBRARYTABLE_GROUPING,
+            ColumnCache::COLUMN_LIBRARYTABLE_BPM,
+            ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
+            ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
+            ColumnCache::COLUMN_LIBRARYTABLE_KEY,
+            ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY,
+            ColumnCache::COLUMN_LIBRARYTABLE_BITRATE,
+            ColumnCache::COLUMN_LIBRARYTABLE_RATING,
+            ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
+            ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE,
+            ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED,
+            ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
+            ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED,
+            ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
+            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION};
+    // Checkboxes are sorted into a 2-column grid, first column is filled first.
+    // Set number of grid rows (no need for bitwise or modulo wizardry since we
+    // can simply count the columns ;) -- adjust when columns are added/removed
+    // 21 column names => 11 rows
+    int gridRows = 11;
+    int num = 0;
+    // We need to adjust the existing Tab stops for the new items,
+    // ie. squeeze checkboxes in between the Played Color checkbox above and the
+    // Search Timeout spinbox below the grid layout
+    QWidget* pPrevWidget = checkbox_played_track_color;
+    for (auto col : columns) {
+        const QString title = m_pLibrary->columnTitle(col);
+        // Set `this` as parent, else the setting the tabstop will not work
+        auto pCheckBox = std::make_unique<QCheckBox>(title, this);
+        // For the checkbox <-> column relation we simply use the column id (enum),
+        // which also use to read from / write to the config (int).
+        // This allows a simple data flow to the BaseTrackTableModel
+        // FIXME this has the small downside that the column selection is shifted
+        // when a Mixxx version reorders, adds or removes columns.
+        pCheckBox->setProperty(kColumnIdPropName, col);
+
+        // Tab stop
+        auto* pBoxPtr = pCheckBox.get();
+        setTabOrder(pPrevWidget, pBoxPtr);
+        pPrevWidget = pBoxPtr;
+
+        // Insert into grid
+        int rowNum = (num + 1 <= gridRows) ? num : num - gridRows;
+        int colNum = (num + 1 <= gridRows) ? 0 : 1;
+        // The layout takes ownership!
+        layout_dimColumns->addWidget(pCheckBox.release(), rowNum, colNum);
+
+        num++;
+    }
+    setTabOrder(pPrevWidget, spinBox_search_debouncing_timeout);
+
+    // Plugins/decoders list
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
 #if defined(__MAD__) || defined(__COREAUDIO__)
@@ -301,6 +366,15 @@ void DlgPrefLibrary::slotResetToDefaults() {
 
     spinBox_sidebar_hover_expand_delay->setValue(kSidebarHoverExpandDelayDefault);
 
+    // By default no column is greyed out
+    for (int i = 0; i < layout_dimColumns->count(); i++) {
+        auto* pItem = layout_dimColumns->itemAt(i);
+        auto* pBox = qobject_cast<QCheckBox*>(pItem->widget());
+        if (pBox) {
+            pBox->setChecked(false);
+        }
+    }
+
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
@@ -373,9 +447,35 @@ void DlgPrefLibrary::slotUpdate() {
     }
 
     updateDateFormatPreview(dateFormat);
-
     // Ensure the static member is updated on startup/load
     BaseTrackTableModel::setDateFormat(dateFormat);
+
+    // Dim columns
+    // Parse int list from config string, create ColumnCache::Column list
+    const QString columnIdsStr = m_pConfig->getValue(kDimColumnsCfgkey, QString());
+    const auto idStrList = columnIdsStr.tokenize(QLatin1Char(','));
+    QList<ColumnCache::Column> columns;
+    for (const auto& idStr : idStrList) {
+        bool isInt = false;
+        int colId = idStr.toInt(&isInt);
+        if (isInt &&
+                colId > ColumnCache::COLUMN_LIBRARYTABLE_INVALID &&
+                colId < ColumnCache::NUM_COLUMNS) {
+            columns.append(static_cast<ColumnCache::Column>(colId));
+        }
+    }
+    // update checkboxes
+    for (int i = 0; i < layout_dimColumns->count(); i++) {
+        auto* pItem = layout_dimColumns->itemAt(i);
+        auto* pBox = qobject_cast<QCheckBox*>(pItem->widget());
+        if (pBox) {
+            const QVariant colIdVar = pBox->property(kColumnIdPropName);
+            const auto column = colIdVar.value<ColumnCache::Column>();
+            pBox->setChecked(columns.contains(column));
+        }
+    }
+    // apply to table models immediately
+    BaseTrackTableModel::setDimColumns(columns);
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -686,6 +786,25 @@ void DlgPrefLibrary::slotApply() {
     int sidebarHoverExpandDelay = spinBox_sidebar_hover_expand_delay->value();
     m_pConfig->setValue(kSidebarHoverExpandDelayConfigKey, sidebarHoverExpandDelay);
     emit m_pLibrary->setSidebarHoverExpandDelay(sidebarHoverExpandDelay);
+
+    // Dim columns
+    QStringList columnIds;
+    QList<ColumnCache::Column> columns;
+    for (int i = 0; i < layout_dimColumns->count(); i++) {
+        auto* pItem = layout_dimColumns->itemAt(i);
+        auto* pBox = qobject_cast<QCheckBox*>(pItem->widget());
+        if (pBox && pBox->isChecked()) {
+            const QVariant colIdVar = pBox->property(kColumnIdPropName);
+            bool isInt = false;
+            int colId = colIdVar.toInt(&isInt);
+            DEBUG_ASSERT(isInt);
+            columnIds.append(QString::number(colId));
+            columns.append(static_cast<ColumnCache::Column>(colId));
+        }
+    }
+    const QString columnIdsJoint = columnIds.join(',');
+    m_pConfig->set(kDimColumnsCfgkey, columnIdsJoint);
+    BaseTrackTableModel::setDimColumns(columns);
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();
