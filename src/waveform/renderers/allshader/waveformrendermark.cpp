@@ -285,10 +285,10 @@ void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
         const float posy3 = posy1 + static_cast<float>(rect.height()) - qh;
         const float posy4 = posy1 + static_cast<float>(rect.height());
 
-    vertexUpdater.addRectangleVGradient(
-            {posx1, posy1}, {posx2, posy2}, {r, g, b, a}, {r, g, b, 0.f});
-    vertexUpdater.addRectangleVGradient(
-            {posx1, posy4}, {posx2, posy3}, {r, g, b, a}, {r, g, b, 0.f});
+        vertexUpdater.addRectangleVGradient(
+                {posx1, posy1}, {posx2, posy2}, {r, g, b, a}, {r, g, b, 0.f});
+        vertexUpdater.addRectangleVGradient(
+                {posx1, posy4}, {posx2, posy3}, {r, g, b, a}, {r, g, b, 0.f});
     }
     pNode->markDirtyGeometry();
     pNode->markDirtyMaterial();
