@@ -14,6 +14,13 @@ WaveformRenderMarkBase::WaveformRenderMarkBase(
 void WaveformRenderMarkBase::setup(const QDomNode& node, const SkinContext& context) {
     WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
     m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+    // The loop_start_position and loop_end_position marks are driven by CO
+    // value changes, not by Track::cuesUpdated, so we must subscribe to the
+    // position controls here. e5d207c8 restored the equivalent connection for
+    // the Overview after 1adf980e/831aff08 removed it; the live waveform was
+    // missed by that fix.
+    m_marks.connectSamplePositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
+    m_marks.connectSampleEndPositionChanged(this, &WaveformRenderMarkBase::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WaveformRenderMarkBase::onMarkChanged);
 }
 
