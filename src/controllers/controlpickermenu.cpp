@@ -11,6 +11,7 @@
 #include "mixer/playermanager.h"
 #include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
+#include "track/cue.h"
 #include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -557,22 +558,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Hotcues
     QMenu* pHotcueMainMenu = addSubmenu(tr("Hotcues"));
-    addDeckControl("shift_cues_earlier",
-            tr("Shift cue points earlier"),
-            tr("Shift cue points 10 milliseconds earlier"),
-            pHotcueMainMenu);
-    addDeckControl("shift_cues_earlier_small",
-            tr("Shift cue points earlier (fine)"),
-            tr("Shift cue points 1 millisecond earlier"),
-            pHotcueMainMenu);
-    addDeckControl("shift_cues_later",
-            tr("Shift cue points later"),
-            tr("Shift cue points 10 milliseconds later"),
-            pHotcueMainMenu);
-    addDeckControl("shift_cues_later_small",
-            tr("Shift cue points later (fine)"),
-            tr("Shift cue points 1 millisecond later"),
-            pHotcueMainMenu);
     addDeckControl("sort_hotcues",
             tr("Sort hotcues by position"),
             tr("Sort hotcues by position"),
@@ -581,6 +566,53 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Sort hotcues by position (remove offsets)"),
             tr("Sort hotcues by position (remove offsets)"),
             pHotcueMainMenu);
+
+    QMenu* pHotcueShiftMenu = addSubmenu(tr("Shift all cues"), pHotcueMainMenu);
+    addDeckControl("shift_cues_earlier",
+            tr("Shift cue points earlier"),
+            tr("Shift cue points 10 milliseconds earlier"),
+            pHotcueShiftMenu);
+    addDeckControl("shift_cues_earlier_small",
+            tr("Shift cue points earlier (fine)"),
+            tr("Shift cue points 1 millisecond earlier"),
+            pHotcueShiftMenu);
+    addDeckControl("shift_cues_later",
+            tr("Shift cue points later"),
+            tr("Shift cue points 10 milliseconds later"),
+            pHotcueShiftMenu);
+    addDeckControl("shift_cues_later_small",
+            tr("Shift cue points later (fine)"),
+            tr("Shift cue points 1 millisecond later"),
+            pHotcueShiftMenu);
+
+    QMenu* pHotcueShiftFocusedMenu = addSubmenu(tr("Shift focused hotcue"), pHotcueMainMenu);
+    const QString shiftFocusedHotcueNextDescription =
+            tr("If Quantize is enabled the hotcue is shifted to the next beat.");
+    const QString shiftFocusedHotcuePrevDescription =
+            tr("If Quantize is enabled the hotcue is shifted to the previous beat.");
+    addDeckControl("shift_focused_hotcue_earlier",
+            tr("Shift focused hotcue earlier"),
+            tr("Shift focused hotcue %1 milliseconds earlier").arg(Cue::kShiftCuesOffsetMillis) +
+                    shiftFocusedHotcuePrevDescription,
+            pHotcueShiftFocusedMenu);
+    addDeckControl("shift_focused_hotcue_earlier_small",
+            tr("Shift focused hotcue earlier (fine)"),
+            tr("Shift focused hotcue %1 millisecond earlier")
+                            .arg(Cue::kShiftCuesOffsetMillisSmall) +
+                    shiftFocusedHotcuePrevDescription,
+            pHotcueShiftFocusedMenu);
+    addDeckControl("shift_focused_hotcue_later",
+            tr("Shift focused hotcue later"),
+            tr("Shift focused hotcue %1 milliseconds later").arg(Cue::kShiftCuesOffsetMillis) +
+                    shiftFocusedHotcueNextDescription,
+            pHotcueShiftFocusedMenu);
+    addDeckControl("shift_focused_hotcue_later_small",
+            tr("Shift focused hotcue later (fine)"),
+            tr("Shift focused hotcue %1 millisecond later").arg(Cue::kShiftCuesOffsetMillisSmall) +
+                    shiftFocusedHotcueNextDescription,
+            pHotcueShiftFocusedMenu);
+
+    pHotcueMainMenu->addSeparator();
 
     const QString hotcueActivateTitle = tr("Hotcue %1");
     const QString hotcueClearTitle = tr("Clear Hotcue %1");

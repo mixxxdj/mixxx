@@ -37,14 +37,14 @@ class WCueMenuPopup : public QWidget {
     void setTrackCueGroup(TrackPointer pTrack, const CuePointer& pCue, const QString& group);
 
     void setColorPalette(const ColorPalette& palette) {
-        if (m_pColorPicker != nullptr) {
+        if (m_pColorPicker) {
             m_pColorPicker->setColorPalette(palette);
         }
     }
 
     void popup(const QPoint& p) {
-        auto parentWidget = qobject_cast<QWidget*>(parent());
-        QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*parentWidget, p, size());
+        auto* pParentWidget = qobject_cast<QWidget*>(parent());
+        QPoint topLeft = mixxx::widgethelper::mapPopupToScreen(*pParentWidget, p, size());
         move(topLeft);
         show();
     }
@@ -83,6 +83,9 @@ class WCueMenuPopup : public QWidget {
     void updateTypeAndColorIfDefault(mixxx::CueType newType);
     mixxx::audio::FramePos getCurrentPlayPositionWithQuantize() const;
 
+    void shiftCue(int direction);
+    void shiftCueSmall(int direction);
+
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
     PollingControlProxy m_pBeatLoopSize;
@@ -92,14 +95,16 @@ class WCueMenuPopup : public QWidget {
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
-    std::unique_ptr<QLabel> m_pCueNumber;
-    std::unique_ptr<QLabel> m_pCuePosition;
-    std::unique_ptr<QLineEdit> m_pEditLabel;
-    std::unique_ptr<WColorPicker> m_pColorPicker;
-    std::unique_ptr<CueMenuPushButton> m_pDeleteCue;
-    std::unique_ptr<CueMenuPushButton> m_pStandardCue;
-    std::unique_ptr<CueMenuPushButton> m_pSavedLoopCue;
-    std::unique_ptr<CueMenuPushButton> m_pSavedJumpCue;
+    parented_ptr<QLabel> m_pCueNumber;
+    parented_ptr<QLabel> m_pCuePosition;
+    parented_ptr<QLineEdit> m_pEditLabel;
+    parented_ptr<WColorPicker> m_pColorPicker;
+    parented_ptr<CueMenuPushButton> m_pDeleteCue;
+    parented_ptr<CueMenuPushButton> m_pShiftCueEarlier;
+    parented_ptr<CueMenuPushButton> m_pShiftCueLater;
+    parented_ptr<CueMenuPushButton> m_pStandardCue;
+    parented_ptr<CueMenuPushButton> m_pSavedLoopCue;
+    parented_ptr<CueMenuPushButton> m_pSavedJumpCue;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
