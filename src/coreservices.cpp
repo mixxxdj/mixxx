@@ -39,9 +39,6 @@
 #include "skin/skincontrols.h"
 #include "skin/skinloader.h"
 #ifdef MIXXX_USE_QML
-#include <QQuickWindow>
-#include <QSGRendererInterface>
-
 #include "qml/qmlapplicationproxy.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
@@ -822,11 +819,6 @@ void CoreServices::initializeQMLSingletons() {
             CmdlineArgs::Instance().getControllerPreviewScreens());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
-
-    // Currently, it is required to enforce QQuickWindow RHI backend to use
-    // OpenGL on all platforms to allow offscreen rendering to function as
-    // expected
-    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
 #endif
 }
 

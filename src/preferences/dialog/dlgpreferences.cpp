@@ -170,14 +170,14 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // Check if the Waveform factory exists (it is not created in QML mode)
-    if (WaveformWidgetFactory::isCreated()) {
-        addPageWidget(PreferencesPage(
-                              new DlgPrefWaveform(this, m_pConfig, pLibrary),
-                              new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-                tr("Waveforms"),
-                "ic_preferences_waveforms.svg");
-    }
+    // DlgPreferences is also used by the QML application. QmlApplication
+    // initializes the factory as a settings backend before constructing this
+    // dialog, so the Waveforms page is available for both UI implementations.
+    addPageWidget(PreferencesPage(
+                          new DlgPrefWaveform(this, m_pConfig, pLibrary),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Waveforms"),
+            "ic_preferences_waveforms.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),

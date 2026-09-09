@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QVariantList>
+#include <memory>
 #include <type_traits>
 
 #include "engine/controls/cuecontrol.h"
@@ -17,6 +18,8 @@
 #include "preferences/usersettings.h"
 #include "qml/qmlconfigproxybase.h"
 #include "qml/qmlwaveformdisplay.h"
+
+class ControlObject;
 
 #define PROPERTY_DECL_ACCESSOR(TYPE, NAME)                              \
   public:                                                               \
@@ -51,6 +54,14 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     Q_PROPERTY(bool waveformOverviewNormalized READ waveformOverviewNormalized
                     WRITE set_waveformOverviewNormalized NOTIFY
                             waveformOverviewNormalizedChanged);
+    Q_PROPERTY(int waveformOverviewType READ waveformOverviewType WRITE
+                    set_waveformOverviewType NOTIFY waveformOverviewTypeChanged);
+    Q_PROPERTY(bool waveformOverviewStereo READ waveformOverviewStereo WRITE
+                    set_waveformOverviewStereo NOTIFY waveformOverviewStereoChanged);
+    Q_PROPERTY(bool waveformOverviewMinuteMarkers READ
+                    waveformOverviewMinuteMarkers WRITE
+                            set_waveformOverviewMinuteMarkers NOTIFY
+                                    waveformOverviewMinuteMarkersChanged);
     // 1..10
     Q_PROPERTY(double waveformDefaultZoom READ waveformDefaultZoom WRITE
                     set_waveformDefaultZoom NOTIFY waveformDefaultZoomChanged);
@@ -58,6 +69,10 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     Q_PROPERTY(double waveformPlayMarkerPosition READ waveformPlayMarkerPosition
                     WRITE set_waveformPlayMarkerPosition NOTIFY
                             waveformPlayMarkerPositionChanged);
+    Q_PROPERTY(bool waveformEnabled READ waveformEnabled WRITE set_waveformEnabled
+                    NOTIFY waveformEnabledChanged);
+    Q_PROPERTY(int waveformFrameRate READ waveformFrameRate WRITE
+                    set_waveformFrameRate NOTIFY waveformFrameRateChanged);
     Q_PROPERTY(bool waveformUntilMarkShowBeats READ waveformUntilMarkShowBeats
                     WRITE set_waveformUntilMarkShowBeats NOTIFY
                             waveformUntilMarkShowBeatsChanged);
@@ -101,6 +116,26 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     Q_PROPERTY(double waveformBeatGridAlpha READ waveformBeatGridAlpha WRITE
                     set_waveformBeatGridAlpha NOTIFY
                             waveformBeatGridAlphaChanged);
+    Q_PROPERTY(double waveformStemOpacity READ waveformStemOpacity WRITE
+                    set_waveformStemOpacity NOTIFY waveformStemOpacityChanged);
+    Q_PROPERTY(double waveformStemOutlineOpacity READ waveformStemOutlineOpacity
+                    WRITE set_waveformStemOutlineOpacity NOTIFY
+                            waveformStemOutlineOpacityChanged);
+    Q_PROPERTY(bool waveformStemReorderOnChange READ
+                    waveformStemReorderOnChange WRITE
+                            set_waveformStemReorderOnChange NOTIFY
+                                    waveformStemReorderOnChangeChanged);
+    Q_PROPERTY(bool waveformStemSplitTracks READ waveformStemSplitTracks WRITE
+                    set_waveformStemSplitTracks NOTIFY
+                            waveformStemSplitTracksChanged);
+    Q_PROPERTY(bool waveformCachingEnabled READ waveformCachingEnabled WRITE
+                    set_waveformCachingEnabled NOTIFY waveformCachingEnabledChanged);
+    Q_PROPERTY(bool waveformGenerationWithAnalysisEnabled READ
+                    waveformGenerationWithAnalysisEnabled WRITE
+                            set_waveformGenerationWithAnalysisEnabled NOTIFY
+                                    waveformGenerationWithAnalysisEnabledChanged);
+    Q_PROPERTY(double waveformAverageFrameRate READ waveformAverageFrameRate
+                    NOTIFY waveformAverageFrameRateChanged);
 
     // Library group
     Q_PROPERTY(mixxx::preferences::Tooltips libraryTooltips READ libraryTooltips
@@ -324,10 +359,15 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     // Waveform settings
     PROPERTY_DECL_ACCESSOR(bool, waveformZoomSynchronization);
     PROPERTY_DECL_ACCESSOR(bool, waveformOverviewNormalized);
+    PROPERTY_DECL_ACCESSOR(int, waveformOverviewType);
+    PROPERTY_DECL_ACCESSOR(bool, waveformOverviewStereo);
+    PROPERTY_DECL_ACCESSOR(bool, waveformOverviewMinuteMarkers);
     // 1..10
     PROPERTY_DECL_ACCESSOR(double, waveformDefaultZoom);
     // [0..1]
     PROPERTY_DECL_ACCESSOR(double, waveformPlayMarkerPosition);
+    PROPERTY_DECL_ACCESSOR(bool, waveformEnabled);
+    PROPERTY_DECL_ACCESSOR(int, waveformFrameRate);
     PROPERTY_DECL_ACCESSOR(bool, waveformUntilMarkShowBeats);
     PROPERTY_DECL_ACCESSOR(bool, waveformUntilMarkShowTime);
     // {1,2,3}, Qt::AlignTop, Qt::AlignVCenter, Qt::AlignBottom
@@ -347,6 +387,13 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayOptions, waveformOptions);
     // Percent, 0..100
     PROPERTY_DECL_ACCESSOR(double, waveformBeatGridAlpha);
+    PROPERTY_DECL_ACCESSOR(double, waveformStemOpacity);
+    PROPERTY_DECL_ACCESSOR(double, waveformStemOutlineOpacity);
+    PROPERTY_DECL_ACCESSOR(bool, waveformStemReorderOnChange);
+    PROPERTY_DECL_ACCESSOR(bool, waveformStemSplitTracks);
+    PROPERTY_DECL_ACCESSOR(bool, waveformCachingEnabled);
+    PROPERTY_DECL_ACCESSOR(bool, waveformGenerationWithAnalysisEnabled);
+    double waveformAverageFrameRate() const;
 
     // Library group
     PROPERTY_DECL_ACCESSOR(mixxx::preferences::Tooltips, libraryTooltips);
@@ -433,13 +480,23 @@ class QmlConfigProxy : public QmlConfigProxyBase {
         return s_pUserSettings;
     }
 
+    // Used by the shared QWidget preferences page when it updates waveform
+    // settings while the QML scene graph is running.
+    static void notifyWaveformSettingsChanged();
+    static void notifyWaveformAverageFrameRateChanged();
+
   signals:
     void multiSamplingLevelChanged();
     void useAccelerationChanged();
     void waveformZoomSynchronizationChanged();
     void waveformOverviewNormalizedChanged();
+    void waveformOverviewTypeChanged();
+    void waveformOverviewStereoChanged();
+    void waveformOverviewMinuteMarkersChanged();
     void waveformDefaultZoomChanged();
     void waveformPlayMarkerPositionChanged();
+    void waveformEnabledChanged();
+    void waveformFrameRateChanged();
     void waveformUntilMarkShowBeatsChanged();
     void waveformUntilMarkShowTimeChanged();
     void waveformUntilMarkAlignChanged();
@@ -452,6 +509,13 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     void waveformTypeChanged();
     void waveformOptionsChanged();
     void waveformBeatGridAlphaChanged();
+    void waveformStemOpacityChanged();
+    void waveformStemOutlineOpacityChanged();
+    void waveformStemReorderOnChangeChanged();
+    void waveformStemSplitTracksChanged();
+    void waveformCachingEnabledChanged();
+    void waveformGenerationWithAnalysisEnabledChanged();
+    void waveformAverageFrameRateChanged();
     void libraryTooltipsChanged();
     void libraryInhibitScreensaverChanged();
     void libraryHideMenuBarChanged();
@@ -521,6 +585,8 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     static inline UserSettingsPointer s_pUserSettings = nullptr;
 
     const UserSettingsPointer m_pConfig;
+    std::unique_ptr<ControlObject> m_pOverviewStereoControl;
+    std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
 };
 
 } // namespace qml

@@ -848,7 +848,7 @@ Select from different types of displays for the waveform overview, which differ 
   <item>
    <widget class="QGroupBox" name="opengl_status_groupbox">
     <property name="title">
-     <string>OpenGL Status</string>
+     <string>Graphics API Status</string>
     </property>
     <layout class="QGridLayout" name="opengl_status_layout">
      <item row="0" column="0" colspan="3">
@@ -860,7 +860,7 @@ Select from different types of displays for the waveform overview, which differ 
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Displays which OpenGL version is supported by the current platform.</string>
+       <string>Displays the graphics API used by the current renderer.</string>
        </property>
        <property name="text">
         <string/>

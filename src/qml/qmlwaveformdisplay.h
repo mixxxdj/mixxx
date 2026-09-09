@@ -48,6 +48,9 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     Q_PROPERTY(double position READ getPosition WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlWaveformRendererFactory> renderers READ renderers)
     Q_PROPERTY(double zoom READ getZoom WRITE setZoom NOTIFY zoomChanged)
+    Q_PROPERTY(int frameRate READ getFrameRate WRITE setFrameRate NOTIFY
+                    frameRateChanged)
+    Q_PROPERTY(double audioSamplePerPixel READ getAudioSamplePerPixel)
     Q_PROPERTY(QColor backgroundColor READ getBackgroundColor WRITE
                     setBackgroundColor NOTIFY backgroundColorChanged)
     Q_PROPERTY(WaveformRendererSignalBaseOptions options READ
@@ -73,6 +76,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
         HighDetail = static_cast<int>(
                 allshader::WaveformRendererSignalBase::Option::HighDetail),
     };
+    Q_ENUM(Option);
     Q_DECLARE_FLAGS(Options, Option);
 
     QmlWaveformDisplay(QQuickItem* parent = nullptr);
@@ -101,6 +105,10 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
         WaveformWidgetRenderer::setZoom(zoom);
         emit zoomChanged();
     }
+    int getFrameRate() const {
+        return m_frameRate;
+    }
+    void setFrameRate(int frameRate);
 
     std::chrono::microseconds fromTimerToNextSync(const PerformanceTimer& timer) override;
     std::chrono::microseconds getSyncInterval() const override {
@@ -125,6 +133,11 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     }
     void setOptions(WaveformRendererSignalBaseOptions options);
 
+    // Recreate the scene-graph renderer stack after a setting changes which
+    // renderer is enabled. The renderer factories are declared in QML, while
+    // their scene-graph nodes are created lazily by updatePaintNode().
+    Q_INVOKABLE void refreshRenderers();
+
   protected:
     QSGNode* updatePaintNode(QSGNode* old, QQuickItem::UpdatePaintNodeData*) override;
     void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
@@ -139,6 +152,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
   signals:
     void playerChanged();
     void zoomChanged();
+    void frameRateChanged();
     void groupChanged(const QString& group);
     void trackChanged(mixxx::qml::QmlTrackProxy* track);
     void positionChanged(double);
@@ -156,7 +170,8 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     QmlTrackProxy* m_pTrack;
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
 
-    std::chrono::milliseconds m_syncInterval;
+    std::chrono::microseconds m_syncInterval;
+    int m_frameRate;
     enum class DirtyFlag : int {
         None = 0x0,
         Geometry = 0x1,
