@@ -83,6 +83,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
     void updateStemOptionsEnabled();
+    void notifyQmlWaveformSettingsChanged();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;

@@ -2,16 +2,24 @@
 
 #include <QLocale>
 #include <QMetaEnum>
+#ifdef MIXXX_USE_QML
+#include <QQuickWindow>
+#include <QSGRendererInterface>
+#endif
 
 #include "control/controlpushbutton.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
+#include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
+#ifdef MIXXX_USE_QML
+#include "qml/qmlconfigproxy.h"
+#endif
 
 namespace {
 const QString kWaveformGroup(QStringLiteral("[Waveform]"));
@@ -21,6 +29,33 @@ const ConfigKey kWaveformOptionsKey(kWaveformGroup,
         QStringLiteral("waveform_options"));
 const ConfigKey kHardwareAccelerationKey(kWaveformGroup,
         QStringLiteral("use_hardware_acceleration"));
+
+#ifdef MIXXX_USE_QML
+QString quickGraphicsApiName() {
+    switch (QQuickWindow::graphicsApi()) {
+    case QSGRendererInterface::OpenGL:
+        return QStringLiteral("OpenGL");
+    case QSGRendererInterface::Metal:
+        return QStringLiteral("Metal");
+    case QSGRendererInterface::Direct3D11:
+        return QStringLiteral("Direct3D 11");
+    case QSGRendererInterface::Direct3D12:
+        return QStringLiteral("Direct3D 12");
+    case QSGRendererInterface::Vulkan:
+        return QStringLiteral("Vulkan");
+    case QSGRendererInterface::Software:
+        return QStringLiteral("Software");
+    case QSGRendererInterface::Null:
+        return QStringLiteral("Null");
+    default:
+        return QStringLiteral("Unknown");
+    }
+}
+
+bool isQmlUiActive() {
+    return WaveformWidgetFactory::isQmlMode();
+}
+#endif
 } // namespace
 
 // for OverviewType
@@ -40,9 +75,11 @@ DlgPrefWaveform::DlgPrefWaveform(
             tr("Filtered"), QVariant::fromValue(OverviewType::Filtered));
     waveformOverviewComboBox->addItem(tr("HSV"), QVariant::fromValue(OverviewType::HSV));
     waveformOverviewComboBox->addItem(tr("RGB"), QVariant::fromValue(OverviewType::RGB));
-    m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
-    m_pTypeControl->setStates(QMetaEnum::fromType<OverviewType>().keyCount());
-    m_pTypeControl->setReadOnly();
+    if (!ControlObject::exists(kOverviewTypeCfgKey)) {
+        m_pTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
+        m_pTypeControl->setStates(QMetaEnum::fromType<OverviewType>().keyCount());
+        m_pTypeControl->setReadOnly();
+    }
     // Update the control with the config value
     OverviewType overviewType =
             m_pConfig->getValue<OverviewType>(kOverviewTypeCfgKey, OverviewType::RGB);
@@ -57,7 +94,11 @@ DlgPrefWaveform::DlgPrefWaveform(
         waveformOverviewComboBox->setCurrentIndex(cfgTypeIndex);
     }
     // Set the control used by WOverview
-    m_pTypeControl->forceSet(cfgTypeIndex);
+    if (m_pTypeControl) {
+        m_pTypeControl->forceSet(cfgTypeIndex);
+    } else if (auto* pControl = ControlObject::getControl(kOverviewTypeCfgKey)) {
+        pControl->forceSet(cfgTypeIndex);
+    }
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -81,14 +122,20 @@ DlgPrefWaveform::DlgPrefWaveform(
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
-    m_pOverviewStereoControl = std::make_unique<ControlObject>(
-            ConfigKey(kWaveformGroup,
-                    QStringLiteral("overview_stereo_mode")));
-    m_pOverviewStereoControl->setReadOnly();
+    const ConfigKey overviewStereoKey(
+            kWaveformGroup, QStringLiteral("overview_stereo_mode"));
+    if (!ControlObject::exists(overviewStereoKey)) {
+        m_pOverviewStereoControl = std::make_unique<ControlObject>(overviewStereoKey);
+        m_pOverviewStereoControl->setReadOnly();
+    }
 
-    m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
-            ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")));
-    m_pOverviewMinuteMarkersControl->setReadOnly();
+    const ConfigKey overviewMinuteMarkersKey(
+            kWaveformGroup, QStringLiteral("draw_overview_minute_markers"));
+    if (!ControlObject::exists(overviewMinuteMarkersKey)) {
+        m_pOverviewMinuteMarkersControl = std::make_unique<ControlObject>(
+                overviewMinuteMarkersKey);
+        m_pOverviewMinuteMarkersControl->setReadOnly();
+    }
 
     // Populate untilMark options
     untilMarkAlignComboBox->addItem(tr("Top"));
@@ -292,13 +339,34 @@ void DlgPrefWaveform::slotSetWaveformOptions(
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(
             factory->findHandleIndexFromType(type), true);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
+#ifdef MIXXX_USE_QML
+    // The QML settings page writes directly through QmlConfigProxy. Reload the
+    // shared factory before presenting the legacy page so both preference
+    // surfaces reflect the same persisted values.
+    if (isQmlUiActive()) {
+        factory->setConfig(m_pConfig);
+        factory->setWidgetTypeFromConfig();
+    }
+#endif
+
     bool isAccelerationEnabled = false;
-    if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
+#ifdef MIXXX_USE_QML
+    if (isQmlUiActive()) {
+        openGlStatusData->setText(
+                tr("Qt Quick renderer: %1").arg(quickGraphicsApiName()));
+        // QML chooses acceleration through the scene-graph backend. The
+        // legacy per-waveform acceleration switch does not apply here.
+        useAccelerationCheckBox->setEnabled(false);
+        useAccelerationCheckBox->setChecked(true);
+    } else
+#endif
+            if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
         openGlStatusData->setText(factory->getOpenGLVersion());
         useAccelerationCheckBox->setEnabled(true);
         isAccelerationEnabled = m_pConfig->getValue(
@@ -329,6 +397,15 @@ void DlgPrefWaveform::slotUpdate() {
             factory->preferredBackend());
     updateWaveformAcceleration(factory->getType(), backend);
     updateWaveformTypeOptions(useWaveform, backend, currentOptions);
+#ifdef MIXXX_USE_QML
+    if (isQmlUiActive()) {
+        // The scene-graph renderer currently ignores the legacy textured/high
+        // detail option. Keep the control visible for parity, but make its
+        // unsupported state explicit.
+        highDetailCheckBox->setEnabled(false);
+        highDetailCheckBox->setChecked(false);
+    }
+#endif
     waveformTypeComboBox->setEnabled(useWaveform);
     updateEnableUntilMark();
     updateWaveformGeneralOptionsEnabled();
@@ -382,12 +459,22 @@ void DlgPrefWaveform::slotUpdate() {
     bool overviewStereo = m_pConfig->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), true);
     overviewStereoCheckBox->setChecked(overviewStereo);
-    m_pOverviewStereoControl->forceSet(overviewStereo);
+    if (m_pOverviewStereoControl) {
+        m_pOverviewStereoControl->forceSet(overviewStereo);
+    } else if (auto* pControl = ControlObject::getControl(
+                       ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")))) {
+        pControl->forceSet(overviewStereo);
+    }
 
     bool drawOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")), true);
     overviewMinuteMarkersCheckBox->setChecked(drawOverviewMinuteMarkers);
-    m_pOverviewMinuteMarkersControl->forceSet(drawOverviewMinuteMarkers);
+    if (m_pOverviewMinuteMarkersControl) {
+        m_pOverviewMinuteMarkersControl->forceSet(drawOverviewMinuteMarkers);
+    } else if (auto* pControl = ControlObject::getControl(
+                       ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")))) {
+        pControl->forceSet(drawOverviewMinuteMarkers);
+    }
 
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
@@ -402,6 +489,7 @@ void DlgPrefWaveform::slotApply() {
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
         enableWaveformGenerationWithAnalysis->isChecked());
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
@@ -470,12 +558,22 @@ void DlgPrefWaveform::slotResetToDefaults() {
     stemDisplayModeComboBox->setCurrentIndex(0);
 }
 
+void DlgPrefWaveform::notifyQmlWaveformSettingsChanged() {
+#ifdef MIXXX_USE_QML
+    if (isQmlUiActive()) {
+        mixxx::qml::QmlConfigProxy::notifyWaveformSettingsChanged();
+    }
+#endif
+}
+
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
     WaveformWidgetFactory::instance()->setFrameRate(frameRate);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetWaveformEndRender(int endTime) {
     WaveformWidgetFactory::instance()->setEndOfTrackWarningTime(endTime);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetWaveformType(int index) {
@@ -517,6 +615,7 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
     updateStemOptionsEnabled();
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
@@ -531,6 +630,7 @@ void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
         factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type), true);
     }
     slotUpdate();
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
@@ -554,6 +654,7 @@ void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
     updateWaveformTypeOptions(true, backend, currentOptions);
     updateEnableUntilMark();
     updateStemOptionsEnabled();
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::updateWaveformAcceleration(
@@ -696,49 +797,73 @@ void DlgPrefWaveform::slotSetWaveformOverviewType() {
     DEBUG_ASSERT(comboboxData.canConvert<OverviewType>());
     auto type = comboboxData.value<OverviewType>();
     m_pConfig->setValue(kOverviewTypeCfgKey, type);
-    m_pTypeControl->forceSet(static_cast<double>(type));
+    if (m_pTypeControl) {
+        m_pTypeControl->forceSet(static_cast<double>(type));
+    } else if (auto* pControl = ControlObject::getControl(kOverviewTypeCfgKey)) {
+        pControl->forceSet(static_cast<double>(type));
+    }
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetDefaultZoom(int index) {
     WaveformWidgetFactory::instance()->setDefaultZoom(index + 1);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetZoomSynchronization(bool checked) {
     WaveformWidgetFactory::instance()->setZoomSync(checked);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetVisualGainAll(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::AllBand, gain);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetVisualGainLow(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::Low, gain);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetVisualGainMid(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::Mid, gain);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
     WaveformWidgetFactory::instance()->setVisualGain(BandIndex::High, gain);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetOverviewScaling() {
     WaveformWidgetFactory::instance()->setOverviewNormalized(
             overview_scale_normalize->isChecked());
     updateWaveformGainEnabled();
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
     m_pConfig->setValue(ConfigKey(kWaveformGroup,
                                 QStringLiteral("draw_overview_minute_markers")),
             draw);
-    m_pOverviewMinuteMarkersControl->forceSet(draw);
+    if (m_pOverviewMinuteMarkersControl) {
+        m_pOverviewMinuteMarkersControl->forceSet(draw);
+    } else if (auto* pControl = ControlObject::getControl(
+                       ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")))) {
+        pControl->forceSet(draw);
+    }
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetOverviewStereoMode(bool stereo) {
     m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")), stereo);
-    m_pOverviewStereoControl->forceSet(stereo);
+    if (m_pOverviewStereoControl) {
+        m_pOverviewStereoControl->forceSet(stereo);
+    } else if (auto* pControl = ControlObject::getControl(
+                       ConfigKey(kWaveformGroup, QStringLiteral("overview_stereo_mode")))) {
+        pControl->forceSet(stereo);
+    }
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
@@ -760,52 +885,63 @@ void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
     // the other waveform controls.
     m_pConfig->setValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")), alpha);
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowBeats(checked);
     updateEnableUntilMark();
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
     WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
     updateEnableUntilMark();
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
     WaveformWidgetFactory::instance()->setUntilMarkAlign(
             WaveformWidgetFactory::toUntilMarkAlign(index));
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
     WaveformWidgetFactory::instance()->setUntilMarkTextPointSize(value);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
     WaveformWidgetFactory::instance()->setUntilMarkTextHeightLimit(
             WaveformWidgetFactory::toUntilMarkTextHeightLimit(index));
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotStemOpacity(float value) {
     WaveformWidgetFactory::instance()->setStemOpacity(value);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotStemReorderOnChange(bool value) {
     WaveformWidgetFactory::instance()->setStemReorderOnChange(value);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotStemOutlineOpacity(float value) {
     WaveformWidgetFactory::instance()->setStemOutlineOpacity(value);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::slotStemDisplayMode(int index) {
     WaveformWidgetFactory::instance()->setStemSplitTracks(index == 1);
+    notifyQmlWaveformSettingsChanged();
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

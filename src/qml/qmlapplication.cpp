@@ -21,6 +21,7 @@
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlapplicationproxy.h"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlcoreservices.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
@@ -122,6 +123,9 @@ QmlApplication::QmlApplication(
           m_perfSession(nullptr),
 #endif
           m_autoReload() {
+#ifdef MIXXX_USE_QML
+    WaveformWidgetFactory::setQmlMode(true);
+#endif
     QQuickStyle::setStyle("Basic");
 
 #if defined(Q_OS_ANDROID)
@@ -218,6 +222,24 @@ QmlApplication::QmlApplication(
     }
 
     setupSpinnyCoverControls();
+
+    // DlgPreferences is shared with the legacy UI. Keep the waveform factory
+    // alive in QML mode as a settings/configuration backend for its Waveforms
+    // page; QML rendering itself is still handled by the scene graph.
+    if (!WaveformWidgetFactory::isCreated()) {
+        WaveformWidgetFactory::createInstance();
+        auto* pWaveformFactory = WaveformWidgetFactory::instance();
+        pWaveformFactory->setConfig(m_pCoreServices->getSettings());
+        // There are no legacy waveform viewers in the QML skin, so the
+        // factory normally waits for MixxxMainWindow::slotSkinLoaded() to
+        // select the configured type. DlgPrefWaveform still uses getType()
+        // to populate its shared preferences page, therefore select the
+        // configured type here without creating a legacy widget.
+        pWaveformFactory->setWidgetTypeFromConfig();
+        if (pWaveformFactory->getType() == WaveformWidgetType::Empty) {
+            pWaveformFactory->setWidgetType(WaveformWidgetFactory::defaultType());
+        }
+    }
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
@@ -359,16 +381,30 @@ QmlApplication::QmlApplication(
         APerformanceHint_setPreferPowerEfficiency(m_perfSession, false);
         __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "ADPF session ready");
     }
+#endif
 }
 
 void QmlApplication::slotWindowChanged(QQuickWindow* window) {
     if (window) {
-        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlApplication::slotFrameSwapped);
+        connect(window,
+                &QQuickWindow::afterFrameEnd,
+                this,
+                &QmlApplication::slotFrameSwapped,
+                Qt::UniqueConnection);
     }
+#if defined(Q_OS_ANDROID)
     m_frameTimer.restart();
+#endif
 }
 
 void QmlApplication::slotFrameSwapped() {
+#ifdef MIXXX_USE_QML
+    if (WaveformWidgetFactory::isCreated() &&
+            WaveformWidgetFactory::instance()->reportQmlFrame()) {
+        QmlConfigProxy::notifyWaveformAverageFrameRateChanged();
+    }
+#endif
+#if defined(Q_OS_ANDROID)
     VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
         return;
     }
@@ -385,6 +421,14 @@ QmlApplication::~QmlApplication() {
     // Delete all the QML singletons in order to prevent leak detection in CoreService
     QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
+    // The factory is created above only to back the shared legacy preferences
+    // dialog in QML mode. Destroy it before CoreServices releases its settings.
+    if (WaveformWidgetFactory::isCreated()) {
+        WaveformWidgetFactory::destroy();
+    }
+#ifdef MIXXX_USE_QML
+    WaveformWidgetFactory::setQmlMode(false);
+#endif
     m_visualsManager.reset();
     m_pAppEngine.reset();
     m_pCoreServices.reset();
@@ -454,7 +498,6 @@ bool QmlApplication::loadQml(const QString& path) {
         return false;
     }
 
-#if defined(Q_OS_ANDROID)
     for (auto* item : m_pAppEngine->rootObjects()) {
         auto* pWindow = qobject_cast<QQuickWindow*>(item);
         if (!pWindow) {
@@ -463,7 +506,6 @@ bool QmlApplication::loadQml(const QString& path) {
         slotWindowChanged(pWindow);
         break;
     }
-#endif
     return true;
 }
 

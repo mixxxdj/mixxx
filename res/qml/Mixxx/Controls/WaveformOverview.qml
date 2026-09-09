@@ -33,6 +33,9 @@ Mixxx.WaveformOverview {
         return "";
     }
 
+    minuteMarkers: Mixxx.Config.waveformOverviewMinuteMarkers
+    normalized: Mixxx.Config.waveformOverviewNormalized
+    stereo: Mixxx.Config.waveformOverviewStereo
     track: player?.currentTrack
 
     Mixxx.ControlProxy {
