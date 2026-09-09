@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Mixxx 1.0 as Mixxx
 import "../LateNightTheme"
 
 Item {
@@ -14,141 +15,97 @@ Item {
     property bool showIntroOutroCues: true
     property bool showLoopControls: true
 
-    height: 55
     clip: true
+    height: LateNightTheme.deckTransportHeight
 
-    Rectangle {
-        anchors.fill: parent
-        color: "#151515"
-        visible: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0
+    Mixxx.ControlProxy {
+        id: beatloopSizeProxy
 
-        Image {
-            anchors.fill: parent
-            source: LateNightTheme.optionalDeckControlsBackgroundTile
-            fillMode: Image.Tile
-        }
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.right: parent.right
-            height: 1
-            color: LateNightTheme.deckPanelBorderDark
-        }
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: 1
-            color: LateNightTheme.deckPanelBorderDark
-        }
-
-        Rectangle {
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            height: 1
-            color: LateNightTheme.deckPanelBorderLight
-        }
-
-        Rectangle {
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            width: 1
-            color: LateNightTheme.deckPanelBorderLight
-        }
+        group: root.group
+        key: "beatloop_size"
     }
+    Mixxx.ControlProxy {
+        id: beatjumpSizeProxy
 
+        group: root.group
+        key: "beatjump_size"
+    }
+    DeckControlsBackground {}
     RowLayout {
+        anchors.bottomMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 2 : 0
         anchors.fill: parent
         anchors.leftMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
-        anchors.topMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
         anchors.rightMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
-        anchors.bottomMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 2 : 0
+        anchors.topMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
         spacing: 6
 
         GridLayout {
-            columns: 2
-            rows: 2
-            rowSpacing: 0
-            columnSpacing: 0
-            Layout.preferredWidth: 68
             Layout.preferredHeight: 52
+            Layout.preferredWidth: 68
+            columnSpacing: 0
+            columns: 2
+            rowSpacing: 0
+            rows: 2
 
             // Cue button: left-click = cue_default, right-click = cue_gotoandstop
             // Display from cue_indicator
             LateNightControlButton {
-                Layout.preferredWidth: 42
                 Layout.preferredHeight: 26
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("medium")
-                iconSource: LateNightTheme.assetDeckCueButton
-                group: root.group
-                key: "cue_default"
-                rightClickKey: "cue_gotoandstop"
-                displayKey: "cue_indicator"
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
+                Layout.preferredWidth: 42
                 activeBackgroundSuffix: "set"
-                pressedBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.playCueActiveIconSuffix
-                pressedIconSuffix: LateNightTheme.playCueActiveIconSuffix
                 activeColor: LateNightTheme.activePlayCueColor
+                activeIconSuffix: LateNightTheme.playCueActiveIconSuffix
+                activeOpacity: 1.0
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("medium")
+                displayKey: "cue_indicator"
+                group: root.group
+                iconSource: LateNightTheme.assetDeckCueButton
+                inactiveOpacity: 0.82
+                key: "cue_default"
                 pressedActivatesFill: true
+                pressedBackgroundSuffix: "active"
+                pressedIconSuffix: LateNightTheme.playCueActiveIconSuffix
+                rightClickKey: "cue_gotoandstop"
             }
 
             // Reverse button: left-click = reverse, right-click = reverseroll
             LateNightControlButton {
-                Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                Layout.preferredWidth: 26
                 activeBackgroundSuffix: "active"
-                iconSource: LateNightTheme.assetDeckReverseButton
+                activeColor: LateNightTheme.activePlayCueColor
                 activeIconSuffix: LateNightTheme.playCueActiveIconSuffix
-                stretchIcon: true
+                activeOpacity: 1.0
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 group: root.group
+                iconSource: LateNightTheme.assetDeckReverseButton
+                inactiveOpacity: 0.82
                 key: "reverse"
                 rightClickKey: "reverseroll"
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
-                activeColor: LateNightTheme.activePlayCueColor
+                stretchIcon: true
             }
 
-            // Play button: left-click = play,
-            //              right-click = cue_set
-            //              Display from play_indicator
-            LateNightControlButton {
+            LateNightPlayButton {
                 Layout.columnSpan: 2
-                Layout.preferredWidth: 68
                 Layout.preferredHeight: 26
+                Layout.preferredWidth: 68
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("play")
-                iconSource: LateNightTheme.assetDeckPlayButton
                 group: root.group
-                key: "play"
-                rightClickKey: "cue_set"
-                displayKey: "play_indicator"
-                toggleable: true
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
-                activeBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.playCueActiveIconSuffix
-                activeColor: LateNightTheme.activePlayCueColor
             }
         }
-
         Item {
             Layout.preferredWidth: 4
+            visible: root.showHotcues || root.showIntroOutroCues
         }
 
         // Hotcue controls
         GridLayout {
-            columns: root.show8Hotcues ? 4 : 2
-            rows: 2
-            rowSpacing: 0
-            columnSpacing: 0
-            Layout.preferredWidth: root.show8Hotcues ? 104 : 52
             Layout.preferredHeight: 52
+            Layout.preferredWidth: root.show8Hotcues ? 104 : 52
+            columnSpacing: 0
+            columns: root.show8Hotcues ? 4 : 2
+            rowSpacing: 0
+            rows: 2
             visible: root.showHotcues
 
             LateNightHotcueButton {
@@ -211,19 +168,19 @@ Item {
                 hotcueNumber: 8
             }
         }
-
         Item {
             Layout.preferredWidth: 4
+            visible: root.showHotcues || root.showIntroOutroCues
         }
 
         // Intro/Outro controls
         GridLayout {
-            columns: 2
-            rows: 2
-            rowSpacing: 0
-            columnSpacing: 0
-            Layout.preferredWidth: 52
             Layout.preferredHeight: 52
+            Layout.preferredWidth: 52
+            columnSpacing: 0
+            columns: 2
+            rowSpacing: 0
+            rows: 2
             visible: root.showIntroOutroCues
 
             LateNightSpecialCueButton {
@@ -254,19 +211,24 @@ Item {
                 cueType: "outro_end"
             }
         }
-
         Item {
-            Layout.preferredWidth: 8
+            Layout.preferredWidth: 2
+            visible: root.showIntroOutroCues || root.showLoopControls || root.showBeatjumpControls
+        }
+        Item {
+            Layout.fillWidth: true
+            Layout.maximumWidth: 80
+            visible: root.showIntroOutroCues || root.showLoopControls || root.showBeatjumpControls
         }
 
         // Loop controls
         GridLayout {
-            columns: 4
-            rows: 2
-            rowSpacing: 0
-            columnSpacing: 0
-            Layout.preferredWidth: 104
             Layout.preferredHeight: 52
+            Layout.preferredWidth: 104
+            columnSpacing: 0
+            columns: 4
+            rowSpacing: 0
+            rows: 2
             visible: root.showLoopControls
 
             LateNightControlButton {
@@ -291,7 +253,6 @@ Item {
 
             LateNightBeatSpinBox {
                 Layout.columnSpan: 3
-                Layout.preferredWidth: 78
                 Layout.preferredHeight: 26
                 group: root.group
                 key: "beatloop_size"
@@ -376,32 +337,36 @@ Item {
                 pressedActivatesFill: true
             }
         }
-
         Item {
-            Layout.preferredWidth: 8
+            Layout.preferredWidth: 2
+            visible: root.showLoopControls || root.showBeatjumpControls
+        }
+        Item {
+            Layout.fillWidth: true
+            Layout.maximumWidth: 80
+            visible: root.showLoopControls || root.showBeatjumpControls
         }
 
         // Beatjump controls
         GridLayout {
-            columns: 2
-            rows: 2
-            rowSpacing: 0
-            columnSpacing: 0
-            Layout.preferredWidth: 60
             Layout.preferredHeight: 52
+            Layout.preferredWidth: 60
+            columnSpacing: 0
+            columns: 2
+            rowSpacing: 0
+            rows: 2
             visible: root.showBeatjumpControls
 
             LateNightBeatSpinBox {
                 Layout.columnSpan: 2
-                Layout.preferredWidth: 60
                 Layout.preferredHeight: 26
+                Layout.preferredWidth: 60
                 preferredWidth: 60
                 group: root.group
                 key: "beatjump_size"
                 decrementKey: "beatjump_size_halve"
                 incrementKey: "beatjump_size_double"
             }
-
             LateNightControlButton {
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
@@ -440,7 +405,6 @@ Item {
                 pressedActivatesFill: true
             }
         }
-
         Item {
             Layout.fillWidth: true
         }

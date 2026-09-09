@@ -14,12 +14,13 @@ QString TremoloEffect::getId() {
 EffectManifestPointer TremoloEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId(getId());
-    pManifest->setName(QObject::tr("Tremolo"));
-    pManifest->setShortName(QObject::tr("Tremolo"));
+    pManifest->setName(QObject::tr("Tremolo/Trans"));
+    pManifest->setShortName(QObject::tr("Tremolo/Trans"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(QObject::tr(
-            "Cycles the volume up and down"));
+    pManifest->setDescription(
+            QObject::tr("Cycles the volume up and down. Use sine wave for "
+                        "tremolo and square wave for trans effect."));
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
@@ -62,8 +63,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
     waveform->setShortName(QObject::tr("Waveform"));
     waveform->setDescription(QObject::tr(
             "Shape of the volume modulation wave\n"
-            "Fully left: Square wave\n"
-            "Fully right: Sine wave"));
+            "Fully left: Square wave (Trans)\n"
+            "Fully right: Sine wave (Tremolo)"));
     waveform->setValueScaler(
             EffectManifestParameter::ValueScaler::Logarithmic);
     waveform->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
