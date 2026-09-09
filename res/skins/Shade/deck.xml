@@ -558,12 +558,26 @@
 
                   <SliderComposed>
                     <TooltipId>rate</TooltipId>
+                    <Style></Style>
                     <Handle>knob_pitch.png</Handle>
                     <Slider>slider_pitch.png</Slider>
-                    <Pos>20,62</Pos>
+                    <Pos>16,62</Pos>
                     <Horizontal>false</Horizontal>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
+
+                  <SliderComposed>
+                    <TooltipId>rate_ultra</TooltipId>
+                    <Style></Style>
+                    <Handle>knob_pitch.png</Handle>
+                    <Slider>slider_pitch.png</Slider>
+                    <Pos>24,62</Pos>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Channel<Variable name="channum"/>],rate_ultra</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </SliderComposed>
