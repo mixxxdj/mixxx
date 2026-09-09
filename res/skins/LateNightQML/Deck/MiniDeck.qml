@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -14,8 +16,7 @@ Controls.Panel {
     required property string group
     readonly property bool hasTrackColor: root.isLoaded && trackColor?.valid
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
-    readonly property bool showSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
-            && (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0)
+    readonly property bool showSpinnyOrCover: SpinnyCoverState.showSpinnyOrCover
     readonly property color overviewColor: secondaryDeck ? LateNightTheme.secondaryOverviewBackgroundColor : LateNightTheme.primaryOverviewBackgroundColor
     readonly property int overviewType: Math.round(overviewTypeProxy.value)
     readonly property bool secondaryDeck: root.group === "[Channel3]" || root.group === "[Channel4]"
@@ -70,24 +71,6 @@ Controls.Panel {
 
         group: "[Waveform]"
         key: "WaveformOverviewType"
-    }
-    Mixxx.ControlProxy {
-        id: showSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showSpinniesProxy
-
-        group: "[Skin]"
-        key: "show_spinnies"
-    }
-    Mixxx.ControlProxy {
-        id: showCoverArtProxy
-
-        group: "[Skin]"
-        key: "show_coverart"
     }
     RowLayout {
         anchors.fill: parent

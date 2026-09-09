@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -9,17 +11,11 @@ Controls.Panel {
 
     required property string group
     readonly property bool showBeatjumpControls: showBeatjumpControlsProxy.value > 0
-    readonly property bool showBigSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
-            && (!showBigSpinnyOrCoverProxy.initialized
-                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value > 0
-                    : showBigSpinnyOrCoverProxy.value > 0)
+    readonly property bool showBigSpinnyOrCover: SpinnyCoverState.showBigSpinnyOrCover
     readonly property bool showKeyControls: showKeyControlsProxy.value > 0
     readonly property bool showLoopControls: showLoopControlsProxy.value > 0
     readonly property bool showRateControls: showRateControlsProxy.value > 0
-    readonly property bool showSmallSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
-            && (!showSmallSpinnyOrCoverProxy.initialized
-                    ? (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0) && selectBigSpinnyProxy.value <= 0
-                    : showSmallSpinnyOrCoverProxy.value > 0)
+    readonly property bool showSmallSpinnyOrCover: SpinnyCoverState.showSmallSpinnyOrCover
     readonly property bool showVinylControls: showVinylControlsProxy.value > 0
 
     signal toggleFocus
@@ -28,32 +24,6 @@ Controls.Panel {
     implicitHeight: LateNightTheme.compactDeckHeight
     implicitWidth: 620
 
-    Mixxx.ControlProxy {
-        id: selectBigSpinnyProxy
-
-        group: "[Skin]"
-        key: "select_big_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showSmallSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_small_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showBigSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_big_spinny_or_cover"
-    }
-    Mixxx.ControlProxy { id: showSpinniesProxy; group: "[Skin]"; key: "show_spinnies" }
-    Mixxx.ControlProxy { id: showCoverArtProxy; group: "[Skin]"; key: "show_coverart" }
     Mixxx.ControlProxy {
         id: showVinylControlsProxy
 

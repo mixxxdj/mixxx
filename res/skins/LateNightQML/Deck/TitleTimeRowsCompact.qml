@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -13,11 +15,6 @@ Item {
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
     readonly property bool secondaryDeck: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property var trackColor: currentTrack?.color
-
-    function formatTime(seconds) {
-        const value = Math.max(0, Math.floor(seconds));
-        return Math.floor(value / 60).toString() + ":" + (value % 60).toString().padStart(2, "0");
-    }
 
     implicitHeight: 46
 
@@ -57,7 +54,11 @@ Item {
                 font.family: "Open Sans"
                 font.pixelSize: 13
                 horizontalAlignment: Text.AlignRight
-                text: root.isLoaded ? root.formatTime(durationProxy.value * playpositionProxy.value) : ""
+                text: root.isLoaded
+                        ? Mixxx.DurationFormatter.format(
+                                  durationProxy.value * playpositionProxy.value,
+                                  Mixxx.DurationFormatter.Mode.TraditionalCoarse)
+                        : ""
                 verticalAlignment: Text.AlignVCenter
             }
         }
@@ -86,7 +87,11 @@ Item {
                 font.family: "Open Sans"
                 font.pixelSize: 12
                 horizontalAlignment: Text.AlignRight
-                text: root.isLoaded ? root.formatTime(durationProxy.value) : ""
+                text: root.isLoaded
+                        ? Mixxx.DurationFormatter.format(
+                                  durationProxy.value,
+                                  Mixxx.DurationFormatter.Mode.TraditionalCoarse)
+                        : ""
                 verticalAlignment: Text.AlignVCenter
             }
         }

@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Mixxx 1.0 as Mixxx
 import Mixxx.Controls 1.0 as MixxxControls
@@ -10,61 +12,14 @@ Item {
     readonly property var deckPlayer: Mixxx.PlayerManager.getPlayer(root.group)
     required property string group
     readonly property bool isLoaded: deckPlayer?.isLoaded ?? false
-    // The derived controls choose the slot size, but the two source toggles
-    // remain the authority for whether a slot exists at all. This prevents a
-    // stale derived value from leaving an empty layout gap.
-    readonly property bool showSpinnyOrCover: (showSpinniesProxy.value > 0 || showCoverArtProxy.value > 0)
-            && (!showSpinnyOrCoverProxy.initialized || showSpinnyOrCoverProxy.value > 0)
-    readonly property bool showSmallSpinnyOrCover: root.showSpinnyOrCover
-            && (!showSmallSpinnyOrCoverProxy.initialized
-                    ? selectBigSpinnyProxy.value <= 0
-                    : showSmallSpinnyOrCoverProxy.value > 0)
-    readonly property bool showBigSpinnyOrCover: root.showSpinnyOrCover
-            && (!showBigSpinnyOrCoverProxy.initialized
-                    ? selectBigSpinnyProxy.value > 0
-                    : showBigSpinnyOrCoverProxy.value > 0)
-    readonly property bool showCover: root.showSpinnyOrCover && showCoverArtProxy.value > 0
-    readonly property bool showSpinny: root.showSpinnyOrCover && showSpinniesProxy.value > 0
+    readonly property bool showSpinnyOrCover: SpinnyCoverState.showSpinnyOrCover
+    readonly property bool showSmallSpinnyOrCover: SpinnyCoverState.showSmallSpinnyOrCover
+    readonly property bool showBigSpinnyOrCover: SpinnyCoverState.showBigSpinnyOrCover
+    readonly property bool showCover: SpinnyCoverState.showCover
+    readonly property bool showSpinny: SpinnyCoverState.showSpinny
 
     // Maintain a 1:1 aspect ratio (square)
     width: height
-
-    Mixxx.ControlProxy {
-        id: showSpinniesProxy
-
-        group: "[Skin]"
-        key: "show_spinnies"
-    }
-    Mixxx.ControlProxy {
-        id: showCoverArtProxy
-
-        group: "[Skin]"
-        key: "show_coverart"
-    }
-    Mixxx.ControlProxy {
-        id: selectBigSpinnyProxy
-
-        group: "[Skin]"
-        key: "select_big_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showSmallSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_small_spinny_or_cover"
-    }
-    Mixxx.ControlProxy {
-        id: showBigSpinnyOrCoverProxy
-
-        group: "[Skin]"
-        key: "show_big_spinny_or_cover"
-    }
 
     // Spinny Platter Mode
     Item {
