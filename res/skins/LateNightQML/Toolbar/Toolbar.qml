@@ -2419,13 +2419,13 @@ Rectangle {
                 }
             }
         }
-        Image {
+        ToolbarMenuCheckIndicator {
             anchors.left: parent.left
             anchors.leftMargin: 3
             anchors.verticalCenter: parent.verticalCenter
-            fillMode: Image.PreserveAspectFit
             height: 14
-            source: appMenuAction.checked ? (LateNightTheme.isPaleMoon ? LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_ivory.svg") : LateNightTheme.lateNightAsset("buttons", "btn__lib_checkmark_grey.svg")) : LateNightTheme.lateNightAsset("buttons", "btn__menu_checkbox.svg")
+            checked: appMenuAction.checked
+            hovered: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus
             visible: appMenuAction.checkable
             width: 14
         }
