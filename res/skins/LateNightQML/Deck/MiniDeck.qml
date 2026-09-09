@@ -190,8 +190,9 @@ Controls.Panel {
                     Layout.maximumWidth: 42
                     spacing: 0
 
-                    KeyColorIndicator {
+                    MixxxControls.KeyColorIndicator {
                         Layout.alignment: Qt.AlignVCenter
+                        fallbackColor: LateNightTheme.accentColor
                         Layout.minimumWidth: root.showMiniKeyColorStrip ? 4 : 0
                         Layout.preferredWidth: root.showMiniKeyColorStrip ? 4 : 0
                         Layout.maximumWidth: root.showMiniKeyColorStrip ? 4 : 0

@@ -1,6 +1,7 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
 import "../LateNightTheme"
+import "../../../qml/Mixxx/Controls" as MixxxControls
 
 Item {
     id: root
@@ -67,7 +68,8 @@ Item {
         backgroundBorderRight: 2
     }
 
-    KeyColorIndicator {
+    MixxxControls.KeyColorIndicator {
+        fallbackColor: LateNightTheme.accentColor
         x: 26
         y: 0
         width: 4

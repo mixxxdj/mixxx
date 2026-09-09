@@ -3990,6 +3990,7 @@ if(QML)
       res/qml/Mixxx/Controls/Knob.qml
       res/qml/Mixxx/Controls/Fader.qml
       res/qml/Mixxx/Controls/Spinny.qml
+      res/qml/Mixxx/Controls/KeyColorIndicator.qml
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarkerLayer.qml

@@ -1,11 +1,11 @@
 import QtQuick
 import Mixxx 1.0 as Mixxx
-import "../LateNightTheme"
 
 Item {
     id: root
 
     required property string group
+    required property color fallbackColor
 
     implicitWidth: 4
     implicitHeight: 20
@@ -28,7 +28,7 @@ Item {
         const openKeyNumber = Mixxx.KeyUtils.keyToOpenKeyNumber(key);
         const palette = Mixxx.Config.keyColorPalette;
         if (openKeyNumber <= 0 || !palette || palette.length < openKeyNumber) {
-            return LateNightTheme.accentColor;
+            return root.fallbackColor;
         }
         return palette[openKeyNumber - 1];
     }
