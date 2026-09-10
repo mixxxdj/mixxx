@@ -280,6 +280,14 @@
             <SetVariable name="text">Cover Art</SetVariable>
             <SetVariable name="skinsetting">[Skin],show_library_coverart</SetVariable>
           </Template>
+
+          <!-- PrepWin -->
+          <Template src="skins:Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_prepwin</SetVariable>
+            <SetVariable name="text">Preparation Window</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_preparation_window</SetVariable>
+          </Template>
+
         </Children>
       </WidgetGroup>
 

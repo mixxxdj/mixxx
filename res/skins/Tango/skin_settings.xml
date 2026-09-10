@@ -315,6 +315,11 @@ Description:
             <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
           </Template>
 
+          <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
+            <SetVariable name="text">Preparation Window</SetVariable>
+            <SetVariable name="Setting">[Skin],show_preparation_window</SetVariable>
+          </Template>
+
         <!-- A hack involving a SizeAwareStack and WidgetStacks
           that toggles [Tango],no_spinny_no_cover when both
           [Skin],show_spinnies and [Skin],show_coverart are 0 -->
@@ -703,6 +708,11 @@ Description:
           <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
             <SetVariable name="text">Cover Art in Library</SetVariable>
             <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>
+          </Template>
+
+          <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
+            <SetVariable name="text">Preparation Window</SetVariable>
+            <SetVariable name="Setting">[Skin],show_preparation_window</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Sampler rows -->
