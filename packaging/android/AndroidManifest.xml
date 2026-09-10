@@ -11,13 +11,23 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"  />
     <uses-permission android:name="android.permission.USB_PERMISSION"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"  />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
+    <!-- Reading the music collection. Up to Android 12 this is covered by
+         READ_EXTERNAL_STORAGE, from Android 13 (API 33) on the scoped
+         READ_MEDIA_AUDIO permission replaces it. Both are requested at
+         runtime, MANAGE_EXTERNAL_STORAGE remains the opt-in for browsing
+         arbitrary directories. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
-        android:smallScreens="true" />
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
     <application
         android:name="org.qtproject.qt.android.bindings.QtApplication"
         android:hardwareAccelerated="true"
@@ -32,6 +42,7 @@
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:launchMode="singleTop"
             android:screenOrientation="sensorLandscape"
+            android:resizeableActivity="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,7 +63,7 @@
 
           <meta-data
                 android:name="android.app.arguments"
-                android:value="--new-ui --log-level debug --developer" />
+                android:value="--new-ui" />
         </activity>
 
         <provider
@@ -66,7 +77,21 @@
         </provider>
     </application>
 
+    <!-- Mixxx runs fine without a USB host port (tablets, Chromebooks and
+         emulators), it just cannot use wired MIDI/HID controllers there.
+         Declaring it as required would exclude those devices from
+         installation entirely. -->
     <uses-feature
         android:name="android.hardware.usb.host"
-        android:required="true" />
+        android:required="false" />
+    <!-- Chromebooks may be operated with mouse and keyboard only. -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.audio.low_latency"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.audio.pro"
+        android:required="false" />
 </manifest>
