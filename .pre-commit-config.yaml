@@ -158,10 +158,10 @@ repos:
         files: ^CHANGELOG.md$
       - id: qmlformat
         name: qmlformat
-        entry: qmlformat
+        entry: python tools/qmlformat.py
         pass_filenames: true
         require_serial: true
-        language: system
+        language: python
         types: [text]
         files: ^.*\.qml$
         args: [-n, -i]
@@ -169,10 +169,10 @@ repos:
           - manual
       - id: qmllint
         name: qmllint
-        entry: qmllint
+        entry: python tools/qmllint.py
         pass_filenames: true
         require_serial: true
-        language: system
+        language: python
         types: [text]
         files: ^.*\.qml$
         stages:
