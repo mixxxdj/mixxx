@@ -90,16 +90,22 @@ QList<QString> ParserM3u::parseAllLocations(const QString& playlistFile) {
     return paths;
 }
 
-bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath) {
-    return writeM3UFile(file_str, items, useRelativePath, false);
+bool ParserM3u::writeM3UFile(const QString& file_str,
+        const QList<QString>& items,
+        PlaylistExportFilePathMode filePathMode) {
+    return writeM3UFile(file_str, items, filePathMode, false);
 }
 
-bool ParserM3u::writeM3U8File(const QString &file_str, const QList<QString> &items, bool useRelativePath) {
-    return writeM3UFile(file_str, items, useRelativePath, true);
+bool ParserM3u::writeM3U8File(const QString& file_str,
+        const QList<QString>& items,
+        PlaylistExportFilePathMode filePathMode) {
+    return writeM3UFile(file_str, items, filePathMode, true);
 }
 
-bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8)
-{
+bool ParserM3u::writeM3UFile(const QString& file_str,
+        const QList<QString>& items,
+        PlaylistExportFilePathMode filePathMode,
+        bool useUtf8) {
     // Important note:
     // On Windows \n will produce a <CR><CL> (=\r\n)
     // On Linux and OS X \n is <CR> (which remains \n)
@@ -109,28 +115,30 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
     QString fileContents(QStringLiteral("#EXTM3U\n"));
     for (const QString& item : items) {
         fileContents += QStringLiteral("#EXTINF\n");
-        if (useUtf8) {
-            if (useRelativePath) {
-                fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
-            } else {
-                fileContents += item + QStringLiteral("\n");
-            }
-        } else {
+        bool encodeAsUrl = false;
+        if (!useUtf8) {
             QByteArray trackByteArray = codec->fromUnicode(item);
             QString trackName = codec->toUnicode(trackByteArray);
-            if (trackName == item) {
-                if (useRelativePath) { //Issue: URL Location is not working properly for Relative Paths
-                    fileContents += baseDirectory.relativeFilePath(item) + QStringLiteral("\n");
-                } else {
-                    fileContents += item + QStringLiteral("\n");
-                }
-            } else {
-                QUrl itemUrl = QUrl::fromLocalFile(item);
-                QString itemUrlEncoded = itemUrl.toEncoded();
-                fileContents += itemUrlEncoded + QStringLiteral("\n");
-                urlEncodingUsed = true;
+            encodeAsUrl = trackName != item;
+        }
+
+        if (encodeAsUrl) {
+            QUrl itemUrl = QUrl::fromLocalFile(item);
+            const QString itemUrlEncoded = itemUrl.toEncoded();
+            fileContents += itemUrlEncoded;
+            urlEncodingUsed = true;
+        } else {
+            // FIXME add helper functions for these three types
+            if (filePathMode == PlaylistExportFilePathMode::AbsolutePaths) {
+                fileContents += item;
+            } else if (filePathMode == PlaylistExportFilePathMode::RelativePaths) {
+                fileContents += baseDirectory.relativeFilePath(item);
+            } else { // NoPaths
+                mixxx::FileInfo file(item);
+                fileContents += QStringLiteral("./") + file.fileName();
             }
         }
+        fileContents += QStringLiteral("\n");
     }
 
     QByteArray outputByteArray;

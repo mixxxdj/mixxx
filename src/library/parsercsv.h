@@ -1,9 +1,10 @@
 #pragma once
 
+#include <QByteArray>
 #include <QList>
 #include <QString>
-#include <QByteArray>
 
+#include "library/library_decl.h"
 #include "library/parser.h"
 
 class BaseSqlTableModel;
@@ -14,7 +15,9 @@ class ParserCsv : public Parser {
     static bool isPlaylistFilenameSupported(const QString& playlistFile);
     static QList<QString> parseAllLocations(const QString&);
     // Playlist Export
-    static bool writeCSVFile(const QString &file, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath);
+    static bool writeCSVFile(const QString& file,
+            BaseSqlTableModel* pPlaylistTableModel,
+            PlaylistExportFilePathMode filePathMode);
     // Readable Text export
     static bool writeReadableTextFile(const QString &file, BaseSqlTableModel* pPlaylistTableModel,  bool writeTimestamp);
 
