@@ -48,17 +48,13 @@ class LibraryFeature : public QObject {
         return m_icon;
     }
 
-    virtual bool dropAccept(const QList<QUrl>& urls, QObject* pSource) {
+    virtual bool dropAccept(const QList<QUrl>& urls) {
         Q_UNUSED(urls);
-        Q_UNUSED(pSource);
         return false;
     }
-    virtual bool dropAcceptChild(const QModelIndex& index,
-            const QList<QUrl>& urls,
-            QObject* pSource) {
+    virtual bool dropAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
         Q_UNUSED(index);
         Q_UNUSED(urls);
-        Q_UNUSED(pSource);
         return false;
     }
     virtual bool dragMoveAccept(const QList<QUrl>& urls) {
@@ -83,6 +79,11 @@ class LibraryFeature : public QObject {
                             KeyboardEventFilter* /* keyboard */) {}
     virtual void bindSidebarWidget(WLibrarySidebar* /* sidebar widget */) {}
     virtual TreeItemModel* sidebarModel() const = 0;
+
+    virtual QList<QUrl> collectTrackUrls(const QModelIndex& index) {
+        Q_UNUSED(index);
+        return {};
+    }
 
     virtual bool hasTrackTable() {
         return false;
