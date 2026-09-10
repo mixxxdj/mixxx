@@ -21,6 +21,18 @@ Item {
     // Maintain a 1:1 aspect ratio (square)
     width: height
 
+    Mixxx.ControlProxy {
+        id: vinylControlEnabledControl
+
+        group: root.group
+        key: "vinylcontrol_enabled"
+    }
+    Mixxx.ControlProxy {
+        id: vinylSignalEnabledControl
+
+        group: root.group
+        key: "vinylcontrol_signal_enabled"
+    }
     // Spinny Platter Mode
     Item {
         id: spinnyContainer
@@ -53,11 +65,21 @@ Item {
             group: root.group
             indicatorVisible: root.isLoaded
 
+            ghostIndicatorVisible: root.isLoaded
+
+            ghostIndicator: Image {
+                anchors.fill: parent
+                fillMode: Image.PreserveAspectFit
+                source: LateNightTheme.assetDeckSpinnyGhostIndicator
+            }
+
             indicator: Image {
                 anchors.fill: parent
                 fillMode: Image.PreserveAspectFit
                 source: LateNightTheme.assetDeckSpinnyIndicator
             }
+
+            z: 2
         }
 
         // Vinyl Grooves Overlay (Mask)
@@ -71,6 +93,18 @@ Item {
                 return isDeck12 ? LateNightTheme.assetDeckSpinnyMask12 : LateNightTheme.assetDeckSpinnyMask34;
             }
         }
+
+        Mixxx.VinylSignalQuality {
+            id: vinylSignalQuality
+            anchors.fill: parent
+            group: root.group
+            visible: root.showSpinny
+            active: root.showSpinny
+                    && vinylControlEnabledControl.value > 0
+                    && vinylSignalEnabledControl.value > 0
+            z: 1
+        }
+
     }
 
     // Cover Art Mode

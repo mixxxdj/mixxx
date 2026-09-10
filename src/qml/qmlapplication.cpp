@@ -137,6 +137,8 @@ QmlApplication::QmlApplication(
     QJSEngine::setObjectOwnership(QmlCoreServices::createInstance(
                                           normalizedColorScheme(colorScheme), this),
             QJSEngine::CppOwnership);
+    QmlApplicationProxy::registerVinylControlManager(
+            m_pCoreServices->getVinylControlManager().get());
 
     const ConfigKey overviewTypeKey(
             QStringLiteral("[Waveform]"),
@@ -387,6 +389,7 @@ QmlApplication::~QmlApplication() {
     QmlDlgPreferencesProxy::s_pInstance.reset();
     m_visualsManager.reset();
     m_pAppEngine.reset();
+    QmlApplicationProxy::registerVinylControlManager(nullptr);
     m_pCoreServices.reset();
 }
 

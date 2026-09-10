@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 
 class KeyboardEventFilter;
+class VinylControlManager;
 
 namespace mixxx {
 namespace qml {
@@ -73,6 +74,12 @@ class QmlApplicationProxy : public QObject {
             std::shared_ptr<KeyboardEventFilter> pKeyboardEventFilter) {
         s_pKeyboardEventFilter = std::move(pKeyboardEventFilter);
     }
+    static void registerVinylControlManager(VinylControlManager* pVinylControlManager) {
+        s_pVinylControlManager = pVinylControlManager;
+    }
+    static VinylControlManager* vinylControlManager() {
+        return s_pVinylControlManager;
+    }
     static void registerReloadCallback(std::function<void()> reloadCallback) {
         s_reloadCallback = std::move(reloadCallback);
     }
@@ -89,6 +96,7 @@ class QmlApplicationProxy : public QObject {
 
     static inline UserSettingsPointer s_pConfig;
     static inline std::shared_ptr<KeyboardEventFilter> s_pKeyboardEventFilter;
+    static inline VinylControlManager* s_pVinylControlManager{nullptr};
     static inline std::function<void()> s_reloadCallback;
 };
 

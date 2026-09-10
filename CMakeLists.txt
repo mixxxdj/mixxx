@@ -3046,6 +3046,8 @@ if(BUILD_TESTING)
         src/test/qmldurationformattertest.cpp
         src/test/qmleffectsproxytest.cpp
         src/test/qmlkeyutilstest.cpp
+        src/test/qmllibraryproxytest.cpp
+        src/test/qmlspinnypositiontest.cpp
         src/test/qmlskincontrolcreatortest.cpp
         src/test/latenightlayoutstate_test.cpp
         src/test/themeqml_test.cpp
@@ -4031,6 +4033,8 @@ if(QML)
       src/qml/qmlsidebarmodelproxy.cpp
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp
+      src/qml/qmlspinnyposition.cpp
+      src/qml/qmlvinylsignalquality.cpp
       src/qml/qmlvisibleeffectsmodel.cpp
       src/qml/qmlwaveformdisplay.cpp
       src/qml/qmlwaveformoverview.cpp
