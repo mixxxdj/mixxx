@@ -1,4 +1,5 @@
 #include "engine/controls/cuecontrol.h"
+
 #include "test/signalpathtest.h"
 
 class CueControlTest : public BaseSignalPathTest {
@@ -587,4 +588,77 @@ TEST_F(CueControlTest, OutroCue_SetStartEnd_ClearStartEnd) {
     EXPECT_FALSE(m_pOutroEndEnabled->toBool());
 
     EXPECT_EQ(nullptr, pTrack->findCueByType(mixxx::CueType::Outro));
+}
+
+// Tests for the disable_preroll feature: gated CUE must work even when the
+// main cue point was stored at a negative (pre-roll) position.
+
+TEST_F(CueControlTest, DisablePreRoll_NegativeCuePoint_GatedCueStartsPlay) {
+    // Regression test: with disable_preroll enabled and limit=0 (hard clamp),
+    // a CDJ-mode CUE press while paused at track start must start gated
+    // playback even when the stored cue is in pre-roll space. getTrackAt()
+    // must clamp the cue comparison to the pre-roll limit so the deck is
+    // recognised as being at the cue.
+    ControlProxy disablePreRoll(m_sGroup1, "disable_preroll");
+    ControlProxy preRollLimit(m_sGroup1, "preroll_limit_beats");
+    ControlProxy cueCdj(m_sGroup1, "cue_cdj");
+    ControlProxy play(m_sGroup1, "play");
+
+    disablePreRoll.set(1.0);
+    preRollLimit.set(0.0); // hard clamp at track start
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(-100.0));
+
+    loadTrack(pTrack);
+
+    // With limit=0, EngineBuffer clamps the deck to track start.
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
+    EXPECT_FALSE(play.toBool());
+
+    // getTrackAt() clamps the cue (-100) to the limit (0), so deck and cue
+    // are both seen as 0 → gated play starts.
+    cueCdj.set(1.0);
+    ProcessBuffer();
+
+    EXPECT_TRUE(play.toBool());
+}
+
+TEST_F(CueControlTest, DisablePreRoll_NegativeCuePoint_DeckClampsToTrackStart) {
+    // When disable_preroll is on, loading a track whose main cue is in pre-roll
+    // must leave the deck at position 0, not at the negative cue position.
+    ControlProxy disablePreRoll(m_sGroup1, "disable_preroll");
+
+    disablePreRoll.set(1.0);
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(-200.0));
+
+    loadTrack(pTrack);
+
+    EXPECT_FRAMEPOS_EQ(mixxx::audio::kStartFramePos, getCurrentFramePos());
+}
+
+TEST_F(CueControlTest, DisablePreRoll_Off_NegativeCuePoint_NormalBehavior) {
+    // With disable_preroll disabled, a CDJ CUE press while paused away from
+    // the cue should move the cue to the current position (existing behaviour).
+    ControlProxy disablePreRoll(m_sGroup1, "disable_preroll");
+    ControlProxy cueCdj(m_sGroup1, "cue_cdj");
+    ControlProxy play(m_sGroup1, "play");
+
+    disablePreRoll.set(0.0);
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setMainCuePosition(mixxx::audio::FramePos(500.0));
+    loadTrack(pTrack);
+
+    // Manually move away from the cue.
+    setCurrentFramePos(mixxx::audio::FramePos(100.0));
+
+    cueCdj.set(1.0);
+    ProcessBuffer();
+
+    // CDJ CUE when not at cue point and not playing → cueSet, no play.
+    EXPECT_FALSE(play.toBool());
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos(100.0), m_pCuePoint);
 }
