@@ -1,5 +1,6 @@
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+// QtQuick 2.15 is required for cursorShape on pointer handlers below.
+import QtQuick 2.15
 import QtQuick.Controls 2.12
 
 Item {
