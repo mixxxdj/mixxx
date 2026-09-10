@@ -1,0 +1,21 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>max,me</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[Skin],hotcue_count" persist="true">
+        <Children>
+          <Template trigger="[Skin],show_4_hotcues" on_hide_select="1" src="skins:LateNight/decks/hotcues_4.xml"/>
+          <Template trigger="[Skin],show_8_hotcues" src="skins:LateNight/decks/hotcues_8.xml"/>
+          <Template trigger="[Skin],show_16_hotcues" on_hide_select="0" src="skins:LateNight/decks/hotcues_16.xml"/>
+        </Children>
+      </WidgetStack>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_hotcues</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>
