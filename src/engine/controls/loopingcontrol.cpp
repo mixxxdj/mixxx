@@ -1209,7 +1209,9 @@ void LoopingControl::notifySeek(mixxx::audio::FramePos newPosition) {
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bloopOrRepeatWasEnabledBeforeSlipEnable =
-            !m_pSlipEnabled->toBool() && enabled && !m_bLoopRollActive;
+            !m_pSlipEnabled->toBool() &&
+            !m_bLoopRollActive &&
+            (enabled || m_pRepeatButton->toBool());
     if (m_bLoopingEnabled == enabled) {
         return;
     }
