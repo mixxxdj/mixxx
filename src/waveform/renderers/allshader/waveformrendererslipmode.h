@@ -11,6 +11,7 @@
 class ControlProxy;
 class QDomNode;
 class SkinContext;
+class WaveformWidgetFactory;
 
 namespace allshader {
 class WaveformRendererSlipMode;
@@ -41,6 +42,10 @@ class allshader::WaveformRendererSlipMode final
 
     QColor m_color;
     PerformanceTimer m_timer;
+    // Resolved once at construction: the factory singleton only exists in the
+    // QWidget UI, in the QML UI this stays null. Looking it up per frame would
+    // spam the log from Singleton::instance().
+    WaveformWidgetFactory* m_pWaveformWidgetFactory;
 
     bool preprocessInner();
 

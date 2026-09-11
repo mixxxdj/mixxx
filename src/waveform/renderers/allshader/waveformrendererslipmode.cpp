@@ -33,7 +33,13 @@ WaveformRendererSlipMode::WaveformRendererSlipMode(
         WaveformWidgetRenderer* waveformWidget)
         : ::WaveformRendererAbstract(waveformWidget),
           m_slipBorderTopOutlineSize(10.f),
-          m_slipBorderBottomOutlineSize(10.f) {
+          m_slipBorderBottomOutlineSize(10.f),
+          // Singleton::instance() itself trips a VERIFY_OR_DEBUG_ASSERT when
+          // the singleton was never created, which is fatal in builds with
+          // MIXXX_DEBUG_ASSERTIONS_FATAL. Ask isCreated() first.
+          m_pWaveformWidgetFactory(WaveformWidgetFactory::isCreated()
+                          ? WaveformWidgetFactory::instance()
+                          : nullptr) {
     initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
 }
@@ -94,8 +100,9 @@ bool WaveformRendererSlipMode::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     const bool isStemTrack = pTrack && pTrack->hasStem() &&
             pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
-    const bool splitStemTracks = isStemTrack &&
-            WaveformWidgetFactory::instance()->isStemSplitTracks();
+    // The factory singleton only exists in the QWidget UI; null in the QML UI.
+    const bool splitStemTracks = isStemTrack && m_pWaveformWidgetFactory &&
+            m_pWaveformWidgetFactory->isStemSplitTracks();
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
