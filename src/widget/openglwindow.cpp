@@ -73,11 +73,7 @@ bool OpenGLWindow::event(QEvent* pEv) {
         // Tooltip don't work by forwarding the events. This mimics the
         // tooltip behavior.
         if (t == QEvent::MouseMove) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPosition().toPoint();
-#else
-            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPos();
-#endif
             ToolTipQOpenGL::singleton().start(m_pWidget, eventPosition);
         }
 

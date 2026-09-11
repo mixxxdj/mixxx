@@ -219,13 +219,9 @@ void TraktorFeature::activate() {
         }
 
         // Let a worker thread do the XML parsing
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         m_future = QtConcurrent::run(&TraktorFeature::importLibrary,
                 this,
                 dbFile);
-#else
-        m_future = QtConcurrent::run(this, &TraktorFeature::importLibrary, dbFile);
-#endif
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.

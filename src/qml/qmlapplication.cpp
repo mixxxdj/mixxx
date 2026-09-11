@@ -162,7 +162,7 @@ QmlApplication::QmlApplication(
             QmlCoreServices::instance(),
             &QmlCoreServices::setInitializationProgress);
 
-    m_pCoreServices->initialize(app);
+    m_pCoreServices->initialize();
     app->installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
     registerImageProvider();
 

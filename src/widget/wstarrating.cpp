@@ -53,11 +53,7 @@ void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
 }
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     const int pos = event->position().toPoint().x();
-#else
-    const int pos = event->x();
-#endif
     int star = m_visualStarRating.starAtPosition(pos, rect());
 
     if (star == StarRating::kInvalidStarCount) {

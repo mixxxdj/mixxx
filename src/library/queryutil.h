@@ -78,11 +78,7 @@ class FieldEscaper final {
     FieldEscaper(const QSqlDatabase& database)
             : m_database(database),
               m_stringField("string",
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                       QMetaType(QMetaType::QString)
-#else
-                      QVariant::String
-#endif
               ) {
     }
 

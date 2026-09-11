@@ -55,11 +55,7 @@ ColorPalette ColorPaletteSettings::getColorPalette(
             const QStringList stringIndices =
                     m_pConfig->getValueString(key).split(
                             kColorPaletteHotcueIndicesConfigSeparator,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                             Qt::SkipEmptyParts);
-#else
-                            QString::SkipEmptyParts);
-#endif
             for (const auto& stringIndex : stringIndices) {
                 bool ok;
                 int index = stringIndex.toInt(&ok);

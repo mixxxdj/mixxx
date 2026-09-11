@@ -2,17 +2,17 @@
 
 #include <QCoreApplication>
 #include <QGuiApplication>
+#include <QMutexLocker>
 #include <QScopedPointer>
 #include <QScreen>
+#include <QStyle>
 #include <QThread>
 #include <QtDebug>
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
-#include "util/compatibility/qmutex.h"
 #include "util/thread_check.h"
 #include "util/versionstore.h"
-#include "util/widgethelper.h"
 
 namespace {
 // Gross estimated dimensions for the size of the error dialog,
@@ -129,7 +129,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     }
 
     // Skip if a dialog with the same key is already displayed
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     bool keyExists = m_dialogKeys.contains(props->getKey());
     locker.unlock();
     if (keyExists) {
@@ -164,11 +164,10 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         if (props->m_detailsUseMonospaceFont) {
             // There is no event to respond on the Show Details button of QMessagBox.
             // Therefore we must consider the expanded size for positioning the dialog initially.
-            auto* pScreen =
-                    mixxx::widgethelper::getScreen(*pMsgBox);
+            auto* pScreen = pMsgBox->screen();
             if (!pScreen) {
-                // Fallback to obtain the primary screen when mixxx::widgethelper::getScreen can't
-                // determine the screen. This happens always with Qt <5.14
+                // Fallback to obtain the primary screen when QWidget::screen() can't
+                // determine the screen. This happened always with Qt <5.14
                 pScreen = qGuiApp->primaryScreen();
             }
             DEBUG_ASSERT(pScreen);
@@ -209,7 +208,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     // into account QWidget windows.
     pMsgBox->setAttribute(Qt::WA_QuitOnClose, false);
 
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     // To avoid duplicate dialogs on the same error
     m_dialogKeys.append(props->m_key);
 
@@ -247,7 +246,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 }
 
 void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
@@ -261,7 +260,7 @@ void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
         return;
     }
 
-    const auto locker2 = lockMutex(&m_mutex);
+    const auto locker2 = QMutexLocker(&m_mutex);
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) {
             qWarning() << "Error dialog key removal from list failed!";

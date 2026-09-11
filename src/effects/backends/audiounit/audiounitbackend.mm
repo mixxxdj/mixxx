@@ -9,6 +9,7 @@
 #include <QHash>
 #include <QList>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QString>
 #include <memory>
 
@@ -16,7 +17,6 @@
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "effects/backends/audiounit/audiounitmanifest.h"
 #include "effects/defs.h"
-#include "util/compatibility/qmutex.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
@@ -38,17 +38,17 @@ class AudioUnitBackend : public EffectsBackend {
         // m_componentsById may not have a corresponding manifest yet, and
         // callers would get a null EffectManifestPointer from getManifest(),
         // which crashes downstream (e.g. EffectManifest::sortLexigraphically).
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.keys();
     }
 
     EffectManifestPointer getManifest(const QString& effectId) const override {
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.value(effectId);
     }
 
     const QList<EffectManifestPointer> getManifests() const override {
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.values();
     }
 
@@ -137,7 +137,7 @@ class AudioUnitBackend : public EffectsBackend {
                         new AudioUnitManifest(effectId, component));
 
                 // Register manifest
-                auto locker = lockMutex(&m_mutex);
+                auto locker = QMutexLocker(&m_mutex);
                 m_manifestsById[effectId] = manifest;
                 locker.unlock();
 

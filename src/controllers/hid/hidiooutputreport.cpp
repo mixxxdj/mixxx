@@ -2,8 +2,9 @@
 
 #include <hidapi.h>
 
+#include <QMutexLocker>
+
 #include "util/cmdlineargs.h"
-#include "util/compatibility/qbytearray.h"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
@@ -29,7 +30,7 @@ HidIoOutputReport::HidIoOutputReport(
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
         const RuntimeLoggingCategory& logOutput,
         bool useNonSkippingFIFO) {
-    auto cacheLock = lockMutex(&m_cachedDataMutex);
+    auto cacheLock = QMutexLocker(&m_cachedDataMutex);
 
     if (!m_lastCachedDataSize) {
         // First call updateCachedData for this report
@@ -66,7 +67,7 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
 
     // Deep copy with reusing the already allocated heap memory
     // The first byte with the ReportID is not overwritten
-    qByteArrayReplaceWithPositionAndSize(&m_cachedData,
+    m_cachedData.replace(
             kReportIdSize,
             m_cachedData.size(),
             data.constData(),
@@ -79,7 +80,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 
-    auto cacheLock = lockMutex(&m_cachedDataMutex);
+    auto cacheLock = QMutexLocker(&m_cachedDataMutex);
 
     if (!m_possiblyUnsentDataCached) {
         // Return with false, to signal the caller, that no time consuming IO operation was necessary
@@ -121,7 +122,7 @@ bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
 
     cacheLock.unlock();
 
-    auto hidDeviceLock = lockMutex(pHidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(pHidDeviceAndPollMutex);
 
     // hid_write can take several milliseconds, because hidapi synchronizes
     // the asyncron HID communication from the OS

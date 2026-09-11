@@ -1,6 +1,5 @@
 #include "waveformsignalcolors.h"
 
-#include "util/colorcomponents.h"
 #include "widget/wskincolor.h"
 
 class QDomNode;
@@ -134,7 +133,7 @@ void WaveformSignalColors::fallBackFromSignalColor() {
     //           << "skin do not provide low/mid/high signal colors";
 
     float h, s, l, a;
-    getHslF(m_signalColor, &h, &s, &l, &a);
+    m_signalColor.getHslF(&h, &s, &l, &a);
 
     constexpr double analogousAngle = 1.0 / 12.0;
 
