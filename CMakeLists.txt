@@ -4832,7 +4832,7 @@ if(RUBBERBAND)
 endif()
 
 # SndFile
-find_package(SndFile REQUIRED)
+find_package(SndFile 1.1.0 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE SndFile::sndfile)
 target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
