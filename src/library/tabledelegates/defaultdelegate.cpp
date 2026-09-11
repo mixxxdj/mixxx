@@ -3,6 +3,8 @@
 #include <QPainter>
 
 #include "moc_defaultdelegate.cpp"
+#include "util/assert.h"
+#include "util/timer.h"
 
 DefaultDelegate::DefaultDelegate(QTableView* pTableView)
         : QStyledItemDelegate(pTableView) {
@@ -12,8 +14,18 @@ void DefaultDelegate::paint(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
+    ScopedTimer t(QStringLiteral("DefaultDelegate::paint"));
+
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
+
+    // Workaround for a Qt6 bug occurring on Wayland (maybe also with other OS or
+    // compositors):
+    // Paint background color from model if available and not selected to
+    // ensure the alpha channel is respected.
+    paintItemBackground(painter, opt, index);
+    // Clear the background brush so QStyledItemDelegate doesn't paint it again
+    opt.backgroundBrush = QBrush();
 
     if (opt.state & QStyle::State_Selected) {
         setHighlightedTextColor(opt, index);
@@ -21,6 +33,25 @@ void DefaultDelegate::paint(
     // TODO Guarantee font/bg contrast with ALL track colors
 
     QStyledItemDelegate::paint(painter, opt, index);
+}
+
+void DefaultDelegate::paintItemBackground(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) {
+    // If the row is not selected, paint the desired background color before
+    // painting the delegate item
+    if (option.showDecorationSelected &&
+            (option.state & QStyle::State_Selected)) {
+        return;
+    }
+    QVariant bgValue = index.data(Qt::BackgroundRole);
+    if (!bgValue.isValid()) {
+        return;
+    }
+    DEBUG_ASSERT(bgValue.canConvert<QBrush>());
+    const auto bgBrush = qvariant_cast<QBrush>(bgValue);
+    painter->fillRect(option.rect, bgBrush);
 }
 
 void DefaultDelegate::setHighlightedTextColor(
