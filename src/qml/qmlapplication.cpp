@@ -38,6 +38,8 @@
 #include <QDir>
 #include <QFile>
 #include <QJniObject>
+
+#include "util/androidpermissions.h"
 #endif
 
 Q_IMPORT_QML_PLUGIN(MixxxPlugin)
@@ -70,13 +72,9 @@ const QStringList kSkipQmlDirs = {
 };
 
 bool canWriteToExternalStorage() {
-    // API 30+ (Android 11+) requires MANAGE_EXTERNAL_STORAGE.
-    // Older: WRITE_EXTERNAL_STORAGE is granted at install time.
-    if (android_get_device_api_level() >= 30) {
-        return QJniObject::callStaticMethod<jboolean>(
-                "android/os/Environment", "isExternalStorageManager");
-    }
-    return true;
+    // API 30+ (Android 11+) requires MANAGE_EXTERNAL_STORAGE, below that
+    // WRITE_EXTERNAL_STORAGE, which is a runtime permission since API 23.
+    return mixxx::android::hasFullExternalStorageAccess();
 }
 
 void copyAssetDir(const QString& src, const QString& dst) {

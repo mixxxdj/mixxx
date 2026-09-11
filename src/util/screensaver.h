@@ -29,8 +29,6 @@ private:
    /* sleep management */
    static IOPMAssertionID s_systemSleepAssertionID;
    static IOPMAssertionID s_userActivityAssertionID;
-#elif defined(Q_OS_ANDROID)
-   static QJniObject s_wakeLock;
 #elif defined(Q_OS_LINUX)
     static uint32_t s_cookie;
     static int s_saverindex;
