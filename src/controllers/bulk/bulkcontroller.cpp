@@ -299,11 +299,67 @@ bool BulkController::sendBytes(const QByteArray& data) {
     int ret;
     int transferred;
 
+    QByteArray pushFrame;
+    const QByteArray* pDataToSend = &data;
+
+    // Mixxx renders the Push 2 display as tightly packed 960 x 160 RGB565.
+    // Convert it here instead of in QML JavaScript: Push expects every
+    // 1920-byte pixel row to be XOR-masked and padded to 2048 bytes.
+    if (m_vendorId == 0x2982 &&
+            m_productId == 0x1967 &&
+            data.size() == 960 * 160 * 2) {
+        constexpr int kSourceLineBytes = 960 * 2;
+        constexpr int kTargetLineBytes = 2048;
+        constexpr int kDisplayHeight = 160;
+        constexpr unsigned char kXorPattern[] = {0xe7, 0xf3, 0xe7, 0xff};
+
+        pushFrame.resize(kTargetLineBytes * kDisplayHeight);
+        for (int y = 0; y < kDisplayHeight; ++y) {
+            const int sourceOffset = y * kSourceLineBytes;
+            const int targetOffset = y * kTargetLineBytes;
+            for (int x = 0; x < kSourceLineBytes; ++x) {
+                pushFrame[targetOffset + x] =
+                        data[sourceOffset + x] ^ kXorPattern[x & 3];
+            }
+            for (int x = kSourceLineBytes; x < kTargetLineBytes; ++x) {
+                pushFrame[targetOffset + x] = kXorPattern[x & 3];
+            }
+        }
+        pDataToSend = &pushFrame;
+    }
+
+    // Push 2 requires its 16-byte frame header to be a separate USB bulk
+    // transfer before the 160 * 2048 bytes of pixel-line data.
+    if (m_vendorId == 0x2982 &&
+            m_productId == 0x1967 &&
+            pDataToSend->size() == 160 * 2048) {
+        unsigned char frameHeader[16] = {
+                0xff, 0xcc, 0xaa, 0x88,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00,
+                0x00, 0x00, 0x00, 0x00};
+        int headerTransferred;
+        ret = libusb_bulk_transfer(m_phandle,
+                m_outEndpointAddr,
+                frameHeader,
+                sizeof(frameHeader),
+                &headerTransferred,
+                5000);
+        if (ret < 0 ||
+                headerTransferred != static_cast<int>(sizeof(frameHeader))) {
+            qCWarning(m_logOutput)
+                    << "Unable to send Push 2 display frame header to"
+                    << getName() << "-" << libusb_error_name(ret);
+            return false;
+        }
+    }
+
     // XXX: don't get drunk again.
     ret = libusb_bulk_transfer(m_phandle,
             m_outEndpointAddr,
-            (unsigned char*)data.constData(),
-            data.size(),
+            reinterpret_cast<unsigned char*>(
+                    const_cast<char*>(pDataToSend->constData())),
+            pDataToSend->size(),
             &transferred,
             5000 // Send timeout in milliseconds
     );

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.6.0+" schemaVersion="1">
+    <info>
+        <name>Ableton Push 2</name>
+        <author>OpenAI Codex</author>
+        <description>Two-deck Push 2 mapping designed to accompany the Push 2 dual-waveform display mapping.</description>
+    </info>
+    <controller id="Ableton Push 2">
+        <scriptfiles>
+            <file functionprefix="Push2" filename="Ableton-Push-2-scripts.js" />
+        </scriptfiles>
+        <controls>
+            <!-- Eight buttons below the display: transport and PFL. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x14</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x15</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x16</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x17</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x18</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x19</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.transport</key>
+                <status>0xB0</status>
+                <midino>0x1B</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- Shift enables hotcue deletion. -->
+            <control>
+                <group>[Controls]</group>
+                <key>Push2.shift</key>
+                <status>0xB0</status>
+                <midino>0x31</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- Browse arrows: left/right load decks; up/down move selection. -->
+            <control>
+                <group>[Library]</group>
+                <key>Push2.browse</key>
+                <status>0xB0</status>
+                <midino>0x2C</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>Push2.browse</key>
+                <status>0xB0</status>
+                <midino>0x2D</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>Push2.browse</key>
+                <status>0xB0</status>
+                <midino>0x2E</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>Push2.browse</key>
+                <status>0xB0</status>
+                <midino>0x2F</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.loadTrack</key>
+                <status>0xB0</status>
+                <midino>0x66</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.loadTrack</key>
+                <status>0xB0</status>
+                <midino>0x6D</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- Track encoders: high/mid/low/filter for deck 1, then deck 2. -->
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x47</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x48</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x49</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x4A</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x4B</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x4C</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x4D</midino>
+                <options><script-binding /></options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>Push2.deckEncoder</key>
+                <status>0xB0</status>
+                <midino>0x4E</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- Tempo encoder browses the focused library list. -->
+            <control>
+                <group>[Library]</group>
+                <key>Push2.browseEncoder</key>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- Touching the Tempo encoder momentarily opens the library view. -->
+            <control>
+                <group>[Controls]</group>
+                <key>Push2.tempoEncoderTouch</key>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- The adjacent Swing encoder zooms both deck waveforms. -->
+            <control>
+                <group>[Controls]</group>
+                <key>Push2.waveformZoomEncoder</key>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
+                <options><script-binding /></options>
+            </control>
+
+            <!-- Bottom pad row: deck 1 hotcues 1-8. -->
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x24</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x25</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x26</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x27</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x28</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x29</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x2A</midino><options><script-binding /></options></control>
+            <control><group>[Channel1]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x2B</midino><options><script-binding /></options></control>
+
+            <!-- Second pad row: deck 2 hotcues 1-8. -->
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x2C</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x2D</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x2E</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x2F</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x30</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x31</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x32</midino><options><script-binding /></options></control>
+            <control><group>[Channel2]</group><key>Push2.hotcuePad</key><status>0x90</status><midino>0x33</midino><options><script-binding /></options></control>
+        </controls>
+    </controller>
+</MixxxControllerPreset>

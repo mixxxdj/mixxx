@@ -54,5 +54,8 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="0582", TAG+="uaccess"
 # Sony Corp.
 KERNEL=="hidraw*", ATTRS{idVendor}=="054c", TAG+="uaccess"
 
+# Ableton AG (Push 2 display)
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="2982", TAG+="uaccess"
+
 # Missing:
 # - American Musical Supply (AMS/Mixars)

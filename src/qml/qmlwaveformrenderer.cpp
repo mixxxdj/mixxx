@@ -165,8 +165,8 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
     pRenderer->setPlayMarkerForegroundColor(m_playMarkerColor);
     pRenderer->setPlayMarkerBackgroundColor(m_playMarkerBackground);
 
-    pRenderer->setUntilMarkShowBeats(m_untilMark->showTime());
-    pRenderer->setUntilMarkShowTime(m_untilMark->showBeats());
+    pRenderer->setUntilMarkShowBeats(m_untilMark->showBeats());
+    pRenderer->setUntilMarkShowTime(m_untilMark->showTime());
     pRenderer->setUntilMarkAlign(m_untilMark->align());
     pRenderer->setUntilMarkTextSize(m_untilMark->textSize());
     pRenderer->setUntilMarkTextHeightLimit(m_untilMark->textHeightLimit());

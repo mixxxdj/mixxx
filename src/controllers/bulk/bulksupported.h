@@ -28,4 +28,5 @@ constexpr static bulk_support_lookup bulk_supported[] = {
         {{0x06f8, 0xb107}, {0x83, 0x03, std::nullopt}}, // Hercules Mk4
         {{0x06f8, 0xb100}, {0x86, 0x06, std::nullopt}}, // Hercules Mk2
         {{0x06f8, 0xb120}, {0x82, 0x03, std::nullopt}}, // Hercules MP3 LE / Glow
+        {{0x2982, 0x1967}, {0x81, 0x01, 0x00}},         // Ableton Push 2 display
 };

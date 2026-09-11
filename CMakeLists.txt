@@ -1941,8 +1941,11 @@ else()
     PRIVATE
       # The following source depends of QML being available but aren't part of the new QML UI
       src/controllers/rendering/controllerrenderingengine.cpp
+      src/controllers/rendering/controllerrenderingengine.h
       src/controllers/controllerenginethreadcontrol.cpp
+      src/controllers/controllerenginethreadcontrol.h
       src/controllers/controllerscreenpreview.cpp
+      src/controllers/controllerscreenpreview.h
   )
 endif()
 if(QOPENGL)
@@ -3153,6 +3156,12 @@ if(ENGINEPRIME)
         APPEND
         DJINTEROP_EXTRA_CMAKE_ARGS
         -DCMAKE_CXX_FLAGS=-Wno-error=deprecated-literal-operator
+      )
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+      list(
+        APPEND
+        DJINTEROP_EXTRA_CMAKE_ARGS
+        -DCMAKE_CXX_FLAGS=-Wno-error=stringop-overflow
       )
     endif()
 

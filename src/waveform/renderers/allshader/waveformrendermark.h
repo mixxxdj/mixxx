@@ -83,6 +83,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     double m_currentBeatPosition;
     double m_nextBeatPosition;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
+    std::unique_ptr<ControlProxy> m_pPlayPositionControl;
 
     bool m_isSlipRenderer;
 

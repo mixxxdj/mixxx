@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.6.0+" schemaVersion="1">
+    <info>
+        <name>Ableton Push 2 Display</name>
+        <author>OpenAI Codex</author>
+        <description>Renders scrolling waveforms for decks 1 and 2 on the Ableton Push 2 display.</description>
+        <devices>
+            <product
+                protocol="bulk"
+                vendor_id="0x2982"
+                product_id="0x1967"
+                in_epaddr="0x81"
+                out_epaddr="0x01"
+                interface_number="0x00" />
+        </devices>
+    </info>
+    <controller id="Ableton Push 2 Display" direction="out">
+        <screens>
+            <!--
+              Push 2 expects BGR565, little endian. Mixxx's reversed RGB565
+              output produces that channel order. The included Mixxx source
+              patch adds the Push-specific XOR mask and line padding, then
+              sends the frame header as a separate USB transfer.
+            -->
+            <screen
+                identifier="main"
+                width="960"
+                height="160"
+                targetFps="60"
+                msaa="1"
+                pixelType="RGB565"
+                endian="little"
+                reversed="true"
+                raw="false" />
+        </screens>
+        <scriptfiles>
+            <file filename="Ableton-Push-2-Display.qml" identifier="main" />
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
