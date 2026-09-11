@@ -22,37 +22,13 @@ const QStringList kSupportedFileTypes = {
         QStringLiteral("wav"),
 };
 
-// SoundSourceProxyTest fails for version >= 1.0.30 and < 1.1.0 and OGG files
-// https://github.com/libsndfile/libsndfile/issues/643
-const mixxx::SemanticVersion kVersionStringWithBrokenOggDecoding(1, 0, 30);
-const mixxx::SemanticVersion kVersionStringWithBrokenOggDecodingFixed(1, 1, 0);
-
-QStringList getSupportedFileTypesFiltered() {
-    auto supportedFileTypes = kSupportedFileTypes;
-    QString libsndfileVersion = sf_version_string();
-    int separatorIndex = libsndfileVersion.lastIndexOf("-");
-    auto semver = mixxx::SemanticVersion(libsndfileVersion.right(separatorIndex));
-    if (semver >= kVersionStringWithBrokenOggDecoding &&
-            semver < kVersionStringWithBrokenOggDecodingFixed) {
-        kLogger.info()
-                << "Disabling OGG decoding for"
-                << libsndfileVersion;
-        supportedFileTypes.removeAll(QStringLiteral("ogg"));
-    }
-    return supportedFileTypes;
-};
-
 } // anonymous namespace
 
 //static
 const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
 
-SoundSourceProviderSndFile::SoundSourceProviderSndFile()
-        : m_supportedFileTypes(getSupportedFileTypesFiltered()) {
-}
-
 QStringList SoundSourceProviderSndFile::getSupportedFileTypes() const {
-    return m_supportedFileTypes;
+    return kSupportedFileTypes;
 }
 
 SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
