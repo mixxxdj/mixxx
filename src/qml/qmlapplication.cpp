@@ -389,6 +389,7 @@ QmlApplication::~QmlApplication() {
     QmlDlgPreferencesProxy::s_pInstance.reset();
     m_visualsManager.reset();
     m_pAppEngine.reset();
+    QmlCoreServices::destroy();
     QmlApplicationProxy::registerVinylControlManager(nullptr);
     m_pCoreServices.reset();
 }
