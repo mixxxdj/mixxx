@@ -14,6 +14,7 @@
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
+class Controller;
 class ControllerManager;
 class DlgPrefControllers;
 class DlgPrefSound;
@@ -69,6 +70,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::optional<mixxx::preferences::SoundHardwareTab> tab =
                     std::nullopt);
     void showSoundHardwareInputPage();
+    void openControllerLearningWizard(Controller* pController);
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();
