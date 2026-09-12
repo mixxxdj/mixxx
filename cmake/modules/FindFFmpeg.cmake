@@ -335,13 +335,39 @@ if(FFmpeg_FOUND)
   # Aggregate convenience target
   if(NOT TARGET FFmpeg::FFmpeg)
     add_library(FFmpeg::FFmpeg INTERFACE IMPORTED)
-    foreach(component ${FFmpeg_FIND_COMPONENTS})
-      if(FFmpeg_${component}_FOUND)
+    if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+      # Static FFmpeg libraries have circular cross-references (e.g. libavformat
+      # references av_adts_header_parse from libavcodec).  Wrap the resolved
+      # library paths (FFmpeg_LIBRARIES, which already includes fdk-aac when
+      # libavcodec is static) in a single LINK_GROUP:RESCAN so the GNU linker
+      # resolves them; a single-pass link would otherwise fail.  Using the
+      # resolved paths keeps transitive deps (e.g. FdkAac) inside the group.
+      is_static_library(_ffmpeg_static FFmpeg::avformat)
+      if(_ffmpeg_static)
         target_link_libraries(
           FFmpeg::FFmpeg
-          INTERFACE "FFmpeg::${_FFmpeg_${component}_lower}"
+          INTERFACE "$<LINK_GROUP:RESCAN,${FFmpeg_LIBRARIES}>"
         )
+      else()
+        foreach(component ${FFmpeg_FIND_COMPONENTS})
+          if(FFmpeg_${component}_FOUND)
+            target_link_libraries(
+              FFmpeg::FFmpeg
+              INTERFACE "FFmpeg::${_FFmpeg_${component}_lower}"
+            )
+          endif()
+        endforeach()
       endif()
-    endforeach()
+      unset(_ffmpeg_static)
+    else()
+      foreach(component ${FFmpeg_FIND_COMPONENTS})
+        if(FFmpeg_${component}_FOUND)
+          target_link_libraries(
+            FFmpeg::FFmpeg
+            INTERFACE "FFmpeg::${_FFmpeg_${component}_lower}"
+          )
+        endif()
+      endforeach()
+    endif()
   endif()
 endif()

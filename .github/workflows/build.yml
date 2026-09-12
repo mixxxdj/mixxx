@@ -194,6 +194,40 @@ jobs:
             compiler_cache_path: /home/runner/.cache/ccache
             crosscompile: true
             arch: arm64
+          # Ubuntu 22.04 (glibc 2.35) is the lowest viable glibc baseline: the
+          # AppImage must run on as many distributions as possible. Qt 6.11
+          # requires glibc >= 2.34, and the buildenv itself is built on 22.04.
+          # CMake >= 4.2 is provided by the "[AppImage] Set up cmake" step below.
+          - name: AppImage Linux x86_64
+            os: ubuntu-22.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            cpack_generator: AppImage
+            # Not a cross-compile: this is a native x86_64 build, so the
+            # shared Test step must run.  The PPA steps are excluded for the
+            # AppImage separately below.
+            crosscompile: false
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            # The AppImage build is fully static and produces far more ccache
+            # data than the default 2G; give it the actions/cache per-entry
+            # maximum so repeated runs can reuse the compiled objects.
+            compiler_cache_max_size: 10G
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_buildenv.sh
+            artifacts_name: AppImage Linux x86_64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage
+            arch: x86_64
 
     env:
       # macOS codesigning
@@ -321,11 +355,33 @@ jobs:
             echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
           fi
 
+      - name: "[AppImage] Set up cmake"
+        # The CPack AppImage generator requires CMake >= 4.2, which is not
+        # available from apt on the ubuntu-22.04 runner (kept for the glibc
+        # baseline).  Use the same action as the macOS/Windows builds.
+        if: matrix.buildenv_script == 'tools/appimage_buildenv.sh'
+        uses: jwlawson/actions-setup-cmake@v2.2
+        with:
+          cmake-version: "4.2.x"
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+
+      - name: "[AppImage] Cache buildenv"
+        # The buildenv is downloaded and extracted during the configure step
+        # (several GB).  Cache the extracted tree so re-runs of the AppImage
+        # job do not re-download it every time.  Keyed by BUILDENV_NAME, so a
+        # new buildenv (new hash suffix) naturally invalidates the entry.
+        # This step must come after "Set up build environment", which exports
+        # BUILDENV_NAME; the restore happens before "Configure" below.
+        if: matrix.buildenv_script == 'tools/appimage_buildenv.sh'
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.BUILDENV_BASEPATH }}/${{ env.BUILDENV_NAME }}
+          key: buildenv-${{ env.BUILDENV_NAME }}
 
       - name: "[Windows] Set up build environment"
         if: matrix.buildenv_script != null && runner.os == 'Windows'
@@ -341,17 +397,20 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          # Key by source state (not run number) so runs that only change the
+          # workflow — or repeat the same source — reuse the compiled objects
+          # instead of creating a fresh cache entry every time.
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ env.BUILDENV_NAME || 'system' }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # GitHub Actions gives us 10 GB of cache.
-        # 4 runs * 2 GB = 8 GB
+        # Default to 2G; larger builds (e.g. the static AppImage build) can
+        # override via compiler_cache_max_size in the matrix.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=2G
+          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -496,6 +555,47 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
+      - name: "[AppImage] Upload AppImage"
+        if: matrix.cpack_generator == 'AppImage'
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ matrix.artifacts_path }}
+          if-no-files-found: error
+          # Match the other artifacts and upload uncompressed.  With
+          # archive=false the AppImage is uploaded as-is and the artifact
+          # name becomes the file name (the AppImage already is compressed,
+          # so re-zipping it is wasted work).
+          archive: "false"
+
+      - name: "[AppImage] Smoke test"
+        # Run the packaged AppImage once.  This catches loader-level failures
+        # (e.g. the ld.so assertion a broken linker produces, or missing
+        # bundled libraries) that a build-only pipeline cannot see.  The
+        # runner has no display, so --version may exit non-zero after
+        # initializing Qt — reaching Mixxx startup is what matters.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          # The AppImage does not bundle libpipewire (it is excluded), so the
+          # host must provide it; the bare runner image lacks it.
+          sudo apt-get install -y --no-install-recommends libpipewire-0.3-0
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Smoke-testing ${APPIMAGE}"
+          set +e
+          APPIMAGE_EXTRACT_AND_RUN=1 timeout 60 "${APPIMAGE}" --version >/tmp/smoke.log 2>&1
+          rc=$?
+          set -e
+          if grep -qE "Inconsistency detected by ld.so|error while loading shared libraries|cannot open shared object file" /tmp/smoke.log; then
+            echo "FAIL: AppImage failed at loader level (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          if ! grep -qE "Mixxx [0-9]|Using preferences|Selected Qt style|ConfigObject:" /tmp/smoke.log; then
+            echo "FAIL: AppImage did not reach Mixxx startup (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          echo "SMOKE OK"
+
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
         uses: actions/upload-artifact@v7
@@ -504,7 +604,7 @@ jobs:
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
@@ -559,8 +659,9 @@ jobs:
         # Copy the desired directory structure to the deploy/ directory. This
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
+        # The AppImage publishes via appimage.yml, not via the generic path.
         id: prepare_deploy
-        if: inputs.publish && matrix.artifacts_path != null
+        if: inputs.publish && matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         shell: bash
         run: >
           if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
@@ -639,8 +740,9 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
-        # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
+        # Skip deploying Ubuntu builds to downloads.mixxx.org (these are
+        # deployed to the PPA) and the AppImage (published via appimage.yml).
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -656,7 +758,9 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        if: matrix.artifacts_path != null
+        # The AppImage is uploaded by the dedicated "[AppImage] Upload AppImage"
+        # step with a stable name used by the publish workflow.
+        if: matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         uses: actions/upload-artifact@v7.0.1
         with:
           archive: "false"

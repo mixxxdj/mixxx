@@ -99,7 +99,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
 endif()
 
 if(
-  ((APPLE AND NOT IOS) OR WIN32 OR ANDROID)
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32 OR ANDROID)
   AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
 )
   if(NOT DEFINED BUILDENV_BASEPATH)
@@ -227,7 +227,16 @@ function(fatal_error_missing_env)
     endif()
   elseif(UNIX AND NOT APPLE AND NOT ANDROID)
     # Linux, BSD, Solaris, Minix
-    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+    if(DEFINED MIXXX_VCPKG_ROOT)
+      # On Linux a vcpkg build environment is currently only used for the
+      # AppImage build.  Point the user at the right setup script instead of
+      # the generic distro dev-package hint below.
+      message(
+        FATAL_ERROR
+        "The Mixxx vcpkg build environment is not set up correctly. Download and\n"
+        "set it up via `source ${CMAKE_SOURCE_DIR}/tools/appimage_buildenv.sh setup`"
+      )
+    elseif(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
         "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"
@@ -357,13 +366,21 @@ if(NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
   endif()
 endif()
-set(
-  X_VCPKG_APPLOCAL_DEPS_INSTALL
-  ON
-  CACHE BOOL
-  "Automatically copy dependencies into the install target directory for executables."
-  FORCE
-)
+# vcpkg's applocal dependency copying is a Windows mechanism (it walks the
+# DLL dependency graph of installed executables).  It only does something on
+# Windows/uwp/xbox platforms, but vcpkg's toolchain hijacks the install()
+# command whenever this variable is ON, so keep it OFF elsewhere (in
+# particular on Linux, where the AppImage packaging uses install(...)
+# RUNTIME_DEPENDENCY_SET).
+if(WIN32)
+  set(
+    X_VCPKG_APPLOCAL_DEPS_INSTALL
+    ON
+    CACHE BOOL
+    "Automatically copy dependencies into the install target directory for executables."
+    FORCE
+  )
+endif()
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
@@ -403,6 +420,28 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(
+  MIXXX_APPIMAGE
+  "Build for AppImage distribution (install AppImage-specific desktop file)"
+  OFF
+)
+# Auto-detect AppImage builds in both directions, so the two flags do not
+# need to be passed independently:
+#   cmake -DCPACK_GENERATOR=AppImage  -> enables the AppImage install rules
+#   cmake -DMIXXX_APPIMAGE=ON         -> cpack defaults to the AppImage generator
+if(CPACK_GENERATOR MATCHES "AppImage")
+  set(MIXXX_APPIMAGE ON CACHE BOOL "" FORCE)
+endif()
+if(MIXXX_APPIMAGE AND NOT DEFINED CPACK_GENERATOR)
+  set(CPACK_GENERATOR "AppImage" CACHE STRING "Package generator")
+endif()
+# mold 1.0.3 emits a .rela.dyn layout the dynamic loader cannot process,
+# which made the AppImage fail to start (verified fixed in mold 2.42).
+# Use the default linker for AppImage builds; users can still opt in
+# explicitly with -DMOLD_SUPPORT=ON.
+if(MIXXX_APPIMAGE OR CPACK_GENERATOR MATCHES "AppImage")
+  set(MOLD_SUPPORT OFF CACHE BOOL "Use 'mold' for linking")
+endif()
 if(QT6)
   set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
 else()
@@ -2635,6 +2674,11 @@ if(UNIX AND NOT APPLE)
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   )
+
+  # AppImage-specific install rules (desktop file, shared libraries).
+  if(MIXXX_APPIMAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/appimage.cmake")
+  endif()
 
   # Icon files for menu entry
   install(
