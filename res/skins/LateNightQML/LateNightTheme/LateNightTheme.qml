@@ -10,6 +10,7 @@ QtObject {
     readonly property url assetDeckBeatCurposButton: lateNightAsset("buttons", "btn__beat_curpos.svg")
     readonly property url assetDeckBeatCurposLargeButton: lateNightAsset("buttons", "btn__beat_curpos_large.svg")
     readonly property url assetDeckBeatSpinBoxBorder: isClassic ? lateNightAsset("buttons", "spinbox_elevated_border.svg") : lateNightSubRegionButton("wide")
+    readonly property url assetDeckBeatSpinBoxFocusBorder: isClassic ? lateNightAsset("buttons", "spinbox_elevated_border_focus.svg") : lateNightAsset("buttons", "btn_embedded_spinbox_focus_blue.svg")
     readonly property url assetDeckBeatSpinBoxDownButton: isClassic ? lateNightAsset("buttons", "spinbox_down.svg") : lateNightAsset("buttons", "btn__spinbox_down.svg")
     readonly property url assetDeckBeatSpinBoxUpButton: isClassic ? lateNightAsset("buttons", "spinbox_up.svg") : lateNightAsset("buttons", "btn__spinbox_up.svg")
     readonly property url assetDeckBeatgridControlsCollapseButton: lateNightAsset("buttons", "btn__beatgrid_controls_collapse.svg")
@@ -169,6 +170,10 @@ QtObject {
     readonly property color buttonPressedColor: white
     readonly property color darkGray: "#0f0f0f"
     readonly property color deckActiveButtonTextColor: "#000000"
+    readonly property color deckBeatSpinBoxFocusedSelectedTextColor: "#000000"
+    readonly property color deckBeatSpinBoxFocusedSelectionColor: "#d2d2d2"
+    readonly property color deckBeatSpinBoxSelectedTextColor: isClassic ? "#000000" : "#a7998b"
+    readonly property color deckBeatSpinBoxSelectionColor: isClassic ? "#d2d2d2" : "#111111"
     readonly property color deckBeatSpinBoxTextColor: isClassic ? "#888888" : "#a7998b"
     readonly property color deckButtonInactiveColor: isClassic ? "#262626" : "#121213"
     readonly property color deckDimButtonInactiveColor: isClassic ? "#262626" : "#171719"
@@ -301,7 +306,6 @@ QtObject {
     readonly property color overviewRgbLowColor: "#0000ff"
     readonly property color overviewRgbMidColor: "#00ff00"
     readonly property color overviewSettingsBackgroundColor: isClassic ? "#151515" : "#19191a"
-    readonly property color passthroughActiveColor: vinylStatusSpeedColor
     readonly property string playCueActiveIconSuffix: isPaleMoon ? "active" : ""
     readonly property color primaryDeckTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color primaryOverviewBackgroundColor: isClassic ? "#0f0f0f" : "#19191a"
@@ -347,6 +351,10 @@ QtObject {
     readonly property color syncExplicitLeaderColor: activePlayCueColor
     readonly property color syncImplicitLeaderColor: isPaleMoon ? "#7d350d" : "#db7700"
     readonly property color syncInactiveBackgroundColor: "#1e1e1e"
+    readonly property color specialCueActiveColor: isPaleMoon ? "#385678" : "#2f4f73"
+    readonly property color cueMenuCheckedColor: isClassic ? "#db0000" : "#b24c12"
+    readonly property color cueMenuDeleteHoverColor: "#6c2e2e"
+    readonly property color cueMenuDeletePressedColor: "#dc4141"
     readonly property color textColor: white
     readonly property color textColorMuted: "#696969"
     readonly property color toolbarActiveColor: white
@@ -375,12 +383,16 @@ QtObject {
     readonly property color toolbarRecordingColor: "#db0000"
     readonly property color toolbarRecordingTextColor: "#ff7373"
     readonly property color toolbarRootBackgroundColor: "#151517"
+    readonly property color toolbarSettingsTextColor: "#d2d2d2"
     readonly property color toolbarStatusErrorColor: "#f856e7"
     readonly property color toolbarStatusOkColor: "#54c76a"
     readonly property color toolbarStatusWarnColor: "#d89124"
     readonly property color trackPropertyHighlightColor: "#151515"
     readonly property color trackPropertySelectedTextColor: "#111111"
     readonly property color trackPropertySelectionColor: white
+    readonly property color passthroughActiveColor: isClassic ? "#d09300" : "#b24c12"
+    readonly property color passthroughLabelColor: passthroughActiveColor
+    readonly property color passthroughOverlayColor: "#bb000000"
     readonly property color vinylCueingActiveColor: "#888888"
     readonly property color vinylStatusSignalAndSpeedColor: "#f856e7"
     readonly property color vinylStatusSignalColor: isClassic ? "#659f08" : "#438225"

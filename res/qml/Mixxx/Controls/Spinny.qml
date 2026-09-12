@@ -7,7 +7,9 @@ Item {
 
     required property string group
     property bool indicatorVisible: true
+    property bool ghostIndicatorVisible: false
     property alias indicator: indicatorContainer.contentItem
+    property alias ghostIndicator: ghostIndicatorContainer.contentItem
 
     // Avoid animation short blinking of spinny during startup
     Component.onCompleted: indicatorTransition.enabled = true
@@ -27,13 +29,6 @@ Item {
     }
 
     Mixxx.ControlProxy {
-        id: playPositionControl
-
-        group: root.group
-        key: "playposition"
-    }
-
-    Mixxx.ControlProxy {
         id: vinylSpeedTypeControl
 
         group: root.group
@@ -45,6 +40,20 @@ Item {
 
         group: root.group
         key: "track_loaded"
+    }
+
+    Mixxx.ControlProxy {
+        id: slipEnabledControl
+
+        group: root.group
+        key: "slip_enabled"
+    }
+
+    Mixxx.SpinnyPosition {
+        id: spinnyPosition
+
+        visible: root.indicatorVisible && trackLoadedControl.value > 0
+        group: root.group
     }
 
     Mixxx.ControlProxy {
@@ -67,12 +76,42 @@ Item {
         ? vinylSpeedTypeControl.value : 33.33
     readonly property real rps: Math.PI * rpm / 60.0
     readonly property real frameRate: sampleRateControl.value
+    readonly property bool positionDataValid: spinnyPosition.valid &&
+        isFinite(samplesControl.value) && samplesControl.value > 0 &&
+        isFinite(sampleRateControl.value) && sampleRateControl.value > 0
+    readonly property bool ghostVisible: root.ghostIndicatorVisible &&
+        root.indicatorVisible &&
+        trackLoadedControl.value > 0 &&
+        slipEnabledControl.value > 0 &&
+        spinnyPosition.valid
+
+    Control {
+        id: ghostIndicatorContainer
+
+        anchors.fill: parent
+        opacity: root.ghostVisible ? 1 : 0
+        visible: opacity > 0
+        z: 0
+
+        transform: Rotation {
+            property real totalFrames: samplesControl.value / 2
+            property real positionSeconds: root.positionDataValid
+                ? spinnyPosition.slipPosition * totalFrames / sampleRateControl.value : 0
+            property real rotationFactor: roundsPerSecond * positionSeconds % 1
+            property real roundsPerSecond: root.rps / Math.PI
+
+            origin.x: root.width / 2
+            origin.y: root.height / 2
+            angle: 360 * rotationFactor
+        }
+    }
 
     Control {
         id: indicatorContainer
 
         anchors.fill: parent
         visible: opacity > 0
+        z: 1
 
         contentItem: Rectangle {
             height: root.height / 2
@@ -84,10 +123,11 @@ Item {
         transform: Rotation {
             id: indicatorRotation
 
-            property real roundsPerSecond: root.rps / Math.PI
             property real totalFrames: samplesControl.value / 2
-            property real positionSeconds: (!isNaN(sampleRateControl.value) && sampleRateControl.value > 0) ? playPositionControl.value * totalFrames / sampleRateControl.value : 0
+            property real positionSeconds: root.positionDataValid
+                ? spinnyPosition.playPosition * totalFrames / sampleRateControl.value : 0
             property real rotationFactor: indicatorRotation.roundsPerSecond * indicatorRotation.positionSeconds % 1
+            property real roundsPerSecond: root.rps / Math.PI
 
             origin.x: root.width / 2
             origin.y: root.height / 2

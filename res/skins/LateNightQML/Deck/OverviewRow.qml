@@ -13,8 +13,22 @@ Item {
     readonly property bool useSecondaryDeckColors: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color overviewBackgroundColor: useSecondaryDeckColors ? LateNightTheme.secondaryOverviewBackgroundColor : LateNightTheme.primaryOverviewBackgroundColor
     readonly property color waveformSignalColor: useSecondaryDeckColors ? LateNightTheme.secondaryWaveformSignalColor : LateNightTheme.primaryWaveformSignalColor
+    readonly property bool passthroughEnabled: passthroughControl.value > 0
+    readonly property bool trackLoaded: trackLoadedProxy.value > 0
     readonly property int waveformOverviewType: Math.round(waveformOverviewTypeProxy.value)
     readonly property bool useFilteredOverview: waveformOverviewType === 0
+
+    Mixxx.ControlProxy {
+        id: passthroughControl
+        group: root.group
+        key: "passthrough"
+    }
+
+    Mixxx.ControlProxy {
+        id: trackLoadedProxy
+        group: root.group
+        key: "track_loaded"
+    }
 
     Mixxx.ControlProxy {
         id: waveformOverviewTypeProxy
@@ -72,6 +86,7 @@ Item {
                 colorLow: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbLowColor
                 colorMid: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbMidColor
                 colorHigh: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbHighColor
+                interactive: !root.passthroughEnabled
                 renderer: root.useFilteredOverview ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.WaveformOverview.Renderer.RGB
             }
 
@@ -374,6 +389,36 @@ Item {
                     font.pixelSize: 10
                     font.bold: true
                     visible: outroStartProxy.value >= 0 && showIntroOutroCuesProxy.value > 0
+                }
+            }
+
+            Item {
+                id: passthroughOverlay
+
+                anchors.fill: parent
+                anchors.margins: 1
+                enabled: false
+                visible: root.passthroughEnabled
+                z: 2
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: LateNightTheme.passthroughOverlayColor
+                    visible: root.trackLoaded
+                }
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.height <= 24 ? 11 : 13
+                    anchors.right: parent.right
+                    anchors.rightMargin: 2
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: LateNightTheme.passthroughLabelColor
+                    elide: Text.ElideRight
+                    font.bold: true
+                    font.family: "Open Sans"
+                    font.pixelSize: Math.max(1, Math.min(19, parent.height - 4))
+                    text: qsTr("Passthrough")
                 }
             }
         }

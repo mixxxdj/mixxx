@@ -8,6 +8,7 @@ Mixxx.WaveformOverview {
     property color cueMarkerColor: "red"
     required property string group
     property color introOutroMarkerColor: "blue"
+    property bool interactive: true
     property color loopMarkerColor: "green"
     property string playPositionMarkerColor: "white"
     readonly property var player: Mixxx.PlayerManager.getPlayer(root.group)
@@ -63,6 +64,7 @@ Mixxx.WaveformOverview {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
+        enabled: root.interactive
         hoverEnabled: true
 
         onPositionChanged: mouse => {

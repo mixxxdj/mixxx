@@ -27,6 +27,7 @@ class QmlLibrarySource : public QObject {
     Q_PROPERTY(uint totalSecond MEMBER m_totalSecond CONSTANT)
     Q_PROPERTY(uint trackCount MEMBER m_trackCount CONSTANT)
     QML_NAMED_ELEMENT(LibrarySource)
+    QML_UNCREATABLE("Only accessible via Mixxx.Library.sources")
   public:
     QmlLibrarySource(const DirectoryDAO::RootDirectoryInfo& record)
             : m_path(record.path),
@@ -126,6 +127,12 @@ class QmlLibraryProxy : public QObject {
         PurgeTracks
     };
     Q_ENUM(SourceRemovalType);
+    enum class JumpDirection {
+        Impossible,
+        Forward,
+        Backward,
+    };
+    Q_ENUM(JumpDirection);
 
     explicit QmlLibraryProxy(QObject* parent = nullptr);
     ~QmlLibraryProxy() override;
@@ -190,6 +197,10 @@ class QmlLibraryProxy : public QObject {
             const QString& group,
             int hotcueNumber,
             const QString& action);
+    Q_INVOKABLE mixxx::qml::QmlLibraryProxy::JumpDirection deckHotcueJumpDirection(
+            mixxx::qml::QmlTrackProxy* track,
+            const QString& group,
+            int hotcueNumber) const;
     Q_INVOKABLE void cleanupDeckHotcuePopup(
             mixxx::qml::QmlTrackProxy* track,
             int hotcueNumber);

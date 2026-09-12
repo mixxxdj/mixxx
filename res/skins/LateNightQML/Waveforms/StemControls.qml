@@ -50,7 +50,7 @@ Controls.Panel {
         target: root.currentTrack
     }
     Connections {
-        function onCurrentTrackChanged() {
+        function onTrackChanged() {
             root.refreshStemInfos();
         }
 

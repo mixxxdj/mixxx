@@ -1,6 +1,7 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Window
 import "../LateNightTheme"
 
 ComboBox {
@@ -9,7 +10,15 @@ ComboBox {
     property bool arrowOnRight: false
     readonly property bool compact: width <= 40
     required property string group
-    readonly property int popupMaxItem: count
+    readonly property int popupMaxItem: {
+        const window = root.Window.window;
+        const contentItem = window ? window.contentItem : null;
+        if (!contentItem)
+            return root.count;
+
+        const popupY = root.mapToItem(contentItem, 0, root.height).y;
+        return Math.max(1, Math.floor((window.height - popupY - 10) / 20));
+    }
     property int popupWidth: 160
     readonly property string quickEffectGroup: "[QuickEffectRack1_" + group + "]"
     property bool textAlignRight: arrowOnRight

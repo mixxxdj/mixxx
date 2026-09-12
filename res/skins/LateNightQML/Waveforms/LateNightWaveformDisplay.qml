@@ -26,6 +26,7 @@ Item {
     readonly property color waveformSignalColor: isPrimaryDeck ? LateNightTheme.waveformPrimarySignalColor : LateNightTheme.waveformSecondarySignalColor
     readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
     readonly property bool trackLoaded: trackLoadedControl.value > 0
+    readonly property bool passthroughEnabled: passthroughControl.value > 0
 
     signal splitStemTracksToggleRequested
 
@@ -36,7 +37,21 @@ Item {
         key: "track_loaded"
     }
 
+    Mixxx.ControlProxy {
+        id: passthroughControl
+
+        group: root.group
+        key: "passthrough"
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: root.waveformBgColor
+        visible: root.passthroughEnabled
+    }
+
     MixxxControls.WaveformDisplay {
+        visible: !root.passthroughEnabled
         anchors.fill: parent
         backgroundColor: root.waveformBgColor
         group: root.group
@@ -180,6 +195,24 @@ Item {
             }
         }
     }
+    Item {
+        id: passthroughLayer
+
+        anchors.fill: parent
+        enabled: false
+        visible: root.passthroughEnabled
+        z: 1
+
+        Text {
+            anchors.centerIn: parent
+            color: LateNightTheme.passthroughLabelColor
+            font.bold: true
+            font.family: "Open Sans"
+            font.pixelSize: Math.max(1, Math.min(25, Math.floor(parent.height * 0.8)))
+            text: qsTr("Passthrough")
+        }
+    }
+
     Mixxx.ControlProxy {
         id: scratchPositionEnableControl
 

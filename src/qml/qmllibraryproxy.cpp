@@ -355,7 +355,7 @@ bool QmlLibraryProxy::setDeckHotcueType(
         int hotcueNumber,
         const QString& action) {
     const CuePointer pCue = findDeckHotcue(track, hotcueNumber);
-    if (!track || !track->internal() || !pCue) {
+    if (!pCue) {
         return false;
     }
 
@@ -453,6 +453,36 @@ bool QmlLibraryProxy::setDeckHotcueType(
     }
 
     return false;
+}
+
+QmlLibraryProxy::JumpDirection QmlLibraryProxy::deckHotcueJumpDirection(
+        QmlTrackProxy* track,
+        const QString& group,
+        int hotcueNumber) const {
+    const CuePointer pCue = findDeckHotcue(track, hotcueNumber);
+    if (!pCue) {
+        return JumpDirection::Impossible;
+    }
+
+    if (pCue->getType() == mixxx::CueType::HotCue) {
+        const Cue::StartAndEndPositions cueStartEnd = pCue->getStartAndEndPosition();
+        auto newPosition = cueStartEnd.endPosition;
+        if (!newPosition.isValid()) {
+            newPosition = getCurrentPlayPositionWithQuantize(track->internal(), group);
+        }
+        if (!newPosition.isValid() ||
+                std::abs(newPosition - cueStartEnd.startPosition) <=
+                        kMinimumAudibleLoopSizeFrames) {
+            return JumpDirection::Impossible;
+        }
+        return newPosition < cueStartEnd.startPosition
+                ? JumpDirection::Forward
+                : JumpDirection::Backward;
+    }
+
+    const bool isForward = pCue->getType() != mixxx::CueType::Jump ||
+            pCue->getPosition() > pCue->getEndPosition();
+    return isForward ? JumpDirection::Forward : JumpDirection::Backward;
 }
 
 void QmlLibraryProxy::cleanupDeckHotcuePopup(

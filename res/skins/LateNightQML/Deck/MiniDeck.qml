@@ -22,6 +22,8 @@ Controls.Panel {
     readonly property bool secondaryDeck: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property var trackColor: currentTrack?.color
     readonly property color waveformColor: secondaryDeck ? LateNightTheme.secondaryWaveformSignalColor : LateNightTheme.primaryWaveformSignalColor
+    readonly property string miniKeyText: root.isLoaded ? Mixxx.KeyUtils.keyToString(keyProxy.value, keyNotationProxy.value) : ""
+    readonly property bool showMiniKeyColorStrip: Mixxx.Config.configKeyColorsEnabled && root.miniKeyText.length > 0
 
     signal toggleFocus
 
@@ -182,14 +184,31 @@ Controls.Panel {
                     text: root.isLoaded ? (root.currentTrack?.artist || qsTr("Unknown Artist")) : ""
                     verticalAlignment: Text.AlignVCenter
                 }
-                Text {
+                RowLayout {
                     Layout.preferredWidth: 42
-                    color: root.deckTextColor
-                    font.family: "Open Sans"
-                    font.pixelSize: 12
-                    horizontalAlignment: Text.AlignHCenter
-                    text: root.isLoaded ? Mixxx.KeyUtils.keyToString(keyProxy.value, keyNotationProxy.value) : ""
-                    verticalAlignment: Text.AlignVCenter
+                    Layout.minimumWidth: 42
+                    Layout.maximumWidth: 42
+                    spacing: 0
+
+                    MixxxControls.KeyColorIndicator {
+                        Layout.alignment: Qt.AlignVCenter
+                        fallbackColor: LateNightTheme.accentColor
+                        Layout.minimumWidth: root.showMiniKeyColorStrip ? 4 : 0
+                        Layout.preferredWidth: root.showMiniKeyColorStrip ? 4 : 0
+                        Layout.maximumWidth: root.showMiniKeyColorStrip ? 4 : 0
+                        Layout.preferredHeight: 20
+                        group: root.group
+                        visible: root.showMiniKeyColorStrip
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        color: root.deckTextColor
+                        font.family: "Open Sans"
+                        font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
+                        text: root.miniKeyText
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 Text {
                     Layout.preferredWidth: 50
