@@ -39,7 +39,8 @@ enum class FileType {
     XM,
     Opus,
     DSF,
-    DSDIFF
+    DSDIFF,
+    Matroska
 };
 Q_ENUM_NS(FileType);
 
