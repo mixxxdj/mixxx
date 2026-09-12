@@ -9,6 +9,8 @@ Item {
     required property string group
     required property string key
     property string color: "white"
+    readonly property real devicePixelRatio: Screen.devicePixelRatio > 0 ? Screen.devicePixelRatio : 1
+    readonly property real markerX: Math.round(root.width * control.value * root.devicePixelRatio) / root.devicePixelRatio
 
     Shape {
         id: shape
@@ -30,7 +32,7 @@ Item {
 
                 property bool hovered: false
 
-                x: 0
+                x: root.markerX
                 y: root.height
             }
         }
@@ -41,9 +43,5 @@ Item {
 
         group: root.group
         key: root.key
-        onValueChanged: (value) => {
-            // Math.round saves tons of CPU by avoiding redrawing for fractional pixel positions.
-            marker.x = Math.round(root.width * value * Screen.devicePixelRatio) / Screen.devicePixelRatio;
-        }
     }
 }

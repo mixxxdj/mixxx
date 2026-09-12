@@ -4,6 +4,8 @@
 #include <memory>
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "test/mixxxtest.h"
 
 namespace {
@@ -35,6 +37,26 @@ TEST_F(ControlObjectTest, getControl) {
     co2.reset();
     EXPECT_EQ(ControlObject::getControl(ck2, ControlFlag::NoAssertIfMissing),
             (ControlObject*)nullptr);
+}
+
+TEST_F(ControlObjectTest, CreatorLifetimeWithSurvivingProxy) {
+    const ConfigKey key("[Waveform]", "WaveformOverviewTypeTest");
+    auto creator = std::make_unique<ControlPushButton>(key);
+
+    for (int i = 0; i < 50; ++i) {
+        ControlProxy proxy(key);
+        EXPECT_TRUE(ControlObject::exists(key));
+        EXPECT_EQ(creator.get(), ControlObject::getControl(key));
+    }
+
+    auto proxy = std::make_unique<ControlProxy>(key);
+    creator.reset();
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_EQ(ControlObject::getControl(key, ControlFlag::NoWarnIfMissing), nullptr);
+
+    proxy.reset();
+    EXPECT_FALSE(ControlObject::exists(key));
 }
 
 TEST_F(ControlObjectTest, AliasRetrieval) {

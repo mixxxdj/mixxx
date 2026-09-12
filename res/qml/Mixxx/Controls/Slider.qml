@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+import QtQuick.Window 2.12
 
 Item {
     id: root
@@ -26,6 +27,7 @@ Item {
     property int orientation: Qt.Vertical
     readonly property real position: valueToPosition(displayValue)
     readonly property bool pressed: dragHandler.active
+    readonly property real devicePixelRatio: Screen.devicePixelRatio > 0 ? Screen.devicePixelRatio : 1
     property real rightPadding: 0
     property int snapMode: Slider.NoSnap
     property real stepSize: 0
@@ -118,14 +120,22 @@ Item {
             id: barPath
 
             fillColor: "transparent"
-            startX: root.horizontal ? barShape.width * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.width * 0.5)
-            startY: root.vertical ? barShape.height * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.height * 0.5)
+            startX: root.bar.snapToDevicePixels
+                    ? Math.round((root.horizontal ? barShape.width * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.width * 0.5)) * root.devicePixelRatio) / root.devicePixelRatio
+                    : (root.horizontal ? barShape.width * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.width * 0.5))
+            startY: root.bar.snapToDevicePixels
+                    ? Math.round((root.vertical ? barShape.height * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.height * 0.5)) * root.devicePixelRatio) / root.devicePixelRatio
+                    : (root.vertical ? barShape.height * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.height * 0.5))
             strokeColor: root.bar.color
             strokeWidth: root.bar.width
 
             PathLine {
-                x: root.horizontal ? (barShape.width * root.position) : barPath.startX
-                y: root.vertical ? (barShape.height * (1 - root.position)) : barPath.startY
+                x: root.bar.snapToDevicePixels
+                        ? Math.round((root.horizontal ? barShape.width * root.position : barPath.startX) * root.devicePixelRatio) / root.devicePixelRatio
+                        : (root.horizontal ? barShape.width * root.position : barPath.startX)
+                y: root.bar.snapToDevicePixels
+                        ? Math.round((root.vertical ? barShape.height * (1 - root.position) : barPath.startY) * root.devicePixelRatio) / root.devicePixelRatio
+                        : (root.vertical ? barShape.height * (1 - root.position) : barPath.startY)
             }
         }
     }
@@ -183,6 +193,7 @@ Item {
         property color color: "transparent"
         property bool enabled: false
         property real margin: 0
+        property bool snapToDevicePixels: false
         property real start: 0
         property real width: 2
     }

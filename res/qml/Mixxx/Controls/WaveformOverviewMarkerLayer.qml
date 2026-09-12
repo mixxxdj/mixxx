@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
+import QtQuick.Window 2.12
 
 Item {
     id: root
@@ -31,12 +32,14 @@ Item {
     property int markerWidth: 1
     property int labelTopMargin: 2
     property int labelHorizontalMargin: 2
+    readonly property real devicePixelRatio: Screen.devicePixelRatio > 0 ? Screen.devicePixelRatio : 1
 
     function mapX(position) {
         if (trackSamplesProxy.value <= 0 || position < 0) {
             return -9999;
         }
-        return (root.width * position) / trackSamplesProxy.value;
+        return Math.round((root.width * position / trackSamplesProxy.value) * root.devicePixelRatio) /
+                root.devicePixelRatio;
     }
 
     function clampedX(position, itemWidth) {
