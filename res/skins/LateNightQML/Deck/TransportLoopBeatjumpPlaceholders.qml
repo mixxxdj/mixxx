@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Mixxx 1.0 as Mixxx
@@ -12,13 +14,6 @@ Item {
     property bool showHotcues: true
     property bool showIntroOutroCues: true
     property bool showLoopControls: true
-
-    function beatSizeText(value) {
-        if (value >= 1) {
-            return value.toFixed(0);
-        }
-        return value.toString();
-    }
 
     clip: true
     height: LateNightTheme.deckTransportHeight
@@ -103,7 +98,7 @@ Item {
             visible: root.showHotcues || root.showIntroOutroCues
         }
 
-        // Hotcue controls (behavior in progress)
+        // Hotcue controls
         GridLayout {
             Layout.preferredHeight: 52
             Layout.preferredWidth: root.show8Hotcues ? 104 : 52
@@ -113,17 +108,64 @@ Item {
             rows: 2
             visible: root.showHotcues
 
-            Repeater {
-                model: 8
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 1
+            }
 
-                delegate: LateNightIconButton {
-                    Layout.preferredHeight: 26
-                    Layout.preferredWidth: root.show8Hotcues || index < 4 ? 26 : 0
-                    contentOpacity: 1.0
-                    iconSource: LateNightTheme.lateNightButton("btn__" + (index + 1) + ".svg")
-                    inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-                    visible: root.show8Hotcues || index < 4
-                }
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 2
+            }
+
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 3
+            }
+
+            LateNightHotcueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 4
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 5
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 6
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 7
+            }
+
+            LateNightHotcueButton {
+                visible: root.show8Hotcues
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                hotcueNumber: 8
             }
         }
         Item {
@@ -131,7 +173,7 @@ Item {
             visible: root.showHotcues || root.showIntroOutroCues
         }
 
-        // Intro/Outro controls (behavior in progress)
+        // Intro/Outro controls
         GridLayout {
             Layout.preferredHeight: 52
             Layout.preferredWidth: 52
@@ -141,16 +183,32 @@ Item {
             rows: 2
             visible: root.showIntroOutroCues
 
-            Repeater {
-                model: [LateNightTheme.assetDeckIntroStartButton, LateNightTheme.assetDeckIntroEndButton, LateNightTheme.assetDeckOutroStartButton, LateNightTheme.assetDeckOutroEndButton]
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "intro_start"
+            }
 
-                delegate: LateNightIconButton {
-                    Layout.preferredHeight: 26
-                    Layout.preferredWidth: 26
-                    contentOpacity: 0.72
-                    iconSource: modelData
-                    inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-                }
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "intro_end"
+            }
+
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "outro_start"
+            }
+
+            LateNightSpecialCueButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                group: root.group
+                cueType: "outro_end"
             }
         }
         Item {
@@ -163,7 +221,7 @@ Item {
             visible: root.showIntroOutroCues || root.showLoopControls || root.showBeatjumpControls
         }
 
-        // Loop controls (behavior in progress)
+        // Loop controls
         GridLayout {
             Layout.preferredHeight: 52
             Layout.preferredWidth: 104
@@ -173,29 +231,110 @@ Item {
             rows: 2
             visible: root.showLoopControls
 
-            LateNightIconButton {
-                Layout.preferredHeight: 26
+            LateNightControlButton {
                 Layout.preferredWidth: 26
-                contentOpacity: 0.82
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckLoopButton
+                group: root.group
+                key: "beatloop_activate"
+                rightClickKey: "beatlooproll_activate"
+                displayKey: "loop_enabled"
+                activeBackgroundSuffix: "set"
+                pressedBackgroundSuffix: "active"
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                inactiveOpacity: 0.82
+                activeColor: LateNightTheme.activePlayCueColor
                 inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
             }
-            BeatSpinBoxPlaceholder {
+
+            LateNightBeatSpinBox {
                 Layout.columnSpan: 3
                 Layout.preferredHeight: 26
-                Layout.preferredWidth: 78
-                valueText: root.beatSizeText(beatloopSizeProxy.value)
+                group: root.group
+                key: "beatloop_size"
+                decrementKey: "loop_halve"
+                incrementKey: "loop_double"
             }
-            Repeater {
-                model: [LateNightTheme.assetDeckReloopButton, LateNightTheme.assetDeckLoopInButton, LateNightTheme.assetDeckLoopOutButton, LateNightTheme.assetDeckLoopAnchorStartButton]
 
-                delegate: LateNightIconButton {
-                    Layout.preferredHeight: 26
-                    Layout.preferredWidth: 26
-                    contentOpacity: 0.78
-                    iconSource: modelData
-                    inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-                }
+            LateNightControlButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                iconSource: LateNightTheme.assetDeckReloopButton
+                group: root.group
+                key: "reloop_toggle"
+                rightClickKey: "reloop_andstop"
+                activeBackgroundSuffix: "active"
+                pressedBackgroundSuffix: "active"
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                inactiveOpacity: 0.78
+                activeColor: LateNightTheme.activePlayCueColor
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
+            }
+
+            LateNightControlButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                iconSource: LateNightTheme.assetDeckLoopInButton
+                group: root.group
+                key: "loop_in"
+                rightClickKey: "loop_in_goto"
+                activeBackgroundSuffix: "active"
+                pressedBackgroundSuffix: "active"
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                inactiveOpacity: 0.78
+                activeColor: LateNightTheme.keyControlsPressedColor
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
+            }
+
+            LateNightControlButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                iconSource: LateNightTheme.assetDeckLoopOutButton
+                group: root.group
+                key: "loop_out"
+                rightClickKey: "loop_out_goto"
+                activeBackgroundSuffix: "active"
+                pressedBackgroundSuffix: "active"
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                inactiveOpacity: 0.78
+                activeColor: LateNightTheme.keyControlsPressedColor
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
+            }
+
+            LateNightControlButton {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                iconSource: isActive
+                        ? LateNightTheme.assetDeckLoopAnchorEndButton
+                        : LateNightTheme.assetDeckLoopAnchorStartButton
+                group: root.group
+                key: "loop_anchor"
+                toggleable: true
+                activeBackgroundSuffix: "set"
+                pressedBackgroundSuffix: "active"
+                activeOpacity: 1.0
+                inactiveOpacity: 0.78
+                activeColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedColor: LateNightTheme.keyControlsPressedColor
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
             }
         }
         Item {
@@ -208,7 +347,7 @@ Item {
             visible: root.showLoopControls || root.showBeatjumpControls
         }
 
-        // Beatjump controls (behavior in progress)
+        // Beatjump controls
         GridLayout {
             Layout.preferredHeight: 52
             Layout.preferredWidth: 60
@@ -218,26 +357,52 @@ Item {
             rows: 2
             visible: root.showBeatjumpControls
 
-            BeatSpinBoxPlaceholder {
+            LateNightBeatSpinBox {
                 Layout.columnSpan: 2
                 Layout.preferredHeight: 26
                 Layout.preferredWidth: 60
                 preferredWidth: 60
-                valueText: root.beatSizeText(beatjumpSizeProxy.value)
+                group: root.group
+                key: "beatjump_size"
+                decrementKey: "beatjump_size_halve"
+                incrementKey: "beatjump_size_double"
             }
-            LateNightIconButton {
-                Layout.preferredHeight: 26
+            LateNightControlButton {
                 Layout.preferredWidth: 26
-                contentOpacity: 0.82
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckBeatjumpLeftButton
+                group: root.group
+                key: "beatjump_backward"
+                rightClickKey: "beatjump_1_backward"
+                activeBackgroundSuffix: "active"
+                pressedBackgroundSuffix: "active"
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                inactiveOpacity: 0.82
+                activeColor: LateNightTheme.keyControlsPressedColor
                 inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
             }
-            LateNightIconButton {
-                Layout.preferredHeight: 26
+
+            LateNightControlButton {
                 Layout.preferredWidth: 26
-                contentOpacity: 0.82
+                Layout.preferredHeight: 26
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
                 iconSource: LateNightTheme.assetDeckBeatjumpRightButton
+                group: root.group
+                key: "beatjump_forward"
+                rightClickKey: "beatjump_1_forward"
+                activeBackgroundSuffix: "active"
+                pressedBackgroundSuffix: "active"
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                inactiveOpacity: 0.82
+                activeColor: LateNightTheme.keyControlsPressedColor
                 inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                pressedActivatesFill: true
             }
         }
         Item {
