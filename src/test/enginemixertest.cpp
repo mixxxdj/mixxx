@@ -157,9 +157,12 @@ TEST_P(EngineMixerTest, OutputWorks) {
 }
 
 TEST_F(BaseSignalPathTest, IndependentMonoMixdown) {
-    ControlProxy mainMono(ConfigKey(QStringLiteral("[Master]"), QStringLiteral("mono_mixdown")));
-    ControlProxy boothMono(ConfigKey(QStringLiteral("[Booth]"), QStringLiteral("mono_mixdown")));
-    ControlProxy headphoneMono(ConfigKey(QStringLiteral("[Headphone]"), QStringLiteral("mono_mixdown")));
+    ControlProxy mainMono(ConfigKey(
+            QStringLiteral("[Master]"), QStringLiteral("mono_mixdown")));
+    ControlProxy boothMono(ConfigKey(
+            QStringLiteral("[Booth]"), QStringLiteral("mono_mixdown")));
+    ControlProxy headphoneMono(ConfigKey(
+            QStringLiteral("[Headphone]"), QStringLiteral("mono_mixdown")));
 
     // Verify initial values
     EXPECT_EQ(0.0, mainMono.get());
@@ -167,9 +170,15 @@ TEST_F(BaseSignalPathTest, IndependentMonoMixdown) {
     EXPECT_EQ(0.0, headphoneMono.get());
 
     // Verify that all three controls exist in the registry
-    EXPECT_NE(nullptr, ControlObject::getControl(ConfigKey(QStringLiteral("[Master]"), QStringLiteral("mono_mixdown"))));
-    EXPECT_NE(nullptr, ControlObject::getControl(ConfigKey(QStringLiteral("[Booth]"), QStringLiteral("mono_mixdown"))));
-    EXPECT_NE(nullptr, ControlObject::getControl(ConfigKey(QStringLiteral("[Headphone]"), QStringLiteral("mono_mixdown"))));
+    EXPECT_NE(nullptr,
+            ControlObject::getControl(ConfigKey(QStringLiteral("[Master]"),
+                    QStringLiteral("mono_mixdown"))));
+    EXPECT_NE(nullptr,
+            ControlObject::getControl(ConfigKey(QStringLiteral("[Booth]"),
+                    QStringLiteral("mono_mixdown"))));
+    EXPECT_NE(nullptr,
+            ControlObject::getControl(ConfigKey(QStringLiteral("[Headphone]"),
+                    QStringLiteral("mono_mixdown"))));
 
     // Verify independent toggling
     mainMono.set(1.0);
