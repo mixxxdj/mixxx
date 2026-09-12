@@ -14,24 +14,32 @@ Item {
         Scratching
     }
 
-    required property string group
-    property bool splitStemTracks: false
-    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
-
-    readonly property bool isPrimaryDeck: group === "[Channel1]" || group === "[Channel2]"
-    readonly property color waveformBgColor: isPrimaryDeck
-            ? LateNightTheme.waveformPrimaryBackgroundColor
-            : LateNightTheme.waveformSecondaryBackgroundColor
-
-    readonly property color cueColor: LateNightTheme.waveformCueColor
-    readonly property color loopColor: LateNightTheme.waveformLoopColor
-    readonly property color introOutroColor: LateNightTheme.waveformIntroOutroColor
-    readonly property color playPosColor: LateNightTheme.waveformPlayPositionColor
     readonly property color beatAxesColor: LateNightTheme.waveformBeatAxesColor
+    readonly property color cueColor: LateNightTheme.waveformCueColor
+    required property string group
+    readonly property color introOutroColor: LateNightTheme.waveformIntroOutroColor
+    readonly property bool isPrimaryDeck: group === "[Channel1]" || group === "[Channel2]"
+    readonly property color loopColor: LateNightTheme.waveformLoopColor
+    readonly property color playPosColor: LateNightTheme.waveformPlayPositionColor
+    property bool splitStemTracks: false
+    readonly property color waveformBgColor: isPrimaryDeck ? LateNightTheme.waveformPrimaryBackgroundColor : LateNightTheme.waveformSecondaryBackgroundColor
+    readonly property color waveformSignalColor: isPrimaryDeck ? LateNightTheme.waveformPrimarySignalColor : LateNightTheme.waveformSecondarySignalColor
+    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
+    readonly property bool trackLoaded: trackLoadedControl.value > 0
     readonly property bool passthroughEnabled: passthroughControl.value > 0
+
+    signal splitStemTracksToggleRequested
+
+    Mixxx.ControlProxy {
+        id: trackLoadedControl
+
+        group: root.group
+        key: "track_loaded"
+    }
 
     Mixxx.ControlProxy {
         id: passthroughControl
+
         group: root.group
         key: "passthrough"
     }
@@ -61,7 +69,7 @@ Item {
             endOfTrackWarningTime: 30
         }
         Mixxx.WaveformRendererPreroll {
-            color: LateNightTheme.waveformEndOfTrackWarningColor
+            color: root.waveformSignalColor
         }
         Mixxx.WaveformRendererMarkRange {
             // Loop
@@ -79,20 +87,20 @@ Item {
                 color: root.introOutroColor
                 durationTextColor: LateNightTheme.waveformMarkerTextColor
                 durationTextLocation: 'after'
-                startControl: "intro_start_position"
                 endControl: "intro_end_position"
-                visibilityControl: "[Skin],show_intro_outro_cues"
                 opacity: 0.1
+                startControl: "intro_start_position"
+                visibilityControl: "[Skin],show_intro_outro_cues"
             }
             // Outro
             Mixxx.WaveformMarkRange {
                 color: root.introOutroColor
                 durationTextColor: LateNightTheme.waveformMarkerTextColor
                 durationTextLocation: 'before'
-                startControl: "outro_start_position"
                 endControl: "outro_end_position"
-                visibilityControl: "[Skin],show_intro_outro_cues"
                 opacity: 0.1
+                startControl: "outro_start_position"
+                visibilityControl: "[Skin],show_intro_outro_cues"
             }
         }
         Mixxx.WaveformRendererFiltered {
@@ -101,9 +109,9 @@ Item {
             gainHigh: 1.0
             gainLow: 1.0
             gainMid: 1.0
-            highColor: LateNightTheme.waveformFilteredHighColor
-            lowColor: LateNightTheme.waveformFilteredLowColor
-            midColor: LateNightTheme.waveformFilteredMidColor
+            highColor: root.waveformSignalColor
+            lowColor: root.waveformSignalColor
+            midColor: root.waveformSignalColor
         }
         Mixxx.WaveformRendererStem {
             gainAll: root.splitStemTracks ? 2.0 : 1.0
@@ -113,8 +121,8 @@ Item {
             color: root.beatAxesColor
         }
         Mixxx.WaveformRendererMark {
-            playMarkerBackground: root.playPosColor
-            playMarkerColor: root.playPosColor
+            playMarkerBackground: root.trackLoaded ? root.playPosColor : "transparent"
+            playMarkerColor: root.trackLoaded ? root.playPosColor : "transparent"
             untilMark.align: Qt.AlignBottom
             untilMark.showBeats: true
             untilMark.showTime: true
@@ -140,8 +148,8 @@ Item {
                 align: 'top|left'
                 color: root.loopColor
                 control: "loop_start_position"
-                text: '↻'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_loop.svg")
+                text: '↻'
                 textColor: LateNightTheme.waveformMarkerTextColor
             }
             Mixxx.WaveformMark {
@@ -154,80 +162,39 @@ Item {
                 align: 'top|right'
                 color: root.introOutroColor
                 control: "intro_start_position"
-                text: '◢'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_intro.svg")
-                visibilityControl: "[Skin],show_intro_outro_cues"
+                text: '◢'
                 textColor: LateNightTheme.waveformMarkerTextColor
+                visibilityControl: "[Skin],show_intro_outro_cues"
             }
             Mixxx.WaveformMark {
                 align: 'top|left'
                 color: root.introOutroColor
                 control: "intro_end_position"
-                text: '◢'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_intro.svg")
-                visibilityControl: "[Skin],show_intro_outro_cues"
+                text: '◢'
                 textColor: LateNightTheme.waveformMarkerTextColor
+                visibilityControl: "[Skin],show_intro_outro_cues"
             }
             Mixxx.WaveformMark {
                 align: 'top|right'
                 color: root.introOutroColor
                 control: "outro_start_position"
-                text: '◣'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_outro.svg")
-                visibilityControl: "[Skin],show_intro_outro_cues"
+                text: '◣'
                 textColor: LateNightTheme.waveformMarkerTextColor
+                visibilityControl: "[Skin],show_intro_outro_cues"
             }
             Mixxx.WaveformMark {
                 align: 'top|left'
                 color: root.introOutroColor
                 control: "outro_end_position"
-                text: '◣'
                 icon: Qt.resolvedUrl("../../LateNight/classic/style/mark_outro.svg")
+                text: '◣'
                 visibilityControl: "[Skin],show_intro_outro_cues"
             }
         }
     }
-
-    Rectangle {
-        id: leftFader
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: 125
-        enabled: false
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop {
-                position: 0.0
-                color: root.waveformBgColor
-            }
-            GradientStop {
-                position: 1.0
-                color: "transparent"
-            }
-        }
-    }
-
-    Rectangle {
-        id: rightFader
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: 125
-        enabled: false
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop {
-                position: 0.0
-                color: "transparent"
-            }
-            GradientStop {
-                position: 1.0
-                color: root.waveformBgColor
-            }
-        }
-    }
-
     Item {
         id: passthroughLayer
 
@@ -248,35 +215,46 @@ Item {
 
     Mixxx.ControlProxy {
         id: scratchPositionEnableControl
+
         group: root.group
         key: "scratch_position_enable"
     }
     Mixxx.ControlProxy {
         id: scratchPositionControl
+
         group: root.group
         key: "scratch_position"
     }
     Mixxx.ControlProxy {
         id: wheelControl
+
         group: root.group
         key: "wheel"
     }
     Mixxx.ControlProxy {
         id: rateRatioControl
+
         group: root.group
         key: "rate_ratio"
     }
     Mixxx.ControlProxy {
         id: zoomControl
+
         group: root.zoomGroup
         key: "waveform_zoom"
+
         Component.onCompleted: {
             if (zoomControl.group === root.group) {
-                zoomControl.value = Mixxx.Config.waveformDefaultZoom
+                zoomControl.value = Mixxx.Config.waveformDefaultZoom;
             }
         }
     }
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+        grabPermissions: PointerHandler.CanTakeOverFromAnything
 
+        onDoubleTapped: root.splitStemTracksToggleRequested()
+    }
     MouseArea {
         property point mouseAnchor: Qt.point(0, 0)
         property int mouseStatus: LateNightWaveformDisplay.MouseStatus.Normal
@@ -284,12 +262,7 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         anchors.fill: parent
 
-        onDoubleClicked: function(mouse) {
-            if (mouse.button === Qt.RightButton) {
-                root.splitStemTracks = !root.splitStemTracks;
-            }
-        }
-        onPositionChanged: function(mouse) {
+        onPositionChanged: function (mouse) {
             const diff = mouse.x - mouseAnchor.x;
             switch (mouseStatus) {
             case LateNightWaveformDisplay.MouseStatus.Bending:
@@ -303,7 +276,7 @@ Item {
                 break;
             }
         }
-        onPressed: function(mouse) {
+        onPressed: function (mouse) {
             mouseAnchor = Qt.point(mouse.x, mouse.y);
             if (mouse.button === Qt.LeftButton) {
                 if (mouseStatus === LateNightWaveformDisplay.MouseStatus.Bending)
@@ -320,7 +293,7 @@ Item {
                 mouseStatus = LateNightWaveformDisplay.MouseStatus.Bending;
             }
         }
-        onReleased: function(mouse) {
+        onReleased: function (mouse) {
             switch (mouseStatus) {
             case LateNightWaveformDisplay.MouseStatus.Bending:
                 wheelControl.parameter = 0.5;
@@ -332,7 +305,7 @@ Item {
             }
             mouseStatus = LateNightWaveformDisplay.MouseStatus.Normal;
         }
-        onWheel: function(mouse) {
+        onWheel: function (mouse) {
             if (mouse.angleDelta.y < 0 && zoomControl.value > 1) {
                 zoomControl.value -= 1;
             } else if (mouse.angleDelta.y > 0 && zoomControl.value < 10.0) {

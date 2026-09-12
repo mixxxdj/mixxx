@@ -166,6 +166,12 @@ QmlApplication::QmlApplication(
     app->installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
     registerImageProvider();
 
+    if (!WaveformWidgetFactory::isCreated()) {
+        WaveformWidgetFactory::createInstance();
+        m_ownsWaveformWidgetFactory = true;
+    }
+    WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
+
     QString configVersion = m_pCoreServices->getSettings()->getValue(
             ConfigKey("[Config]", "Version"), "");
 
@@ -223,7 +229,11 @@ QmlApplication::QmlApplication(
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
-    std::shared_ptr<QDialog> pDlgPreferences = m_pCoreServices->makeDlgPreferences();
+    // Keep the native Waveforms preferences page out of the QML startup
+    // dialog until the dedicated QML preferences page is complete. The
+    // waveform factory is still initialized above for QML rendering.
+    std::shared_ptr<QDialog> pDlgPreferences =
+            m_pCoreServices->makeDlgPreferences(false);
     // Without this, QApplication will quit when the last QWidget QWindow is
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
@@ -387,8 +397,11 @@ QmlApplication::~QmlApplication() {
     // Delete all the QML singletons in order to prevent leak detection in CoreService
     QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
-    m_visualsManager.reset();
     m_pAppEngine.reset();
+    if (m_ownsWaveformWidgetFactory) {
+        WaveformWidgetFactory::destroy();
+    }
+    m_visualsManager.reset();
     QmlApplicationProxy::registerVinylControlManager(nullptr);
     m_pCoreServices.reset();
 }
