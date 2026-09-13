@@ -36,6 +36,8 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
     void setDevice(const SoundDeviceId& device);
     bool isMonoApplicable() const;
+    bool isMonoChecked() const;
+    void resetMonoToDefault();
 
   signals:
     void selectedDeviceChanged();
@@ -54,10 +56,16 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
 
+  private slots:
+    void monoToggled(bool checked);
+    void monoMixdownValueChanged(double value);
+
   private:
     SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setChannel(unsigned int channelBase, unsigned int channels);
     int hasSufficientChannels(const SoundDevice& device) const;
+    int currentChannelCount() const;
+    void updateMonoCheckboxState();
 
     AudioPathType m_type;
     unsigned int m_index;
@@ -67,6 +75,8 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // Because QVariant supports QPoint natively we use a QPoint to store the
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
+    bool m_savedMono;
+    bool m_userStereoMonoPreference;
     bool m_emitSettingChanged;
     parented_ptr<ControlProxy> m_pMonoMixdown;
 };
