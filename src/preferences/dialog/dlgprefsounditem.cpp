@@ -356,12 +356,26 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
                 pDevice->getDeviceId(),
                 AudioOutput(m_type, channelBase, channelCount, m_index));
     }
+
+    if (isMonoApplicable() && m_pMonoMixdown) {
+        if (channelCount == 1) {
+            m_pMonoMixdown->set(1.0);
+        } else {
+            m_pMonoMixdown->set(monoCheckBox->isChecked() ? 1.0 : 0.0);
+        }
+    }
 }
 
 /// Slot called to tell the Item to save its selections for later use.
 void DlgPrefSoundItem::save() {
     m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
+    if (isMonoApplicable()) {
+        m_savedMono = monoCheckBox->isChecked();
+        if (monoCheckBox->isEnabled()) {
+            m_userStereoMonoPreference = m_savedMono;
+        }
+    }
 }
 
 /// Slot called to reload Item with previously saved settings.
@@ -373,6 +387,10 @@ void DlgPrefSoundItem::reload() {
     int newChannel = channelComboBox->findData(m_savedChannel);
     if (newChannel > -1) {
         channelComboBox->setCurrentIndex(newChannel);
+    }
+    if (isMonoApplicable()) {
+        m_userStereoMonoPreference = m_savedMono;
+        updateMonoCheckboxState();
     }
 }
 
