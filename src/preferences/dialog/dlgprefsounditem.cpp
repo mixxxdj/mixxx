@@ -30,6 +30,27 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
+    if (isMonoApplicable()) {
+        QString group;
+        switch (m_type) {
+        case AudioPathType::Main:
+            group = QStringLiteral("[Master]");
+            break;
+        case AudioPathType::Booth:
+            group = QStringLiteral("[Booth]");
+            break;
+        case AudioPathType::Headphones:
+            group = QStringLiteral("[Headphone]");
+            break;
+        default:
+            break;
+        }
+        m_pMonoMixdown = make_parented<ControlProxy>(
+                group, QStringLiteral("mono_mixdown"), this);
+    } else {
+        monoCheckBox->hide();
+    }
+
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
             QVariant::fromValue(SoundDeviceId()));
 
@@ -45,6 +66,13 @@ DlgPrefSoundItem::DlgPrefSoundItem(
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
+}
+
+bool DlgPrefSoundItem::isMonoApplicable() const {
+    return !m_isInput &&
+            (m_type == AudioPathType::Main ||
+                    m_type == AudioPathType::Booth ||
+                    m_type == AudioPathType::Headphones);
 }
 
 /// Slot called when the parent preferences pane updates its list of sound

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "control/controlproxy.h"
 #include "preferences/dialog/ui_dlgprefsounditem.h"
-#include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/parented_ptr.h"
 
 class SoundManagerConfig;
 
@@ -33,6 +35,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     }
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
     void setDevice(const SoundDeviceId& device);
+    bool isMonoApplicable() const;
 
   signals:
     void selectedDeviceChanged();
@@ -65,4 +68,5 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
     bool m_emitSettingChanged;
+    parented_ptr<ControlProxy> m_pMonoMixdown;
 };
