@@ -1,0 +1,1166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefOscDlg</class>
+ <widget class="QWidget" name="DlgPrefOscDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>865</width>
+    <height>619</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>OSC Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="1" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="OscReceiverSettingsGroupBox">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>200</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>0</width>
+         <height>150</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Mixxx as an OSC-Receiver(Client)</string>
+       </property>
+       <widget class="QLabel" name="OscPortInLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>120</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>OSC-In Port (UDP)</string>
+        </property>
+        <property name="buddy">
+         <cstring>OscEnabledCheckBox</cstring>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscPortIn">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>20</y>
+          <width>100</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Set the port on which Mixxx will listen to OSC messages</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
+       </widget>
+       <widget class="QGroupBox" name="OscSenderSettingsGroupBox">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>80</y>
+          <width>809</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>150</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>150</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Mixxx as an OSC-Sender (Server)</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscPortOutLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>100</y>
+          <width>120</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>OSC-Out Port (UDP)</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscPortOut">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>100</y>
+          <width>100</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set the port on which Mixxx will send OSC messages</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>9999</number>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="OscSendSyncTriggers">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>140</y>
+          <width>291</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Enable Mixxx to send Sync-triggers</string>
+        </property>
+        <property name="text">
+         <string>Send SyncTriggers</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscSendSyncTriggersInterval">
+        <property name="geometry">
+         <rect>
+          <x>310</x>
+          <y>160</y>
+          <width>100</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set the time interval in milliseconds to send Sync triggers</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="minimum">
+         <number>1000</number>
+        </property>
+        <property name="maximum">
+         <number>60000</number>
+        </property>
+        <property name="singleStep">
+         <number>1000</number>
+        </property>
+        <property name="value">
+         <number>1000</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_17">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>160</y>
+          <width>300</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Interval between the SyncTriggers (in milliseconds)</string>
+        </property>
+       </widget>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="OscOptions">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>OSC Settings</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_osc">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_enable">
+          <item>
+           <widget class="QCheckBox" name="OscEnabledCheckBox">
+            <property name="toolTip">
+             <string>Check to activate OSC, Mixxx must be restarted.</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="OscEnabledLabel">
+            <property name="text">
+             <string>Enable OSC in Mixxx</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_enable">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string>Mixxx must be restarted for changes to take effect</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="OscReceiversGroupBox">
+       <property name="title">
+        <string>OSC Receivers (Clients) (Machines that need to receive OSC-messages from Mixxx)</string>
+       </property>
+       <widget class="QLabel" name="OscReceiverColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>50</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Receiver</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="OscReceiver1ActiveCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>60</y>
+          <width>77</width>
+          <height>19</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Activate Receiver 1</string>
+        </property>
+        <property name="text">
+         <string>Active</string>
+        </property>
+        <property name="autoRepeatDelay">
+         <number>0</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver1IpByte1">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>60</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 1st byte of Receiver 1 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiverIpByte1ColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>30</y>
+          <width>60</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>1st byte</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiver1RowLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>60</y>
+          <width>80</width>
+          <height>13</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Receiver 1</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiverActiveColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>30</y>
+          <width>50</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Active</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiverIpByte2ColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>30</y>
+          <width>60</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>2nd byte</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiverIpByte3ColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>30</y>
+          <width>60</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>3rd byte</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiverIpByte4ColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>30</y>
+          <width>60</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>4th byte</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiverIpColumLabel">
+        <property name="geometry">
+         <rect>
+          <x>200</x>
+          <y>30</y>
+          <width>20</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>IP:</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver1IpByte2">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>60</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 2nd byte of Receiver 1 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver1IpByte3">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>60</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 3rd byte of Receiver 1 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver1IpByte4">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>60</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 4th byte of Receiver 1 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiver2RowLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>90</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Receiver 2</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="OscReceiver2ActiveCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>90</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Activate Receiver 2</string>
+        </property>
+        <property name="text">
+         <string>Active</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiver3RowLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>120</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Receiver 3</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="OscReceiver3ActiveCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>120</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Activate Receiver 3</string>
+        </property>
+        <property name="text">
+         <string>Active</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiver4RowLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>150</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Receiver 4</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="OscReceiver4ActiveCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>150</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Activate Receiver 4</string>
+        </property>
+        <property name="text">
+         <string>Active</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="OscReceiver5RowLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>180</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Receiver 5</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="OscReceiver5ActiveCheckBox">
+        <property name="geometry">
+         <rect>
+          <x>120</x>
+          <y>180</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Activate Receiver 5</string>
+        </property>
+        <property name="text">
+         <string>Active</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver2IpByte4">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>90</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 4th byte of Receiver 2 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver2IpByte1">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>90</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 1st byte of Receiver 2 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver2IpByte3">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>90</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 3rd byte of Receiver 2 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver2IpByte2">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>90</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 2nd byte of Receiver 2 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver3IpByte4">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>120</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 4th byte of Receiver 3 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver3IpByte1">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>120</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 1st byte of Receiver 3 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver3IpByte3">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>120</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 3rd byte of Receiver 3 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver3IpByte2">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>120</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 2nd byte of Receiver 3 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver4IpByte4">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>150</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 4th byte of Receiver 4 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver4IpByte2">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>150</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 2nd byte of Receiver 4 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver4IpByte1">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>150</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 1st byte of Receiver 4 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver4IpByte3">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>150</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 3rd byte of Receiver 4 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver5IpByte4">
+        <property name="geometry">
+         <rect>
+          <x>520</x>
+          <y>180</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 4th byte of Receiver 5 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver5IpByte2">
+        <property name="geometry">
+         <rect>
+          <x>320</x>
+          <y>180</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 2nd byte of Receiver 5 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver5IpByte1">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>180</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 1st byte of Receiver 5 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="OscReceiver5IpByte3">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>180</y>
+          <width>80</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>Set 3rd byte of Receiver 5 IP-address</string>
+        </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>255</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>60</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_2">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>60</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_3">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>60</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_4">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>90</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>90</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>90</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>120</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>120</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>120</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>150</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>150</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>150</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_13">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>180</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_14">
+        <property name="geometry">
+         <rect>
+          <x>300</x>
+          <y>180</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_15">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>180</y>
+          <width>10</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>OscEnabledCheckBox</tabstop>
+  <tabstop>OscPortIn</tabstop>
+  <tabstop>OscPortOut</tabstop>
+  <tabstop>OscReceiver1ActiveCheckBox</tabstop>
+  <tabstop>OscReceiver1IpByte1</tabstop>
+  <tabstop>OscReceiver1IpByte2</tabstop>
+  <tabstop>OscReceiver1IpByte3</tabstop>
+  <tabstop>OscReceiver1IpByte4</tabstop>
+  <tabstop>OscReceiver2ActiveCheckBox</tabstop>
+  <tabstop>OscReceiver2IpByte1</tabstop>
+  <tabstop>OscReceiver2IpByte2</tabstop>
+  <tabstop>OscReceiver2IpByte3</tabstop>
+  <tabstop>OscReceiver2IpByte4</tabstop>
+  <tabstop>OscReceiver3ActiveCheckBox</tabstop>
+  <tabstop>OscReceiver3IpByte1</tabstop>
+  <tabstop>OscReceiver3IpByte2</tabstop>
+  <tabstop>OscReceiver3IpByte3</tabstop>
+  <tabstop>OscReceiver3IpByte4</tabstop>
+  <tabstop>OscReceiver4ActiveCheckBox</tabstop>
+  <tabstop>OscReceiver4IpByte1</tabstop>
+  <tabstop>OscReceiver4IpByte2</tabstop>
+  <tabstop>OscReceiver4IpByte3</tabstop>
+  <tabstop>OscReceiver4IpByte4</tabstop>
+  <tabstop>OscReceiver5ActiveCheckBox</tabstop>
+  <tabstop>OscReceiver5IpByte1</tabstop>
+  <tabstop>OscReceiver5IpByte2</tabstop>
+  <tabstop>OscReceiver5IpByte3</tabstop>
+  <tabstop>OscReceiver5IpByte4</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

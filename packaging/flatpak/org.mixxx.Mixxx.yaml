@@ -58,6 +58,7 @@ modules:
   - modules/libebur128.yaml
   - modules/libkeyfinder.yaml
   - modules/libdjinterop.yaml
+  - modules/liblo.yaml
   - name: mixxx
     buildsystem: cmake-ninja
     run-tests: true
