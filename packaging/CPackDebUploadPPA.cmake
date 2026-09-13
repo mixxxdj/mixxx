@@ -6,29 +6,44 @@
 
 find_program(CPACK_DEBIAN_DEBUILD debuild)
 if(NOT CPACK_DEBIAN_DEBUILD)
-  message(FATAL_ERROR "debuild not found, required for cpack -G External -D DEB_UPLOAD_PPA=true" )
+  message(
+    FATAL_ERROR
+    "debuild not found, required for cpack -G External -D DEB_..."
+  )
 endif()
 
 if(DEB_UPLOAD_PPA)
   find_program(CPACK_DEBIAN_DPUT dput)
   if(NOT CPACK_DEBIAN_DPUT)
-    message(FATAL_ERROR "dput not found, required for cpack -G External -D DEB_UPLOAD_PPA=true" )
+    message(
+      FATAL_ERROR
+      "dput not found, required for cpack -G External -D DEB_UPLOAD_PPA=${DEB_UPLOAD_PPA}"
+    )
   endif()
 endif()
 
 find_program(CPACK_DEBIAN_DEBCHANGE debchange)
 if(NOT CPACK_DEBIAN_DEBCHANGE)
-  message(FATAL_ERROR "debchange not found, required for cpack -G External -D DEB_UPLOAD_PPA=true" )
+  message(
+    FATAL_ERROR
+    "debchange not found, required for cpack -G External -D DEB_..."
+  )
 endif()
 
 find_program(CPACK_DEBIAN_MARKDOWN markdown)
 if(NOT CPACK_DEBIAN_MARKDOWN)
-  message(FATAL_ERROR "markdown not found, required for cpack -G External -D DEB_UPLOAD_PPA=true")
+  message(
+    FATAL_ERROR
+    "markdown not found, required for cpack -G External -D DEB_..."
+  )
 endif()
 
 find_program(CPACK_DEBIAN_DOCBOOK_TO_MAN docbook-to-man)
 if(NOT CPACK_DEBIAN_DOCBOOK_TO_MAN)
-  message(FATAL_ERROR "docbook-to-man not found, required for cpack -G External -D DEB_UPLOAD_PPA=true")
+  message(
+    FATAL_ERROR
+    "docbook-to-man not found, required for cpack -G External -D DEB_..."
+  )
 endif()
 
 # PR branches have no access to the pgp key. Don't sign.

@@ -33,7 +33,9 @@ on:
         required: false
       NETLIFY_BUILD_HOOK:
         required: false
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+        required: false
+      PPA_SSH_PRIVATE_KEY:
         required: false
 
 permissions:
@@ -363,24 +365,45 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
-      - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
-        run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+      - name: "[Ubuntu] Import DEB package maintainer GPG key"
+        if: matrix.name == 'Ubuntu 24.04' && env.GPG_PRIVATE_KEY != null
         env:
-          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: gpg --import <(echo "$GPG_PRIVATE_KEY")
+
+      - name: "[Ubuntu] Set up for Launchpad PPA SSH upload"
+        if: matrix.name == 'Ubuntu 24.04' && env.PPA_SSH_KEY != null
+        env:
+          PPA_SSH_KEY: ${{ secrets.PPA_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "$PPA_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "# ppa.launchpad.net:22 SSH-2.0-Twisted_20.3.0+lp11" >> ~/.ssh/known_hosts
+          echo "|1|vctA7tDErFfMmg90fV0D4We8BB8=|DuVjz6Bom2lTeHQT8CxbXMZh2U0= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0aKz5UTUndYgIGG7dQBV+HaeuEZJ2xPHo2DS2iSKvUL4xNMSAY4UguNW+pX56nAQmZKIZZ8MaEvSj6zMEDiq6HFfn5JcTlM80UwlnyKe8B8p7Nk06PPQLrnmQt5fh0HmEcZx+JU9TZsfCHPnX7MNz4ELfZE6cFsclClrKim3BHUIGq//t93DllB+h4O9LHjEUsQ1Sr63irDLSutkLJD6RXchjROXkNirlcNVHH/jwLWR5RcYilNX7S5bIkK8NlWPjsn/8Ua5O7I9/YoE97PpO6i73DTGLh5H9JN/SITwCKBkgSDWUt61uPK3Y11Gty7o2lWsBjhBUm2Y38CBsoGmBw==" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          sudo tee /etc/dput.cf > /dev/null <<'EOF'
+          [ssh-ppa]
+          fqdn            = ppa.launchpad.net
+          method          = sftp
+          incoming        = ~%(ssh-ppa)s
+          login           = daschuer
+          EOF
+          sudo chmod 644 /etc/dput.cf
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 22.04'
         run: |
           if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/nightlies"
           elif [[ "${{ inputs.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxxbetas"
           elif [[ "${{ inputs.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxx"
           elif [[ "${{ inputs.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxpatches"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxxpatches"
           else
             # only build the source DEB, do not upload
             CPACK_ARGS="-D DEB_SOURCEPKG=ON"
