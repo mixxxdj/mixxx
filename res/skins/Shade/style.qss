@@ -1099,3 +1099,17 @@ WRateRange {
   font-size: 10px;
   qproperty-alignment: 'AlignCenter';
 }
+
+/* Ableton Link Widgets */
+
+#AbletonLinkButton {
+  font-size: 8px;
+  font-weight: bold;
+  color: #000000;
+}
+
+#AbletonLinkPeers {
+  font-size: 8px;
+  font-weight: bold;
+  color: #D2D2D2;
+}

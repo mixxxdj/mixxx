@@ -1,0 +1,40 @@
+name: ableton-link
+buildsystem: simple
+build-commands:
+  - cp -r include/ableton ${FLATPAK_DEST}/include/
+  - install -d ${FLATPAK_DEST}/lib/cmake/AbletonLink
+  - |
+    cat > ${FLATPAK_DEST}/lib/cmake/AbletonLink/AbletonLinkConfig.cmake << 'EOF'
+    if(TARGET Ableton::Link)
+      return()
+    endif()
+    add_library(Ableton::Link INTERFACE IMPORTED)
+    get_filename_component(_ableton_link_prefix "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
+    set_target_properties(Ableton::Link PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${_ableton_link_prefix}/include"
+    )
+    if(UNIX AND NOT APPLE)
+      include(CMakeFindDependencyMacro)
+      find_dependency(Threads)
+      set_property(TARGET Ableton::Link APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES Threads::Threads)
+      set_property(TARGET Ableton::Link APPEND PROPERTY
+        INTERFACE_COMPILE_DEFINITIONS LINK_PLATFORM_LINUX=1)
+    endif()
+    unset(_ableton_link_prefix)
+    EOF
+sources:
+  - type: archive
+    url: https://github.com/Ableton/link/archive/refs/tags/Link-3.0.6.tar.gz
+    sha256: 4f4fae68bd9351cba603f07990b0d1d9cd7f986c1c78f748d97168c8ae5269b2
+    dest-filename: ableton-link.tar.gz
+    x-checker-data:
+      type: anitya
+      project-id: 227486
+      stable-only: true
+      url-template: https://github.com/Ableton/link/archive/refs/tags/Link-$version.tar.gz
+cleanup:
+  - /include
+  - /lib/cmake
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/ableton-link LICENSE.md
