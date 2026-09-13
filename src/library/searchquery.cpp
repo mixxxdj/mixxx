@@ -332,6 +332,12 @@ void NumericFilterNode::init(QString argument) {
     if (match.hasMatch()) {
         m_operator = match.captured(1);
         argument = match.captured(2);
+    } else if (argument.endsWith('+')) {
+        m_operator = QStringLiteral(">=");
+        argument.chop(1);
+    } else if (argument.endsWith('-')) {
+        m_operator = QStringLiteral("<=");
+        argument.chop(1);
     }
 
     bool parsed = false;
@@ -575,7 +581,8 @@ BpmFilterNode::BpmFilterNode(
     }
 
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
-    if (opMatch.hasMatch()) {
+    bool operatorMatch = opMatch.hasMatch();
+    if (operatorMatch) {
         if (fuzzy) {
             // fuzzy can't be combined with operators
             // m_matchMode is already Invalid.
@@ -583,6 +590,14 @@ BpmFilterNode::BpmFilterNode(
         }
         m_operator = opMatch.captured(1);
         argument = opMatch.captured(2);
+    } else if (argument.endsWith('+')) {
+        m_operator = QStringLiteral(">=");
+        argument.chop(1);
+        operatorMatch = true;
+    } else if (argument.endsWith('-')) {
+        m_operator = QStringLiteral("<=");
+        argument.chop(1);
+        operatorMatch = true;
     }
 
     // Replace the locale's decimal separator with .
@@ -600,7 +615,7 @@ BpmFilterNode::BpmFilterNode(
         if (fuzzy) {
             // fuzzy search +- n%
             m_matchMode = MatchMode::Fuzzy;
-        } else if (!opMatch.hasMatch() && !negate) {
+        } else if (!operatorMatch && !negate) {
             // Simple 'bpm:NNN' search.
             // Also searches for half/double matches (rounded up/down)
             // Center value is turned into range in order to ...
@@ -864,10 +879,17 @@ QString YearFilterNode::toSql() const {
 }
 
 // TODO Convert to DateFilterNode and allow searching for "last_played"
-DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
+DateAddedFilterNode::DateAddedFilterNode(QString& argument)
         : m_operatorQuery(false),
           m_equalsQuery(false),
           m_operator("=") {
+    if (argument.endsWith('+')) {
+        argument.chop(1);
+        argument.prepend(QStringLiteral(">="));
+    } else if (argument.endsWith('-')) {
+        argument.chop(1);
+        argument.prepend(QStringLiteral("<="));
+    }
     QDateTime date;
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
     if (opMatch.hasMatch()) {
