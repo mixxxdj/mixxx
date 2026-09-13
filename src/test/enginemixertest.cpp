@@ -150,7 +150,8 @@ TEST_P(EngineMixerTest, OutputWorks) {
                 .WillOnce(Return());
     }
 
-    m_pEngineMixer->process(static_cast<int>(channels.at(0).second.size()));
+    m_pEngineMixer->process(static_cast<int>(channels.at(0).second.size()),
+            std::chrono::microseconds(0));
 
     assertBuffers();
 }

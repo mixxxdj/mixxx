@@ -6,11 +6,14 @@
 #include <condition_variable>
 #include <memory>
 
+#include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/duration.h"
 #include "util/fifo.h"
+#include "util/hosttimefilter.h"
+#include "util/movinginterquartilemean.h"
 #include "util/performancetimer.h"
 
 class SoundManager;
@@ -94,4 +97,10 @@ class SoundDevicePortAudio : public SoundDevice {
     std::mutex m_finishedMutex;
     std::condition_variable m_finishedCV;
     bool m_bFinished;
+
+    HostTimeFilter m_hostTimeFilter;
+    double m_cummulatedBufferTime;
+    MovingInterquartileMean m_meanOutputLatency;
+
+    std::unique_ptr<ControlProxy> m_pExternalSyncLatencyCompensation;
 };
