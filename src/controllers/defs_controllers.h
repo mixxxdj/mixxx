@@ -27,8 +27,16 @@ inline QString userMappingsPath(UserSettingsPointer pConfig) {
 #define BULK_MAPPING_EXTENSION ".bulk.xml"
 #define XML_SCHEMA_VERSION "1"
 
-#ifdef __PORTMIDI__
+#if defined(__PORTMIDI__) || defined(__LIBREMIDI__)
 const auto kMidiThroughPortPrefix = QLatin1String("MIDI Through Port");
 const ConfigKey kMidiThroughCfgKey =
         ConfigKey(QStringLiteral("[Controller]"), QStringLiteral("midi_through_enabled"));
+const ConfigKey kMidiAPI =
+        ConfigKey(QStringLiteral("[Controller]"), QStringLiteral("midi_api"));
+#endif
+
+#if defined(__PORTMIDI__)
+const auto kDefaultMidiAPI = QStringLiteral("PortMidi");
+#elif defined(__LIBREMIDI__)
+const auto kDefaultMidiAPI = QStringLiteral("Libremidi");
 #endif

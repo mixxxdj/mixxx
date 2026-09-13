@@ -1,0 +1,91 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Thomas">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win95; U) [Netscape]">
+
+<script language=JavaScript>
+<!--
+
+/*
+Disable right mouse click Script (By Crash @ http://walk.to/crash)
+Submitted to and permission granted to Dynamicdrive.com to feature script in it's archive
+For full source code to this script and 100's more, visit 
+http://dynamicdrive.com
+*/
+
+var message="Thou shall not steal my copyright material, thank you! If you'd like a copy of one of my pictures, please ask permission.";
+function click(e) {
+if (document.all) {
+if (event.button==2||event.button==3) {
+alert(message);
+return false;
+}
+}
+else if (document.layers||document.getElementById) {
+if (e.which == 3) {
+alert(message);
+return false;
+}
+}
+}
+if (document.layers) {
+document.captureEvents(Event.MOUSEDOWN);
+}
+document.onmousedown=click;
+// --> 
+</script>
+
+   <title>The Lee familyalbum</title>
+</head>
+<body text="#996633" bgcolor="#CC6600" link="#FF6600" vlink="#FFCC33" alink="#FF9900" background="owl-bg19.gif">
+&nbsp;
+<table ALIGN=RIGHT WIDTH="85%" >
+<tr>
+<td>
+<center><img SRC="graphics/album.jpg" height=140 width=495>
+<br><embed src="audio/adamfam.mid" height="15" width="50" autostart="true" controls="smallconsole" loop="true"></embed>
+<br>&nbsp;
+<br>&nbsp;
+<p><img SRC="graphics/fam82c4r.JPG" BORDER=10 height=396 width=360>
+<br>Our "Adamms Family" photo! (1982)&nbsp;
+<br>The color is messed up on this a bit;&nbsp;
+<br>Micki, Kathy and Dad all still had hair
+<br>about the same color then. (red-brown)
+<br>When I tried to correct the hair color,
+<br>we all wound up looking "sunburned".
+<br>&nbsp;
+<br>&nbsp;
+<p><img SRC="graphics/kathy5-r.jpg" BORDER=10 height=468 width=320>
+<br>Kathy 7/11/98
+<br>Our youngest scion on her wedding day,
+<br>hiding her beautiful blue eyes behind those "shades".
+<br>This was also our 25th and 35th anniversaries.
+<br>(We eloped, then renewed our vows on the 10th.)
+<br>&nbsp;
+<p><img SRC="graphics/billbrnt.jpg" BORDER=10 height=229 width=360>
+<br>Bill on left, with Brent after Brent's wedding. 5/98
+<br>Our "middle man", bestman for his "bud" since jr. high.
+<br>He was "sandwiched" in, and got it from both sisters
+<br>when he was growing up, but now is bigger than both.
+<br>&nbsp;
+<p><img SRC="graphics/micki-3.jpg" BORDER=10 height=369 width=320>
+<br>&nbsp;Micki 7/11/98
+<br>Our firstborn offspring and "the boss" when we weren't around.
+<br>Has Dad's hair, Pop-pop's eyes, Ma's fixtures and Granny's habits.
+<br>She's Sister's "My-ster" and My-ster's My-ster, too. (Private joke)
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<p><b><font size=+2><a href="album1b.htm">Next page of album</a></font></b>
+<br><b><font size=+2><a href="album1b.htm"></a></font></b>&nbsp;
+<p><a href="http://www.stormi.com/">Background by Stormi</a>
+<br><a href="http://www.stormi.com/">Click link to visit there.</a><a href="http://www.stormi.com/"></a>
+<p></center>
+</td>
+</tr>
+</table>
+
+</body>
+</html>
