@@ -238,18 +238,18 @@ class WaveformWidgetFactory : public QObject,
         return false;
     };
 
-    void setDownbeatDistance(int downbeatDistance);
-    int getDownbeatDistance() const {
-        return m_downbeatDistance;
+    void setPhraseLength(int phraseLength);
+    int getPhraseLength() const {
+        return m_phraseLength;
     }
-    static int downbeatDistanceMin() {
-        return 2;
+    static int phraseLengthMin() {
+        return 0;
     };
-    static int downbeatDistanceMax() {
+    static int phraseLengthMax() {
         return 32;
     };
-    static int downbeatDistanceDefault() {
-        return 4;
+    static int phraseLengthDefault() {
+        return 0;
     };
 
     void setVisualGain(BandIndex index, double gain);
@@ -375,7 +375,7 @@ class WaveformWidgetFactory : public QObject,
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
     bool m_downbeatsEnabled;
-    int m_downbeatDistance;
+    int m_phraseLength;
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned

@@ -88,7 +88,7 @@ const ConfigKey kFrameRateKey =
         ConfigKey(kWaveformGroup, QStringLiteral("FrameRate"));
 const ConfigKey kVSyncKey = ConfigKey(kWaveformGroup, QStringLiteral("VSync"));
 const ConfigKey kDownbeatsEnabledKey = ConfigKey(kWaveformGroup, QStringLiteral("show_downbeats"));
-const ConfigKey kDownbeatsDistanceKey = ConfigKey(kWaveformGroup, QStringLiteral("downbeats_distance"));
+const ConfigKey kPhraseLengthKey = ConfigKey(kWaveformGroup, QStringLiteral("phrase_length"));
 
 ConfigKey visualGainKey(int index) {
     return ConfigKey(kWaveformGroup, QStringLiteral("VisualGain_") + QString::number(index));
@@ -146,7 +146,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
           m_downbeatsEnabled(downbeatsEnabledDefault()),
-          m_downbeatDistance(downbeatDistanceDefault()),
+          m_phraseLength(phraseLengthDefault()),
           m_vsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
@@ -492,12 +492,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     if (ok) {
         setDownbeatsEnabled(static_cast<bool>(downbeatsEnabled));
     }
-    int downbeatDistance = m_config->getValue(
-            kDownbeatsDistanceKey,
-            downbeatDistanceDefault());
-    setDownbeatDistance(math_clamp(downbeatDistance,
-            downbeatDistanceMin(),
-            downbeatDistanceMax()));
+    int phraseLength = m_config->getValue(
+            kPhraseLengthKey,
+            phraseLengthDefault());
+    setPhraseLength(math_clamp(phraseLength,
+            phraseLengthMin(),
+            phraseLengthMax()));
 
     return true;
 }
@@ -780,14 +780,14 @@ void WaveformWidgetFactory::setDownbeatsEnabled(bool enabled) {
     }
 }
 
-void WaveformWidgetFactory::setDownbeatDistance(int downbeatDistance) {
-    VERIFY_OR_DEBUG_ASSERT(downbeatDistance >= downbeatDistanceMin() &&
-            downbeatDistance <= downbeatDistanceMax()) {
-        downbeatDistance = downbeatDistanceDefault();
+void WaveformWidgetFactory::setPhraseLength(int phraseLength) {
+    VERIFY_OR_DEBUG_ASSERT(phraseLength >= phraseLengthMin() &&
+            phraseLength <= phraseLengthMax()) {
+        phraseLength = phraseLengthDefault();
     }
-    m_downbeatDistance = downbeatDistance;
+    m_phraseLength = phraseLength;
     if (m_config) {
-        m_config->setValue(kDownbeatsDistanceKey, m_downbeatDistance);
+        m_config->setValue(kPhraseLengthKey, m_phraseLength);
     }
 }
 

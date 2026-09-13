@@ -728,28 +728,28 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
      <item row="16" column="3">
-      <widget class="QLabel" name="downbeatDistanceLabel">
+      <widget class="QLabel" name="phraseLengthLabel">
        <property name="text">
-        <string>Distance</string>
+        <string>Phrase length</string>
        </property>
       </widget>
      </item>
      <item row="16" column="4">
-      <widget class="QSpinBox" name="downbeatDistanceSpinBox">
+      <widget class="QSpinBox" name="phraseLengthSpinBox">
         <property name="toolTip">
-        <string/>
+        <string>Show a green line every N beats to mark the phrase length. Set to 0 to disable.</string>
         </property>
         <property name="suffix">
         <string> beats</string>
         </property>
         <property name="minimum">
-        <number>2</number>
+        <number>0</number>
         </property>
         <property name="maximum">
         <number>32</number>
         </property>
         <property name="value">
-        <number>4</number>
+        <number>0</number>
         </property>
       </widget>
      </item>
