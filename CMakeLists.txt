@@ -2815,6 +2815,7 @@ if(BUILD_TESTING)
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
+    src/test/versionstore_test.cpp
     src/test/wbatterytest.cpp
     src/test/wpushbutton_test.cpp
     src/test/wwidgetstack_test.cpp
