@@ -1,6 +1,7 @@
 #include "preferences/dialog/dlgprefsounditem.h"
 
 #include <QPoint>
+#include <QSignalBlocker>
 
 #include "audio/types.h"
 #include "moc_dlgprefsounditem.cpp"
@@ -26,9 +27,40 @@ DlgPrefSoundItem::DlgPrefSoundItem(
           m_type(type),
           m_index(index),
           m_isInput(isInput),
+          m_savedMono(false),
+          m_userStereoMonoPreference(false),
           m_emitSettingChanged(true) {
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
+
+    if (isMonoApplicable()) {
+        QString group;
+        switch (m_type) {
+        case AudioPathType::Main:
+            group = QStringLiteral("[Master]");
+            break;
+        case AudioPathType::Booth:
+            group = QStringLiteral("[Booth]");
+            break;
+        case AudioPathType::Headphones:
+            group = QStringLiteral("[Headphone]");
+            break;
+        default:
+            break;
+        }
+        m_pMonoMixdown = make_parented<ControlProxy>(
+                group, QStringLiteral("mono_mixdown"), this);
+        m_savedMono = m_pMonoMixdown->toBool();
+        m_userStereoMonoPreference = m_savedMono;
+        m_pMonoMixdown->connectValueChanged(
+                this, &DlgPrefSoundItem::monoMixdownValueChanged);
+        connect(monoCheckBox,
+                &QCheckBox::toggled,
+                this,
+                &DlgPrefSoundItem::monoToggled);
+    } else {
+        monoCheckBox->hide();
+    }
 
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
             QVariant::fromValue(SoundDeviceId()));
@@ -42,9 +74,85 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             this,
             &DlgPrefSoundItem::channelChanged);
     refreshDevices(devices);
+    updateMonoCheckboxState();
 }
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
+}
+
+bool DlgPrefSoundItem::isMonoApplicable() const {
+    return !m_isInput &&
+            (m_type == AudioPathType::Main ||
+                    m_type == AudioPathType::Booth ||
+                    m_type == AudioPathType::Headphones);
+}
+
+bool DlgPrefSoundItem::isMonoChecked() const {
+    return isMonoApplicable() && monoCheckBox->isChecked();
+}
+
+int DlgPrefSoundItem::currentChannelCount() const {
+    int channelIdx = channelComboBox->currentIndex();
+    if (channelIdx < 0) {
+        return 0;
+    }
+    QPoint channelData = channelComboBox->itemData(channelIdx).toPoint();
+    return channelData.y();
+}
+
+void DlgPrefSoundItem::resetMonoToDefault() {
+    if (!isMonoApplicable()) {
+        return;
+    }
+    m_userStereoMonoPreference = false;
+    updateMonoCheckboxState();
+}
+
+void DlgPrefSoundItem::monoToggled(bool checked) {
+    if (!isMonoApplicable()) {
+        return;
+    }
+    if (currentChannelCount() == 2) {
+        m_userStereoMonoPreference = checked;
+    }
+    if (m_emitSettingChanged) {
+        emit selectedChannelsChanged();
+    }
+}
+
+void DlgPrefSoundItem::monoMixdownValueChanged(double value) {
+    if (!isMonoApplicable()) {
+        return;
+    }
+    const bool mono = (value != 0.0);
+    if (monoCheckBox->isEnabled()) {
+        m_userStereoMonoPreference = mono;
+    }
+    updateMonoCheckboxState();
+}
+
+void DlgPrefSoundItem::updateMonoCheckboxState() {
+    if (!isMonoApplicable()) {
+        return;
+    }
+    const QSignalBlocker blocker(monoCheckBox);
+    SoundDeviceId selection =
+            deviceComboBox->itemData(deviceComboBox->currentIndex())
+                    .value<SoundDeviceId>();
+    int channelCount = currentChannelCount();
+    if (selection == SoundDeviceId() || channelCount == 0) {
+        monoCheckBox->setChecked(false);
+        monoCheckBox->setEnabled(false);
+    } else if (channelCount == 1) {
+        monoCheckBox->setChecked(true);
+        monoCheckBox->setEnabled(false);
+    } else if (channelCount == 2) {
+        monoCheckBox->setEnabled(true);
+        monoCheckBox->setChecked(m_userStereoMonoPreference);
+    } else {
+        monoCheckBox->setChecked(false);
+        monoCheckBox->setEnabled(false);
+    }
 }
 
 /// Slot called when the parent preferences pane updates its list of sound
@@ -160,12 +268,14 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         channelComboBox->blockSignals(false);
     }
 emitAndReturn:
+    updateMonoCheckboxState();
     if (m_emitSettingChanged) {
         emit selectedDeviceChanged();
     }
 }
 
 void DlgPrefSoundItem::channelChanged() {
+    updateMonoCheckboxState();
     if (m_emitSettingChanged) {
         emit selectedChannelsChanged();
     }
@@ -291,6 +401,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     int index = deviceComboBox->findData(QVariant::fromValue(device));
     if (index == -1) {
         deviceComboBox->setCurrentIndex(0); // None
+        updateMonoCheckboxState();
         emit selectedDeviceChanged();
         if (device != SoundDeviceId()) {
             // Notify DlgPrefSound that the device that can't be found.
@@ -299,6 +410,7 @@ void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     } else {
         m_emitSettingChanged = false;
         deviceComboBox->setCurrentIndex(index);
+        updateMonoCheckboxState();
         m_emitSettingChanged = true;
     }
 }
@@ -314,10 +426,12 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
     if (index == -1) {
         // channel(s) not found
         channelComboBox->setCurrentIndex(0); // 1
+        updateMonoCheckboxState();
         emit selectedChannelsChanged();
     } else {
         m_emitSettingChanged = false;
         channelComboBox->setCurrentIndex(index);
+        updateMonoCheckboxState();
         m_emitSettingChanged = true;
     }
 }
