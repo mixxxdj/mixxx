@@ -16,7 +16,8 @@ class SoundDevicePipewire : public SoundDevice {
             SoundManager* pManager,
             PipewireEnumerator* pEnumerator,
             uint32_t id,
-            const std::string_view name);
+            std::string_view displayName,
+            std::string_view name);
     ~SoundDevicePipewire() override;
 
     SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override;
