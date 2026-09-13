@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <QSignalSpy>
 #include <QTest>
 #include <gsl/pointers>
 
@@ -21,6 +22,8 @@
 #include "test/soundsourceproviderregistration.h"
 #include "track/track.h"
 #include "util/cmdlineargs.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
 #ifdef __RUBBERBAND__
 #include "engine/bufferscalers/rubberbandworkerpool.h"
 #endif
@@ -105,6 +108,9 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
     }
 
     void TearDown() override {
+        if (WaveformWidgetFactory::isCreated()) {
+            WaveformWidgetFactory::destroy();
+        }
         CoverArtCache::destroy();
 #ifdef __RUBBERBAND__
         RubberBandWorkerPool::destroy();
@@ -236,6 +242,108 @@ TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     QTest::qSleep(kUnreplaceDelay);
     deck1->slotEjectTrack(1.0);
     ASSERT_EQ(nullptr, deck1->getLoadedTrack());
+}
+
+TEST_F(PlayerManagerTest, ReanalyzeLoadedTracks) {
+    auto deck1 = m_pPlayerManager->getDeck(0);
+    auto deck2 = m_pPlayerManager->getDeck(1);
+    ASSERT_NE(nullptr, deck1);
+    ASSERT_NE(nullptr, deck2);
+
+    TrackPointer pTrack = getOrAddTrackByLocation(
+            getTestDir().filePath(kTrackLocationTest1));
+    ASSERT_NE(nullptr, pTrack);
+    ASSERT_TRUE(pTrack->getId().isValid());
+
+    deck1->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    m_pEngine->process(1024);
+    waitForTrackToBeLoaded(deck1);
+    waitForTrackToBeLoaded(deck2);
+    ASSERT_EQ(pTrack, deck1->getLoadedTrack());
+    ASSERT_EQ(pTrack, deck2->getLoadedTrack());
+
+    pTrack->setWaveform(ConstWaveformPointer(new Waveform()));
+    pTrack->setWaveformSummary(ConstWaveformPointer(new Waveform()));
+    QSignalSpy progressSpy(
+            m_pPlayerManager.get(), &PlayerManager::trackAnalyzerProgress);
+
+    m_pPlayerManager->slotReanalyzeLoadedTracks();
+
+    EXPECT_TRUE(pTrack->getWaveform().isNull());
+    EXPECT_TRUE(pTrack->getWaveformSummary().isNull());
+    EXPECT_EQ(progressSpy.count(), 1);
+}
+
+TEST_F(PlayerManagerTest, WaveformProfileChangeReanalyzesLoadedTracks) {
+    ASSERT_FALSE(WaveformWidgetFactory::isCreated());
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::createInstance();
+    ASSERT_NE(nullptr, pWaveformWidgetFactory);
+    ASSERT_TRUE(pWaveformWidgetFactory->setConfig(m_pConfig));
+    QObject::connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::waveformAnalysisProfileChanged,
+            m_pPlayerManager.get(),
+            &PlayerManager::slotReanalyzeLoadedTracks);
+    if (!pWaveformWidgetFactory->widgetTypeSupportsAcceleration(
+                WaveformWidgetType::Perceptual3Band)) {
+        GTEST_SKIP() << "Perceptual 3-band requires the accelerated waveform backend";
+    }
+
+    auto deck1 = m_pPlayerManager->getDeck(0);
+    auto deck2 = m_pPlayerManager->getDeck(1);
+    ASSERT_NE(nullptr, deck1);
+    ASSERT_NE(nullptr, deck2);
+
+    TrackPointer pTrack = getOrAddTrackByLocation(
+            getTestDir().filePath(kTrackLocationTest1));
+    ASSERT_NE(nullptr, pTrack);
+    ASSERT_TRUE(pTrack->getId().isValid());
+
+    deck1->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2->slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    m_pEngine->process(1024);
+    waitForTrackToBeLoaded(deck1);
+    waitForTrackToBeLoaded(deck2);
+    ASSERT_EQ(pTrack, deck1->getLoadedTrack());
+    ASSERT_EQ(pTrack, deck2->getLoadedTrack());
+
+    ASSERT_TRUE(pWaveformWidgetFactory->setWidgetType(WaveformWidgetType::RGB));
+    QSignalSpy progressSpy(
+            m_pPlayerManager.get(), &PlayerManager::trackAnalyzerProgress);
+
+    pTrack->setWaveform(ConstWaveformPointer(new Waveform()));
+    pTrack->setWaveformSummary(ConstWaveformPointer(new Waveform()));
+    ASSERT_TRUE(pWaveformWidgetFactory->setWidgetType(
+            WaveformWidgetType::Perceptual3Band));
+
+    EXPECT_TRUE(pTrack->getWaveform().isNull());
+    EXPECT_TRUE(pTrack->getWaveformSummary().isNull());
+    EXPECT_EQ(progressSpy.count(), 1);
+
+    progressSpy.clear();
+    pTrack->setWaveform(ConstWaveformPointer(new Waveform()));
+    pTrack->setWaveformSummary(ConstWaveformPointer(new Waveform()));
+    ASSERT_TRUE(pWaveformWidgetFactory->setWidgetType(WaveformWidgetType::Stacked));
+
+    EXPECT_TRUE(pTrack->getWaveform().isNull());
+    EXPECT_TRUE(pTrack->getWaveformSummary().isNull());
+    EXPECT_EQ(progressSpy.count(), 1);
 }
 
 TEST_F(PlayerManagerTest, UnReplaceTest) {
