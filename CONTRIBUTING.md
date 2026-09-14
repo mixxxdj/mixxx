@@ -191,7 +191,18 @@ wiki page.
 The Mixxx UI is currently being rewritten in QML. This new code is in a high state of flux and will change rapidly.
 
 - Source in `res/qml/` and `src/qml/`.
-- `qmlformat` and `qmllint` are available via pre-commit.
+- `qmlformat` and `qmllint` are available as *manual* pre-commit hooks, because
+  they need the Qt 6 tools installed:
+
+      pre-commit run qmlformat --hook-stage manual --all-files
+      pre-commit run qmllint --hook-stage manual --all-files
+
+  The hooks look for the tools on `PATH`, in the Qt of your CMake build directory
+  (`build/` or `$MIXXX_BUILD_DIR`) and in the usual distribution locations.
+- `qmllint` needs that build directory: the C++ backed types of the `Mixxx`
+  module (`Mixxx.ControlProxy` etc.) are only known through the `qmltypes` files
+  the build generates. Without a build, every `import Mixxx` reports an import
+  failure and most of the output is noise.
 
 ## Git Workflow
 
