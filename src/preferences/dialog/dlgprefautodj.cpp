@@ -89,7 +89,8 @@ void DlgPrefAutoDJ::slotApply() {
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTime"),
             RequeueIgnoreCheckBox->isChecked());
     const QString ignTimeStr =
-            RequeueIgnoreTimeEdit->time().toString();
+            RequeueIgnoreTimeEdit->time().toString(
+                    RequeueIgnoreTimeEdit->displayFormat());
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "IgnoreTime"), ignTimeStr);
 
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "EnableRandomQueue"),

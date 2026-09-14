@@ -79,7 +79,7 @@ QString getFilePathWithVerifiedExtensionFromFileDialog(
         // If the file path has the selected suffix we can assume the user either
         // selected a new file or already confirmed overwriting an existing file.
         // Return the file path. Also when the adjusted file path does not exist yet.
-        // Otherwise show the dialog again with the repaired file path pre-selected.
+        // Otherwise show the dialog again with the repaired file path preselected.
         if (fileLocation == fileLocationAdjusted ||
                 !QFileInfo::exists(fileLocationAdjusted)) {
             fileLocation = fileLocationAdjusted;
