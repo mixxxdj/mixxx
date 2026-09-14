@@ -1,0 +1,39 @@
+<Template>
+  <WidgetGroup><!-- HotCues 1-16 -->
+    <Layout>horizontal</Layout>
+    <Children>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue1</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue2</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue3</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue4</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue5</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue6</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue7</ObjectName></SingletonContainer>
+      <SingletonContainer><ObjectName><Variable name="Group"/>_Hotcue8</ObjectName></SingletonContainer>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">9</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">10</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">11</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">12</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">13</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">14</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">15</SetVariable>
+      </Template>
+      <Template src="skins:LateNight/controls/button_hotcue.xml">
+        <SetVariable name="number">16</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>
