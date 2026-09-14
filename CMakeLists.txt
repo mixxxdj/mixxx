@@ -3848,6 +3848,7 @@ endif()
 if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "LabsQmlModels")
   list(APPEND QT_EXTRA_COMPONENTS "Multimedia")
+  list(APPEND QT_EXTRA_COMPONENTS "QmlCore")
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
@@ -4260,6 +4261,15 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::LabsQmlModels
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QmlCore
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
@@ -5560,6 +5570,7 @@ if(QT6)
       CPACK_DEBIAN_PACKAGE_DEPENDS
       "qml6-module-qt5compat-graphicaleffects"
     )
+    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtcore")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtmultimedia")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
