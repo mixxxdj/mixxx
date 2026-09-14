@@ -117,11 +117,15 @@ MIXXX_BEHAVE_RETRY=5 ctest -R mixxx-behave- --output-on-failure
   for the `xvfb` backend, `wf-recorder` (libavcodec) for the `xwayland` backend
   (cage). Chapter metadata is embedded into the video from behave's scenario
   lifecycle hooks (ffmpeg is still used for chapter muxing on both backends).
-- **Session reuse**: scenarios sharing the same `Background` profile type reuse
-  the same `mixxx-test` process — only the first scenario pays startup cost.
-  `a fresh ... profile` opts out: it force-kills the running process and
-  spawns a new genuinely empty (no config, no DB, no tracks) or library-ready profile every
-  scenario.
+- **Session reuse**: scenarios sharing the same session key (profile directory +
+  sound-device signature) reuse the same `mixxx-test` process — only the first
+  scenario pays startup cost. `a fresh ... profile` opts out: it force-kills the
+  running process and spawns a new genuinely empty (no config, no DB, no tracks)
+  or library-ready profile every scenario. Because a reused instance keeps its
+  QML state across scenarios (no `reloadQml`), a scenario that assumes the
+  default window size or library columns must declare it with
+  `the window size is default` / `the library columns are in their default state`
+  (see the Given step table).
 - After editing QML or `main.cpp`, rebuild:
   `cmake --build build --target mixxx-test -j$(nproc)`
 - After editing Python (`steps/`, `environment.py`, `mixxx_profile.py`, runner), no
@@ -767,6 +771,8 @@ LOOP_BUTTONS = {
 | `the sync_on deck {deck:d} is {state}` | `_set_control_value` for `sync_enabled` (Given-only) |
 | `the window's width is {width:d}px` | Sets `mainWindow.width` (impersonal Given form of `I resize the window's width to {width:d}px`) |
 | `the window's height is {height:d}px` | Sets `mainWindow.height` (impersonal Given form of `I resize the window's height to {height:d}px`) |
+| `the window size is default` | Sets `mainWindow.width=1792`, `mainWindow.height=1008`. Declares the default size a scenario relies on when reusing a session (no QML reload between scenarios) |
+| `the library columns are in their default state` | `invokeMethod(trackList, "resetColumns")` — restores default column order, visibility and sort (see `Library/TrackList.qml`) |
 | `I wait for {second:d} second` | `time.sleep(second)` (also available as @when and @then) |
 
 ### When Steps

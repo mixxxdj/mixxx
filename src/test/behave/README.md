@@ -127,6 +127,12 @@ The test runtime has three layers:
    `steps/mixxx_steps.py` provides the step definitions that drive the UI via
    spix. `environment.py` hooks manage session state across scenarios.
 
+   Scenarios sharing the same profile and sound-device setup reuse one running
+   Mixxx instance (no QML reload between them), so a scenario that relies on
+   the default window size or library columns should declare it with
+   `Given the window size is default` and/or
+   `Given the library columns are in their default state`.
+
 3. **Test runner** (`mixxx_test_runner.py`) -- Orchestrates everything: sets up
    a headless virtual display (Xvfb, or cage plus wf-recorder for the Xwayland
    backend), or offscreen QPA when no monitor is available, optionally records

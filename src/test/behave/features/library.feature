@@ -3,6 +3,8 @@ Feature: Library
   Background:
     Given a new library-ready profile
     And Mixxx is open and ready to operate
+    And the window size is default
+    And the library columns are in their default state
 
   Scenario: Library toggle button is visible
     When I check on the button "LIBRARY" in the main toolbar

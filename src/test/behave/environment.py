@@ -19,6 +19,31 @@ def _is_expected_failure_or_flaky(tags):
     return any(t.startswith("xfail") or t.startswith("xpass") for t in tags)
 
 
+def _reset_session(context):
+    """Stop the running Mixxx instance and clear the whole session grouping so
+    the next scenario (or retry attempt) starts from a clean process and a
+    fresh profile. A scenario that fails may leave Mixxx in an unknown state,
+    so it must never be reused as a grouped instance."""
+    session = context._session
+    # Stop both the session instance and whatever context.mixxx points at:
+    # after a failed start() the two diverge (context holds the never-ready
+    # process), and a live stray keeps port 9000 occupied.
+    for mixxx in (session.get("mixxx"), getattr(context, "mixxx", None)):
+        if mixxx is not None:
+            try:
+                mixxx.stop()
+            except Exception:
+                pass
+    session["mixxx"] = None
+    session["rpc"] = None
+    session["ready_key"] = None
+    session["registered_devices"] = None
+    session["active_profile_type"] = None
+    session["profile_dir"] = None
+    context.mixxx = None
+    context.mixxx_rpc = None
+
+
 def patch_scenario_with_autoretry(context, scenario, max_attempts=3):
     """Monkey-patches :func:`~behave.model.Scenario.run()` to auto-retry a
     scenario that fails. Based on behave.contrib.scenario_autoretry but also:
@@ -39,19 +64,14 @@ def patch_scenario_with_autoretry(context, scenario, max_attempts=3):
             # -- SCENARIO FAILED:
             if attempt < max_attempts:
                 print(u"AUTO-RETRY SCENARIO (attempt {0})".format(attempt))
-                try:
-                    context._session["rpc"].quit()
-                    time.sleep(1)
-                except Exception:
-                    pass
-                if context._session["mixxx"]:
-                    context._session["mixxx"].stop()
-                context._session["mixxx"] = None
-                context._session["rpc"] = None
+                _reset_session(context)
+        # -- All attempts exhausted (or final attempt failed): poison the
+        #    session so a later scenario never inherits partial state.
         if _is_expected_failure_or_flaky(scenario.tags):
             return False    # -- NOT-FAILED = EXPECTED FAILURE
         message = u"AUTO-RETRY SCENARIO FAILED (after {0} attempts)"
         print(message.format(max_attempts))
+        _reset_session(context)
         context._session["had_failure"] = True
         return True
 
@@ -74,6 +94,8 @@ def before_all(context):
         "profile_dir": None,
         "mixxx": None,
         "rpc": None,
+        "ready_key": None,
+        "registered_devices": None,
         "had_failure": None,
     }
 
@@ -91,6 +113,9 @@ def before_scenario(context, scenario):
         context.mixxx_rpc = session["rpc"]
         context.profile_dir = session["profile_dir"]
         context.active_profile_type = session["active_profile_type"]
+
+    context._soundMockDevices = None
+    context._remembered = {}
 
     scenario.start_at = time.time()
     if session["had_failure"] and context.config.userdata["fail_early"]:

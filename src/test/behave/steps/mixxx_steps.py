@@ -504,6 +504,84 @@ def _mixxx_running(context):
     return False
 
 
+def _mixxx_process_alive(context):
+    """True when a Mixxx process this session owns is still running, RPC or not.
+
+    Unlike :func:`_mixxx_running` this deliberately ignores the RPC probe: an
+    instance that is stuck starting up, or whose RPC server never came up, is
+    exactly the one holding port 9000. Treating the failed RPC probe as "not
+    running" used to let such instances leak, and every later fresh-profile
+    spawn of the run then timed out against the port they held.
+    """
+    session = context._session
+    for mixxx in (session.get("mixxx"), getattr(context, "mixxx", None)):
+        if mixxx is not None and mixxx.process is not None and mixxx.process.poll() is None:
+            return True
+    return False
+
+
+def _stop_mixxx(context):
+    """Stop every Mixxx process this session owns, RPC-responsive or not.
+
+    The session instance and ``context.mixxx`` can diverge after a failed
+    ``start()`` (context then holds the never-ready process), so both are
+    reaped. A graceful quit is attempted first when the RPC still answers;
+    ``MixxxProcess.stop()`` escalates to SIGKILL, which reliably frees
+    port 9000.
+    """
+    session = context._session
+    quit_attempted = False
+    for mixxx in (session.get("mixxx"), getattr(context, "mixxx", None)):
+        if mixxx is None:
+            continue
+        if not quit_attempted and mixxx.process is not None and mixxx.process.poll() is None:
+            quit_attempted = True
+            try:
+                rpc = getattr(context, "mixxx_rpc", None)
+                if rpc is not None:
+                    rpc.quit()
+                    time.sleep(1)
+            except Exception:
+                pass
+        mixxx.stop()
+    session["mixxx"] = None
+    session["rpc"] = None
+    session["ready_key"] = None
+    session["registered_devices"] = None
+    context.mixxx = None
+    context.mixxx_rpc = None
+
+
+def _device_signature(context):
+    devices = getattr(context, "_soundMockDevices", None)
+    if not devices:
+        return None
+    return tuple(
+        sorted(
+            (
+                d["name"],
+                d.get("api", "Mock"),
+                d.get("outputChannels", 0),
+                d.get("inputChannels", 0),
+            )
+            for d in devices
+        )
+    )
+
+
+def _mock_devices_key(devices):
+    """Canonical form of a scenario's mock-device table, for change detection.
+
+    ``None`` and ``[]`` both normalize to "no devices" so a device-less
+    scenario compares equal to an instance with nothing registered.
+    """
+    return json.dumps(devices or [], sort_keys=True)
+
+
+def _session_key(context):
+    return (getattr(context, "profile_dir", None), _device_signature(context))
+
+
 def _ensure_profile(context, profile_type, force=False):
     session = context._session
     if not force and session.get("active_profile_type") == profile_type and _mixxx_running(context):
@@ -540,6 +618,10 @@ def step_new_empty_profile(context, profile_type):
 
 @given("Mixxx is open and ready to operate")
 def step_open_and_ready(context):
+    session = context._session
+    if session.get("ready_key") == _session_key(context) and _mixxx_running(context):
+        return
+
     tracks_dir = context.config.userdata["tracks_dir"]
     if not _mixxx_running(context):
         if _mixxx_process_alive(context):
@@ -591,6 +673,7 @@ def step_open_and_ready(context):
     _wait_for_visible(context.mixxx_rpc, "mainWindow/library")
     _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
     context.mixxx_rpc.setStringProperty("mainWindow", "enableDiagnosticClick", "true")
+    session["ready_key"] = _session_key(context)
 
 
 # --- When: window/button steps ---
@@ -603,6 +686,20 @@ def step_window_width_is(context, width):
 @given("the window's height is {height:d}px")
 def step_window_height_is(context, height):
     step_resize_window_height(context, height)
+
+
+@given("the window size is default")
+def step_window_size_default(context):
+    s = context.mixxx_rpc
+    _set_property(s, "mainWindow", "width", 1792)
+    _set_property(s, "mainWindow", "height", 1008)
+    time.sleep(0.5)
+
+
+@given("the library columns are in their default state")
+def step_library_columns_default(context):
+    context.mixxx_rpc.invokeMethod(TRACKLIST_PATH, "resetColumns", [])
+    time.sleep(0.5)
 
 
 @when("I resize the window's width to {width:d}px")
