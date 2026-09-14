@@ -551,7 +551,7 @@
                 <status>0x95</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal />
+                    <script-binding />
                 </options>
             </control>
             <!--CUE-->
