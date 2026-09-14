@@ -566,7 +566,8 @@ class QmlWaveformRendererMark
                     playMarkerBackgroundChanged)
     Q_PROPERTY(double playMarkerPosition MEMBER m_playMarkerPosition NOTIFY
                     playMarkerPositionChanged)
-    Q_PROPERTY(QmlWaveformMark* defaultMark MEMBER m_defaultMark NOTIFY defaultMarkChanged)
+    Q_PROPERTY(mixxx::qml::QmlWaveformMark* defaultMark MEMBER m_defaultMark
+                    NOTIFY defaultMarkChanged)
     Q_PROPERTY(QmlWaveformUntilMark* untilMark READ untilMark FINAL)
     Q_CLASSINFO("DefaultProperty", "marks")
     QML_NAMED_ELEMENT(WaveformRendererMark)
