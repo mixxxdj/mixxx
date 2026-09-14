@@ -707,7 +707,7 @@ jobs:
           echo "GIT_DESC=$GIT_DESC" >> $GITHUB_ENV
 
       - name: "Build Flatpak"
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6.8
         with:
           manifest-path: packaging/flatpak/org.mixxx.Mixxx.yaml
           arch: ${{ matrix.variant.arch }}
