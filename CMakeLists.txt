@@ -75,12 +75,41 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
   if((NOT ANDROID_SDK_ROOT) AND DEFINED ENV{ANDROID_SDK})
     set(ANDROID_SDK_ROOT "$ENV{ANDROID_SDK}")
   endif()
-  set(ANDROID_ABI arm64-v8a)
+  # The target ABI. arm64-v8a covers phones and ARM tablets/Chromebooks,
+  # x86_64 is needed for Intel Chromebooks and the emulator. Note that a
+  # matching vcpkg dependency tree has to be available for the chosen ABI,
+  # see tools/android_buildenv.sh.
+  set(
+    ANDROID_ABI
+    "arm64-v8a"
+    CACHE
+    STRING
+    "Android ABI to build for (arm64-v8a, x86_64, armeabi-v7a, x86)"
+  )
+  set_property(
+    CACHE ANDROID_ABI
+    PROPERTY STRINGS arm64-v8a x86_64 armeabi-v7a x86
+  )
+  if(ANDROID_ABI STREQUAL "arm64-v8a")
+    set(ANDROID_TOOLCHAIN_TRIPLE "aarch64-linux-android")
+    set(ANDROID_LLVM_ARCH "aarch64")
+  elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+    set(ANDROID_TOOLCHAIN_TRIPLE "arm-linux-androideabi")
+    set(ANDROID_LLVM_ARCH "arm")
+  elseif(ANDROID_ABI STREQUAL "x86_64")
+    set(ANDROID_TOOLCHAIN_TRIPLE "x86_64-linux-android")
+    set(ANDROID_LLVM_ARCH "x86_64")
+  elseif(ANDROID_ABI STREQUAL "x86")
+    set(ANDROID_TOOLCHAIN_TRIPLE "i686-linux-android")
+    set(ANDROID_LLVM_ARCH "i386")
+  else()
+    message(FATAL_ERROR "Unsupported ANDROID_ABI '${ANDROID_ABI}'")
+  endif()
   set(ANDROID_NDK_HOST_SYSTEM_NAME linux-x86_64)
   set(CMAKE_SYSTEM_VERSION 35) # API level
   set(ANDROID_PLATFORM "android-${CMAKE_SYSTEM_VERSION}")
   set(ANDROID_API_VERSION "android-${CMAKE_SYSTEM_VERSION}")
-  set(CMAKE_ANDROID_ARCH_ABI "${ANDROID_ABI}") # or x86_64, armeabi-v7a, etc.
+  set(CMAKE_ANDROID_ARCH_ABI "${ANDROID_ABI}")
   set(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION clang)
   set(CMAKE_ANDROID_STL_TYPE c++_shared)
   set(
@@ -94,7 +123,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
   )
   set(
     CMAKE_LIBRARY_PATH
-    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/aarch64-linux-android/${CMAKE_SYSTEM_VERSION}/;${CMAKE_LIBRARY_PATH}"
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/${ANDROID_TOOLCHAIN_TRIPLE}/${CMAKE_SYSTEM_VERSION}/;${CMAKE_LIBRARY_PATH}"
   )
 endif()
 
@@ -2359,11 +2388,12 @@ if(QT6)
       mixxx-lib
       PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
     )
-    set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
+    set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "${ANDROID_ABI}")
     target_compile_definitions(
       mixxx-lib
       PUBLIC ANDROID_PACKAGE_NAME="org.mixxx"
     )
+    target_sources(mixxx-lib PRIVATE src/util/androidpermissions.cpp)
     qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
     set_property(
       TARGET mixxx
@@ -2379,7 +2409,7 @@ if(QT6)
     set_target_properties(
       mixxx
       PROPERTIES
-        QT_ANDROID_APPLICATION_ARGUMENTS "--qml --log-level debug --developer"
+        QT_ANDROID_APPLICATION_ARGUMENTS "--new-ui"
     )
     qt_add_android_permission(mixxx
     NAME android.permission.ACCESS_NETWORK_STATE
@@ -2403,6 +2433,12 @@ if(QT6)
     NAME android.permission.WAKE_LOCK
     )
     qt_add_android_permission(mixxx
+    NAME android.permission.READ_EXTERNAL_STORAGE
+    )
+    qt_add_android_permission(mixxx
+    NAME android.permission.READ_MEDIA_AUDIO
+    )
+    qt_add_android_permission(mixxx
     NAME android.permission.USB_PERMISSION
     )
     set(
@@ -2417,12 +2453,25 @@ if(QT6)
       CMAKE_CXX_COMPILER
       "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
     )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+    # The clang runtime directory is versioned by the NDK's clang major
+    # version, so look it up instead of hardcoding both the version and the
+    # architecture.
+    file(
+      GLOB
+      ANDROID_LIBOMP_CANDIDATES
+      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/*/lib/linux/${ANDROID_LLVM_ARCH}/libomp.so"
+    )
+    if(NOT ANDROID_LIBOMP_CANDIDATES)
+      message(
+        FATAL_ERROR
+        "Could not find libomp.so for ${ANDROID_LLVM_ARCH} in the NDK at ${CMAKE_ANDROID_NDK}"
+      )
+    endif()
+    list(GET ANDROID_LIBOMP_CANDIDATES 0 ANDROID_LIBOMP)
     set_target_properties(
       mixxx
-      PROPERTIES
-        QT_ANDROID_EXTRA_LIBS
-          ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/18/lib/linux/aarch64/libomp.so
+      PROPERTIES QT_ANDROID_EXTRA_LIBS "${ANDROID_LIBOMP}"
     )
     add_custom_target(
       copy-resource-android
@@ -3835,6 +3884,11 @@ set(QT_EXTRA_COMPONENTS "")
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+  if(ANDROID)
+    # QtAndroidPrivate (permissions, intents) lives in QtCore's private API.
+    list(APPEND QT_EXTRA_COMPONENTS "CorePrivate")
+    set(QT_NO_PRIVATE_MODULE_WARNING ON)
+  endif()
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
   if(QT_VERSION VERSION_GREATER_EQUAL 6.10)

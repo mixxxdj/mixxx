@@ -29,6 +29,20 @@ fi
 
 HOST_ARCH=$(uname -m)  # One of x86_64, arm64, i386, ppc or ppc64
 
+# Target ABI of the device Mixxx is built for. arm64-v8a covers phones, ARM
+# tablets and ARM Chromebooks. Other ABIs (notably x86_64 for Intel
+# Chromebooks and the emulator) require a matching vcpkg dependency tree,
+# which is not published as a prebuilt archive yet.
+[ -z "$ANDROID_ABI" ] && ANDROID_ABI="arm64-v8a"
+if [ "$ANDROID_ABI" != "arm64-v8a" ]; then
+    echo "ERROR: No prebuilt dependencies are published for ANDROID_ABI=${ANDROID_ABI}."
+    echo "Only arm64-v8a is available as a download. To target another ABI,"
+    echo "build the vcpkg environment yourself as described in:"
+    echo "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-android"
+    echo "and then configure with -DANDROID_ABI=${ANDROID_ABI}."
+    exit 1
+fi
+
 if [ "$HOST_ARCH" == "x86_64" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
         VCPKG_TARGET_TRIPLET="arm64-android-rel"
@@ -107,6 +121,7 @@ case "$1" in
         export BUILDENV_SHA256
         export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
+        export ANDROID_ABI="${ANDROID_ABI}"
 
         echo_exported_variables() {
             echo "ANDROID_SDK=${ANDROID_SDK}"
@@ -118,6 +133,7 @@ case "$1" in
             echo "BUILDENV_SHA256=${BUILDENV_SHA256}"
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
+            echo "ANDROID_ABI=${ANDROID_ABI}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
@@ -127,7 +143,7 @@ case "$1" in
             echo "Exported environment variables:"
             echo_exported_variables
             echo "You can now configure cmake from the command line in an EMPTY build directory via:"
-            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake -DCMAKE_SYSTEM_NAME=Android ${MIXXX_ROOT}"
+            echo "cmake -DCMAKE_TOOLCHAIN_FILE=${MIXXX_VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake -DCMAKE_SYSTEM_NAME=Android -DANDROID_ABI=${ANDROID_ABI} ${MIXXX_ROOT}"
         fi
         ;;
     *)

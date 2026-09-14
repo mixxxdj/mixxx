@@ -66,4 +66,20 @@ Skin.Button {
             hotcueBehavior.releaseSecondary();
         }
     }
+
+    // A touchscreen has no right mouse button, so a long press stands in for
+    // it and opens the hotcue popup. The default DragThreshold policy only
+    // takes a passive grab, leaving the button itself to handle the press.
+    TapHandler {
+        id: longPressHandler
+
+        acceptedButtons: Qt.LeftButton
+        gesturePolicy: TapHandler.DragThreshold
+
+        onLongPressed: {
+            const position = longPressHandler.point.position;
+            hotcueBehavior.pressSecondary(position.x, position.y);
+            hotcueBehavior.releaseSecondary();
+        }
+    }
 }
