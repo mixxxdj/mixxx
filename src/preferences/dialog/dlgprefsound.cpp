@@ -547,6 +547,12 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit writePaths(&m_config);
 
+    for (auto* pItem : outputSoundItems()) {
+        if (pItem->isMonoApplicable()) {
+            pItem->applyMonoSetting();
+        }
+    }
+
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
         ScopedWaitCursor cursor;

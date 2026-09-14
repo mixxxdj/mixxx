@@ -2916,6 +2916,7 @@ if(BUILD_TESTING)
     src/test/dbconnectionpool_test.cpp
     src/test/dbidtest.cpp
     src/test/directorydaotest.cpp
+    src/test/dlgprefsounditem_test.cpp
     src/test/duration_test.cpp
     src/test/durationutiltest.cpp
     #TODO: write useful tests for refactored effects system
@@ -3055,7 +3056,11 @@ if(BUILD_TESTING)
     target_sources(mixxx-test PRIVATE src/test/audiounitmanager_test.mm)
   endif()
 
-  set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+  set_target_properties(mixxx-test PROPERTIES AUTOMOC ON AUTOUIC ON)
+  target_include_directories(
+    mixxx-test
+    PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include"
+  )
   target_link_libraries(
     mixxx-test
     PRIVATE mixxx-lib mixxx-gitinfostore mixxx-xwax GTest::gtest GTest::gmock

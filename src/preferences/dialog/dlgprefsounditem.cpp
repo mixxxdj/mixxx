@@ -108,6 +108,23 @@ void DlgPrefSoundItem::resetMonoToDefault() {
     updateMonoCheckboxState();
 }
 
+void DlgPrefSoundItem::applyMonoSetting() {
+    if (isMonoApplicable() && m_pMonoMixdown) {
+        int channelCount = currentChannelCount();
+        if (channelCount == 1) {
+            m_pMonoMixdown->set(1.0);
+        } else if (channelCount == 2) {
+            m_pMonoMixdown->set(monoCheckBox->isChecked() ? 1.0 : 0.0);
+        } else {
+            m_pMonoMixdown->set(0.0);
+        }
+        m_savedMono = (m_pMonoMixdown->get() != 0.0);
+        if (channelCount == 2) {
+            m_userStereoMonoPreference = m_savedMono;
+        }
+    }
+}
+
 void DlgPrefSoundItem::monoToggled(bool checked) {
     if (!isMonoApplicable()) {
         return;
@@ -125,7 +142,8 @@ void DlgPrefSoundItem::monoMixdownValueChanged(double value) {
         return;
     }
     const bool mono = (value != 0.0);
-    if (monoCheckBox->isEnabled()) {
+    m_savedMono = mono;
+    if (currentChannelCount() == 2) {
         m_userStereoMonoPreference = mono;
     }
     updateMonoCheckboxState();
@@ -302,7 +320,11 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
 /// @note If there are multiple AudioPaths matching this instance's type
 ///       and index (if applicable), then only the first one is used. A more
 ///       advanced preferences pane may one day allow multiples.
-void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
+void DlgPrefSoundItem::loadPath(const SoundManagerConfig& config) {
+    if (isMonoApplicable() && m_pMonoMixdown) {
+        m_savedMono = m_pMonoMixdown->toBool();
+        m_userStereoMonoPreference = m_savedMono;
+    }
     if (m_isInput) {
         const auto inputDeviceMap = config.getInputs();
         for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
@@ -355,14 +377,6 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
         config->addOutput(
                 pDevice->getDeviceId(),
                 AudioOutput(m_type, channelBase, channelCount, m_index));
-    }
-
-    if (isMonoApplicable() && m_pMonoMixdown) {
-        if (channelCount == 1) {
-            m_pMonoMixdown->set(1.0);
-        } else {
-            m_pMonoMixdown->set(monoCheckBox->isChecked() ? 1.0 : 0.0);
-        }
     }
 }
 

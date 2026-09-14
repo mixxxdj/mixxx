@@ -38,6 +38,7 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     bool isMonoApplicable() const;
     bool isMonoChecked() const;
     void resetMonoToDefault();
+    void applyMonoSetting();
 
   signals:
     void selectedDeviceChanged();
