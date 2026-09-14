@@ -151,6 +151,15 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
     m_pStemSplitTracksControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")));
+    connect(m_pStemSplitTracksControl.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                const bool splitStemTracks = value > 0.0;
+                if (splitStemTracks != m_stemSplitTracks) {
+                    setStemSplitTracks(splitStemTracks);
+                }
+            });
     m_visualGain[AllBand] = kVisualGainDefault[AllBand];
     m_visualGain[Low] = kVisualGainDefault[Low];
     m_visualGain[Mid] = kVisualGainDefault[Mid];

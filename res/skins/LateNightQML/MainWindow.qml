@@ -11,6 +11,7 @@ import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Templates as T
 import QtQuick.Window
 
 Item {
@@ -153,33 +154,25 @@ Item {
             handle: Rectangle {
                 id: handleDelegate
 
-                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? LateNightTheme.libraryPanelSplitterHandleActive : LateNightTheme.libraryPanelSplitterHandle
-                property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 3
+                readonly property bool pressed: splitView.resizing || T.SplitHandle.pressed
 
                 clip: true
                 color: LateNightTheme.libraryPanelSplitterBackground
-                implicitHeight: 4
+                implicitHeight: 9
                 implicitWidth: 8
 
                 containmentMask: Item {
-                    height: 8
+                    height: 12
                     width: splitView.width
                     x: (handleDelegate.width - width) / 2
                 }
 
-                RowLayout {
+                Image {
                     anchors.centerIn: parent
-
-                    Repeater {
-                        model: 3
-
-                        Rectangle {
-                            color: handleColor
-                            height: handleSize
-                            radius: handleSize
-                            width: handleSize
-                        }
-                    }
+                    fillMode: Image.PreserveAspectFit
+                    source: handleDelegate.pressed
+                            ? LateNightTheme.assetWaveformSplitterHandlePressed
+                            : LateNightTheme.assetWaveformSplitterHandle
                 }
             }
 
@@ -187,6 +180,7 @@ Item {
                 id: waveforms
 
                 SplitView.fillHeight: !library.active
+                SplitView.minimumHeight: visible ? minimumContentHeight : 0
                 SplitView.preferredHeight: library.active ? 120 : undefined
                 show4decks: root.show4decks
                 visible: root.showWaveforms && !root.maximizeLibrary

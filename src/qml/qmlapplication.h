@@ -72,6 +72,7 @@ class QmlApplication : public QObject {
     std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
+    bool m_ownsWaveformWidgetFactory{false};
     bool m_loadSucceeded;
     quint64 m_qmlLoadGeneration = 0;
     QmlAutoReload m_autoReload;

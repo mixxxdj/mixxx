@@ -100,7 +100,11 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
-    std::shared_ptr<QDialog> makeDlgPreferences() const;
+    // Creates the native preferences dialog. QML can temporarily suppress
+    // the legacy Waveforms page while its dedicated settings page is being
+    // implemented.
+    std::shared_ptr<QDialog> makeDlgPreferences(
+            bool includeWaveformPreferences = true) const;
 
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);

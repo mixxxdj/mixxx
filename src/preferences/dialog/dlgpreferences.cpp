@@ -61,7 +61,8 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary)
+        std::shared_ptr<Library> pLibrary,
+        bool includeWaveformPreferences)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -170,8 +171,10 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // Check if the Waveform factory exists (it is not created in QML mode)
-    if (WaveformWidgetFactory::isCreated()) {
+    // QML has its own waveform settings page. Do not construct the native
+    // Waveforms page there while the QML preferences implementation is in
+    // progress; the QML waveform factory is still required by the renderer.
+    if (includeWaveformPreferences && WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),

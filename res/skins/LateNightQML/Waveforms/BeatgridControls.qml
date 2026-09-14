@@ -2,268 +2,266 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Mixxx 1.0 as Mixxx
 import "../LateNightTheme"
 import "../Deck"
+import "../Controls" as Controls
+import "../../../qml/Deck" as SharedDeck
 
-RowLayout {
+Controls.Panel {
     id: root
 
     required property string group
 
-    Mixxx.ControlProxy {
-        id: bpmlockProxy
+    clip: true
+    color: LateNightTheme.waveformOverlayColor
+    implicitHeight: 52
+    implicitWidth: beatgridBehavior.timingShiftButtonsVisible ? 130 : 104
+    bottomBorderColor: LateNightTheme.isPaleMoon ? "#020202" : "#111111"
+    leftBorderColor: LateNightTheme.isPaleMoon ? "#1c1c1c" : "#222222"
+    rightBorderColor: "#111111"
+    topBorderColor: LateNightTheme.isPaleMoon ? "#1c1c1c" : "#222222"
+
+    MouseArea {
+        acceptedButtons: Qt.AllButtons
+        anchors.fill: parent
+        z: -1
+
+        onWheel: wheel => wheel.accepted = true
+    }
+    SharedDeck.BeatgridControlsBehavior {
+        id: beatgridBehavior
+
         group: root.group
-        key: "bpmlock"
     }
-
-    Mixxx.ControlProxy {
-        id: timingShiftButtonsProxy
-        group: "[Skin]"
-        key: "timing_shift_buttons"
-    }
-
-    Mixxx.ControlProxy {
-        id: beatsUndoPossibleProxy
-        group: root.group
-        key: "beats_undo_possible"
-    }
-
-    spacing: 0
-    Layout.fillHeight: true
-
-    // Column 1: CurPos (26x52)
-    Item {
-        Layout.preferredWidth: 26
-        Layout.preferredHeight: 52
-
-        LateNightControlButton {
-            anchors.fill: parent
-            backgroundSource: LateNightTheme.lateNightTopRegionButton("library_tall")
-            iconSource: LateNightTheme.assetDeckBeatCurposLargeButton
-            group: root.group
-            key: "beats_translate_curpos"
-            rightClickKey: "beats_translate_match_alignment"
-            activeBackgroundSuffix: "active"
-            pressedBackgroundSuffix: "active"
-            activeOpacity: 1.0
-            inactiveOpacity: 0.82
-            activeColor: LateNightTheme.deckDimButtonInactiveColor
-            inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-            enabled: bpmlockProxy.value === 0
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            color: LateNightTheme.beatgridDisabledCoverColor
-            visible: bpmlockProxy.value > 0
-            radius: 2
-        }
-    }
-
-    // Column 2: BeatsEarlier / BeatsFaster
-    Item {
-        Layout.preferredWidth: 26
-        Layout.preferredHeight: 52
-
-        Column {
-            anchors.fill: parent
-            spacing: 0
-
-            LateNightControlButton {
-                width: 26
-                height: 26
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-                iconSource: LateNightTheme.assetDeckBeatsEarlierButton
-                group: root.group
-                key: "beats_translate_earlier"
-                rightClickKey: "beats_translate_half"
-                activeBackgroundSuffix: "active"
-                pressedBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
-                activeColor: LateNightTheme.deckDimButtonInactiveColor
-                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-                enabled: bpmlockProxy.value === 0
-            }
-
-            LateNightControlButton {
-                width: 26
-                height: 26
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-                iconSource: LateNightTheme.assetDeckBeatsFasterButton
-                group: root.group
-                key: "beats_adjust_faster"
-                activeBackgroundSuffix: "active"
-                pressedBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
-                activeColor: LateNightTheme.deckDimButtonInactiveColor
-                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-                enabled: bpmlockProxy.value === 0
-            }
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            color: LateNightTheme.beatgridDisabledCoverColor
-            visible: bpmlockProxy.value > 0
-            radius: 2
-        }
-    }
-
-    // Column 3: BeatsLater / BeatsSlower
-    Item {
-        Layout.preferredWidth: 26
-        Layout.preferredHeight: 52
-
-        Column {
-            anchors.fill: parent
-            spacing: 0
-
-            LateNightControlButton {
-                width: 26
-                height: 26
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-                iconSource: LateNightTheme.assetDeckBeatsLaterButton
-                group: root.group
-                key: "beats_translate_later"
-                rightClickKey: "beats_translate_half"
-                activeBackgroundSuffix: "active"
-                pressedBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
-                activeColor: LateNightTheme.deckDimButtonInactiveColor
-                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-                enabled: bpmlockProxy.value === 0
-            }
-
-            LateNightControlButton {
-                width: 26
-                height: 26
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-                iconSource: LateNightTheme.assetDeckBeatsSlowerButton
-                group: root.group
-                key: "beats_adjust_slower"
-                activeBackgroundSuffix: "active"
-                pressedBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
-                activeColor: LateNightTheme.deckDimButtonInactiveColor
-                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-                enabled: bpmlockProxy.value === 0
-            }
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            color: LateNightTheme.beatgridDisabledCoverColor
-            visible: bpmlockProxy.value > 0
-            radius: 2
-        }
-    }
-
-    // Column 4: Undo / BpmLockToggle
-    Column {
-        Layout.preferredWidth: 26
-        Layout.preferredHeight: 52
+    RowLayout {
+        anchors.centerIn: parent
         spacing: 0
 
+        // Column 1: CurPos (26x52)
         Item {
-            width: 26
-            height: 26
+            Layout.preferredHeight: 52
+            Layout.preferredWidth: 26
 
             LateNightControlButton {
-                anchors.fill: parent
-                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-                iconSource: LateNightTheme.assetDeckUndoButton
-                group: root.group
-                key: "beats_undo_adjustment"
                 activeBackgroundSuffix: "active"
-                pressedBackgroundSuffix: "active"
-                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-                activeOpacity: 1.0
-                inactiveOpacity: 0.82
                 activeColor: LateNightTheme.deckDimButtonInactiveColor
+                activeOpacity: 1.0
+                anchors.fill: parent
+                backgroundSource: LateNightTheme.lateNightTopRegionButton("library_tall")
+                enabled: !beatgridBehavior.bpmLocked
+                group: root.group
+                iconSource: LateNightTheme.assetDeckBeatCurposLargeButton
                 inactiveColor: LateNightTheme.deckDimButtonInactiveColor
-                enabled: beatsUndoPossibleProxy.value > 0
+                inactiveOpacity: 0.82
+                key: "beats_translate_curpos"
+                pressedBackgroundSuffix: "active"
+                rightClickKey: "beats_translate_match_alignment"
             }
-
             Rectangle {
                 anchors.fill: parent
                 color: LateNightTheme.beatgridDisabledCoverColor
-                visible: beatsUndoPossibleProxy.value === 0
                 radius: 2
+                visible: beatgridBehavior.bpmLocked
             }
         }
 
-        LateNightControlButton {
-            width: 26
-            height: 26
-            backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-            iconSource: isActive ? LateNightTheme.assetDeckBpmLockedButton : LateNightTheme.assetDeckBpmUnlockedButton
-            group: root.group
-            key: "bpmlock"
-            toggleable: true
-            activeBackgroundSuffix: "active"
-            pressedBackgroundSuffix: "active"
-            activeOpacity: 1.0
-            inactiveOpacity: 0.82
-            activeColor: LateNightTheme.deckDimButtonInactiveColor
-            inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+        // Column 2: BeatsEarlier / BeatsFaster
+        Item {
+            Layout.preferredHeight: 52
+            Layout.preferredWidth: 26
+
+            Column {
+                anchors.fill: parent
+                spacing: 0
+
+                LateNightControlButton {
+                    activeBackgroundSuffix: "active"
+                    activeColor: LateNightTheme.deckDimButtonInactiveColor
+                    activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    activeOpacity: 1.0
+                    backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                    enabled: !beatgridBehavior.bpmLocked
+                    group: root.group
+                    height: 26
+                    iconSource: LateNightTheme.assetDeckBeatsEarlierButton
+                    inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                    inactiveOpacity: 0.82
+                    key: "beats_translate_earlier"
+                    pressedBackgroundSuffix: "active"
+                    pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    rightClickKey: "beats_translate_half"
+                    width: 26
+                }
+                LateNightControlButton {
+                    activeBackgroundSuffix: "active"
+                    activeColor: LateNightTheme.deckDimButtonInactiveColor
+                    activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    activeOpacity: 1.0
+                    backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                    enabled: !beatgridBehavior.bpmLocked
+                    group: root.group
+                    height: 26
+                    iconSource: LateNightTheme.assetDeckBeatsFasterButton
+                    inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                    inactiveOpacity: 0.82
+                    key: "beats_adjust_faster"
+                    pressedBackgroundSuffix: "active"
+                    pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    width: 26
+                }
+            }
+            Rectangle {
+                anchors.fill: parent
+                color: LateNightTheme.beatgridDisabledCoverColor
+                radius: 2
+                visible: beatgridBehavior.bpmLocked
+            }
         }
-    }
 
-    // Column 5 (optional): HotcuesEarlier / HotcuesLater
-    Column {
-        Layout.preferredWidth: 26
-        Layout.preferredHeight: 52
-        spacing: 0
-        visible: timingShiftButtonsProxy.value > 0
+        // Column 3: BeatsLater / BeatsSlower
+        Item {
+            Layout.preferredHeight: 52
+            Layout.preferredWidth: 26
 
-        LateNightControlButton {
-            width: 26
-            height: 26
-            backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-            iconSource: LateNightTheme.assetDeckBeatsHotcuesEarlierButton
-            group: root.group
-            key: "shift_cues_earlier"
-            rightClickKey: "shift_cues_earlier_small"
-            activeBackgroundSuffix: "active"
-            pressedBackgroundSuffix: "active"
-            activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-            pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-            activeOpacity: 1.0
-            inactiveOpacity: 0.82
-            activeColor: LateNightTheme.deckDimButtonInactiveColor
-            inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+            Column {
+                anchors.fill: parent
+                spacing: 0
+
+                LateNightControlButton {
+                    activeBackgroundSuffix: "active"
+                    activeColor: LateNightTheme.deckDimButtonInactiveColor
+                    activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    activeOpacity: 1.0
+                    backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                    enabled: !beatgridBehavior.bpmLocked
+                    group: root.group
+                    height: 26
+                    iconSource: LateNightTheme.assetDeckBeatsLaterButton
+                    inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                    inactiveOpacity: 0.82
+                    key: "beats_translate_later"
+                    pressedBackgroundSuffix: "active"
+                    pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    rightClickKey: "beats_translate_half"
+                    width: 26
+                }
+                LateNightControlButton {
+                    activeBackgroundSuffix: "active"
+                    activeColor: LateNightTheme.deckDimButtonInactiveColor
+                    activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    activeOpacity: 1.0
+                    backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                    enabled: !beatgridBehavior.bpmLocked
+                    group: root.group
+                    height: 26
+                    iconSource: LateNightTheme.assetDeckBeatsSlowerButton
+                    inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                    inactiveOpacity: 0.82
+                    key: "beats_adjust_slower"
+                    pressedBackgroundSuffix: "active"
+                    pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    width: 26
+                }
+            }
+            Rectangle {
+                anchors.fill: parent
+                color: LateNightTheme.beatgridDisabledCoverColor
+                radius: 2
+                visible: beatgridBehavior.bpmLocked
+            }
         }
 
-        LateNightControlButton {
-            width: 26
-            height: 26
-            backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
-            iconSource: LateNightTheme.assetDeckBeatsHotcuesLaterButton
-            group: root.group
-            key: "shift_cues_later"
-            rightClickKey: "shift_cues_later_small"
-            activeBackgroundSuffix: "active"
-            pressedBackgroundSuffix: "active"
-            activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-            pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
-            activeOpacity: 1.0
-            inactiveOpacity: 0.82
-            activeColor: LateNightTheme.deckDimButtonInactiveColor
-            inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+        // Column 4: Undo / BpmLockToggle
+        Column {
+            Layout.preferredHeight: 52
+            Layout.preferredWidth: 26
+            spacing: 0
+
+            Item {
+                height: 26
+                width: 26
+
+                LateNightControlButton {
+                    activeBackgroundSuffix: "active"
+                    activeColor: LateNightTheme.deckDimButtonInactiveColor
+                    activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                    activeOpacity: 1.0
+                    anchors.fill: parent
+                    backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                    enabled: beatgridBehavior.beatsUndoPossible
+                    group: root.group
+                    iconSource: LateNightTheme.assetDeckUndoButton
+                    inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                    inactiveOpacity: 0.82
+                    key: "beats_undo_adjustment"
+                    pressedBackgroundSuffix: "active"
+                    pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                }
+                Rectangle {
+                    anchors.fill: parent
+                    color: LateNightTheme.beatgridDisabledCoverColor
+                    radius: 2
+                    visible: !beatgridBehavior.beatsUndoPossible
+                }
+            }
+            LateNightControlButton {
+                activeBackgroundSuffix: "active"
+                activeColor: LateNightTheme.deckDimButtonInactiveColor
+                activeOpacity: 1.0
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                group: root.group
+                height: 26
+                iconSource: isActive ? LateNightTheme.assetDeckBpmLockedButton : LateNightTheme.assetDeckBpmUnlockedButton
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                inactiveOpacity: 0.82
+                key: "bpmlock"
+                pressedBackgroundSuffix: "active"
+                toggleable: true
+                width: 26
+            }
+        }
+
+        // Column 5 (optional): HotcuesEarlier / HotcuesLater
+        Column {
+            Layout.preferredHeight: 52
+            Layout.preferredWidth: 26
+            spacing: 0
+            visible: beatgridBehavior.timingShiftButtonsVisible
+
+            LateNightControlButton {
+                activeBackgroundSuffix: "active"
+                activeColor: LateNightTheme.deckDimButtonInactiveColor
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                group: root.group
+                height: 26
+                iconSource: LateNightTheme.assetDeckBeatsHotcuesEarlierButton
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                inactiveOpacity: 0.82
+                key: "shift_cues_earlier"
+                pressedBackgroundSuffix: "active"
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                rightClickKey: "shift_cues_earlier_small"
+                width: 26
+            }
+            LateNightControlButton {
+                activeBackgroundSuffix: "active"
+                activeColor: LateNightTheme.deckDimButtonInactiveColor
+                activeIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                activeOpacity: 1.0
+                backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
+                group: root.group
+                height: 26
+                iconSource: LateNightTheme.assetDeckBeatsHotcuesLaterButton
+                inactiveColor: LateNightTheme.deckDimButtonInactiveColor
+                inactiveOpacity: 0.82
+                key: "shift_cues_later"
+                pressedBackgroundSuffix: "active"
+                pressedIconSuffix: LateNightTheme.isPaleMoon ? "active" : ""
+                rightClickKey: "shift_cues_later_small"
+                width: 26
+            }
         }
     }
 }

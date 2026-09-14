@@ -35,6 +35,8 @@ Item {
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_main_head_mixer"; persist: true }
     Mixxx.SkinControlCreator { group: "[Skin]"; key: "equal_4deck_waveforms"; persist: true }
     Mixxx.SkinControlCreator { group: "[Skin]"; key: "timing_shift_buttons"; persist: true }
+    Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_beatgrid_controls"; persist: true }
+    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_stem_controls"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_sampler_fx"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "sampler_rows"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: -1.0; group: "[Skin]"; key: "show_4samplers"; persist: true }
