@@ -22,6 +22,7 @@ SoundDevicePipewire::SoundDevicePipewire(UserSettingsPointer pConfig,
           m_pEnumerator(pEnumerator) {
     m_hostAPI = SoundManagerConfig::kAPIPipewire;
     m_deviceId.name = name.data();
+    m_deviceId.alsaHwDevice = name.data();
     m_deviceId.deviceIndex = id;
     m_strDisplayName = QString::fromUtf8(name);
     m_numInputChannels = mixxx::audio::ChannelCount(0);

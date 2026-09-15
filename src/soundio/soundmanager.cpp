@@ -730,3 +730,26 @@ void SoundManager::invalidateConfig() {
     qDebug() << "SoundManager::invalidateConfig";
     emit configInvalidated();
 }
+
+void SoundManager::addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index) {
+    qDebug() << "SoundManager::addHardwareVolume";
+    emit hardwareVolumeAdded(deviceId, name, index);
+}
+
+void SoundManager::addHardwareDevice(const QString& name, uint32_t id) {
+    qDebug() << "SoundManager::addHardwareDevice";
+    emit hardwareDeviceAdded(name, id);
+}
+
+void SoundManager::removeHardwareDevice(uint32_t id) {
+    emit hardwareDeviceRemoved(id);
+}
+
+std::vector<std::pair<uint32_t, QString>> SoundManager::queryHardwareDevices() {
+    qDebug() << "SoundManager::queryHardwareDevices";
+    return m_pEnumerator->queryHardwareDevices();
+}
+
+std::unordered_map<uint32_t, QString> SoundManager::queryHardwareVolumes(uint32_t deviceId) {
+    return m_pEnumerator->queryHardwareVolumes(deviceId);
+}
