@@ -1,6 +1,8 @@
 #include "mixer/playermanager.h"
 
 #include <QRegularExpression>
+#include <QSet>
+#include <utility>
 
 #include "audio/types.h"
 #include "control/controlobject.h"
@@ -783,6 +785,24 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
 #else
     pSampler->slotLoadTrack(pTrack, false);
 #endif
+}
+
+void PlayerManager::slotReanalyzeLoadedTracks() {
+    QSet<TrackId> scheduledTrackIds;
+    for (BaseTrackPlayer* pPlayer : std::as_const(m_players)) {
+        if (pPlayer == nullptr) {
+            continue;
+        }
+        const TrackPointer pTrack = pPlayer->getLoadedTrack();
+        if (!pTrack || !pTrack->getId().isValid() ||
+                scheduledTrackIds.contains(pTrack->getId())) {
+            continue;
+        }
+        scheduledTrackIds.insert(pTrack->getId());
+        pTrack->setWaveform(WaveformPointer());
+        pTrack->setWaveformSummary(WaveformPointer());
+        slotAnalyzeTrack(pTrack);
+    }
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {

@@ -596,7 +596,14 @@ void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
 }
 
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
-    return setWidgetType(type, &m_type);
+    const mixxx::WaveformAnalysisProfile previousProfile =
+            WaveformWidgetType::analysisProfile(m_type);
+    const bool isAcceptable = setWidgetType(type, &m_type);
+    if (isAcceptable &&
+            previousProfile != WaveformWidgetType::analysisProfile(m_type)) {
+        emit waveformAnalysisProfileChanged();
+    }
+    return isAcceptable;
 }
 
 bool WaveformWidgetFactory::setWidgetType(
@@ -625,6 +632,7 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     case WaveformWidgetType::Simple:
     case WaveformWidgetType::HSV:
     case WaveformWidgetType::Stacked:
+    case WaveformWidgetType::Perceptual3Band:
         return true;
     default:
         break;
@@ -639,6 +647,7 @@ bool WaveformWidgetFactory::widgetTypeSupportsStems() const {
     case WaveformWidgetType::Simple:
     case WaveformWidgetType::HSV:
     case WaveformWidgetType::Stacked:
+    case WaveformWidgetType::Perceptual3Band:
         return true;
     default:
         break;
@@ -1095,6 +1104,13 @@ void WaveformWidgetFactory::evaluateWidgets() {
                             type, useGles);
 #endif
             break;
+        case WaveformWidgetType::Perceptual3Band:
+#ifdef MIXXX_USE_QOPENGL
+            addHandle(collectedHandles, type, allshader::WaveformWidget::vars());
+            supportedOptions[type] =
+                    allshader::WaveformWidget::supportedOptions(type, useGles);
+#endif
+            break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -1183,6 +1199,18 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
     }
 }
 
+WaveformWidgetAbstract* WaveformWidgetFactory::createPerceptual3BandWaveformWidget(
+        WWaveformViewer* viewer,
+        WaveformRendererSignalBase::Options options) {
+#ifdef MIXXX_USE_QOPENGL
+    if (getBackendFromConfig() == WaveformWidgetBackend::AllShader) {
+        return createAllshaderWaveformWidget(
+                WaveformWidgetType::Perceptual3Band, viewer, options);
+    }
+#endif
+    return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+}
+
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
     WaveformWidgetBackend backend = getBackendFromConfig();
@@ -1236,6 +1264,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::Stacked:
             pWidget = createStackedWaveformWidget(pViewer, options);
+            break;
+        case WaveformWidgetType::Perceptual3Band:
+            pWidget = createPerceptual3BandWaveformWidget(pViewer, options);
             break;
         default:
             pWidget = new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
@@ -1398,6 +1429,8 @@ QString WaveformWidgetAbstractHandle::getDisplayName(WaveformWidgetType::Type ty
         return QObject::tr("RGB");
     case WaveformWidgetType::Stacked:
         return QObject::tr("Stacked");
+    case WaveformWidgetType::Perceptual3Band:
+        return QObject::tr("Perceptual 3-band");
     default:
         return QObject::tr("Unknown");
     }

@@ -266,6 +266,7 @@ class WaveformWidgetFactory : public QObject,
 
     void overviewScalingChanged();
     void visualGainChanged(double allChannelGain, double lowGain, double midGain, double highGain);
+    void waveformAnalysisProfileChanged();
 
     void untilMarkShowBeatsChanged(bool value);
     void untilMarkShowTimeChanged(bool value);
@@ -366,6 +367,9 @@ class WaveformWidgetFactory : public QObject,
     WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
             WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createPerceptual3BandWaveformWidget(
+            WWaveformViewer* viewer,
             WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer,
             WaveformRendererSignalBase::Options option);
