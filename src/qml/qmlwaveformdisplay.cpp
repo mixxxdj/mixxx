@@ -26,7 +26,7 @@
 using namespace allshader;
 
 namespace {
-constexpr int kDefaultSyncInternalMs = 100;
+constexpr int kDefaultFrameRate = 60;
 } // namespace
 
 namespace mixxx {
@@ -35,7 +35,8 @@ namespace qml {
 QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
         : QQuickItem(parent),
           WaveformWidgetRenderer(),
-          m_syncInterval(kDefaultSyncInternalMs),
+          m_syncInterval(1'000'000 / kDefaultFrameRate),
+          m_frameRate(kDefaultFrameRate),
           m_pPlayer(nullptr),
           m_pTrack(nullptr),
           m_visualPlayPosition(QSharedPointer<VisualPlayPosition>::create()) {
@@ -54,12 +55,34 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
             0.0);
     setFlag(QQuickItem::ItemHasContents, true);
 
+    m_frameRateTimer.setSingleShot(true);
+    m_frameRateTimer.setTimerType(Qt::PreciseTimer);
+    connect(&m_frameRateTimer, &QTimer::timeout, this, [this]() {
+        m_frameRequestTimer.restart();
+        update();
+    });
+
     connect(this,
             &QmlWaveformDisplay::windowChanged,
             this,
             &QmlWaveformDisplay::slotWindowChanged,
             Qt::DirectConnection);
     slotWindowChanged(window());
+}
+
+void QmlWaveformDisplay::setFrameRate(int frameRate) {
+    const int clampedFrameRate = std::clamp(frameRate, 1, 240);
+    if (m_frameRate == clampedFrameRate) {
+        return;
+    }
+    m_frameRate = clampedFrameRate;
+    m_syncInterval = std::chrono::microseconds(
+            std::max(1, 1'000'000 / m_frameRate));
+    if (window()) {
+        m_frameRateTimer.stop();
+        requestUpdateAtFrameRate();
+    }
+    emit frameRateChanged();
 }
 
 QmlWaveformDisplay::~QmlWaveformDisplay() {
@@ -146,9 +169,15 @@ void QmlWaveformDisplay::slotWindowChanged(QQuickWindow* window) {
 
     m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     if (window) {
-        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlWaveformDisplay::slotFrameSwapped);
+        connect(window,
+                &QQuickWindow::afterFrameEnd,
+                this,
+                &QmlWaveformDisplay::slotFrameSwapped,
+                Qt::UniqueConnection);
     }
     m_timer.restart();
+    m_frameRateTimer.stop();
+    m_frameRequestTimer.restart();
 }
 
 void QmlWaveformDisplay::setOptions(mixxx::qml::WaveformRendererSignalBaseOptions options) {
@@ -157,6 +186,15 @@ void QmlWaveformDisplay::setOptions(mixxx::qml::WaveformRendererSignalBaseOption
     m_rendererStack.clear();
 
     m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    update();
+}
+
+void QmlWaveformDisplay::refreshRenderers() {
+    // Renderer objects and their render-graph nodes live on the scene-graph
+    // thread. Only mark the item dirty here; updatePaintNode() clears and
+    // rebuilds the stack on that thread.
+    m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    update();
 }
 
 std::chrono::microseconds QmlWaveformDisplay::fromTimerToNextSync(const PerformanceTimer& timer) {
@@ -170,9 +208,31 @@ std::chrono::microseconds QmlWaveformDisplay::fromTimerToNextSync(const Performa
 
 void QmlWaveformDisplay::slotFrameSwapped() {
     m_timer.restart();
+    requestUpdateAtFrameRate();
+}
 
-    // continuous redraw
-    update();
+void QmlWaveformDisplay::requestUpdateAtFrameRate() {
+    if (!window()) {
+        return;
+    }
+
+    if (!m_frameRequestTimer.isValid()) {
+        m_frameRequestTimer.start();
+    }
+
+    const qint64 elapsedMicros = m_frameRequestTimer.nsecsElapsed() / 1000;
+    const qint64 intervalMicros = m_syncInterval.count();
+    if (elapsedMicros >= intervalMicros) {
+        m_frameRateTimer.stop();
+        m_frameRequestTimer.restart();
+        update();
+        return;
+    }
+
+    const qint64 remainingMicros = intervalMicros - elapsedMicros;
+    const int remainingMillis = static_cast<int>(
+            std::max<qint64>(1, (remainingMicros + 999) / 1000));
+    m_frameRateTimer.start(remainingMillis);
 }
 
 void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
@@ -216,6 +276,9 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
 
         m_rendererStack.clear();
         for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
+            if (!pQmlRenderer->isEnabled()) {
+                continue;
+            }
             if (!pQmlRenderer->isSupported()) {
                 qWarning() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
                 continue;
@@ -369,6 +432,13 @@ void QmlWaveformDisplay::renderers_append(
     }
     pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     pWaveform->m_waveformRenderers.append(value);
+    QObject::connect(value,
+            &QmlWaveformRendererFactory::enabledChanged,
+            pWaveform,
+            [pWaveform]() {
+                pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+                pWaveform->update();
+            });
 }
 
 // Static

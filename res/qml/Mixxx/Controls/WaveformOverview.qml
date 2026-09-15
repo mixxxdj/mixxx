@@ -6,13 +6,36 @@ Mixxx.WaveformOverview {
     id: root
 
     property color cueMarkerColor: "red"
-    required property string group
     property color introOutroMarkerColor: "blue"
     property bool interactive: true
     property color loopMarkerColor: "green"
     property string playPositionMarkerColor: "white"
+    property color analyzerStatusColor: "orangered"
+    property bool showAnalyzerStatus: false
     readonly property var player: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property double playerAnalyzerProgress: root.player?.analyzerProgress ?? -1
+    readonly property string analyzerStatusText: {
+        if (!root.showAnalyzerStatus || !root.player?.isLoaded) {
+            return "";
+        }
+        if (!root.player?.trackLoaded) {
+            return qsTr("Loading track...");
+        }
+        if (root.playerAnalyzerProgress < 0 || root.playerAnalyzerProgress >= 1) {
+            return "";
+        }
+        if (root.playerAnalyzerProgress <= 0.5) {
+            return qsTr("Ready to play, analyzing...");
+        }
+        if (root.playerAnalyzerProgress >= 0.95) {
+            return qsTr("Finalizing...");
+        }
+        return "";
+    }
 
+    minuteMarkers: Mixxx.Config.waveformOverviewMinuteMarkers
+    normalized: Mixxx.Config.waveformOverviewNormalized
+    stereo: Mixxx.Config.waveformOverviewStereo
     track: player?.currentTrack
 
     Mixxx.ControlProxy {
@@ -30,6 +53,18 @@ Mixxx.WaveformOverview {
 
         group: root.group
         key: "playposition"
+    }
+    Text {
+        x: 10
+        y: 0
+        color: Qt.rgba(root.analyzerStatusColor.r,
+                root.analyzerStatusColor.g,
+                root.analyzerStatusColor.b,
+                0.5)
+        font.family: "Open Sans"
+        font.pixelSize: 13
+        text: root.analyzerStatusText
+        visible: text.length > 0
     }
     Item {
         id: markers

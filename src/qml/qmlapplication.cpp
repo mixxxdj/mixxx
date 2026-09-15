@@ -21,6 +21,7 @@
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlapplicationproxy.h"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlcoreservices.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
@@ -122,6 +123,9 @@ QmlApplication::QmlApplication(
           m_perfSession(nullptr),
 #endif
           m_autoReload() {
+#ifdef MIXXX_USE_QML
+    WaveformWidgetFactory::setQmlMode(true);
+#endif
     QQuickStyle::setStyle("Basic");
 
 #if defined(Q_OS_ANDROID)
@@ -229,11 +233,8 @@ QmlApplication::QmlApplication(
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
-    // Keep the native Waveforms preferences page out of the QML startup
-    // dialog until the dedicated QML preferences page is complete. The
-    // waveform factory is still initialized above for QML rendering.
     std::shared_ptr<QDialog> pDlgPreferences =
-            m_pCoreServices->makeDlgPreferences(false);
+            m_pCoreServices->makeDlgPreferences();
     // Without this, QApplication will quit when the last QWidget QWindow is
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
@@ -371,16 +372,30 @@ QmlApplication::QmlApplication(
         APerformanceHint_setPreferPowerEfficiency(m_perfSession, false);
         __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "ADPF session ready");
     }
+#endif
 }
 
 void QmlApplication::slotWindowChanged(QQuickWindow* window) {
     if (window) {
-        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlApplication::slotFrameSwapped);
+        connect(window,
+                &QQuickWindow::afterFrameEnd,
+                this,
+                &QmlApplication::slotFrameSwapped,
+                Qt::UniqueConnection);
     }
+#if defined(Q_OS_ANDROID)
     m_frameTimer.restart();
+#endif
 }
 
 void QmlApplication::slotFrameSwapped() {
+#ifdef MIXXX_USE_QML
+    if (WaveformWidgetFactory::isCreated() &&
+            WaveformWidgetFactory::instance()->reportQmlFrame()) {
+        QmlConfigProxy::notifyWaveformAverageFrameRateChanged();
+    }
+#endif
+#if defined(Q_OS_ANDROID)
     VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
         return;
     }
@@ -394,13 +409,19 @@ void QmlApplication::slotFrameSwapped() {
 
 QmlApplication::~QmlApplication() {
     QmlApplicationProxy::registerReloadCallback({});
+    // Destroy the QML engine before the waveform factory. Scene-graph nodes
+    // owned by the engine may still reference QML waveform renderers and the
+    // factory while the engine is tearing down its object tree.
+    m_pAppEngine.reset();
     // Delete all the QML singletons in order to prevent leak detection in CoreService
     QmlRecordingProxy::s_pRecordingManager.reset();
     QmlDlgPreferencesProxy::s_pInstance.reset();
-    m_pAppEngine.reset();
     if (m_ownsWaveformWidgetFactory) {
         WaveformWidgetFactory::destroy();
     }
+#ifdef MIXXX_USE_QML
+    WaveformWidgetFactory::setQmlMode(false);
+#endif
     m_visualsManager.reset();
     QmlApplicationProxy::registerVinylControlManager(nullptr);
     m_pCoreServices.reset();
@@ -464,14 +485,14 @@ bool QmlApplication::loadQml(const QString& path) {
     registerImageProvider();
 
     m_pAppEngine->load(path);
-    if (m_pAppEngine->rootObjects().isEmpty()) {
+    const auto rootObjects = m_pAppEngine->rootObjects();
+    if (rootObjects.isEmpty()) {
         qWarning() << "Failed to load QML file" << path;
         m_pAppEngine.reset();
         return false;
     }
 
-#if defined(Q_OS_ANDROID)
-    for (auto* item : m_pAppEngine->rootObjects()) {
+    for (auto* item : rootObjects) {
         auto* pWindow = qobject_cast<QQuickWindow*>(item);
         if (!pWindow) {
             continue;
@@ -479,7 +500,6 @@ bool QmlApplication::loadQml(const QString& path) {
         slotWindowChanged(pWindow);
         break;
     }
-#endif
     return true;
 }
 

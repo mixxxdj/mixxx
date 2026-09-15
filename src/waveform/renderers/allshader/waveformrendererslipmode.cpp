@@ -94,7 +94,7 @@ bool WaveformRendererSlipMode::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     const bool isStemTrack = pTrack && pTrack->hasStem() &&
             pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
-    const bool splitStemTracks = isStemTrack &&
+    const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;

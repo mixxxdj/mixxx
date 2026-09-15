@@ -15,8 +15,9 @@ Item {
     readonly property color waveformSignalColor: useSecondaryDeckColors ? LateNightTheme.secondaryWaveformSignalColor : LateNightTheme.primaryWaveformSignalColor
     readonly property bool passthroughEnabled: passthroughControl.value > 0
     readonly property bool trackLoaded: trackLoadedProxy.value > 0
-    readonly property int waveformOverviewType: Math.round(waveformOverviewTypeProxy.value)
+    readonly property int waveformOverviewType: Mixxx.Config.waveformOverviewType
     readonly property bool useFilteredOverview: waveformOverviewType === 0
+    readonly property bool useHsvOverview: waveformOverviewType === 1
 
     Mixxx.ControlProxy {
         id: passthroughControl
@@ -28,12 +29,6 @@ Item {
         id: trackLoadedProxy
         group: root.group
         key: "track_loaded"
-    }
-
-    Mixxx.ControlProxy {
-        id: waveformOverviewTypeProxy
-        group: "[Waveform]"
-        key: "WaveformOverviewType"
     }
 
     RowLayout {
@@ -87,7 +82,13 @@ Item {
                 colorMid: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbMidColor
                 colorHigh: root.useFilteredOverview ? root.waveformSignalColor : LateNightTheme.overviewRgbHighColor
                 interactive: !root.passthroughEnabled
-                renderer: root.useFilteredOverview ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.WaveformOverview.Renderer.RGB
+                renderer: root.useFilteredOverview
+                        ? Mixxx.WaveformOverview.Renderer.Filtered
+                        : root.useHsvOverview
+                        ? Mixxx.WaveformOverview.Renderer.HSV
+                        : Mixxx.WaveformOverview.Renderer.RGB
+                analyzerStatusColor: root.waveformSignalColor
+                showAnalyzerStatus: true
             }
 
             Item {
