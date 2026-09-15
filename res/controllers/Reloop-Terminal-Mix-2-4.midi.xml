@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.6+">
+  <info>
+    <name>Reloop Terminal Mix 2/4</name>
+    <author>Sean M. Pappalardo (1.11), ronso0 (2.1 update), Christian (2.6 update)</author>
+    <description>A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.</description>
+    <manual>reloop_terminal_mix_series</manual>
+    <wiki>https://github.com/mixxxdj/mixxx/wiki/Reloop-Terminal-Mix</wiki>
+    <forums>https://mixxx.discourse.group/c/controller-mappings</forums>
+  </info>
+  <controller id="TerminalMix">
+    <scriptfiles>
+      <file filename="midi-components-0.0.js" />
+      <file filename="Behringer-Extension-scripts.js" />
+      <file filename="Reloop-Terminal-Mix-2-4.scripts.js" functionprefix="TerminalMix"/>
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Channel1]</group>
+        <status>0xE0</status>
+        <key>TerminalMix.rate</key>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>TerminalMix.rate</key>
+        <status>0xE1</status>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>TerminalMix.rate</key>
+        <status>0xE2</status>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>TerminalMix.rate</key>
+        <status>0xE3</status>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+    </controls>
+  </controller>
+</MixxxControllerPreset>
