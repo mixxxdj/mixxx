@@ -2168,6 +2168,14 @@ if(WARNINGS_FATAL)
   endif()
 endif()
 
+# Pass the build directory to VersionStore so that it can detect uninstalled
+# source builds for the version info dump in the About dialog. Only
+# src/util/versionstore.cpp needs it.
+set_source_files_properties(
+  src/util/versionstore.cpp
+  PROPERTIES COMPILE_DEFINITIONS "MIXXX_BUILD_DIR=\"${CMAKE_BINARY_DIR}\""
+)
+
 target_compile_definitions(
   mixxx-lib
   PUBLIC
@@ -2807,6 +2815,7 @@ if(BUILD_TESTING)
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
+    src/test/versionstore_test.cpp
     src/test/wbatterytest.cpp
     src/test/wpushbutton_test.cpp
     src/test/wwidgetstack_test.cpp
@@ -2839,6 +2848,9 @@ if(BUILD_TESTING)
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
+    # For VersionStore::installationMethod() to detect uninstalled source
+    # builds in the tests, see src/test/versionstore_test.cpp.
+    PUBLIC MIXXX_BUILD_DIR="${CMAKE_BINARY_DIR}"
   )
 
   if(QML)

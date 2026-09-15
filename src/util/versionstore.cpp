@@ -2,7 +2,11 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
+#include <QRegularExpression>
 #include <QStandardPaths>
+#include <QSysInfo>
 #include <QtGlobal>
 #include <utility>
 
@@ -48,6 +52,46 @@ QString ebur128Version() {
             .arg(QString::number(major),
                     QString::number(minor),
                     QString::number(patch));
+}
+
+/// Formats one "key  value" line of the diagnostic info dump. The key is
+/// left-justified so that all values start at the same column.
+QString formatDiagnosticLine(
+        const QString& key, const QString& value, qsizetype keyWidth) {
+    return key.leftJustified(keyWidth) + QChar(' ') + value;
+}
+
+/// Matches the values of the -ffile-prefix-map and -fmacro-prefix-map
+/// compiler flags, which contain private file system paths of the build
+/// machine (e.g. the location of the source tree). The flags are separated
+/// by whitespace or semicolons in the MIXXX_BUILD_FLAGS string.
+const QRegularExpression kPrefixMapFlagRegex(
+        QStringLiteral("(-ffile-prefix-map=|-fmacro-prefix-map=)[^;\\s]+"));
+
+/// Returns the value of the given key from an os-release file
+/// (https://www.freedesktop.org/software/systemd/man/latest/os-release.html)
+/// or the null string if the file cannot be read or does not contain the
+/// key. The values of the keys may be wrapped in double or single quotes.
+QString readOsReleaseValue(const QString& osReleasePath, const QString& key) {
+    QFile file(osReleasePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return QString();
+    }
+    const QByteArray keyWithSeparator = key.toUtf8() + '=';
+    while (!file.atEnd()) {
+        const QByteArray line = file.readLine().trimmed();
+        if (!line.startsWith(keyWithSeparator)) {
+            continue;
+        }
+        QByteArray value = line.mid(keyWithSeparator.size());
+        if (value.size() >= 2 &&
+                (value.startsWith('"') || value.startsWith('\''))) {
+            value.chop(1);
+            value.remove(0, 1);
+        }
+        return QString::fromUtf8(value);
+    }
+    return QString();
 }
 
 } // namespace
@@ -135,6 +179,146 @@ QString VersionStore::platform() {
 }
 
 // static
+QString VersionStore::distribution() {
+    return distribution(QStringLiteral("/etc/os-release"));
+}
+
+// static
+QString VersionStore::distribution(const QString& osReleasePath) {
+#ifdef __LINUX__
+    // Prefer the PRETTY_NAME field of /etc/os-release, which contains a
+    // human-readable distribution name, e.g. "Ubuntu Studio 26.04 LTS".
+    // Note that inside a Flatpak sandbox this may report the runtime
+    // instead of the host distribution, which is an acceptable fallback.
+    const QString prettyName =
+            readOsReleaseValue(osReleasePath, QStringLiteral("PRETTY_NAME"));
+    if (!prettyName.isEmpty()) {
+        return prettyName;
+    }
+    // Fall back to QSysInfo if the os-release file is unreadable or does
+    // not provide a PRETTY_NAME field.
+    const QString productType = QSysInfo::productType();
+    const QString productVersion = QSysInfo::productVersion();
+    if (productType.isEmpty() || productType == QLatin1String("unknown") ||
+            productVersion.isEmpty() ||
+            productVersion == QLatin1String("unknown")) {
+        return QString();
+    }
+    return productType + QChar(' ') + productVersion;
+#else
+    Q_UNUSED(osReleasePath);
+    return QString();
+#endif
+}
+
+// static
+QString VersionStore::kernel() {
+    const QString kernelType = QSysInfo::kernelType();
+    const QString kernelVersion = QSysInfo::kernelVersion();
+    if (kernelType.isEmpty() || kernelVersion.isEmpty() ||
+            kernelType == QLatin1String("unknown") ||
+            kernelVersion == QLatin1String("unknown")) {
+        return QString();
+    }
+    return kernelType + QChar(' ') + kernelVersion;
+}
+
+// static
+QString VersionStore::cpuArchitecture() {
+    const QString architecture = QSysInfo::currentCpuArchitecture();
+    if (architecture.isEmpty() || architecture == QLatin1String("unknown")) {
+        return QString();
+    }
+    return architecture;
+}
+
+// static
+QString VersionStore::sessionType() {
+#ifdef __LINUX__
+    // XDG_SESSION_TYPE is the standard way to determine the type of the
+    // graphical session on Linux ("x11", "wayland", "tty", ...).
+    const QString sessionType = qEnvironmentVariable("XDG_SESSION_TYPE");
+    if (sessionType.compare(QLatin1String("wayland"), Qt::CaseInsensitive) == 0) {
+        return QStringLiteral("Wayland");
+    }
+    if (sessionType.compare(QLatin1String("x11"), Qt::CaseInsensitive) == 0) {
+        return QStringLiteral("X11");
+    }
+    // Session types other than Wayland and X11 are omitted instead of being
+    // reported with a placeholder value.
+#endif
+    // The session type is an XDG-specific concept. There is no meaningful
+    // equivalent to report on other platforms.
+    return QString();
+}
+
+// static
+QString VersionStore::installationMethod() {
+    return installationMethod(QCoreApplication::applicationDirPath());
+}
+
+// static
+QString VersionStore::installationMethod(const QString& applicationDirPath) {
+#ifdef __LINUX__
+    const QString canonicalApplicationDir =
+            QFileInfo(applicationDirPath).canonicalFilePath();
+
+    // Flatpak: the Flatpak runtime sets FLATPAK_ID inside the sandbox.
+    // https://docs.flatpak.org/en/latest/variables.html
+    if (!qEnvironmentVariableIsEmpty("FLATPAK_ID")) {
+        return QStringLiteral("Flatpak");
+    }
+
+    // Snap: the Snap runtime provides a set of SNAP_* variables, e.g. SNAP_NAME.
+    // https://snapcraft.io/docs/environment-variables
+    if (!qEnvironmentVariableIsEmpty("SNAP_NAME")) {
+        return QStringLiteral("Snap");
+    }
+
+    // AppImage: the official AppImage runtime sets APPIMAGE to the absolute
+    // path of the running AppImage file.
+    // https://docs.appimage.org/packaging/environment-variables.html
+    if (!qEnvironmentVariableIsEmpty("APPIMAGE")) {
+        return QStringLiteral("AppImage");
+    }
+
+#ifdef MIXXX_BUILD_DIR
+    // Uninstalled source builds are run from inside the CMake build directory,
+    // which is passed to the compiler as MIXXX_BUILD_DIR. Note that a source
+    // build installed with `make install` is indistinguishable from a
+    // distribution package and is reported as such.
+    const QString buildDirPath = QStringLiteral(MIXXX_BUILD_DIR);
+    if (canonicalApplicationDir ==
+            QFileInfo(buildDirPath).canonicalFilePath()) {
+        return QStringLiteral("source build");
+    }
+#endif
+
+    // Native Linux packages: if the executable is located in a well-known
+    // system-wide binary directory we assume it was installed by a
+    // distribution package (or locally via `make install`, see above).
+    // Anything else, e.g. a portable archive extracted to an arbitrary
+    // location, cannot be identified reliably and is omitted.
+    static const QStringList kSystemBinDirs = {
+            QStringLiteral("/usr/bin"),
+            QStringLiteral("/usr/local/bin"),
+    };
+    for (const QString& systemBinDir : kSystemBinDirs) {
+        if (canonicalApplicationDir ==
+                QFileInfo(systemBinDir).canonicalFilePath()) {
+            return QStringLiteral("distro package");
+        }
+    }
+#else
+    Q_UNUSED(applicationDirPath);
+#endif
+    // On Windows and macOS the installation method (installer, portable
+    // archive, DMG, App bundle, Homebrew, ...) cannot be detected reliably,
+    // so the entry is omitted entirely.
+    return QString();
+}
+
+// static
 QString VersionStore::gitBranch() {
     return GitInfoStore::branch();
 }
@@ -167,6 +351,19 @@ QString VersionStore::qtVersion() {
 // static
 QString VersionStore::buildFlags() {
     return kBuildFlags;
+}
+
+// static
+QString VersionStore::maskedBuildFlags() {
+    return maskedBuildFlags(buildFlags());
+}
+
+// static
+QString VersionStore::maskedBuildFlags(const QString& buildFlags) {
+    // The values of the -ffile-prefix-map and -fmacro-prefix-map compiler
+    // flags contain private file system paths of the build machine (e.g. the
+    // location of the source tree), which must not be shared in bug reports.
+    return QString(buildFlags).replace(kPrefixMapFlagRegex, QStringLiteral("\\1<masked>"));
 }
 
 QStringList VersionStore::dependencyVersions() {
@@ -235,4 +432,88 @@ void VersionStore::logBuildDetails() {
              << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     qDebug() << "QCoreApplication::applicationDirPath()"
              << QCoreApplication::applicationDirPath();
+}
+
+// static
+QString VersionStore::diagnosticInfo(const QString& skin) {
+    // This dump is a technical text for bug reports. The keys are stable
+    // English identifiers and must NOT be translated.
+    QList<QPair<QString, QString>> entries;
+    entries.append({QStringLiteral("Version"), version()});
+
+    // gitVersion() also contains the branch name (if available), but falls
+    // back to "unknown" if the build does not provide the git information.
+    if (!gitDescribe().isEmpty()) {
+        entries.append({QStringLiteral("Git version"), gitVersion()});
+    }
+
+    const QDateTime lastCommitDate = date();
+    if (lastCommitDate.isValid()) {
+        // This is the date of the last commit of the source tree the binary
+        // was built from, not the build date. Use UTC to make the date
+        // unambiguous in bug reports.
+        entries.append({QStringLiteral("Last commit"),
+                lastCommitDate.toUTC().toString(Qt::ISODate)});
+    }
+
+    entries.append({QStringLiteral("Qt"), qtVersion()});
+
+#ifdef __LINUX__
+    const QString distribution = VersionStore::distribution();
+    if (!distribution.isEmpty()) {
+        entries.append({QStringLiteral("Distribution"), distribution});
+    }
+#else
+    const QString productName = QSysInfo::prettyProductName();
+    if (!productName.isEmpty() && productName != QLatin1String("unknown")) {
+        entries.append({QStringLiteral("OS"), productName});
+    }
+#endif
+
+    const QString kernel = VersionStore::kernel();
+    if (!kernel.isEmpty()) {
+        entries.append({QStringLiteral("Kernel"), kernel});
+    }
+
+    const QString cpuArchitecture = VersionStore::cpuArchitecture();
+    if (!cpuArchitecture.isEmpty()) {
+        entries.append({QStringLiteral("Architecture"), cpuArchitecture});
+    }
+
+    const QString session = VersionStore::sessionType();
+    if (!session.isEmpty()) {
+        entries.append({QStringLiteral("Session type"), session});
+    }
+
+    const QString installMethod = VersionStore::installationMethod();
+    if (!installMethod.isEmpty()) {
+        entries.append({QStringLiteral("Installation method"), installMethod});
+    }
+
+    if (!skin.isEmpty()) {
+        entries.append({QStringLiteral("Skin"), skin});
+    }
+
+    const QString buildFlags = VersionStore::maskedBuildFlags();
+    if (!buildFlags.isEmpty()) {
+        entries.append({QStringLiteral("Build flags"), buildFlags});
+    }
+
+    const QStringList dependencies = dependencyVersions();
+    if (!dependencies.isEmpty()) {
+        entries.append({QStringLiteral("Dependencies"),
+                dependencies.join(QStringLiteral(", "))});
+    }
+
+    qsizetype keyWidth = 0;
+    for (const auto& entry : entries) {
+        keyWidth = qMax(keyWidth, entry.first.length());
+    }
+
+    QStringList lines;
+    lines.reserve(entries.size());
+    for (const auto& entry : entries) {
+        lines.append(formatDiagnosticLine(entry.first, entry.second, keyWidth));
+    }
+    return lines.join(QChar('\n'));
 }
