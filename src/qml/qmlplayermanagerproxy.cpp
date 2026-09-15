@@ -32,6 +32,10 @@ QmlPlayerProxy* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     // the corresponding JS object is garbage collected.
     QmlPlayerProxy* pPlayerProxy = new QmlPlayerProxy(pPlayer);
     QQmlEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+    connect(m_pPlayerManager.get(),
+            &PlayerManager::trackAnalyzerProgress,
+            pPlayerProxy,
+            &QmlPlayerProxy::slotTrackAnalyzerProgress);
     connect(pPlayerProxy,
             &QmlPlayerProxy::loadTrackFromLocationRequested,
             this,
