@@ -1,10 +1,23 @@
 #include "widget/wcuemenupopup.h"
 
+#include <QCryptographicHash>
+#include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include <QHBoxLayout>
+#include <QProcess>
+#include <QRegularExpression>
+#include <QStandardPaths>
 #include <QVBoxLayout>
+#include <algorithm>
+#include <array>
 #include <optional>
+#include <vector>
 
 #include "control/controlobject.h"
+#include "control/pollingcontrolproxy.h"
+#include "mixer/playermanager.h"
+#include "mixer/sampler.h"
 #include "moc_wcuemenupopup.cpp"
 #include "track/track.h"
 
@@ -14,6 +27,11 @@ const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorI
 const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_color_index");
 
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
+
+constexpr int kMaxVisibleSamplerButtons = 16;
+
+const QRegularExpression kUnsafeFilenameChars(
+        QStringLiteral(R"([\\/:*?"<>|])"));
 } // namespace
 
 void CueMenuPushButton::mousePressEvent(QMouseEvent* e) {
@@ -150,6 +168,25 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedJumpCueManual);
 
+    m_pExportCue = std::make_unique<CueMenuPushButton>(this);
+    m_pExportCue->setToolTip(tr("Export this loop as a sample"));
+    m_pExportCue->setObjectName("CueExportButton");
+    connect(m_pExportCue.get(),
+            &QPushButton::clicked,
+            this,
+            &WCueMenuPopup::slotExportCue);
+
+    m_pExportToSamplerButtons.reserve(kMaxVisibleSamplerButtons);
+    for (int i = 0; i < kMaxVisibleSamplerButtons; ++i) {
+        auto btn = std::make_unique<CueMenuPushButton>(this);
+        btn->setToolTip(tr("Export this cue to Sampler %1").arg(i + 1));
+        btn->setObjectName(QStringLiteral("CueExportToSampler%1").arg(i + 1));
+        btn->setText(QString::number(i + 1));
+        connect(btn.get(), &QPushButton::clicked, this, [this, i]() { slotExportToSampler(i); });
+        btn->setVisible(false);
+        m_pExportToSamplerButtons.push_back(std::move(btn));
+    }
+
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber.get());
     pLabelLayout->addStretch(1);
@@ -159,6 +196,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pLeftLayout->addLayout(pLabelLayout);
     pLeftLayout->addWidget(m_pEditLabel.get());
     pLeftLayout->addWidget(m_pColorPicker.get());
+    m_pLeftLayout = pLeftLayout;
 
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pDeleteCue.get());
@@ -167,6 +205,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pRightLayout->addWidget(m_pSavedLoopCue.get());
     pRightLayout->addStretch(1);
     pRightLayout->addWidget(m_pSavedJumpCue.get());
+    pRightLayout->addWidget(m_pExportCue.get());
 
     QHBoxLayout* pMainLayout = new QHBoxLayout();
     pMainLayout->addLayout(pLeftLayout);
@@ -179,6 +218,150 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     layout()->activate();
 }
 
+SamplerLayout WCueMenuPopup::currentSamplerLayout() const {
+    SamplerLayout layout;
+
+    PollingControlProxy show4Proxy(
+            ConfigKey("[LateNight]", "show_4samplers"),
+            ControlFlag::AllowMissingOrInvalid);
+    PollingControlProxy show8Proxy(
+            ConfigKey("[LateNight]", "show_8samplers"),
+            ControlFlag::AllowMissingOrInvalid);
+    PollingControlProxy show16Proxy(
+            ConfigKey("[LateNight]", "show_16samplers"),
+            ControlFlag::AllowMissingOrInvalid);
+    PollingControlProxy expand1_8Proxy(
+            ConfigKey("[LateNight]", "expand_samplers_1-8"),
+            ControlFlag::AllowMissingOrInvalid);
+    PollingControlProxy expand9_16Proxy(
+            ConfigKey("[LateNight]", "expand_samplers_9-16"),
+            ControlFlag::AllowMissingOrInvalid);
+
+    const bool show4 = show4Proxy.valid() && show4Proxy.get() != 0.0;
+    const bool show8 = show8Proxy.valid() && show8Proxy.get() != 0.0;
+    const bool show16 = show16Proxy.valid() && show16Proxy.get() != 0.0;
+    const bool expand_1_8 = expand1_8Proxy.valid() && expand1_8Proxy.get() != 0.0;
+    const bool expand_9_16 = expand9_16Proxy.valid() && expand9_16Proxy.get() != 0.0;
+
+    qDebug() << "[WCUEMENUPOPUP] -> currentSamplerLayout config:"
+             << "show_4=" << show4
+             << "show_8=" << show8
+             << "show_16=" << show16
+             << "expand_1_8=" << expand_1_8
+             << "expand_9_16=" << expand_9_16;
+
+    if (show4 && !show8 && !show16) {
+        layout.samplerNumbers = {1, 2, 3, 4};
+        layout.columnsPerRow = {4};
+    } else if (show8 && !show16) {
+        if (expand_1_8) {
+            layout.samplerNumbers = {1, 2, 5, 6, 3, 4, 7, 8};
+            layout.columnsPerRow = {4, 4};
+        } else {
+            layout.samplerNumbers = {1, 2, 3, 4, 5, 6, 7, 8};
+            layout.columnsPerRow = {8};
+        }
+    } else if (show16) {
+        if (!expand_1_8 && !expand_9_16) {
+            layout.samplerNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+            layout.columnsPerRow = {8, 8};
+        } else if (expand_1_8 && !expand_9_16) {
+            layout.samplerNumbers = {1, 2, 5, 6, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+            layout.columnsPerRow = {4, 4, 8};
+        } else if (!expand_1_8 && expand_9_16) {
+            layout.samplerNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 11, 12, 15, 16};
+            layout.columnsPerRow = {8, 4, 4};
+        } else {
+            layout.samplerNumbers = {1, 2, 5, 6, 3, 4, 7, 8, 9, 10, 13, 14, 11, 12, 15, 16};
+            layout.columnsPerRow = {4, 4, 4, 4};
+        }
+    }
+    // else: no samplers visible -> empty layout
+
+    return layout;
+}
+
+void WCueMenuPopup::clearExportToSamplerButtons() {
+    // remove buttons first
+    for (auto& btn : m_pExportToSamplerButtons) {
+        if (btn) {
+            btn->setParent(nullptr);
+            btn->deleteLater();
+        }
+    }
+    m_pExportToSamplerButtons.clear();
+
+    // remove rows from the layout and delete them
+    for (QHBoxLayout* pRow : m_pSamplerButtonRows) {
+        if (!pRow) {
+            continue;
+        }
+        while (pRow->count() > 0) {
+            QLayoutItem* pItem = pRow->takeAt(0);
+            delete pItem;
+        }
+        if (m_pLeftLayout) {
+            m_pLeftLayout->removeItem(pRow);
+        }
+        delete pRow;
+    }
+    m_pSamplerButtonRows.clear();
+}
+
+void WCueMenuPopup::rebuildExportToSamplerButtons() {
+    qDebug() << "[WCUEMENUPOPUP] -> rebuildExportToSamplerButtons:"
+             << "m_pLeftLayout=" << m_pLeftLayout;
+
+    clearExportToSamplerButtons();
+
+    if (!m_pLeftLayout) {
+        qWarning() << "[WCUEMENUPOPUP] -> m_pLeftLayout is null, bailing";
+        return;
+    }
+
+    if (!m_pLeftLayout) {
+        return;
+    }
+
+    const SamplerLayout layout = currentSamplerLayout();
+
+    qDebug() << "[WCUEMENUPOPUP] -> layout:"
+             << "samplerNumbers=" << layout.samplerNumbers
+             << "columnsPerRow=" << layout.columnsPerRow;
+
+    if (layout.samplerNumbers.isEmpty()) {
+        return;
+    }
+
+    int pos = 0;
+    for (int cols : layout.columnsPerRow) {
+        auto* pRow = new QHBoxLayout();
+        for (int c = 0; c < cols && pos < layout.samplerNumbers.size();
+                ++c, ++pos) {
+            const int samplerNumber = layout.samplerNumbers[pos];
+
+            auto btn = std::make_unique<CueMenuPushButton>(this);
+            btn->setText(QString::number(samplerNumber));
+            btn->setMinimumSize(22, 18);
+            btn->setToolTip(
+                    tr("Export this hotcue/loop as sample to sampler %1")
+                            .arg(samplerNumber));
+            btn->setObjectName(
+                    QStringLiteral("CueExportToSampler%1").arg(samplerNumber));
+            connect(btn.get(), &QPushButton::clicked, this, [this, samplerNumber]() {
+                slotExportToSampler(samplerNumber - 1);
+            });
+
+            pRow->addWidget(btn.get(), 1);
+            m_pExportToSamplerButtons.push_back(std::move(btn));
+        }
+        m_pSamplerButtonRows.push_back(pRow);
+        m_pLeftLayout->addLayout(pRow);
+    }
+
+    updateExportToSamplerButtons();
+}
+
 void WCueMenuPopup::setTrackCueGroup(
         TrackPointer pTrack, const CuePointer& pCue, const QString& group) {
     if (!pTrack || !pCue) {
@@ -187,6 +370,7 @@ void WCueMenuPopup::setTrackCueGroup(
 
     m_pTrack = pTrack;
     m_pCue = pCue;
+    m_group = group;
 
     if (m_pBeatLoopSize.getKey().group != group) {
         m_pBeatLoopSize = PollingControlProxy(group, "beatloop_size");
@@ -204,6 +388,7 @@ void WCueMenuPopup::setTrackCueGroup(
         m_pQuantizeEnabled = PollingControlProxy(group, "quantize");
     }
     slotUpdate();
+    rebuildExportToSamplerButtons();
 }
 
 void WCueMenuPopup::slotUpdate() {
@@ -295,6 +480,7 @@ void WCueMenuPopup::slotUpdate() {
         m_pSavedJumpCue->setProperty("direction", direction);
         m_pSavedJumpCue->style()->polish(m_pSavedJumpCue.get());
         m_pSavedJumpCue->repaint();
+        m_pExportCue->setEnabled(m_pCue->getStartAndEndPosition().startPosition.isValid());
     } else {
         m_pTrack.reset();
         m_pCue.reset();
@@ -302,6 +488,19 @@ void WCueMenuPopup::slotUpdate() {
         m_pCuePosition->setText(QString(""));
         m_pEditLabel->setText(QString(""));
         m_pColorPicker->setSelectedColor(std::nullopt);
+        m_pExportCue->setEnabled(false);
+    }
+    updateExportToSamplerButtons();
+}
+
+void WCueMenuPopup::updateExportToSamplerButtons() {
+    const bool canExport = m_pCue != nullptr &&
+            m_pCue->getStartAndEndPosition().startPosition.isValid();
+
+    for (auto& btn : m_pExportToSamplerButtons) {
+        if (btn) {
+            btn->setEnabled(canExport);
+        }
     }
 }
 
@@ -487,4 +686,516 @@ void WCueMenuPopup::closeEvent(QCloseEvent* event) {
     }
     emit aboutToHide();
     QWidget::closeEvent(event);
+}
+
+bool WCueMenuPopup::trackHasStems() const {
+    if (!m_pTrack) {
+        return false;
+    }
+    return m_pTrack->hasStem();
+}
+
+QString WCueMenuPopup::buildExportPath(const QString& trackId,
+        const QString& artist,
+        const QString& title,
+        const QString& tag,
+        const QString& ext) const {
+    const QString settingsPath = m_pConfig->getSettingsPath();
+    const QString samplesDir = QDir(settingsPath).filePath(QStringLiteral("Samples"));
+
+    if (!QDir().mkpath(samplesDir)) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: could not create Samples dir"
+                   << samplesDir;
+        return QString();
+    }
+
+    QString safeArtist = artist;
+    QString safeTitle = title;
+    if (safeArtist.isEmpty()) {
+        safeArtist = QStringLiteral("Unknown");
+    }
+    if (safeTitle.isEmpty()) {
+        safeTitle = QStringLiteral("Untitled");
+    }
+
+    safeArtist.replace(kUnsafeFilenameChars, QStringLiteral("_"));
+    safeTitle.replace(kUnsafeFilenameChars, QStringLiteral("_"));
+
+    const QString baseName = QStringLiteral("%1_%2-%3-[%4]")
+                                     .arg(trackId,
+                                             safeArtist,
+                                             safeTitle,
+                                             tag);
+
+    return QDir(samplesDir).filePath(QStringLiteral("%1.%2").arg(baseName, ext));
+}
+
+void WCueMenuPopup::getStemState(std::array<double, 4>& stemGains) const {
+    stemGains = {1.0, 1.0, 1.0, 1.0};
+
+    if (m_group.isEmpty() || !trackHasStems()) {
+        return;
+    }
+
+    int deckNumber = -1;
+    if (!PlayerManager::isDeckGroup(m_group, &deckNumber)) {
+        return;
+    }
+
+    for (int i = 0; i < 4; ++i) {
+        const QString stemGroup =
+                PlayerManager::groupForDeckStem(deckNumber - 1, i);
+
+        PollingControlProxy stemMute(
+                stemGroup, QStringLiteral("mute"), ControlFlag::AllowMissingOrInvalid);
+        PollingControlProxy stemVolume(
+                stemGroup, QStringLiteral("volume"), ControlFlag::AllowMissingOrInvalid);
+
+        if (!stemMute.valid() || !stemVolume.valid()) {
+            stemGains = {1.0, 1.0, 1.0, 1.0};
+            return;
+        }
+
+        stemGains[i] = stemMute.toBool() ? 0.0 : stemVolume.get();
+    }
+}
+
+bool WCueMenuPopup::exportLoopByStreamCopy(const QString& src,
+        const mixxx::audio::FramePos& start,
+        const mixxx::audio::FramePos& end,
+        const QString& dst,
+        const QString& title,
+        bool isStemFile,
+        bool blocking) {
+    if (!m_pTrack) {
+        return false;
+    }
+    const double sampleRate = m_pTrack->getSampleRate();
+    if (sampleRate <= 0.0) {
+        return false;
+    }
+
+    const double startSec = start.value() / sampleRate;
+    const double durationSec =
+            static_cast<double>(end - start) / sampleRate;
+
+    if (durationSec <= 0.0) {
+        return false;
+    }
+
+    QStringList args;
+    args << QStringLiteral("-hide_banner")
+         << QStringLiteral("-loglevel") << QStringLiteral("error")
+         << QStringLiteral("-ss") << QString::number(startSec, 'f', 6)
+         << QStringLiteral("-t") << QString::number(durationSec, 'f', 6)
+         << QStringLiteral("-i") << src;
+
+    if (isStemFile) {
+        // stream 0 in the stem container
+        args << QStringLiteral("-map") << QStringLiteral("0:0");
+    } else {
+        // 1st audio stream, ignore video/cover-art
+        args << QStringLiteral("-map") << QStringLiteral("0:a:0");
+    }
+
+    // set metadata title to distinguish the exported sample from the original track in the library
+    // add a Mixxx-genre tag to easu retrieve & delete exported samples from the library later
+    args << QStringLiteral("-metadata")
+         << QStringLiteral("title=%1").arg(title)
+         << QStringLiteral("-metadata")
+         << QStringLiteral("genre=Mixxx-Exported-HotCue-To-Sampler");
+
+    args << QStringLiteral("-c:a") << QStringLiteral("copy")
+         << QStringLiteral("-y") << dst;
+
+    if (blocking) {
+        QProcess proc;
+        proc.start(QStringLiteral("ffmpeg"), args);
+        if (!proc.waitForStarted(5000)) {
+            qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg failed to start";
+            return false;
+        }
+        if (!proc.waitForFinished(-1)) {
+            qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg did not finish";
+            return false;
+        }
+        if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
+            qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg error"
+                       << proc.readAllStandardError();
+            return false;
+        }
+        return true;
+    }
+
+    auto* proc = new QProcess(this);
+    QObject::connect(proc,
+            QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            proc,
+            [proc, dst](int exitCode, QProcess::ExitStatus status) {
+                if (status != QProcess::NormalExit || exitCode != 0) {
+                    qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg error"
+                               << proc->readAllStandardError();
+                } else {
+                    qDebug() << "[WCUEMENUPOPUP] -> Sample Export: " << dst;
+                }
+                proc->deleteLater();
+            });
+    QObject::connect(proc,
+            &QProcess::errorOccurred,
+            proc,
+            [proc](QProcess::ProcessError err) {
+                qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg process error" << err
+                           << proc->errorString();
+            });
+    proc->start(QStringLiteral("ffmpeg"), args);
+
+    return true;
+}
+
+bool WCueMenuPopup::exportLoopByRendering(const mixxx::audio::FramePos& start,
+        const mixxx::audio::FramePos& end,
+        const std::array<double, 4>& stemGains,
+        bool isStemFile,
+        const QString& dst,
+        const QString& title,
+        bool blocking) {
+    if (!m_pTrack || !isStemFile) {
+        return false;
+    }
+    const double sampleRate = m_pTrack->getSampleRate();
+    if (sampleRate <= 0.0) {
+        return false;
+    }
+
+    const double startSec = start.value() / sampleRate;
+    const double durationSec =
+            static_cast<double>(end - start) / sampleRate;
+    if (durationSec <= 0.0) {
+        return false;
+    }
+
+    const QString src = m_pTrack->getLocation();
+
+    QStringList args;
+    args << QStringLiteral("-hide_banner")
+         << QStringLiteral("-loglevel") << QStringLiteral("error")
+         << QStringLiteral("-ss") << QString::number(startSec, 'f', 6)
+         << QStringLiteral("-t") << QString::number(durationSec, 'f', 6)
+         << QStringLiteral("-i") << src;
+
+    // stream 0 is original premix, streams 1..4 the individual stems.
+    // only use render path when 1+ stems are muted or have a volume other than 1.0.
+    // -> original premix is ignored
+    //
+    // not all ffmpeg versions support normalize in amix,
+    // -> we need to compensate for the division by the number of inputs ourselves.
+    // amix divides each input by the number of inputs
+    // = default in all ffmpeg versions
+    // -> pre-multiply each gain by numInputs so amix
+    // division cancels out and the output is the plain weighted sum.
+    constexpr int numInputs = 4;
+    constexpr double amixCompensation = static_cast<double>(numInputs);
+
+    QStringList filterParts;
+    for (int i = 0; i < numInputs; ++i) {
+        // skip premix stream 0
+        filterParts << QStringLiteral("[0:a:%1]volume=%2[a%3]")
+                               .arg(i + 1)
+                               .arg(stemGains[i] * amixCompensation, 0, 'f', 6)
+                               .arg(i);
+    }
+    filterParts << QStringLiteral(
+            "[a0][a1][a2][a3]amix=inputs=4[out]");
+
+    args << QStringLiteral("-filter_complex") << filterParts.join(';')
+         << QStringLiteral("-map") << QStringLiteral("[out]");
+
+    // set metadata title to distinguish the exported sample from the original track in the library
+    // add a Mixxx-genre tag to easu retrieve & delete exported samples from the library later
+    args << QStringLiteral("-metadata")
+         << QStringLiteral("title=%1").arg(title)
+         << QStringLiteral("-metadata")
+         << QStringLiteral("genre=Mixxx-Exported-HotCue-To-Sampler");
+
+    args << QStringLiteral("-c:a") << QStringLiteral("pcm_f32le")
+         << QStringLiteral("-y") << dst;
+
+    qDebug() << "[WCUEMENUPOPUP] - ffmpeg render args:" << args;
+
+    if (blocking) {
+        QProcess proc;
+        proc.start(QStringLiteral("ffmpeg"), args);
+        if (!proc.waitForStarted(5000)) {
+            qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg failed to start";
+            return false;
+        }
+        if (!proc.waitForFinished(-1)) {
+            qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg did not finish";
+            return false;
+        }
+        if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode() != 0) {
+            qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg error"
+                       << proc.readAllStandardError();
+            return false;
+        }
+        return true;
+    }
+
+    auto* proc = new QProcess(this);
+    QObject::connect(proc,
+            QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            proc,
+            [proc, dst](int exitCode, QProcess::ExitStatus status) {
+                if (status != QProcess::NormalExit || exitCode != 0) {
+                    qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg error"
+                               << proc->readAllStandardError();
+                } else {
+                    qDebug() << "[WCUEMENUPOPUP] -> Sample Export: " << dst;
+                }
+                proc->deleteLater();
+            });
+    QObject::connect(proc,
+            &QProcess::errorOccurred,
+            proc,
+            [proc](QProcess::ProcessError err) {
+                qWarning() << "[WCUEMENUPOPUP] -> Sample Export: ffmpeg process error" << err
+                           << proc->errorString();
+            });
+    proc->start(QStringLiteral("ffmpeg"), args);
+
+    return true;
+}
+
+QString WCueMenuPopup::exportCueToFile(bool blocking) {
+    if (!m_pCue || !m_pTrack) {
+        return QString();
+    }
+
+    const auto pos = m_pCue->getStartAndEndPosition();
+    if (!pos.startPosition.isValid()) {
+        return QString();
+    }
+
+    // compute the export range.
+    // -> loop with a valid forward range: use the loop range
+    // -> savedjump with a valid (positive) range: use the jump range
+    // -> else: normal hotcue =  loop with broken range
+    // -> preference sample length from the cue position
+    mixxx::audio::FramePos endPosition;
+    if (((m_pCue->getType() == mixxx::CueType::Loop) ||
+                (m_pCue->getType() == mixxx::CueType::Jump)) &&
+            pos.endPosition.isValid() &&
+            pos.endPosition > pos.startPosition) {
+        endPosition = pos.endPosition;
+    } else {
+        const double sampleRate = m_pTrack->getSampleRate();
+        if (sampleRate <= 0.0) {
+            return QString();
+        }
+        const int sampleLengthSec = m_pConfig->getValue(
+                ConfigKey("[Controls]", "NonLoopSampleLengthSec"), 5);
+        endPosition = pos.startPosition +
+                mixxx::audio::FrameDiff_t(sampleRate * sampleLengthSec);
+    }
+
+    if (endPosition <= pos.startPosition) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: computed end position is not after start";
+        return QString();
+    }
+
+    std::array<double, 4> stemGains = {1.0, 1.0, 1.0, 1.0};
+    getStemState(stemGains);
+
+    const bool hasStems = trackHasStems();
+
+    // untouched means all 4 stems are unmuted and at 100% volume
+    // -> their sum is the original premix
+    // -> we can stream-copy the original premix (stream 0) directly.
+    bool untouchedMix;
+    if (!hasStems) {
+        untouchedMix = true;
+    } else {
+        untouchedMix = std::all_of(stemGains.begin(),
+                stemGains.end(),
+                [](double g) { return g == 1.0; });
+    }
+
+    const QString src = m_pTrack->getLocation();
+    const QFileInfo srcInfo(src);
+
+    const TrackId trackId = m_pTrack->getId();
+    const QString artist = m_pTrack->getArtist();
+    const QString title = m_pTrack->getTitle();
+    const int hotcueNumber = m_pCue->getHotCue() + 1;
+
+    QString tag;
+    if (m_pCue->getType() == mixxx::CueType::Loop) {
+        tag = QStringLiteral("HC-%1-LOOP")
+                      .arg(hotcueNumber, 2, 10, QChar('0'));
+    } else {
+        tag = QStringLiteral("HC-%1")
+                      .arg(hotcueNumber, 2, 10, QChar('0'));
+    }
+
+    // a changed cue produces a different signature, if eg the file is locked on windows
+    // we can't replacethe previous exported sample.
+    // To check if the existing file can be reused we add a hash,
+    // if new cue parameters produce a different hash, we export a new file
+    // -> all done to avoid a lot of samples being imported in the library
+    QString sigInput = QStringLiteral("%1|%2|%3")
+                               .arg(pos.startPosition.value())
+                               .arg(endPosition.value())
+                               .arg(untouchedMix ? 1 : 0);
+    for (double g : stemGains) {
+        sigInput += QStringLiteral("|%1").arg(g, 0, 'f', 4);
+    }
+    const QByteArray sigHash = QCryptographicHash::hash(
+            sigInput.toUtf8(), QCryptographicHash::Sha1);
+    const QString signature = QString::fromLatin1(sigHash.toHex().left(6));
+
+    const QString tagWithSig = tag + QStringLiteral("-") + signature;
+
+    const QString exportTitle = QStringLiteral("%1 [%2]").arg(title, tag);
+
+    const QString dst = untouchedMix
+            ? buildExportPath(trackId.toString(),
+                      artist,
+                      title,
+                      tagWithSig,
+                      srcInfo.suffix())
+            : buildExportPath(trackId.toString(),
+                      artist,
+                      title,
+                      tagWithSig,
+                      QStringLiteral("wav"));
+
+    if (dst.isEmpty()) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: could not resolve export path";
+        return QString();
+    }
+
+    // If the file already exists with this exact signature,
+    // the export is unchanged
+    // -> reuse it as it is.
+    // -> when the file is currently loaded in a sampler: no need to eject or reload.
+    if (QFile::exists(dst)) {
+        qDebug() << "[WCUEMENUPOPUP] -> Sample Export: unchanged export exists,"
+                 << "reusing" << dst;
+        return dst;
+    }
+
+    qDebug() << "[WCUEMENUPOPUP] -> Sample Export -> decision:"
+             << "stemGains=" << stemGains[0] << stemGains[1]
+             << stemGains[2] << stemGains[3]
+             << "untouchedMix=" << untouchedMix
+             << "hasStems=" << hasStems
+             << "start=" << pos.startPosition.value()
+             << "end=" << endPosition.value()
+             << "signature=" << signature;
+
+    bool ok = false;
+    if (untouchedMix) {
+        ok = exportLoopByStreamCopy(src,
+                pos.startPosition,
+                endPosition,
+                dst,
+                exportTitle,
+                hasStems,
+                blocking);
+    } else {
+        ok = exportLoopByRendering(pos.startPosition,
+                endPosition,
+                stemGains,
+                hasStems,
+                dst,
+                exportTitle,
+                blocking);
+    }
+
+    if (!ok) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: export failed";
+        return QString();
+    }
+
+    return dst;
+}
+
+void WCueMenuPopup::slotExportCue() {
+    const QString path = exportCueToFile(/*blocking=*/false);
+    if (path.isEmpty()) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: loop export failed";
+    }
+    hide();
+}
+
+void WCueMenuPopup::slotExportToSampler(int samplerIndex) {
+    if (!m_pCue || !m_pTrack) {
+        hide();
+        return;
+    }
+
+    PlayerManager* pPlayerManager = PlayerManager::instance();
+    if (!pPlayerManager) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: No PlayerManager instance available";
+        hide();
+        return;
+    }
+
+    // Block export to a sampler that's currently playing.
+    // Loading a track into a playing sampler stops playback, which is
+    // disruptive during a live set and will make the audience booing,
+    // DJs don't like boohoo.
+
+    const QString targetGroup = PlayerManager::groupForSampler(samplerIndex);
+    ControlObject* pPlay = ControlObject::getControl(
+            ConfigKey(targetGroup, QStringLiteral("play")),
+            ControlFlag::AllowMissingOrInvalid);
+    if (pPlay && pPlay->toBool()) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export: target sampler"
+                   << (samplerIndex + 1) << "is playing, refusing to export";
+        hide();
+        return;
+    }
+
+    const QString path = exportCueToFile(/*blocking=*/true);
+    if (path.isEmpty()) {
+        qWarning() << "[WCUEMENUPOPUP] -> Sample Export to sampler"
+                   << (samplerIndex + 1) << "failed";
+        hide();
+        return;
+    }
+
+    pPlayerManager->slotLoadToSampler(path, samplerIndex + 1);
+
+    // enable repeat on the sampler for loop cues
+    const double repeatValue =
+            (m_pCue->getType() == mixxx::CueType::Loop) ? 1.0 : 0.0;
+    ControlObject::set(ConfigKey(targetGroup, QStringLiteral("repeat")),
+            repeatValue);
+    ControlObject::set(ConfigKey("[Playlist]", QStringLiteral("ToggleSelectedSidebarItem")), 1);
+
+    hide();
+}
+
+bool WCueMenuPopup::isFileLoadedInAnySampler(const QString& path) const {
+    PlayerManager* pPlayerManager = PlayerManager::instance();
+    if (!pPlayerManager) {
+        return false;
+    }
+
+    const unsigned int numSamplers = pPlayerManager->numberOfSamplers();
+    for (unsigned int i = 1; i <= numSamplers; ++i) {
+        // only call getSampler when we know the index is valid
+        // -> numberOfSamplers() = configured count
+        const QString group = PlayerManager::groupForSampler(i - 1);
+        BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
+        if (!pPlayer) {
+            continue;
+        }
+        TrackPointer pLoadedTrack = pPlayer->getLoadedTrack();
+        if (pLoadedTrack && pLoadedTrack->getLocation() == path) {
+            return true;
+        }
+    }
+    return false;
 }

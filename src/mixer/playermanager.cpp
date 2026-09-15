@@ -135,6 +135,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(m_pConfig, this);
 
+    PlayerManager::s_pInstance = this;
+
     m_cloneTimer.start();
 }
 
@@ -154,6 +156,18 @@ PlayerManager::~PlayerManager() {
     // We need to delete m_pTrackAnalysisScheduler here immediately synchronously,
     // waiting for pending threads to have finished, to not kill them during exit
     delete m_pTrackAnalysisScheduler.release();
+
+    if (PlayerManager::s_pInstance == this) {
+        PlayerManager::s_pInstance = nullptr;
+    }
+}
+
+// static
+PlayerManager* PlayerManager::s_pInstance = nullptr;
+
+// static
+PlayerManager* PlayerManager::instance() {
+    return s_pInstance;
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {

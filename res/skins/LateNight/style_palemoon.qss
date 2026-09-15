@@ -163,6 +163,29 @@ WCueMenuPopup #CueLabelEdit {
   border-right: 1px solid #252525;
   background-color: #19191a;
   }
+WCueMenuPopup #CueExportToSampler1,
+WCueMenuPopup #CueExportToSampler2,
+WCueMenuPopup #CueExportToSampler3,
+WCueMenuPopup #CueExportToSampler4,
+WCueMenuPopup #CueExportToSampler5,
+WCueMenuPopup #CueExportToSampler6,
+WCueMenuPopup #CueExportToSampler7,
+WCueMenuPopup #CueExportToSampler8,
+WCueMenuPopup #CueExportToSampler9,
+WCueMenuPopup #CueExportToSampler10,
+WCueMenuPopup #CueExportToSampler11,
+WCueMenuPopup #CueExportToSampler12,
+WCueMenuPopup #CueExportToSampler13,
+WCueMenuPopup #CueExportToSampler14,
+WCueMenuPopup #CueExportToSampler15,
+WCueMenuPopup #CueExportToSampler16 {
+  border-top: 1px solid #0d0d0d;
+  border-left: 1px solid #121212;
+  border-bottom: 1px solid #2a2a2a;
+  border-right: 1px solid #252525;
+  background-color: #19191a;
+  color: #ffffff;
+}
 WTrackTableView,
 WLibraryTextBrowser,
 WLibrarySidebar,
