@@ -187,8 +187,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
-    m_marks.connectSamplePositionChanged(this, &WOverview::onMarkChanged);
-    m_marks.connectSampleEndPositionChanged(this, &WOverview::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WOverview::onMarkChanged);
 
     QDomNode child = node.firstChild();
@@ -410,7 +408,14 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
+        // IMPORTANT: make this a QueuedConnection so the slot is called AFTER
+        // objects with DirectConnection (eg. CueControl, which updates the
+        // position COs we need when we iterate over the cues and update marks)
+        connect(pNewTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated,
+                Qt::QueuedConnection);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
