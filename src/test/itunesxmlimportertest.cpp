@@ -60,6 +60,9 @@ std::unique_ptr<MockITunesDAO> makeMockDAO() {
     ON_CALL(*dao, importPlaylistRelation(_, _)).WillByDefault([pDao](int parentId, int childId) {
         return pDao->ITunesDAO::importPlaylistRelation(parentId, childId);
     });
+    ON_CALL(*dao, importPlaylistTrack(_, _, _)).WillByDefault([pDao](int playlistId, int trackId, int index) {
+        return pDao->ITunesDAO::importPlaylistTrack(playlistId, trackId, index);
+    });
     ON_CALL(*dao, applyPathMapping(_)).WillByDefault([pDao](const ITunesPathMapping& pathMapping) {
         return pDao->ITunesDAO::applyPathMapping(pathMapping);
     });
@@ -255,6 +258,36 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
     EXPECT_CALL(*dao, importPlaylistRelation(1425, 1494)); // - Playlist C
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1440)); // Downloaded (smart playlist)
     EXPECT_CALL(*dao, importPlaylistRelation(root, 1449)); // Playlist D
+    
+    // Folder A (Playlist ID: 1425)
+    EXPECT_CALL(*dao, importPlaylistTrack(1425, 467, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(1425, 473, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(1425, 476, 3));
+
+    // Folder B (Playlist ID: 1498)
+    EXPECT_CALL(*dao, importPlaylistTrack(1498, 467, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(1498, 473, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(1498, 476, 3));
+
+    // Playlist A (Playlist ID: 1431)
+    EXPECT_CALL(*dao, importPlaylistTrack(1431, 473, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(1431, 467, 2));
+
+    // Playlist B (Playlist ID: 1436)
+    EXPECT_CALL(*dao, importPlaylistTrack(1436, 476, 1));
+
+    // Downloaded (Playlist ID: 1440)
+    EXPECT_CALL(*dao, importPlaylistTrack(1440, 479, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(1440, 482, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(1440, 467, 3));
+    EXPECT_CALL(*dao, importPlaylistTrack(1440, 473, 4));
+    EXPECT_CALL(*dao, importPlaylistTrack(1440, 470, 5));
+    EXPECT_CALL(*dao, importPlaylistTrack(1440, 476, 6));
+
+    // Playlist D (Playlist ID: 1449)
+    EXPECT_CALL(*dao, importPlaylistTrack(1449, 470, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(1449, 482, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(1449, 479, 3));
 
     std::unique_ptr<ITunesXMLImporter> importer =
             makeImporter("macOS Music Library.xml", std::move(dao));
@@ -467,6 +500,37 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
     EXPECT_CALL(*dao, importPlaylistRelation(153, 174));  // - Playlist C
     EXPECT_CALL(*dao, importPlaylistRelation(root, 177)); // Downloaded (smart playlist)
     EXPECT_CALL(*dao, importPlaylistRelation(root, 186)); // Playlist D
+    
+    // Folder A (Playlist ID: 153)
+    EXPECT_CALL(*dao, importPlaylistTrack(153, 81, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(153, 83, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(153, 87, 3));
+
+    // Folder B (Playlist ID: 159)
+    EXPECT_CALL(*dao, importPlaylistTrack(159, 81, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(159, 83, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(159, 87, 3));
+
+    // Playlist A (Playlist ID: 165)
+    EXPECT_CALL(*dao, importPlaylistTrack(165, 83, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(165, 87, 2));
+
+    // Playlist B (Playlist ID: 170)
+    EXPECT_CALL(*dao, importPlaylistTrack(170, 81, 1));
+
+    // Downloaded (Smart-Playlist – Playlist ID: 177)
+    EXPECT_CALL(*dao, importPlaylistTrack(177, 77, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(177, 79, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(177, 81, 3));
+    EXPECT_CALL(*dao, importPlaylistTrack(177, 87, 4));
+    EXPECT_CALL(*dao, importPlaylistTrack(177, 83, 5));
+    EXPECT_CALL(*dao, importPlaylistTrack(177, 85, 6));
+
+    // Playlist D (Playlist ID: 186)
+    EXPECT_CALL(*dao, importPlaylistTrack(186, 85, 1));
+    EXPECT_CALL(*dao, importPlaylistTrack(186, 79, 2));
+    EXPECT_CALL(*dao, importPlaylistTrack(186, 77, 3));
+
 
     std::unique_ptr<ITunesXMLImporter> importer =
             makeImporter("iTunes Music Library.xml", std::move(dao));
