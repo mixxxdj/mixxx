@@ -351,7 +351,7 @@ QtObject {
     readonly property int toolbarButtonWidth: 52
     readonly property color toolbarClockTextColor: isClassic ? "#f0bb2b" : "#c2b3a5"
     readonly property color toolbarLatencyBorderColor: "#040404"
-    readonly property color toolbarLatencyLabelColor: "#444444"
+    readonly property color toolbarLatencyLabelColor: isClassic ? "#f0bb2b" : "#444444"
     readonly property color toolbarLatencyOverloadColor: "#ffff00"
     readonly property color toolbarMenuDisabledTextColor: "#777777"
     readonly property color toolbarMenuHoverColor: isPaleMoon ? "#2c454f" : "#5e4507"
