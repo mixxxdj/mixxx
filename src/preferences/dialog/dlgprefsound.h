@@ -63,8 +63,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void boothDelaySpinboxChanged(double value);
     void mainMixChanged(int value);
     void mainEnabledChanged(double value);
-    void mainOutputModeComboBoxChanged(int value);
-    void mainMonoMixdownChanged(double value);
     void micMonitorModeComboBoxChanged(int value);
 
   private slots:
@@ -100,6 +98,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
+    QList<DlgPrefSoundItem*> outputSoundItems() const;
+    QList<DlgPrefSoundItem*> inputSoundItems() const;
 
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
@@ -115,7 +115,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<ControlProxy> m_pAudioLatencyOverloadCount;
     parented_ptr<ControlProxy> m_pOutputLatencyMs;
     parented_ptr<ControlProxy> m_pMainEnabled;
-    parented_ptr<ControlProxy> m_pMainMonoMixdown;
 
     QList<SoundDevicePointer> m_inputDevices;
     QList<SoundDevicePointer> m_outputDevices;

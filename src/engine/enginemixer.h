@@ -347,6 +347,8 @@ class EngineMixer : public QObject, public AudioSource {
 
     // Mix two Mono channels. This is useful for outdoor gigs
     std::unique_ptr<ControlObject> m_pMainMonoMixdown;
+    std::unique_ptr<ControlObject> m_pBoothMonoMixdown;
+    std::unique_ptr<ControlObject> m_pHeadphoneMonoMixdown;
     std::unique_ptr<ControlObject> m_pMicMonitorMode;
 
     // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).
