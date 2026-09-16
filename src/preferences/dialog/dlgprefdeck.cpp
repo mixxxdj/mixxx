@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
@@ -15,6 +16,7 @@
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
+constexpr bool kDefaultUltraSpeedEnabled = false;
 constexpr double kRateDirectionInverted = -1;
 constexpr bool kDefaultRateDirectionInverted = true;
 constexpr RateControl::RampMode kDefaultRampingMode = RateControl::RampMode::Stepping;
@@ -70,8 +72,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
-        pControl->set(static_cast<int>(m_cueMode));
+    for (PollingControlProxy control : std::as_const(m_cueControls)) {
+        control.set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -287,8 +289,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     m_keylockMode = static_cast<KeylockMode>(
             m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("keylockMode")),
                     static_cast<int>(KeylockMode::LockOriginalKey)));
-    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
-        pControl->set(static_cast<double>(m_keylockMode));
+    for (PollingControlProxy control : std::as_const(m_keylockModeControls)) {
+        control.set(static_cast<double>(m_keylockMode));
     }
 
     // Key unlock mode
@@ -300,8 +302,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     m_keyunlockMode = static_cast<KeyunlockMode>(
             m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("keyunlockMode")),
                     static_cast<int>(KeyunlockMode::ResetLockedKey)));
-    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
-        pControl->set(static_cast<int>(m_keyunlockMode));
+    for (PollingControlProxy control : std::as_const(m_keyunlockModeControls)) {
+        control.set(static_cast<int>(m_keyunlockMode));
     }
 
     // Cue Mode
@@ -320,6 +322,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_SYNC_MODES_URL));
 
+    connect(CheckBoxUltraSpeed,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotUltraSpeedCheckboxToggled);
+
     // Speed / Pitch reset configuration
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
@@ -328,15 +335,24 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             BaseTrackPlayer::TrackLoadReset::RESET_PITCH);
 
     m_speedAutoReset = (configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_SPEED ||
-            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
+            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED ||
+            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_ULTRASPEED);
     m_pitchAutoReset = (configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH ||
-            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED);
+            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED ||
+            configSPAutoReset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_ULTRASPEED);
+    m_ultraspeedAutoReset = (configSPAutoReset ==
+            BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_ULTRASPEED);
 
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
+    checkBoxResetUltraspeed->setChecked(m_ultraspeedAutoReset);
 
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
+    connect(checkBoxResetUltraspeed,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotUpdateUltraspeedAutoReset);
 
     //
     // Ramping Temporary Rate Change configuration
@@ -432,15 +448,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     slotUpdate();
 }
 
-DlgPrefDeck::~DlgPrefDeck() {
-    qDeleteAll(m_rateControls);
-    qDeleteAll(m_rateDirectionControls);
-    qDeleteAll(m_cueControls);
-    qDeleteAll(m_rateRangeControls);
-    qDeleteAll(m_keylockModeControls);
-    qDeleteAll(m_keyunlockModeControls);
-}
-
 void DlgPrefDeck::slotUpdate() {
     checkBoxIntroStartMove->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("SetIntroStartAtMainCue")), false));
@@ -450,7 +457,9 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")), true));
 
-    double rateRange = m_rateRangeControls[0]->get();
+    updateUltraSpeedCheckBox();
+
+    double rateRange = m_rateRangeControls[0].get();
     int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
     if (index == -1) {
         ComboBoxRateRange->addItem(QString::number(rateRange * 100.).append("%"),
@@ -458,10 +467,10 @@ void DlgPrefDeck::slotUpdate() {
     }
     ComboBoxRateRange->setCurrentIndex(index);
 
-    double rateDirection = m_rateDirectionControls[0]->get();
+    double rateDirection = m_rateDirectionControls[0].get();
     checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
 
-    double cueMode = m_cueControls[0]->get();
+    double cueMode = m_cueControls[0].get();
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
@@ -476,7 +485,7 @@ void DlgPrefDeck::slotUpdate() {
     }
 
     KeylockMode keylockMode =
-            static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
+            static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0].get()));
     if (keylockMode == KeylockMode::LockCurrentKey) {
         radioButtonCurrentKey->setChecked(true);
     } else {
@@ -484,27 +493,65 @@ void DlgPrefDeck::slotUpdate() {
     }
 
     KeyunlockMode keyunlockMode =
-            static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
+            static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0].get()));
     if (keyunlockMode == KeyunlockMode::KeepLockedKey) {
         radioButtonKeepUnlockedKey->setChecked(true);
     } else {
         radioButtonResetUnlockedKey->setChecked(true);
     }
 
+    // TODO use some kind of flag for this ??
     auto reset = m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
             BaseTrackPlayer::TrackLoadReset::RESET_PITCH);
+    qWarning() << "PrefDeck::update AutoReset Cfg:" << reset;
     if (reset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH) {
+        qWarning() << "-> PITCH";
+        qWarning() << "-> Pitch: X";
+        qWarning() << "-> Speed: -";
+        qWarning() << "-> Ultra: -";
         checkBoxResetPitch->setChecked(true);
         checkBoxResetSpeed->setChecked(false);
+        checkBoxResetUltraspeed->setChecked(false);
     } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_SPEED) {
+        qWarning() << "-> SPEED";
+        qWarning() << "-> Pitch: -";
+        qWarning() << "-> Speed: X";
+        qWarning() << "-> Ultra: X";
         checkBoxResetPitch->setChecked(false);
         checkBoxResetSpeed->setChecked(true);
+        checkBoxResetUltraspeed->setChecked(true);
     } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED) {
+        qWarning() << "-> PITCH_AND_SPEED";
+        qWarning() << "-> Pitch: X";
+        qWarning() << "-> Speed: X";
+        qWarning() << "-> Ultra: X";
         checkBoxResetPitch->setChecked(true);
         checkBoxResetSpeed->setChecked(true);
-    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_NONE) {
+        checkBoxResetUltraspeed->setChecked(true);
+    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_ULTRASPEED) {
+        qWarning() << "-> PITCH_AND_ULTRA";
+        qWarning() << "-> Pitch: X";
+        qWarning() << "-> Speed: -";
+        qWarning() << "-> Ultra: X";
+        checkBoxResetPitch->setChecked(true);
+        checkBoxResetSpeed->setChecked(false);
+        checkBoxResetUltraspeed->setChecked(true);
+    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_ULTRASPEED) {
+        qWarning() << "-> ULTRA";
+        qWarning() << "-> Pitch: -";
+        qWarning() << "-> Speed: -";
+        qWarning() << "-> Ultra: X";
         checkBoxResetPitch->setChecked(false);
         checkBoxResetSpeed->setChecked(false);
+        checkBoxResetUltraspeed->setChecked(true);
+    } else if (reset == BaseTrackPlayer::TrackLoadReset::RESET_NONE) {
+        qWarning() << "-> NONE";
+        qWarning() << "-> Pitch: -";
+        qWarning() << "-> Speed: -";
+        qWarning() << "-> Ultra: -";
+        checkBoxResetPitch->setChecked(false);
+        checkBoxResetSpeed->setChecked(false);
+        checkBoxResetUltraspeed->setChecked(false);
     }
 
     if (m_bRateRamping == RateControl::RampMode::Linear) {
@@ -533,6 +580,9 @@ void DlgPrefDeck::slotResetToDefaults() {
     // 8% Rate Range
     ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(kDefaultRateRangePercent));
 
+    // Disable Ultra Speed slider (rate_ultra)
+    CheckBoxUltraSpeed->setChecked(kDefaultUltraSpeedEnabled);
+
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
 
@@ -559,6 +609,7 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
+    checkBoxResetUltraspeed->setChecked(false);
 
     radioButtonSoftLeader->setChecked(true);
 
@@ -575,8 +626,39 @@ void DlgPrefDeck::slotRateRangeComboBox(int index) {
 }
 
 void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
-    for (ControlProxy* pControl : std::as_const(m_rateRangeControls)) {
-        pControl->set(rangePercent / 100.0);
+    for (PollingControlProxy control : std::as_const(m_rateRangeControls)) {
+        control.set(rangePercent / 100.0);
+    }
+}
+
+void DlgPrefDeck::maybeToggleUltraSpeedForAllDecks() {
+    Qt::CheckState rateUltraCheckState = CheckBoxUltraSpeed->checkState();
+    if (rateUltraCheckState == Qt::CheckState::PartiallyChecked) {
+        // Don't override the user-set mixed state
+        return;
+    }
+
+    int enabled = rateUltraCheckState == Qt::CheckState::Checked ? 1.0 : 0.0;
+    for (PollingControlProxy control : std::as_const(m_rateUtraEnabledControls)) {
+        control.set(enabled);
+    }
+}
+
+void DlgPrefDeck::updateUltraSpeedCheckBox() {
+    // Ultra speed (rate_ultra_enabled) can be set per deck and it's persistent,
+    // so read all controls and check it fully or partially
+    int numEnabled = 0;
+    for (const PollingControlProxy& control : std::as_const(m_rateUtraEnabledControls)) {
+        if (control.toBool()) {
+            numEnabled++;
+        }
+    }
+    if (numEnabled == 0) {
+        CheckBoxUltraSpeed->setCheckState(Qt::CheckState::Unchecked);
+    } else if (numEnabled < m_rateUtraEnabledControls.size()) {
+        CheckBoxUltraSpeed->setCheckState(Qt::CheckState::PartiallyChecked);
+    } else {
+        CheckBoxUltraSpeed->setCheckState(Qt::CheckState::Checked);
     }
 }
 
@@ -585,21 +667,12 @@ void DlgPrefDeck::slotRateInversionCheckbox(bool inverted) {
 }
 
 void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
-    double oldRateDirectionMultiplier = m_rateDirectionControls[0]->get();
     double rateDirectionMultiplier = 1.0;
     if (inverted) {
         rateDirectionMultiplier = kRateDirectionInverted;
     }
-    for (ControlProxy* pControl : std::as_const(m_rateDirectionControls)) {
-        pControl->set(rateDirectionMultiplier);
-    }
-
-    // If the rate slider direction setting has changed,
-    // multiply the rate by -1 so the current sound does not change.
-    if (rateDirectionMultiplier != oldRateDirectionMultiplier) {
-        for (ControlProxy* pControl : std::as_const(m_rateControls)) {
-            pControl->set(-1 * pControl->get());
-        }
+    for (PollingControlProxy control : std::as_const(m_rateDirectionControls)) {
+        control.set(rateDirectionMultiplier);
     }
 }
 
@@ -709,8 +782,8 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("TimeFormat")), timeFormat);
 
     // Set cue mode for every deck
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
-        pControl->set(static_cast<int>(m_cueMode));
+    for (PollingControlProxy control : std::as_const(m_cueControls)) {
+        control.set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CueDefault")), m_cueMode);
 
@@ -728,18 +801,29 @@ void DlgPrefDeck::slotApply() {
             m_iRateRangePercent);
     setRateRangeForAllDecks(m_iRateRangePercent);
 
+    maybeToggleUltraSpeedForAllDecks();
+
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RateDir")),
             m_bRateDownIncreasesSpeed);
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
 
     BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_NONE;
 
-    if (m_speedAutoReset && m_pitchAutoReset) {
-        configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED;
-    } else if (m_speedAutoReset) {
-        configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_SPEED;
-    } else if (m_pitchAutoReset) {
-        configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_PITCH;
+    // When ultraspeed auto-reset is requested, use RESET_PITCH_AND_SPEED or
+    // RESET_SPEED depending on the pitch checkbox state. These enum values
+    // already reset the ultra speed slider in the engine.
+    if (m_pitchAutoReset) {
+        if (m_speedAutoReset) {
+            configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_SPEED;
+        } else if (m_ultraspeedAutoReset) {
+            configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_PITCH_AND_ULTRASPEED;
+        }
+    } else {
+        if (m_speedAutoReset) {
+            configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_SPEED;
+        } else if (m_ultraspeedAutoReset) {
+            configSPAutoReset = BaseTrackPlayer::TrackLoadReset::RESET_ULTRASPEED;
+        }
     }
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
@@ -756,15 +840,15 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("keylockMode")),
             m_keylockMode);
     // Set key lock behavior for every group
-    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
-        pControl->set(static_cast<double>(m_keylockMode));
+    for (PollingControlProxy control : std::as_const(m_keylockModeControls)) {
+        control.set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("keyunlockMode")),
             m_keyunlockMode);
     // Set key un-lock behavior for every group
-    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
-        pControl->set(static_cast<double>(m_keyunlockMode));
+    for (PollingControlProxy control : std::as_const(m_keyunlockModeControls)) {
+        control.set(static_cast<double>(m_keyunlockMode));
     }
 
     RateControl::setRateRampMode(m_bRateRamping);
@@ -803,29 +887,31 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
 
     for (int i = m_iNumConfiguredDecks; i < numdecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateControls.push_back(new ControlProxy(
-                group, "rate"));
-        m_rateRangeControls.push_back(new ControlProxy(
-                group, "rateRange"));
-        m_rateDirectionControls.push_back(new ControlProxy(
-                group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
-                group, "cue_mode"));
-        m_keylockModeControls.push_back(new ControlProxy(
-                group, "keylockMode"));
-        m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
-        m_keyunlockModeControls.push_back(new ControlProxy(
-                group, "keyunlockMode"));
-        m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_rateRangeControls.push_back(PollingControlProxy(
+                group, QStringLiteral("rateRange")));
+        m_rateDirectionControls.push_back(PollingControlProxy(
+                group, QStringLiteral("rate_dir")));
+        m_rateUtraEnabledControls.push_back(PollingControlProxy(
+                group, QStringLiteral("rate_ultra_enabled")));
+        m_cueControls.push_back(PollingControlProxy(
+                group, QStringLiteral("cue_mode")));
+        m_keylockModeControls.push_back(PollingControlProxy(
+                group, QStringLiteral("keylockMode")));
+        m_keylockModeControls.last().set(static_cast<double>(m_keylockMode));
+        m_keyunlockModeControls.push_back(PollingControlProxy(
+                group, QStringLiteral("keyunlockMode")));
+        m_keyunlockModeControls.last().set(static_cast<double>(m_keyunlockMode));
     }
 
     m_iNumConfiguredDecks = numdecks;
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
-        setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
+        setRateDirectionForAllDecks(m_rateDirectionControls[0].get() == kRateDirectionInverted);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0].get() * 100.0));
     }
+
+    updateUltraSpeedCheckBox();
 }
 
 void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
@@ -836,37 +922,48 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
 
     for (int i = m_iNumConfiguredSamplers; i < numsamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateControls.push_back(new ControlProxy(
-                group, "rate"));
-        m_rateRangeControls.push_back(new ControlProxy(
+        m_rateRangeControls.push_back(PollingControlProxy(
                 group, "rateRange"));
-        m_rateDirectionControls.push_back(new ControlProxy(
+        m_rateDirectionControls.push_back(PollingControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
+        m_cueControls.push_back(PollingControlProxy(
                 group, "cue_mode"));
-        m_keylockModeControls.push_back(new ControlProxy(
+        m_keylockModeControls.push_back(PollingControlProxy(
                 group, "keylockMode"));
-        m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
-        m_keyunlockModeControls.push_back(new ControlProxy(
+        m_keylockModeControls.last().set(static_cast<double>(m_keylockMode));
+        m_keyunlockModeControls.push_back(PollingControlProxy(
                 group, "keyunlockMode"));
-        m_keyunlockModeControls.last()->set(static_cast<double>(m_keyunlockMode));
+        m_keyunlockModeControls.last().set(static_cast<double>(m_keyunlockMode));
     }
 
     m_iNumConfiguredSamplers = numsamplers;
 
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
-        setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
+        setRateDirectionForAllDecks(m_rateDirectionControls[0].get() == kRateDirectionInverted);
+        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0].get() * 100.0));
     }
 }
 
 void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {
     m_speedAutoReset = b;
+    // Ultra speed auto-reset follows speed auto-reset. When speed is checked,
+    // also check ultraspeed. The user can uncheck ultraspeed independently.
+    if (b) {
+        checkBoxResetUltraspeed->setChecked(true);
+    }
 }
 
 void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
     m_pitchAutoReset = b;
+}
+
+void DlgPrefDeck::slotUpdateUltraspeedAutoReset(bool b) {
+    m_ultraspeedAutoReset = b;
+}
+
+void DlgPrefDeck::slotUltraSpeedCheckboxToggled(bool checked) {
+    checkBoxResetUltraspeed->setEnabled(checked);
 }
 
 int DlgPrefDeck::cueDefaultIndexByData(int userData) const {

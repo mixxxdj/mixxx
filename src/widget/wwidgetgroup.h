@@ -81,7 +81,23 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     bool event(QEvent* pEvent) override;
     void fillDebugTooltip(QStringList* debug) override;
 
+    // By default QFrame::sizeHint() (QWidget::sizeHint()) would return an
+    // invalid size when no layout (and no fixed size) has been set.
+    // If we'd set <Size>100min,100f</Size>, hiding a child would not cause the
+    // parent to shrink (or grow when show, depends on initial state??).
+    //
+    // We override these to get the proper sizeHint for WidgetGroups in such
+    // cases and only consider visible children.
+    // Note: this only works in conjunction with updateGeometry() in
+    // ControlWidgetPropertyConnection::slotControlValueChanged()
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
+
   private:
+    // Returns the bounding box of all visible children with absolute
+    // positioning (no layout).
+    QSize visibleChildrenBoundingBox() const;
+
     // Associated background pixmap
     PaintablePointer m_pPixmapBack;
     PaintablePointer m_pPixmapBackHighlighted;

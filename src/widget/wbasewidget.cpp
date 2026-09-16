@@ -78,6 +78,13 @@ double WBaseWidget::getControlParameterDisplay() const {
     return 0.0;
 }
 
+bool WBaseWidget::isControlParameterDefault() const {
+    if (!m_connections.empty()) {
+        return m_connections.at(0)->isControlParameterDefault();
+    }
+    return false;
+}
+
 void WBaseWidget::resetControlParameter() {
     for (const auto& pControlConnection : std::as_const(m_connections)) {
         pControlConnection->resetControl();
