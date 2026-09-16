@@ -1591,6 +1591,7 @@ Rectangle {
         id: mixerSettingsPopup
 
         ToolbarMenuSectionToggle {
+            showTitle: false
             title: "Mixer"
             control: showMixerControl
 
@@ -1621,6 +1622,7 @@ Rectangle {
         id: waveformSettingsPopup
 
         ToolbarMenuSectionToggle {
+            showTitle: false
             title: "Waveforms"
             control: showWaveformsControl
 
@@ -1964,6 +1966,7 @@ Rectangle {
         minimumWidth: 140
 
         ToolbarMenuSection {
+            showTitle: false
             title: "Library"
 
             ToolbarMenuToggle {
@@ -2498,6 +2501,8 @@ Rectangle {
         }
     }
     component ToolbarMenuSection: ColumnLayout {
+        id: section
+        property bool showTitle: true
         required property string title
 
         Layout.fillWidth: true
@@ -2513,7 +2518,8 @@ Rectangle {
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
-            text: parent.title
+            text: section.title
+            visible: section.showTitle
         }
     }
     component ToolbarMenuCheckIndicator: Text {
@@ -2529,6 +2535,7 @@ Rectangle {
     }
     component ToolbarMenuSectionToggle: ColumnLayout {
         id: sectionToggle
+        property bool showTitle: true
         required property string title
         required property Mixxx.ControlProxy control
 
@@ -2546,6 +2553,7 @@ Rectangle {
             Layout.fillWidth: true
             implicitHeight: 18
             implicitWidth: headerText.implicitWidth + 20
+            visible: sectionToggle.showTitle
 
             Rectangle {
                 anchors.fill: parent
