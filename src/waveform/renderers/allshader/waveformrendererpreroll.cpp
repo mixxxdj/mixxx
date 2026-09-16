@@ -175,6 +175,7 @@ bool WaveformRendererPreroll::preprocessInner() {
     geometry().allocate(reservedVertexCount);
 
     const float end = m_waveformRenderer->getLength();
+    const bool reverseDirection = m_waveformRenderer->isReverseWaveformDirection();
 
     TexturedVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
 
@@ -185,24 +186,55 @@ bool WaveformRendererPreroll::preprocessInner() {
                 currentVSamplePosition;
         // In pixels
         float x = static_cast<float>(triangleTipVSamplePosition / vSamplesPerPixel);
-        const float limit = end + markerLength;
-        if (x >= limit) {
-            // Don't draw invisible triangles beyond the right side of the display
-            x -= std::ceil((x - limit) / markerLength) * markerLength;
-        }
 
-        const float repetitions = x / markerLength;
+        if (reverseDirection) {
+            // Mirror the track-start boundary around the play marker so it
+            // recedes to the right (the "past" side in reversed mode) as
+            // playback advances, and tile the hazard pattern from there to
+            // the right edge instead of the left edge -- i.e. reuse the
+            // same rectangle shape the (unreversed) post-roll case below
+            // uses, since post-roll's "tip to edge" geometry is exactly
+            // what a mirrored pre-roll needs.
+            x = static_cast<float>(m_waveformRenderer->reflectPixelPosition(x));
+            const float limit = -markerLength;
+            if (x <= limit) {
+                // Don't draw invisible triangles before the left side of the display
+                x += std::ceil((limit - x) / markerLength) * markerLength;
+            }
 
-        for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
-            const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
-            vertexUpdater.addRectangle(
-                    {x, boxCenterY - halfMarkerBreadth},
-                    {0.f,
-                            m_isSlipRenderer
-                                    ? boxCenterY
-                                    : boxCenterY + halfMarkerBreadth},
-                    {0.f, 0.f},
-                    {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+            const float repetitions = (end - x) / markerLength;
+
+            for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+                const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
+                vertexUpdater.addRectangle(
+                        {x, boxCenterY - halfMarkerBreadth},
+                        {end,
+                                m_isSlipRenderer
+                                        ? boxCenterY
+                                        : boxCenterY + halfMarkerBreadth},
+                        {0.f, 0.f},
+                        {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+            }
+        } else {
+            const float limit = end + markerLength;
+            if (x >= limit) {
+                // Don't draw invisible triangles beyond the right side of the display
+                x -= std::ceil((x - limit) / markerLength) * markerLength;
+            }
+
+            const float repetitions = x / markerLength;
+
+            for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+                const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
+                vertexUpdater.addRectangle(
+                        {x, boxCenterY - halfMarkerBreadth},
+                        {0.f,
+                                m_isSlipRenderer
+                                        ? boxCenterY
+                                        : boxCenterY + halfMarkerBreadth},
+                        {0.f, 0.f},
+                        {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+            }
         }
     }
 
@@ -214,24 +246,50 @@ bool WaveformRendererPreroll::preprocessInner() {
                 remainingVSamples;
         // In pixels
         float x = static_cast<float>(triangleTipVSamplePosition / vSamplesPerPixel);
-        const float limit = -markerLength;
-        if (x <= limit) {
-            // Don't draw invisible triangles before the left side of the display
-            x += std::ceil((limit - x) / markerLength) * markerLength;
-        }
 
-        const float repetitions = (end - x) / markerLength;
+        if (reverseDirection) {
+            // Mirror the track-end boundary around the play marker (see the
+            // pre-roll case above) and reuse the unreversed pre-roll's "tip
+            // to left edge" rectangle shape.
+            x = static_cast<float>(m_waveformRenderer->reflectPixelPosition(x));
+            const float limit = end + markerLength;
+            if (x >= limit) {
+                x -= std::ceil((x - limit) / markerLength) * markerLength;
+            }
 
-        for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
-            const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
-            vertexUpdater.addRectangle(
-                    {x, boxCenterY - halfMarkerBreadth},
-                    {end,
-                            m_isSlipRenderer
-                                    ? boxCenterY
-                                    : boxCenterY + halfMarkerBreadth},
-                    {0.f, 0.f},
-                    {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+            const float repetitions = x / markerLength;
+
+            for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+                const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
+                vertexUpdater.addRectangle(
+                        {x, boxCenterY - halfMarkerBreadth},
+                        {0.f,
+                                m_isSlipRenderer
+                                        ? boxCenterY
+                                        : boxCenterY + halfMarkerBreadth},
+                        {0.f, 0.f},
+                        {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+            }
+        } else {
+            const float limit = -markerLength;
+            if (x <= limit) {
+                // Don't draw invisible triangles before the left side of the display
+                x += std::ceil((limit - x) / markerLength) * markerLength;
+            }
+
+            const float repetitions = (end - x) / markerLength;
+
+            for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+                const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
+                vertexUpdater.addRectangle(
+                        {x, boxCenterY - halfMarkerBreadth},
+                        {end,
+                                m_isSlipRenderer
+                                        ? boxCenterY
+                                        : boxCenterY + halfMarkerBreadth},
+                        {0.f, 0.f},
+                        {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+            }
         }
     }
 

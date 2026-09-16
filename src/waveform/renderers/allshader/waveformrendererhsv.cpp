@@ -90,8 +90,23 @@ bool WaveformRendererHSV::preprocessInner() {
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
 
+    // When the scroll direction is reversed, sweep frames across the pixel
+    // range in the opposite direction while leaving each pixel's draw
+    // position (fpos below) untouched. This keeps the play marker's frame
+    // pinned to its own pixel and avoids pushing content outside the
+    // visible pixel range, which reflecting the draw position would do
+    // whenever the marker isn't centered.
+    double visualFrameStep = visualIncrementPerPixel;
+    double xVisualFrame = firstVisualFrame;
+    if (m_waveformRenderer->isReverseWaveformDirection()) {
+        const double markerDevicePos =
+                m_waveformRenderer->getPlayMarkerPosition() * pixelLength;
+        xVisualFrame = firstVisualFrame + 2.0 * markerDevicePos * visualIncrementPerPixel;
+        visualFrameStep = -visualIncrementPerPixel;
+    }
+
     // Effective visual frame for x
-    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+    xVisualFrame = qRound(xVisualFrame / visualIncrementPerPixel) *
             visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
@@ -196,7 +211,7 @@ bool WaveformRendererHSV::preprocessInner() {
                         static_cast<float>(color.greenF()),
                         static_cast<float>(color.blueF())});
 
-        xVisualFrame += visualIncrementPerPixel;
+        xVisualFrame += visualFrameStep;
     }
 
     DEBUG_ASSERT(reserved == vertexUpdater.index());

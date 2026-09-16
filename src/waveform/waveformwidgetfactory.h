@@ -254,6 +254,9 @@ class WaveformWidgetFactory : public QObject,
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
+    void setReverseWaveformDirection(bool reverse);
+    bool isReverseWaveformDirection() const { return m_reverseWaveformDirection; }
+
     void notifyZoomChange(WWaveformViewer *viewer);
 
   signals:
@@ -377,4 +380,5 @@ class WaveformWidgetFactory : public QObject,
     double m_actualFrameRate;
     int m_vSyncType;
     double m_playMarkerPosition;
+    bool m_reverseWaveformDirection;
 };

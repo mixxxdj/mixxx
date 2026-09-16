@@ -119,15 +119,36 @@ class WaveformWidgetRenderer {
     inline double transformSamplePositionInRendererWorld(double samplePosition,
             ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play) const {
+        double pixelX;
         if (std::abs(samplePosition - m_truePosSample[type]) < 1.f) {
             // When asked for the sample position that corresponds with the play
             // marker, return the play market pixel position. This avoids a rare
             // rounding issue where a marker at that sample position would be
             // 1 pixel off.
-            return m_playMarkerPosition * getLength();
+            pixelX = m_playMarkerPosition * getLength();
+        } else {
+            pixelX = (samplePosition - m_firstDisplayedPosition[type] * m_trackSamples) /
+                    2 / m_audioSamplePerPixel;
         }
-        return (samplePosition - m_firstDisplayedPosition[type] * m_trackSamples) /
-                2 / m_audioSamplePerPixel;
+        return reflectPixelPosition(pixelX);
+    }
+
+    bool isReverseWaveformDirection() const {
+        return m_bReverseWaveformDirection;
+    }
+
+    void setReverseWaveformDirection(bool reverse) {
+        m_bReverseWaveformDirection = reverse;
+    }
+
+    // Reflects a pixel x-position across the play marker's pixel position.
+    // Used to invert the scroll direction of the waveform, beatgrid and
+    // marks together while keeping the play marker itself fixed in place.
+    inline double reflectPixelPosition(double pixelX) const {
+        if (!m_bReverseWaveformDirection) {
+            return pixelX;
+        }
+        return 2.0 * m_playMarkerPosition * getLength() - pixelX;
     }
 
     int getPlayPosVSample(::WaveformRendererAbstract::PositionSource type =
@@ -260,6 +281,7 @@ class WaveformWidgetRenderer {
     double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
+    bool m_bReverseWaveformDirection;
 
     // used by allshader waveformrenderers when used with rendergraph nodes
     rendergraph::Context* m_pContext;

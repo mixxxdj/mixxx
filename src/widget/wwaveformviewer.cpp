@@ -94,7 +94,14 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
                     event->pos().x() : event->pos().y();
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
+        // Reversing the waveform's scroll direction also flips which way
+        // a drag along the waveform should scrub, so the motion still
+        // tracks what's visually under the cursor.
+        double dragDirection =
+                WaveformWidgetFactory::instance()->isReverseWaveformDirection()
+                ? 1.0
+                : -1.0;
+        double targetPosition = dragDirection * eventPosValue * audioSamplePerPixel * 2;
         m_pScratchPosition->set(targetPosition);
         m_pScratchPositionEnable->set(1.0);
     } else if (event->button() == Qt::RightButton) {
@@ -138,7 +145,11 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
                     event->pos().x() : event->pos().y();
         // Adjusts for one-to-one movement.
         double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
+        // See mousePressEvent for why this flips in reversed mode.
+        double dragDirection = WaveformWidgetFactory::instance()->isReverseWaveformDirection()
+                ? 1.0
+                : -1.0;
+        double targetPosition = dragDirection * eventPosValue * audioSamplePerPixel * 2;
         //qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->set(targetPosition);
     } else if (m_bBending) {
@@ -282,6 +293,12 @@ void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
 void WWaveformViewer::setPlayMarkerPosition(double position) {
     if (m_waveformWidget) {
         m_waveformWidget->setPlayMarkerPosition(position);
+    }
+}
+
+void WWaveformViewer::setReverseWaveformDirection(bool reverse) {
+    if (m_waveformWidget) {
+        m_waveformWidget->setReverseWaveformDirection(reverse);
     }
 }
 

@@ -223,6 +223,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+    connect(reverseWaveformDirectionCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetReverseWaveformDirection);
     connect(untilMarkShowBeatsCheckBox,
             &QCheckBox::toggled,
             this,
@@ -346,6 +350,7 @@ void DlgPrefWaveform::slotUpdate() {
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
+    reverseWaveformDirectionCheckBox->setChecked(factory->isReverseWaveformDirection());
     beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
@@ -466,6 +471,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
+
+    // Mixxx's default is right-to-left, i.e. not reversed
+    reverseWaveformDirectionCheckBox->setChecked(false);
 
     stemDisplayModeComboBox->setCurrentIndex(0);
 }
@@ -655,6 +663,7 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
     beatGridAlphaSlider->setEnabled(enabled);
     beatGridAlphaSpinBox->setEnabled(enabled);
     playMarkerPositionSlider->setEnabled(enabled);
+    reverseWaveformDirectionCheckBox->setEnabled(enabled);
     defaultZoomComboBox->setEnabled(enabled);
     synchronizeZoomCheckBox->setEnabled(enabled);
     updateWaveformGainEnabled();
@@ -766,6 +775,10 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
+}
+
+void DlgPrefWaveform::slotSetReverseWaveformDirection(bool checked) {
+    WaveformWidgetFactory::instance()->setReverseWaveformDirection(checked);
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
