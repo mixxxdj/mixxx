@@ -24,13 +24,13 @@ struct FormatTestParam {
 
 const FormatTestParam kFormatTestParams[] = {
         {"empty.mp3", "mp3", "mp3"},
-        {"cover-test.flac", "flac", "flac"},
-        {"cover-test.ogg", "ogg", "ogg"},
-        {"cover-test.opus", "opus", "opus"},
-        {"cover-test-ffmpeg-aac.m4a", "m4a", "m4a"},
-        {"cover-test.wav", "wav", "wav"},
-        {"cover-test.aiff", "aiff", "aiff"},
-        {"cover-test.wv", "wv", "wv"},
+        {"cover-test-øé~ł€˚.flac", "flac", "flac"},
+        {"cover-test-øé~ł€˚.ogg", "ogg", "ogg"},
+        {"cover-test-øé~ł€˚.opus", "opus", "opus"},
+        {"cover-test-øé~ł€˚-ffmpeg-aac.m4a", "m4a", "m4a"},
+        {"cover-test-øé~ł€˚.wav", "wav", "wav"},
+        {"cover-test-øé~ł€˚.aiff", "aiff", "aiff"},
+        {"cover-test-øé~ł€˚.wv", "wv", "wv"},
 };
 
 } // namespace
@@ -55,7 +55,7 @@ class RatingExportImportFormatTest
 TEST_P(RatingExportImportFormatTest, RoundTrip) {
     const auto& param = GetParam();
     const QString srcPath = m_testDataDir.absoluteFilePath(
-            QString::fromLatin1(param.fixture));
+            QString::fromUtf8(param.fixture));
     const QString dstPath = m_tempDir.filePath(
             QStringLiteral("rating_test.") +
             QString::fromLatin1(param.extension));
@@ -407,7 +407,7 @@ TEST_F(RatingExportImportTest, ExportKeepsMpegApeRatingInSync) {
 TEST_F(RatingExportImportTest, ExportKeepsFlacId3v2RatingInSync) {
     const QString dstPath = m_tempDir.filePath(QStringLiteral("id3v2_sync.flac"));
     mixxxtest::copyFile(
-            m_testDataDir.absoluteFilePath(QStringLiteral("cover-test.flac")),
+            m_testDataDir.absoluteFilePath(QStringLiteral("cover-test-øé~ł€˚.flac")),
             dstPath);
 
     // Seed an ID3v2 FMPS_Rating as written by another application
