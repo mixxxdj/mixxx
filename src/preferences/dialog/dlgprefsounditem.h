@@ -76,7 +76,11 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // Because QVariant supports QPoint natively we use a QPoint to store the
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
+    // Mirrors the live engine ControlObject value at all times (kept in
+    // sync via loadPath() and monoMixdownValueChanged()); serves as the
+    // rollback target for Cancel/reload().
     bool m_savedMono;
+    // User's preferred mono mixdown setting when in 2-channel stereo mode (preserved through 1-channel temporary locks).
     bool m_userStereoMonoPreference;
     bool m_emitSettingChanged;
     parented_ptr<ControlProxy> m_pMonoMixdown;

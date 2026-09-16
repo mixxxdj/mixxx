@@ -46,9 +46,9 @@ const ConfigKey kForceBufferSize = ConfigKey(kAppGroup, QStringLiteral("force_bu
 const ConfigKey kForceSamplerate = ConfigKey(kAppGroup, QStringLiteral("force_samplerate"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
-    const auto items = widget.findChildren<DlgPrefSoundItem*>();
-    for (const auto* pItem : items) {
-        if (pItem->type() != output.getType()) {
+    for (const QObject* pObj : widget.children()) {
+        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (!pItem || pItem->type() != output.getType()) {
             continue;
         }
         if (!AudioPath::isIndexed(pItem->type()) || pItem->index() == output.getIndex()) {
@@ -749,11 +749,23 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
 }
 
 QList<DlgPrefSoundItem*> DlgPrefSound::outputSoundItems() const {
-    return outputTab->findChildren<DlgPrefSoundItem*>();
+    QList<DlgPrefSoundItem*> items;
+    for (QObject* pObj : outputTab->children()) {
+        if (auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj)) {
+            items.append(pItem);
+        }
+    }
+    return items;
 }
 
 QList<DlgPrefSoundItem*> DlgPrefSound::inputSoundItems() const {
-    return inputTab->findChildren<DlgPrefSoundItem*>();
+    QList<DlgPrefSoundItem*> items;
+    for (QObject* pObj : inputTab->children()) {
+        if (auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj)) {
+            items.append(pItem);
+        }
+    }
+    return items;
 }
 
 /// Convenience overload to load settings from the SoundManagerConfig owned by

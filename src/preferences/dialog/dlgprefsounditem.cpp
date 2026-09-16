@@ -33,8 +33,10 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
-    if (isMonoApplicable()) {
-        QString group;
+    QString group;
+    if (m_isInput) {
+        monoCheckBox->hide();
+    } else {
         switch (m_type) {
         case AudioPathType::Main:
             group = QStringLiteral("[Master]");
@@ -46,8 +48,12 @@ DlgPrefSoundItem::DlgPrefSoundItem(
             group = QStringLiteral("[Headphone]");
             break;
         default:
+            monoCheckBox->hide();
             break;
         }
+    }
+
+    if (!group.isEmpty()) {
         m_pMonoMixdown = make_parented<ControlProxy>(
                 group, QStringLiteral("mono_mixdown"), this);
         m_savedMono = m_pMonoMixdown->toBool();
@@ -58,8 +64,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
                 &QCheckBox::toggled,
                 this,
                 &DlgPrefSoundItem::monoToggled);
-    } else {
-        monoCheckBox->hide();
     }
 
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
@@ -81,10 +85,7 @@ DlgPrefSoundItem::~DlgPrefSoundItem() {
 }
 
 bool DlgPrefSoundItem::isMonoApplicable() const {
-    return !m_isInput &&
-            (m_type == AudioPathType::Main ||
-                    m_type == AudioPathType::Booth ||
-                    m_type == AudioPathType::Headphones);
+    return m_pMonoMixdown.get() != nullptr;
 }
 
 bool DlgPrefSoundItem::isMonoChecked() const {
@@ -109,17 +110,10 @@ void DlgPrefSoundItem::resetMonoToDefault() {
 }
 
 void DlgPrefSoundItem::applyMonoSetting() {
-    if (isMonoApplicable() && m_pMonoMixdown) {
-        int channelCount = currentChannelCount();
-        if (channelCount == 1) {
-            m_pMonoMixdown->set(1.0);
-        } else if (channelCount == 2) {
-            m_pMonoMixdown->set(monoCheckBox->isChecked() ? 1.0 : 0.0);
-        } else {
-            m_pMonoMixdown->set(0.0);
-        }
+    if (m_pMonoMixdown) {
+        m_pMonoMixdown->set(monoCheckBox->isChecked() ? 1.0 : 0.0);
         m_savedMono = (m_pMonoMixdown->get() != 0.0);
-        if (channelCount == 2) {
+        if (currentChannelCount() == 2) {
             m_userStereoMonoPreference = m_savedMono;
         }
     }
@@ -321,7 +315,7 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
 ///       and index (if applicable), then only the first one is used. A more
 ///       advanced preferences pane may one day allow multiples.
 void DlgPrefSoundItem::loadPath(const SoundManagerConfig& config) {
-    if (isMonoApplicable() && m_pMonoMixdown) {
+    if (m_pMonoMixdown) {
         m_savedMono = m_pMonoMixdown->toBool();
         m_userStereoMonoPreference = m_savedMono;
     }
