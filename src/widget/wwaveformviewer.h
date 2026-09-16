@@ -53,6 +53,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
+    bool event(QEvent* event) override;
 
   private slots:
     void onZoomChange(double zoom);

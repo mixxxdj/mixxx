@@ -12,6 +12,7 @@
 #include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
+#include "waveform/waveformwidgetfactory.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
@@ -429,6 +430,46 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
+    //
+    // Waveform pitch bend on left-click configuration
+    //
+    m_bWaveformPitchBendOnLeftClick =
+            WaveformWidgetFactory::instance()->isLeftClickPitchBendEnabled();
+    checkBoxWaveformPitchBendOnLeftClick->setChecked(m_bWaveformPitchBendOnLeftClick);
+    connect(checkBoxWaveformPitchBendOnLeftClick,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotWaveformPitchBendOnLeftClickCheckbox);
+
+    m_iWaveformPitchBendSensitivity =
+            WaveformWidgetFactory::instance()->getPitchBendSensitivity();
+    SliderWaveformPitchBendSensitivity->setValue(m_iWaveformPitchBendSensitivity);
+    labelWaveformPitchBendSensitivityValue->setNum(m_iWaveformPitchBendSensitivity);
+    SliderWaveformPitchBendSensitivity->setEnabled(m_bWaveformPitchBendOnLeftClick);
+    labelWaveformPitchBendSensitivity->setEnabled(m_bWaveformPitchBendOnLeftClick);
+    labelWaveformPitchBendSensitivityValue->setEnabled(m_bWaveformPitchBendOnLeftClick);
+    connect(SliderWaveformPitchBendSensitivity,
+            &QSlider::valueChanged,
+            this,
+            &DlgPrefDeck::slotWaveformPitchBendSensitivitySlider);
+    connect(SliderWaveformPitchBendSensitivity,
+            &QSlider::valueChanged,
+            labelWaveformPitchBendSensitivityValue,
+            QOverload<int>::of(&QLabel::setNum));
+    // Enable/disable the sensitivity slider along with the checkbox
+    connect(checkBoxWaveformPitchBendOnLeftClick,
+            &QCheckBox::toggled,
+            labelWaveformPitchBendSensitivity,
+            &QWidget::setEnabled);
+    connect(checkBoxWaveformPitchBendOnLeftClick,
+            &QCheckBox::toggled,
+            SliderWaveformPitchBendSensitivity,
+            &QWidget::setEnabled);
+    connect(checkBoxWaveformPitchBendOnLeftClick,
+            &QCheckBox::toggled,
+            labelWaveformPitchBendSensitivityValue,
+            &QWidget::setEnabled);
+
     slotUpdate();
 }
 
@@ -517,6 +558,13 @@ void DlgPrefDeck::slotUpdate() {
             m_pConfig->getValue(ConfigKey(kControlsGroup, QStringLiteral("RateRampSensitivity")),
                     kDefaultRateRampSensitivity));
 
+    checkBoxWaveformPitchBendOnLeftClick->setChecked(
+            WaveformWidgetFactory::instance()->isLeftClickPitchBendEnabled());
+    SliderWaveformPitchBendSensitivity->setValue(
+            WaveformWidgetFactory::instance()->getPitchBendSensitivity());
+    labelWaveformPitchBendSensitivityValue->setNum(
+            WaveformWidgetFactory::instance()->getPitchBendSensitivity());
+
     spinBoxTemporaryRateCoarse->setValue(RateControl::getTemporaryRateChangeCoarseAmount());
     spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
@@ -550,6 +598,13 @@ void DlgPrefDeck::slotResetToDefaults() {
     radioButtonRateRampModeStepping->setChecked(true);
 
     SliderRateRampSensitivity->setValue(kDefaultRateRampSensitivity);
+
+    // Waveform left-click pitch bend defaults to off.
+    checkBoxWaveformPitchBendOnLeftClick->setChecked(false);
+    SliderWaveformPitchBendSensitivity->setValue(
+            WaveformWidgetFactory::kPitchBendSensitivityDefault);
+    labelWaveformPitchBendSensitivityValue->setNum(
+            WaveformWidgetFactory::kPitchBendSensitivityDefault);
 
     // Permanent and temporary pitch adjust fine/coarse.
     spinBoxTemporaryRateCoarse->setValue(4.0);
@@ -669,6 +724,14 @@ void DlgPrefDeck::slotRateRampSensitivitySlider(int value) {
     m_iRateRampSensitivity = value;
 }
 
+void DlgPrefDeck::slotWaveformPitchBendOnLeftClickCheckbox(bool checked) {
+    m_bWaveformPitchBendOnLeftClick = checked;
+}
+
+void DlgPrefDeck::slotWaveformPitchBendSensitivitySlider(int value) {
+    m_iWaveformPitchBendSensitivity = value;
+}
+
 void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
     if (checked) {
         m_bRateRamping = RateControl::RampMode::Linear;
@@ -774,6 +837,11 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(
             ConfigKey(kControlsGroup, QStringLiteral("RateRampSensitivity")),
             m_iRateRampSensitivity);
+
+    WaveformWidgetFactory::instance()->setLeftClickPitchBendEnabled(
+            m_bWaveformPitchBendOnLeftClick);
+    WaveformWidgetFactory::instance()->setPitchBendSensitivity(
+            m_iWaveformPitchBendSensitivity);
 
     RateControl::setTemporaryRateChangeCoarseAmount(m_dRateTempCoarse);
     RateControl::setTemporaryRateChangeFineAmount(m_dRateTempFine);
