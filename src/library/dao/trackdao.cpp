@@ -563,6 +563,17 @@ void TrackDAO::addTracksFinish(bool rollback) {
     m_tracksAddedSet.clear();
 }
 
+void TrackDAO::addTracksCommitAndRestart() {
+    // Commit the current batch of track additions and immediately start a
+    // new transaction. Used by the library scanner to release the write
+    // lock after every imported track, so that other threads (e.g. the
+    // GUI thread) can write to the database and no deadlock can occur
+    // between the scanner and the GlobalTrackCache mutex (see the comment
+    // in LibraryScanner::slotAddNewTrack).
+    addTracksFinish(false);
+    addTracksPrepare();
+}
+
 namespace {
 
 bool insertTrackLocation(
