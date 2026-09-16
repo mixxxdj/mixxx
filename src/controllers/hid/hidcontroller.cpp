@@ -418,6 +418,8 @@ void HidController::fetchReportDescriptorInBackground() {
                     nullptr);
         }
         if (!pHidDevice) {
+            lock.unlock();
+            QThread::currentThread()->quit();
             return;
         }
         hid_set_nonblocking(pHidDevice, 1);
@@ -433,6 +435,8 @@ void HidController::fetchReportDescriptorInBackground() {
             m_deviceUsesReportIds = m_reportDescriptor->isDeviceWithReportIds();
         }
         hid_close(pHidDevice);
+        lock.unlock();
+        QThread::currentThread()->quit();
     });
 #else
     Q_UNUSED(m_reportDescriptorFuture);
