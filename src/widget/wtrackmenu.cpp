@@ -503,6 +503,21 @@ void WTrackMenu::createActions() {
                 });
     }
 
+    if (featureIsEnabled(Feature::DownbeatMarkers)) {
+        m_pShowDownbeatMarkersAction =
+                make_parented<QAction>(tr("Show Downbeat Markers"), m_pBPMMenu);
+        m_pHideDownbeatMarkersAction =
+                make_parented<QAction>(tr("Hide Downbeat Markers"), m_pBPMMenu);
+        connect(m_pShowDownbeatMarkersAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotShowDownbeatMarkers);
+        connect(m_pHideDownbeatMarkersAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotHideDownbeatMarkers);
+    }
+
     if (featureIsEnabled(Feature::BPM)) {
         m_pBpmLockAction = make_parented<QAction>(tr("Lock BPM"), m_pBPMMenu);
         m_pBpmUnlockAction = make_parented<QAction>(tr("Unlock BPM"), m_pBPMMenu);
@@ -777,6 +792,10 @@ void WTrackMenu::setupActions() {
     }
 
     addSeparator();
+    addAction(m_pShowDownbeatMarkersAction);
+    addAction(m_pHideDownbeatMarkersAction);
+
+    addSeparator();
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
@@ -830,6 +849,26 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
         anyBpmNotLocked = !anyBpmLocked;
     }
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
+}
+
+std::pair<bool, bool> WTrackMenu::getTrackDownbeatMarkersStates() const {
+    bool anyShowDownbeatMarkers = false;
+    bool anyHideDownbeatMarkers = false;
+    const auto pTrackPointerIterator = newTrackPointerIterator();
+    if (pTrackPointerIterator) {
+        while (auto nextTrackPointer = pTrackPointerIterator->nextItem()) {
+            const auto pTrack = *nextTrackPointer;
+            if (pTrack->getShowDownbeats()) {
+                anyShowDownbeatMarkers = true;
+            } else {
+                anyHideDownbeatMarkers = true;
+            }
+            if (anyShowDownbeatMarkers && anyHideDownbeatMarkers) {
+                break;
+            }
+        }
+    }
+    return std::pair<bool, bool>(anyShowDownbeatMarkers, anyHideDownbeatMarkers);
 }
 
 int WTrackMenu::getCommonTrackRating() const {
@@ -1185,6 +1224,13 @@ void WTrackMenu::updateMenus() {
                 appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
             }
         }
+    }
+
+    if (featureIsEnabled(Feature::DownbeatMarkers)) {
+        bool anyShowDownbeatMarkers, anyHideDownbeatMarkers;
+        std::tie(anyShowDownbeatMarkers, anyHideDownbeatMarkers) = getTrackDownbeatMarkersStates();
+        m_pHideDownbeatMarkersAction->setEnabled(anyShowDownbeatMarkers);
+        m_pShowDownbeatMarkersAction->setEnabled(anyHideDownbeatMarkers);
     }
 
     // This action is created only for menus instantiated by deck widgets (e.g.
@@ -1944,6 +1990,42 @@ void WTrackMenu::lockBpm(bool lock) {
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
+}
+
+namespace {
+class ShowDownbeatMarkersTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ShowDownbeatMarkersTrackPointerOperation(bool showDownbeats)
+            : m_showDownbeats(showDownbeats) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setShowDownbeats(m_showDownbeats);
+    }
+
+    const bool m_showDownbeats;
+};
+} // anonymous namespace
+
+void WTrackMenu::setDownbeatMarkers(bool show) {
+    const auto progressLabelText = show
+            ? tr("Showing downbeat markers of %n track(s)", "", getTrackCount())
+            : tr("Hiding downbeat markers of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ShowDownbeatMarkersTrackPointerOperation(show);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+void WTrackMenu::slotShowDownbeatMarkers() {
+    setDownbeatMarkers(true);
+}
+
+void WTrackMenu::slotHideDownbeatMarkers() {
+    setDownbeatMarkers(false);
 }
 
 namespace {
@@ -3019,6 +3101,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
                 TrackModel::Capability::EditMetadata |
                 TrackModel::Capability::ResetPlayed);
     case Feature::BPM:
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+    case Feature::DownbeatMarkers:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Color:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
