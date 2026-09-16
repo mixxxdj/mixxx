@@ -860,6 +860,20 @@ WSearchLineEdit QAbstractScrollArea::corner,
   background-color: #222222;
 }
 
+#SkinSettingsNumToggle {
+  padding: 0;
+  margin: 0;
+}
+
+#SkinSettingsNumToggle[value="1"] {
+  color: #fff;
+  text-decoration: underline;
+}
+
+#HotcueCountRow {
+  qproperty-layoutSpacing: 0;
+}
+
 /*******************************************************************************
  ** END SKIN SETTINGS **********************************************************
  *******************************************************************************/
