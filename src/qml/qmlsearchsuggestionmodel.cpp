@@ -22,28 +22,55 @@ constexpr int kMaxSuggestions = 50;
 const QHash<int, QByteArray> kRoleNames = {
         {QmlSearchSuggestionModel::ValueRole, "value"},
         {QmlSearchSuggestionModel::LabelRole, "label"},
-        {QmlSearchSuggestionModel::FieldRole, "field"},
-        {QmlSearchSuggestionModel::IsFieldRole, "isField"},
 };
 
 // Returns the SQL expression that yields the human-readable value of the
-// library column associated with a canonical (lowercase) search field, or an
-// empty string when the field is not supported.
-QString fieldExpression(const QString& field) {
-    static const QHash<QString, QString> map = {
-            {QStringLiteral("artist"), LIBRARYTABLE_ARTIST},
-            {QStringLiteral("album"), LIBRARYTABLE_ALBUM},
-            {QStringLiteral("title"), LIBRARYTABLE_TITLE},
-            {QStringLiteral("genre"), LIBRARYTABLE_GENRE},
-            {QStringLiteral("composer"), LIBRARYTABLE_COMPOSER},
-            {QStringLiteral("comment"), LIBRARYTABLE_COMMENT},
-            {QStringLiteral("year"),
-                    QStringLiteral("CAST(%1 AS TEXT)").arg(LIBRARYTABLE_YEAR)},
-            {QStringLiteral("bpm"),
-                    QStringLiteral("CAST(ROUND(%1) AS TEXT)")
-                            .arg(LIBRARYTABLE_BPM)},
+// library column associated with a search field, or an empty string when the
+// field does not map to a library column.
+QString fieldExpression(QmlSearchSuggestionModel::SearchField field) {
+    using SearchField = QmlSearchSuggestionModel::SearchField;
+    switch (field) {
+    case SearchField::Artist:
+        return LIBRARYTABLE_ARTIST;
+    case SearchField::Album:
+        return LIBRARYTABLE_ALBUM;
+    case SearchField::Title:
+        return LIBRARYTABLE_TITLE;
+    case SearchField::Genre:
+        return LIBRARYTABLE_GENRE;
+    case SearchField::Composer:
+        return LIBRARYTABLE_COMPOSER;
+    case SearchField::Comment:
+        return LIBRARYTABLE_COMMENT;
+    case SearchField::Year:
+        return QStringLiteral("CAST(%1 AS TEXT)").arg(LIBRARYTABLE_YEAR);
+    case SearchField::BPM:
+        return QStringLiteral("CAST(ROUND(%1) AS TEXT)").arg(LIBRARYTABLE_BPM);
+    case SearchField::Key:
+    case SearchField::Track:
+    case SearchField::Invalid:
+        return QString();
+    }
+    return QString();
+}
+
+// Maps the canonical (lowercase) search-field name used in the query syntax to
+// the corresponding enum value.
+QmlSearchSuggestionModel::SearchField searchFieldFromName(const QString& field) {
+    using SearchField = QmlSearchSuggestionModel::SearchField;
+    static const QHash<QString, SearchField> map = {
+            {QStringLiteral("artist"), SearchField::Artist},
+            {QStringLiteral("album"), SearchField::Album},
+            {QStringLiteral("title"), SearchField::Title},
+            {QStringLiteral("genre"), SearchField::Genre},
+            {QStringLiteral("composer"), SearchField::Composer},
+            {QStringLiteral("comment"), SearchField::Comment},
+            {QStringLiteral("year"), SearchField::Year},
+            {QStringLiteral("bpm"), SearchField::BPM},
+            {QStringLiteral("key"), SearchField::Key},
+            {QStringLiteral("track"), SearchField::Track},
     };
-    return map.value(field);
+    return map.value(field.toLower(), SearchField::Invalid);
 }
 
 QString escapeLikePattern(QString pattern) {
@@ -75,54 +102,51 @@ QmlSearchSuggestionModel::QmlSearchSuggestionModel(
 }
 
 void QmlSearchSuggestionModel::setQuery(const QString& field, const QString& prefix) {
-    if (field.compare(QStringLiteral("key"), Qt::CaseInsensitive) == 0) {
+    const SearchField searchField = searchFieldFromName(field);
+    switch (searchField) {
+    case SearchField::Artist:
+    case SearchField::Album:
+    case SearchField::Title:
+    case SearchField::Genre:
+    case SearchField::Composer:
+    case SearchField::Comment:
+    case SearchField::Year:
+    case SearchField::BPM:
+        setValueSuggestions(searchField, prefix);
+        return;
+    case SearchField::Key:
         setKeySuggestions(prefix);
-    } else if (field.compare(QStringLiteral("track"), Qt::CaseInsensitive) == 0) {
+        return;
+    case SearchField::Track:
         setTrackSuggestions(prefix);
-    } else {
-        setValueSuggestions(field, prefix);
+        return;
+    case SearchField::Invalid:
+        beginResetModel();
+        m_suggestions.clear();
+        endResetModel();
+        return;
     }
 }
 
 void QmlSearchSuggestionModel::setValueSuggestions(
-        const QString& field, const QString& prefix) {
-    const QString lowerField = field.toLower();
-    const QString expression = fieldExpression(lowerField);
+        SearchField field, const QString& prefix) {
+    const QString expression = fieldExpression(field);
 
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackCollection && !expression.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!expression.isEmpty()) {
         beginResetModel();
         m_suggestions.clear();
         endResetModel();
         return;
     }
 
-    const auto database = m_pTrackCollection->database();
-    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        return;
-    }
-
-    FwdSqlQuery query(database,
+    const QString sql =
             QStringLiteral("SELECT DISTINCT %1 AS value FROM " LIBRARY_TABLE
                            " WHERE %1 != '' AND %1 LIKE :prefix ESCAPE '\\'"
                            " ORDER BY value COLLATE NOCASE LIMIT %2")
-                    .arg(expression, QString::number(kMaxSuggestions)));
-    query.bindValue(QStringLiteral(":prefix"),
-            QString(kSqlLikeMatchAll) + escapeLikePattern(prefix) + QString(kSqlLikeMatchAll));
-
-    QVector<Suggestion> suggestions;
-    if (query.execPrepared()) {
-        const auto valueIndex = query.fieldIndex(QStringLiteral("value"));
-        while (query.next()) {
-            const QString value = query.fieldValue(valueIndex).toString();
-            if (value.isEmpty()) {
-                continue;
-            }
-            suggestions.push_back({value, QString(), lowerField, false});
-        }
-    }
+                    .arg(expression, QString::number(kMaxSuggestions));
 
     beginResetModel();
-    m_suggestions = std::move(suggestions);
+    m_suggestions = runSuggestionsQuery(sql, prefix);
     endResetModel();
 }
 
@@ -144,8 +168,7 @@ void QmlSearchSuggestionModel::setKeySuggestions(const QString& prefix) {
             if (!needle.isEmpty() && !value.contains(needle, Qt::CaseInsensitive)) {
                 continue;
             }
-            suggestions.push_back(
-                    {value, keyNotationLabel(notation), QStringLiteral("key"), false});
+            suggestions.push_back({value, keyNotationLabel(notation)});
         }
     }
 
@@ -155,30 +178,37 @@ void QmlSearchSuggestionModel::setKeySuggestions(const QString& prefix) {
 }
 
 void QmlSearchSuggestionModel::setTrackSuggestions(const QString& prefix) {
+    const QString sql =
+            QStringLiteral(
+                    "SELECT DISTINCT %1 || ' - ' || %2"
+                    " || CASE WHEN COALESCE(%3, '') != '' THEN ' (' || "
+                    "%3 || ')' ELSE '' END AS value"
+                    " FROM " LIBRARY_TABLE
+                    " WHERE %1 LIKE :prefix ESCAPE '\\' OR %2 LIKE "
+                    ":prefix ESCAPE '\\' OR %3 LIKE :prefix ESCAPE '\\'"
+                    " ORDER BY value COLLATE NOCASE LIMIT %4")
+                    .arg(LIBRARYTABLE_ARTIST,
+                            LIBRARYTABLE_TITLE,
+                            LIBRARYTABLE_ALBUM,
+                            QString::number(kMaxSuggestions));
+
+    beginResetModel();
+    m_suggestions = runSuggestionsQuery(sql, prefix);
+    endResetModel();
+}
+
+QVector<QmlSearchSuggestionModel::Suggestion> QmlSearchSuggestionModel::runSuggestionsQuery(
+        const QString& sql, const QString& prefix) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackCollection) {
-        beginResetModel();
-        m_suggestions.clear();
-        endResetModel();
-        return;
+        return {};
     }
 
     const auto database = m_pTrackCollection->database();
     VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
-        return;
+        return {};
     }
 
-    FwdSqlQuery query(database,
-            QStringLiteral("SELECT DISTINCT %1 || ' - ' || %2"
-                           " || CASE WHEN COALESCE(%3, '') != '' THEN ' (' || "
-                           "%3 || ')' ELSE '' END AS value"
-                           " FROM " LIBRARY_TABLE
-                           " WHERE %1 LIKE :prefix ESCAPE '\\' OR %2 LIKE "
-                           ":prefix ESCAPE '\\' OR %3 LIKE :prefix ESCAPE '\\'"
-                           " ORDER BY value COLLATE NOCASE LIMIT %4")
-                    .arg(LIBRARYTABLE_ARTIST,
-                            LIBRARYTABLE_TITLE,
-                            LIBRARYTABLE_ALBUM,
-                            QString::number(kMaxSuggestions)));
+    FwdSqlQuery query(database, sql);
     query.bindValue(QStringLiteral(":prefix"),
             QString(kSqlLikeMatchAll) + escapeLikePattern(prefix) + QString(kSqlLikeMatchAll));
 
@@ -190,13 +220,10 @@ void QmlSearchSuggestionModel::setTrackSuggestions(const QString& prefix) {
             if (value.isEmpty()) {
                 continue;
             }
-            suggestions.push_back({value, QString(), QStringLiteral("track"), false});
+            suggestions.push_back({value, QString()});
         }
     }
-
-    beginResetModel();
-    m_suggestions = std::move(suggestions);
-    endResetModel();
+    return suggestions;
 }
 
 QVariant QmlSearchSuggestionModel::data(const QModelIndex& index, int role) const {
@@ -210,10 +237,6 @@ QVariant QmlSearchSuggestionModel::data(const QModelIndex& index, int role) cons
         return suggestion.value;
     case LabelRole:
         return suggestion.label;
-    case FieldRole:
-        return suggestion.field;
-    case IsFieldRole:
-        return suggestion.isField;
     default:
         return {};
     }

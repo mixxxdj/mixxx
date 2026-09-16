@@ -49,7 +49,7 @@ Item {
             update();
         }
         function update() {
-            print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.keyboardRectangle} ${Qt.inputMethod.inputItemClipRectangle}`)
+            // print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.keyboardRectangle} ${Qt.inputMethod.inputItemClipRectangle}`)
             // print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.inputItemClipRectangle.y}`)
             // root.searchShift = Qt.inputMethod.visible ? Qt.inputMethod.inputItemClipRectangle.y : 0
             if (Qt.inputMethod.visible) {
