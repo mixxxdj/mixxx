@@ -4,7 +4,6 @@ import Qt.labs.qmlmodels
 import QtQml
 import QtQuick
 import QtQml.Models
-import QtQuick.Layouts
 import QtQuick.Controls 2.15
 import QtQuick.Shapes 1.6
 import "Theme"
@@ -27,36 +26,13 @@ Item {
         anchors.fill: parent
         orientation: Qt.Horizontal
 
-        handle: Rectangle {
-            id: handleDelegate
-
-            property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
-            property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
-
-            clip: true
-            color: Theme.panelSplitterBackground
-            implicitHeight: 8
-            implicitWidth: 8
+        handle: Skin.SplitViewHandle {
+            id: librarySplitHandle
 
             containmentMask: Item {
                 height: librarySplitView.height
                 width: 8
-                x: (handleDelegate.width - width) / 2
-            }
-
-            ColumnLayout {
-                anchors.centerIn: parent
-
-                Repeater {
-                    model: 3
-
-                    Rectangle {
-                        color: handleColor
-                        height: handleSize
-                        radius: handleSize
-                        width: handleSize
-                    }
-                }
+                x: (librarySplitHandle.width - width) / 2
             }
         }
 
@@ -68,36 +44,15 @@ Item {
             SplitView.preferredWidth: root.width * 0.15
             orientation: Qt.Vertical
 
-            handle: Rectangle {
-                id: handleDelegate
+            handle: Skin.SplitViewHandle {
+                id: sideBarSplitHandle
 
-                property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
-                property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
-
-                clip: true
-                color: Theme.panelSplitterBackground
-                implicitHeight: 8
-                implicitWidth: 8
+                dotColumns: 3
 
                 containmentMask: Item {
                     height: 8
                     width: sideBarSplitView.width
-                    x: (handleDelegate.width - width) / 2
-                }
-
-                RowLayout {
-                    anchors.centerIn: parent
-
-                    Repeater {
-                        model: 3
-
-                        Rectangle {
-                            color: handleColor
-                            height: handleSize
-                            radius: handleSize
-                            width: handleSize
-                        }
-                    }
+                    x: (sideBarSplitHandle.width - width) / 2
                 }
             }
 
@@ -130,37 +85,15 @@ Item {
 
                 orientation: root.width < 800 ? Qt.Vertical: Qt.Horizontal
 
-                handle: Rectangle {
-                    id: handleDelegate
+                handle: Skin.SplitViewHandle {
+                    id: trackListSplitHandle
 
-                    property color handleColor: SplitHandle.pressed || SplitHandle.hovered ? Theme.panelSplitterHandleActive : Theme.panelSplitterHandle
-                    property int handleSize: SplitHandle.pressed || SplitHandle.hovered ? 6 : 5
-
-                    clip: true
-                    color: Theme.panelSplitterBackground
-                    implicitHeight: 8
-                    implicitWidth: 8
+                    dotColumns: root.width < 800 ? 3 : 1
 
                     containmentMask: Item {
                         height: root.width < 800 ? 8 : librarySplitView.height
                         width: root.width < 800 ? sideBarSplitView.width : 8
-                        x: (handleDelegate.width - width) / 2
-                    }
-
-                    GridLayout {
-                        anchors.centerIn: parent
-                        columns: root.width < 800 ? 3 : 1
-
-                        Repeater {
-                            model: 3
-
-                            Rectangle {
-                                color: handleColor
-                                height: handleSize
-                                radius: handleSize
-                                width: handleSize
-                            }
-                        }
+                        x: (trackListSplitHandle.width - width) / 2
                     }
                 }
                 LibraryComponent.TrackList {
@@ -305,8 +238,8 @@ Item {
 
                 ListModel {
                     id: recentSearchesModel
-                    ListElement { tokensJson: '[{"name":"Artist","value":"A Super Artist"}]'; display: null }
-                    ListElement { tokensJson: '[{"name":"Artist","value":"super artist"},{"name":"BPM","value":"100"}]'; display: "Foo" }
+                    ListElement { tokensJson: '[{"name":"Artist","value":"A Super Artist"}]'; freeText: "" }
+                    ListElement { tokensJson: '[{"name":"Artist","value":"super artist"},{"name":"BPM","value":"100"}]'; freeText: "Foo" }
                 }
 
                 width: 250
@@ -383,6 +316,14 @@ Item {
                     searchField.height = host.height
                 }
 
+                function appendSearchSuggestions(field) {
+                    Mixxx.Library.searchSuggestions.setQuery(field, searchField.text)
+                    for (let j = 0; j < Mixxx.Library.searchSuggestions.rowCount(); j++) {
+                        let s = Mixxx.Library.searchSuggestions.get(j)
+                        suggestionModel.append({ display: s.value, meta: s.label, isField: false })
+                    }
+                }
+
                 function refreshSuggestions() {
                     suggestionModel.clear()
                     highlightedIndex = -1
@@ -396,23 +337,15 @@ Item {
                             for (let i = 0; i < fieldModel.count; i++) {
                                 let f = fieldModel.get(i)
                                 if (f.name.toLowerCase().indexOf(text) === 0) {
-                                    suggestionModel.append({ display: f.name + ":", meta: "", kind: "field", name: f.name, query: f.query })
+                                    suggestionModel.append({ display: f.name + ":", meta: "", isField: true, name: f.name, query: f.query })
                                 }
                             }
-                            Mixxx.Library.searchSuggestions.setQuery("track", searchField.text)
-                            for (let j = 0; j < Mixxx.Library.searchSuggestions.rowCount(); j++) {
-                                let s = Mixxx.Library.searchSuggestions.get(j)
-                                suggestionModel.append({ display: s.value, meta: s.label, kind: "track" })
-                            }
+                            appendSearchSuggestions("track")
                         }
                     } else {
                         let tok = selectedCriteria.get(activeTokenIndex)
                         if (tok) {
-                            Mixxx.Library.searchSuggestions.setQuery(tok.query, searchField.text)
-                            for (let j = 0; j < Mixxx.Library.searchSuggestions.rowCount(); j++) {
-                                let s = Mixxx.Library.searchSuggestions.get(j)
-                                suggestionModel.append({ display: s.value, meta: s.label, kind: "value" })
-                            }
+                            appendSearchSuggestions(tok.query)
                         }
                     }
                 }
@@ -515,7 +448,7 @@ Item {
                     }
                     let s = suggestionModel.get(idx)
                     if (activeTokenIndex < 0) {
-                        if (s.kind === "field") {
+                        if (s.isField) {
                             freeSearchText = ""
                             selectedCriteria.append({ name: s.name, query: s.query, value: "", exact: false })
                             setActiveToken(selectedCriteria.count - 1)
@@ -542,13 +475,10 @@ Item {
                     if (idx < 0 || idx >= suggestionModel.count) {
                         idx = 0
                     }
-                    let s = suggestionModel.get(idx)
-                    if (s.kind !== "field") {
+                    if (!suggestionModel.get(idx).isField) {
                         return
                     }
-                    freeSearchText = ""
-                    selectedCriteria.append({ name: s.name, query: s.query, value: "", exact: false })
-                    setActiveToken(selectedCriteria.count - 1)
+                    acceptHighlightedSuggestion()
                 }
 
                 function toggleExactMatch() {
@@ -561,15 +491,29 @@ Item {
                 }
 
                 function activateSearch() {
-                    activated = true
-                    activeTokenIndex = -1
                     searchField.text = freeSearchText
                     searchField.cursorPosition = searchField.text.length
+                    syncSearchUI()
+                }
+
+                function syncSearchUI() {
+                    activated = true
+                    activeTokenIndex = -1
                     focusedWidgetControl.value = Skin.FocusedWidgetControl.WidgetKind.Searchbar
                     refreshSuggestions()
                     updateSearchQuery()
                     updateEditorPosition()
                     searchField.forceActiveFocus()
+                }
+
+                function clearAllCriteria() {
+                    selectingAll = false
+                    selectedCriteria.clear()
+                    activeTokenIndex = -1
+                    searchField.text = ""
+                    refreshSuggestions()
+                    updateSearchQuery()
+                    updateEditorPosition()
                 }
 
                 function deactivateSearch() {
@@ -580,6 +524,10 @@ Item {
                             selectedCriteria.remove(i)
                         }
                     }
+                    deactivatePane()
+                }
+
+                function deactivatePane() {
                     activated = false
                     activeTokenIndex = -1
                     highlightedIndex = -1
@@ -615,19 +563,10 @@ Item {
                         return
                     }
                     let tokensJson = JSON.stringify(tokens)
-                    let parts = []
-                    for (let i = 0; i < tokens.length; i++) {
-                        let t = tokens[i]
-                        parts.push(t.name + ":" + (t.exact ? "=" : "") + t.value)
-                    }
-                    if (freeText.length > 0) {
-                        parts.push(freeText)
-                    }
-                    let display = parts.join("  ")
                     if (activeRecentIndex >= 0 && activeRecentIndex < recentSearchesModel.count) {
-                        recentSearchesModel.set(activeRecentIndex, { display: freeText, tokensJson: tokensJson })
+                        recentSearchesModel.set(activeRecentIndex, { freeText: freeText, tokensJson: tokensJson })
                     } else {
-                        recentSearchesModel.insert(0, { display: freeText, tokensJson: tokensJson })
+                        recentSearchesModel.insert(0, { freeText: freeText, tokensJson: tokensJson })
                         activeRecentIndex = 0
                     }
                 }
@@ -648,30 +587,17 @@ Item {
                             exact: t.exact !== undefined ? t.exact : false
                         })
                     }
-                    activated = true
-                    activeTokenIndex = -1
                     activeRecentIndex = index
                     highlightedRecentIndex = -1
                     searchField.text = entry.freeText !== undefined ? entry.freeText : ""
-                    focusedWidgetControl.value = Skin.FocusedWidgetControl.WidgetKind.Searchbar
-                    refreshSuggestions()
-                    updateSearchQuery()
-                    updateEditorPosition()
-                    searchField.forceActiveFocus()
+                    syncSearchUI()
                 }
 
                 function clearSearch() {
                     activeRecentIndex = -1
                     highlightedRecentIndex = -1
-                    selectedCriteria.clear()
-                    activeTokenIndex = -1
-                    searchField.text = ""
-                    refreshSuggestions()
-                    updateSearchQuery()
-                    activated = false
-                    highlightedIndex = -1
-                    focusedWidgetControl.value = Skin.FocusedWidgetControl.WidgetKind.LibraryView
-                    browsingView.forceActiveFocus()
+                    clearAllCriteria()
+                    deactivatePane()
                 }
 
                 Timer {
@@ -881,7 +807,7 @@ Item {
                                     id: freeTextHost
 
                                     width: searchPane.activeTokenIndex < 0 ? 224 : 0
-                                    height: 24
+                                    height: 32
                                 }
                             }
 
@@ -896,7 +822,7 @@ Item {
 
                                 width: searchPane.width - 10
                                 anchors.margins: 5
-                                height: Math.min(suggestionModel.count, 6) * 22
+                                height: Math.min(suggestionModel.count, 6) * 24
                                 visible: suggestionModel.count > 0
                                 clip: true
                                 interactive: false
@@ -904,7 +830,7 @@ Item {
                                 model: suggestionModel
 
                                 delegate: Item {
-                                    height: 22
+                                    height: 24
                                     width: suggestionList.width
 
                                     Rectangle {
@@ -919,51 +845,18 @@ Item {
                                         }
                                     }
 
-                                    Rectangle {
-                                        id: fieldPill
-                                        visible: kind === "field"
+                                    Skin.SearchFieldCriteria {
+                                        visible: isField
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.left: parent.left
                                         anchors.leftMargin: 5
-                                        height: 18
-                                        radius: 7
-                                        color: '#2D4EA1'
-                                        width: fieldPillRow.width + 10
-
-                                        Row {
-                                            id: fieldPillRow
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            anchors.left: parent.left
-                                            anchors.leftMargin: 5
-                                            spacing: 4
-
-                                            Text {
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                text: name + ":"
-                                                color: '#FFFFFF'
-                                                font.pixelSize: 12
-                                            }
-
-                                            Rectangle {
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                height: 14
-                                                radius: 7
-                                                color: '#D9D9D9'
-                                                width: fieldHintText.width + 8
-
-                                                Text {
-                                                    id: fieldHintText
-                                                    anchors.centerIn: parent
-                                                    text: "..."
-                                                    color: '#808080'
-                                                    font.pixelSize: 12
-                                                }
-                                            }
-                                        }
+                                        field: name
+                                        active: false
+                                        interactive: false
                                     }
 
                                     Text {
-                                        visible: kind !== "field"
+                                        visible: !isField
                                         anchors.left: parent.left
                                         anchors.leftMargin: 5
                                         anchors.right: metaLabel.left
@@ -976,7 +869,7 @@ Item {
 
                                     Text {
                                         id: metaLabel
-                                        visible: kind !== "field"
+                                        visible: !isField
                                         anchors.right: parent.right
                                         anchors.rightMargin: 5
                                         anchors.verticalCenter: parent.verticalCenter
@@ -988,7 +881,7 @@ Item {
                             }
 
                             Column {
-                                visible: searchPane.activated && searchPane.activeTokenIndex < 0 && searchPane.freeSearchText.length === 0 && selectedCriteria.count === 0
+                                visible: searchPane.isRecentShown()
                                 width: searchPane.width - 10
                                 anchors.margins: 5
                                 spacing: 2
@@ -1014,7 +907,7 @@ Item {
 
                                         required property int index
                                         required property string tokensJson
-                                        required property string display
+                                        required property string freeText
 
                                         height: 24
                                         width: recentList.width
@@ -1030,7 +923,6 @@ Item {
 
                                         Row {
                                             property var tokens: JSON.parse(recentDelegate.tokensJson)
-                                            property var freeText: recentDelegate.display
 
                                             anchors.fill: parent
                                             anchors.leftMargin: 5
@@ -1050,9 +942,9 @@ Item {
                                             }
 
                                             Text {
-                                                visible: parent.freeText?.length > 0
+                                                visible: recentDelegate.freeText?.length > 0
                                                 anchors.verticalCenter: parent.verticalCenter
-                                                text: parent.freeText ?? ""
+                                                text: recentDelegate.freeText ?? ""
                                                 color: '#404040'
                                                 font.pixelSize: 14
                                             }
@@ -1212,13 +1104,7 @@ Item {
                                 break
                             case Qt.Key_Backspace:
                                 if (searchPane.selectingAll) {
-                                    searchPane.selectingAll = false
-                                    selectedCriteria.clear()
-                                    searchPane.activeTokenIndex = -1
-                                    searchField.text = ""
-                                    searchPane.refreshSuggestions()
-                                    searchPane.updateSearchQuery()
-                                    searchPane.updateEditorPosition()
+                                    searchPane.clearAllCriteria()
                                     event.accepted = true
                                     break
                                 }
@@ -1233,13 +1119,7 @@ Item {
                                 break
                             case Qt.Key_Delete:
                                 if (searchPane.selectingAll) {
-                                    searchPane.selectingAll = false
-                                    selectedCriteria.clear()
-                                    searchPane.activeTokenIndex = -1
-                                    searchField.text = ""
-                                    searchPane.refreshSuggestions()
-                                    searchPane.updateSearchQuery()
-                                    searchPane.updateEditorPosition()
+                                    searchPane.clearAllCriteria()
                                     event.accepted = true
                                     break
                                 }
@@ -1253,9 +1133,8 @@ Item {
 
                         onTextEdited: {
                             if (searchPane.selectingAll) {
-                                searchPane.selectingAll = false
-                                selectedCriteria.clear()
-                                searchPane.activeTokenIndex = -1
+                                searchPane.clearAllCriteria()
+                                return
                             }
                             if (searchPane.activeTokenIndex >= 0) {
                                 selectedCriteria.setProperty(searchPane.activeTokenIndex, "value", searchField.text)
@@ -1290,6 +1169,7 @@ Item {
                         y: searchField.y
                         width: searchField.width
                         height: searchField.height
+                        verticalAlignment: Text.AlignVCenter
                     }
 
                     FontMetrics {
@@ -1308,7 +1188,7 @@ Item {
                             if (searchPane.activeTokenIndex < 0) {
                                 for (let i = 0; i < suggestionModel.count; i++) {
                                     let f = suggestionModel.get(i)
-                                    if (f.kind === "field") {
+                                    if (f.isField) {
                                         let pronoun = /^[aeiou]/i.test(f.name) ? "an" : "a"
                                         return 'Press "Tab" to search for ' + pronoun + ' ' + f.name
                                     }

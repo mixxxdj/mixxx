@@ -61,8 +61,8 @@ Item {
                 id: valueText
                 visible: !root.active
                 anchors.fill: parent
-                anchors.leftMargin: 4
-                anchors.rightMargin: 4
+                anchors.leftMargin: 5
+                anchors.rightMargin: 5
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignLeft
                 clip: true

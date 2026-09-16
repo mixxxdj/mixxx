@@ -16,11 +16,24 @@ class QmlSearchSuggestionModel : public QAbstractListModel {
     QML_UNCREATABLE("Only accessible via Mixxx.Library.searchSuggestions")
 
   public:
+    enum class SearchField {
+        Invalid,
+        Artist,
+        Album,
+        Title,
+        Genre,
+        Composer,
+        Comment,
+        Year,
+        BPM,
+        Key,
+        Track,
+    };
+    Q_ENUM(SearchField)
+
     enum Roles {
         ValueRole = Qt::UserRole + 1,
         LabelRole,
-        FieldRole,
-        IsFieldRole,
     };
     Q_ENUM(Roles);
 
@@ -38,13 +51,12 @@ class QmlSearchSuggestionModel : public QAbstractListModel {
     struct Suggestion {
         QString value;
         QString label;
-        QString field;
-        bool isField;
     };
 
-    void setValueSuggestions(const QString& field, const QString& prefix);
+    void setValueSuggestions(SearchField field, const QString& prefix);
     void setKeySuggestions(const QString& prefix);
     void setTrackSuggestions(const QString& prefix);
+    QVector<Suggestion> runSuggestionsQuery(const QString& sql, const QString& prefix);
 
     TrackCollection* m_pTrackCollection;
     QVector<Suggestion> m_suggestions;
