@@ -1,0 +1,26 @@
+name: libopenmpt
+buildsystem: autotools
+# The command-line player, examples and tests are not needed; the optional
+# codec libraries (mpg123/ogg/vorbis/zlib, used for MO3 and compressed samples)
+# are auto-detected and used only if the runtime provides them.
+config-opts:
+  - --disable-openmpt123
+  - --disable-examples
+  - --disable-tests
+  - --disable-doxygen-doc
+sources:
+  - type: archive
+    url: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-0.7.13+release.autotools.tar.gz
+    sha256: dcd7cde4f9c498eb496c4556e1c1b81353e2a74747e8270a42565117ea42e1f1
+    x-checker-data:
+      type: anitya
+      project-id: 141468
+      stable-only: true
+      url-template: https://lib.openmpt.org/files/libopenmpt/src/libopenmpt-$version+release.autotools.tar.gz
+cleanup:
+  - /bin
+  - /include
+  - /lib/pkgconfig
+  - /share/doc
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/libopenmpt LICENSE
