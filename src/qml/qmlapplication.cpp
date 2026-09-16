@@ -108,6 +108,10 @@ QmlApplication::QmlApplication(
     QQuickStyle::setStyle("Basic");
 
 #if defined(Q_OS_ANDROID)
+    // Qt >= 6.8.8 / 6.11.1 / 6.12 reads this to keep the IME in inline mode
+    // instead of the fullscreen "extract" view that covers the app on landscape.
+    qputenv("QT_ANDROID_NO_FULLSCREEN_KEYBOARD", "1");
+
     if (canWriteToExternalStorage()) {
         const QString externalQmlDir = QStringLiteral("/storage/emulated/0/Mixxx/qml");
         copyAssetDir(QStringLiteral("assets:/qml"), externalQmlDir);

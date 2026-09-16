@@ -28,6 +28,39 @@ Item {
 
     readonly property bool _showLibrary: maximizeLibrary || height - mixer.height >= 400
 
+    // Distance to lift the whole content column up when the soft keyboard
+    // opens on mobile, so the search bar reaches the top of the screen.
+    property real searchShift: 0
+    y: -root.searchShift
+
+    Behavior on y {
+        NumberAnimation {
+            duration: 150
+        }
+    }
+
+    Connections {
+        target: Qt.inputMethod
+
+        function onVisibleChanged() {
+            update();
+        }
+        function onInputItemClipRectangleChanged() {
+            update();
+        }
+        function update() {
+            print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.keyboardRectangle} ${Qt.inputMethod.inputItemClipRectangle}`)
+            // print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.inputItemClipRectangle.y}`)
+            // root.searchShift = Qt.inputMethod.visible ? Qt.inputMethod.inputItemClipRectangle.y : 0
+            if (Qt.inputMethod.visible) {
+                root.searchShift = 186
+                // root.searchShift = Qt.inputMethod.keyboardRectangle.y
+            } else {
+                root.searchShift = 0
+            }
+        }
+    }
+
     // color: Theme.backgroundColor
     // height: isMobile ? Screen.height : designHeight
     // visible: true

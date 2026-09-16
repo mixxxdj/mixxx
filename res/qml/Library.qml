@@ -285,6 +285,24 @@ Item {
 
                 readonly property bool hasSearch: activeQuery.length > 0
 
+                onActivatedChanged: {
+                    if (activated) {
+                        Mixxx.Core.addOpenedPopup(searchPane)
+                    } else {
+                        Mixxx.Core.removeOpenedPopup(searchPane)
+                    }
+                }
+
+                Connections {
+                    target: Qt.inputMethod
+
+                    function onVisibleChanged() {
+                        if (!Qt.inputMethod.visible) {
+                            searchPane.activated = false
+                        }
+                    }
+                }
+
                 ListModel {
                     id: recentSearchesModel
                     ListElement { tokensJson: '[{"name":"Artist","value":"A Super Artist"}]'; display: null }
@@ -555,6 +573,7 @@ Item {
                 }
 
                 function deactivateSearch() {
+                    Qt.inputMethod.hide()
                     commitCurrentEditor()
                     for (let i = selectedCriteria.count - 1; i >= 0; i--) {
                         if (selectedCriteria.get(i).value.length === 0) {
@@ -1117,6 +1136,8 @@ Item {
                         font.pixelSize: 14
                         horizontalAlignment: TextInput.AlignLeft
                         verticalAlignment: TextInput.AlignVCenter
+                        inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhNoFullscreen
+                        EnterKey.type: Qt.EnterKeyReturn
 
                         Keys.onTabPressed: (event) => {
                             if (searchPane.activeTokenIndex < 0) {
