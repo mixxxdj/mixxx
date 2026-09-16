@@ -39,6 +39,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotSingleEqToggled(bool checked);
     void slotEqAutoResetToggled(bool checked);
     void slotGainAutoResetToggled(bool checked);
+    void slotVuMeterModeChanged(int index);
 #ifdef __STEM__
     void slotStemAutoResetToggled(bool checked);
 #endif
@@ -100,6 +101,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     parented_ptr<ControlProxy> m_xfCurveCO;
     parented_ptr<ControlProxy> m_xfReverseCO;
     parented_ptr<ControlProxy> m_xfCalibrationCO;
+    parented_ptr<ControlProxy> m_vuMeterModeCO;
     PollingControlProxy m_crossfader;
 
     bool m_xFaderReverse;
@@ -128,6 +130,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqEffectsOnly;
     bool m_eqAutoReset;
     bool m_gainAutoReset;
+    int m_vuMeterMode;
 #ifdef __STEM__
     bool m_stemAutoReset;
 #endif
