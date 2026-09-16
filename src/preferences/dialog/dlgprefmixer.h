@@ -60,6 +60,8 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotXFaderModeControlChanged(double v);
     void slotXFaderReverseControlChanged(double v);
 
+    void slotXFaderHoldValueChanged(double v);
+
     void slotHiEqSliderChanged();
     void slotLoEqSliderChanged();
 
@@ -101,6 +103,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     parented_ptr<ControlProxy> m_xfReverseCO;
     parented_ptr<ControlProxy> m_xfCalibrationCO;
     PollingControlProxy m_crossfader;
+    PollingControlProxy m_crossfaderHoldValue;
 
     bool m_xFaderReverse;
     parented_ptr<QGraphicsScene> m_pxfScene;

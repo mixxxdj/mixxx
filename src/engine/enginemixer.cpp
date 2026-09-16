@@ -102,6 +102,18 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
                           : nullptr),
           m_pCrossfader(std::make_unique<ControlPotmeter>(
                   ConfigKey(group, "crossfader"), -1., 1.)),
+          m_pCrossfaderHold(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, "crossfader_hold"))),
+          m_pCrossfaderHoldValue(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, "crossfader_hold_value"),
+                  -1.,
+                  1.,
+                  false,
+                  true,
+                  false,
+                  /*bPersist=*/true,
+                  /*defaultValue=*/-1.0)),
+          m_bCrossfaderHoldWasActive(false),
           m_pHeadMix(std::make_unique<ControlPotmeter>(
                   ConfigKey(group, "headMix"), -1., 1.)),
           m_pBalance(std::make_unique<ControlPotmeter>(
@@ -477,6 +489,15 @@ void EngineMixer::process(const std::size_t bufferSize) {
         DEBUG_ASSERT("!Unknown Ducking mode");
         m_pTalkoverDucking->setAboveThreshold(false);
         break;
+    }
+
+    // Momentarily override the crossfader while crossfader_hold is held,
+    // restoring center on release. Edge-triggered so we only touch the CO
+    // (and its connected UI widget) on press/release, not every buffer.
+    const bool crossfaderHoldActive = m_pCrossfaderHold->toBool();
+    if (crossfaderHoldActive != m_bCrossfaderHoldWasActive) {
+        m_pCrossfader->set(crossfaderHoldActive ? m_pCrossfaderHoldValue->get() : 0.0);
+        m_bCrossfaderHoldWasActive = crossfaderHoldActive;
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader

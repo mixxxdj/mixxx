@@ -79,6 +79,8 @@ DlgPrefMixer::DlgPrefMixer(
           m_xfReverseCO(make_parented<ControlProxy>(kXfaderReverseKey, this)),
           m_xfCalibrationCO(make_parented<ControlProxy>(kXfaderCalibrationKey, this)),
           m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
+          m_crossfaderHoldValue(
+                  QStringLiteral("[Master]"), QStringLiteral("crossfader_hold_value")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),
@@ -125,6 +127,10 @@ DlgPrefMixer::DlgPrefMixer(
 #endif
             this,
             &DlgPrefMixer::slotXFaderReverseBoxToggled);
+    connect(doubleSpinBoxXFaderHoldValue,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefMixer::slotXFaderHoldValueChanged);
 
     m_xfModeCO->connectValueChanged(
             this, &DlgPrefMixer::slotXFaderModeControlChanged);
@@ -514,6 +520,8 @@ void DlgPrefMixer::slotResetToDefaults() {
     radioButtonAdditive->setChecked(true);
     checkBoxReverse->setChecked(false);
 
+    doubleSpinBoxXFaderHoldValue->setValue(-1.0);
+
     // EQ & QuickEffects //////////////////////////////////
     m_pEffectsManager->loadDefaultEqsAndQuickEffects();
     CheckBoxBypass->setChecked(false);
@@ -770,6 +778,8 @@ void DlgPrefMixer::storeEqShelves() {
 
 void DlgPrefMixer::slotUpdate() {
     slotUpdateXFader();
+
+    doubleSpinBoxXFaderHoldValue->setValue(m_crossfaderHoldValue.get());
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
     QString eqsOnly = m_pConfig->getValueString(kEqsOnlyKey);
@@ -1044,6 +1054,10 @@ void DlgPrefMixer::slotXFaderReverseControlChanged(double v) {
     }
     m_xFaderReverse = reverse;
     updateXFaderWidgets();
+}
+
+void DlgPrefMixer::slotXFaderHoldValueChanged(double v) {
+    m_crossfaderHoldValue.set(v);
 }
 
 void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
