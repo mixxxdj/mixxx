@@ -24,4 +24,5 @@ class OpenGLWindow : public QOpenGLWindow {
 
     WGLWidget* m_pWidget;
     TrackDropTarget* m_pTrackDropTarget;
+    bool m_dirty{};
 };
