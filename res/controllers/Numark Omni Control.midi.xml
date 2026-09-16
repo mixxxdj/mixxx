@@ -1,661 +1,661 @@
-<MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.5.6+" schemaVersion="1">
     <info>
         <name>Numark Omni Control</name>
-        <author>Baxter</author>
-        <description>Adaptation from the work of Smashuu and David Gnedt</description>
-        <manual>numark_omni_control</manual>
+        <author>gonzo.LE</author>
+        <description>Adaptation from the work of Baxter, Smashuu and David Gnedt</description>
     </info>
-    <controller id="Numark OMNI CONTROL MIDI">
+    <controller id="Numark">
         <scriptfiles>
-            <file functionprefix="NumarkTotalControl" filename="Numark-Omni-Control-scripts.js"/>
+            <file filename="Numark-Omni-Control-scripts.js" functionprefix="NumarkOmniControl"/>
         </scriptfiles>
         <controls>
             <control>
-                <status>0x90</status>
-                <midino>0x38</midino>
-                <group>[Channel1]</group>
-                <key>keylock</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x39</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3a</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.tap</key>
-                <description></description>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>NumarkOmniControl.selectQuickEffect</key>
+                <description>FX_AMT  -> QUICK EFFECT SELECTION</description>
+                <status>0xB0</status>
+                <midino>0x00</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <status>0x90</status>
-                <midino>0x3b</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.setCue</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3c</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.playFromCue</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3d</midino>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3e</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.tap</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x3f</midino>
-                <group>[Channel2]</group>
-                <key>keylock</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x40</midino>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x41</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.leftFunction</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x42</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.rightFunction</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x43</midino>
-                <group>[Channel1]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x44</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.setCue</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x45</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.leftFunction</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x46</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.rightFunction</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x47</midino>
-                <group>[Channel2]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x48</midino>
-                <group>[Playlist]</group>
-                <key>NumarkTotalControl.toggleDirectoryMode</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x49</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.loopIn</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4a</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.loopOut</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4b</midino>
-                <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4c</midino>
-                <group>[Channel2]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4d</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.loopIn</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4e</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.loopOut</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4f</midino>
-                <group>[Playlist]</group>
-                <key>LoadSelectedIntoFirstStopped</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x50</midino>
-                <group>[Channel1]</group>
-                <key>filterHighKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x51</midino>
-                <group>[Channel2]</group>
-                <key>filterMidKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x52</midino>
-                <group>[Channel2]</group>
-                <key>filterHighKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x53</midino>
-                <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x54</midino>
-                <group>[Channel2]</group>
-                <key>filterLowKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x0</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
-                <description></description>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>FILTER_AMT -> QUICK EFFECT USAGE</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
                 <options>
                     <diff/>
                 </options>
             </control>
             <control>
-                <status>0x90</status>
-                <midino>0x55</midino>
                 <group>[Channel1]</group>
-                <key>filterMidKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x1</midino>
-                <group>[Flanger]</group>
-                <key>lfoPeriod</key>
-                <description></description>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x2</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
-                <description></description>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x3</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.finePitch</key>
-                <description></description>
+                <key>NumarkOmniControl.jumpBeats</key>
+                <description>PAR</description>
+                <status>0xB0</status>
+                <midino>0x02</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x4</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
-                <description></description>
+                <group>[Channel1]</group>
+                <key>NumarkOmniControl.finePitch</key>
+                <description>FINE_PITCH</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>NumarkOmniControl.selectQuickEffect</key>
+                <description>FX_AMT  -> QUICK EFFECT SELECTION</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>FILTER_AMT -> QUICK EFFECT USAGE</description>
+                <status>0xB0</status>
+                <midino>0x05</midino>
                 <options>
                     <diff/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x5</midino>
-                <group>[Flanger]</group>
-                <key>lfoPeriod</key>
-                <description></description>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x6</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
-                <description></description>
-                <options>
-                    <diff/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x7</midino>
                 <group>[Channel2]</group>
-                <key>NumarkTotalControl.finePitch</key>
-                <description></description>
+                <key>NumarkOmniControl.jumpBeats</key>
+                <description>PAR</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x8</midino>
+                <group>[Channel2]</group>
+                <key>NumarkOmniControl.finePitch</key>
+                <description>FINE_PITCH</description>
+                <status>0xB0</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>volume</key>
-                <description></description>
+                <description>VOLUME</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x9</midino>
                 <group>[Channel2]</group>
                 <key>volume</key>
-                <description></description>
+                <description>VOLUME</description>
+                <status>0xB0</status>
+                <midino>0x09</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xa</midino>
                 <group>[Master]</group>
                 <key>crossfader</key>
-                <description></description>
+                <description>CROSSFADER</description>
+                <status>0xB0</status>
+                <midino>0x0A</midino>
                 <options>
                     <invert/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xb</midino>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <description></description>
+                <description>RATE</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xc</midino>
                 <group>[Channel2]</group>
                 <key>rate</key>
-                <description></description>
+                <description>RATE</description>
+                <status>0xB0</status>
+                <midino>0x0C</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xd</midino>
                 <group>[Channel1]</group>
                 <key>pregain</key>
-                <description></description>
+                <description>GAIN</description>
+                <status>0xB0</status>
+                <midino>0x0D</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xe</midino>
                 <group>[Channel2]</group>
                 <key>pregain</key>
-                <description></description>
+                <description>GAIN</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xf</midino>
                 <group>[Master]</group>
-                <key>headVolume</key>
-                <description></description>
+                <key>headGain</key>
+                <description>PH_VOL</description>
+                <status>0xB0</status>
+                <midino>0x0F</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>TREBLE</description>
+                <status>0xB0</status>
                 <midino>0x10</midino>
-                <group>[Channel1]</group>
-                <key>filterHigh</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>TREBLE</description>
+                <status>0xB0</status>
                 <midino>0x11</midino>
-                <group>[Channel2]</group>
-                <key>filterHigh</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>MID</description>
+                <status>0xB0</status>
                 <midino>0x12</midino>
-                <group>[Channel1]</group>
-                <key>filterMid</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>MID</description>
+                <status>0xB0</status>
                 <midino>0x13</midino>
-                <group>[Channel2]</group>
-                <key>filterMid</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>BASS</description>
+                <status>0xB0</status>
                 <midino>0x14</midino>
-                <group>[Channel1]</group>
-                <key>filterLow</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>BASS</description>
+                <status>0xB0</status>
                 <midino>0x15</midino>
-                <group>[Channel2]</group>
-                <key>filterLow</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x16</midino>
                 <group>[Master]</group>
                 <key>headMix</key>
-                <description></description>
+                <description>PH_MIX</description>
+                <status>0xB0</status>
+                <midino>0x16</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x17</midino>
                 <group>[Master]</group>
-                <key>volume</key>
-                <description></description>
+                <key>gain</key>
+                <description>MASTER</description>
+                <status>0xB0</status>
+                <midino>0x17</midino>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x18</midino>
                 <group>[Channel1]</group>
-                <key>NumarkTotalControl.jogWheel</key>
-                <description></description>
+                <key>NumarkOmniControl.jogWheel</key>
+                <description>JOGWHEEL</description>
+                <status>0xB0</status>
+                <midino>0x18</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x19</midino>
                 <group>[Channel2]</group>
-                <key>NumarkTotalControl.jogWheel</key>
-                <description></description>
+                <key>NumarkOmniControl.jogWheel</key>
+                <description>JOGWHEEL</description>
+                <status>0xB0</status>
+                <midino>0x19</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x1a</midino>
                 <group>[Playlist]</group>
-                <key>NumarkTotalControl.selectKnob</key>
-                <description></description>
+                <key>NumarkOmniControl.selectKnob</key>
+                <description>TRACK</description>
+                <status>0xB0</status>
+                <midino>0x1A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x30</midino>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
+                <group>[Channel1]</group>
+                <key>loop_anchor</key>
+                <description>SELECT -> LOOPANCHOR</description>
                 <status>0x90</status>
                 <midino>0x31</midino>
-                <group>[Master]</group>
-                <key>NumarkTotalControl.toggleSimpleCue</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x32</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.toggleScratchMode</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x33</midino>
-                <group>[Channel1]</group>
-                <key>NumarkTotalControl.playFromCue</key>
-                <description></description>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x34</midino>
-                <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
                 <options>
                     <normal/>
                 </options>
             </control>
             <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>NumarkOmniControl.toggleQuickEffect</key>
+                <description>FILTER_ONOFF -> QUICK EFFECT ONOFF</description>
+                <status>0x90</status>
+                <midino>0x32</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkOmniControl.playFromCue</key>
+                <description>CUE</description>
+                <status>0x90</status>
+                <midino>0x33</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <description>LOAD_TRACK</description>
+                <status>0x90</status>
+                <midino>0x34</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_anchor</key>
+                <description>SELECT -> LOOPANCHOR</description>
                 <status>0x90</status>
                 <midino>0x35</midino>
-                <group>[Master]</group>
-                <key>NumarkTotalControl.toggleExtendedLooping</key>
-                <description></description>
                 <options>
-                    <script-binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>NumarkOmniControl.toggleQuickEffect</key>
+                <description>FILTER_ONOFF -> QUICK EFFECT ONOFF</description>
                 <status>0x90</status>
                 <midino>0x36</midino>
-                <group>[Channel2]</group>
-                <key>NumarkTotalControl.toggleQuantize</key>
-                <description></description>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <status>0x90</status>
-                <midino>0x37</midino>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <description></description>
+                <description>PFL</description>
+                <status>0x90</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>keylock</key>
+                <description>KEY</description>
+                <status>0x90</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>NumarkOmniControl.toggleScratchMode</key>
+                <description>PAR_ONOFF -> CUSTOM: SCRATCH</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>tempo_tap</key>
+                <description>TAP</description>
+                <status>0x90</status>
+                <midino>0x3A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>cue_set</key>
+                <description>SETCUE</description>
+                <status>0x90</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkOmniControl.playFromCue</key>
+                <description>CUE</description>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>NumarkOmniControl.toggleExtendedLooping</key>
+                <description>PAR_ONOFF -> CUSTOM: EXTENDEDLOOPING</description>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>tempo_tap</key>
+                <description>TAP</description>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <description>KEY</description>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatsync</key>
+                <description>SYNC</description>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkOmniControl.leftFunction</key>
+                <description>PITCHBEND-</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkOmniControl.rightFunction</key>
+                <description>PITCHBEND+</description>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <description>PLAY</description>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_set</key>
+                <description>SETCUE</description>
+                <status>0x90</status>
+                <midino>0x44</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkOmniControl.leftFunction</key>
+                <description>PITCHBEND-</description>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkOmniControl.rightFunction</key>
+                <description>PITCHBEND+</description>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatsync</key>
+                <description>SYNC</description>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>NumarkOmniControl.toggleDirectoryMode</key>
+                <description>DIRECTORY</description>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkOmniControl.loopIn</key>
+                <description>LOOP_IN</description>
+                <status>0x90</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>NumarkOmniControl.loopOut</key>
+                <description>LOOP_OUT</description>
+                <status>0x90</status>
+                <midino>0x4A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description>LOAD_TRACK</description>
+                <status>0x90</status>
+                <midino>0x4B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <description>PLAY</description>
+                <status>0x90</status>
+                <midino>0x4C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkOmniControl.loopIn</key>
+                <description>LOOP_IN</description>
+                <status>0x90</status>
+                <midino>0x4D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>NumarkOmniControl.loopOut</key>
+                <description>LOOP_OUT</description>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>NumarkOmniControl.pressTrackKnob</key>
+                <description>TRACK</description>
+                <status>0x90</status>
+                <midino>0x4F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>TREBLE_KILL</description>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>MID_KILL</description>
+                <status>0x90</status>
+                <midino>0x51</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>TREBLE_KILL</description>
+                <status>0x90</status>
+                <midino>0x52</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>BASS_KILL</description>
+                <status>0x90</status>
+                <midino>0x53</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>BASS_KILL</description>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>MID_KILL</description>
+                <status>0x90</status>
+                <midino>0x55</midino>
                 <options>
                     <normal/>
                 </options>
@@ -663,247 +663,249 @@
         </controls>
         <outputs>
             <output>
-                <group>[Channel2]</group>
-                <key>filterLowKill</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x55</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>playposition</key>
-                <description></description>
-                <minimum>0.75</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4f</midino>
-                <on>0x64</on>
-                <off>0x0</off>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>beat_active</key>
-                <description></description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
+                <description>SYNC (blink)</description>
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <on>0x64</on>
-                <off>0x0</off>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_point</key>
+                <description>CUE</description>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>end_of_track</key>
+                <description>LOADTRACK</description>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>keylock</key>
+                <description>KEY</description>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <on>0x64</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_anchor</key>
+                <description>SELECT->LOOPANCHOR</description>
+                <status>0x90</status>
+                <midino>0x33</midino>
+                <on>0x64</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>LOOP_IN</description>
+                <status>0x90</status>
+                <midino>0x3A</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
                 <key>pfl</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
+                <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x35</midino>
-                <on>0x0</on>
+                <on>0x00</on>
                 <off>0x64</off>
+                <maximum>0.1</maximum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>cue_point</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x3c</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>keylock</key>
-                <description></description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x41</midino>
-                <on>0x64</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x32</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x52</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>keylock</key>
-                <description></description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x36</midino>
-                <on>0x64</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x46</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>rate</key>
-                <description></description>
-                <minimum>-0.05</minimum>
-                <maximum>0.05</maximum>
-                <status>0x90</status>
-                <midino>0x43</midino>
-                <on>0x64</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>filterHighKill</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x53</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
                 <key>play</key>
-                <description></description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
+                <description>PLAY</description>
                 <status>0x90</status>
-                <midino>0x4e</midino>
+                <midino>0x3E</midino>
                 <on>0x64</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>filterMidKill</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x54</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>cue_point</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x4c</midino>
-                <on>0x0</on>
-                <off>0x64</off>
+                <minimum>0.1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
                 <key>rate</key>
-                <description></description>
-                <minimum>-0.05</minimum>
-                <maximum>0.05</maximum>
+                <description>RATE</description>
                 <status>0x90</status>
                 <midino>0x34</midino>
                 <on>0x64</on>
-                <off>0x0</off>
+                <maximum>0.05</maximum>
+                <minimum>-0.05</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>filterHighKill</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
+                <key>tempo_tap</key>
+                <description>TAP</description>
                 <status>0x90</status>
-                <midino>0x50</midino>
-                <on>0x0</on>
+                <midino>0x30</midino>
+                <on>0x00</on>
                 <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>play</key>
-                <description></description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
-                <status>0x90</status>
-                <midino>0x3e</midino>
-                <on>0x64</on>
-                <off>0x0</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>filterMidKill</key>
-                <description></description>
-                <minimum>0</minimum>
                 <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x51</midino>
-                <on>0x0</on>
-                <off>0x64</off>
             </output>
             <output>
                 <group>[Channel2]</group>
                 <key>beat_active</key>
-                <description></description>
-                <minimum>0.1</minimum>
-                <maximum>1</maximum>
+                <description>SYNC (blink)</description>
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <on>0x64</on>
-                <off>0x0</off>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_point</key>
+                <description>CUE</description>
+                <status>0x90</status>
+                <midino>0x4C</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>end_of_track</key>
+                <description>LOADTRACK</description>
+                <status>0x90</status>
+                <midino>0x4F</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <description>KEY</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <on>0x64</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_anchor</key>
+                <description>SELECT->LOOPANCHOR</description>
+                <status>0x90</status>
+                <midino>0x44</midino>
+                <on>0x64</on>
+                <minimum>0.1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>LOOP_IN</description>
+                <status>0x90</status>
+                <midino>0x4A</midino>
+                <on>0x64</on>
             </output>
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
-                <description></description>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
+                <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x40</midino>
-                <on>0x0</on>
+                <on>0x00</on>
                 <off>0x64</off>
+                <maximum>0.1</maximum>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>playposition</key>
-                <description></description>
-                <minimum>0.75</minimum>
-                <maximum>1</maximum>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <description>PLAY</description>
                 <status>0x90</status>
-                <midino>0x3f</midino>
+                <midino>0x4E</midino>
                 <on>0x64</on>
-                <off>0x0</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <description>RATE</description>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <on>0x64</on>
+                <maximum>0.05</maximum>
+                <minimum>-0.05</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>tempo_tap</key>
+                <description>TAP</description>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>BASS_KILL</description>
+                <status>0x90</status>
+                <midino>0x52</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>MID_KILL</description>
+                <status>0x90</status>
+                <midino>0x51</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>TREBLE_KILL</description>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter1</key>
+                <description>BASS_KILL</description>
+                <status>0x90</status>
+                <midino>0x55</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter2</key>
+                <description>MID_KILL</description>
+                <status>0x90</status>
+                <midino>0x54</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
+            </output>
+            <output>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>button_parameter3</key>
+                <description>TREBLE_KILL</description>
+                <status>0x90</status>
+                <midino>0x53</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0.1</maximum>
             </output>
         </outputs>
     </controller>
-</MixxxMIDIPreset>
+</MixxxControllerPreset>
