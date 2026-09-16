@@ -284,6 +284,14 @@ PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSyncTrackMetadataConfigKey,
         bool,
         librarySyncTrackMetadataExport,
         false);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kExportRatingToFileTagsConfigKey,
+        bool,
+        libraryExportRatingToFileTags,
+        false);
+PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kImportRatingFromFileTagsConfigKey,
+        bool,
+        libraryImportRatingFromFileTags,
+        false);
 PROPERTY_IMPL_CONFIGKEY(mixxx::library::prefs::kSyncSeratoMetadataConfigKey,
         bool,
         librarySeratoMetadataExport,
