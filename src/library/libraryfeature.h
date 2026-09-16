@@ -89,18 +89,6 @@ class LibraryFeature : public QObject {
     }
 
   protected:
-    QStringList getPlaylistFiles() const {
-        return getPlaylistFiles(QFileDialog::ExistingFiles);
-    }
-    QString getPlaylistFile() const {
-        const QStringList playListFiles = getPlaylistFiles();
-        if (playListFiles.isEmpty()) {
-            return QString(); // no file chosen
-        } else {
-            return playListFiles.first();
-        }
-    }
-
     Library* const m_pLibrary;
 
     const UserSettingsPointer m_pConfig;
@@ -170,17 +158,7 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
-  protected:
-    // TODO: Move common crate/playlist functions into
-    // a separate base class
-    static bool exportPlaylistItemsIntoFile(
-            QString playlistFilePath,
-            const QList<QString>& playlistItemLocations,
-            bool useRelativePath);
-
   private:
-    QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
-
     QString m_iconName;
     QIcon m_icon;
 };
