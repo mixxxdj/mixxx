@@ -126,7 +126,7 @@ void PlaylistFeature::onRightClickChild(
 }
 
 bool PlaylistFeature::dropAcceptChild(
-        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
+        const QModelIndex& index, const QList<QUrl>& urls) {
     int playlistId = playlistIdFromIndex(index);
     VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return false;
@@ -143,7 +143,7 @@ bool PlaylistFeature::dropAcceptChild(
             // collect all tracks, accept playlist files
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos);
     if (trackIds.isEmpty()) {
         return false;
     }
