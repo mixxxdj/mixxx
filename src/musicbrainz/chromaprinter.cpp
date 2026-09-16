@@ -12,6 +12,10 @@
 #include "util/performancetimer.h"
 #include "util/sample.h"
 
+#ifdef DEBUG_PRINT_FINGERPRINT
+#include <QCryptographicHash>
+#endif
+
 namespace
 {
 
@@ -53,6 +57,14 @@ QString calcFingerprint(
     std::vector<SAMPLE> fingerprintSamples(
             audioSourceProxy.getSignalInfo().frames2samples(
                     readableSampleFrames.frameLength()));
+
+#ifdef DEBUG_PRINT_FINGERPRINT
+    SampleUtil::applyGain(
+            sampleBuffer.data(),
+            1,
+            sampleBuffer.size());
+#endif
+
     // Convert floating-point to integer
     SampleUtil::convertFloat32ToS16(
             &fingerprintSamples[0],
@@ -83,14 +95,40 @@ QString calcFingerprint(
     uint32_p fprint = nullptr;
     int size = 0;
     int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
+
+#ifdef DEBUG_PRINT_FINGERPRINT
+    uint32_t simHash;
+    chromaprint_hash_fingerprint(fprint, size, &simHash);
+
+    QByteArray hash =
+            QCryptographicHash::hash(QByteArray(reinterpret_cast<char*>(fprint),
+                                             size * sizeof(fprint[0])),
+                    QCryptographicHash::Md5)
+                    .toHex();
+
+    qDebug() << "Hash:" << hash;
+    qDebug() << "SimHash:" << simHash;
+
+    for (int i = 0; i < size; ++i) {
+        QString item = QString::number(fprint[i], 2).replace('0', ' ');
+        while (item.length() < 32) {
+            item.prepend(' ');
+        }
+        qDebug() << item << i;
+    }
+#endif
+
     QByteArray fingerprint;
     if (ret == 1) {
         char_p encoded = nullptr;
         int encoded_size = 0;
-        chromaprint_encode_fingerprint(fprint, size,
-                                       CHROMAPRINT_ALGORITHM_DEFAULT,
-                                       &encoded,
-                                       &encoded_size, 1);
+        int base64 = 1;
+        chromaprint_encode_fingerprint(fprint,
+                size,
+                CHROMAPRINT_ALGORITHM_DEFAULT,
+                &encoded,
+                &encoded_size,
+                base64);
 
         fingerprint.append(reinterpret_cast<char*>(encoded), encoded_size);
 
@@ -123,10 +161,11 @@ QString ChromaPrinter::getFingerprint(TrackPointer pTrack) {
         return QString();
     }
 
+    const SINT startFrame = 2;
     const auto fingerprintRange = intersect(
             pAudioSource->frameIndexRange(),
             mixxx::IndexRange::forward(
-                    pAudioSource->frameIndexMin(),
+                    pAudioSource->frameIndexMin() + startFrame,
                     kFingerprintDuration * pAudioSource->getSignalInfo().getSampleRate()));
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
