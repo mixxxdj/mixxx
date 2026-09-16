@@ -740,7 +740,7 @@ Select from different types of displays for the waveform overview, which differ 
      <item row="1" column="1" colspan="4">
       <widget class="QCheckBox" name="overviewStereoCheckBox">
        <property name="text">
-        <string>Stereo mode</string>
+        <string>Stereo deck overviews</string>
        </property>
       </widget>
      </item>
@@ -748,12 +748,20 @@ Select from different types of displays for the waveform overview, which differ 
      <item row="2" column="1" colspan="4">
       <widget class="QCheckBox" name="overviewMinuteMarkersCheckBox">
        <property name="text">
-        <string>Show minute markers on waveform overview</string>
+        <string>Show minute markers on deck overviews</string>
        </property>
       </widget>
      </item>
 
-     <item row="3" column="0">
+     <item row="3" column="1" colspan="4">
+      <widget class="QCheckBox" name="overviewLibraryMinuteMarkersCheckBox">
+       <property name="text">
+        <string>Show minute markers on library overviews</string>
+       </property>
+      </widget>
+     </item>
+
+     <item row="4" column="0">
       <widget class="QLabel" name="overview_gain_label">
        <property name="toolTip">
         <string extracomment="Select a gain mode for the waveform overview."/>
@@ -763,7 +771,7 @@ Select from different types of displays for the waveform overview, which differ 
        </property>
       </widget>
      </item>
-     <item row="3" column="1" colspan="4">
+     <item row="4" column="1" colspan="4">
       <widget class="QRadioButton" name="overview_scale_normalize">
        <property name="text">
         <string>Normalize to peak</string>
@@ -773,7 +781,7 @@ Select from different types of displays for the waveform overview, which differ 
        </attribute>
       </widget>
      </item>
-     <item row="4" column="1" colspan="4">
+     <item row="5" column="1" colspan="4">
       <widget class="QRadioButton" name="overview_scale_allReplayGain">
        <property name="text">
         <string extracomment="'Global' refers to the 'Global' visual gain in the scrolling waveform settings">Use Waveform "Global" gain and ReplayGain (if enabled)</string>
@@ -929,6 +937,7 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>waveformOverviewComboBox</tabstop>
   <tabstop>overviewStereoCheckBox</tabstop>
   <tabstop>overviewMinuteMarkersCheckBox</tabstop>
+  <tabstop>overviewLibraryMinuteMarkersCheckBox</tabstop>
   <tabstop>overview_scale_normalize</tabstop>
   <tabstop>overview_scale_allReplayGain</tabstop>
   <tabstop>enableWaveformCaching</tabstop>
