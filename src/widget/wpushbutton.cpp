@@ -229,7 +229,12 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
         if (rightConnection->getDirectionOption() &
                         ControlParameterWidgetConnection::DIR_DEFAULT) {
-            rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
+            // Also listen to changes of the right-click control (e.g. a
+            // "_small" ControlObject triggered by a keyboard shortcut or
+            // MIDI mapping instead of a right-click) so the button lights
+            // up the same way it does for a right-click.
+            rightConnection->setDirectionOption(
+                    ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET);
         }
     }
 
