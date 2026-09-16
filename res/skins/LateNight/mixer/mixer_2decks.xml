@@ -198,6 +198,7 @@
                 <BarRoundCaps>true</BarRoundCaps>
                 <BarAxisPos>19.0</BarAxisPos>
                 <BarUnipolar>false</BarUnipolar>
+                <ClickToPosition>true</ClickToPosition>
                 <Connection>
                   <ConfigKey>[Master],crossfader</ConfigKey>
                 </Connection>

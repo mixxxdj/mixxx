@@ -74,6 +74,7 @@
                 <Slider>slider_crossfader.png</Slider>
                 <Pos>72,200</Pos>
                 <Horizontal>true</Horizontal>
+                <ClickToPosition>true</ClickToPosition>
                 <Connection>
                   <ConfigKey>[Master],crossfader</ConfigKey>
                   <EmitOnDownPress>false</EmitOnDownPress>

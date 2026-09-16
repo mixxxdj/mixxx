@@ -96,6 +96,7 @@ Description:
             <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_handle.svg</Handle>
             <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_scale.svg</Slider>
             <Horizontal>true</Horizontal>
+            <ClickToPosition>true</ClickToPosition>
             <Connection>
               <ConfigKey>[Master],crossfader</ConfigKey>
             </Connection>

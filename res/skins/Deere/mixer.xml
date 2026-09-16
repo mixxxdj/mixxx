@@ -179,6 +179,7 @@
                     <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
                     <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
                     <Horizontal>true</Horizontal>
+                    <ClickToPosition>true</ClickToPosition>
                     <Connection>
                       <ConfigKey>[Master],crossfader</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>

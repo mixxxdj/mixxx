@@ -21,7 +21,9 @@ class SliderEventHandler {
               m_dSliderLength(0),
               m_bHorizontal(false),
               m_bDrag(false),
-              m_bEventWhileDrag(true) { }
+              m_bEventWhileDrag(true),
+              m_bClickToPosition(false),
+              m_dPreRightClickParameter(-1.0) { }
 
     void setHorizontal(bool horiz) {
         m_bHorizontal = horiz;
@@ -37,6 +39,14 @@ class SliderEventHandler {
 
     void setEventWhileDrag(bool eventwhile) {
         m_bEventWhileDrag = eventwhile;
+    }
+
+    // When enabled, a plain click jumps the handle straight to the clicked
+    // position (instead of only anchoring a relative drag), and a
+    // right-click momentarily jumps to the clicked position, restoring the
+    // previous value on release.
+    void setClickToPosition(bool clickToPosition) {
+        m_bClickToPosition = clickToPosition;
     }
 
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
@@ -84,23 +94,36 @@ class SliderEventHandler {
             pWidget->mouseMoveEvent(e);
             m_bDrag = true;
         } else {
+            double clickMousePos;
+            if (m_bHorizontal) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                clickMousePos = e->position().x() - m_dHandleLength / 2;
+#else
+                clickMousePos = e->x() - m_dHandleLength / 2;
+#endif
+            } else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                clickMousePos = e->position().y() - m_dHandleLength / 2;
+#else
+                clickMousePos = e->y() - m_dHandleLength / 2;
+#endif
+            }
+
             if (e->button() == Qt::RightButton) {
-                pWidget->resetControlParameter();
+                if (m_bClickToPosition) {
+                    // Momentarily jump to the clicked position; the previous
+                    // value is restored in mouseReleaseEvent.
+                    m_dPreRightClickParameter = pWidget->getControlParameter();
+                    jumpToPosition(pWidget, clampToRange(clickMousePos));
+                } else {
+                    pWidget->resetControlParameter();
+                }
                 m_bRightButtonPressed = true;
             } else {
-                if (m_bHorizontal) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                    m_dStartMousePos = e->position().x() - m_dHandleLength / 2;
-#else
-                    m_dStartMousePos = e->x() - m_dHandleLength / 2;
-#endif
-                } else {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                    m_dStartMousePos = e->position().y() - m_dHandleLength / 2;
-#else
-                    m_dStartMousePos = e->y() - m_dHandleLength / 2;
-#endif
+                if (m_bClickToPosition) {
+                    jumpToPosition(pWidget, clampToRange(clickMousePos));
                 }
+                m_dStartMousePos = clickMousePos;
                 m_dStartHandlePos = m_dPos;
             }
         }
@@ -119,6 +142,10 @@ class SliderEventHandler {
         }
         if (e->button() == Qt::RightButton) {
             m_bRightButtonPressed = false;
+            if (m_bClickToPosition && m_dPreRightClickParameter >= 0.0) {
+                jumpToParameter(pWidget, m_dPreRightClickParameter);
+                m_dPreRightClickParameter = -1.0;
+            }
         } else {
             pWidget->setControlParameter(m_dOldParameter);
         }
@@ -202,6 +229,34 @@ class SliderEventHandler {
     }
 
   private:
+    double clampToRange(double pos) const {
+        if (m_dSliderLength - m_dHandleLength > 0.0) {
+            return math_clamp(pos, 0.0, m_dSliderLength - m_dHandleLength);
+        }
+        return pos;
+    }
+
+    // Immediately sets the handle/control to the given (already clamped)
+    // pixel position, used by click-to-position presses.
+    void jumpToPosition(T* pWidget, double clampedPos) {
+        m_dPos = clampedPos;
+        double newParameter = positionToParameter(m_dPos);
+        // If we don't change this, then updates might be rejected in
+        // onConnectedControlChanged.
+        m_dOldParameter = newParameter;
+        pWidget->setControlParameter(newParameter);
+        pWidget->inputActivity();
+    }
+
+    // Immediately sets the handle/control to the given CO parameter value,
+    // used to restore the previous value after a momentary right-click.
+    void jumpToParameter(T* pWidget, double parameter) {
+        m_dPos = clampToRange(parameterToPosition(parameter));
+        m_dOldParameter = parameter;
+        pWidget->setControlParameter(parameter);
+        pWidget->update();
+    }
+
     // This is the position the handle was when a drag started.
     double m_dStartHandlePos;
     // We record where the mouse was when the user started clicking so they
@@ -223,4 +278,10 @@ class SliderEventHandler {
     bool m_bDrag;
     // Is true if events is emitted while the slider is dragged
     bool m_bEventWhileDrag;
+    // If true, a click jumps the handle to the clicked position instead of
+    // only anchoring a relative drag, and a right-click does so momentarily.
+    bool m_bClickToPosition;
+    // The control's parameter value just before a momentary right-click
+    // jump, restored on release. Negative while no right-click is active.
+    double m_dPreRightClickParameter;
 };

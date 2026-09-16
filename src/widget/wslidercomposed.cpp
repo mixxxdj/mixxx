@@ -163,6 +163,9 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             m_handler.setEventWhileDrag(false);
         }
     }
+    if (context.selectBool(node, "ClickToPosition", false)) {
+        m_handler.setClickToPosition(true);
+    }
     if (!m_connections.empty()) {
         auto& pDefaultConnection = m_connections[0];
         if (pDefaultConnection) {
