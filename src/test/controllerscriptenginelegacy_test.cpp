@@ -759,6 +759,23 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_trigger) {
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
 
+TEST_F(ControllerScriptEngineLegacyTest, connectionObject_ignoreReentrantTrigger) {
+    auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
+    auto counter = std::make_unique<ControlObject>(ConfigKey("[Test]", "counter"));
+
+    EXPECT_TRUE(evaluateAndAssert(
+            "var callback = function () {"
+            "  let counter = engine.getValue('[Test]', 'counter');"
+            "  engine.setValue('[Test]', 'counter', counter + 1);"
+            "  connection.trigger();"
+            "};"
+            "var connection = engine.makeConnection('[Test]', 'co', callback);"
+            "connection.trigger();"
+            "connection.trigger();"));
+
+    EXPECT_DOUBLE_EQ(2.0, counter->get());
+}
+
 TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject) {
     // Test that callback functions are executed with JavaScript's
     // 'this' keyword referring to the object in which the connection

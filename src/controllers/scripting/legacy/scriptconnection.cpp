@@ -1,9 +1,16 @@
 #include "controllers/scripting/legacy/scriptconnection.h"
 
+#include <QScopedValueRollback>
+
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/trace.h"
 
 void ScriptConnection::executeCallback(double value) const {
+    if (m_pCallbackState->isExecuting) {
+        return;
+    }
+    QScopedValueRollback<bool> callbackExecuting(m_pCallbackState->isExecuting, true);
+
     Trace executeCallbackTrace("JS %1 callback", key.item);
     const auto args = QJSValueList{
             value,
