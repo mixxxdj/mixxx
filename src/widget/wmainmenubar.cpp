@@ -14,6 +14,7 @@
 #include "util/cmdlineargs.h"
 #include "util/desktophelper.h"
 #include "util/experiment.h"
+#include "util/undostack.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -145,6 +146,20 @@ void WMainMenuBar::initialize() {
     pFileMenu->addAction(pFileQuit);
 
     addMenu(pFileMenu);
+
+    auto* pEditMenu = new QMenu(tr("&Edit"), this);
+#ifndef __APPLE__
+    connectMenuToSlotShowMenuBar(pEditMenu);
+#endif
+
+    auto* undoAction = UndoStack::instance()->createUndoAction(this);
+    pEditMenu->addAction(undoAction);
+    auto* redoAction = UndoStack::instance()->createRedoAction(this);
+    pEditMenu->addAction(redoAction);
+
+    undoAction->setShortcuts(QKeySequence::Undo);
+    redoAction->setShortcuts(QKeySequence::Redo);
+    addMenu(pEditMenu);
 
     // LIBRARY MENU
     QMenu* pLibraryMenu = new QMenu(tr("&Library"), this);
