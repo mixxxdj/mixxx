@@ -2202,8 +2202,9 @@ Rectangle {
             }
             Text {
                 color: LateNightTheme.toolbarLatencyLabelColor
+                font.bold: LateNightTheme.isClassic
                 font.family: "Open Sans"
-                font.pixelSize: 8
+                font.pixelSize: LateNightTheme.isClassic ? 10 : 8
                 height: 10
                 horizontalAlignment: Text.AlignHCenter
                 text: "Buffer %"
