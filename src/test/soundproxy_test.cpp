@@ -1,3 +1,5 @@
+#include <gtest/gtest.h>
+
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtDebug>
@@ -182,6 +184,7 @@ TEST_F(SoundSourceProxyTest, open) {
         const auto fileUrl = QUrl::fromLocalFile(filePath);
         const auto providerRegistrations =
                 SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        bool couldOpenFile = false;
         for (const auto& providerRegistration : providerRegistrations) {
             mixxx::AudioSourcePointer pAudioSource = openAudioSource(
                     filePath,
@@ -193,10 +196,13 @@ TEST_F(SoundSourceProxyTest, open) {
                 // skip test file
                 continue;
             }
+            couldOpenFile = true;
             EXPECT_LT(0, pAudioSource->getSignalInfo().getChannelCount());
             EXPECT_LT(0u, pAudioSource->getSignalInfo().getSampleRate());
             EXPECT_FALSE(pAudioSource->frameIndexRange().empty());
         }
+        // Ensure we can open the file with a least one provider.
+        EXPECT_TRUE(couldOpenFile);
     }
 }
 
