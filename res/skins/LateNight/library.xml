@@ -107,14 +107,114 @@
               </WidgetGroup><!-- LibSidebarContainer -->
 
               <!-- Library Table-->
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
-                <!-- Colors for the render modes of the Overview column -->
-                <!-- For the overview column we only set the signal color,
-                     other colors are the defaults. -->
-                <SignalColor><Variable name="SignalColor_12"/></SignalColor>
-              </Library>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <!-- 'Pinned Track' controls -->
+                  <WidgetGroup>
+                    <ObjectName>PinnedTrackControls</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <PushButton>
+                        <ObjectName>PinnedTrackToggle</ObjectName>
+                        <Size>22f,22f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>L</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>L</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Library],pin_selected_track</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <PushButton>
+                        <ObjectName>PinnedTrackToggle</ObjectName>
+                        <Size>22f,22f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>1</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>1</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel1],pin_loaded_track</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <PushButton>
+                        <ObjectName>PinnedTrackToggle</ObjectName>
+                        <Size>22f,22f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Text>2</Text>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Text>2</Text>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[Channel2],pin_loaded_track</ConfigKey>
+                        </Connection>
+                      </PushButton>
+
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,min</SizePolicy>
+                        <MaximumSize>500,</MaximumSize>
+                        <Children>
+                          <TrackProperty>
+                            <ObjectName>TitleTextSmall</ObjectName>
+                            <Size>50min,25f</Size>
+                            <TooltipId>track_title</TooltipId>
+                            <Property>titleInfo</Property>
+                            <Alignment>Left</Alignment>
+                            <Elide>right</Elide>
+                            <Group>[Library]</Group>
+                          </TrackProperty>
+
+                          <Label>
+                            <ObjectName>MicAuxLabelUnconfigured</ObjectName>
+                            <Size>10f,21f</Size>
+                            <Text> - </Text>
+                            <Alignment>center</Alignment>
+                          </Label>
+
+                          <TrackProperty>
+                            <ObjectName>TitleTextSmall</ObjectName>
+                            <Size>0me,25f</Size>
+                            <TooltipId>track_artist</TooltipId>
+                            <Property>artist</Property>
+                            <Alignment>Left</Alignment>
+                            <Elide>right</Elide>
+                            <Group>[Library]</Group>
+                          </TrackProperty>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup><SizePolicy>i,min</SizePolicy></WidgetGroup>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Library],has_pinned_track</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                    <!-- Colors for the render modes of the Overview column -->
+                    <!-- For the overview column we only set the signal color,
+                         other colors are the defaults. -->
+                    <SignalColor><Variable name="SignalColor_12"/></SignalColor>
+                  </Library>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </Splitter><!-- LibrarySplitter -->
