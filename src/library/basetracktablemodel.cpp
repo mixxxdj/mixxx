@@ -322,6 +322,7 @@ QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
 bool BaseTrackTableModel::isColumnHiddenByDefault(
         int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RECORDLABEL) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||

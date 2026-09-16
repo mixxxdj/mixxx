@@ -28,6 +28,7 @@ class QmlLibraryTrackListColumn : public QObject {
     enum class SQLColumns {
         Album = ColumnCache::COLUMN_LIBRARYTABLE_ALBUM,
         Artist = ColumnCache::COLUMN_LIBRARYTABLE_ARTIST,
+        RecordLabel = ColumnCache::COLUMN_LIBRARYTABLE_RECORDLABEL,
         Title = ColumnCache::COLUMN_LIBRARYTABLE_TITLE,
         Year = ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
         Bpm = ColumnCache::COLUMN_LIBRARYTABLE_BPM,
