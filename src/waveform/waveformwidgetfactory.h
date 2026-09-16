@@ -257,6 +257,26 @@ class WaveformWidgetFactory : public QObject,
     void setReverseWaveformDirection(bool reverse);
     bool isReverseWaveformDirection() const { return m_reverseWaveformDirection; }
 
+    // Minimum/maximum/default values for the pitch-bend sensitivity slider in
+    // DlgPrefDeck. The slider value is inverted to compute the actual pixel
+    // divisor (see getPitchBendDivisor()), mirroring RateControl's
+    // RateRampSensitivity so a higher slider value means "more sensitive".
+    static constexpr int kPitchBendSensitivityMin = 100;
+    static constexpr int kPitchBendSensitivityMax = 2500;
+    static constexpr int kPitchBendSensitivityDefault = 1330;
+
+    void setLeftClickPitchBendEnabled(bool enabled);
+    bool isLeftClickPitchBendEnabled() const { return m_leftClickPitchBendEnabled; }
+
+    void setPitchBendSensitivity(int sensitivity);
+    int getPitchBendSensitivity() const { return m_pitchBendSensitivity; }
+    // The pixel divisor used to convert a mouse drag distance into a "wheel"
+    // (pitch bend) control value; lower means more sensitive.
+    double getPitchBendDivisor() const {
+        return static_cast<double>(
+                kPitchBendSensitivityMax - m_pitchBendSensitivity + kPitchBendSensitivityMin);
+    }
+
     void notifyZoomChange(WWaveformViewer *viewer);
 
   signals:
@@ -381,4 +401,6 @@ class WaveformWidgetFactory : public QObject,
     int m_vSyncType;
     double m_playMarkerPosition;
     bool m_reverseWaveformDirection;
+    bool m_leftClickPitchBendEnabled;
+    int m_pitchBendSensitivity;
 };

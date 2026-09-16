@@ -2,6 +2,7 @@
 
 #include <QDragEnterEvent>
 #include <QEvent>
+#include <QNativeGestureEvent>
 
 #include "control/controlproxy.h"
 #include "moc_wwaveformviewer.cpp"
@@ -84,26 +85,37 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
     m_mouseAnchor = event->pos();
 
     if (event->button() == Qt::LeftButton) {
-        // If we are pitch-bending then disable and reset because the two
-        // shouldn't be used at once.
-        if (m_bBending) {
+        if (WaveformWidgetFactory::instance()->isLeftClickPitchBendEnabled()) {
+            // If we are scratching then disable and reset because the two
+            // shouldn't be used at once.
+            if (m_bScratching) {
+                m_pScratchPositionEnable->set(0.0);
+                m_bScratching = false;
+            }
             m_pWheel->setParameter(0.5);
-            m_bBending = false;
+            m_bBending = true;
+        } else {
+            // If we are pitch-bending then disable and reset because the two
+            // shouldn't be used at once.
+            if (m_bBending) {
+                m_pWheel->setParameter(0.5);
+                m_bBending = false;
+            }
+            m_bScratching = true;
+            int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
+                        event->pos().x() : event->pos().y();
+            double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+            // Reversing the waveform's scroll direction also flips which way
+            // a drag along the waveform should scrub, so the motion still
+            // tracks what's visually under the cursor.
+            double dragDirection =
+                    WaveformWidgetFactory::instance()->isReverseWaveformDirection()
+                    ? 1.0
+                    : -1.0;
+            double targetPosition = dragDirection * eventPosValue * audioSamplePerPixel * 2;
+            m_pScratchPosition->set(targetPosition);
+            m_pScratchPositionEnable->set(1.0);
         }
-        m_bScratching = true;
-        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    event->pos().x() : event->pos().y();
-        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
-        // Reversing the waveform's scroll direction also flips which way
-        // a drag along the waveform should scrub, so the motion still
-        // tracks what's visually under the cursor.
-        double dragDirection =
-                WaveformWidgetFactory::instance()->isReverseWaveformDirection()
-                ? 1.0
-                : -1.0;
-        double targetPosition = dragDirection * eventPosValue * audioSamplePerPixel * 2;
-        m_pScratchPosition->set(targetPosition);
-        m_pScratchPositionEnable->set(1.0);
     } else if (event->button() == Qt::RightButton) {
         const auto currentTrack = m_waveformWidget->getTrackInfo();
         if (!isPlaying() && m_pHoveredMark) {
@@ -163,7 +175,10 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         // control since we manually connect it in LegacySkinParser regardless
         // of whether the skin specifies it. See ControlTTRotaryBehavior to see
         // where this value is handled.
-        double v = 0.5 + (diffValue / 1270.0);
+        // The divisor is user-configurable via the pitch bend sensitivity
+        // setting in Preferences > Decks.
+        double v = 0.5 +
+                (diffValue / WaveformWidgetFactory::instance()->getPitchBendDivisor());
         // clamp to [0.0, 1.0]
         v = math_clamp(v, 0.0, 1.0);
         m_pWheel->setParameter(v);
@@ -211,6 +226,21 @@ void WWaveformViewer::wheelEvent(QWheelEvent* event) {
             onZoomChange(m_waveformWidget->getZoom() * 1.05);
         }
     }
+}
+
+bool WWaveformViewer::event(QEvent* event) {
+    // Handles the macOS trackpad pinch-to-zoom gesture. Spreading the
+    // fingers apart (positive value()) zooms in, mirroring scrolling down
+    // in wheelEvent().
+    if (event->type() == QEvent::NativeGesture) {
+        auto* pGestureEvent = static_cast<QNativeGestureEvent*>(event);
+        if (pGestureEvent->gestureType() == Qt::ZoomNativeGesture && m_waveformWidget) {
+            double zoomFactor = 1.0 + pGestureEvent->value();
+            onZoomChange(m_waveformWidget->getZoom() * zoomFactor);
+            return true;
+        }
+    }
+    return WWidget::event(event);
 }
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* pEvent) {

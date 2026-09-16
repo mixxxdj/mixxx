@@ -149,7 +149,9 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition),
-          m_reverseWaveformDirection(false) {
+          m_reverseWaveformDirection(false),
+          m_leftClickPitchBendEnabled(false),
+          m_pitchBendSensitivity(kPitchBendSensitivityDefault) {
     m_pStemSplitTracksControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")));
     connect(m_pStemSplitTracksControl.get(),
@@ -453,6 +455,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     m_reverseWaveformDirection = m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("ReverseWaveformDirection")), false);
     setReverseWaveformDirection(m_reverseWaveformDirection);
+
+    m_leftClickPitchBendEnabled = m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("LeftClickPitchBendEnabled")), false);
+    m_pitchBendSensitivity = m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("PitchBendSensitivity")),
+            kPitchBendSensitivityDefault);
 
     int untilMarkShowBeats =
             m_config->getValueString(
@@ -833,6 +841,23 @@ void WaveformWidgetFactory::setReverseWaveformDirection(bool reverse) {
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setReverseWaveformDirection(m_reverseWaveformDirection);
+    }
+}
+
+void WaveformWidgetFactory::setLeftClickPitchBendEnabled(bool enabled) {
+    m_leftClickPitchBendEnabled = enabled;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("LeftClickPitchBendEnabled")),
+                m_leftClickPitchBendEnabled);
+    }
+}
+
+void WaveformWidgetFactory::setPitchBendSensitivity(int sensitivity) {
+    m_pitchBendSensitivity = math_clamp(
+            sensitivity, kPitchBendSensitivityMin, kPitchBendSensitivityMax);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("PitchBendSensitivity")),
+                m_pitchBendSensitivity);
     }
 }
 
