@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <algorithm>
 #include <array>
+#include <iterator>
 #include <optional>
 #include <vector>
 
@@ -28,7 +29,35 @@ const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_colo
 
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 
-constexpr int kMaxVisibleSamplerButtons = 16;
+struct ShowKey {
+    const char* key;
+    int count;
+    int blockCount;
+};
+
+const ShowKey kShowKeys[] = {
+        {"show_64samplers", 64, 8},
+        {"show_48samplers", 48, 6},
+        {"show_32samplers", 32, 4},
+        {"show_16samplers", 16, 2},
+        {"show_8samplers", 8, 1},
+        {"show_4samplers", 4, 0},
+};
+
+static const char* const kExpandKeys[] = {
+        "expand_samplers_1-8",
+        "expand_samplers_9-16",
+        "expand_samplers_17-24",
+        "expand_samplers_25-32",
+        "expand_samplers_33-40",
+        "expand_samplers_41-48",
+        "expand_samplers_49-56",
+        "expand_samplers_57-64",
+};
+
+constexpr int kNumExpandKeys = static_cast<int>(std::size(kExpandKeys));
+
+constexpr int kMaxVisibleSamplerButtons = 64;
 
 const QRegularExpression kUnsafeFilenameChars(
         QStringLiteral(R"([\\/:*?"<>|])"));
@@ -221,62 +250,72 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
 SamplerLayout WCueMenuPopup::currentSamplerLayout() const {
     SamplerLayout layout;
 
-    PollingControlProxy show4Proxy(
-            ConfigKey("[LateNight]", "show_4samplers"),
-            ControlFlag::AllowMissingOrInvalid);
-    PollingControlProxy show8Proxy(
-            ConfigKey("[LateNight]", "show_8samplers"),
-            ControlFlag::AllowMissingOrInvalid);
-    PollingControlProxy show16Proxy(
-            ConfigKey("[LateNight]", "show_16samplers"),
-            ControlFlag::AllowMissingOrInvalid);
-    PollingControlProxy expand1_8Proxy(
-            ConfigKey("[LateNight]", "expand_samplers_1-8"),
-            ControlFlag::AllowMissingOrInvalid);
-    PollingControlProxy expand9_16Proxy(
-            ConfigKey("[LateNight]", "expand_samplers_9-16"),
-            ControlFlag::AllowMissingOrInvalid);
+    int blockCount = -1;
+    bool isFourSamplerLayout = false;
+    QString activeShowKey;
 
-    const bool show4 = show4Proxy.valid() && show4Proxy.get() != 0.0;
-    const bool show8 = show8Proxy.valid() && show8Proxy.get() != 0.0;
-    const bool show16 = show16Proxy.valid() && show16Proxy.get() != 0.0;
-    const bool expand_1_8 = expand1_8Proxy.valid() && expand1_8Proxy.get() != 0.0;
-    const bool expand_9_16 = expand9_16Proxy.valid() && expand9_16Proxy.get() != 0.0;
-
-    qDebug() << "[WCUEMENUPOPUP] -> currentSamplerLayout config:"
-             << "show_4=" << show4
-             << "show_8=" << show8
-             << "show_16=" << show16
-             << "expand_1_8=" << expand_1_8
-             << "expand_9_16=" << expand_9_16;
-
-    if (show4 && !show8 && !show16) {
-        layout.samplerNumbers = {1, 2, 3, 4};
-        layout.columnsPerRow = {4};
-    } else if (show8 && !show16) {
-        if (expand_1_8) {
-            layout.samplerNumbers = {1, 2, 5, 6, 3, 4, 7, 8};
-            layout.columnsPerRow = {4, 4};
-        } else {
-            layout.samplerNumbers = {1, 2, 3, 4, 5, 6, 7, 8};
-            layout.columnsPerRow = {8};
-        }
-    } else if (show16) {
-        if (!expand_1_8 && !expand_9_16) {
-            layout.samplerNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-            layout.columnsPerRow = {8, 8};
-        } else if (expand_1_8 && !expand_9_16) {
-            layout.samplerNumbers = {1, 2, 5, 6, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-            layout.columnsPerRow = {4, 4, 8};
-        } else if (!expand_1_8 && expand_9_16) {
-            layout.samplerNumbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 11, 12, 15, 16};
-            layout.columnsPerRow = {8, 4, 4};
-        } else {
-            layout.samplerNumbers = {1, 2, 5, 6, 3, 4, 7, 8, 9, 10, 13, 14, 11, 12, 15, 16};
-            layout.columnsPerRow = {4, 4, 4, 4};
+    for (const auto& k : kShowKeys) {
+        PollingControlProxy proxy(
+                ConfigKey("[LateNight]", k.key),
+                ControlFlag::AllowMissingOrInvalid);
+        if (proxy.valid() && proxy.get() != 0.0) {
+            blockCount = k.blockCount;
+            isFourSamplerLayout = (k.count == 4);
+            activeShowKey = QString::fromLatin1(k.key);
+            break;
         }
     }
-    // else: no samplers visible -> empty layout
+
+    // read all expand states once so the debug line can print them.
+    std::array<bool, kNumExpandKeys> expandStates{};
+    for (int b = 0; b < kNumExpandKeys; ++b) {
+        PollingControlProxy expandProxy(
+                ConfigKey("[LateNight]", kExpandKeys[b]),
+                ControlFlag::AllowMissingOrInvalid);
+        expandStates[b] = expandProxy.valid() && expandProxy.get() != 0.0;
+    }
+
+    qDebug() << "[WCUEMENUPOPUP] -> currentSamplerLayout config:"
+             << "activeShowKey=" << activeShowKey
+             << "blockCount=" << blockCount
+             << "isFourSamplerLayout=" << isFourSamplerLayout
+             << "expand_1_8=" << expandStates[0]
+             << "expand_9_16=" << expandStates[1]
+             << "expand_17_24=" << expandStates[2]
+             << "expand_25_32=" << expandStates[3]
+             << "expand_33_40=" << expandStates[4]
+             << "expand_41_48=" << expandStates[5]
+             << "expand_49_56=" << expandStates[6]
+             << "expand_57_64=" << expandStates[7];
+
+    if (blockCount < 0) {
+        return layout;
+    }
+
+    if (isFourSamplerLayout) {
+        layout.samplerNumbers = {1, 2, 3, 4};
+        layout.columnsPerRow = {4};
+        return layout;
+    }
+
+    auto addBlock = [&layout](int first, bool expanded) {
+        if (expanded) {
+            layout.samplerNumbers
+                    << first << first + 1 << first + 4 << first + 5
+                    << first + 2 << first + 3 << first + 6 << first + 7;
+            layout.columnsPerRow << 4 << 4;
+        } else {
+            for (int i = 0; i < 8; ++i) {
+                layout.samplerNumbers << first + i;
+            }
+            layout.columnsPerRow << 8;
+        }
+    };
+
+    for (int b = 0; b < blockCount && b < kNumExpandKeys; ++b) {
+        const int firstSamplerNumber = b * 8 + 1;
+        addBlock(firstSamplerNumber, expandStates[b]);
+    }
 
     return layout;
 }
@@ -319,10 +358,6 @@ void WCueMenuPopup::rebuildExportToSamplerButtons() {
         return;
     }
 
-    if (!m_pLeftLayout) {
-        return;
-    }
-
     const SamplerLayout layout = currentSamplerLayout();
 
     qDebug() << "[WCUEMENUPOPUP] -> layout:"
@@ -332,6 +367,8 @@ void WCueMenuPopup::rebuildExportToSamplerButtons() {
     if (layout.samplerNumbers.isEmpty()) {
         return;
     }
+
+    PlayerManager* pPlayerManager = PlayerManager::instance();
 
     int pos = 0;
     for (int cols : layout.columnsPerRow) {
@@ -352,6 +389,32 @@ void WCueMenuPopup::rebuildExportToSamplerButtons() {
                 slotExportToSampler(samplerNumber - 1);
             });
 
+            // the gred shows colours for the sampler state:
+            // -> black = empty sampler
+            // -> red text if a track is loaded in the sampler, not playing
+            // -> orange background if the sampler is currently playing a NON-LOOP.
+            // -> red background if the sampler is currently playing a LOOP
+            if (pPlayerManager) {
+                const QString group =
+                        PlayerManager::groupForSampler(samplerNumber - 1);
+                const bool hasTrack = samplerHasLoadedTrack(pPlayerManager, group);
+                const bool isPlaying = samplerIsPlaying(group);
+                const bool isLooping = isPlaying && samplerIsLooping(group);
+
+                if (isLooping) {
+                    // Playing a loop
+                    btn->setStyleSheet(QStringLiteral(
+                            "background-color: #800000; color: #ffffff;"));
+                } else if (isPlaying) {
+                    // Playing a one-shot
+                    btn->setStyleSheet(QStringLiteral(
+                            "background-color: #b06000; color: #ffffff;"));
+                } else if (hasTrack) {
+                    // Loaded but stopped
+                    btn->setStyleSheet(QStringLiteral("color: #ff4040;"));
+                }
+            }
+
             pRow->addWidget(btn.get(), 1);
             m_pExportToSamplerButtons.push_back(std::move(btn));
         }
@@ -360,6 +423,32 @@ void WCueMenuPopup::rebuildExportToSamplerButtons() {
     }
 
     updateExportToSamplerButtons();
+}
+
+bool WCueMenuPopup::samplerIsPlaying(const QString& group) const {
+    ControlObject* pPlay = ControlObject::getControl(
+            ConfigKey(group, QStringLiteral("play")),
+            ControlFlag::AllowMissingOrInvalid);
+    return pPlay && pPlay->toBool();
+}
+
+bool WCueMenuPopup::samplerHasLoadedTrack(
+        PlayerManager* pPlayerManager, const QString& group) const {
+    if (!pPlayerManager) {
+        return false;
+    }
+    BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        return false;
+    }
+    return pPlayer->getLoadedTrack() != nullptr;
+}
+
+bool WCueMenuPopup::samplerIsLooping(const QString& group) const {
+    ControlObject* pRepeat = ControlObject::getControl(
+            ConfigKey(group, QStringLiteral("repeat")),
+            ControlFlag::AllowMissingOrInvalid);
+    return pRepeat && pRepeat->toBool();
 }
 
 void WCueMenuPopup::setTrackCueGroup(
@@ -1147,10 +1236,7 @@ void WCueMenuPopup::slotExportToSampler(int samplerIndex) {
     // DJs don't like boohoo.
 
     const QString targetGroup = PlayerManager::groupForSampler(samplerIndex);
-    ControlObject* pPlay = ControlObject::getControl(
-            ConfigKey(targetGroup, QStringLiteral("play")),
-            ControlFlag::AllowMissingOrInvalid);
-    if (pPlay && pPlay->toBool()) {
+    if (samplerIsPlaying(targetGroup)) {
         qWarning() << "[WCUEMENUPOPUP] -> Sample Export: target sampler"
                    << (samplerIndex + 1) << "is playing, refusing to export";
         hide();

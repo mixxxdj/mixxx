@@ -157,6 +157,11 @@ class WCueMenuPopup : public QWidget {
     std::vector<QHBoxLayout*> m_pSamplerButtonRows;
     QVBoxLayout* m_pLeftLayout = nullptr;
 
+    bool samplerIsPlaying(const QString& group) const;
+    bool samplerHasLoadedTrack(PlayerManager* pPlayerManager,
+            const QString& group) const;
+    bool samplerIsLooping(const QString& group) const;
+
   protected:
     void closeEvent(QCloseEvent* event) override;
 };
