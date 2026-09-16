@@ -2,6 +2,7 @@
 
 layout(std140, binding = 0) uniform buf {
     highp mat4 matrix;
+    highp float alpha;
 }
 ubuf;
 

@@ -14,28 +14,12 @@ namespace allshader {
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_options(options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
-}
-
-void WaveformRendererRGB::setAxesColor(const QColor& axesColor) {
-    getRgbF(axesColor, &m_axesColor_r, &m_axesColor_g, &m_axesColor_b, &m_axesColor_a);
-}
-
-void WaveformRendererRGB::setLowColor(const QColor& lowColor) {
-    getRgbF(lowColor, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
-}
-
-void WaveformRendererRGB::setMidColor(const QColor& midColor) {
-    getRgbF(midColor, &m_rgbMidColor_r, &m_rgbMidColor_g, &m_rgbMidColor_b);
-}
-
-void WaveformRendererRGB::setHighColor(const QColor& highColor) {
-    getRgbF(highColor, &m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode&) {
@@ -77,7 +61,7 @@ bool WaveformRendererRGB::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -116,7 +100,7 @@ bool WaveformRendererRGB::preprocessInner() {
 
     const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
-    const bool splitLeftRight = m_options & WaveformRendererSignalBase::Option::SplitStereoSignal;
+    const bool splitLeftRight = m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal;
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
     const float mid_r = static_cast<float>(m_rgbMidColor_r);

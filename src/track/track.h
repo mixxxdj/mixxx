@@ -382,7 +382,6 @@ class Track : public QObject {
 
     // Set the track's Beats if not locked
     bool trySetBeats(mixxx::BeatsPointer pBeats);
-    bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
     void undoBeatsChange();
     bool canUndoBeatsChange() const {
@@ -408,6 +407,8 @@ class Track : public QObject {
             mixxx::track::io::key::Source keySource = mixxx::track::io::key::USER);
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
+    void setTuningFrequencyHz(double tuningFrequencyHz);
+    double getTuningFrequencyHz() const;
 
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;

@@ -13,6 +13,7 @@
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
+#include "qml/qmlconfigproxybase.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"
 #include "skin/skinloader.h"
@@ -20,6 +21,7 @@
 #include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/widgethelper.h"
+#include "waveform/waveformwidgetfactory.h"
 
 using mixxx::skin::SkinManifest;
 using mixxx::skin::SkinPointer;
@@ -36,6 +38,7 @@ const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+const QString kForceHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
 
 // TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
@@ -59,18 +62,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_dDevicePixelRatio(1.0) {
     setupUi(this);
 
-    // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
-    m_dDevicePixelRatio = devicePixelRatioF();
-
-    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
-    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
-    // unusable GUI with visual artefacts
-    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
-    if (initialScaleFactor <= 0) {
-        initialScaleFactor = 1.0;
-    }
-    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
-    m_minScaleFactor = 1 / unscaledDevicePixelRatio;
+    updateScreenMetrics();
 
     // Locale setting
     // Iterate through the available locales and add them to the combobox
@@ -139,20 +131,7 @@ DlgPrefInterface::DlgPrefInterface(
                 tr("The minimum size of the selected skin is bigger than your "
                    "screen resolution."));
 
-        ComboBoxSkinconf->clear();
-        skinPreviewLabel->setText("");
-        skinDescriptionText->setText("");
-        skinDescriptionText->hide();
-
-        const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
-        int index = 0;
-        for (const SkinPointer& pSkin : skins) {
-            ComboBoxSkinconf->insertItem(index, pSkin->name());
-            m_skins.insert(pSkin->name(), pSkin);
-            index++;
-        }
-
-        ComboBoxSkinconf->setCurrentIndex(index);
+        slotUpdateSkins();
         // schemes must be updated here to populate the drop-down box and set m_colorScheme
         slotUpdateSchemes();
         slotSetSkinPreview();
@@ -206,6 +185,9 @@ DlgPrefInterface::DlgPrefInterface(
         m_multiSampling = m_pConfig->getValue<mixxx::preferences::MultiSamplingMode>(
                 ConfigKey(kPreferencesGroup, kMultiSamplingKey),
                 mixxx::preferences::MultiSamplingMode::Four);
+        m_forceHardwareAcceleration = m_pConfig->getValue<bool>(
+                ConfigKey(kPreferencesGroup, kForceHardwareAccelerationKey),
+                false);
         int multiSamplingIndex = multiSamplingComboBox->findData(
                 QVariant::fromValue((m_multiSampling)));
         if (multiSamplingIndex != -1) {
@@ -215,14 +197,17 @@ DlgPrefInterface::DlgPrefInterface(
             m_pConfig->setValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey),
                     mixxx::preferences::MultiSamplingMode::Disabled);
         }
+        checkBoxForceHardwareAcceleration->setChecked(m_forceHardwareAcceleration);
     } else
 #endif
     {
 #ifdef MIXXX_USE_QML
         m_multiSampling = mixxx::preferences::MultiSamplingMode::Disabled;
+        m_forceHardwareAcceleration = false;
 #endif
         multiSamplingLabel->hide();
         multiSamplingComboBox->hide();
+        checkBoxForceHardwareAcceleration->hide();
     }
 
     // Tooltip configuration
@@ -240,15 +225,88 @@ DlgPrefInterface::DlgPrefInterface(
 }
 
 QScreen* DlgPrefInterface::getScreen() const {
-    auto* pScreen =
-            mixxx::widgethelper::getScreen(*this);
-    if (!pScreen) {
-        // Obtain the primary screen. This is necessary if no window is
-        // available before the widget is displayed.
-        pScreen = qGuiApp->primaryScreen();
-    }
+    QScreen* pScreen = mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     DEBUG_ASSERT(pScreen);
     return pScreen;
+}
+
+void DlgPrefInterface::updateScreenMetrics() {
+    QScreen* pScreen = getScreen();
+    if (pScreen) {
+        // Use the resolved application screen instead of this page's DPR. In
+        // QML mode the preferences dialog can be constructed before the QML
+        // window exists, and this page might not yet be associated with the
+        // correct monitor.
+        m_dDevicePixelRatio = pScreen->devicePixelRatio();
+    } else {
+        m_dDevicePixelRatio = devicePixelRatioF();
+    }
+
+    // Calculate the minimum scale factor that leads to a device pixel ratio of 1.0
+    // m_dDevicePixelRatio must not drop below 1.0 because this creates an
+    // unusable GUI with visual artefacts
+    double initialScaleFactor = CmdlineArgs::Instance().getScaleFactor();
+    if (initialScaleFactor <= 0) {
+        initialScaleFactor = 1.0;
+    }
+    double unscaledDevicePixelRatio = m_dDevicePixelRatio / initialScaleFactor;
+    if (unscaledDevicePixelRatio > 0) {
+        m_minScaleFactor = 1 / unscaledDevicePixelRatio;
+    } else {
+        m_minScaleFactor = 1.0;
+    }
+}
+
+void DlgPrefInterface::slotUpdateSkins() {
+    if (!m_pSkinLoader) {
+        return;
+    }
+
+    ComboBoxSkinconf->blockSignals(true);
+    ComboBoxSkinconf->clear();
+    m_skins.clear();
+    skinPreviewLabel->setText("");
+    skinDescriptionText->setText("");
+    skinDescriptionText->hide();
+
+    // Check the text color of the palette for whether to use dark or light icons
+    QDir iconsPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        iconsPath.setPath(":/images/preferences/light/");
+    } else {
+        iconsPath.setPath(":/images/preferences/dark/");
+    }
+
+    // Set the user skin icon.
+    QIcon userSkinIcon(iconsPath.filePath("ic_custom.svg"));
+
+    const QList<SkinPointer> userSkins = m_pSkinLoader->getUserSkins();
+    int index = 0;
+    for (const SkinPointer& pSkin : userSkins) {
+        ComboBoxSkinconf->insertItem(index, userSkinIcon, pSkin->displayName(), pSkin->name());
+        m_skins.insert(pSkin->name(), pSkin);
+        index++;
+    }
+
+    // If there are user skins, we add a separator and the
+    // built-in skins also get an icon.
+    QIcon systemSkinIcon;
+    if (ComboBoxSkinconf->count() > 0) {
+        ComboBoxSkinconf->insertSeparator(index);
+        systemSkinIcon = QIcon(iconsPath.filePath("ic_mixxx_symbolic.svg"));
+        index++;
+    }
+
+    const QList<SkinPointer> systemSkins = m_pSkinLoader->getSystemSkins();
+    for (const SkinPointer& pSkin : systemSkins) {
+        ComboBoxSkinconf->insertItem(
+                index, systemSkinIcon, pSkin->displayName(), pSkin->name());
+        m_skins.insert(pSkin->name(), pSkin);
+        index++;
+    }
+
+    ComboBoxSkinconf->setCurrentIndex(index);
+    ComboBoxSkinconf->blockSignals(false);
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
@@ -295,14 +353,18 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
+    updateScreenMetrics();
+
     if (m_pSkinLoader) {
+        slotUpdateSkins();
+
         const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
         if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
             m_skinNameOnUpdate = pSkinOnUpdate->name();
         } else {
             m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
         }
-        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
+        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findData(m_skinNameOnUpdate));
         slotUpdateSchemes();
     }
 
@@ -330,7 +392,7 @@ void DlgPrefInterface::slotUpdate() {
 
 void DlgPrefInterface::slotResetToDefaults() {
     if (m_pSkinLoader) {
-        int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+        int index = ComboBoxSkinconf->findData(m_pSkinLoader->getDefaultSkinName());
         ComboBoxSkinconf->setCurrentIndex(index);
         slotSetSkin(index);
     }
@@ -358,6 +420,8 @@ void DlgPrefInterface::slotResetToDefaults() {
     multiSamplingComboBox->setCurrentIndex(
             multiSamplingComboBox->findData(QVariant::fromValue(
                     mixxx::preferences::MultiSamplingMode::Four))); // 4x MSAA
+    checkBoxForceHardwareAcceleration->setChecked(
+            false);
 #endif
 
 #ifdef Q_OS_IOS
@@ -375,6 +439,8 @@ void DlgPrefInterface::slotSetTooltips() {
         m_tooltipMode = mixxx::preferences::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
         m_tooltipMode = mixxx::preferences::Tooltips::OnlyInLibrary;
+    } else if (radioButtonTooltipsOnlyKbdShortcuts->isChecked()) {
+        m_tooltipMode = mixxx::preferences::Tooltips::OnlyKbdShortcuts;
     }
 }
 
@@ -384,6 +450,13 @@ void DlgPrefInterface::notifyRebootNecessary() {
             tr("Information"),
             tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
                "settings will take effect."));
+}
+
+void DlgPrefInterface::notifyExperimentalQmlSkinRestartNecessary() {
+    QMessageBox::information(this,
+            tr("Information"),
+            tr("Mixxx must be restarted with the --developer command line option "
+               "to use the experimental LateNight QML skin."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -431,7 +504,7 @@ void DlgPrefInterface::slotSetSkin(int) {
         return;
     }
 
-    QString newSkinName = ComboBoxSkinconf->currentText();
+    QString newSkinName = ComboBoxSkinconf->currentData().toString();
     if (newSkinName == m_pSkin->name()) {
         return;
     }
@@ -489,11 +562,20 @@ void DlgPrefInterface::slotApply() {
                     .value<mixxx::preferences::MultiSamplingMode>();
     m_pConfig->setValue<mixxx::preferences::MultiSamplingMode>(
             ConfigKey(kPreferencesGroup, kMultiSamplingKey), multiSampling);
+    bool forceHardwareAcceleration = checkBoxForceHardwareAcceleration->isChecked();
+    if (m_pConfig->exists(
+                ConfigKey(kPreferencesGroup, kForceHardwareAccelerationKey)) ||
+            forceHardwareAcceleration) {
+        m_pConfig->setValue(
+                ConfigKey(kPreferencesGroup, kForceHardwareAccelerationKey),
+                forceHardwareAcceleration);
+    }
 #endif
 
     if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
 #ifdef MIXXX_USE_QML
-            || multiSampling != m_multiSampling
+            || multiSampling != m_multiSampling ||
+            forceHardwareAcceleration != m_forceHardwareAcceleration
 #endif
     ) {
         notifyRebootNecessary();
@@ -502,6 +584,7 @@ void DlgPrefInterface::slotApply() {
         m_dScaleFactor = scaleFactor;
 #ifdef MIXXX_USE_QML
         m_multiSampling = multiSampling;
+        m_forceHardwareAcceleration = forceHardwareAcceleration;
 #endif
     }
 
@@ -509,11 +592,30 @@ void DlgPrefInterface::slotApply() {
     if (m_pSkin &&
             (m_pSkin->name() != m_skinNameOnUpdate ||
                     m_colorScheme != m_colorSchemeOnUpdate)) {
-        // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
-        emit reloadUserInterface();
-        // Allow switching skins multiple times without closing the dialog
-        m_skinNameOnUpdate = m_pSkin->name();
-        m_colorSchemeOnUpdate = m_colorScheme;
+        if (m_pSkin->type() == mixxx::skin::SkinType::QML) {
+            if (m_pSkin->name() != m_skinNameOnUpdate) {
+                notifyExperimentalQmlSkinRestartNecessary();
+                m_skinNameOnUpdate = m_pSkin->name();
+                m_colorSchemeOnUpdate = m_colorScheme;
+                return;
+            } else {
+                if (mixxx::qml::QmlConfigProxyBase::s_pInstance) {
+                    mixxx::qml::QmlConfigProxyBase::s_pInstance->setConfigScheme(m_colorScheme);
+                }
+                m_colorSchemeOnUpdate = m_colorScheme;
+            }
+        } else if (!WaveformWidgetFactory::isCreated()) {
+            notifyExperimentalQmlSkinRestartNecessary();
+            m_skinNameOnUpdate = m_pSkin->name();
+            m_colorSchemeOnUpdate = m_colorScheme;
+            return;
+        } else {
+            // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
+            emit reloadUserInterface();
+            // Allow switching skins multiple times without closing the dialog
+            m_skinNameOnUpdate = m_pSkin->name();
+            m_colorSchemeOnUpdate = m_colorScheme;
+        }
     }
 }
 
@@ -531,6 +633,9 @@ void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
         break;
     case mixxx::preferences::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
+        break;
+    case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+        radioButtonTooltipsOnlyKbdShortcuts->setChecked(true);
         break;
     case mixxx::preferences::Tooltips::On:
     default:

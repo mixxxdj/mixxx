@@ -68,6 +68,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotCueMenuPopupAboutToHide();
 
     void slotTypeControlChanged(double v);
+    void slotStereoControlChanged(double v);
     void slotMinuteMarkersChanged(bool v);
     void slotScalingChanged();
 
@@ -141,12 +142,18 @@ class WOverview : public WWidget, public TrackDropTarget {
         }
     }
 
-    // Hold the last visual sample processed to generate the pixmap
+    /// Returns the menu pointer.
+    /// Creates and connects the menu on first call
+    WCueMenuPopup* getMenu();
+    bool menuIsCreated();
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
 
     mixxx::OverviewType m_type;
+    bool m_stereo;
+
+    // Hold the last visual sample processed to generate the pixmap
     int m_actualCompletion;
     bool m_pixmapDone;
     float m_waveformPeak;
@@ -155,7 +162,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_endOfTrack;
     bool m_bPassthroughEnabled;
 
+    /// Note: the menu should not be used directly since it is created only on
+    /// demand to reduce skin loading time.
+    /// Use getMenu() menuIsCreated() instead.
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;
@@ -195,6 +206,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     PollingControlProxy m_playpositionControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
+    parented_ptr<ControlProxy> m_pStereoControl;
     parented_ptr<ControlProxy> m_pMinuteMarkersControl;
     // Controls to trigger update of amplitude scaling
     parented_ptr<ControlProxy> m_pReplayGain;

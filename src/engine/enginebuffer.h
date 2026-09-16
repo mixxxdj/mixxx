@@ -88,15 +88,18 @@ class EngineBuffer : public EngineObject {
 #ifdef __RUBBERBAND__
         RubberBandFaster = 1,
         RubberBandFiner = 2,
+        RubberBandR3ShortWindow = 3,
 #endif
     };
+    Q_ENUM(KeylockEngine);
 
     // intended for iteration over the KeylockEngine enum
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
             KeylockEngine::SoundTouch,
 #ifdef __RUBBERBAND__
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner
+            KeylockEngine::RubberBandFiner,
+            KeylockEngine::RubberBandR3ShortWindow,
 #endif
     };
 
@@ -114,6 +117,9 @@ class EngineBuffer : public EngineObject {
     double getSpeed() const;
     mixxx::audio::ChannelCount getChannelCount() const {
         return m_channelCount;
+    }
+    mixxx::audio::FramePos getPlayPos() const {
+        return m_playPos;
     }
     bool getScratching() const;
     bool isReverse() const;
@@ -171,21 +177,26 @@ class EngineBuffer : public EngineObject {
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
         case KeylockEngine::SoundTouch:
-            return tr("Soundtouch (faster)");
+            return tr("Soundtouch (fastest, low quality)");
 #ifdef __RUBBERBAND__
         case KeylockEngine::RubberBandFaster:
-            return tr("Rubberband (better)");
+            return tr("Rubberband (fast, medium quality)");
         case KeylockEngine::RubberBandFiner:
             if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
-                return tr("Rubberband R3 (near-hi-fi quality)");
+                return tr("Rubberband R3 MW (slow, highest quality)");
+            }
+            [[fallthrough]];
+        case KeylockEngine::RubberBandR3ShortWindow:
+            if (EngineBufferScaleRubberBand::isEngineFinerAvailable()) {
+                return tr("Rubberband R3 SW (fast, high quality)");
             }
             [[fallthrough]];
 #endif
         default:
 #ifdef __RUBBERBAND__
-            return tr("Unknown, using Rubberband (better)");
+            return tr("Unknown, using Rubberband (fast, medium quality)");
 #else
-            return tr("Unknown, using Soundtouch");
+            return tr("Unknown, using Soundtouch (fastest, low quality)");
 #endif
         }
     }
@@ -198,6 +209,7 @@ class EngineBuffer : public EngineObject {
         case KeylockEngine::RubberBandFaster:
             return true;
         case KeylockEngine::RubberBandFiner:
+        case KeylockEngine::RubberBandR3ShortWindow:
             return EngineBufferScaleRubberBand::isEngineFinerAvailable();
 #endif
         default:
@@ -239,6 +251,8 @@ class EngineBuffer : public EngineObject {
     void seekExact(mixxx::audio::FramePos);
 
     void verifyPlay();
+
+    void slipQuitAndAdopt();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -471,6 +485,7 @@ class EngineBuffer : public EngineObject {
     ControlValueAtomic<QueuedSeek> m_queuedSeek;
     bool m_previousBufferSeek = false;
 
+    QAtomicInt m_slipQuitAndAdopt;
     /// Indicates that no seek is queued
     static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
     /// indicates a clone seek on a bosition from another deck

@@ -61,7 +61,8 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     }
 
   signals:
-    FocusWidget setLibraryFocus(FocusWidget newFocus);
+    FocusWidget setLibraryFocus(FocusWidget newFocus,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
 
   public slots:
     // Show the view registered with the given name. Does nothing if the current

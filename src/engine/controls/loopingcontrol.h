@@ -49,7 +49,7 @@ class LoopingControl : public EngineControl {
 
     // Wrapper to use adjustedPositionInsideAdjustedLoop() with the current loop.
     // Called from EngineBuffer while slip mode is enabled
-    mixxx::audio::FramePos adjustedPositionForCurrentLoop(
+    mixxx::audio::FramePos adjustedPositionForCurrentLoopOrRepeat(
             mixxx::audio::FramePos newPosition,
             bool reverse);
 
@@ -96,8 +96,8 @@ class LoopingControl : public EngineControl {
     bool isLoopRollActive() {
         return m_bLoopRollActive;
     }
-    bool loopWasEnabledBeforeSlipEnable() {
-        return m_bLoopWasEnabledBeforeSlipEnable;
+    bool loopOrRepeatWasEnabledBeforeSlipEnable() {
+        return m_bloopOrRepeatWasEnabledBeforeSlipEnable;
     }
 
     void trackLoaded(TrackPointer pNewTrack) override;
@@ -161,6 +161,7 @@ class LoopingControl : public EngineControl {
 
   private:
     void setLoopingEnabled(bool enabled);
+    void repeatToggled(double value);
     void setLoopInToCurrentPosition();
     void setLoopOutToCurrentPosition();
 
@@ -226,7 +227,7 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
-    bool m_bLoopWasEnabledBeforeSlipEnable;
+    bool m_bloopOrRepeatWasEnabledBeforeSlipEnable;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
     bool m_bAdjustingLoopInOld;

@@ -6,7 +6,7 @@
 class WaveformRendererRGB : public WaveformRendererSignalBase {
   public:
     explicit WaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidget);
+            WaveformWidgetRenderer* waveformWidget, ::WaveformRendererSignalBase::Options options);
     virtual ~WaveformRendererRGB();
 
     virtual void onSetup(const QDomNode& node);

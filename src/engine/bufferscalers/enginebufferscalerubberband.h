@@ -30,6 +30,9 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     // Enable engine v3 if available
     void useEngineFiner(bool enable);
 
+    // Enable short window if available (only for R3)
+    void useOptionWindowShort(bool enable);
+
     void setScaleParameters(double base_rate,
                             double* pTempoRatio,
                             double* pPitchRatio) override;
@@ -85,4 +88,5 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     SINT m_remainingPaddingInOutput = 0;
 
     bool m_useEngineFiner;
+    bool m_useOptionWindowShort;
 };

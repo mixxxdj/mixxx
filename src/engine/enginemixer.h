@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QVarLengthArray>
+#include <array>
 #include <atomic>
 #include <gsl/pointers>
 #include <memory>
@@ -118,12 +119,12 @@ class EngineMixer : public QObject, public AudioSource {
         ChannelInfo(int index)
                 : m_index(index) {
         }
-        ChannelHandle m_handle{};
-        std::unique_ptr<EngineChannel> m_pChannel{nullptr};
-        mixxx::SampleBuffer m_pBuffer{};
-        std::unique_ptr<ControlObject> m_pVolumeControl{nullptr};
-        std::unique_ptr<ControlPushButton> m_pMuteControl{nullptr};
-        GroupFeatureState m_features{};
+        ChannelHandle m_handle;
+        std::unique_ptr<EngineChannel> m_pChannel;
+        mixxx::SampleBuffer m_pBuffer;
+        std::unique_ptr<ControlObject> m_pVolumeControl;
+        std::unique_ptr<ControlPushButton> m_pMuteControl;
+        GroupFeatureState m_features;
         int m_index;
     };
 
@@ -270,9 +271,6 @@ class EngineMixer : public QObject, public AudioSource {
     // non-owning. lifetime bound to EffectsManager
     EngineEffectsManager* m_pEngineEffectsManager;
 
-    // List of channels added to the engine.
-    QVarLengthArray<std::unique_ptr<ChannelInfo>, kPreallocatedChannels> m_channels;
-
     // The previous gain of each channel for each mixing output (main,
     // headphone, talkover).
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
@@ -297,6 +295,9 @@ class EngineMixer : public QObject, public AudioSource {
 
     parented_ptr<EngineWorkerScheduler> m_pWorkerScheduler;
     std::unique_ptr<EngineSync> m_pEngineSync;
+
+    // List of channels added to the engine. (depends on m_pEngineSync)
+    QVarLengthArray<std::unique_ptr<ChannelInfo>, kPreallocatedChannels> m_channels;
 
     std::unique_ptr<ControlObject> m_pMainGain;
     std::unique_ptr<ControlObject> m_pBoothGain;

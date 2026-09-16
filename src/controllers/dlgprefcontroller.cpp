@@ -18,9 +18,10 @@
 #endif
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgcontrollerlearning.h"
-#ifdef __HID__
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
 #include "controllers/hid/hidcontroller.h"
 #endif
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -90,7 +91,15 @@ DlgPrefController::DlgPrefController(
           m_inputMappingsTabIndex(-1),
           m_outputMappingsTabIndex(-1),
           m_settingsTabIndex(-1),
-          m_screensTabIndex(-1) {
+          m_screensTabIndex(-1)
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
+          ,
+          m_hidReportTabsManager(nullptr) {
+    qRegisterMetaType<const hid::reportDescriptor::Control*>();
+#else
+{
+#endif
+
     m_ui.setupUi(this);
     // Create text color for the file and wiki links
     createLinkColor();
@@ -196,9 +205,9 @@ DlgPrefController::DlgPrefController(
         m_ui.labelUsbInterfaceNumberValue->setVisible(false);
     }
 
-#ifdef __HID__
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
     // Display HID UsagePage and Usage if the controller is an HidController
-    if (auto* hidController = dynamic_cast<HidController*>(m_pController)) {
+    if (auto* hidController = qobject_cast<HidController*>(m_pController)) {
         m_ui.labelHidUsagePageValue->setText(QStringLiteral("%1 (%2)")
                         .arg(formatHex(hidController->getUsagePage()),
                                 hidController->getUsagePageDescription()));
@@ -210,6 +219,12 @@ DlgPrefController::DlgPrefController(
         m_ui.labelHidUsagePageValue->setVisible(true);
         m_ui.labelHidUsage->setVisible(true);
         m_ui.labelHidUsageValue->setVisible(true);
+
+        // Create HID report tabs
+        m_hidReportTabsManager =
+                std::make_unique<ControllerHidReportTabsManager>(
+                        m_ui.controllerTabs, hidController);
+        m_hidReportTabsManager->createReportTypeTabs();
     } else
 #endif
     {
@@ -1188,7 +1203,7 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
     }
 #endif
 
-    // Inputs tab
+    // MIDI Inputs tab
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this,
                     m_pControlPickerMenu,
@@ -1216,7 +1231,7 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
     // Trigger search when the model was recreated after hitting Apply
     slotInputControlSearch();
 
-    // Outputs tab
+    // MIDI Outputs tab
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this,
                     m_pControlPickerMenu,

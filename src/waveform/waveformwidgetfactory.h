@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QSurfaceFormat>
 #include <QVector>
+#include <memory>
 #include <vector>
 
 #include "preferences/usersettings.h"
@@ -10,6 +11,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
 
@@ -20,6 +22,7 @@ class WaveformWidgetAbstract;
 class VSyncThread;
 class GuiTick;
 class VisualsManager;
+class ControlObject;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -61,11 +64,11 @@ class WaveformWidgetAbstractHandle {
     }
 
 #ifdef MIXXX_USE_QOPENGL
-    allshader::WaveformRendererSignalBase::Options supportedOptions(
+    WaveformRendererSignalBase::Options supportedOptions(
             WaveformWidgetBackend backend) const {
         return backend == WaveformWidgetBackend::AllShader
                 ? m_supportedOption
-                : allshader::WaveformRendererSignalBase::Option::None;
+                : WaveformRendererSignalBase::Option::None;
     }
 #endif
 
@@ -77,7 +80,7 @@ class WaveformWidgetAbstractHandle {
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
-    allshader::WaveformRendererSignalBase::Options m_supportedOption;
+    WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 
     friend class WaveformWidgetFactory;
@@ -175,6 +178,7 @@ class WaveformWidgetFactory : public QObject,
     void setStemReorderOnChange(bool value);
     void setStemOutlineOpacity(float value);
     void setStemOpacity(float value);
+    void setStemSplitTracks(bool value);
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -200,13 +204,16 @@ class WaveformWidgetFactory : public QObject,
     float getStemOpacity() const {
         return m_stemOpacity;
     }
+    bool isStemSplitTracks() const {
+        return m_stemSplitTracks;
+    }
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
     static float toUntilMarkTextHeightLimit(int index);
     static int toUntilMarkTextHeightLimitIndex(float value);
 
     /// Returns the desired surface format for the OpenGLWindow
-    static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
+    static QSurfaceFormat getSurfaceFormat(UserSettingsPointer pConfig = nullptr);
 
   protected:
     bool setWidgetType(
@@ -269,6 +276,7 @@ class WaveformWidgetFactory : public QObject,
     void stemReorderOnChangeChanged(bool value);
     void stemOutlineOpacityChanged(float value);
     void stemOpacityChanged(float value);
+    void stemSplitTracksChanged(bool value);
 
   public slots:
     void slotSkinLoaded();
@@ -298,8 +306,11 @@ class WaveformWidgetFactory : public QObject,
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
-            WaveformWidgetType::Type type, WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
+            WaveformWidgetType::Type type,
+            WWaveformViewer* pViewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createWaveformWidget(
+            WaveformWidgetType::Type type, WWaveformViewer* pViewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);
@@ -333,6 +344,8 @@ class WaveformWidgetFactory : public QObject,
     bool m_stemReorderOnChange;
     float m_stemOutlineOpacity;
     float m_stemOpacity;
+    bool m_stemSplitTracks;
+    std::unique_ptr<ControlObject> m_pStemSplitTracksControl;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
@@ -345,11 +358,17 @@ class WaveformWidgetFactory : public QObject,
     VisualsManager* m_pVisualsManager;  // not owned
 
     // TODO(#13245): Migrate the following methods to smart pointer.
-    WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createFilteredWaveformWidget(
+            WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug

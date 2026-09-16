@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[o:mixxx-dj-software:p:mixxxdj:r:mixxx2-6]
+[o:mixxx-dj-software:p:mixxxdj:r:mixxx2-7]
 file_filter  = res/translations/mixxx_<lang>.ts
 source_file  = res/translations/mixxx.ts
 source_lang  = en

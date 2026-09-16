@@ -2,7 +2,7 @@
 <Template>
   <SetVariable name="StemGroup">[Channel<Variable name="ChanNum"/>_Stem<Variable name="StemNum"/>]</SetVariable>
   <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
-  <SetVariable name="label_width">30min</SetVariable>
+  <SetVariable name="label_width">0f</SetVariable>
 
   <WidgetGroup>
     <ObjectName>StemChannel_ControlContainer</ObjectName>

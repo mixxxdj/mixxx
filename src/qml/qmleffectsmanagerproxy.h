@@ -5,6 +5,7 @@
 #include "effects/effectsmanager.h"
 #include "qml/qmlchainpresetmodel.h"
 #include "qml/qmleffectslotproxy.h"
+#include "qml/qmleffectunitproxy.h"
 #include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
@@ -15,9 +16,11 @@ class QmlChainPresetModel;
 class QmlEffectsManagerProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(mixxx::qml::QmlVisibleEffectsModel* visibleEffectsModel
-                    MEMBER m_pVisibleEffectsModel CONSTANT);
+                    MEMBER m_pVisibleEffectsModel CONSTANT)
     Q_PROPERTY(mixxx::qml::QmlChainPresetModel* quickChainPresetModel
-                    MEMBER m_pQuickChainPresetModel CONSTANT);
+                    MEMBER m_pQuickChainPresetModel CONSTANT)
+    Q_PROPERTY(mixxx::qml::QmlChainPresetModel* standardChainPresetModel
+                    MEMBER m_pStandardChainPresetModel CONSTANT)
     QML_NAMED_ELEMENT(EffectsManager)
     QML_SINGLETON
 
@@ -28,6 +31,7 @@ class QmlEffectsManagerProxy : public QObject {
 
     Q_INVOKABLE mixxx::qml::QmlEffectSlotProxy* getEffectSlot(
             int unitNumber, int effectNumber) const;
+    Q_INVOKABLE mixxx::qml::QmlEffectUnitProxy* getEffectUnit(int unitNumber) const;
 
     static QmlEffectsManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static void registerEffectsManager(std::shared_ptr<EffectsManager> pEffectsManager) {
@@ -40,6 +44,8 @@ class QmlEffectsManagerProxy : public QObject {
     const std::shared_ptr<EffectsManager> m_pEffectsManager;
     QmlVisibleEffectsModel* m_pVisibleEffectsModel;
     QmlChainPresetModel* m_pQuickChainPresetModel;
+    QmlChainPresetModel* m_pStandardChainPresetModel;
+    QList<QmlEffectUnitProxy*> m_effectUnitProxies;
 };
 
 } // namespace qml

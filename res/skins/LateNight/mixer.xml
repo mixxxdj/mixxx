@@ -1,5 +1,6 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+  <SetVariable name="xfaderMid">warning</SetVariable>
 
   <WidgetGroup>
     <SizePolicy>max,me</SizePolicy>

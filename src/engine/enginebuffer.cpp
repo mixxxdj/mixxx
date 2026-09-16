@@ -80,6 +80,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_baserate_old(0),
           m_rate_old(0.),
           m_trackEndPositionOld(mixxx::audio::kInvalidFramePos),
+          m_samplesSinceLastIndicatorUpdate(0),
           m_slipPos(mixxx::audio::kStartFramePos),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
@@ -92,6 +93,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
+          m_slipQuitAndAdopt(0),
           m_bPlayAfterLoading(false),
           m_channelCount(mixxx::kEngineChannelOutputCount),
           m_pCrossfadeBuffer(SampleUtil::alloc(
@@ -265,7 +267,8 @@ EngineBuffer::EngineBuffer(const QString& group,
             Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
-                                               m_pLoopingControl);
+            m_pLoopingControl,
+            m_pCueControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
     m_pKeylockEngine = new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);
@@ -307,10 +310,10 @@ EngineBuffer::~EngineBuffer() {
     df.close();
 #endif
 
-    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
-
     delete m_pReadAheadManager;
     delete m_pReader;
+
+    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
 
     delete m_playButton;
     delete m_playStartButton;
@@ -755,10 +758,9 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     VERIFY_OR_DEBUG_ASSERT(!util_isnan(fractionalPos)) {
         return;
     }
-
-    // FIXME: Use maybe invalid here
     const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
-    VERIFY_OR_DEBUG_ASSERT(trackEndPosition.isValid()) {
+    if (!trackEndPosition.isValid()) {
+        // happens if no track is loaded
         return;
     }
     const auto seekPosition = trackEndPosition * fractionalPos;
@@ -870,11 +872,18 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 #ifdef __RUBBERBAND__
     case KeylockEngine::RubberBandFaster:
         m_pScaleRB->useEngineFiner(false);
+        m_pScaleRB->useOptionWindowShort(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
     case KeylockEngine::RubberBandFiner:
         m_pScaleRB->useEngineFiner(
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
+        m_pScaleRB->useOptionWindowShort(false);
+        m_pScaleKeylock = m_pScaleRB;
+        break;
+    case KeylockEngine::RubberBandR3ShortWindow:
+        m_pScaleRB->useEngineFiner(true);
+        m_pScaleRB->useOptionWindowShort(true);
         m_pScaleKeylock = m_pScaleRB;
         break;
 #endif
@@ -882,6 +891,11 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         slotKeylockEngineChanged(static_cast<double>(defaultKeylockEngine()));
         break;
     }
+}
+
+void EngineBuffer::slipQuitAndAdopt() {
+    m_slipQuitAndAdopt.storeRelease(1);
+    m_pSlipButton->set(0);
 }
 
 void EngineBuffer::processTrackLocked(
@@ -988,11 +1002,11 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    if (speed != 0.0) {
-        // Do not switch scaler when we have no transport
+    if (speed != 0.0 || is_scratching) {
+        // Do not switch scaler when we have no transport, except when we start scratching.
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                 bufferSize);
-    } else if (m_speed_old != 0 && !is_scratching) {
+    } else if (m_speed_old != 0) {
         // we are stopping, collect samples for fade out
         readToCrossfadeBuffer(bufferSize);
         // Clear the scaler information
@@ -1226,8 +1240,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
     m_pScaleRB->setSignal(m_sampleRate, m_channelCount);
 #endif
 
-    bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
-    if (hasStableTrack && m_pause.tryLock()) {
+    if (isTrackLoaded() && m_pause.tryLock()) {
         processTrackLocked(pOutput, bufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
@@ -1277,8 +1290,12 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
             m_slipPos = m_playPos;
             m_dSlipRate = m_rate_old;
         } else {
-            // TODO(owen) assuming that looping will get canceled properly
-            seekExact(m_slipPos.toNearestFrameBoundary());
+            // If m_slipQuitAndAdopt is 1 we've already quit slip mode
+            // but we don't seek in that case.
+            if (m_slipQuitAndAdopt.fetchAndStoreAcquire(0) == 0) {
+                // TODO(owen) assuming that looping will get canceled properly
+                seekExact(m_slipPos.toNearestFrameBoundary());
+            }
             m_slipPos = mixxx::audio::kStartFramePos;
         }
     }
@@ -1296,15 +1313,20 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
         DEBUG_ASSERT(bufferFrameCount * m_channelCount == bufferSize);
         const mixxx::audio::FrameDiff_t slipDelta =
                 static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
-        // Simulate looping if a regular loop is active
-        if (m_pLoopingControl->isLoopingEnabled() &&
-                m_pLoopingControl->loopWasEnabledBeforeSlipEnable() &&
+        // Simulate looping if a regular loop is active or repeat is enabled
+        bool looping = m_pLoopingControl->isLoopingEnabled();
+        if ((looping || m_pRepeat->toBool()) &&
+                m_pLoopingControl->loopOrRepeatWasEnabledBeforeSlipEnable() &&
                 !m_pLoopingControl->isLoopRollActive()) {
             const mixxx::audio::FramePos newPos = m_slipPos + slipDelta;
-            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
+            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoopOrRepeat(
                     newPos,
                     m_dSlipRate < 0);
-            m_slipModeState = SlipModeState::Armed;
+            if (looping) {
+                m_slipModeState = SlipModeState::Armed;
+            } else { // repeat
+                m_slipModeState = SlipModeState::Running;
+            }
         } else {
             m_slipPos += slipDelta;
             m_slipModeState = SlipModeState::Running;
@@ -1516,6 +1538,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
                     kPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
+        m_samplesSinceLastIndicatorUpdate = 0;
     }
 
     // Update visual control object, this needs to be done more often than the
@@ -1601,10 +1624,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 }
 
 bool EngineBuffer::isTrackLoaded() const {
-    if (m_pCurrentTrack) {
-        return true;
-    }
-    return false;
+    return (m_pCurrentTrack && m_iTrackLoading.loadAcquire() == 0);
 }
 
 TrackPointer EngineBuffer::getLoadedTrack() const {

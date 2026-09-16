@@ -110,6 +110,17 @@ if(PortAudio_FOUND)
           PROPERTY INTERFACE_LINK_LIBRARIES JACK::jack
         )
       endif()
+      if(CMAKE_SYSTEM_NAME STREQUAL Android)
+        find_package(Oboe)
+        if(NOT (OBOE_FOUND))
+          message(FATAL_ERROR "Oboe: not found")
+        endif()
+        set_property(
+          TARGET PortAudio::PortAudio
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES Oboe::Oboe
+        )
+      endif()
     endif()
     if(PortAudio_ALSA_H)
       target_compile_definitions(PortAudio::PortAudio INTERFACE PA_USE_ALSA)

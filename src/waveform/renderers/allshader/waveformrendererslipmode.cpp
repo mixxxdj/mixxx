@@ -5,11 +5,14 @@
 #include <memory>
 
 #include "control/controlproxy.h"
+#include "engine/engine.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
+#include "track/track.h"
 #include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
@@ -44,8 +47,12 @@ void WaveformRendererSlipMode::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
-    m_pSlipModeControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled")));
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        m_pSlipModeControl.reset();
+        return true;
+    }
+    m_pSlipModeControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
 
     return true;
 }
@@ -79,9 +86,16 @@ void WaveformRendererSlipMode::preprocess() {
 }
 
 bool WaveformRendererSlipMode::preprocessInner() {
-    if (!m_pSlipModeControl->toBool() || !m_waveformRenderer->isSlipActive()) {
+    if (!m_pSlipModeControl || !m_pSlipModeControl->toBool() ||
+            !m_waveformRenderer->isSlipActive()) {
         return false;
     }
+
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    const bool isStemTrack = pTrack && pTrack->hasStem() &&
+            pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
+    const bool splitStemTracks = isStemTrack &&
+            WaveformWidgetFactory::instance()->isStemSplitTracks();
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
@@ -94,38 +108,55 @@ bool WaveformRendererSlipMode::preprocessInner() {
 
     const float posx1 = 0.f;
     const float posx2 = m_waveformRenderer->getLength();
-    const float posy1 = 0.f;
-    const float posy2 = m_waveformRenderer->getBreadth() / 2.f;
+    const float breadth = m_waveformRenderer->getBreadth();
 
-    const float sideBorderOutlineSide = m_slipBorderTopOutlineSize;
+    const int numBoxes = splitStemTracks ? mixxx::kMaxSupportedStems : 1;
+    const float boxBreadth = splitStemTracks
+            ? breadth / static_cast<float>(mixxx::kMaxSupportedStems)
+            : breadth;
+
+    const float topOutlineSize = splitStemTracks
+            ? m_slipBorderTopOutlineSize / static_cast<float>(mixxx::kMaxSupportedStems)
+            : m_slipBorderTopOutlineSize;
+    const float bottomOutlineSize = splitStemTracks
+            ? m_slipBorderBottomOutlineSize / static_cast<float>(mixxx::kMaxSupportedStems)
+            : m_slipBorderBottomOutlineSize;
+    const float sideBorderOutlineSide = topOutlineSize;
 
     const QVector4D bgColor{0.f, 0.f, 0.f, 1.f};
     const QVector4D borderColor{m_color.redF(), m_color.greenF(), m_color.blueF(), alpha};
     const QVector4D borderColor0{m_color.redF(), m_color.greenF(), m_color.blueF(), 0.f};
 
-    const int numVerticesPerLine = 6;            // 2 triangles
-    geometry().allocate(numVerticesPerLine * 5); // border on 4 sides + bgColor filler in center
+    const int numVerticesPerLine = 6; // 2 triangles
+    geometry().allocate(numVerticesPerLine * 5 *
+            numBoxes); // border on 4 sides + bgColor filler in center
 
     RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
 
-    vertexUpdater.addRectangle(
-            {posx1, posy1},
-            {posx2, posy2},
-            bgColor);
+    for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+        const float posy1 = boxIdx * boxBreadth;
+        const float posy2 = posy1 + boxBreadth / 2.f;
 
-    vertexUpdater.addRectangle(
-            {posx1, posy1}, {posx2, posy1 + m_slipBorderTopOutlineSize}, borderColor);
-    vertexUpdater.addRectangle({posx1, posy1 + m_slipBorderTopOutlineSize},
-            {posx1 + sideBorderOutlineSide,
-                    posy2},
-            borderColor);
-    vertexUpdater.addRectangle({posx2 - sideBorderOutlineSide, posy1 + m_slipBorderTopOutlineSize},
-            {posx2, posy2},
-            borderColor);
-    vertexUpdater.addRectangleVGradient({posx1, posy2},
-            {posx2, posy2 + m_slipBorderBottomOutlineSize},
-            borderColor,
-            borderColor0);
+        vertexUpdater.addRectangle(
+                {posx1, posy1},
+                {posx2, posy2},
+                bgColor);
+
+        vertexUpdater.addRectangle(
+                {posx1, posy1}, {posx2, posy1 + topOutlineSize}, borderColor);
+        vertexUpdater.addRectangle({posx1, posy1 + topOutlineSize},
+                {posx1 + sideBorderOutlineSide,
+                        posy2},
+                borderColor);
+        vertexUpdater.addRectangle({posx2 - sideBorderOutlineSide, posy1 + topOutlineSize},
+                {posx2, posy2},
+                borderColor);
+        vertexUpdater.addRectangleVGradient({posx1, posy2},
+                {posx2, posy2 + bottomOutlineSize},
+                borderColor,
+                borderColor0);
+    }
+
     markDirtyGeometry();
     markDirtyMaterial();
 

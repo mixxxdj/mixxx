@@ -284,7 +284,7 @@ class YearFilterNode : public NumericFilterNode {
 
 class DateAddedFilterNode : public QueryNode {
   public:
-    DateAddedFilterNode(const QString& argument);
+    DateAddedFilterNode(QString& argument);
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
 

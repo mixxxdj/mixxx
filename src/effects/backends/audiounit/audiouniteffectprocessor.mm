@@ -185,7 +185,7 @@ void AudioUnitEffectProcessor::syncParameters() {
 
     int i = 0;
     for (auto parameter : m_parameters) {
-        if (m_lastValues.size() < i) {
+        if (m_lastValues.size() <= i) {
             static_assert(sizeof(AudioUnitParameterValue) == sizeof(float));
             m_lastValues.push_back(util_float_nan());
         }

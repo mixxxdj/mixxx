@@ -13,6 +13,7 @@ WTrackProperty,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
+WBpmEditor QDoubleSpinBox,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -234,7 +235,7 @@ WPushButton,
 #SamplerBpmMini,
 #PreviewBPM,
 #LibraryFeatureControls QRadioButton {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 WKey,
@@ -481,14 +482,9 @@ WSpinny { /*
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
-#BpmRateTapContainer {
-  margin: 1px;
-}
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
-}
-#RateSliderBoxCompactSync {
   margin-left: 5px;
 }
 
@@ -498,6 +494,18 @@ WTrackProperty[selected="false"] {
   border: 0px solid transparent;
   border-radius: 1px;
 }
+
+#BpmClickOverlay,
+#BpmTapButton,
+#BpmTapButton:focus {
+  background-color: transparent;
+}
+WBpmEditor,
+#BpmClickOverlay {
+  border: none;
+}
+
+
 /************** Decks  ********************************************************/
 
 
@@ -657,7 +665,7 @@ WEffectChainPresetSelector {
   /* QuickEffect selector of left-hand decks and in 4-decks mixer
     has it's down arrow on the left side, below the QuickEffect toggle */
   WEffectChainPresetSelector#QuickEffectSelectorLeft {
-    padding: 0px -5px 0px -1px;
+    padding: 0px -3px 0px -1px;
     margin: 0px;
     text-align: left;
     }
@@ -666,7 +674,7 @@ WEffectChainPresetSelector {
       subcontrol-position: left center;
     }
   WEffectChainPresetSelector#QuickEffectSelectorRight {
-    padding: 0px -1px 0px -5px;
+    padding: 0px -1px 0px -3px;
     margin: 0px;
     text-align: right;
   }

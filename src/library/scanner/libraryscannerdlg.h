@@ -1,29 +1,41 @@
 #pragma once
 
-#include <QWidget>
+#include <QDialog>
+#include <QLabel>
+#include <QProgressBar>
 
+#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
-class QString;
-
-class LibraryScannerDlg : public QWidget {
+class LibraryScannerDlg : public QDialog {
     Q_OBJECT
   public:
-    LibraryScannerDlg(QWidget* parent = NULL, Qt::WindowFlags f = Qt::Dialog);
-    virtual ~LibraryScannerDlg();
+    LibraryScannerDlg(QWidget* pParent = nullptr);
+
+    void resetTaskCount();
+    void addQueuedTasks(int num);
 
   public slots:
     void slotUpdate(const QString& path);
     void slotUpdateCover(const QString& path);
+    void slotUpdateSubstitute(const QString& path);
     void slotCancel();
     void slotScanFinished();
     void slotScanStarted();
 
   signals:
     void scanCancelled();
-    void progress(const QString&);
 
   private:
+    void updateProgressBar();
+
     PerformanceTimer m_timer;
+
+    parented_ptr<QLabel> m_pLabelCurrent;
+    parented_ptr<QProgressBar> m_pProgressBar;
+
     bool m_bCancelled;
+    int m_tasksDone;
+    int m_tasksTotal;
+    bool m_showNoTasksQueuedWarning;
 };

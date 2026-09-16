@@ -33,8 +33,9 @@ namespace allshader {
 
 WaveformRendererStem::WaveformRendererStem(
         WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererAbstract::PositionSource type,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_splitStemTracks(false),
           m_outlineOpacity(0.15f),
@@ -47,6 +48,11 @@ void WaveformRendererStem::onSetup(const QDomNode&) {
 }
 
 bool WaveformRendererStem::init() {
+    m_pStemGain.clear();
+    m_pStemMute.clear();
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        return true;
+    }
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
@@ -71,6 +77,11 @@ bool WaveformRendererStem::init() {
 
 #ifndef __SCENEGRAPH__
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    setSplitStemTracks(pWaveformWidgetFactory->isStemSplitTracks());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemSplitTracksChanged,
+            this,
+            &WaveformRendererStem::setSplitStemTracks);
     setReorderOnChange(pWaveformWidgetFactory->isStemReorderOnChange());
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::stemReorderOnChangeChanged,
@@ -218,7 +229,7 @@ bool WaveformRendererStem::preprocessInner() {
                 }
 
                 // Cast to float
-                float max = static_cast<float>(u8max);
+                float max = static_cast<float>(u8max) * allGain;
 
                 // Apply the gains
                 if (layerIdx) {
@@ -238,15 +249,18 @@ bool WaveformRendererStem::preprocessInner() {
 
                 // Lines are thin rectangles
                 // shadow
+                float height = heightFactor * max;
+                if (m_splitStemTracks) {
+                    height = std::min(height, halfBreadth);
+                }
+                const int yIndex = m_splitStemTracks ? stemIdx : stemLayer;
                 vertexUpdater.addRectangle(
                         {fVisualIdx - halfStripSize,
-                                stemLayer * stemBreadth + halfBreadth -
-                                        heightFactor * max},
+                                yIndex * stemBreadth + halfBreadth - height},
                         {fVisualIdx + halfStripSize,
                                 m_isSlipRenderer
-                                        ? stemLayer * stemBreadth + halfBreadth
-                                        : stemLayer * stemBreadth + halfBreadth +
-                                                heightFactor * max},
+                                        ? yIndex * stemBreadth + halfBreadth
+                                        : yIndex * stemBreadth + halfBreadth + height},
                         {color_r, color_g, color_b, color_a});
             }
             stemLayer++;

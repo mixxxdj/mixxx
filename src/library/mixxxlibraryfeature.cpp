@@ -33,7 +33,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
-          m_pHiddenView(nullptr) {
+          m_pHiddenView(nullptr),
+          m_trackCount{0} {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
@@ -53,6 +54,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             LIBRARYTABLE_TRACKNUMBER,
             LIBRARYTABLE_KEY,
             LIBRARYTABLE_KEY_ID,
+            LIBRARYTABLE_TUNING_FREQUENCY,
             LIBRARYTABLE_BPM,
             LIBRARYTABLE_BPM_LOCK,
             LIBRARYTABLE_BEATS_VERSION,
@@ -117,6 +119,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             pLibrary->trackCollectionManager(),
             "mixxx.db.model.library");
 
+    connect(m_pLibraryTableModel,
+            &LibraryTableModel::updateTrackCount,
+            this,
+            &MixxxLibraryFeature::slotUpdateTrackCount);
+
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
@@ -141,6 +148,20 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
             &DlgHidden::trackSelected,
             this,
             &MixxxLibraryFeature::trackSelected);
+    connect(m_pHiddenView,
+            &DlgHidden::loadTrack,
+            this,
+            &MixxxLibraryFeature::loadTrack);
+    connect(m_pHiddenView,
+            &DlgHidden::loadTrackToPlayer,
+            this,
+            [=, this](TrackPointer track, const QString& group) {
+                emit loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        mixxx::StemChannelSelection(),
+#endif
+                        false);
+            });
 
     m_pMissingView = new DlgMissing(pLibraryWidget, m_pConfig, m_pLibrary,
                                     pKeyboard);
@@ -152,7 +173,8 @@ void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Tracks");
+    const QString title = tr("Tracks") + QStringLiteral(" (%1)").arg(m_trackCount);
+    return title;
 }
 
 TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
@@ -176,7 +198,7 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
         return;
     }
     m_pLibraryTableModel->search(query);
-    activate();
+    selectAndActivate();
 }
 
 #ifdef __ENGINEPRIME__
@@ -185,6 +207,14 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pSidebarWidget = pSidebarWidget;
 }
 #endif
+
+void MixxxLibraryFeature::slotUpdateTrackCount() {
+    m_trackCount = m_pLibraryTableModel->rowCount();
+
+    // Force updating the Tracks sidebar item.
+    // `select` must be false as we don't want to select again
+    emit featureIsLoading(this, false);
+}
 
 void MixxxLibraryFeature::activate() {
     //qDebug() << "MixxxLibraryFeature::activate()";
@@ -217,7 +247,14 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
             DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     const QList<TrackId> trackIds =
             m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, nullptr);
-    return trackIds.size() > 0;
+    if (trackIds.size() == 0) {
+        return false;
+    }
+
+    // Update the track count in the sidebar item label.
+    // Calls slotUpdateTrackCount()
+    m_pLibraryTableModel->select();
+    return true;
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(const QList<QUrl>& urls) {

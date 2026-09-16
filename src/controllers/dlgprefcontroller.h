@@ -1,8 +1,14 @@
 #pragma once
 
+#include <qglobal.h>
+
 #include <memory>
 
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
+#include "controllers/controllerhidreporttabsmanager.h"
+#endif
 #include "controllers/controllermappinginfo.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -17,6 +23,7 @@ class ControllerManager;
 class ControllerOutputMappingTableModel;
 class ControlPickerMenu;
 class DlgControllerLearning;
+class LegacyControllerMapping;
 class MappingInfoEnumerator;
 #ifdef MIXXX_USE_QML
 class ControllerScriptEngineLegacy;
@@ -148,4 +155,8 @@ class DlgPrefController : public DlgPreferencePage {
     int m_settingsTabIndex;       // Index of the settings tab
     int m_screensTabIndex;        // Index of the screens tab
     QHash<QString, bool> m_settingsCollapsedStates;
+
+#if defined(__HID__) && !defined(Q_OS_ANDROID)
+    std::unique_ptr<ControllerHidReportTabsManager> m_hidReportTabsManager;
+#endif
 };

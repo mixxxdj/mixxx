@@ -1,0 +1,13 @@
+module S4MK3
+BPMIndicator 1.0 BPMIndicator.qml
+HotcuePoint 1.0 HotcuePoint.qml
+Keyboard 1.0 Keyboard.qml
+KeyIndicator 1.0 KeyIndicator.qml
+LoopSizeIndicator 1.0 LoopSizeIndicator.qml
+OnAirTrack 1.0 OnAirTrack.qml
+Progression 1.0 Progression.qml
+TimeAndBeatloopIndicator 1.0 TimeAndBeatloopIndicator.qml
+WaveformOverview 1.0 WaveformOverview.qml
+SplashOff 1.0 SplashOff.qml
+StockScreen 1.0 StockScreen.qml
+AdvancedScreen 1.0 AdvancedScreen.qml

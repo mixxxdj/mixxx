@@ -48,7 +48,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     /// Needs to be called inside a transaction.
     /// @return true on success, false on error
     bool deleteAllUnlockedPlaylistsWithFewerTracks(const PlaylistDAO::HiddenType type,
-            int minNumberOfTracks);
+            int minNumberOfTracks,
+            bool skipCurrHistory = false);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
@@ -57,6 +58,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int setPlaylistsLocked(const QSet<int>& playlistIds, const bool lock);
     // Find out the state of a playlist lock
     bool isPlaylistLocked(const int playlistId) const;
+    // Check if a playlist exists
+    bool playlistExists(const int playlistId) const;
     // Append a list of tracks to a playlist
     bool appendTracksToPlaylist(const QList<TrackId>& trackIds, const int playlistId);
     // Append a track to a playlist
@@ -111,6 +114,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(const int playlistId) const;
+    // This receives a track list that represents the current order (sorted by BPM for example)
+    // and adopts this order for `position` in the playlist.
+    // Returns true on success.
+    void orderTracksByCurrPos(const int playlistId, QList<std::pair<TrackId, int>>& newOrder);
     // moved Track to a new position
     void moveTrack(const int playlistId,
             const int oldPosition, const int newPosition);
@@ -119,6 +126,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isTrackInPlaylist(TrackId trackId, const int playlistId) const;
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
+
+    void setCurrentHistoryPlaylistId(int id) {
+        m_currentHistoryPlaylist = id;
+    }
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 
@@ -151,6 +162,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void populatePlaylistMembershipCache();
 
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
+    int m_currentHistoryPlaylist;
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };

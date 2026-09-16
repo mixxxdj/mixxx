@@ -10,7 +10,7 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 namespace {
-const QString kPaththroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
+const QString kPassthroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
 } // namespace
 
 namespace allshader {
@@ -35,8 +35,8 @@ WaveformRendererTextured::WaveformRendererTextured(
         WaveformWidgetRenderer* waveformWidget,
         ::WaveformWidgetType::Type t,
         ::WaveformRendererAbstract::PositionSource type,
-        WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget),
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
@@ -69,10 +69,10 @@ bool WaveformRendererTextured::loadShaders() {
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 QOpenGLShader::Vertex,
-                kPaththroughShaderPath)) {
+                kPassthroughShaderPath)) {
         qWarning()
                 << "WaveformRendererTextured::loadShaders - compilation failed:"
-                << kPaththroughShaderPath;
+                << kPassthroughShaderPath;
         qDebug() << m_frameShaderProgram->log();
         return false;
     }
@@ -385,7 +385,7 @@ void WaveformRendererTextured::paintGL() {
 
         if (m_type == ::WaveformWidgetType::RGB) {
             m_frameShaderProgram->setUniformValue("splitStereoSignal",
-                    m_options & WaveformRendererSignalBase::Option::SplitStereoSignal);
+                    m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal);
         }
 
         m_frameShaderProgram->setUniformValue("axesColor",

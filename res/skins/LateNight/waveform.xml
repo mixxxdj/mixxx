@@ -27,12 +27,17 @@
         <Children>
           <WidgetGroup>
             <Size>0me,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
             <!-- StemControlsInner -->
             <Layout>horizontal</Layout>
-            <SizePolicy>f,f</SizePolicy>
+            <SizePolicy>f,me</SizePolicy>
             <Children>
 
               <WidgetGroup>
@@ -151,6 +156,11 @@
 
           <WidgetGroup>
             <Size>1me,1me</Size>
+            <Connection>
+              <ConfigKey persist="true">[Waveform],stem_split_tracks</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
@@ -196,6 +206,8 @@
               <Align>bottom|right</Align>
               <Color>#FF0000</Color>
               <TextColor>#FFFFFF</TextColor>
+              <EndIcon>skins:LateNight/classic/style/mark_jump_%1.svg</EndIcon>
+              <DisabledOpacity>0.25</DisabledOpacity>
               <Text> %1 </Text>
             </DefaultMark>
             <!-- Cue -->

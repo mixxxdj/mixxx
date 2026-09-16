@@ -17,7 +17,9 @@ VisualPlayPosition::VisualPlayPosition(const QString& key)
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
-    m_listVisualPlayPosition.remove(m_key);
+    if (!m_key.isEmpty()) {
+        m_listVisualPlayPosition.remove(m_key);
+    }
 }
 
 void VisualPlayPosition::set(

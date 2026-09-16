@@ -6,8 +6,9 @@
 #include "util/painterscope.h"
 
 WaveformRendererRGB::WaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        WaveformWidgetRenderer* waveformWidgetRenderer,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidgetRenderer, options) {
 }
 
 WaveformRendererRGB::~WaveformRendererRGB() {
