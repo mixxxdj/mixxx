@@ -86,7 +86,6 @@ Description:
                   <SetVariable name="Text">Fx controls</SetVariable>
                   <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
                 </Template>
-
                 <WidgetGroup>
                   <ObjectName>SamplerLoadSaveBox</ObjectName>
                   <Layout>horizontal</Layout>

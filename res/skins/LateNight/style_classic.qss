@@ -125,7 +125,7 @@ WSearchLineEdit,
   border-top-right-radius: 1px;
   background-color: #151515;
   }
-  #KeyText {
+  #Deck #KeyText {
     border-top: 1px solid #0c0c0c;
     border-bottom: 1px solid #0c0c0c;
   }
