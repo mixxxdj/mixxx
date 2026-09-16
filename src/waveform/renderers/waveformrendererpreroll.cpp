@@ -53,6 +53,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
         const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
         const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
+        const bool reverseDirection = m_waveformRenderer->isReverseWaveformDirection();
 
         PainterScope PainterScope(painter);
 
@@ -85,16 +86,31 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
                         floor(invisibleVSamples / polyVSampleOffset) *
                         polyVSampleOffset;
             }
+
+            // In reversed mode, mirror the tip around the play marker and
+            // flip both the arrow's point direction and the direction the
+            // repeating pattern marches off-screen, so it still points
+            // toward and recedes away from the actual track content.
+            const double shapeWidth = reverseDirection ? polyPixelWidth : -polyPixelWidth;
+            const double stepPixel = reverseDirection ? polyPixelOffset : -polyPixelOffset;
+            double tipPixel = triangleTipVSamplePosition / vSamplesPerPixel;
+            if (reverseDirection) {
+                tipPixel = m_waveformRenderer->reflectPixelPosition(tipPixel);
+            }
+
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
-                    << QPointF(-polyPixelWidth, halfBreadth - halfPolyBreadth)
-                    << QPointF(-polyPixelWidth, halfBreadth + halfPolyBreadth);
-            polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
+                    << QPointF(shapeWidth, halfBreadth - halfPolyBreadth)
+                    << QPointF(shapeWidth, halfBreadth + halfPolyBreadth);
+            polygon.translate(tipPixel, 0);
 
-            for (; triangleTipVSamplePosition > 0;
-                    triangleTipVSamplePosition -= polyVSampleOffset) {
+            const double stopPixel = reverseDirection
+                    ? m_waveformRenderer->getLength()
+                    : 0.0;
+            for (; reverseDirection ? (tipPixel < stopPixel) : (tipPixel > stopPixel);
+                    tipPixel += stepPixel) {
                 painter->drawPolygon(polygon);
-                polygon.translate(-polyPixelOffset, 0);
+                polygon.translate(stepPixel, 0);
             }
         }
 
@@ -114,16 +130,25 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
                         polyVSampleOffset;
             }
 
+            // See the pre-roll case above for why these flip in reversed mode.
+            const double shapeWidth = reverseDirection ? -polyPixelWidth : polyPixelWidth;
+            const double stepPixel = reverseDirection ? -polyPixelOffset : polyPixelOffset;
+            double tipPixel = triangleTipVSamplePosition / vSamplesPerPixel;
+            if (reverseDirection) {
+                tipPixel = m_waveformRenderer->reflectPixelPosition(tipPixel);
+            }
+
             QPolygonF polygon;
             polygon << QPointF(0, halfBreadth)
-                    << QPointF(polyPixelWidth, halfBreadth - halfPolyBreadth)
-                    << QPointF(polyPixelWidth, halfBreadth + halfPolyBreadth);
-            polygon.translate(triangleTipVSamplePosition / vSamplesPerPixel, 0);
+                    << QPointF(shapeWidth, halfBreadth - halfPolyBreadth)
+                    << QPointF(shapeWidth, halfBreadth + halfPolyBreadth);
+            polygon.translate(tipPixel, 0);
 
-            for (; triangleTipVSamplePosition < numberOfVisibleVSamples;
-                    triangleTipVSamplePosition += polyVSampleOffset) {
+            const double stopPixel = reverseDirection ? 0.0 : numberOfVisibleVSamples;
+            for (; reverseDirection ? (tipPixel > stopPixel) : (tipPixel < stopPixel);
+                    tipPixel += stepPixel) {
                 painter->drawPolygon(polygon);
-                polygon.translate(polyPixelOffset, 0);
+                polygon.translate(stepPixel, 0);
             }
         }
     }

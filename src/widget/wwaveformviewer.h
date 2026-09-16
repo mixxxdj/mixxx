@@ -66,6 +66,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void setZoom(double zoom);
     void setDisplayBeatGridAlpha(int alpha);
     void setPlayMarkerPosition(double position);
+    void setReverseWaveformDirection(bool reverse);
 
   private:
     const QString m_group;

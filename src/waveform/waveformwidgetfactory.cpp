@@ -148,7 +148,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_pVisualsManager(nullptr),
           m_frameCnt(0),
           m_actualFrameRate(0),
-          m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
+          m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition),
+          m_reverseWaveformDirection(false) {
     m_pStemSplitTracksControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")));
     connect(m_pStemSplitTracksControl.get(),
@@ -449,6 +450,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
                     WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
     setPlayMarkerPosition(m_playMarkerPosition);
 
+    m_reverseWaveformDirection = m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("ReverseWaveformDirection")), false);
+    setReverseWaveformDirection(m_reverseWaveformDirection);
+
     int untilMarkShowBeats =
             m_config->getValueString(
                             ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowBeats")))
@@ -569,6 +574,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     viewer->setPlayMarkerPosition(m_playMarkerPosition);
+    viewer->setReverseWaveformDirection(m_reverseWaveformDirection);
     waveformWidget->resize(viewer->width(), viewer->height());
     waveformWidget->getWidget()->show();
     viewer->update();
@@ -713,6 +719,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
         viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
+        viewer->setReverseWaveformDirection(m_reverseWaveformDirection);
         viewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
@@ -814,6 +821,18 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
+    }
+}
+
+void WaveformWidgetFactory::setReverseWaveformDirection(bool reverse) {
+    m_reverseWaveformDirection = reverse;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ReverseWaveformDirection")),
+                m_reverseWaveformDirection);
+    }
+
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
+        holder.m_waveformWidget->setReverseWaveformDirection(m_reverseWaveformDirection);
     }
 }
 

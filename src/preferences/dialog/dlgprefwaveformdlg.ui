@@ -707,6 +707,17 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
+     <item row="16" column="1" colspan="4">
+      <widget class="QCheckBox" name="reverseWaveformDirectionCheckBox">
+       <property name="toolTip">
+        <string>Scroll the waveform, beat grid and markers left-to-right instead of Mixxx's default right-to-left.</string>
+       </property>
+       <property name="text">
+        <string>Reverse waveform scroll direction (left to right)</string>
+       </property>
+      </widget>
+     </item>
+
     </layout>
    </widget>
   </item><!-- waveform groupbox -->
@@ -915,6 +926,7 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>beatGridAlphaSlider</tabstop>
   <tabstop>beatGridAlphaSpinBox</tabstop>
   <tabstop>playMarkerPositionSlider</tabstop>
+  <tabstop>reverseWaveformDirectionCheckBox</tabstop>
   <tabstop>defaultZoomComboBox</tabstop>
   <tabstop>synchronizeZoomCheckBox</tabstop>
   <tabstop>allVisualGain</tabstop>

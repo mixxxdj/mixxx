@@ -155,8 +155,14 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
                          << channel << m_polygon.size() << x;
             }
 
-            // Width of the x position in visual indices.
-            const double xSampleWidth = gain * x;
+            // Width of the x position in visual indices. When the scroll
+            // direction is reversed, mirror which sample is looked up for
+            // this pixel (around the play marker) while leaving the pixel
+            // itself, drawn below, untouched -- this keeps the play marker
+            // sample pinned to its pixel and avoids pushing content outside
+            // the visible pixel range, which a straight reflection of the
+            // draw position would do whenever the marker isn't centered.
+            const double xSampleWidth = gain * m_waveformRenderer->reflectPixelPosition(x);
 
             // Effective visual index of x
             const double xVisualSampleIndex = xSampleWidth + offset;
