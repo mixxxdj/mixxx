@@ -7,12 +7,6 @@ import "Theme"
 Item {
     id: root
 
-    enum MouseStatus {
-        Normal,
-        Bending,
-        Scratching
-    }
-
     required property string group
     property bool splitStemTracks: false
     readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
@@ -186,67 +180,93 @@ Item {
             }
         }
     }
-    MouseArea {
-        property point mouseAnchor: Qt.point(0, 0)
-        property int mouseStatus: WaveformDisplay.MouseStatus.Normal
+    // Scratching is driven by a PointHandler so that both waveforms can be
+    // touched at the same time. A MouseArea only ever receives the single
+    // mouse pointer that Qt synthesizes from the first touch point, which
+    // makes two handed scratching impossible on a touchscreen.
+    PointHandler {
+        id: scratchHandler
 
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        anchors.fill: parent
+        property real anchorX: 0
 
-        onDoubleClicked: {
-            if (mouse.button == Qt.RightButton) {
-                root.splitStemTracks = !root.splitStemTracks;
-            }
-        }
-        onPositionChanged: {
-            const diff = mouse.x - mouseAnchor.x;
-            switch (mouseStatus) {
-            case WaveformDisplay.MouseStatus.Bending:
-                {
-                    // Start at the middle of [0.0, 1.0], and emit values based on how far
-                    // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
-                    // this is tuned to 127.
-                    const v = 0.5 + (diff / root.width);
-                    // clamp to [0.0, 1.0]
-                    wheelControl.parameter = Math.max(Math.min(v, 1), 0);
-                    break;
-                }
-                ;
-            case WaveformDisplay.MouseStatus.Scratching:
-                // TODO: Calculate position properly
-                scratchPositionControl.value = -diff * zoomControl.value * 200;
-                break;
-            }
-        }
-        onPressed: {
-            mouseAnchor = Qt.point(mouse.x, mouse.y);
-            if (mouse.button == Qt.LeftButton) {
-                if (mouseStatus == WaveformDisplay.MouseStatus.Bending)
-                    wheelControl.parameter = 0.5;
+        acceptedButtons: Qt.LeftButton
+        // Do not scratch while the user is pinching to zoom.
+        enabled: !zoomPinchHandler.active
 
-                mouseStatus = WaveformDisplay.MouseStatus.Scratching;
+        onActiveChanged: {
+            if (scratchHandler.active) {
+                scratchHandler.anchorX = scratchHandler.point.position.x;
                 scratchPositionControl.value = 0;
                 scratchPositionEnableControl.value = 1;
             } else {
-                if (mouseStatus == WaveformDisplay.MouseStatus.Scratching)
-                    scratchPositionEnableControl.value = 0;
-
-                wheelControl.parameter = 0.5;
-                mouseStatus = WaveformDisplay.MouseStatus.Bending;
-            }
-        }
-        onReleased: {
-            switch (mouseStatus) {
-            case WaveformDisplay.MouseStatus.Bending:
-                wheelControl.parameter = 0.5;
-                break;
-            case WaveformDisplay.MouseStatus.Scratching:
                 scratchPositionEnableControl.value = 0;
                 scratchPositionControl.value = 0;
-                break;
             }
-            mouseStatus = WaveformDisplay.MouseStatus.Normal;
         }
+
+        onPointChanged: {
+            if (!scratchHandler.active) {
+                return;
+            }
+            const diff = scratchHandler.point.position.x - scratchHandler.anchorX;
+            // TODO: Calculate position properly
+            scratchPositionControl.value = -diff * zoomControl.value * 200;
+        }
+    }
+
+    // Pinch to zoom, the touch equivalent of the mouse wheel below.
+    PinchHandler {
+        id: zoomPinchHandler
+
+        // Tracks activeScale through a plain binding, which works no matter
+        // which notify signal the underlying property uses.
+        property real currentScale: zoomPinchHandler.activeScale
+        property real zoomOnActivation: 1
+
+        target: null
+
+        onActiveChanged: {
+            if (zoomPinchHandler.active) {
+                zoomPinchHandler.zoomOnActivation = zoomControl.value;
+            }
+        }
+
+        onCurrentScaleChanged: {
+            if (!zoomPinchHandler.active) {
+                return;
+            }
+            // Spreading the fingers shows more detail, i.e. a higher zoom
+            // factor, which is what the waveform_zoom control counts.
+            const zoom = zoomPinchHandler.zoomOnActivation * zoomPinchHandler.currentScale;
+            zoomControl.value = Math.max(1, Math.min(10, zoom));
+        }
+    }
+
+    // Pitch bending is bound to the right mouse button and therefore mouse
+    // only. Touch points never reach this MouseArea because Qt synthesizes
+    // left button presses from them.
+    MouseArea {
+        id: bendArea
+
+        property real mouseAnchorX: 0
+
+        acceptedButtons: Qt.RightButton
+        anchors.fill: parent
+
+        onDoubleClicked: root.splitStemTracks = !root.splitStemTracks
+        onPositionChanged: mouse => {
+            // Start at the middle of [0.0, 1.0], and emit values based on how far
+            // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
+            // this is tuned to 127.
+            const v = 0.5 + ((mouse.x - bendArea.mouseAnchorX) / root.width);
+            // clamp to [0.0, 1.0]
+            wheelControl.parameter = Math.max(Math.min(v, 1), 0);
+        }
+        onPressed: mouse => {
+            bendArea.mouseAnchorX = mouse.x;
+            wheelControl.parameter = 0.5;
+        }
+        onReleased: wheelControl.parameter = 0.5
         onWheel: mouse => {
             if (mouse.angleDelta.y < 0 && zoomControl.value > 1) {
                 zoomControl.value -= 1;

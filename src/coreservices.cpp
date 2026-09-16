@@ -71,7 +71,7 @@
 #include <X11/XKBlib.h>
 #endif
 #if defined(Q_OS_ANDROID)
-#include <QtCore/private/qandroidextras_p.h>
+#include "util/androidpermissions.h"
 #endif
 
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -495,6 +495,13 @@ void CoreServices::initialize(QApplication* pApp) {
 
     VersionStore::logBuildDetails();
 
+#if defined(Q_OS_ANDROID)
+    // Ask for collection access on every start: the user may have revoked the
+    // permission in the system settings since the last run, and without it the
+    // library scan finds nothing at all.
+    mixxx::android::requestMusicLibraryPermissions();
+#endif
+
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QLatin1String("xcb")) {
@@ -656,43 +663,11 @@ void CoreServices::initialize(QApplication* pApp) {
             dir.mkpath(".");
         }
 #elif defined(Q_OS_ANDROID)
-        // if(QOperatingSystemVersion::current() <
-        // QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
-        //     qDebug() << "it is less then Android 11 - ALL FILES permission
-        //     isn't possible!";
-        // }
-        QString fd;
-        jboolean value = QJniObject::callStaticMethod<jboolean>(
-                "android/os/Environment", "isExternalStorageManager");
-        if (value == false) {
-            qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
-            QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION =
-                    QJniObject::getStaticObjectField(
-                            "android/provider/Settings",
-                            "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
-                            "Ljava/lang/String;");
-            QJniObject intent("android/content/Intent",
-                    "(Ljava/lang/String;)V",
-                    ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
-            QJniObject jniPath = QJniObject::fromString(
-                    QStringLiteral("package:%1").arg(ANDROID_PACKAGE_NAME));
-            QJniObject jniUri =
-                    QJniObject::callStaticObjectMethod("android/net/Uri",
-                            "parse",
-                            "(Ljava/lang/String;)Landroid/net/Uri;",
-                            jniPath.object<jstring>());
-            QJniObject jniResult = intent.callObjectMethod("setData",
-                    "(Landroid/net/Uri;)Landroid/content/Intent;",
-                    jniUri.object<jobject>());
-            QtAndroidPrivate::startActivity(intent, 0);
-        } else {
-            qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
-        }
-        fd = "/storage/emulated/0/Music/";
-        QDir dir = fd;
-        if (!dir.exists()) {
-            dir.mkpath(".");
-        }
+        // "All files access" is what allows Mixxx to browse directories
+        // outside of the media store. It is optional: if the user declines,
+        // the default music directory below is still readable.
+        mixxx::android::requestFullExternalStorageAccess();
+        QString fd = mixxx::android::defaultMusicDirectory();
 #else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
