@@ -1,93 +1,74 @@
 import QtQuick
 
-FocusScope {
+Item {
     id: root
-    width: filedLabel.width + 18 + field.width
+
+    property string field: ""
+    property string value: ""
+    property bool exact: false
+    property bool active: false
+    property bool interactive: true
+
+    property alias valueEditorHost: valueArea
+
+    readonly property real valueAreaX: width - 5 - valueArea.width
+
+    signal activated()
+    signal deleted()
+
     height: 24
-    required property string field
-    property var query: undefined
-    property bool interactive: false
-    property alias textInput: searchField
-
-    readonly property var regExp: new RegExp(root.query, "i")
-
-    signal edited
-    signal deleted
+    width: labelText.width + valueArea.width + 18
 
     TapHandler {
-        onTapped: searchField.forceActiveFocus()
+        enabled: root.interactive
+        onTapped: root.activated()
+        onDoubleTapped: root.deleted()
     }
 
     Rectangle {
-        width: parent.width
-        height: parent.height
-        focus: true
-
+        anchors.fill: parent
         radius: 7
-        color: '#2D4EA1'
+        color: root.active ? '#3A60BE' : '#2D4EA1'
+        border.color: root.active ? '#5C82D6' : 'transparent'
+        border.width: 1
+
         Text {
+            id: labelText
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 5
-            id: filedLabel
-            text: (root.query ? root.field.replace(root.regExp, `**${root.query}**`) : root.field) + ":"
-
-            textFormat: Text.MarkdownText
+            text: root.field + ":"
+            color: '#FFFFFF'
+            font.pixelSize: 14
         }
+
         Rectangle {
-            id: field
+            id: valueArea
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 5
-            width: searchField.activeFocus ? 162 : fontMetrics.advanceWidth(searchField.text.length ? searchField.text : "...") + 4
+            width: root.active ? 162 : Math.max(valueMetrics.advanceWidth(root.value.length ? (root.exact ? "=" : "") + root.value : "..."), 20) + 8
             height: 18
             radius: 7
             color: '#D9D9D9'
+
             FontMetrics {
-                id: fontMetrics
-                font: searchField.font
+                id: valueMetrics
+                font: valueText.font
             }
+
             Text {
-                visible: !root.interactive
+                id: valueText
+                visible: !root.active
                 anchors.fill: parent
-                text: searchField.text ?? "..."
-            }
-            Item {
-                anchors.fill: parent
-                visible: root.interactive
-                TextInput {
-                    id: searchField
-                    anchors.fill: parent
-                    focus: true
-                    clip: true
-                    color: "#808080"
-                    horizontalAlignment: TextInput.AlignLeft
-
-                    Keys.onPressed: (event) => {
-                        if (event.key == Qt.Key_Backspace && searchField.text.length == 0) {
-                            root.deleted()
-                            event.accepted = true
-                        }
-                    }
-
-                    onActiveFocusChanged: {
-                        if (!activeFocus && text.length == 0){
-                            root.deleted()
-                        }
-                    }
-
-                    onTextEdited: {
-                        root.edited()
-                    }
-                }
-                Text {
-                    id: searchPlaceholder
-                    visible: searchField.text.length == 0
-                    anchors.fill: parent
-                    color: "#808080"
-                    text: "Press “=” for an exact match"
-                    elide: Text.ElideRight
-                }
+                anchors.leftMargin: 4
+                anchors.rightMargin: 4
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                clip: true
+                color: '#404040'
+                font.pixelSize: 14
+                text: root.value.length ? (root.exact ? "=" : "") + root.value : "..."
             }
         }
     }

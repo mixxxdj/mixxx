@@ -13,6 +13,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmllibrarytracklistmodel.h"
+#include "qml/qmlsearchsuggestionmodel.h"
 #include "qmltrackproxy.h"
 #include "track/cue.h"
 #include "track/track.h"
@@ -108,7 +109,9 @@ QmlLibraryProxy::QmlLibraryProxy(
           m_pModelProperty(new QmlLibraryTrackListModel(
                   QList<QmlLibraryTrackListColumn*>{}, m_pLibrary->trackTableModel(), this)),
           m_pScanner(new QmlLibraryScannerProxy(
-                  m_pLibrary->trackCollectionManager()->scanner(), this)) {
+                  m_pLibrary->trackCollectionManager()->scanner(), this)),
+          m_pSearchSuggestions(new QmlSearchSuggestionModel(
+                  m_pLibrary->trackCollectionManager()->internalCollection(), this)) {
 }
 
 QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent)
