@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "control/controlproxy.h"
@@ -547,7 +548,8 @@ void DlgPrefSound::slotApply() {
     m_config.clearOutputs();
     emit writePaths(&m_config);
 
-    for (auto* pItem : outputSoundItems()) {
+    const auto outputItems = outputSoundItems();
+    for (auto* pItem : outputItems) {
         if (pItem->isMonoApplicable()) {
             pItem->applyMonoSetting();
         }
@@ -833,7 +835,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     // selected later on, when a different device is selected for any I/O.
     m_selectedOutputChannelIndices.clear();
     m_selectedInputChannelIndices.clear();
-    for (auto* pItem : outputSoundItems()) {
+    const auto outputItems = outputSoundItems();
+    for (auto* pItem : outputItems) {
         auto id = pItem->getDeviceId();
         if (id == SoundDeviceId()) {
             continue;
@@ -841,7 +844,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
         m_selectedOutputChannelIndices.insert(pItem,
                 QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
     }
-    for (auto* pItem : inputSoundItems()) {
+    const auto inputItems = inputSoundItems();
+    for (auto* pItem : inputItems) {
         auto id = pItem->getDeviceId();
         if (id == SoundDeviceId()) {
             continue;
@@ -1115,7 +1119,8 @@ void DlgPrefSound::updateKeylockDualThreadingCheckbox() {
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
     bool monoMix = false;
-    for (const auto* pItem : outputSoundItems()) {
+    const auto outputItems = outputSoundItems();
+    for (const auto* pItem : outputItems) {
         if (pItem->type() == AudioPathType::Main) {
             monoMix = pItem->isMonoChecked();
             break;
@@ -1248,7 +1253,8 @@ void DlgPrefSound::slotResetToDefaults() {
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
 
-    for (auto* pItem : outputSoundItems()) {
+    const auto outputItems = outputSoundItems();
+    for (auto* pItem : outputItems) {
         if (pItem->isMonoApplicable()) {
             pItem->resetMonoToDefault();
         }
