@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QMap>
+#include <QString>
+
 #include "preferences/broadcastsettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
@@ -47,6 +50,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void btnRemoveConnectionClicked();
     void btnDisconnectAllClicked();
     void onSectionResized();
+    void btnAddSocialLinkClicked();
 
   private:
     void applyModel();
@@ -55,6 +59,8 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void selectConnectionRowByName(const QString& rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
+    void addSocialLinkRow(const QString& key = QString(),
+            const QString& value = QString());
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;

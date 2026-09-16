@@ -63,6 +63,10 @@ TEST(BroadcastProfileTest, SaveAndLoadXML) {
 
     BroadcastProfile profile("Broadcast Profile test");
     profile.setStreamName(streamName);
+    QMap<QString, QString> extraMeta;
+    extraMeta.insert(QStringLiteral("irc"), QStringLiteral("irc.freenode.net"));
+    extraMeta.insert(QStringLiteral("spotify"), QStringLiteral("spoti.fi/myuser"));
+    profile.setStreamExtraMetadata(extraMeta);
 
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());
@@ -76,6 +80,7 @@ TEST(BroadcastProfileTest, SaveAndLoadXML) {
     BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
     EXPECT_NE(savedProfile, nullptr);
     EXPECT_TRUE(savedProfile->getStreamName() == streamName);
+    EXPECT_EQ(savedProfile->getStreamExtraMetadata(), extraMeta);
 }
 
 TEST(BroadcastProfileTest, SaveAndLoadXMLDotName) {
@@ -195,6 +200,12 @@ TEST(BroadcastProfileTest, SetGetValues) {
     QString streamWebsite("www.website.com");
     profile.setStreamWebsite(streamWebsite);
     ASSERT_TRUE(profile.getStreamWebsite() == streamWebsite);
+
+    QMap<QString, QString> extraMeta;
+    extraMeta.insert(QStringLiteral("discord"), QStringLiteral("https://discord.gg/xyz"));
+    extraMeta.insert(QStringLiteral("youtube"), QStringLiteral("youtube.com/mychannel"));
+    profile.setStreamExtraMetadata(extraMeta);
+    ASSERT_EQ(profile.getStreamExtraMetadata(), extraMeta);
 
     bool enableMetadata = true;
     profile.setEnableMetadata(enableMetadata);
