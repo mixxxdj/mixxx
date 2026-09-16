@@ -4000,6 +4000,7 @@ if(QML)
       src/qml/qmllibrarysource.cpp
       src/qml/qmllibrarysourcetree.cpp
       src/qml/qmllibrarytracklistmodel.cpp
+      src/qml/qmlsearchsuggestionmodel.cpp
       src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
