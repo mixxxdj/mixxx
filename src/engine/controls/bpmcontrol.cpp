@@ -369,6 +369,12 @@ void BpmControl::slotTranslateBeatsMove(double v) {
     if (v == 0) {
         return;
     }
+    if (getConfig()->getValue(
+                ConfigKey("[Waveform]", "ReverseWaveformDirection"), false)) {
+        // Keep the on-screen movement direction consistent regardless of
+        // whether the waveform scroll direction is reversed.
+        v = -v;
+    }
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
