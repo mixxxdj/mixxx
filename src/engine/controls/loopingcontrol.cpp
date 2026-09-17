@@ -1822,6 +1822,12 @@ void LoopingControl::slotLoopMove(double beats) {
     if (!pBeats || beats == 0) {
         return;
     }
+    if (getConfig()->getValue(
+                ConfigKey("[Waveform]", "ReverseWaveformDirection"), false)) {
+        // Keep the on-screen movement direction consistent regardless of
+        // whether the waveform scroll direction is reversed.
+        beats = -beats;
+    }
     LoopInfo loopInfo = m_loopInfo.getValue();
     if (!loopInfo.startPosition.isValid() || !loopInfo.endPosition.isValid()) {
         return;
