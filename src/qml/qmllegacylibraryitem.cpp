@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QContextMenuEvent>
 #include <QCoreApplication>
+#include <QDebug>
 #include <QDir>
 #include <QDomDocument>
 #include <QElapsedTimer>
@@ -14,7 +15,9 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QIcon>
+#include <QItemSelectionModel>
 #include <QMetaEnum>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPalette>
 #include <QPushButton>
@@ -22,6 +25,7 @@
 #include <QScopedValueRollback>
 #include <QScrollBar>
 #include <QSplitter>
+#include <QStackedLayout>
 #include <QStyle>
 #include <QStyleHints>
 #include <QTableView>
@@ -38,31 +42,79 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/trackmodel.h"
+#include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_qmllegacylibraryitem.cpp"
 #include "preferences/constants.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmllibraryproxy.h"
+#include "qml/qmlplayermanagerproxy.h"
 #include "skin/legacy/skincontext.h"
+#include "skin/legacy/tooltips.h"
+#include "util/valuetransformer.h"
 #include "waveform/overviewtype.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "widget/controlwidgetconnection.h"
 #include "widget/wcolorpicker.h"
+#include "widget/wcoverart.h"
+#include "widget/wlabel.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wnumber.h"
+#include "widget/woverview.h"
+#include "widget/wpushbutton.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wslidercomposed.h"
+#include "widget/wstatuslight.h"
+#include "widget/wtrackproperty.h"
 #include "widget/wtracktableview.h"
 #include "widget/wtracktableviewheader.h"
+#include "widget/wvumeterlegacy.h"
+#include "widget/wwidgetgroup.h"
 
 namespace mixxx {
 namespace qml {
 
 namespace {
-const QColor kLegacyLibraryBackgroundColor(0x1e, 0x1e, 0x1e);
+constexpr int kInteractionResizeRenderThrottleMillis = 16;
 
 struct SchemeStyle {
     QString qssName;
     QString signalColor;
     QString scrollbarHandleStyle;
     QString scrollbarVerticalStyle;
+    QString schemeName;
+};
+
+class QmlLibrarySplitterHandle final : public QSplitterHandle {
+  public:
+    QmlLibrarySplitterHandle(Qt::Orientation orientation, QSplitter* pSplitter)
+            : QSplitterHandle(orientation, pSplitter) {
+    }
+
+  protected:
+    void mousePressEvent(QMouseEvent* pEvent) override {
+        pEvent->accept();
+    }
+
+    void mouseMoveEvent(QMouseEvent* pEvent) override {
+        pEvent->accept();
+    }
+
+    void mouseReleaseEvent(QMouseEvent* pEvent) override {
+        pEvent->accept();
+    }
+};
+
+class QmlLibrarySplitter final : public QSplitter {
+  public:
+    using QSplitter::QSplitter;
+
+  protected:
+    QSplitterHandle* createHandle() override {
+        return new QmlLibrarySplitterHandle(orientation(), this);
+    }
 };
 
 SchemeStyle getActiveSchemeStyle() {
@@ -77,18 +129,133 @@ SchemeStyle getActiveSchemeStyle() {
                         "border-radius: 2px;\n"
                         "  background: qlineargradient(x1:0, y1:0, x2:0, y2:1, "
                         "stop:0 #725309, stop:1 #412f05);"),
-                QString()};
+                QString(),
+                QStringLiteral("classic")};
     } else {
         return {
                 QStringLiteral("style_palemoon.qss"),
                 QStringLiteral("#d9b28c"),
                 QStringLiteral("background-color: #333338;"),
-                QStringLiteral("border-top: 1px solid #212123;")};
+                QStringLiteral("border-top: 1px solid #212123;"),
+                QStringLiteral("palemoon")};
     }
+}
+
+QColor legacyLibraryBackgroundColor(const SchemeStyle& scheme) {
+    return scheme.schemeName == QStringLiteral("classic")
+            ? QColor(0x0f, 0x0f, 0x0f)
+            : QColor(0x08, 0x08, 0x08);
+}
+
+bool setDomContent(QDomDocument* pDocument, const QString& content) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    const QDomDocument::ParseResult result = pDocument->setContent(content);
+    return static_cast<bool>(result);
+#else
+    return pDocument->setContent(content);
+#endif
+}
+
+QList<int> configuredSplitterSizes(
+        const UserSettingsPointer& pConfig,
+        const ConfigKey& configKey,
+        const QList<int>& defaultSizes) {
+    if (!pConfig || !pConfig->exists(configKey)) {
+        return defaultSizes;
+    }
+
+    const QStringList sizeStrings =
+            pConfig->getValueString(configKey).split(",");
+    if (sizeStrings.size() != defaultSizes.size()) {
+        return defaultSizes;
+    }
+
+    QList<int> sizes;
+    sizes.reserve(sizeStrings.size());
+    for (const QString& sizeString : sizeStrings) {
+        bool ok = false;
+        const int size = sizeString.toInt(&ok);
+        if (!ok || size < 0) {
+            return defaultSizes;
+        }
+        sizes.append(size);
+    }
+    return sizes;
+}
+
+void connectSplitterConfig(
+        QSplitter* pSplitter,
+        const UserSettingsPointer& pConfig,
+        const ConfigKey& configKey) {
+    QObject::connect(pSplitter,
+            &QSplitter::splitterMoved,
+            pSplitter,
+            [pSplitter, pConfig, configKey](int, int) {
+                QStringList sizeStrings;
+                const QList<int> sizes = pSplitter->sizes();
+                for (const int size : sizes) {
+                    sizeStrings.append(QString::number(size));
+                }
+                pConfig->set(configKey, ConfigValue(sizeStrings.join(",")));
+            });
+}
+
+void setLateNightPreviewVariables(SkinContext* pContext, const SchemeStyle& scheme) {
+    const bool classic = scheme.schemeName == QStringLiteral("classic");
+    pContext->setVariable(QStringLiteral("BtnScheme"), scheme.schemeName);
+    pContext->setVariable(QStringLiteral("SliderScheme"), scheme.schemeName);
+    pContext->setVariable(QStringLiteral("StyleScheme"), scheme.schemeName);
+    pContext->setVariable(QStringLiteral("OverviewFontSizePreview"), QStringLiteral("9"));
+    pContext->setVariable(QStringLiteral("BgColorOverview_12"),
+            classic ? QStringLiteral("rgba(15, 15, 15, 20)") : QStringLiteral("#19191a"));
+    pContext->setVariable(QStringLiteral("SignalColor_12"), scheme.signalColor);
+    pContext->setVariable(QStringLiteral("SignalHighColor"),
+            classic ? QStringLiteral("blue") : QStringLiteral("mediumblue"));
+    pContext->setVariable(QStringLiteral("SignalMidColor"),
+            classic ? QStringLiteral("green") : QStringLiteral("darkgreen"));
+    pContext->setVariable(QStringLiteral("SignalLowColor"),
+            classic ? QStringLiteral("red") : QStringLiteral("orangered"));
+    pContext->setVariable(QStringLiteral("SignalRGBHighColor"), QString());
+    pContext->setVariable(QStringLiteral("SignalRGBMidColor"), QString());
+    pContext->setVariable(QStringLiteral("SignalRGBLowColor"), QString());
+    pContext->setVariable(QStringLiteral("AxesColor"),
+            classic ? QStringLiteral("#ffffff") : QStringLiteral("#999"));
+    pContext->setVariable(QStringLiteral("BeatColor"),
+            classic ? QStringLiteral("#ffffff") : QStringLiteral("#999"));
+    pContext->setVariable(QStringLiteral("PlayPosColor"),
+            classic ? QStringLiteral("#00c8ff") : QStringLiteral("#00c6ff"));
+    pContext->setVariable(QStringLiteral("CueColor"),
+            classic ? QStringLiteral("#ff001c") : QStringLiteral("#ff7a01"));
+    pContext->setVariable(QStringLiteral("LoopColor"),
+            classic ? QStringLiteral("#00ff00") : QStringLiteral("#00b400"));
+    pContext->setVariable(QStringLiteral("IntroOutroColor"),
+            classic ? QStringLiteral("#0000ff") : QStringLiteral("#2c5c9a"));
+    pContext->setVariable(QStringLiteral("PlayedOverlayColor"),
+            classic ? QStringLiteral("#bb000000") : QStringLiteral("#dd151515"));
+    pContext->setVariable(QStringLiteral("EndOfTrackColor"), QStringLiteral("#f856e7"));
+    pContext->setVariable(QStringLiteral("SlipBorderOutlineColor"),
+            classic ? QStringLiteral("#1af000") : QStringLiteral("#f08c00"));
+    pContext->setVariable(QStringLiteral("PassthroughLabelColor"),
+            classic ? QStringLiteral("#d09300") : QStringLiteral("#b24c12"));
+    pContext->setVariable(QStringLiteral("DimBrightThresholdOverview"), QStringLiteral("127"));
+    pContext->setVariable(QStringLiteral("VuColor"), QString());
 }
 } // namespace
 
 QmlLegacyLibraryItem::~QmlLegacyLibraryItem() = default;
+
+QRectF QmlLegacyLibraryItem::previewDeckDropRect() const {
+    if (!m_pPreviewDeckBox || !m_pRootWidget) {
+        return {};
+    }
+
+    const QPoint topLeft = m_pPreviewDeckBox->mapTo(m_pRootWidget.get(), QPoint());
+    return QRectF(QPointF(topLeft), QSizeF(m_pPreviewDeckBox->size()));
+}
+
+bool QmlLegacyLibraryItem::previewDeckDropEnabled() const {
+    return m_pPreviewDeckBox && m_pPreviewDeckBox->isVisible();
+}
 
 void QmlLegacyLibraryItem::focusSearch() {
     VERIFY_OR_DEBUG_ASSERT(m_pSearchLineEdit) {
@@ -101,7 +268,8 @@ void QmlLegacyLibraryItem::focusSearch() {
 
 QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         : QQuickPaintedItem(pParent),
-          m_pRootWidget(std::make_unique<QWidget>()) {
+          m_pRootWidget(std::make_unique<QWidget>()),
+          m_legacyLibraryBackgroundColor(legacyLibraryBackgroundColor(getActiveSchemeStyle())) {
     setAntialiasing(false);
     setOpaquePainting(true);
 
@@ -121,45 +289,108 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
             &QTimer::timeout,
             this,
             &QmlLegacyLibraryItem::doBridgeAutoScroll);
+    m_splitterInteractionWatchdogTimer.setInterval(50);
+    connect(&m_splitterInteractionWatchdogTimer,
+            &QTimer::timeout,
+            this,
+            [this]() {
+                if (!m_pPressedSplitter ||
+                        QGuiApplication::mouseButtons() != Qt::NoButton) {
+                    return;
+                }
+                resetSplitterInteraction();
+                requestRender();
+            });
 
     QPalette rootPalette = m_pRootWidget->palette();
-    rootPalette.setColor(QPalette::Window, kLegacyLibraryBackgroundColor);
+    rootPalette.setColor(QPalette::Window, m_legacyLibraryBackgroundColor);
     m_pRootWidget->setPalette(rootPalette);
     m_pRootWidget->setAutoFillBackground(true);
     m_pRootWidget->setAttribute(Qt::WA_DontShowOnScreen);
     m_pRootWidget->setObjectName(QStringLiteral("LibraryContainer"));
+    m_pRootWidget->show();
+    UserSettingsPointer pConfig = QmlConfigProxy::get();
     // 1. Create splitter layout
     // Name must match the LateNight QSS selector "#LibrarySplitter::handle"
     // so the skin image is applied instead of a native/platform handle.
     // See res/skins/LateNight/library.xml and style_classic.qss:2646.
-    auto* pSplitter = new QSplitter(m_pRootWidget.get());
+    auto* pSplitter = new QmlLibrarySplitter(m_pRootWidget.get());
     pSplitter->setObjectName(QStringLiteral("LibrarySplitter"));
+    pSplitter->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
     // 2. Sidebar page (search + sidebar)
-    auto* pSidebarPage = new QWidget(pSplitter);
+    auto* pSidebarPage = new WWidgetGroup(pSplitter);
     pSidebarPage->setObjectName(QStringLiteral("LibSidebarContainer"));
     pSidebarPage->setAttribute(Qt::WA_StyledBackground, true);
+    pSidebarPage->setSizePolicy(
+            QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+    pSidebarPage->setMinimumWidth(100);
     auto* pSidebarLayout = new QVBoxLayout(pSidebarPage);
     pSidebarLayout->setContentsMargins(0, 0, 0, 0);
     pSidebarLayout->setSpacing(0);
 
-    UserSettingsPointer pConfig = QmlConfigProxy::get();
-    auto* pSearchLineBox = new QWidget(pSidebarPage);
+    m_pPreviewDeckBox = new WWidgetGroup(pSidebarPage);
+    m_pPreviewDeckBox->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::Maximum);
+    auto* pSearchLineBox = new WWidgetGroup(pSidebarPage);
     pSearchLineBox->setObjectName(QStringLiteral("SearchLineBox"));
     pSearchLineBox->setAttribute(Qt::WA_StyledBackground, true);
+    pSearchLineBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
     auto* pSearchLineLayout = new QHBoxLayout(pSearchLineBox);
     pSearchLineLayout->setContentsMargins(0, 0, 0, 0);
     pSearchLineLayout->setSpacing(0);
+    pSearchLineLayout->setAlignment(Qt::AlignCenter);
     m_pSearchLineEdit = new WSearchLineEdit(pSearchLineBox, pConfig);
     applyLegacySearchBoxSkinConfiguration();
     pSearchLineLayout->addWidget(m_pSearchLineEdit);
 
-    auto* pSearchTreeSpacer = new QWidget(pSidebarPage);
+    auto* pSearchAndExpandRow = new WWidgetGroup(pSidebarPage);
+    pSearchAndExpandRow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+    auto* pSearchAndExpandLayout = new QHBoxLayout(pSearchAndExpandRow);
+    pSearchAndExpandLayout->setContentsMargins(0, 0, 0, 0);
+    pSearchAndExpandLayout->setSpacing(0);
+    pSearchAndExpandLayout->setAlignment(Qt::AlignCenter);
+    pSearchAndExpandLayout->addWidget(pSearchLineBox, 1);
+
+    m_pLibraryExpandBox = new WWidgetGroup(pSearchAndExpandRow);
+    m_pLibraryExpandBox->setObjectName(QStringLiteral("LibExpandBox"));
+    m_pLibraryExpandBox->setAttribute(Qt::WA_StyledBackground, true);
+    auto* pLibraryExpandLayout = new QVBoxLayout(m_pLibraryExpandBox);
+    pLibraryExpandLayout->setContentsMargins(0, 0, 0, 0);
+    pLibraryExpandLayout->setSpacing(0);
+    pLibraryExpandLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    m_pLibraryExpandButton = new WPushButton(m_pLibraryExpandBox);
+    m_pLibraryExpandButton->setObjectName(QStringLiteral("LibExpand"));
+    m_pLibraryExpandButton->setFixedWidth(18);
+    m_pLibraryExpandButton->setMinimumHeight(18);
+    m_pLibraryExpandButton->setSizePolicy(
+            QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+    m_pLibraryExpandButton->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pLibraryExpandButton,
+                    ConfigKey(QStringLiteral("[Skin]"),
+                            QStringLiteral("show_maximized_library")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_DEFAULT,
+                    ControlParameterWidgetConnection::EMIT_DEFAULT),
+            WBaseWidget::ConnectionSide::Left);
+    pLibraryExpandLayout->addWidget(m_pLibraryExpandButton);
+    pSearchAndExpandLayout->addWidget(m_pLibraryExpandBox);
+
+    auto* pSearchTreeSpacer = new WWidgetGroup(pSidebarPage);
     pSearchTreeSpacer->setObjectName(QStringLiteral("SearchTreeSpacer"));
     pSearchTreeSpacer->setAttribute(Qt::WA_StyledBackground, true);
     pSearchTreeSpacer->setFixedHeight(3);
 
-    auto* pSidebarBox = new QWidget(pSidebarPage);
+    auto* pSidebarCoverSplitter =
+            new QmlLibrarySplitter(Qt::Vertical, pSidebarPage);
+    pSidebarCoverSplitter->setObjectName(QStringLiteral("SidebarCoverSplitter"));
+    pSidebarCoverSplitter->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    pSidebarCoverSplitter->setChildrenCollapsible(false);
+
+    auto* pSidebarBox = new WWidgetGroup(pSidebarCoverSplitter);
     pSidebarBox->setObjectName(QStringLiteral("SidebarBox"));
     pSidebarBox->setAttribute(Qt::WA_StyledBackground, true);
     auto* pSidebarBoxLayout = new QVBoxLayout(pSidebarBox);
@@ -168,23 +399,61 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     m_pSidebar = new WLibrarySidebar(pSidebarBox);
     pSidebarBoxLayout->addWidget(m_pSidebar);
 
-    pSidebarLayout->addWidget(pSearchLineBox);
+    m_pCoverArtBox = new WWidgetGroup(pSidebarCoverSplitter);
+    m_pCoverArtBox->setObjectName(QStringLiteral("AlignCenter"));
+    m_pCoverArtBox->setAttribute(Qt::WA_StyledBackground, true);
+    m_pCoverArtBox->setMinimumSize(40, 40);
+    auto* pCoverArtBoxLayout = new QVBoxLayout(m_pCoverArtBox);
+    pCoverArtBoxLayout->setContentsMargins(0, 0, 0, 0);
+    pCoverArtBoxLayout->setSpacing(0);
+    m_pCoverArt = new WCoverArt(m_pCoverArtBox, pConfig, QString(), nullptr);
+    m_pCoverArt->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_pCoverArt->setMinimumSize(40, 40);
+    pCoverArtBoxLayout->addWidget(m_pCoverArt);
+
+    pSidebarCoverSplitter->addWidget(pSidebarBox);
+    pSidebarCoverSplitter->addWidget(m_pCoverArtBox);
+    pSidebarCoverSplitter->setCollapsible(0, false);
+    pSidebarCoverSplitter->setCollapsible(1, false);
+    m_pCoverArtSplitter = pSidebarCoverSplitter;
+    const ConfigKey coverArtSplitterConfigKey(
+            QStringLiteral("[Skin]"),
+            QStringLiteral("coverArt_splitsize"));
+    QList<int> coverArtSplitterSizes = configuredSplitterSizes(
+            pConfig,
+            coverArtSplitterConfigKey,
+            {1, 1});
+    m_initialCoverArtSplitterSizes = coverArtSplitterSizes;
+    connectSplitterConfig(
+            pSidebarCoverSplitter, pConfig, coverArtSplitterConfigKey);
+
+    pSidebarLayout->addWidget(m_pPreviewDeckBox);
+    pSidebarLayout->addWidget(pSearchAndExpandRow);
     pSidebarLayout->addWidget(pSearchTreeSpacer);
-    pSidebarLayout->addWidget(pSidebarBox, 1);
+    pSidebarLayout->addWidget(pSidebarCoverSplitter, 1);
 
     // 3. Library (main content area)
     m_pLibraryWidget = new WLibrary(pSplitter);
     m_pLibraryWidget->setObjectName(QStringLiteral("LibraryContainer"));
     applyLegacyLibrarySkinConfiguration();
+    applyLegacyCoverArtSkinConfiguration();
 
     // 4. Add to splitter
-    // Collapsibility matches library.xml <Collapsible>1,0</Collapsible>:
-    // sidebar (index 0) can be collapsed; track table (index 1) cannot.
     pSplitter->addWidget(pSidebarPage);
     pSplitter->addWidget(m_pLibraryWidget);
+    pSplitter->setChildrenCollapsible(false);
     pSplitter->setCollapsible(0, true);
     pSplitter->setCollapsible(1, false);
-    pSplitter->setSizes({200, 600});
+    m_pLibrarySplitter = pSplitter;
+    const ConfigKey librarySplitterConfigKey(
+            QStringLiteral("[Skin]"),
+            QStringLiteral("librarySidebar_splitsize"));
+    QList<int> librarySplitterSizes = configuredSplitterSizes(
+            pConfig,
+            librarySplitterConfigKey,
+            {1, 10});
+    m_initialLibrarySplitterSizes = librarySplitterSizes;
+    connectSplitterConfig(pSplitter, pConfig, librarySplitterConfigKey);
 
     // 5. Root layout
     auto* pRootLayout = new QVBoxLayout(m_pRootWidget.get());
@@ -201,6 +470,12 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     Library* pLibrary = QmlLibraryProxy::get();
     VERIFY_OR_DEBUG_ASSERT(pLibrary) {
         return;
+    }
+    m_pLibrary = pLibrary;
+    m_pPlayerManager = QmlPlayerManagerProxy::get();
+    if (m_pPlayerManager) {
+        m_pPreviewPlayer = m_pPlayerManager->getPlayer(
+                PlayerManager::groupForPreviewDeck(0));
     }
     KeyboardEventFilter* pKeyboard = QmlLibraryProxy::getKeyboard();
     VERIFY_OR_DEBUG_ASSERT(pKeyboard) {
@@ -219,6 +494,11 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
             &Library::search,
             m_pLibraryWidget,
             &WLibrary::search);
+    connect(pLibrary, &Library::switchToView, m_pCoverArt, &WCoverArt::slotReset);
+    connect(pLibrary, &Library::enableCoverArtDisplay, m_pCoverArt, &WCoverArt::slotEnable);
+    connect(pLibrary, &Library::trackSelected, m_pCoverArt, &WCoverArt::slotLoadTrack);
+
+    createLegacyPreviewDeck();
 
     // 8. Trigger repaints on visual changes and refresh input tracking for
     //    views that are created or swapped after the initial bind.
@@ -231,6 +511,7 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         installEmbeddedWidgetEventFilters();
         connectEmbeddedWidgetUpdateSignals();
         repaintEmbeddedViews();
+        syncLibraryCoverArtFromSelection();
     });
     connect(pLibrary, &Library::showTrackModel, this, [this]() {
         enableEmbeddedWidgetInputTracking();
@@ -241,6 +522,7 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         installEmbeddedWidgetEventFilters();
         connectEmbeddedWidgetUpdateSignals();
         repaintEmbeddedViews();
+        syncLibraryCoverArtFromSelection();
     });
 
     // Initialize default view to Tracks collection to avoid black screen
@@ -253,6 +535,7 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     //    and QML palette bindings once the library panel is ported to QML.
     applyLegacyStylesheet();
     repolishEmbeddedWidgets();
+    syncLibraryCoverArtFromSelection();
 
     if (QmlConfigProxyBase::s_pInstance) {
         connect(QmlConfigProxyBase::s_pInstance,
@@ -260,10 +543,13 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
                 this,
                 [this]() {
                     applyLegacyLibrarySkinConfiguration();
+                    applyLegacyPreviewDeckSkinConfiguration();
+                    applyLegacyCoverArtSkinConfiguration();
                     applyLegacyStylesheet();
                     repolishEmbeddedWidgets();
                     applyLegacyScrollbarStyles();
                     repaintEmbeddedViews();
+                    syncLibraryCoverArtFromSelection();
                 });
     }
 
@@ -274,6 +560,7 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     connectSortBypass();
     installEmbeddedWidgetEventFilters();
     connectEmbeddedWidgetUpdateSignals();
+    syncLibraryCoverArtFromSelection();
 
     const QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
     m_pPreviewDeckPlay = std::make_unique<ControlProxy>(
@@ -289,9 +576,42 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     m_pPreviewDeckPlay->connectValueChanged(this, [this](double) {
         requestRender();
     });
-    m_pPreviewDeckTrackLoaded->connectValueChanged(this, [this](double) {
+    m_pPreviewDeckTrackLoaded->connectValueChanged(this, [this](double value) {
+        updatePreviewDeckTrackLoaded(value);
         requestRender();
     });
+    updatePreviewDeckTrackLoaded(m_pPreviewDeckTrackLoaded->get());
+
+    m_pShowPreviewDecks = std::make_unique<ControlProxy>(
+            QStringLiteral("[Skin]"),
+            QStringLiteral("show_preview_decks"),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pShowPreviewDecks->connectValueChanged(this, [this](double value) {
+        if (m_pPreviewDeckBox) {
+            m_pPreviewDeckBox->setVisible(value > 0.0);
+            emit previewDeckGeometryChanged();
+            requestRender();
+        }
+    });
+    if (m_pPreviewDeckBox) {
+        m_pPreviewDeckBox->setVisible(m_pShowPreviewDecks->toBool());
+    }
+
+    m_pShowLibraryCoverArt = std::make_unique<ControlProxy>(
+            QStringLiteral("[Skin]"),
+            QStringLiteral("show_library_coverart"),
+            this,
+            ControlFlag::NoAssertIfMissing);
+    m_pShowLibraryCoverArt->connectValueChanged(this, [this](double value) {
+        if (m_pCoverArtBox) {
+            m_pCoverArtBox->setVisible(value > 0.0);
+            requestRender();
+        }
+    });
+    if (m_pCoverArtBox) {
+        m_pCoverArtBox->setVisible(m_pShowLibraryCoverArt->toBool());
+    }
 }
 
 void QmlLegacyLibraryItem::renderOffscreen() {
@@ -300,12 +620,24 @@ void QmlLegacyLibraryItem::renderOffscreen() {
     }
     syncRootWidgetGlobalPosition();
     updateWidgetSize();
-    const QSize size(qMax(1, qRound(width())),
+    const QSize logicalSize(qMax(1, qRound(width())),
             qMax(1, qRound(height())));
-    if (m_offscreenPixmap.size() != size) {
-        m_offscreenPixmap = QPixmap(size);
+    qreal devicePixelRatio = window() ? window()->devicePixelRatio() : 0.0;
+    if (!qIsFinite(devicePixelRatio) || devicePixelRatio <= 0.0) {
+        devicePixelRatio = m_pRootWidget->devicePixelRatioF();
     }
-    m_offscreenPixmap.fill(kLegacyLibraryBackgroundColor);
+    if (!qIsFinite(devicePixelRatio) || devicePixelRatio <= 0.0) {
+        devicePixelRatio = 1.0;
+    }
+    const QSize physicalSize(
+            qMax(1, static_cast<int>(std::ceil(logicalSize.width() * devicePixelRatio))),
+            qMax(1, static_cast<int>(std::ceil(logicalSize.height() * devicePixelRatio))));
+    if (m_offscreenPixmap.size() != physicalSize ||
+            !qFuzzyCompare(m_offscreenPixmap.devicePixelRatio(), devicePixelRatio)) {
+        m_offscreenPixmap = QPixmap(physicalSize);
+        m_offscreenPixmap.setDevicePixelRatio(devicePixelRatio);
+    }
+    m_offscreenPixmap.fill(m_legacyLibraryBackgroundColor);
 
     // Process all pending layout, resize, and geometry events for the QWidget tree
     // so that child widgets (persistent editors) are correctly positioned before rendering.
@@ -318,7 +650,7 @@ void QmlLegacyLibraryItem::renderOffscreen() {
 
 void QmlLegacyLibraryItem::paint(QPainter* pPainter) {
     pPainter->fillRect(QRectF(0, 0, width(), height()),
-            kLegacyLibraryBackgroundColor);
+            m_legacyLibraryBackgroundColor);
     if (m_offscreenPixmap.isNull()) {
         return;
     }
@@ -330,6 +662,7 @@ void QmlLegacyLibraryItem::geometryChange(
         const QRectF& oldGeometry) {
     QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
     updateWidgetSize();
+    emit previewDeckGeometryChanged();
     requestRender();
 }
 
@@ -416,9 +749,52 @@ QHeaderView* QmlLegacyLibraryItem::parentHeaderView(QWidget* pWidget) const {
     return nullptr;
 }
 
+QSplitterHandle* QmlLegacyLibraryItem::parentSplitterHandle(QWidget* pWidget) const {
+    for (QWidget* pCurrent = pWidget; pCurrent; pCurrent = pCurrent->parentWidget()) {
+        if (auto* pHandle = qobject_cast<QSplitterHandle*>(pCurrent)) {
+            return pHandle;
+        }
+    }
+    return nullptr;
+}
+
+QSplitterHandle* QmlLegacyLibraryItem::splitterHandleAtRootPos(
+        const QPoint& rootPos) const {
+    if (!m_pRootWidget) {
+        return nullptr;
+    }
+
+    const auto splitters = m_pRootWidget->findChildren<QSplitter*>();
+    for (QSplitter* pSplitter : splitters) {
+        for (int index = 1; index < pSplitter->count(); ++index) {
+            QSplitterHandle* pHandle = pSplitter->handle(index);
+            if (!pHandle || !pHandle->isVisible() || !pHandle->isEnabled()) {
+                continue;
+            }
+
+            QRect handleRect(
+                    pHandle->mapTo(m_pRootWidget.get(), QPoint()), pHandle->size());
+            const int margin = 2;
+            if (pSplitter->orientation() == Qt::Horizontal) {
+                handleRect.adjust(-margin, 0, margin, 0);
+            } else {
+                handleRect.adjust(0, -margin, 0, margin);
+            }
+            if (handleRect.contains(rootPos)) {
+                return pHandle;
+            }
+        }
+    }
+    return nullptr;
+}
+
 QWidget* QmlLegacyLibraryItem::eventTargetFor(QWidget* pWidget) const {
     if (!pWidget) {
         return m_pRootWidget.get();
+    }
+
+    if (auto* pHandle = parentSplitterHandle(pWidget)) {
+        return pHandle;
     }
 
     // QHeaderView IS-A QAbstractItemView, but sort-click handling lives on the
@@ -992,6 +1368,172 @@ void QmlLegacyLibraryItem::resetHeaderInteraction(bool stopAutoScroll) {
     m_lastForwardedHeaderMoveRootPos = QPoint();
 }
 
+bool QmlLegacyLibraryItem::startSplitterInteraction(
+        QWidget* pTarget, const QPoint& rootPos) {
+    resetHeaderInteraction(true);
+    resetSplitterInteraction();
+
+    QSplitterHandle* pHandle = parentSplitterHandle(pTarget);
+    if (!pHandle) {
+        return false;
+    }
+
+    QSplitter* pSplitter = pHandle->splitter();
+    if (!pSplitter || !dynamic_cast<QmlLibrarySplitter*>(pSplitter)) {
+        return false;
+    }
+
+    int handleIndex = -1;
+    for (int index = 1; index < pSplitter->count(); ++index) {
+        if (pSplitter->handle(index) == pHandle) {
+            handleIndex = index;
+            break;
+        }
+    }
+    if (handleIndex < 1) {
+        return false;
+    }
+
+    const QList<int> splitterSizes = pSplitter->sizes();
+    if (splitterSizes.size() != pSplitter->count()) {
+        return false;
+    }
+
+    m_pPressedSplitter = pSplitter;
+    m_pPressedSplitterHandle = pHandle;
+    m_splitterHandleIndex = handleIndex;
+    m_splitterStartSizes = splitterSizes;
+    m_splitterStartRootPos = rootPos;
+    setSplitterHandlePressed(pHandle, true);
+    setKeepMouseGrab(true);
+    grabMouse();
+    m_splitterInteractionWatchdogTimer.start();
+    return true;
+}
+
+void QmlLegacyLibraryItem::resizeSplitterFromRootPos(const QPoint& rootPos) {
+    QSplitter* pSplitter = m_pPressedSplitter.data();
+    if (!pSplitter || m_splitterHandleIndex <= 0 ||
+            m_splitterHandleIndex >= pSplitter->count() ||
+            m_splitterHandleIndex >= m_splitterStartSizes.size()) {
+        return;
+    }
+
+    const int beforeIndex = m_splitterHandleIndex - 1;
+    const int afterIndex = m_splitterHandleIndex;
+    QWidget* pBefore = pSplitter->widget(beforeIndex);
+    QWidget* pAfter = pSplitter->widget(afterIndex);
+    if (!pBefore || !pAfter) {
+        return;
+    }
+
+    const bool horizontal = pSplitter->orientation() == Qt::Horizontal;
+    const int delta = horizontal
+            ? rootPos.x() - m_splitterStartRootPos.x()
+            : rootPos.y() - m_splitterStartRootPos.y();
+
+    const int total = m_splitterStartSizes.at(beforeIndex) +
+            m_splitterStartSizes.at(afterIndex);
+    if (total <= 0) {
+        return;
+    }
+
+    const QSize beforeMinimumSizeHint = pBefore->minimumSizeHint();
+    const QSize afterMinimumSizeHint = pAfter->minimumSizeHint();
+    const int beforeMinimum = pSplitter->isCollapsible(beforeIndex)
+            ? 0
+            : (horizontal
+                              ? qMax(pBefore->minimumWidth(), beforeMinimumSizeHint.width())
+                              : qMax(pBefore->minimumHeight(), beforeMinimumSizeHint.height()));
+    const int afterMinimum = pSplitter->isCollapsible(afterIndex)
+            ? 0
+            : (horizontal
+                              ? qMax(pAfter->minimumWidth(), afterMinimumSizeHint.width())
+                              : qMax(pAfter->minimumHeight(), afterMinimumSizeHint.height()));
+    const int minimumBeforeSize = qMin(beforeMinimum, total);
+    const int maximumBeforeSize = qMax(minimumBeforeSize, total - afterMinimum);
+    const int beforeSize = qBound(
+            minimumBeforeSize,
+            m_splitterStartSizes.at(beforeIndex) + delta,
+            maximumBeforeSize);
+
+    QList<int> sizes = m_splitterStartSizes;
+    sizes[beforeIndex] = beforeSize;
+    sizes[afterIndex] = total - beforeSize;
+    if (sizes.at(beforeIndex) > 0) {
+        pBefore->show();
+    }
+    const bool coverArtVisible = pAfter != m_pCoverArtBox ||
+            !m_pShowLibraryCoverArt || m_pShowLibraryCoverArt->toBool();
+    if (sizes.at(afterIndex) > 0 && coverArtVisible) {
+        pAfter->show();
+    }
+    const QList<int> previousSizes = pSplitter->sizes();
+    pSplitter->setSizes(sizes);
+    m_splitterSizesDirty = m_splitterSizesDirty || previousSizes != pSplitter->sizes();
+}
+
+void QmlLegacyLibraryItem::resetSplitterInteraction() {
+    QSplitterHandle* pHandle = m_pPressedSplitterHandle.data();
+    QSplitter* pSplitter = m_pPressedSplitter.data();
+    const bool hadSplitterInteraction = pSplitter != nullptr;
+    if (pSplitter && m_splitterSizesDirty) {
+        persistSplitterSizes(pSplitter);
+    }
+    m_pPressedSplitterHandle.clear();
+    m_pPressedSplitter.clear();
+    m_splitterHandleIndex = -1;
+    m_splitterStartSizes.clear();
+    m_splitterStartRootPos = QPoint();
+    m_resizeInteractionRenderPending = false;
+    m_splitterSizesDirty = false;
+    m_splitterInteractionWatchdogTimer.stop();
+    setKeepMouseGrab(false);
+    if (pHandle) {
+        setSplitterHandlePressed(pHandle, false);
+    }
+    if (hadSplitterInteraction && !m_handlingMouseUngrab) {
+        ungrabMouse();
+    }
+}
+
+void QmlLegacyLibraryItem::persistSplitterSizes(QSplitter* pSplitter) {
+    if (!pSplitter) {
+        return;
+    }
+
+    const ConfigKey configKey = pSplitter == m_pLibrarySplitter
+            ? ConfigKey(QStringLiteral("[Skin]"),
+                      QStringLiteral("librarySidebar_splitsize"))
+            : ConfigKey(QStringLiteral("[Skin]"),
+                      QStringLiteral("coverArt_splitsize"));
+    QStringList sizeStrings;
+    const QList<int> sizes = pSplitter->sizes();
+    for (const int size : sizes) {
+        sizeStrings.append(QString::number(size));
+    }
+    QmlConfigProxy::get()->set(configKey, ConfigValue(sizeStrings.join(",")));
+}
+
+void QmlLegacyLibraryItem::setSplitterHandlePressed(
+        QSplitterHandle* pHandle, bool pressed) {
+    if (!pHandle || !pHandle->splitter()) {
+        return;
+    }
+
+    QSplitter* pSplitter = pHandle->splitter();
+    if (pSplitter->property("bridgePressed").toBool() == pressed) {
+        return;
+    }
+
+    pSplitter->setProperty("bridgePressed", pressed);
+    if (QStyle* pStyle = pSplitter->style()) {
+        pStyle->unpolish(pSplitter);
+        pStyle->polish(pSplitter);
+    }
+    pHandle->update();
+}
+
 void QmlLegacyLibraryItem::syncCursorFromWidget(QWidget* pTarget, const QPoint& rootPos) {
     if (!pTarget) {
         unsetCursor();
@@ -1005,6 +1547,13 @@ void QmlLegacyLibraryItem::syncCursorFromWidget(QWidget* pTarget, const QPoint& 
                             : Qt::SplitVCursor);
             return;
         }
+    }
+
+    if (auto* pHandle = parentSplitterHandle(pTarget)) {
+        setCursor(pHandle->orientation() == Qt::Horizontal
+                        ? Qt::SplitHCursor
+                        : Qt::SplitVCursor);
+        return;
     }
 
     for (QWidget* pCurrent = pTarget; pCurrent; pCurrent = pCurrent->parentWidget()) {
@@ -1214,16 +1763,44 @@ void QmlLegacyLibraryItem::mousePressEvent(QMouseEvent* pEvent) {
     cancelToolTip();
     const QPoint rootPos = pEvent->position().toPoint();
     QWidget* pTarget = eventTargetFor(widgetAtRootPos(rootPos));
-    sendSyntheticMouseMoveToWidget(pTarget, rootPos, pEvent->globalPosition(), pEvent->modifiers());
-    pTarget = eventTargetFor(widgetAtRootPos(rootPos));
+    QSplitterHandle* pSplitterHandle = nullptr;
+    if (pEvent->button() == Qt::LeftButton) {
+        pSplitterHandle = splitterHandleAtRootPos(rootPos);
+        if (pSplitterHandle) {
+            pTarget = pSplitterHandle;
+        }
+    }
+    if (!pSplitterHandle) {
+        sendSyntheticMouseMoveToWidget(
+                pTarget, rootPos, pEvent->globalPosition(), pEvent->modifiers());
+        pTarget = eventTargetFor(widgetAtRootPos(rootPos));
+        if (pEvent->button() == Qt::LeftButton) {
+            pSplitterHandle = splitterHandleAtRootPos(rootPos);
+            if (pSplitterHandle) {
+                pTarget = pSplitterHandle;
+            }
+        }
+    }
     m_pPressedWidget = pTarget;
     m_pGrabbedWidget = pTarget;
-    m_pressedButtons = pEvent->buttons();
+    m_pressedButtons = pEvent->buttons() | pEvent->button();
     m_pressRootPos = rootPos;
-    if (pEvent->button() == Qt::LeftButton) {
+    const bool splitterInteractionStarted =
+            pEvent->button() == Qt::LeftButton &&
+            startSplitterInteraction(pTarget, rootPos);
+    if (splitterInteractionStarted) {
+        pEvent->accept();
+        requestRender();
+    } else if (pEvent->button() == Qt::LeftButton) {
         startHeaderInteraction(pTarget, rootPos);
     } else {
         resetHeaderInteraction(true);
+    }
+
+    if (splitterInteractionStarted) {
+        forceActiveFocus(Qt::MouseFocusReason);
+        updateEmbeddedFocus(pTarget, Qt::MouseFocusReason);
+        return;
     }
 
     if (sendMouseToWidget(pEvent, pTarget)) {
@@ -1258,9 +1835,17 @@ void QmlLegacyLibraryItem::mouseReleaseEvent(QMouseEvent* pEvent) {
     QWidget* pTarget = m_pGrabbedWidget
             ? m_pGrabbedWidget.data()
             : eventTargetFor(widgetAtRootPos(rootPos));
-    const bool accepted = sendMouseToWidget(pEvent, pTarget);
-    if (pEvent->button() == Qt::LeftButton) {
-        maybeApplyHeaderSortFallback(parentHeaderView(pTarget), rootPos);
+    const bool wasSplitterResize = m_pPressedSplitter != nullptr;
+    bool accepted = false;
+    if (wasSplitterResize) {
+        resizeSplitterFromRootPos(rootPos);
+        pEvent->accept();
+        accepted = true;
+    } else {
+        accepted = sendMouseToWidget(pEvent, pTarget);
+        if (pEvent->button() == Qt::LeftButton) {
+            maybeApplyHeaderSortFallback(parentHeaderView(pTarget), rootPos);
+        }
     }
 
     bool contextMenuAccepted = false;
@@ -1279,6 +1864,10 @@ void QmlLegacyLibraryItem::mouseReleaseEvent(QMouseEvent* pEvent) {
     m_pGrabbedWidget.clear();
     m_pressedButtons = Qt::NoButton;
     resetHeaderInteraction(true);
+    resetSplitterInteraction();
+    if (wasSplitterResize) {
+        requestRender();
+    }
 }
 
 void QmlLegacyLibraryItem::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -1290,6 +1879,19 @@ void QmlLegacyLibraryItem::mouseMoveEvent(QMouseEvent* pEvent) {
     QWidget* pTarget = m_pGrabbedWidget
             ? m_pGrabbedWidget.data()
             : eventTargetFor(widgetAtRootPos(rootPos));
+    if (m_pPressedSplitter) {
+        if (!(pEvent->buttons() & Qt::LeftButton) &&
+                !(m_pressedButtons & Qt::LeftButton)) {
+            resetSplitterInteraction();
+            requestRender();
+            pEvent->accept();
+            return;
+        }
+        resizeSplitterFromRootPos(rootPos);
+        pEvent->accept();
+        requestRenderForCurrentInteraction();
+        return;
+    }
     if (!shouldForwardHeaderMove(pTarget, rootPos)) {
         pEvent->accept();
         return;
@@ -1322,7 +1924,7 @@ void QmlLegacyLibraryItem::mouseMoveEvent(QMouseEvent* pEvent) {
                 }
             }
         }
-        requestRender();
+        requestRenderForCurrentInteraction();
     } else {
         QQuickPaintedItem::mouseMoveEvent(pEvent);
     }
@@ -1345,10 +1947,16 @@ void QmlLegacyLibraryItem::mouseDoubleClickEvent(QMouseEvent* pEvent) {
 }
 
 void QmlLegacyLibraryItem::mouseUngrabEvent() {
+    const QScopedValueRollback<bool> ungrabRollback(m_handlingMouseUngrab, true);
+    const bool hadSplitterInteraction = m_pPressedSplitter != nullptr;
     m_pPressedWidget.clear();
     m_pGrabbedWidget.clear();
     m_pressedButtons = Qt::NoButton;
     resetHeaderInteraction(true);
+    resetSplitterInteraction();
+    if (hadSplitterInteraction) {
+        requestRender();
+    }
     QQuickPaintedItem::mouseUngrabEvent();
 }
 
@@ -1364,6 +1972,11 @@ void QmlLegacyLibraryItem::wheelEvent(QWheelEvent* pEvent) {
 
 void QmlLegacyLibraryItem::hoverEnterEvent(QHoverEvent* pEvent) {
     syncRootWidgetGlobalPosition();
+    if (m_pPressedSplitter &&
+            QGuiApplication::mouseButtons() == Qt::NoButton) {
+        resetSplitterInteraction();
+        requestRender();
+    }
     if (sendHoverToWidget(pEvent)) {
         requestRender();
     } else {
@@ -1373,6 +1986,11 @@ void QmlLegacyLibraryItem::hoverEnterEvent(QHoverEvent* pEvent) {
 
 void QmlLegacyLibraryItem::hoverMoveEvent(QHoverEvent* pEvent) {
     syncRootWidgetGlobalPosition();
+    if (m_pPressedSplitter &&
+            QGuiApplication::mouseButtons() == Qt::NoButton) {
+        resetSplitterInteraction();
+        requestRender();
+    }
     if (sendHoverToWidget(pEvent)) {
         requestRender();
     } else {
@@ -1383,6 +2001,11 @@ void QmlLegacyLibraryItem::hoverMoveEvent(QHoverEvent* pEvent) {
 void QmlLegacyLibraryItem::hoverLeaveEvent(QHoverEvent* pEvent) {
     syncRootWidgetGlobalPosition();
     cancelToolTip();
+    if (m_pPressedSplitter &&
+            QGuiApplication::mouseButtons() == Qt::NoButton) {
+        resetSplitterInteraction();
+        requestRender();
+    }
     if (m_pLastHoverWidget) {
         QEvent leaveEvent(QEvent::Leave);
         QApplication::sendEvent(m_pLastHoverWidget, &leaveEvent);
@@ -1464,11 +2087,613 @@ void QmlLegacyLibraryItem::updateWidgetSize() {
             qMax(1, qRound(width())),
             qMax(1, qRound(height())));
     if (m_pRootWidget->size() == widgetSize) {
+        applyInitialSplitterSizes();
         return;
     }
 
     m_pRootWidget->resize(widgetSize);
     m_pRootWidget->ensurePolished();
+    applyInitialSplitterSizes();
+}
+
+void QmlLegacyLibraryItem::applyInitialSplitterSizes() {
+    if (m_initialSplitterSizesApplied || !m_pRootWidget ||
+            !m_pLibrarySplitter || !m_pCoverArtSplitter ||
+            m_pRootWidget->width() <= 1 || m_pRootWidget->height() <= 1) {
+        return;
+    }
+
+    const auto applySizes = [this](QSplitter* pSplitter, const QList<int>& sizes) {
+        if (!pSplitter || sizes.size() != pSplitter->count()) {
+            return false;
+        }
+
+        for (int index = 0; index < pSplitter->count(); ++index) {
+            QWidget* pWidget = pSplitter->widget(index);
+            const bool coverArtVisible = pWidget != m_pCoverArtBox ||
+                    !m_pShowLibraryCoverArt || m_pShowLibraryCoverArt->toBool();
+            if (pWidget && sizes.at(index) > 0 && coverArtVisible) {
+                pWidget->show();
+            }
+        }
+        pSplitter->setSizes(sizes);
+        return true;
+    };
+
+    if (!applySizes(m_pCoverArtSplitter, m_initialCoverArtSplitterSizes) ||
+            !applySizes(m_pLibrarySplitter, m_initialLibrarySplitterSizes)) {
+        return;
+    }
+
+    m_initialSplitterSizesApplied = true;
+    persistSplitterSizes(m_pCoverArtSplitter);
+    persistSplitterSizes(m_pLibrarySplitter);
+}
+
+void QmlLegacyLibraryItem::createLegacyPreviewDeck() {
+    if (!m_pPreviewDeckBox || !m_pLibrary) {
+        return;
+    }
+
+    auto* pPreviewLayout = new QHBoxLayout(m_pPreviewDeckBox);
+    pPreviewLayout->setContentsMargins(0, 0, 0, 0);
+    pPreviewLayout->setSpacing(0);
+
+    auto* pPreviewDeck = new WWidgetGroup(m_pPreviewDeckBox);
+    pPreviewDeck->setObjectName(QStringLiteral("PreviewDeck"));
+    pPreviewDeck->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    pPreviewDeck->setMinimumWidth(100);
+    auto* pPreviewDeckLayout = new QHBoxLayout(pPreviewDeck);
+    pPreviewDeckLayout->setContentsMargins(0, 0, 0, 0);
+    pPreviewDeckLayout->setSpacing(0);
+
+    auto* pLeftPart = new WWidgetGroup(pPreviewDeck);
+    pLeftPart->setObjectName(QStringLiteral("PreviewDeckLeftPart"));
+    pLeftPart->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto* pLeftPartLayout = new QVBoxLayout(pLeftPart);
+    pLeftPartLayout->setContentsMargins(0, 0, 0, 0);
+    pLeftPartLayout->setSpacing(0);
+
+    auto* pTitleEjectRow = new WWidgetGroup(pLeftPart);
+    pTitleEjectRow->setObjectName(QStringLiteral("PreviewTitleEjectRow"));
+    pTitleEjectRow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto* pTitleEjectLayout = new QHBoxLayout(pTitleEjectRow);
+    pTitleEjectLayout->setContentsMargins(0, 0, 0, 0);
+    pTitleEjectLayout->setSpacing(0);
+
+    auto* pTextBox = new WWidgetGroup(pTitleEjectRow);
+    pTextBox->setObjectName(QStringLiteral("PreviewDeckTextBoxBox"));
+    pTextBox->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Minimum);
+    pTextBox->setFixedHeight(20);
+    auto* pTextBoxLayout = new QStackedLayout(pTextBox);
+    pTextBoxLayout->setContentsMargins(0, 0, 0, 0);
+    pTextBoxLayout->setStackingMode(QStackedLayout::StackAll);
+
+    auto* pTitleBpmRow = new WWidgetGroup(pTextBox);
+    pTitleBpmRow->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    pTitleBpmRow->setFixedHeight(20);
+    auto* pTitleBpmLayout = new QHBoxLayout(pTitleBpmRow);
+    pTitleBpmLayout->setContentsMargins(0, 0, 0, 0);
+    pTitleBpmLayout->setSpacing(0);
+
+    const QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
+    UserSettingsPointer pConfig = QmlConfigProxy::get();
+    m_pPreviewTitle = new WTrackProperty(
+            pTitleBpmRow, pConfig, m_pLibrary, previewDeckGroup, false);
+    m_pPreviewTitle->setObjectName(QStringLiteral("PreviewTitle"));
+    m_pPreviewTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_pPreviewTitle->setFixedHeight(20);
+    pTitleBpmLayout->addWidget(m_pPreviewTitle, 1);
+
+    m_pPreviewBpm = new WNumber(pTitleBpmRow);
+    m_pPreviewBpm->setObjectName(QStringLiteral("PreviewBPM"));
+    m_pPreviewBpm->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    m_pPreviewBpm->setFixedSize(45, 20);
+    m_pPreviewBpm->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewBpm,
+                    ConfigKey(previewDeckGroup, QStringLiteral("visual_bpm")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_TO_WIDGET,
+                    ControlParameterWidgetConnection::EMIT_NEVER),
+            WBaseWidget::ConnectionSide::None);
+    pTitleBpmLayout->addWidget(m_pPreviewBpm);
+    pTextBoxLayout->addWidget(pTitleBpmRow);
+
+    m_pPreviewLabel = new WLabel(pTextBox);
+    m_pPreviewLabel->setObjectName(QStringLiteral("PreviewLabel"));
+    m_pPreviewLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    m_pPreviewLabel->setFixedHeight(20);
+    pTextBoxLayout->addWidget(m_pPreviewLabel);
+
+    m_pPreviewEjectBox = new WWidgetGroup(pTitleEjectRow);
+    m_pPreviewEjectBox->setObjectName(QStringLiteral("PreviewEjectBox"));
+    m_pPreviewEjectBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto* pEjectLayout = new QHBoxLayout(m_pPreviewEjectBox);
+    pEjectLayout->setContentsMargins(0, 0, 0, 0);
+    pEjectLayout->setSpacing(0);
+    m_pPreviewEjectButton = new WPushButton(m_pPreviewEjectBox);
+    m_pPreviewEjectButton->setObjectName(QStringLiteral("EjectButton12"));
+    m_pPreviewEjectButton->setFixedSize(21, 18);
+    m_pPreviewEjectButton->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewEjectButton,
+                    ConfigKey(previewDeckGroup, QStringLiteral("eject")),
+                    nullptr,
+                    static_cast<ControlParameterWidgetConnection::DirectionOption>(
+                            ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET |
+                            ControlParameterWidgetConnection::DIR_DEFAULT),
+                    ControlParameterWidgetConnection::EMIT_DEFAULT),
+            WBaseWidget::ConnectionSide::None);
+    pEjectLayout->addWidget(m_pPreviewEjectButton);
+
+    pTitleEjectLayout->addWidget(pTextBox, 1);
+    pTitleEjectLayout->addWidget(m_pPreviewEjectBox);
+    pLeftPartLayout->addWidget(pTitleEjectRow);
+
+    auto* pPlayOverview = new WWidgetGroup(pLeftPart);
+    pPlayOverview->setObjectName(QStringLiteral("PreviewPlayOverview"));
+    pPlayOverview->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    pPlayOverview->setMinimumHeight(34);
+    auto* pPlayOverviewLayout = new QHBoxLayout(pPlayOverview);
+    pPlayOverviewLayout->setContentsMargins(0, 0, 0, 0);
+    pPlayOverviewLayout->setSpacing(0);
+
+    auto* pPlayBox = new WWidgetGroup(pPlayOverview);
+    pPlayBox->setObjectName(QStringLiteral("PreviewPlayBox"));
+    pPlayBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto* pPlayBoxLayout = new QHBoxLayout(pPlayBox);
+    pPlayBoxLayout->setContentsMargins(0, 0, 0, 0);
+    pPlayBoxLayout->setSpacing(0);
+
+    m_pPreviewPlayButton = new WPushButton(pPlayBox);
+    m_pPreviewPlayButton->setObjectName(QStringLiteral("PlayPreview"));
+    m_pPreviewPlayButton->setFixedSize(34, 34);
+    m_pPreviewPlayButton->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewPlayButton,
+                    ConfigKey(previewDeckGroup, QStringLiteral("play")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_DEFAULT,
+                    ControlParameterWidgetConnection::EMIT_DEFAULT),
+            WBaseWidget::ConnectionSide::Left);
+    m_pPreviewPlayButton->addConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewPlayButton,
+                    ConfigKey(previewDeckGroup, QStringLiteral("start")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_DEFAULT,
+                    ControlParameterWidgetConnection::EMIT_DEFAULT),
+            WBaseWidget::ConnectionSide::Right);
+    m_pPreviewPlayButton->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewPlayButton,
+                    ConfigKey(previewDeckGroup, QStringLiteral("play_indicator")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_TO_WIDGET,
+                    ControlParameterWidgetConnection::EMIT_NEVER),
+            WBaseWidget::ConnectionSide::None);
+    pPlayBoxLayout->addWidget(m_pPreviewPlayButton);
+
+    m_pOverviewBox = new WWidgetGroup(pPlayOverview);
+    m_pOverviewBox->setObjectName(QStringLiteral("OverviewBox"));
+    m_pOverviewBox->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    m_pOverviewBox->setFixedHeight(34);
+    m_pOverviewBox->setProperty("highlight", 0);
+    auto* pOverviewLayout = new QVBoxLayout(m_pOverviewBox);
+    pOverviewLayout->setContentsMargins(0, 0, 0, 0);
+    pOverviewLayout->setSpacing(0);
+
+    pPlayOverviewLayout->addWidget(pPlayBox);
+    pPlayOverviewLayout->addWidget(m_pOverviewBox, 1);
+    pLeftPartLayout->addWidget(pPlayOverview);
+
+    auto* pVuBox = new WWidgetGroup(pPreviewDeck);
+    pVuBox->setObjectName(QStringLiteral("PreviewVuMeter"));
+    pVuBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto* pVuLayout = new QVBoxLayout(pVuBox);
+    pVuLayout->setContentsMargins(0, 0, 0, 0);
+    pVuLayout->setSpacing(0);
+
+    auto* pVuMeterBox = new WWidgetGroup(pVuBox);
+    pVuMeterBox->setObjectName(QStringLiteral("VuMeterBox"));
+    pVuMeterBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    auto* pVuMeterBoxLayout = new QVBoxLayout(pVuMeterBox);
+    pVuMeterBoxLayout->setContentsMargins(0, 0, 0, 0);
+    pVuMeterBoxLayout->setSpacing(0);
+
+    m_pPreviewPeakIndicator = new WStatusLight(pVuMeterBox);
+    m_pPreviewPeakIndicator->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewPeakIndicator,
+                    ConfigKey(previewDeckGroup, QStringLiteral("peak_indicator")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_TO_WIDGET,
+                    ControlParameterWidgetConnection::EMIT_NEVER),
+            WBaseWidget::ConnectionSide::None);
+    pVuMeterBoxLayout->addWidget(m_pPreviewPeakIndicator);
+
+    m_pPreviewVuMeter = new WVuMeterLegacy(pVuMeterBox);
+    m_pPreviewVuMeter->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewVuMeter,
+                    ConfigKey(previewDeckGroup, QStringLiteral("vu_meter")),
+                    nullptr,
+                    ControlParameterWidgetConnection::DIR_TO_WIDGET,
+                    ControlParameterWidgetConnection::EMIT_NEVER),
+            WBaseWidget::ConnectionSide::None);
+    pVuMeterBoxLayout->addWidget(m_pPreviewVuMeter);
+    pVuLayout->addWidget(pVuMeterBox);
+
+    m_pPreviewSlider = new WSliderComposed(pPreviewDeck);
+    m_pPreviewSlider->setObjectName(QStringLiteral("PreviewPregain"));
+    m_pPreviewSlider->setFixedSize(10, 54);
+    m_pPreviewSlider->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    m_pPreviewSlider,
+                    ConfigKey(previewDeckGroup, QStringLiteral("pregain")),
+                    nullptr,
+                    static_cast<ControlParameterWidgetConnection::DirectionOption>(
+                            ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET |
+                            ControlParameterWidgetConnection::DIR_DEFAULT),
+                    ControlParameterWidgetConnection::EMIT_DEFAULT),
+            WBaseWidget::ConnectionSide::None);
+
+    pPreviewDeckLayout->addWidget(pLeftPart);
+    pPreviewDeckLayout->addWidget(pVuBox);
+    pPreviewDeckLayout->addWidget(m_pPreviewSlider);
+
+    auto* pRightSpacer = new WWidgetGroup(m_pPreviewDeckBox);
+    pRightSpacer->setObjectName(QStringLiteral("PreviewDeckRightSpacer"));
+    pRightSpacer->setAttribute(Qt::WA_StyledBackground, true);
+    pRightSpacer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    pRightSpacer->setFixedWidth(
+            getActiveSchemeStyle().schemeName == QStringLiteral("classic") ? 4 : 3);
+    m_pPreviewDeckRightSpacer = pRightSpacer;
+
+    pPreviewLayout->addWidget(pPreviewDeck);
+    pPreviewLayout->addWidget(pRightSpacer);
+
+    if (m_pPreviewPlayer) {
+        connect(m_pPreviewPlayer,
+                &BaseTrackPlayer::newTrackLoaded,
+                m_pPreviewTitle,
+                &WTrackProperty::slotTrackLoaded);
+        connect(m_pPreviewPlayer,
+                &BaseTrackPlayer::loadingTrack,
+                m_pPreviewTitle,
+                &WTrackProperty::slotLoadingTrack);
+    }
+    if (m_pPlayerManager) {
+        connect(m_pPreviewTitle,
+                &WTrackProperty::trackDropped,
+                m_pPlayerManager,
+                &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+        connect(m_pPreviewTitle,
+                &WTrackProperty::cloneDeck,
+                m_pPlayerManager,
+                &PlayerManager::slotCloneDeck);
+        if (auto* pFactory = WaveformWidgetFactory::instance()) {
+            pFactory->addVuMeter(m_pPreviewVuMeter);
+        }
+    }
+
+    applyLegacyPreviewDeckSkinConfiguration();
+    if (m_pPreviewPlayer) {
+        const TrackPointer pTrack = m_pPreviewPlayer->getLoadedTrack();
+        if (pTrack) {
+            m_pPreviewTitle->slotTrackLoaded(pTrack);
+        }
+    }
+}
+
+void QmlLegacyLibraryItem::applyLegacyPreviewDeckSkinConfiguration() {
+    if (!m_pPreviewDeckBox) {
+        return;
+    }
+
+    const QString resourcePath = QmlConfigProxy::get()->getResourcePath();
+    const QString skinsRoot = QDir::fromNativeSeparators(
+            resourcePath + QStringLiteral("skins/"));
+    const QString lateNightSkinPath = resourcePath + QStringLiteral("skins/LateNight");
+    QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
+    QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinPath});
+
+    const SchemeStyle scheme = getActiveSchemeStyle();
+    SkinContext context(QmlConfigProxy::get(), lateNightSkinPath + QStringLiteral("/skin.xml"));
+    context.setSkinBasePath(lateNightSkinPath);
+    setLateNightPreviewVariables(&context, scheme);
+    context.setVariable(QStringLiteral("Group"), PlayerManager::groupForPreviewDeck(0));
+    context.setVariable(QStringLiteral("SignalColor"), scheme.signalColor);
+    context.setVariable(QStringLiteral("BgColor"),
+            scheme.schemeName == QStringLiteral("classic")
+                    ? QStringLiteral("rgba(15, 15, 15, 20)")
+                    : QStringLiteral("#19191a"));
+    context.setVariable(QStringLiteral("OverviewFontSize"), QStringLiteral("9"));
+
+    if (m_pPreviewTitle) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewTitleSetup"));
+        if (setDomContent(&document,
+                    QStringLiteral(
+                            "<TrackProperty><Property>info</"
+                            "Property><Elide>right</Elide></TrackProperty>"))) {
+            m_pPreviewTitle->setup(document.documentElement(), context);
+            m_pPreviewTitle->Init();
+        }
+    }
+    if (m_pPreviewBpm) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewBpmSetup"));
+        if (setDomContent(&document,
+                    QStringLiteral("<Number><Alignment>right</Alignment></Number>"))) {
+            m_pPreviewBpm->setup(document.documentElement(), context);
+            m_pPreviewBpm->Init();
+        }
+    }
+    if (m_pPreviewLabel) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewLabelSetup"));
+        if (setDomContent(&document,
+                    QStringLiteral(
+                            "<Label><Text>Preview</Text><Alignment>left</"
+                            "Alignment></Label>"))) {
+            m_pPreviewLabel->setup(document.documentElement(), context);
+            m_pPreviewLabel->Init();
+        }
+    }
+    if (m_pPreviewEjectButton) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewEjectSetup"));
+        if (setDomContent(&document,
+                    QStringLiteral("<PushButton><NumberStates>1</NumberStates></PushButton>"))) {
+            m_pPreviewEjectButton->setup(document.documentElement(), context);
+            m_pPreviewEjectButton->Init();
+        }
+    }
+    if (m_pPreviewPlayButton) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewPlaySetup"));
+        const QString xml = QStringLiteral(
+                "<PushButton><NumberStates>2</NumberStates>"
+                "<RightClickIsPushButton>true</RightClickIsPushButton>"
+                "<State><Number>0</Number>"
+                "<Unpressed "
+                "scalemode=\"STRETCH\">skins:LateNight/%1/buttons/"
+                "btn_embedded_square_big.svg</Unpressed>"
+                "<Pressed "
+                "scalemode=\"STRETCH\">skins:LateNight/%1/buttons/"
+                "btn_embedded_square_big_active.svg</Pressed>"
+                "</State>"
+                "<State><Number>1</Number>"
+                "<Unpressed "
+                "scalemode=\"STRETCH\">skins:LateNight/%1/buttons/"
+                "btn_embedded_square_big_active.svg</Unpressed>"
+                "<Pressed "
+                "scalemode=\"STRETCH\">skins:LateNight/%1/buttons/"
+                "btn_embedded_square_big_active.svg</Pressed>"
+                "</State></PushButton>")
+                                    .arg(scheme.schemeName);
+        if (setDomContent(&document, xml)) {
+            m_pPreviewPlayButton->setup(document.documentElement(), context);
+            m_pPreviewPlayButton->Init();
+        }
+    }
+    if (m_pPreviewPeakIndicator) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewPeakSetup"));
+        const QString xml = QStringLiteral(
+                "<StatusLight><PathBack>skins:LateNight/%1/style/"
+                "vu_preview_clipping_bg_.png</PathBack>"
+                "<PathStatusLight>skins:LateNight/%1/style/"
+                "vu_preview_clipping_active.png</PathStatusLight></"
+                "StatusLight>")
+                                    .arg(scheme.schemeName);
+        if (setDomContent(&document, xml)) {
+            m_pPreviewPeakIndicator->setup(document.documentElement(), context);
+            m_pPreviewPeakIndicator->Init();
+        }
+    }
+    if (m_pPreviewVuMeter) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewVuSetup"));
+        const QString xml = QStringLiteral(
+                "<VuMeter><PathBack>skins:LateNight/%1/style/vu_preview_level_bg_.png</PathBack>"
+                "<PathVu>skins:LateNight/%1/style/vu_preview_level_active.png</PathVu>"
+                "<Horizontal>false</Horizontal><PeakHoldSize>4</PeakHoldSize>"
+                "<PeakHoldTime>500</PeakHoldTime><PeakFallTime>10</PeakFallTime>"
+                "<PeakFallStep>2</PeakFallStep></VuMeter>")
+                                    .arg(scheme.schemeName);
+        if (setDomContent(&document, xml)) {
+            m_pPreviewVuMeter->setup(document.documentElement(), context);
+            m_pPreviewVuMeter->Init();
+        }
+    }
+    if (m_pPreviewSlider) {
+        QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewSliderSetup"));
+        const QString xml = QStringLiteral(
+                "<Slider><Handle "
+                "scalemode=\"STRETCH_ASPECT\">skins:LateNight/%1/sliders/"
+                "knob_volume_previewdeck.svg</Handle>"
+                "<Slider>skins:LateNight/%1/sliders/"
+                "slider_volume_previewdeck.svg</Slider>"
+                "<Horizontal>false</Horizontal></Slider>")
+                                    .arg(scheme.schemeName);
+        if (setDomContent(&document, xml)) {
+            m_pPreviewSlider->setup(document.documentElement(), context);
+            m_pPreviewSlider->Init();
+        }
+    }
+    if (m_pPreviewDeckRightSpacer) {
+        m_pPreviewDeckRightSpacer->setAttribute(Qt::WA_StyledBackground, true);
+        m_pPreviewDeckRightSpacer->setFixedWidth(
+                scheme.schemeName == QStringLiteral("classic") ? 4 : 3);
+    }
+
+    recreateLegacyPreviewOverview();
+    updatePreviewDeckTrackLoaded(m_pPreviewDeckTrackLoaded
+                    ? m_pPreviewDeckTrackLoaded->get()
+                    : 0.0);
+}
+
+void QmlLegacyLibraryItem::recreateLegacyPreviewOverview() {
+    if (!m_pOverviewBox || !m_pPlayerManager || !m_pPreviewPlayer || !m_pLibrary) {
+        return;
+    }
+
+    auto* pLayout = qobject_cast<QVBoxLayout*>(m_pOverviewBox->layout());
+    if (!pLayout) {
+        return;
+    }
+    if (m_pPreviewOverview) {
+        pLayout->removeWidget(m_pPreviewOverview);
+        delete m_pPreviewOverview;
+        m_pPreviewOverview = nullptr;
+    }
+
+    const QString resourcePath = QmlConfigProxy::get()->getResourcePath();
+    const QString overviewPath =
+            resourcePath + QStringLiteral("skins/LateNight/decks/overview.xml");
+    QFile overviewFile(overviewPath);
+    if (!overviewFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return;
+    }
+    QDomDocument document(QStringLiteral("QmlLegacyLibraryItemPreviewOverviewDocument"));
+    if (!setDomContent(&document, QString::fromUtf8(overviewFile.readAll()))) {
+        return;
+    }
+    const QDomElement overviewNode = SkinContext::selectElement(
+            document.documentElement(), QStringLiteral("Overview"));
+    if (overviewNode.isNull()) {
+        return;
+    }
+
+    const QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
+    const SchemeStyle scheme = getActiveSchemeStyle();
+    SkinContext context(QmlConfigProxy::get(), overviewPath);
+    context.setSkinBasePath(resourcePath + QStringLiteral("skins/LateNight"));
+    setLateNightPreviewVariables(&context, scheme);
+    context.setVariable(QStringLiteral("Group"), previewDeckGroup);
+    context.setVariable(QStringLiteral("SignalColor"), scheme.signalColor);
+    context.setVariable(QStringLiteral("BgColor"),
+            scheme.schemeName == QStringLiteral("classic")
+                    ? QStringLiteral("rgba(15, 15, 15, 20)")
+                    : QStringLiteral("#19191a"));
+    context.setVariable(QStringLiteral("OverviewFontSize"), QStringLiteral("9"));
+
+    auto* pOverview = new WOverview(
+            previewDeckGroup, m_pPlayerManager, QmlConfigProxy::get(), m_pOverviewBox);
+    pOverview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    pOverview->setFixedHeight(34);
+    pOverview->addAndSetDisplayConnection(
+            std::make_unique<ControlParameterWidgetConnection>(
+                    pOverview,
+                    ConfigKey(previewDeckGroup, QStringLiteral("playposition")),
+                    nullptr,
+                    static_cast<ControlParameterWidgetConnection::DirectionOption>(
+                            ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET |
+                            ControlParameterWidgetConnection::DIR_DEFAULT),
+                    ControlParameterWidgetConnection::EMIT_DEFAULT),
+            WBaseWidget::ConnectionSide::None);
+    pOverview->setup(overviewNode, context);
+    connect(pOverview,
+            &WOverview::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    connect(pOverview,
+            &WOverview::cloneDeck,
+            m_pPlayerManager,
+            &PlayerManager::slotCloneDeck);
+    connect(m_pLibrary,
+            &Library::onTrackAnalyzerProgress,
+            pOverview,
+            &WOverview::onTrackAnalyzerProgress);
+    connect(m_pPreviewPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            pOverview,
+            &WOverview::slotTrackLoaded);
+    connect(m_pPreviewPlayer,
+            &BaseTrackPlayer::loadingTrack,
+            pOverview,
+            &WOverview::slotLoadingTrack);
+    pLayout->addWidget(pOverview);
+    m_pPreviewOverview = pOverview;
+    pOverview->initWithTrack(m_pPreviewPlayer->getLoadedTrack());
+}
+
+void QmlLegacyLibraryItem::updatePreviewDeckTrackLoaded(double value) {
+    const bool loaded = value > 0.0;
+    if (m_pPreviewBpm) {
+        m_pPreviewBpm->setVisible(loaded);
+    }
+    if (m_pPreviewLabel) {
+        m_pPreviewLabel->setVisible(!loaded);
+    }
+    if (m_pPreviewEjectBox) {
+        m_pPreviewEjectBox->setVisible(loaded);
+    }
+    if (m_pOverviewBox) {
+        m_pOverviewBox->setProperty("highlight", loaded ? 1 : 0);
+        if (QStyle* pStyle = m_pOverviewBox->style()) {
+            pStyle->unpolish(m_pOverviewBox);
+            pStyle->polish(m_pOverviewBox);
+        }
+        m_pOverviewBox->update();
+    }
+}
+
+void QmlLegacyLibraryItem::applyLegacyCoverArtSkinConfiguration() {
+    if (!m_pCoverArt) {
+        return;
+    }
+
+    const QString resourcePath = QmlConfigProxy::get()->getResourcePath();
+    const QString skinsRoot = QDir::fromNativeSeparators(
+            resourcePath + QStringLiteral("skins/"));
+    const QString lateNightSkinPath = resourcePath + QStringLiteral("skins/LateNight");
+    QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
+    QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinPath});
+
+    SkinContext context(QmlConfigProxy::get(), lateNightSkinPath + QStringLiteral("/skin.xml"));
+    context.setSkinBasePath(lateNightSkinPath);
+
+    const SchemeStyle scheme = getActiveSchemeStyle();
+    QDomDocument document(QStringLiteral("QmlLegacyLibraryItemCoverArtSetup"));
+    const QString coverArtXml = QStringLiteral(
+            "<CoverArt><DefaultCover>skins:LateNight/%1/style/"
+            "cover_default.svg</DefaultCover></CoverArt>")
+                                        .arg(scheme.schemeName);
+    if (!setDomContent(&document, coverArtXml)) {
+        return;
+    }
+    m_pCoverArt->setup(document.documentElement(), context);
+}
+
+void QmlLegacyLibraryItem::syncLibraryCoverArtFromSelection() {
+    if (!m_pLibraryWidget || !m_pCoverArt) {
+        return;
+    }
+
+    WTrackTableView* pTracksView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (!pTracksView) {
+        m_pCoverArt->slotLoadTrack(TrackPointer());
+        return;
+    }
+
+    QItemSelectionModel* pSelectionModel = pTracksView->selectionModel();
+    if (!pSelectionModel) {
+        m_pCoverArt->slotLoadTrack(TrackPointer());
+        return;
+    }
+
+    const QModelIndexList selectedRows = pSelectionModel->selectedRows();
+    if (selectedRows.size() != 1 || !selectedRows.first().isValid()) {
+        m_pCoverArt->slotLoadTrack(TrackPointer());
+        return;
+    }
+
+    auto* pTrackModel = dynamic_cast<TrackModel*>(pTracksView->model());
+    if (!pTrackModel) {
+        m_pCoverArt->slotLoadTrack(TrackPointer());
+        return;
+    }
+
+    m_pCoverArt->slotLoadTrack(pTrackModel->getTrack(selectedRows.first()));
 }
 
 void QmlLegacyLibraryItem::applyLegacySearchBoxSkinConfiguration() {
@@ -1518,6 +2743,10 @@ void QmlLegacyLibraryItem::applyLegacyLibrarySkinConfiguration() {
 
     const QString resourcePath = QmlConfigProxy::get()->getResourcePath();
     const QString lateNightSkinPath = resourcePath + QStringLiteral("skins/LateNight");
+    const QString skinsRoot = QDir::fromNativeSeparators(
+            resourcePath + QStringLiteral("skins/"));
+    QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
+    QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinPath});
 
     SkinContext context(QmlConfigProxy::get(), lateNightSkinPath + QStringLiteral("/skin.xml"));
     context.setSkinBasePath(lateNightSkinPath);
@@ -1550,6 +2779,31 @@ void QmlLegacyLibraryItem::applyLegacyLibrarySkinConfiguration() {
     }
 
     m_pLibraryWidget->setup(document.documentElement(), context);
+
+    if (m_pLibraryExpandButton) {
+        QDomDocument buttonDocument(QStringLiteral("QmlLegacyLibraryItemLibraryExpandSetup"));
+        const QString buttonXml = QStringLiteral(
+                "<PushButton>"
+                "<NumberStates>2</NumberStates>"
+                "<RightClickIsPushButton>false</RightClickIsPushButton>"
+                "<State><Number>0</Number>"
+                "<Unpressed scalemode=\"STRETCH\">skins:LateNight/%1/buttons/btn__.svg</Unpressed>"
+                "<Pressed scalemode=\"STRETCH\">skins:LateNight/%1/buttons/btn__.svg</Pressed>"
+                "</State>"
+                "<State><Number>1</Number>"
+                "<Unpressed scalemode=\"STRETCH\">skins:LateNight/%1/buttons/btn__.svg</Unpressed>"
+                "<Pressed scalemode=\"STRETCH\">skins:LateNight/%1/buttons/btn__.svg</Pressed>"
+                "</State>"
+                "</PushButton>")
+                                          .arg(scheme.schemeName);
+        if (setDomContent(&buttonDocument, buttonXml)) {
+            m_pLibraryExpandButton->setup(buttonDocument.documentElement(), context);
+            m_pLibraryExpandButton->Init();
+            Tooltips tooltips;
+            m_pLibraryExpandButton->setBaseTooltip(
+                    tooltips.tooltipForId(QStringLiteral("maximize_library")));
+        }
+    }
 }
 
 // Loads style_classic.qss from the LateNight skin directory and
@@ -1574,17 +2828,29 @@ void QmlLegacyLibraryItem::applyLegacyStylesheet() {
     QDir::setSearchPaths(QStringLiteral("skins"), {skinsRoot});
     QDir::setSearchPaths(QStringLiteral("skin"), {lateNightSkinRoot});
     const SchemeStyle scheme = getActiveSchemeStyle();
-    const QString styleFilePath =
-            skinsRoot + QStringLiteral("LateNight/") + scheme.qssName;
+    m_legacyLibraryBackgroundColor = legacyLibraryBackgroundColor(scheme);
+    QPalette rootPalette = m_pRootWidget->palette();
+    rootPalette.setColor(QPalette::Window, m_legacyLibraryBackgroundColor);
+    m_pRootWidget->setPalette(rootPalette);
+    const QString commonStyleFilePath =
+            lateNightSkinRoot + QStringLiteral("/style.qss");
+    const QString schemeStyleFilePath =
+            lateNightSkinRoot + QStringLiteral("/") + scheme.qssName;
 
-    QFile styleFile(styleFilePath);
-    if (!styleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "QmlLegacyLibraryItem: could not open" << styleFilePath
+    QString style;
+    QFile commonStyleFile(commonStyleFilePath);
+    if (commonStyleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        style = QString::fromUtf8(commonStyleFile.readAll());
+    }
+
+    QFile schemeStyleFile(schemeStyleFilePath);
+    if (!schemeStyleFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "QmlLegacyLibraryItem: could not open" << schemeStyleFilePath
                    << "- library will have no custom styling";
         return;
     }
-
-    QString style = QString::fromUtf8(styleFile.readAll());
+    style.append(QStringLiteral("\n"));
+    style.append(QString::fromUtf8(schemeStyleFile.readAll()));
 
     // Resolve the "skins:" URL alias used throughout the QSS file.
     // LegacySkinParser does the same replacement in processStyleNodes().
@@ -1594,6 +2860,12 @@ void QmlLegacyLibraryItem::applyLegacyStylesheet() {
             QStringLiteral("url(\"") + skinsRoot);
     style.replace(QStringLiteral("url('skins:"),
             QStringLiteral("url('") + skinsRoot);
+    style.replace(QStringLiteral("url(skin:"),
+            QStringLiteral("url(") + lateNightSkinRoot);
+    style.replace(QStringLiteral("url(\"skin:"),
+            QStringLiteral("url(\"") + lateNightSkinRoot);
+    style.replace(QStringLiteral("url('skin:"),
+            QStringLiteral("url('") + lateNightSkinRoot);
 
     // In the offscreen bridge Qt sometimes falls back to the SVG viewBox size
     // for QHeaderView sort subcontrols. Pin the indicator size to match the
@@ -1609,6 +2881,19 @@ void QmlLegacyLibraryItem::applyLegacyStylesheet() {
             "\n#LibraryPlayedCheckbox::item {"
             "\n  background-color: transparent;"
             "\n}"));
+    const QString splitterHandlePath = lateNightSkinRoot +
+            QStringLiteral("/") + scheme.schemeName + QStringLiteral("/style/");
+    const QString pressedExtension = scheme.schemeName == QStringLiteral("classic")
+            ? QStringLiteral(".png")
+            : QStringLiteral(".svg");
+    style.append(QStringLiteral(
+            "\n#LibrarySplitter[bridgePressed=\"true\"]::handle {"
+            "\n  image: url(%1splitter_handle_vertical_pressed%2);"
+            "\n}"
+            "\n#SidebarCoverSplitter[bridgePressed=\"true\"]::handle {"
+            "\n  image: url(%1splitter_handle_horizontal_pressed%2);"
+            "\n}")
+                    .arg(splitterHandlePath, pressedExtension));
 
     // Prepend default.qss so that SearchClearButton, LibraryPreviewButton,
     // BPM lock and other icon rules are available.
@@ -1662,6 +2947,36 @@ void QmlLegacyLibraryItem::requestRender() {
     polish();
 }
 
+void QmlLegacyLibraryItem::requestRenderForCurrentInteraction() {
+    if (!m_pPressedSplitter) {
+        requestRender();
+        return;
+    }
+
+    if (!m_lastResizeInteractionRender.isValid() ||
+            m_lastResizeInteractionRender.elapsed() >= kInteractionResizeRenderThrottleMillis) {
+        m_lastResizeInteractionRender.restart();
+        requestRender();
+        return;
+    }
+
+    if (m_resizeInteractionRenderPending) {
+        return;
+    }
+
+    m_resizeInteractionRenderPending = true;
+    const int remainingMillis = kInteractionResizeRenderThrottleMillis -
+            static_cast<int>(m_lastResizeInteractionRender.elapsed());
+    QTimer::singleShot(qMax(0, remainingMillis), this, [this]() {
+        m_resizeInteractionRenderPending = false;
+        if (!m_pPressedSplitter) {
+            return;
+        }
+        m_lastResizeInteractionRender.restart();
+        requestRender();
+    });
+}
+
 void QmlLegacyLibraryItem::updatePolish() {
     if (!m_isDirty) {
         return;
@@ -1676,17 +2991,29 @@ bool QmlLegacyLibraryItem::eventFilter(QObject* pWatched, QEvent* pEvent) {
         return QQuickPaintedItem::eventFilter(pWatched, pEvent);
     }
 
+    if (pEvent->type() == QEvent::Hide && m_pPressedSplitter &&
+            (pWatched == m_pRootWidget.get() ||
+                    pWatched == m_pPressedSplitter.data() ||
+                    pWatched == m_pPressedSplitterHandle.data())) {
+        resetSplitterInteraction();
+        requestRender();
+    }
+
     switch (pEvent->type()) {
     case QEvent::Resize:
     case QEvent::Move:
+    case QEvent::Show:
+    case QEvent::Hide:
+        emit previewDeckGeometryChanged();
+        requestRenderForCurrentInteraction();
+        break;
     case QEvent::StyleChange:
     case QEvent::PaletteChange:
     case QEvent::FontChange:
-    case QEvent::Show:
-    case QEvent::Hide:
     case QEvent::EnabledChange:
     case QEvent::DynamicPropertyChange:
-        requestRender();
+    case QEvent::UpdateRequest:
+        requestRenderForCurrentInteraction();
         break;
     default:
         break;

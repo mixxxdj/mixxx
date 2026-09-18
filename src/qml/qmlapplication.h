@@ -52,7 +52,6 @@ class QmlApplication : public QObject {
     std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
     std::unique_ptr<GuiTick> m_pGuiTick;
-    QTimer m_guiTickTimer;
 
     parented_ptr<ControlProxy> m_pShowSpinny;
     parented_ptr<ControlProxy> m_pShowCover;

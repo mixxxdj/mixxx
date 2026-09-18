@@ -337,10 +337,8 @@ QmlApplication::QmlApplication(
                 }
             });
 
-    connect(&m_guiTickTimer, &QTimer::timeout, this, [this]() {
-        m_pGuiTick->process();
-    });
-    m_guiTickTimer.start(std::chrono::milliseconds(16));
+    WaveformWidgetFactory::instance()->startVSync(
+            m_pGuiTick.get(), m_visualsManager.get(), true);
 
     m_pCoreServices->getControllerManager()->setUpDevices();
 
