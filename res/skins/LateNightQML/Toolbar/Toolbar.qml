@@ -1621,6 +1621,8 @@ Rectangle {
     ToolbarSettingsPopup {
         id: waveformSettingsPopup
 
+        minimumWidth: 0
+
         ToolbarMenuSectionToggle {
             showTitle: false
             title: "Waveforms"
@@ -1924,7 +1926,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: librarySettingsPopup
 
-        minimumWidth: 140
+        minimumWidth: 0
 
         ToolbarMenuSection {
             showTitle: false
