@@ -1,7 +1,9 @@
 #include "track/track.h"
 
 #include <QDebug>
+#include <algorithm>
 #include <atomic>
+#include <utility>
 
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
@@ -988,64 +990,61 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
 void Track::setHotcueIndicesSortedByPosition(HotcueSortMode sortMode) {
     auto locked = lockMutex(&m_qMutex);
 
-    // Populate lists of positions and indices
-    QList<int> indices;
-    QList<mixxx::audio::FramePos> positions;
-    indices.reserve(m_cuePoints.size());
-    positions.reserve(m_cuePoints.size());
+    // Collect the hotcues to sort together with their positions.
+    // We only want hotcues (regular, loop, jump) with a valid index.
+    // Note: Cue::kNoHotCue (-1) is the temporary, unsaved loop, or some
+    // orphaned hotcue.
+    //
+    // Two hotcues may share the same position, e.g. if they have been
+    // duplicated accidentally.
+    // Sorting must not swallow any of them, hence we must not use a
+    // position -> index hash map like QHash<FramePos, int>
+    struct HotcueAndPosition {
+        mixxx::audio::FramePos position;
+        CuePointer pCue;
+    };
+    QList<HotcueAndPosition> hotcues;
+    hotcues.reserve(m_cuePoints.size());
     for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
-        // We only want hotcues (regular, loop, jump) with a valid index.
-        // Note: Loop with index -1 is the temporary, unsaved loop.
-        // Also note that there may be orphaned hotcues with index -1.
-        // Remember to also run this check when setting the new indices.
         if (pCue->getHotCue() == Cue::kNoHotCue ||
                 (pCue->getType() != mixxx::CueType::HotCue &&
                         pCue->getType() != mixxx::CueType::Loop &&
                         pCue->getType() != mixxx::CueType::Jump)) {
             continue;
         }
-        const auto pos = pCue->getPosition();
-        positions.append(pos);
-        if (sortMode == HotcueSortMode::KeepOffsets) {
-            // We shall keep empty hotcues (start offset, gaps), so we need
-            // to store the indices
-            indices.append(pCue->getHotCue());
-        }
+        hotcues.append(HotcueAndPosition{pCue->getPosition(), pCue});
     }
 
-    std::sort(positions.begin(), positions.end());
-    if (sortMode == HotcueSortMode::KeepOffsets) {
-        DEBUG_ASSERT(positions.size() == indices.size());
-        std::sort(indices.begin(), indices.end());
-    }
+    // Sort the hotcues by position
+    std::stable_sort(
+            hotcues.begin(),
+            hotcues.end(),
+            [](const HotcueAndPosition& a, const HotcueAndPosition& b) {
+                return a.position < b.position;
+            });
 
     // The actual sorting:
-    // re-map hotcue positions to indices in ascending order
-    QHash<mixxx::audio::FramePos, int> posIndexHash;
+    // assign new indices to the hotcues in ascending order of their positions
     if (sortMode == HotcueSortMode::RemoveOffsets) {
         // Assign new indices, start with 0
         int index = mixxx::kFirstHotCueIndex;
-        for (int i = 0; i < positions.size(); i++) {
-            posIndexHash.insert(positions[i], index);
+        for (const HotcueAndPosition& hotcue : std::as_const(hotcues)) {
+            hotcue.pCue->setHotCue(index);
             index++;
         }
     } else { // HotcueSortMode::KeepOffsets
-        // Assign sorted indices
-        for (int i = 0; i < positions.size(); i++) {
-            posIndexHash.insert(positions[i], indices[i]);
+        // Assign sorted indices, keeping empty hotcues (start offset, gaps)
+        // before and in between.
+        QList<int> indices;
+        indices.reserve(hotcues.size());
+        for (const HotcueAndPosition& hotcue : std::as_const(hotcues)) {
+            indices.append(hotcue.pCue->getHotCue());
         }
-    }
-
-    // Finally set new indices on hotcues
-    for (CuePointer& pCue : m_cuePoints) {
-        if (pCue->getHotCue() == Cue::kNoHotCue ||
-                (pCue->getType() != mixxx::CueType::HotCue &&
-                        pCue->getType() != mixxx::CueType::Loop &&
-                        pCue->getType() != mixxx::CueType::Jump)) {
-            continue;
+        DEBUG_ASSERT(indices.size() == hotcues.size());
+        std::sort(indices.begin(), indices.end());
+        for (int i = 0; i < hotcues.size(); i++) {
+            hotcues[i].pCue->setHotCue(indices[i]);
         }
-        int newIndex = posIndexHash.take(pCue->getPosition());
-        pCue->setHotCue(newIndex);
     }
 
     markDirtyAndUnlock(&locked);
