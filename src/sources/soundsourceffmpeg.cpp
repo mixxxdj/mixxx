@@ -1202,9 +1202,13 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
 
     AVPacket* pavNextPacket = nullptr;
-    while (m_frameBuffer.isValid() &&                         // no decoding error occurred
-            (pavNextPacket || !writableFrameRange.empty()) && // not yet finished
-            consumeNextAVPacket(&pavNextPacket)) {            // next packet consumed
+    while (m_frameBuffer.isValid() && // no decoding error occurred
+            (pavNextPacket ||
+                    !writableFrameRange
+                            .empty()) &&           // fill writableFrameRange and consume
+                                                   // a whole package
+            consumeNextAVPacket(&pavNextPacket)) { // overlapping frames are
+                                                   // stored in m_frameBuffer
         int avcodec_receive_frame_result;
         // One or more AV packets are required for decoding the next AV frame
         do {
@@ -1269,14 +1273,17 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 // because they may affect only the position of the outro end
                 // point and not any other position markers!
                 if (m_frameBuffer.isReady()) {
-                    // Current position is known
+                    // Current position is known and nothing buffered
                     DEBUG_ASSERT(m_frameBuffer.isEmpty());
-                    DEBUG_ASSERT(m_frameBuffer.writeIndex() < frameIndexRange().end());
-                    kLogger.info()
-                            << "Stream ends at sample frame"
-                            << m_frameBuffer.writeIndex()
-                            << "instead of"
-                            << frameIndexRange().end();
+                    if (m_frameBuffer.writeIndex() != frameIndexRange().end()) {
+                        kLogger.info()
+                                << "Stream ends at sample frame"
+                                << m_frameBuffer.writeIndex()
+                                << "instead of"
+                                << frameIndexRange().end();
+                        // We expect that file is shorter then reported, never longer
+                        DEBUG_ASSERT(m_frameBuffer.writeIndex() < frameIndexRange().end());
+                    }
                 }
                 if (!writableFrameRange.empty()) {
                     const auto clearSampleCount =
