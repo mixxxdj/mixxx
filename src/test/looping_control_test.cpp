@@ -1376,3 +1376,18 @@ TEST_F(LoopingControlTest, DisablingLoopPreservesRepeatForSlipMode) {
             mixxx::audio::FramePos{1},
             adjustedPositionForCurrentLoopOrRepeat(kTrackEndPosition + 1, false));
 }
+
+TEST_F(LoopingControlTest, UserInteractionKeepsRepeatAfterLoopAndSlipCycle) {
+    m_pTrack1->trySetBpm(120.0);
+    m_pBeatLoopSize->set(4.0);
+    m_pButtonBeatLoopActivate->set(1.0);
+    m_pButtonBeatLoopActivate->set(0.0);
+    ASSERT_TRUE(isLoopEnabled());
+
+    m_pRepeatEnabled->set(1.0);
+    m_pSlipEnabled->set(1.0);
+    m_pLoopEnabled->set(0.0);
+    m_pSlipEnabled->set(0.0);
+
+    EXPECT_EQ(1.0, m_pRepeatEnabled->get());
+}
