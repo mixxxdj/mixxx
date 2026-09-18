@@ -1015,12 +1015,19 @@ void Track::setHotcueIndicesSortedByPosition(HotcueSortMode sortMode) {
         hotcues.append(HotcueAndPosition{pCue->getPosition(), pCue});
     }
 
-    // Sort the hotcues by position
+    // Sort the hotcues by position.
+    // Hotcues sharing the same position retain their existing order,
+    // i.e. the order of their current hotcue indices. This is relevant if
+    // users have cues of different types at the same position, eg. first
+    // the hotcue, then a loopcue, which we don't want to shuffle.
     std::stable_sort(
             hotcues.begin(),
             hotcues.end(),
             [](const HotcueAndPosition& a, const HotcueAndPosition& b) {
-                return a.position < b.position;
+                if (a.position != b.position) {
+                    return a.position < b.position;
+                }
+                return a.pCue->getHotCue() < b.pCue->getHotCue();
             });
 
     // The actual sorting:

@@ -104,13 +104,12 @@ TEST_F(TrackHotcueOrderByPosTest, orderHotcuesDuplicatePositionsKeepOffsets) {
 
     pTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::KeepOffsets);
 
-    // Hotcues indices by position should now be 1 3 5 7, i.e. the two
-    // hotcues at position 200 must not swallow each other and none of
-    // them may be reassigned to index 0
+    // Hotcues indices by position should now be 1 3 5 7. The two hotcues
+    // at position 200 retain their existing order (indices 1 and 7),
+    // i.e. none of them is swallowed or reassigned to a duplicate index.
     EXPECT_EQ(pHotcue1->getHotCue(), 1);
-    EXPECT_TRUE(pHotcue2->getHotCue() == 3 || pHotcue2->getHotCue() == 5);
-    EXPECT_TRUE(pHotcue3->getHotCue() == 3 || pHotcue3->getHotCue() == 5);
-    EXPECT_NE(pHotcue2->getHotCue(), pHotcue3->getHotCue());
+    EXPECT_EQ(pHotcue2->getHotCue(), 3);
+    EXPECT_EQ(pHotcue3->getHotCue(), 5);
     EXPECT_EQ(pHotcue4->getHotCue(), 7);
 }
 
@@ -139,12 +138,67 @@ TEST_F(TrackHotcueOrderByPosTest, orderHotcuesDuplicatePositionsRemoveOffsets) {
 
     pTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::RemoveOffsets);
 
-    // Hotcues indices by position should now be 0 1 2 3, i.e. the two
-    // hotcues at position 200 must not swallow each other and none of
-    // them may be reassigned a duplicate index
+    // Hotcues indices by position should now be 0 1 2 3. The two hotcues
+    // at position 200 retain their existing order (indices 1 and 7),
+    // i.e. none of them is swallowed or reassigned to a duplicate index.
     EXPECT_EQ(pHotcue1->getHotCue(), 0);
-    EXPECT_TRUE(pHotcue2->getHotCue() == 1 || pHotcue2->getHotCue() == 2);
-    EXPECT_TRUE(pHotcue3->getHotCue() == 1 || pHotcue3->getHotCue() == 2);
-    EXPECT_NE(pHotcue2->getHotCue(), pHotcue3->getHotCue());
+    EXPECT_EQ(pHotcue2->getHotCue(), 1);
+    EXPECT_EQ(pHotcue3->getHotCue(), 2);
     EXPECT_EQ(pHotcue4->getHotCue(), 3);
+}
+
+TEST_F(TrackHotcueOrderByPosTest, orderHotcuesMixedTypesDuplicatePositionsKeepOffsets) {
+    auto pTrack = newTestTrack();
+    pTrack->markClean();
+
+    // create a hotcue, a loop and a jump cue at the same position, with
+    // indices defining an existing order that differs from the type order
+    CuePointer pHotcue = pTrack->createAndAddCue(mixxx::CueType::HotCue,
+            9,
+            mixxx::audio::FramePos(100),
+            mixxx::audio::kInvalidFramePos);
+    CuePointer pLoop = pTrack->createAndAddCue(mixxx::CueType::Loop,
+            7,
+            mixxx::audio::FramePos(100),
+            mixxx::audio::kInvalidFramePos);
+    CuePointer pJump = pTrack->createAndAddCue(mixxx::CueType::Jump,
+            8,
+            mixxx::audio::FramePos(100),
+            mixxx::audio::kInvalidFramePos);
+
+    pTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::KeepOffsets);
+
+    // The cues retain their existing order at the same position, i.e.
+    // each of them keeps its current index: loop 7, jump 8, hotcue 9
+    EXPECT_EQ(pLoop->getHotCue(), 7);
+    EXPECT_EQ(pJump->getHotCue(), 8);
+    EXPECT_EQ(pHotcue->getHotCue(), 9);
+}
+
+TEST_F(TrackHotcueOrderByPosTest, orderHotcuesMixedTypesDuplicatePositionsRemoveOffsets) {
+    auto pTrack = newTestTrack();
+    pTrack->markClean();
+
+    // create a hotcue, a loop and a jump cue at the same position, with
+    // indices defining an existing order that differs from the type order
+    CuePointer pHotcue = pTrack->createAndAddCue(mixxx::CueType::HotCue,
+            9,
+            mixxx::audio::FramePos(100),
+            mixxx::audio::kInvalidFramePos);
+    CuePointer pLoop = pTrack->createAndAddCue(mixxx::CueType::Loop,
+            7,
+            mixxx::audio::FramePos(100),
+            mixxx::audio::kInvalidFramePos);
+    CuePointer pJump = pTrack->createAndAddCue(mixxx::CueType::Jump,
+            8,
+            mixxx::audio::FramePos(100),
+            mixxx::audio::kInvalidFramePos);
+
+    pTrack->setHotcueIndicesSortedByPosition(HotcueSortMode::RemoveOffsets);
+
+    // The consecutive indices 0 1 2 are assigned keeping the existing
+    // order at the same position: loop, jump, hotcue
+    EXPECT_EQ(pLoop->getHotCue(), 0);
+    EXPECT_EQ(pJump->getHotCue(), 1);
+    EXPECT_EQ(pHotcue->getHotCue(), 2);
 }
