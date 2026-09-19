@@ -1,17 +1,22 @@
 pragma ComponentBehavior: Bound
 
+import "../LateNightTheme"
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Layouts
 
-Item {
+Rectangle {
     id: root
 
+    color: LateNightTheme.layoutGutterColor
     readonly property Item loadedRack: (mode === 0 ? fourSamplerLoader.item : samplerRowsLoader.item) as Item
     readonly property int mode: Math.max(0, Math.min(5, Math.round(samplerRowsControl.value)))
     readonly property bool modeControlsInitialized: show4SamplersControl.initialized && show8SamplersControl.initialized && show16SamplersControl.initialized && show32SamplersControl.initialized && show48SamplersControl.initialized && show64SamplersControl.initialized
     readonly property int selectedSamplerCount: [4, 8, 16, 32, 48, 64][mode]
+    readonly property int legacyBottomMargin: LateNightTheme.isClassic ? 4 : 3
     property bool synchronizingMode: false
+
+    height: implicitHeight
 
     function normalizeMode() {
         if (!root.modeControlsInitialized)
@@ -35,7 +40,7 @@ Item {
             numSamplersControl.value = samplerCount;
     }
 
-    implicitHeight: loadedRack?.implicitHeight ?? 0
+    implicitHeight: (loadedRack?.implicitHeight ?? 0) + legacyBottomMargin
 
     Loader {
         id: fourSamplerLoader
@@ -175,7 +180,7 @@ Item {
                     ++rows.preloadIndex;
             }
 
-            spacing: 4
+            spacing: LateNightTheme.deckRowGutter
 
             Repeater {
                 id: samplerGroups

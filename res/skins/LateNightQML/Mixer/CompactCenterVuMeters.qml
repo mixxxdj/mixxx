@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import "../Controls" as Controls
 import "../LateNightTheme"
 
@@ -10,30 +9,27 @@ Item {
 
     required property bool show4decks
 
+    clip: true
     implicitHeight: show4decks ? 192 : 96
     implicitWidth: LateNightTheme.compactVuSlotWidth
     readonly property int deckGroupWidth: LateNightTheme.compactVuDeckGroupWidth
     readonly property int mainGroupWidth: LateNightTheme.compactVuMainGroupWidth
+    readonly property real rowHeight: (height - (show4decks ? LateNightTheme.deckRowGutter : 0)) / (show4decks ? 2 : 1)
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: 0
-
-        MeterRow {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.preferredHeight: 1
-            leftDeckGroup: "[Channel1]"
-            rightDeckGroup: "[Channel2]"
-        }
-        MeterRow {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.preferredHeight: 1
-            leftDeckGroup: "[Channel3]"
-            rightDeckGroup: "[Channel4]"
-            visible: root.show4decks
-        }
+    MeterRow {
+        height: root.rowHeight
+        leftDeckGroup: "[Channel1]"
+        rightDeckGroup: "[Channel2]"
+        width: parent.width
+        y: 0
+    }
+    MeterRow {
+        height: root.rowHeight
+        leftDeckGroup: "[Channel3]"
+        rightDeckGroup: "[Channel4]"
+        visible: root.show4decks
+        width: parent.width
+        y: root.rowHeight + LateNightTheme.deckRowGutter
     }
 
     component MeterRow: Item {
@@ -42,8 +38,7 @@ Item {
         required property string leftDeckGroup
         required property string rightDeckGroup
 
-        Layout.fillHeight: true
-        Layout.fillWidth: true
+        clip: true
         implicitHeight: 96
         implicitWidth: root.implicitWidth
 
@@ -53,9 +48,9 @@ Item {
             anchors.top: parent.top
             width: root.deckGroupWidth
 
-            Rectangle {
+            MeterPanel {
                 anchors.fill: parent
-                color: LateNightTheme.compactVuPanelColor
+                showLeftBorder: LateNightTheme.isClassic
             }
             Controls.ImageVuMeter {
                 anchors.left: parent.left
@@ -74,14 +69,13 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             width: root.mainGroupWidth
 
-            Rectangle {
+            MeterPanel {
                 anchors.left: parent.left
                 anchors.leftMargin: 4
                 anchors.right: parent.right
                 anchors.rightMargin: 4
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                color: LateNightTheme.compactVuPanelColor
             }
             Controls.ImageVuMeter {
                 anchors.verticalCenter: parent.verticalCenter
@@ -112,9 +106,9 @@ Item {
             anchors.top: parent.top
             width: root.deckGroupWidth
 
-            Rectangle {
+            MeterPanel {
                 anchors.fill: parent
-                color: LateNightTheme.compactVuPanelColor
+                showRightBorder: LateNightTheme.isClassic
             }
             Controls.ImageVuMeter {
                 anchors.left: parent.left
@@ -126,6 +120,48 @@ Item {
                 group: meterRow.rightDeckGroup
                 height: LateNightTheme.compactVuMeterHeight
             }
+        }
+    }
+
+    component MeterPanel: Rectangle {
+        property bool showLeftBorder: true
+        property bool showRightBorder: true
+
+        color: LateNightTheme.compactVuPanelColor
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            color: LateNightTheme.compactVuPanelBorderColor
+            height: 1
+            z: 2
+        }
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            color: LateNightTheme.compactVuPanelBorderBottomColor
+            height: 1
+            z: 2
+        }
+        Rectangle {
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            color: LateNightTheme.compactVuPanelBorderLeftColor
+            visible: parent.showLeftBorder
+            width: 1
+            z: 1
+        }
+        Rectangle {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            color: LateNightTheme.compactVuPanelBorderRightColor
+            visible: parent.showRightBorder
+            width: 1
+            z: 1
         }
     }
 }

@@ -189,11 +189,21 @@ Item {
                     fadeTarget: waveforms
                 }
             }
-            Item {
+            Rectangle {
                 id: deckPane
 
-                readonly property real basePaneHeight: Math.max(deckRowsHeight, mixer.visible ? mixer.implicitHeight : 0)
-                readonly property real deckRowsHeight: root.show4decks ? visibleDeckHeight * 2 : visibleDeckHeight
+                color: LateNightTheme.layoutGutterColor
+                readonly property int deckRowCount: root.show4decks ? 2 : 1
+                readonly property real basePaneHeight: Math.max(deckRowsHeight, mixerLayoutVisible ? mixer.implicitHeight + LateNightTheme.deckRowGutter : 0)
+                readonly property real deckRowHeight: visibleDeckHeight > 0
+                        ? (deckStackHeight - LateNightTheme.deckRowGutter * (deckRowCount - 1)) / deckRowCount
+                        : 0
+                readonly property real deckRowsHeight: visibleDeckHeight > 0
+                        ? visibleDeckHeight * (root.show4decks ? 2 : 1) + LateNightTheme.deckRowGutter * (root.show4decks ? 2 : 1)
+                        : 0
+                readonly property int deckSideMargin: root.showMixer && !root.maximizeLibrary ? LateNightTheme.deckMixerGutter : 2
+                readonly property real deckStackHeight: basePaneHeight - LateNightTheme.deckRowGutter
+                readonly property bool mixerLayoutVisible: root.showMixer && !root.maximizeLibrary
                 readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height + micAuxSection.height
                 readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
 
@@ -203,31 +213,34 @@ Item {
                 implicitHeight: requiredPaneHeight
                 width: splitView.width
 
+                Item {
+                    id: deckFirstRowBottom
+
+                    height: 0
+                    y: deckPane.deckRowHeight
+                }
+                Item {
+                    id: deckStackBottom
+
+                    height: 0
+                    y: deckPane.deckStackHeight
+                }
                 LateNightDeck.Deck {
                     id: deck1
 
                     deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel1]"
-                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
                     visible: !root.maximizeLibrary || root.showMaximizedDecks
-
-                    Behavior on height {
-                        SpringAnimation {
-                            id: deck1HeightAnimation
-
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
-                    }
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
                     }
 
                     anchors {
+                        bottom: root.show4decks ? deckFirstRowBottom.top : deckStackBottom.top
                         left: parent.left
                         right: mixer.left
+                        rightMargin: deckPane.deckSideMargin
                         top: parent.top
                     }
 
@@ -237,6 +250,14 @@ Item {
 
                             AnchorChanges {
                                 anchors.right: compactVuSlot.left
+                                target: deck1
+                            }
+                        },
+                        State {
+                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.right: parent.horizontalCenter
                                 target: deck1
                             }
                         },
@@ -255,10 +276,7 @@ Item {
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
-                    // deckRowsHeight belongs to deckPane. Referencing it
-                    // unqualified here caused a runtime ReferenceError and
-                    // left the entire compact VU slot with no valid height.
-                    height: root.showCompactVuMeters ? deckPane.deckRowsHeight : 0
+                    height: root.showCompactVuMeters ? deckPane.deckStackHeight : 0
                     visible: root.showCompactVuMeters
                     width: root.showCompactVuMeters ? LateNightTheme.compactVuSlotWidth : 0
                     z: 10
@@ -280,10 +298,10 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     groups: [deck1.group, deck2.group, deck3.group, deck4.group]
-                    height: visible ? implicitHeight : 0
+                    height: deckPane.mixerLayoutVisible ? deckPane.deckStackHeight : 0
                     show4decks: root.show4decks
                     visible: root.showMixer && !root.maximizeLibrary
-                    width: visible ? implicitWidth : 0
+                    width: deckPane.mixerLayoutVisible ? implicitWidth : 0
 
                     states: [
                         State {
@@ -367,24 +385,15 @@ Item {
                     deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel2]"
-                    height: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
                     visible: !root.maximizeLibrary || root.showMaximizedDecks
-
-                    Behavior on height {
-                        SpringAnimation {
-                            id: deck2HeightAnimation
-
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
-                    }
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2;
                     }
 
                     anchors {
+                        bottom: root.show4decks ? deckFirstRowBottom.top : deckStackBottom.top
                         left: mixer.right
+                        leftMargin: deckPane.deckSideMargin
                         right: parent.right
                         top: parent.top
                     }
@@ -395,6 +404,14 @@ Item {
 
                             AnchorChanges {
                                 anchors.left: compactVuSlot.right
+                                target: deck2
+                            }
+                        },
+                        State {
+                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: parent.horizontalCenter
                                 target: deck2
                             }
                         },
@@ -415,21 +432,9 @@ Item {
 
                     active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
-                    height: active ? (root.maximizeLibrary ? LateNightTheme.miniDeckHeight : root.activeDeckHeight) : 0
-
-                    Behavior on height {
-                        SpringAnimation {
-                            id: deck3HeightAnimation
-
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
-                    }
                     sourceComponent: Component {
                         LateNightDeck.Deck {
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
+                            anchors.fill: parent
                             deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck3.group
@@ -445,6 +450,14 @@ Item {
                             }
                         },
                         State {
+                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.right: parent.horizontalCenter
+                                target: deck3
+                            }
+                        },
+                        State {
                             when: root.maximizeLibrary
 
                             AnchorChanges {
@@ -455,9 +468,12 @@ Item {
                     ]
 
                     anchors {
+                        bottom: deckStackBottom.top
                         left: parent.left
                         right: mixer.left
-                        top: deck1.bottom
+                        rightMargin: deckPane.deckSideMargin
+                        top: deckFirstRowBottom.bottom
+                        topMargin: LateNightTheme.deckRowGutter
                     }
                 }
                 Loader {
@@ -467,21 +483,9 @@ Item {
 
                     active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
                     clip: true
-                    height: active ? (root.maximizeLibrary ? LateNightTheme.miniDeckHeight : root.activeDeckHeight) : 0
-
-                    Behavior on height {
-                        SpringAnimation {
-                            id: deck4HeightAnimation
-
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
-                    }
                     sourceComponent: Component {
                         LateNightDeck.Deck {
-                            anchors.bottom: parent.bottom
-                            anchors.right: parent.right
+                            anchors.fill: parent
                             deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck4.group
@@ -497,6 +501,14 @@ Item {
                             }
                         },
                         State {
+                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
+
+                            AnchorChanges {
+                                anchors.left: parent.horizontalCenter
+                                target: deck4
+                            }
+                        },
+                        State {
                             when: root.maximizeLibrary
 
                             AnchorChanges {
@@ -507,9 +519,12 @@ Item {
                     ]
 
                     anchors {
+                        bottom: deckStackBottom.top
                         left: mixer.right
+                        leftMargin: deckPane.deckSideMargin
                         right: parent.right
-                        top: deck2.bottom
+                        top: deckFirstRowBottom.bottom
+                        topMargin: LateNightTheme.deckRowGutter
                     }
                 }
 
