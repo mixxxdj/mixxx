@@ -13,6 +13,7 @@
 #include <memory>
 
 class ControlProxy;
+class ControlObject;
 class ControlPushButton;
 class BaseTrackPlayer;
 class QAbstractItemView;
@@ -246,6 +247,8 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     // exist, so we create and own the CO here so that OverviewDelegate can
     // read the correct overview type (RGB by default).
     std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;
+    std::unique_ptr<ControlObject> m_pOverviewStereoControl;
+    std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
     QPixmap m_offscreenPixmap;
     bool m_isRendering = false;
     bool m_componentComplete = false; // gates rendering until QML component is constructed

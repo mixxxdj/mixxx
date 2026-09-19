@@ -473,16 +473,24 @@ bool QmlApplication::loadQml(const QString& path) {
         return false;
     }
 
-#if defined(Q_OS_ANDROID)
     for (auto* item : m_pAppEngine->rootObjects()) {
         auto* pWindow = qobject_cast<QQuickWindow*>(item);
         if (!pWindow) {
             continue;
         }
+
+        connect(pWindow,
+                &QQuickWindow::closing,
+                this,
+                [](auto*) {
+                    QCoreApplication::quit();
+                });
+
+#if defined(Q_OS_ANDROID)
         slotWindowChanged(pWindow);
+#endif
         break;
     }
-#endif
     return true;
 }
 

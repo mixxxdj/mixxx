@@ -307,7 +307,9 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     m_pRootWidget->setPalette(rootPalette);
     m_pRootWidget->setAutoFillBackground(true);
     m_pRootWidget->setAttribute(Qt::WA_DontShowOnScreen);
-    m_pRootWidget->setObjectName(QStringLiteral("LibraryContainer"));
+    m_pRootWidget->setMinimumSize(0, 0);
+    m_pRootWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    m_pRootWidget->setObjectName(QStringLiteral("QmlLegacyLibraryRoot"));
     m_pRootWidget->show();
     UserSettingsPointer pConfig = QmlConfigProxy::get();
     // 1. Create splitter layout
@@ -316,6 +318,8 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     // See res/skins/LateNight/library.xml and style_classic.qss:2646.
     auto* pSplitter = new QmlLibrarySplitter(m_pRootWidget.get());
     pSplitter->setObjectName(QStringLiteral("LibrarySplitter"));
+    pSplitter->setHandleWidth(6);
+    pSplitter->setMinimumSize(0, 0);
     pSplitter->setSizePolicy(
             QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
@@ -326,6 +330,7 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     pSidebarPage->setSizePolicy(
             QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     pSidebarPage->setMinimumWidth(100);
+    pSidebarPage->setMinimumHeight(0);
     auto* pSidebarLayout = new QVBoxLayout(pSidebarPage);
     pSidebarLayout->setContentsMargins(0, 0, 0, 0);
     pSidebarLayout->setSpacing(0);
@@ -386,6 +391,8 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     auto* pSidebarCoverSplitter =
             new QmlLibrarySplitter(Qt::Vertical, pSidebarPage);
     pSidebarCoverSplitter->setObjectName(QStringLiteral("SidebarCoverSplitter"));
+    pSidebarCoverSplitter->setHandleWidth(9);
+    pSidebarCoverSplitter->setMinimumSize(0, 0);
     pSidebarCoverSplitter->setSizePolicy(
             QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     pSidebarCoverSplitter->setChildrenCollapsible(false);
@@ -434,7 +441,9 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
 
     // 3. Library (main content area)
     m_pLibraryWidget = new WLibrary(pSplitter);
-    m_pLibraryWidget->setObjectName(QStringLiteral("LibraryContainer"));
+    m_pLibraryWidget->setMinimumSize(0, 0);
+    m_pLibraryWidget->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     applyLegacyLibrarySkinConfiguration();
     applyLegacyCoverArtSkinConfiguration();
 
@@ -455,10 +464,30 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     m_initialLibrarySplitterSizes = librarySplitterSizes;
     connectSplitterConfig(pSplitter, pConfig, librarySplitterConfigKey);
 
+    auto* pLibraryOuter = new WWidgetGroup(m_pRootWidget.get());
+    pLibraryOuter->setMinimumSize(0, 0);
+    pLibraryOuter->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::Ignored);
+    auto* pLibraryOuterLayout = new QVBoxLayout(pLibraryOuter);
+    pLibraryOuterLayout->setContentsMargins(0, 0, 0, 0);
+    pLibraryOuterLayout->setSpacing(0);
+
+    auto* pLibraryContainer = new WWidgetGroup(pLibraryOuter);
+    pLibraryContainer->setObjectName(QStringLiteral("LibraryContainer"));
+    pLibraryContainer->setMinimumSize(0, 0);
+    pLibraryContainer->setSizePolicy(
+            QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    auto* pLibraryContainerLayout = new QHBoxLayout(pLibraryContainer);
+    pLibraryContainerLayout->setContentsMargins(0, 0, 0, 0);
+    pLibraryContainerLayout->setSpacing(0);
+    pLibraryContainerLayout->addWidget(pSplitter);
+    pLibraryOuterLayout->addWidget(pLibraryContainer);
+
     // 5. Root layout
     auto* pRootLayout = new QVBoxLayout(m_pRootWidget.get());
     pRootLayout->setContentsMargins(0, 0, 0, 0);
-    pRootLayout->addWidget(pSplitter);
+    pRootLayout->setSpacing(0);
+    pRootLayout->addWidget(pLibraryOuter);
 
     // 6. Initialize the WaveformOverviewType ControlPushButton BEFORE binding
     //    the library, because bindLibraryWidget creates OverviewDelegate which
@@ -2065,6 +2094,25 @@ void QmlLegacyLibraryItem::updateWidgetSize() {
 
     m_pRootWidget->resize(widgetSize);
     m_pRootWidget->ensurePolished();
+    if (QLayout* pLayout = m_pRootWidget->layout()) {
+        pLayout->invalidate();
+        pLayout->activate();
+    }
+    const auto childWidgets = m_pRootWidget->findChildren<QWidget*>();
+    for (QWidget* pWidget : childWidgets) {
+        if (QLayout* pLayout = pWidget->layout()) {
+            pLayout->invalidate();
+            pLayout->activate();
+        }
+    }
+    const auto tableViews = m_pRootWidget->findChildren<QAbstractItemView*>();
+    for (QAbstractItemView* pView : tableViews) {
+        if (auto* pTableView = qobject_cast<QTableView*>(pView)) {
+            pTableView->doItemsLayout();
+            QMetaObject::invokeMethod(
+                    pTableView, "updateGeometries", Qt::DirectConnection);
+        }
+    }
     applyInitialSplitterSizes();
 }
 
@@ -2923,19 +2971,36 @@ void QmlLegacyLibraryItem::initializeOverviewTypeControl() {
             QStringLiteral("[Waveform]"),
             QStringLiteral("WaveformOverviewType"));
 
-    if (ControlObject::exists(overviewTypeCfgKey)) {
-        return;
+    if (!ControlObject::exists(overviewTypeCfgKey)) {
+        m_pOverviewTypeControl = std::make_unique<ControlPushButton>(overviewTypeCfgKey);
+        m_pOverviewTypeControl->setStates(
+                QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+        m_pOverviewTypeControl->setReadOnly();
+
+        // Seed from config, defaulting to RGB.
+        mixxx::OverviewType overviewType = pConfig->getValue<mixxx::OverviewType>(
+                overviewTypeCfgKey, mixxx::OverviewType::RGB);
+        m_pOverviewTypeControl->forceSet(static_cast<double>(overviewType));
     }
 
-    m_pOverviewTypeControl = std::make_unique<ControlPushButton>(overviewTypeCfgKey);
-    m_pOverviewTypeControl->setStates(
-            QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
-    m_pOverviewTypeControl->setReadOnly();
+    const ConfigKey overviewStereoCfgKey(
+            QStringLiteral("[Waveform]"), QStringLiteral("overview_stereo_mode"));
+    if (!ControlObject::exists(overviewStereoCfgKey)) {
+        m_pOverviewStereoControl = std::make_unique<ControlObject>(overviewStereoCfgKey);
+        m_pOverviewStereoControl->setReadOnly();
+        m_pOverviewStereoControl->forceSet(
+                pConfig->getValue<bool>(overviewStereoCfgKey, true));
+    }
 
-    // Seed from config, defaulting to RGB.
-    mixxx::OverviewType overviewType = pConfig->getValue<mixxx::OverviewType>(
-            overviewTypeCfgKey, mixxx::OverviewType::RGB);
-    m_pOverviewTypeControl->forceSet(static_cast<double>(overviewType));
+    const ConfigKey overviewMinuteMarkersCfgKey(
+            QStringLiteral("[Waveform]"), QStringLiteral("draw_overview_minute_markers"));
+    if (!ControlObject::exists(overviewMinuteMarkersCfgKey)) {
+        m_pOverviewMinuteMarkersControl =
+                std::make_unique<ControlObject>(overviewMinuteMarkersCfgKey);
+        m_pOverviewMinuteMarkersControl->setReadOnly();
+        m_pOverviewMinuteMarkersControl->forceSet(
+                pConfig->getValue<bool>(overviewMinuteMarkersCfgKey, true));
+    }
 }
 
 void QmlLegacyLibraryItem::requestRender() {
