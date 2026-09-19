@@ -53,7 +53,7 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
-    const bool splitStemTracks = isStemTrack &&
+    const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
@@ -74,7 +74,7 @@ bool WaveformRenderBeat::preprocessInner() {
 
     if (!m_color.alpha()) {
         // Don't render the beatgrid lines is there are fully transparent
-        return true;
+        return false;
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();

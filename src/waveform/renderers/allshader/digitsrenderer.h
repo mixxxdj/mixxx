@@ -45,6 +45,6 @@ class allshader::DigitsRenderNode : public rendergraph::GeometryNode {
     float m_fontPointSize{};
     float m_height{};
     float m_maxHeight{};
-    float m_adjustedFontPointSize{};
+    float m_devicePixelRatio{};
     DISALLOW_COPY_AND_ASSIGN(DigitsRenderNode);
 };
