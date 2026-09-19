@@ -337,6 +337,11 @@ QmlApplication::QmlApplication(
                 }
             });
 
+    // The embedded legacy preview deck registers its
+    // WVuMeterLegacy with WaveformWidgetFactory. In QML mode, this timer-backed
+    // VSync loop provides the waveformUpdateTick that schedules the widget's
+    // repaint. This dependency can be removed once the native QML library and
+    // preview deck replace the embedded legacy widgets.
     WaveformWidgetFactory::instance()->startVSync(
             m_pGuiTick.get(), m_visualsManager.get(), true);
 

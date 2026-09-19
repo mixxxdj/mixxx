@@ -507,7 +507,6 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         applyLegacyScrollbarStyles();
         applyLegacyTableViewBridgeOptions();
         applyLegacyColorPickerBridgeOptions();
-        connectSortBypass();
         installEmbeddedWidgetEventFilters();
         connectEmbeddedWidgetUpdateSignals();
         repaintEmbeddedViews();
@@ -518,7 +517,6 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         applyLegacyScrollbarStyles();
         applyLegacyTableViewBridgeOptions();
         applyLegacyColorPickerBridgeOptions();
-        connectSortBypass();
         installEmbeddedWidgetEventFilters();
         connectEmbeddedWidgetUpdateSignals();
         repaintEmbeddedViews();
@@ -557,7 +555,6 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     applyLegacyScrollbarStyles();
     applyLegacyTableViewBridgeOptions();
     applyLegacyColorPickerBridgeOptions();
-    connectSortBypass();
     installEmbeddedWidgetEventFilters();
     connectEmbeddedWidgetUpdateSignals();
     syncLibraryCoverArtFromSelection();
@@ -1696,31 +1693,6 @@ void QmlLegacyLibraryItem::enableEmbeddedWidgetInputTracking() {
     }
 }
 
-void QmlLegacyLibraryItem::connectSortBypass() {
-    if (!m_pRootWidget) {
-        return;
-    }
-
-    // WTrackTableView::applySortingIfVisible() bails because isVisible()
-    // returns false for our WA_DontShowOnScreen widget tree. We bypass this
-    // by directly connecting each table header's sortIndicatorChanged signal
-    // to QTableView::sortByColumn (public, inherited), which does the actual
-    // model sort. Use Qt::UniqueConnection so this is idempotent across
-    // repeated calls from view-switch signals.
-    const auto tableViews = m_pRootWidget->findChildren<QTableView*>();
-    for (QTableView* pTableView : tableViews) {
-        QHeaderView* pHeader = pTableView->horizontalHeader();
-        if (!pHeader) {
-            continue;
-        }
-        connect(pHeader,
-                &QHeaderView::sortIndicatorChanged,
-                pTableView,
-                &QTableView::sortByColumn,
-                Qt::UniqueConnection);
-    }
-}
-
 void QmlLegacyLibraryItem::applyLegacyTableViewBridgeOptions() {
     if (!m_pRootWidget) {
         return;
@@ -2126,8 +2098,6 @@ void QmlLegacyLibraryItem::applyInitialSplitterSizes() {
     }
 
     m_initialSplitterSizesApplied = true;
-    persistSplitterSizes(m_pCoverArtSplitter);
-    persistSplitterSizes(m_pLibrarySplitter);
 }
 
 void QmlLegacyLibraryItem::createLegacyPreviewDeck() {
@@ -2526,6 +2496,37 @@ void QmlLegacyLibraryItem::applyLegacyPreviewDeckSkinConfiguration() {
     }
 
     recreateLegacyPreviewOverview();
+
+    Tooltips tooltips;
+    if (m_pPreviewTitle) {
+        m_pPreviewTitle->setBaseTooltip(tooltips.tooltipForId(QStringLiteral("text")));
+    }
+    if (m_pPreviewBpm) {
+        m_pPreviewBpm->setBaseTooltip(tooltips.tooltipForId(QStringLiteral("visual_bpm")));
+    }
+    if (m_pPreviewEjectButton) {
+        m_pPreviewEjectButton->setBaseTooltip(tooltips.tooltipForId(QStringLiteral("eject")));
+    }
+    if (m_pPreviewPlayButton) {
+        m_pPreviewPlayButton->setBaseTooltip(
+                tooltips.tooltipForId(QStringLiteral("cue_gotoandplay_cue_default")));
+    }
+    if (m_pPreviewOverview) {
+        m_pPreviewOverview->setBaseTooltip(
+                tooltips.tooltipForId(QStringLiteral("waveform_overview")));
+    }
+    if (m_pPreviewVuMeter) {
+        m_pPreviewVuMeter->setBaseTooltip(
+                tooltips.tooltipForId(QStringLiteral("preview_VuMeter")));
+    }
+    if (m_pPreviewPeakIndicator) {
+        m_pPreviewPeakIndicator->setBaseTooltip(
+                tooltips.tooltipForId(QStringLiteral("preview_peak_indicator")));
+    }
+    if (m_pPreviewSlider) {
+        m_pPreviewSlider->setBaseTooltip(tooltips.tooltipForId(QStringLiteral("pregain")));
+    }
+
     updatePreviewDeckTrackLoaded(m_pPreviewDeckTrackLoaded
                     ? m_pPreviewDeckTrackLoaded->get()
                     : 0.0);

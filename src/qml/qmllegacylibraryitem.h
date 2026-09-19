@@ -126,7 +126,6 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     void applyLegacyScrollbarStyle(QScrollBar* pScrollBar);
     void applyLegacyTableViewBridgeOptions();
     void applyLegacyColorPickerBridgeOptions();
-    void connectSortBypass();
     void applyInitialSplitterSizes();
     void requestRender();
     void requestRenderForCurrentInteraction();
