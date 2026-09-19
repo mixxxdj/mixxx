@@ -564,8 +564,12 @@ Item {
                         id: effectsRack
 
                         anchors.fill: parent
-                        leftUnitEnd: deck1.x + deck1.width
-                        rightUnitStart: deck2.x
+                        leftUnitEnd: deckPane.mixerLayoutVisible
+                                ? Math.round((effectsRack.width - effectsRack.unitSpacing) / 2)
+                                : deck1.x + deck1.width
+                        rightUnitStart: deckPane.mixerLayoutVisible
+                                ? Math.round((effectsRack.width + effectsRack.unitSpacing) / 2)
+                                : deck2.x
                     }
                 }
                 Item {
