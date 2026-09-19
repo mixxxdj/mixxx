@@ -137,7 +137,9 @@ Item {
         }
         VinylControlsPlaceholder {
             Layout.preferredHeight: 20
+            Layout.minimumWidth: 158
             Layout.preferredWidth: 158
+            Layout.maximumWidth: 158
             group: root.group
             visible: root.showVinylControls
         }
