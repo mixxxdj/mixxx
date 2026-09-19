@@ -217,4 +217,84 @@ TEST_F(TrackUpdateTest, partialImportFillsMissingRating) {
     EXPECT_EQ(pTrack->getRating(), 2);
 }
 
-// TODO: Add tests for SoundSourceProxy::UpdateTrackFromSourceMode::Newer
+TEST_F(TrackUpdateTest, newerModeChangedFileOverwritesMixxxRating) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("rated.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportRating(2));
+    }
+
+    SyncTrackMetadataParams params;
+    params.importRatingFromFile = true;
+
+    auto pTrack = Track::newTemporary(trackPath);
+    ASSERT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    params));
+    ASSERT_EQ(pTrack->getRating(), 2);
+    pTrack->markClean();
+
+    // The user rates the track in Mixxx, then another application writes a
+    // different rating into the file. The file is now newer than the last
+    // synchronization, so its rating takes precedence.
+    pTrack->setRating(4);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportRating(5));
+    }
+    {
+        QFile file(trackPath);
+        ASSERT_TRUE(file.open(QIODevice::ReadWrite));
+        ASSERT_TRUE(file.setFileTime(QDateTime::currentDateTime().addSecs(2),
+                QFileDevice::FileModificationTime));
+    }
+    pTrack->markClean();
+
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Newer,
+            params);
+    EXPECT_EQ(pTrack->getRating(), 5);
+}
+
+TEST_F(TrackUpdateTest, newerModeUnchangedFileKeepsMixxxRating) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("rated.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportRating(2));
+    }
+
+    SyncTrackMetadataParams params;
+    params.importRatingFromFile = true;
+
+    auto pTrack = Track::newTemporary(trackPath);
+    ASSERT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    params));
+    ASSERT_EQ(pTrack->getRating(), 2);
+    pTrack->markClean();
+
+    // The file has not been touched since, so the rating set in Mixxx is the
+    // newer value and must survive a repeated import.
+    pTrack->setRating(4);
+    pTrack->markClean();
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Newer,
+            params);
+    EXPECT_EQ(pTrack->getRating(), 4);
+}
