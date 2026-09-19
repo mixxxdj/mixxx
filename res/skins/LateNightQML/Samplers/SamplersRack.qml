@@ -16,8 +16,6 @@ Rectangle {
     readonly property int legacyBottomMargin: LateNightTheme.isClassic ? 4 : 3
     property bool synchronizingMode: false
 
-    height: implicitHeight
-
     function normalizeMode() {
         if (!root.modeControlsInitialized)
             return;

@@ -13,7 +13,7 @@ Item {
     property string deck2Group: "[Channel2]"
     property string deck3Group: "[Channel3]"
     property string deck4Group: "[Channel4]"
-    readonly property int bottomGutterHeight: 3
+    readonly property int bottomGutterHeight: 2
     readonly property var bottomDeck: root.show4decks ? deck4waveform.item : deck2waveform
     readonly property int deckCount: root.show4decks ? 4 : 2
     readonly property real deck3MinimumHeight: deck3waveform.item ? deck3waveform.item.minimumHeight : 30

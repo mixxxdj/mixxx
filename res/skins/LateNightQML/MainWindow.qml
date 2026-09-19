@@ -563,9 +563,9 @@ Item {
                     LateNightEffects.EffectsRack {
                         id: effectsRack
 
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
+                        anchors.fill: parent
+                        leftUnitEnd: deck1.x + deck1.width
+                        rightUnitStart: deck2.x
                     }
                 }
                 Item {
@@ -594,9 +594,7 @@ Item {
                     LateNightSamplers.SamplersRack {
                         id: samplers
 
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
+                        anchors.fill: parent
                     }
                 }
                 Item {
@@ -625,9 +623,7 @@ Item {
                     LateNightMicAux.MicAuxRack {
                         id: micAuxRack
 
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.top: parent.top
+                        anchors.fill: parent
                     }
                 }
                 Loader {
