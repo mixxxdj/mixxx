@@ -825,10 +825,13 @@ void CoreServices::initializeQMLSingletons() {
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
-    // Currently, it is required to enforce QQuickWindow RHI backend to use
-    // OpenGL on all platforms to allow offscreen rendering to function as
-    // expected
+    // Qt Quick's native graphics backends are preferred on macOS and Windows.
+    // Offscreen rendering for controller screens is currently implemented only
+    // on Linux and Android, so those platforms retain the established OpenGL
+    // scene-graph backend used by the QML waveform renderers.
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_WIN)
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
 #endif
 }
 

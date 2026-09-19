@@ -275,13 +275,13 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
     auto pRenderer = std::make_unique<allshader::WaveformRenderBeat>(
             waveformWidget, m_position);
     waveformWidget->setDisplayBeatGridAlpha(m_color.alphaF() * 100);
-    pRenderer->setColor(m_color.rgb());
+    pRenderer->setColor(m_color);
     connect(this,
             &QmlWaveformRendererBeat::colorChanged,
             pRenderer.get(),
             [waveformWidget, pRenderer = pRenderer.get()](const QColor& color) {
                 waveformWidget->setDisplayBeatGridAlpha(color.alphaF() * 100);
-                pRenderer->setColor(color.rgb());
+                pRenderer->setColor(color);
             });
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
@@ -317,11 +317,32 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererStem::create(
             waveformWidget, m_position);
 
     pRenderer->setAllChannelVisualGain(m_gainAll);
+    pRenderer->setOpacity(static_cast<float>(m_opacity));
+    pRenderer->setOutlineOpacity(static_cast<float>(m_outlineOpacity));
+    pRenderer->setReorderOnChange(m_reorderOnChange);
     pRenderer->setSplitStemTracks(m_splitStemTracks);
     connect(this,
             &QmlWaveformRendererStem::gainAllChanged,
             pRenderer.get(),
             &allshader::WaveformRendererStem::setAllChannelVisualGain);
+    connect(this,
+            &QmlWaveformRendererStem::opacityChanged,
+            pRenderer.get(),
+            [renderer = pRenderer.get()](double value) {
+                renderer->setOpacity(static_cast<float>(value));
+            });
+    connect(this,
+            &QmlWaveformRendererStem::outlineOpacityChanged,
+            pRenderer.get(),
+            [renderer = pRenderer.get()](double value) {
+                renderer->setOutlineOpacity(static_cast<float>(value));
+            });
+    connect(this,
+            &QmlWaveformRendererStem::reorderOnChangeChanged,
+            pRenderer.get(),
+            [renderer = pRenderer.get()](bool value) {
+                renderer->setReorderOnChange(value);
+            });
     connect(this,
             &QmlWaveformRendererStem::splitStemTracksChanged,
             pRenderer.get(),
@@ -343,8 +364,8 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
     pRenderer->setPlayMarkerBackgroundColor(m_playMarkerBackground);
     waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
 
-    pRenderer->setUntilMarkShowBeats(m_untilMark->showTime());
-    pRenderer->setUntilMarkShowTime(m_untilMark->showBeats());
+    pRenderer->setUntilMarkShowBeats(m_untilMark->showBeats());
+    pRenderer->setUntilMarkShowTime(m_untilMark->showTime());
     pRenderer->setUntilMarkAlign(m_untilMark->align());
     pRenderer->setUntilMarkTextSize(m_untilMark->textSize());
     pRenderer->setUntilMarkTextHeightLimit(m_untilMark->textHeightLimit());
@@ -366,6 +387,10 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererMark::create(
             &QmlWaveformUntilMark::textSizeChanged,
             pRenderer.get(),
             &allshader::WaveformRenderMark::setUntilMarkTextSize);
+    connect(m_untilMark.get(),
+            &QmlWaveformUntilMark::textHeightLimitChanged,
+            pRenderer.get(),
+            &allshader::WaveformRenderMark::setUntilMarkTextHeightLimit);
     connect(m_untilMark.get(),
             &QmlWaveformUntilMark::defaultNextMarkPositionChanged,
             pRenderer.get(),

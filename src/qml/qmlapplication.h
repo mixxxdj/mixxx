@@ -14,8 +14,8 @@ class ControlProxy;
 class ControlPushButton;
 class GuiTick;
 class VisualsManager;
-#if defined(Q_OS_ANDROID)
 class QQuickWindow;
+#if defined(Q_OS_ANDROID)
 class APerformanceHintSession;
 #endif
 
@@ -38,11 +38,9 @@ class QmlApplication : public QObject {
   public slots:
     bool loadQml(const QString& path);
 
-#if defined(Q_OS_ANDROID)
   private slots:
     void slotFrameSwapped();
     void slotWindowChanged(QQuickWindow* window);
-#endif
 
   private:
     void registerImageProvider();
@@ -52,6 +50,7 @@ class QmlApplication : public QObject {
     std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
     std::unique_ptr<GuiTick> m_pGuiTick;
+    QTimer m_guiTickTimer;
 
     parented_ptr<ControlProxy> m_pShowSpinny;
     parented_ptr<ControlProxy> m_pShowCover;
