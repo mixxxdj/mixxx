@@ -8,6 +8,7 @@
 
 #include "library/treeitem.h"
 #include "moc_qmlsidebarmodelproxy.cpp"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmllibrarysource.h"
 #include "util/assert.h"
 #include "util/parented_ptr.h"
@@ -57,7 +58,7 @@ void QmlSidebarModelProxy::activate(const QModelIndex& index) {
 }
 
 QmlSidebarModelProxy::QmlSidebarModelProxy(QObject* parent)
-        : SidebarModel(parent),
+        : SidebarModel(QmlConfigProxy::get(), parent),
           m_tracklist(nullptr) {
 }
 QmlSidebarModelProxy::~QmlSidebarModelProxy() = default;

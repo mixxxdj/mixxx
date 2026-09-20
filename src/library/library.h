@@ -139,6 +139,8 @@ class Library: public QObject {
     void onSkinLoadFinished();
     void slotSaveCurrentViewState() const;
     void slotRestoreCurrentViewState() const;
+    void slotSaveSelectedTrackId();
+    void slotRestoreSelectedTrackId();
 
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
