@@ -125,8 +125,9 @@ class SliderEventHandler {
             m_bRightButtonPressed = false;
         } else {
             pWidget->setControlParameter(m_dOldParameter);
-            m_bMouseButtonPressed = false;
         }
+        m_bMouseButtonPressed =
+                (e->buttons() & ~Qt::RightButton) != Qt::NoButton;
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {

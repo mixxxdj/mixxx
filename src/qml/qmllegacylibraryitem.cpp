@@ -246,16 +246,29 @@ void setLateNightPreviewVariables(SkinContext* pContext, const SchemeStyle& sche
 QmlLegacyLibraryItem::~QmlLegacyLibraryItem() = default;
 
 QRectF QmlLegacyLibraryItem::previewDeckDropRect() const {
-    if (!m_pPreviewDeckBox || !m_pRootWidget) {
+    if (!m_pPreviewDeckBox || !m_pRootWidget || !m_pPreviewDeckBox->isVisible()) {
         return {};
     }
 
-    const QPoint topLeft = m_pPreviewDeckBox->mapTo(m_pRootWidget.get(), QPoint());
-    return QRectF(QPointF(topLeft), QSizeF(m_pPreviewDeckBox->size()));
+    QRect clippedRect(
+            m_pPreviewDeckBox->mapTo(m_pRootWidget.get(), QPoint()),
+            m_pPreviewDeckBox->size());
+    for (QWidget* pAncestor = m_pPreviewDeckBox->parentWidget();
+            pAncestor;
+            pAncestor = pAncestor->parentWidget()) {
+        const QRect ancestorRect(
+                pAncestor->mapTo(m_pRootWidget.get(), QPoint()),
+                pAncestor->size());
+        clippedRect = clippedRect.intersected(ancestorRect);
+        if (pAncestor == m_pRootWidget.get() || clippedRect.isEmpty()) {
+            break;
+        }
+    }
+    return QRectF(clippedRect);
 }
 
 bool QmlLegacyLibraryItem::previewDeckDropEnabled() const {
-    return m_pPreviewDeckBox && m_pPreviewDeckBox->isVisible();
+    return !previewDeckDropRect().isEmpty();
 }
 
 void QmlLegacyLibraryItem::focusSearch() {
@@ -455,6 +468,12 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     pSplitter->setCollapsible(0, true);
     pSplitter->setCollapsible(1, false);
     m_pLibrarySplitter = pSplitter;
+    connect(pSplitter,
+            &QSplitter::splitterMoved,
+            this,
+            [this](int, int) {
+                emit previewDeckGeometryChanged();
+            });
     const ConfigKey librarySplitterConfigKey(
             QStringLiteral("[Skin]"),
             QStringLiteral("librarySidebar_splitsize"));
