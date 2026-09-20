@@ -37,7 +37,7 @@ Item {
         anchors.leftMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
         anchors.rightMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
         anchors.topMargin: LateNightTheme.optionalDeckControlsBackgroundTile.toString().length > 0 ? 1 : 0
-        spacing: 6
+        spacing: 0
 
         GridLayout {
             Layout.preferredHeight: 52
@@ -94,7 +94,10 @@ Item {
             }
         }
         Item {
-            Layout.preferredWidth: 4
+            Layout.minimumWidth: 2
+            Layout.preferredWidth: 2
+            Layout.maximumWidth: 8
+            Layout.fillWidth: true
             visible: root.showHotcues || root.showIntroOutroCues
         }
 
@@ -169,7 +172,10 @@ Item {
             }
         }
         Item {
-            Layout.preferredWidth: 4
+            Layout.minimumWidth: 2
+            Layout.preferredWidth: 2
+            Layout.maximumWidth: 8
+            Layout.fillWidth: true
             visible: root.showHotcues || root.showIntroOutroCues
         }
 
@@ -212,6 +218,7 @@ Item {
             }
         }
         Item {
+            Layout.minimumWidth: 2
             Layout.preferredWidth: 2
             visible: root.showIntroOutroCues || root.showLoopControls || root.showBeatjumpControls
         }
@@ -223,8 +230,10 @@ Item {
 
         // Loop controls
         GridLayout {
+            Layout.minimumWidth: 78
             Layout.preferredHeight: 52
             Layout.preferredWidth: 104
+            Layout.maximumWidth: 104
             columnSpacing: 0
             columns: 4
             rowSpacing: 0
@@ -232,6 +241,7 @@ Item {
             visible: root.showLoopControls
 
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
@@ -252,8 +262,11 @@ Item {
             }
 
             LateNightBeatSpinBox {
+                Layout.minimumWidth: 46
                 Layout.columnSpan: 3
                 Layout.preferredHeight: 26
+                Layout.preferredWidth: 78
+                Layout.maximumWidth: 78
                 group: root.group
                 key: "beatloop_size"
                 decrementKey: "loop_halve"
@@ -261,6 +274,7 @@ Item {
             }
 
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
@@ -280,6 +294,7 @@ Item {
             }
 
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
@@ -299,6 +314,7 @@ Item {
             }
 
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
@@ -318,6 +334,7 @@ Item {
             }
 
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
@@ -338,6 +355,7 @@ Item {
             }
         }
         Item {
+            Layout.minimumWidth: 2
             Layout.preferredWidth: 2
             visible: root.showLoopControls || root.showBeatjumpControls
         }
@@ -349,8 +367,10 @@ Item {
 
         // Beatjump controls
         GridLayout {
+            Layout.minimumWidth: 52
             Layout.preferredHeight: 52
             Layout.preferredWidth: 60
+            Layout.maximumWidth: 60
             columnSpacing: 0
             columns: 2
             rowSpacing: 0
@@ -359,8 +379,10 @@ Item {
 
             LateNightBeatSpinBox {
                 Layout.columnSpan: 2
+                Layout.minimumWidth: 46
                 Layout.preferredHeight: 26
                 Layout.preferredWidth: 60
+                Layout.maximumWidth: 60
                 preferredWidth: 60
                 group: root.group
                 key: "beatjump_size"
@@ -368,6 +390,7 @@ Item {
                 incrementKey: "beatjump_size_double"
             }
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
@@ -387,6 +410,7 @@ Item {
             }
 
             LateNightControlButton {
+                Layout.minimumWidth: 0
                 Layout.preferredWidth: 26
                 Layout.preferredHeight: 26
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("square")
