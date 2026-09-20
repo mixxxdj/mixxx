@@ -1,27 +1,17 @@
 #pragma once
 
-#include <QByteArray>
 #include <QLoggingCategory>
-#include <QtGlobal>
+
+#include "util/cmdlineargs.h"
 
 namespace mixxx::qml {
 
 inline bool qmlRenderDiagnosticsEnabled() {
-    static const bool enabled = [] {
-        const QByteArray value = qgetenv("MIXXX_QML_RENDER_DIAGNOSTICS");
-        return !value.isEmpty() && value != QByteArrayLiteral("0") &&
-                value.compare(QByteArrayLiteral("false"), Qt::CaseInsensitive) != 0;
-    }();
-    return enabled;
+    return CmdlineArgs::Instance().getQmlRenderDiagnostics();
 }
 
 inline bool qmlRenderForceFullSurface() {
-    static const bool enabled = [] {
-        const QByteArray value = qgetenv("MIXXX_QML_RENDER_FORCE_FULL_SURFACE");
-        return !value.isEmpty() && value != QByteArrayLiteral("0") &&
-                value.compare(QByteArrayLiteral("false"), Qt::CaseInsensitive) != 0;
-    }();
-    return enabled;
+    return CmdlineArgs::Instance().getQmlRenderForceFullSurface();
 }
 
 inline const QLoggingCategory& qmlRenderDiagnosticsCategory() {
