@@ -2560,6 +2560,7 @@ void QmlLegacyLibraryItem::applyLegacyPreviewDeckSkinConfiguration() {
         if (setDomContent(&document, xml)) {
             m_pPreviewVuMeter->setup(document.documentElement(), context);
             m_pPreviewVuMeter->Init();
+            m_pPreviewVuMeter->refresh();
         }
     }
     if (m_pPreviewSlider) {
