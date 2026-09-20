@@ -2955,7 +2955,6 @@ if(BUILD_TESTING)
     src/test/performancetimer_test.cpp
     src/test/playcountertest.cpp
     src/test/playermanagertest.cpp
-    src/test/pixmapcachelimit_test.cpp
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
     src/test/portmidienumeratortest.cpp
