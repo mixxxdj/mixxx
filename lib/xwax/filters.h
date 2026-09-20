@@ -11,12 +11,14 @@ extern "C" {
 struct ewma_filter {
     double alpha;
     int y_old;
+    double y_old_f; /* as y_old, for callers that need the double precision */
 };
 
 void ewma_init(struct ewma_filter *f, const double alpha);
 void ewma_init_adaptive(struct ewma_filter *f, double k, double f_carrier,
     double fs);
 int ewma(struct ewma_filter *f, const int x);
+double ewmaf(struct ewma_filter *f, const double x);
 
 struct differentiator {
     int x_old;
