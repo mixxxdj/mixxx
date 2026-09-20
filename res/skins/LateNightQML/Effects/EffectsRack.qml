@@ -26,7 +26,7 @@ Rectangle {
 
         height: implicitHeight
         unitNumber: 1
-        width: Math.max(0, root.leftUnitEnd - unit1.x + 1)
+        width: Math.max(0, root.leftUnitEnd - unit1.x)
         x: 0
         y: 0
     }
@@ -43,7 +43,7 @@ Rectangle {
         height: implicitHeight
         unitNumber: 2
         width: parent.width - x
-        x: root.rightUnitStart - 1
+        x: root.rightUnitStart
         y: 0
     }
     Controls.RackFiller {
@@ -59,7 +59,7 @@ Rectangle {
         height: implicitHeight
         unitNumber: 3
         visible: root.showFourUnits
-        width: Math.max(0, root.leftUnitEnd - unit3.x + 1)
+        width: Math.max(0, root.leftUnitEnd - unit3.x)
         x: 0
         y: root.unit3Top
     }
@@ -77,7 +77,7 @@ Rectangle {
         unitNumber: 4
         visible: root.showFourUnits
         width: parent.width - x
-        x: root.rightUnitStart - 1
+        x: root.rightUnitStart
         y: root.unit4Top
     }
     Controls.RackFiller {

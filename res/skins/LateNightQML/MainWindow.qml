@@ -564,10 +564,10 @@ Item {
                         id: effectsRack
 
                         anchors.fill: parent
-                        leftUnitEnd: deckPane.mixerLayoutVisible
+                        leftUnitEnd: deckPane.mixerLayoutVisible || root.showCompactVuMeters
                                 ? Math.round((effectsRack.width - effectsRack.unitSpacing) / 2)
                                 : deck1.x + deck1.width
-                        rightUnitStart: deckPane.mixerLayoutVisible
+                        rightUnitStart: deckPane.mixerLayoutVisible || root.showCompactVuMeters
                                 ? Math.round((effectsRack.width + effectsRack.unitSpacing) / 2)
                                 : deck2.x
                     }
