@@ -518,9 +518,7 @@ bool QmlApplication::loadQml(const QString& path) {
                 this,
                 metaObject()->method(closingSlotIndex));
 
-#if defined(Q_OS_ANDROID)
         slotWindowChanged(pWindow);
-#endif
         break;
     }
     return true;
