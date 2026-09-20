@@ -91,6 +91,7 @@ Item {
                 Layout.preferredWidth: 68
                 backgroundSource: LateNightTheme.lateNightSubRegionButton("play")
                 group: root.group
+                useFullIcon: true
             }
         }
         Item {
