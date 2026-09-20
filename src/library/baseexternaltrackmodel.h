@@ -28,6 +28,8 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
 
   protected:
     virtual QString resolveLocation(const QString& nativeLocation) const;
+    QString normalizeTrackLocationForLoadedDecks(
+            const QString& location) const override;
 
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const override;

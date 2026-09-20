@@ -27,6 +27,12 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     DISALLOW_COPY_AND_ASSIGN(BaseTrackTableModel);
 
   public:
+    // Stores the loaded deck and sampler index as a bit mask
+    struct LoadedDeckMasks {
+        quint8 mainDeck = 0;
+        quint64 samplersDeck = 0;
+    };
+
     explicit BaseTrackTableModel(
             QObject* parent,
             TrackCollectionManager* const pTrackCollectionManager,
@@ -180,6 +186,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     bool isBpmLocked(
             const QModelIndex& index) const;
 
+    LoadedDeckMasks loadedDeckMaskForTrackId(TrackId trackId) const;
+    void setLoadedDeckMasks(QHash<TrackId, LoadedDeckMasks>&& loadedDeckMasksByTrackId);
+    virtual void handleLoadedDecksChanged(const QList<int>& rows);
+
     const QPointer<TrackCollectionManager> m_pTrackCollectionManager;
 
     ///////////////////////////////////////////////////////
@@ -236,6 +246,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_COVERART_DIGEST: QByteArray (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_HASH: quint16 (pass-through)
     /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
+    /// COLUMN_LIBRARYTABLE_LOADED_DECK: BaseTrackTableModel::LoadedDeckMasks
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
             const QModelIndex& index) const = 0;
@@ -278,6 +289,14 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QPixmap& pixmap);
 
   private:
+    void updateLoadedDeckState(
+            const QString& group,
+            const TrackPointer& pNewTrack,
+            const TrackPointer& pOldTrack);
+    void appendLoadedDeckRows(
+            TrackId trackId,
+            QList<int>* pRows) const;
+
     QVariant rawSiblingValue(
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
@@ -312,6 +331,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QVector<ColumnHeader> m_columnHeaders;
 
     TrackId m_previewDeckTrackId;
+
+    QHash<TrackId, LoadedDeckMasks> m_loadedDecksMaskByTrackId;
 
     mutable QModelIndex m_toolTipIndex;
 
