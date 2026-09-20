@@ -56,7 +56,6 @@ CmdlineArgs::CmdlineArgs()
           m_controllerAbortOnWarning(false),
           m_developer(false),
           m_stats(false),
-          m_qmlRenderForceFullSurface(false),
 #ifdef MIXXX_USE_QML
           m_qml(false),
 #endif
@@ -290,16 +289,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                             : QString());
     parser.addOption(stats);
 
-    const QCommandLineOption qmlRenderForceFullSurface(
-            QStringLiteral("qml-render-force-full-surface"),
-            forUserFeedback
-                    ? QCoreApplication::translate(
-                              "CmdlineArgs",
-                              "Forces full-surface repaints for embedded legacy QWidget "
-                              "rendering (diagnostic experiment).")
-                    : QString());
-    parser.addOption(qmlRenderForceFullSurface);
-
 #ifdef MIXXX_USE_QML
     const QCommandLineOption qml(QStringLiteral("new-ui"),
             forUserFeedback
@@ -489,7 +478,6 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
     m_stats = parser.isSet(stats);
-    m_qmlRenderForceFullSurface = parser.isSet(qmlRenderForceFullSurface);
 #ifdef MIXXX_USE_QML
     m_qml = parser.isSet(qml);
     if (parser.isSet(qmlDeprecated)) {

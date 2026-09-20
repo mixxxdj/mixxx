@@ -49,12 +49,6 @@ class CmdlineArgs final {
     bool getStats() const {
         return m_developer || m_stats;
     }
-    bool getQmlRenderDiagnostics() const {
-        return m_developer;
-    }
-    bool getQmlRenderForceFullSurface() const {
-        return m_qmlRenderForceFullSurface;
-    }
 #ifdef MIXXX_USE_QML
     bool isQml() const {
         return m_qml;
@@ -124,7 +118,6 @@ class CmdlineArgs final {
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
     bool m_developer; // Developer Mode
     bool m_stats;     // Enable stats collection
-    bool m_qmlRenderForceFullSurface; // Force full-surface legacy QWidget repaints
 #ifdef MIXXX_USE_QML
     bool m_qml;
     bool m_awareOfRisk;

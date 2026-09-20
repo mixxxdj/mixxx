@@ -398,7 +398,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     bool ok = false;
 
     int frameRate = m_config->getValue(kFrameRateKey, m_frameRate);
-    m_frameRate = math_clamp(frameRate, 1, 120);
+    m_frameRate = math_clamp(frameRate, 1, 240);
 
     int endTime = m_config->getValueString(kEndOfTrackWarningKey).toInt(&ok);
     if (ok) {
@@ -758,6 +758,10 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
 
 void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     m_beatGridAlpha = alpha;
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha")),
+                m_beatGridAlpha);
+    }
     if (m_waveformWidgetHolders.size() == 0) {
         return;
     }
@@ -900,6 +904,30 @@ void WaveformWidgetFactory::renderSelf() {
     // qDebug() << "refresh end" << m_vsyncThread->elapsed();
 }
 
+bool WaveformWidgetFactory::reportQmlFrame() {
+    // Legacy rendering already accounts for frames in renderSelf(). QML has
+    // no VSyncThread, so its QQuickWindow::afterFrameEnd callback reports
+    // frames here instead.
+    if (m_vsyncThread) {
+        return false;
+    }
+
+    m_frameCnt += 1.0f;
+    const mixxx::Duration timeCnt = m_time.elapsed();
+    if (timeCnt > mixxx::Duration::fromSeconds(1)) {
+        m_time.start();
+        m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis();
+        m_actualFrameRate = m_frameCnt;
+        // Qt Quick does not expose the dropped-frame count through
+        // afterFrameEnd. Use a negative value to distinguish unavailable data
+        // from a measured count of zero in consumers of waveformMeasured.
+        emit waveformMeasured(m_frameCnt, -1);
+        m_frameCnt = 0.0;
+        return true;
+    }
+    return false;
+}
+
 void WaveformWidgetFactory::render() {
     renderSelf();
     m_vsyncThread->vsyncSlotFinished();
@@ -991,7 +1019,17 @@ void WaveformWidgetFactory::addHandle(
         }
     } else {
         // No sufficient GL support
+        // QML's scene-graph backend provides the accelerated renderer and does
+        // not expose a SharedGLContext to this legacy factory. Keep the
+        // all-shader waveform types available to DlgPrefWaveform so the shared
+        // preferences page can still edit them in QML mode.
+#ifdef MIXXX_USE_QML
+        if (!WaveformWidgetFactory::isQmlMode() ||
+                (vars.m_category != WaveformWidgetCategory::AllShader &&
+                        (vars.m_useGLES || vars.m_useGL || vars.m_useGLSL))) {
+#else
         if (vars.m_useGLES || vars.m_useGL || vars.m_useGLSL) {
+#endif
             active = false;
         }
     }
@@ -1361,6 +1399,13 @@ WaveformWidgetBackend WaveformWidgetFactory::getBackendFromConfig() const {
 
 WaveformWidgetBackend WaveformWidgetFactory::preferredBackend() const {
 #ifdef MIXXX_USE_QOPENGL
+    // QML waveform renderers use the scene graph's accelerated backend even
+    // though the legacy factory has no SharedGLContext to inspect.
+#ifdef MIXXX_USE_QML
+    if (WaveformWidgetFactory::isQmlMode()) {
+        return WaveformWidgetBackend::AllShader;
+    }
+#endif
     if (m_openGlAvailable || m_openGlesAvailable) {
         return WaveformWidgetBackend::AllShader;
     }

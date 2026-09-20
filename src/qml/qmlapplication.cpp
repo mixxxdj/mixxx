@@ -1,16 +1,13 @@
 #include "qmlapplication.h"
 
 #include <QCoreApplication>
-#include <QEvent>
 #include <QEventLoop>
 #include <QLocale>
 #include <QMessageBox>
 #include <QMetaEnum>
-#include <QQmlContext>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
-#include <QScreen>
 #include <QTextDocument>
 #include <memory>
 #include <utility>
@@ -24,11 +21,11 @@
 #include "preferences/configobject.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlapplicationproxy.h"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlcoreservices.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
 #include "soundio/soundmanager.h"
-#include "util/qmldiagnostics.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
 #include "waveform/overviewtype.h"
@@ -129,12 +126,9 @@ QmlApplication::QmlApplication(
           m_perfSession(nullptr),
 #endif
           m_autoReload() {
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlApplication constructed"
-                << "application=" << this
-                << "mainQmlPath=" << m_mainFilePath;
-    }
+#ifdef MIXXX_USE_QML
+    WaveformWidgetFactory::setQmlMode(true);
+#endif
     QQuickStyle::setStyle("Basic");
 
 #if defined(Q_OS_ANDROID)
@@ -242,11 +236,8 @@ QmlApplication::QmlApplication(
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
-    // Keep the native Waveforms preferences page out of the QML startup
-    // dialog until the dedicated QML preferences page is complete. The
-    // waveform factory is still initialized above for QML rendering.
     std::shared_ptr<QDialog> pDlgPreferences =
-            m_pCoreServices->makeDlgPreferences(false);
+            m_pCoreServices->makeDlgPreferences();
     // Without this, QApplication will quit when the last QWidget QWindow is
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
@@ -352,6 +343,8 @@ QmlApplication::QmlApplication(
             });
 
     connect(&m_guiTickTimer, &QTimer::timeout, this, [this]() {
+        m_visualsManager->process(
+                WaveformWidgetFactory::instance()->getEndOfTrackWarningTime());
         m_pGuiTick->process();
     });
     m_guiTickTimer.start(std::chrono::milliseconds(16));
@@ -365,11 +358,6 @@ QmlApplication::QmlApplication(
             &QmlAutoReload::triggered,
             this,
             [this]() {
-                if (qmlRenderDiagnosticsEnabled()) {
-                    qCDebug(qmlRenderDiagnosticsCategory())
-                            << "QmlAutoReload triggered"
-                            << "nextGeneration=" << (m_qmlLoadGeneration + 1);
-                }
                 if (!loadQml(m_mainFilePath)) {
                     qWarning() << "Auto-reload failed to load QML. Exiting.";
                     QCoreApplication::exit(-1);
@@ -390,16 +378,30 @@ QmlApplication::QmlApplication(
         APerformanceHint_setPreferPowerEfficiency(m_perfSession, false);
         __android_log_print(ANDROID_LOG_VERBOSE, "mixxx", "ADPF session ready");
     }
+#endif
 }
 
 void QmlApplication::slotWindowChanged(QQuickWindow* window) {
     if (window) {
-        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlApplication::slotFrameSwapped);
+        connect(window,
+                &QQuickWindow::afterFrameEnd,
+                this,
+                &QmlApplication::slotFrameSwapped,
+                Qt::UniqueConnection);
     }
+#if defined(Q_OS_ANDROID)
     m_frameTimer.restart();
+#endif
 }
 
 void QmlApplication::slotFrameSwapped() {
+#ifdef MIXXX_USE_QML
+    if (WaveformWidgetFactory::isCreated() &&
+            WaveformWidgetFactory::instance()->reportQmlFrame()) {
+        QmlConfigProxy::notifyWaveformAverageFrameRateChanged();
+    }
+#endif
+#if defined(Q_OS_ANDROID)
     VERIFY_OR_DEBUG_ASSERT(m_perfSession) {
         return;
     }
@@ -413,16 +415,11 @@ void QmlApplication::slotFrameSwapped() {
 
 QmlApplication::~QmlApplication() {
     QmlApplicationProxy::registerReloadCallback({});
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlApplication destroying"
-                << "application=" << this
-                << "loadGeneration=" << m_qmlLoadGeneration
-                << "engine=" << m_pAppEngine.get()
-                << "rootCount=" << (m_pAppEngine ? m_pAppEngine->rootObjects().size() : 0);
-    }
     m_guiTickTimer.stop();
     disconnect(&m_autoReload, nullptr, this, nullptr);
+    // Destroy the QML engine before the waveform factory. Scene-graph nodes
+    // owned by the engine may still reference QML waveform renderers and the
+    // factory while the engine is tearing down its object tree.
     m_pAppEngine.reset();
     // Delete all the QML singletons in order to prevent leak detection in CoreService
     QmlRecordingProxy::s_pRecordingManager.reset();
@@ -430,6 +427,9 @@ QmlApplication::~QmlApplication() {
     if (m_ownsWaveformWidgetFactory) {
         WaveformWidgetFactory::destroy();
     }
+#ifdef MIXXX_USE_QML
+    WaveformWidgetFactory::setQmlMode(false);
+#endif
     m_visualsManager.reset();
     QmlApplicationProxy::registerVinylControlManager(nullptr);
     m_pCoreServices.reset();
@@ -469,12 +469,6 @@ void QmlApplication::setupSpinnyCoverControls() {
 
 void QmlApplication::setupOverviewTypeControl() {
     if (WaveformWidgetFactory::isCreated()) {
-        if (qmlRenderDiagnosticsEnabled()) {
-            qCDebug(qmlRenderDiagnosticsCategory())
-                    << "QmlApplication overview-control owner"
-                    << "owner=DlgPrefWaveform"
-                    << "reason=WaveformWidgetFactory already created";
-        }
         return;
     }
 
@@ -496,14 +490,6 @@ void QmlApplication::setupOverviewTypeControl() {
         m_pCoreServices->getSettings()->setValue(kOverviewTypeCfgKey, overviewType);
     }
     m_pOverviewTypeControl->forceSet(static_cast<double>(overviewType));
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QmlApplication overview-control initialized"
-                << "creator=" << m_pOverviewTypeControl.get()
-                << "storedValue=" << storedOverviewType
-                << "repairedInvalidValue=" << !overviewTypeIsValid
-                << "value=" << static_cast<double>(overviewType);
-    }
 }
 
 void QmlApplication::updateSpinnyCoverControls() {
@@ -520,30 +506,10 @@ void QmlApplication::updateSpinnyCoverControls() {
 }
 
 bool QmlApplication::loadQml(const QString& path) {
-    const bool diagnosticsEnabled = qmlRenderDiagnosticsEnabled();
-    const quint64 generation = diagnosticsEnabled ? ++m_qmlLoadGeneration : 0;
-    QQmlApplicationEngine* oldEngine = diagnosticsEnabled ? m_pAppEngine.get() : nullptr;
-    const int oldRootCount = diagnosticsEnabled && oldEngine
-            ? oldEngine->rootObjects().size()
-            : 0;
-    if (diagnosticsEnabled) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlApplication::loadQml begin"
-                << "generation=" << generation
-                << "reason=" << (oldEngine ? "reload" : "initial")
-                << "path=" << path
-                << "oldEngine=" << oldEngine
-                << "oldRootCount=" << oldRootCount;
-    }
     // QQmlApplicationEngine::load creates a new window but also leaves the old one,
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
     m_pAppEngine->setUiLanguage(QLocale().name());
-
-    if (diagnosticsEnabled) {
-        m_pAppEngine->rootContext()->setContextProperty(
-                QStringLiteral("_mixxxQmlRenderDiagnostics"), true);
-    }
 
     m_autoReload.clear();
     m_pAppEngine->addUrlInterceptor(&m_autoReload);
@@ -552,38 +518,14 @@ bool QmlApplication::loadQml(const QString& path) {
     registerImageProvider();
 
     m_pAppEngine->load(path);
-    if (m_pAppEngine->rootObjects().isEmpty()) {
-        if (diagnosticsEnabled) {
-            qCWarning(qmlRenderDiagnosticsCategory())
-                    << "QmlApplication::loadQml failed"
-                    << "generation=" << generation
-                    << "engine=" << m_pAppEngine.get()
-                    << "rootCount=0";
-        }
+    const auto rootObjects = m_pAppEngine->rootObjects();
+    if (rootObjects.isEmpty()) {
         qWarning() << "Failed to load QML file" << path;
         m_pAppEngine.reset();
         return false;
     }
 
-    if (diagnosticsEnabled) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlApplication::loadQml complete"
-                << "generation=" << generation
-                << "engine=" << m_pAppEngine.get()
-                << "rootCount=" << m_pAppEngine->rootObjects().size();
-    }
-
-    if (diagnosticsEnabled) {
-        const auto rootObjects = m_pAppEngine->rootObjects();
-        for (QObject* rootObject : rootObjects) {
-            if (auto* window = qobject_cast<QQuickWindow*>(rootObject)) {
-                installRenderDiagnostics(window);
-            }
-        }
-    }
-
-#if defined(Q_OS_ANDROID)
-    for (auto* item : m_pAppEngine->rootObjects()) {
+    for (auto* item : rootObjects) {
         auto* pWindow = qobject_cast<QQuickWindow*>(item);
         if (!pWindow) {
             continue;
@@ -591,68 +533,7 @@ bool QmlApplication::loadQml(const QString& path) {
         slotWindowChanged(pWindow);
         break;
     }
-#endif
     return true;
-}
-
-void QmlApplication::installRenderDiagnostics(QQuickWindow* window) {
-    if (!qmlRenderDiagnosticsEnabled() || !window) {
-        return;
-    }
-
-    window->installEventFilter(this);
-    connect(window,
-            &QWindow::screenChanged,
-            this,
-            [this, window](QScreen* screen) {
-                qCDebug(qmlRenderDiagnosticsCategory())
-                        << "QQuickWindow screenChanged"
-                        << "window=" << window
-                        << "screen=" << screen
-                        << "screenName=" << (screen ? screen->name() : QString())
-                        << "windowDpr=" << window->devicePixelRatio()
-                        << "screenDpr=" << (screen ? screen->devicePixelRatio() : 0.0)
-                        << "geometry=" << window->geometry();
-            });
-    qCDebug(qmlRenderDiagnosticsCategory())
-            << "QQuickWindow attached"
-            << "window=" << window
-            << "screen=" << window->screen()
-            << "screenName=" << (window->screen() ? window->screen()->name() : QString())
-            << "windowDpr=" << window->devicePixelRatio()
-            << "screenDpr=" << (window->screen() ? window->screen()->devicePixelRatio() : 0.0)
-            << "geometry=" << window->geometry();
-}
-
-bool QmlApplication::eventFilter(QObject* watched, QEvent* event) {
-    if (qmlRenderDiagnosticsEnabled()) {
-        if (auto* window = qobject_cast<QQuickWindow*>(watched)) {
-            switch (event->type()) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-            // DevicePixelRatioChange was added after the minimum supported Qt version.
-            case QEvent::DevicePixelRatioChange:
-#endif
-            case QEvent::ScreenChangeInternal:
-            case QEvent::Resize:
-            case QEvent::Move:
-                qCDebug(qmlRenderDiagnosticsCategory())
-                        << "QQuickWindow event"
-                        << "type=" << event->type()
-                        << "window=" << window
-                        << "screen=" << window->screen()
-                        << "screenName="
-                        << (window->screen() ? window->screen()->name() : QString())
-                        << "windowDpr=" << window->devicePixelRatio()
-                        << "screenDpr="
-                        << (window->screen() ? window->screen()->devicePixelRatio() : 0.0)
-                        << "geometry=" << window->geometry();
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    return QObject::eventFilter(watched, event);
 }
 
 void QmlApplication::registerImageProvider() {

@@ -6,7 +6,6 @@
 
 #include "moc_qmlautoreload.cpp"
 #include "util/autofilereloader.h"
-#include "util/qmldiagnostics.h"
 
 namespace mixxx {
 
@@ -18,10 +17,6 @@ QmlAutoReload::QmlAutoReload()
             &AutoFileReloader::fileChanged,
             this,
             [this](const QString& changedFile) {
-                if (qmlRenderDiagnosticsEnabled()) {
-                    qCDebug(qmlRenderDiagnosticsCategory())
-                            << "QmlAutoReload triggered" << changedFile;
-                }
                 emit triggered();
             });
 }
@@ -37,11 +32,6 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
     }
     QMetaObject::invokeMethod(this, [this, filePath, generation]() {
                 if (generation == m_generation.load()) {
-                    if (qmlRenderDiagnosticsEnabled()) {
-                        qCDebug(qmlRenderDiagnosticsCategory())
-                                << "QmlAutoReload watching" << filePath
-                                << "watchGeneration=" << generation;
-                    }
                     m_autoReloader.addPath(filePath);
                 } }, Qt::AutoConnection);
     return url;

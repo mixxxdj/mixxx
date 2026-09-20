@@ -13,7 +13,6 @@
 
 class ControlProxy;
 class ControlPushButton;
-class QEvent;
 class GuiTick;
 class QQuickWindow;
 class VisualsManager;
@@ -40,20 +39,15 @@ class QmlApplication : public QObject {
   public slots:
     bool loadQml(const QString& path);
 
-#if defined(Q_OS_ANDROID)
   private slots:
     void slotFrameSwapped();
     void slotWindowChanged(QQuickWindow* window);
-#endif
 
   private:
     void registerImageProvider();
     void setupSpinnyCoverControls();
     void setupOverviewTypeControl();
     void updateSpinnyCoverControls();
-    void installRenderDiagnostics(QQuickWindow* window);
-
-    bool eventFilter(QObject* watched, QEvent* event) override;
 
     std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
@@ -74,7 +68,6 @@ class QmlApplication : public QObject {
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
     bool m_ownsWaveformWidgetFactory{false};
     bool m_loadSucceeded;
-    quint64 m_qmlLoadGeneration = 0;
     QmlAutoReload m_autoReload;
 
 #if defined(Q_OS_ANDROID)

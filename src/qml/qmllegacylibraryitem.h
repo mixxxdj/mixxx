@@ -104,8 +104,6 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
             const QRegion& logicalRegion = {});
     void requestViewportRender();
     QRegion viewportRenderRegion() const;
-    static const char* renderInvalidationReasonName(
-            RenderInvalidationReason reason);
     void installEmbeddedWidgetEventFilters();
     void connectEmbeddedWidgetUpdateSignals();
     void syncEmbeddedTableGeometry(QAbstractItemView* pView);
@@ -184,7 +182,6 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     qreal m_effectiveDpr = 1.0;
     QSize m_logicalBackingSize;
     QSize m_physicalBackingSize;
-    quint64 m_diagnosticsRenderRequests = 0;
     mixxx::qml::RenderInvalidationState m_pendingInvalidation{true};
     mixxx::qml::RenderInvalidationState m_lastRenderInvalidation;
 

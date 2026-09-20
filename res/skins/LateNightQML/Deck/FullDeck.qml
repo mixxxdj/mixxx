@@ -95,7 +95,7 @@ Controls.Panel {
         anchors.leftMargin: LateNightTheme.deckOuterMargin
         anchors.topMargin: LateNightTheme.deckOuterMargin
         anchors.rightMargin: LateNightTheme.deckOuterMargin
-        anchors.bottomMargin: LateNightTheme.deckOuterMargin + 1
+        anchors.bottomMargin: LateNightTheme.deckOuterMargin
         spacing: 2
 
         // Central main deck column
@@ -122,6 +122,13 @@ Controls.Panel {
                 }
 
                 Item {
+                    Layout.minimumWidth: 2
+                    Layout.preferredWidth: 2
+                    Layout.maximumWidth: 2
+                    Layout.fillHeight: true
+                }
+
+                Item {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
@@ -135,7 +142,9 @@ Controls.Panel {
                 }
 
                 VinylControlsPlaceholder {
+                    Layout.minimumWidth: 158
                     Layout.preferredWidth: 158
+                    Layout.maximumWidth: 158
                     Layout.preferredHeight: 20
                     Layout.maximumHeight: 20
                     group: root.group
@@ -143,9 +152,23 @@ Controls.Panel {
                 }
 
                 Item {
-                    Layout.preferredWidth: root.showVinylControls ? 2 : 0
                     Layout.fillHeight: true
-                    visible: root.showVinylControls
+                    Layout.fillWidth: true
+
+                    Rectangle {
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        height: 1
+                        color: LateNightTheme.deckPanelBorderDark
+                    }
+                }
+
+                Item {
+                    Layout.minimumWidth: 2
+                    Layout.preferredWidth: 2
+                    Layout.maximumWidth: 2
+                    Layout.fillHeight: true
                 }
 
                 KeyControlsPlaceholder {

@@ -3,7 +3,6 @@
 #include "control/controlobject.h"
 #include "moc_control.cpp"
 #include "util/mutex.h"
-#include "util/qmldiagnostics.h"
 #include "util/stat.h"
 
 namespace {
@@ -162,14 +161,6 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
 
                 // Control object already exists
                 if (pCreatorCO) {
-                    if (mixxx::qml::qmlRenderDiagnosticsEnabled()) {
-                        qCDebug(mixxx::qml::qmlRenderDiagnosticsCategory())
-                                << "Duplicate ControlObject creator requested"
-                                << "key=" << key.group << key.item
-                                << "private=" << pControl.data()
-                                << "currentCreator=" << pControl->getCreatorCO()
-                                << "requestedCreator=" << pCreatorCO;
-                    }
                     qWarning()
                             << "ControlObject"
                             << key.group << key.item

@@ -7,7 +7,6 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QDomDocument>
-#include <QElapsedTimer>
 #include <QFile>
 #include <QFocusEvent>
 #include <QGuiApplication>
@@ -46,7 +45,6 @@
 #include "qml/qmllibraryproxy.h"
 #include "qml/qmlwidgetrendering.h"
 #include "skin/legacy/skincontext.h"
-#include "util/qmldiagnostics.h"
 #include "widget/wcolorpicker.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -91,20 +89,6 @@ SchemeStyle getActiveSchemeStyle() {
 } // namespace
 
 QmlLegacyLibraryItem::~QmlLegacyLibraryItem() {
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlLegacyLibraryItem destroying"
-                << "item=" << this
-                << "rootWidget=" << m_pRootWidget.get()
-                << "window=" << m_renderWindow.data()
-                << "screen=" << m_renderScreen.data()
-                << "effectiveDpr=" << m_effectiveDpr
-                << "logicalSize=" << size()
-                << "logicalBackingSize=" << m_logicalBackingSize
-                << "physicalBackingSize=" << m_physicalBackingSize
-                << "pixmapDpr=" << m_offscreenPixmap.devicePixelRatio()
-                << "renderRequests=" << m_diagnosticsRenderRequests;
-    }
     m_toolTipTimer.stop();
     m_headerAutoScrollTimer.stop();
     disconnect(this, nullptr, this, nullptr);
@@ -131,11 +115,6 @@ QmlLegacyLibraryItem::~QmlLegacyLibraryItem() {
         m_pRootWidget->disconnect(this);
         m_pRootWidget.reset();
     }
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlLegacyLibraryItem widget tree destroyed"
-                << "item=" << this;
-    }
 }
 
 void QmlLegacyLibraryItem::focusSearch() {
@@ -150,18 +129,6 @@ void QmlLegacyLibraryItem::focusSearch() {
 QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         : QQuickPaintedItem(pParent),
           m_pRootWidget(std::make_unique<QWidget>()) {
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCInfo(qmlRenderDiagnosticsCategory())
-                << "QmlLegacyLibraryItem constructed"
-                << "item=" << this
-                << "parent=" << pParent
-                << "rootWidget=" << m_pRootWidget.get()
-                << "logicalSize=" << size()
-                << "window=" << m_renderWindow.data()
-                << "screen=" << m_renderScreen.data()
-                << "effectiveDpr=" << m_effectiveDpr
-                << "pixmapDpr=" << m_offscreenPixmap.devicePixelRatio();
-    }
     connect(this,
             &QQuickItem::windowChanged,
             this,
@@ -359,11 +326,6 @@ void QmlLegacyLibraryItem::renderOffscreen() {
     if (!m_pRootWidget) {
         return;
     }
-    const bool diagnosticsEnabled = qmlRenderDiagnosticsEnabled();
-    QElapsedTimer renderTimer;
-    if (diagnosticsEnabled) {
-        renderTimer.start();
-    }
     syncRootWidgetGlobalPosition();
     updateWidgetSize();
     const QSize logicalSize = widgetSizeForItemSize(size());
@@ -379,14 +341,7 @@ void QmlLegacyLibraryItem::renderOffscreen() {
 
     // Process all pending layout, resize, and geometry events for the QWidget tree
     // so that child widgets (persistent editors) are correctly positioned before rendering.
-    QElapsedTimer postedEventsTimer;
-    if (diagnosticsEnabled) {
-        postedEventsTimer.start();
-    }
     QCoreApplication::sendPostedEvents(m_pRootWidget.get());
-    const qint64 postedEventsMicros = diagnosticsEnabled
-            ? postedEventsTimer.nsecsElapsed() / 1000
-            : 0;
 
     const QRegion itemRegion(QRect(QPoint(0, 0), logicalSize));
     auto invalidation = m_pendingInvalidation.take();
@@ -395,8 +350,8 @@ void QmlLegacyLibraryItem::renderOffscreen() {
     const RenderInvalidationReason invalidationReason =
             invalidation.invalidationReason;
     QRegion renderRegion = invalidation.dirtyRegion;
-    const bool fullSurface = qmlRenderForceFullSurface() || requestedFullSurface ||
-            backingStoreChanged || renderRegion.isEmpty();
+    const bool fullSurface = requestedFullSurface || backingStoreChanged ||
+            renderRegion.isEmpty();
     if (fullSurface) {
         renderRegion = itemRegion;
         m_offscreenPixmap.fill(kLegacyLibraryBackgroundColor);
@@ -407,10 +362,6 @@ void QmlLegacyLibraryItem::renderOffscreen() {
 
     QPainter painter(&m_offscreenPixmap);
     const QScopedValueRollback<bool> renderingRollback(m_isRendering, true);
-    QElapsedTimer widgetRenderTimer;
-    if (diagnosticsEnabled) {
-        widgetRenderTimer.start();
-    }
     if (fullSurface) {
         m_pRootWidget->render(&painter);
     } else {
@@ -419,88 +370,15 @@ void QmlLegacyLibraryItem::renderOffscreen() {
                 renderRegion,
                 kLegacyLibraryBackgroundColor);
     }
-    if (diagnosticsEnabled) {
-        const auto invalidationReasonName = [invalidationReason] {
-            switch (invalidationReason) {
-            case RenderInvalidationReason::FullSurface:
-                return "full";
-            case RenderInvalidationReason::Viewport:
-                return "viewport";
-            case RenderInvalidationReason::SmallRegion:
-                return "small-region";
-            case RenderInvalidationReason::Unknown:
-                return "unknown";
-            }
-            return "unknown";
-        }();
-        quint64 logicalDirtyArea = 0;
-        for (const QRect& rect : renderRegion) {
-            logicalDirtyArea += static_cast<quint64>(rect.width()) *
-                    static_cast<quint64>(rect.height());
-        }
-        const auto estimatedBytes = fullSurface
-                ? static_cast<qulonglong>(m_offscreenPixmap.width()) *
-                        static_cast<qulonglong>(m_offscreenPixmap.height()) * 4ULL
-                : static_cast<qulonglong>(std::ceil(
-                          static_cast<qreal>(logicalDirtyArea) *
-                          m_effectiveDpr * m_effectiveDpr * 4.0));
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QWidget render"
-                << "item=" << this
-                << "invalidationReason=" << invalidationReasonName
-                << "fullSurface=" << fullSurface
-                << "forcedFullSurface=" << qmlRenderForceFullSurface()
-                << "dirtyRegion=" << renderRegion.boundingRect()
-                << "dirtyRectCount=" << renderRegion.rectCount()
-                << "dirtyLogicalArea=" << logicalDirtyArea
-                << "logicalSize=" << m_logicalBackingSize
-                << "physicalSize=" << m_physicalBackingSize
-                << "effectiveDpr=" << m_effectiveDpr
-                << "estimatedBytes=" << estimatedBytes
-                << "windowDpr=" << (m_renderWindow ? m_renderWindow->devicePixelRatio() : 0.0)
-                << "screenDpr="
-                << (m_renderScreen
-                                   ? m_renderScreen->devicePixelRatio()
-                                   : 0.0)
-                << "widgetDpr=" << m_pRootWidget->devicePixelRatioF()
-                << "painterDpr=" << painter.device()->devicePixelRatioF()
-                << "pixmapDpr=" << m_offscreenPixmap.devicePixelRatio()
-                << "postedEventsMicros=" << postedEventsMicros
-                << "widgetRenderMicros=" << widgetRenderTimer.nsecsElapsed() / 1000
-                << "totalMicros=" << renderTimer.nsecsElapsed() / 1000;
-    }
 }
 
 void QmlLegacyLibraryItem::paint(QPainter* pPainter) {
-    QElapsedTimer paintTimer;
-    const bool diagnosticsEnabled = qmlRenderDiagnosticsEnabled();
-    if (diagnosticsEnabled) {
-        paintTimer.start();
-    }
     pPainter->fillRect(QRectF(0, 0, width(), height()),
             kLegacyLibraryBackgroundColor);
     if (m_offscreenPixmap.isNull()) {
-        if (diagnosticsEnabled) {
-            qCDebug(qmlRenderDiagnosticsCategory())
-                    << "QQuickPaintedItem paint"
-                    << "item=" << this
-                    << "pixmap=null"
-                    << "paintMicros=" << paintTimer.nsecsElapsed() / 1000;
-        }
         return;
     }
     pPainter->drawPixmap(0, 0, m_offscreenPixmap);
-    if (diagnosticsEnabled) {
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QQuickPaintedItem paint"
-                << "item=" << this
-                << "itemSize=" << size()
-                << "logicalBackingSize=" << m_logicalBackingSize
-                << "physicalBackingSize=" << m_physicalBackingSize
-                << "effectiveDpr=" << m_effectiveDpr
-                << "pixmapDpr=" << m_offscreenPixmap.devicePixelRatio()
-                << "paintMicros=" << paintTimer.nsecsElapsed() / 1000;
-    }
 }
 
 void QmlLegacyLibraryItem::geometryChange(
@@ -1668,19 +1546,6 @@ void QmlLegacyLibraryItem::updateRenderWindow(QQuickWindow* pWindow) {
     }
 
     updateRenderScreen(m_renderWindow ? m_renderWindow->screen() : nullptr);
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QmlLegacyLibraryItem windowChanged"
-                << "item=" << this
-                << "window=" << m_renderWindow.data()
-                << "screen=" << m_renderScreen.data()
-                << "screenName=" << (m_renderScreen ? m_renderScreen->name() : QString())
-                << "windowDpr="
-                << (m_renderWindow ? m_renderWindow->devicePixelRatio() : 0.0)
-                << "screenDpr="
-                << (m_renderScreen ? m_renderScreen->devicePixelRatio() : 0.0)
-                << "effectiveDpr=" << m_effectiveDpr;
-    }
 }
 
 void QmlLegacyLibraryItem::updateRenderScreen(QScreen* pScreen) {
@@ -1724,19 +1589,6 @@ void QmlLegacyLibraryItem::updateRenderScreen(QScreen* pScreen) {
 
     updateEffectiveDpr();
     requestRenderWithReason(RenderInvalidationReason::FullSurface);
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QmlLegacyLibraryItem screenChanged"
-                << "item=" << this
-                << "window=" << m_renderWindow.data()
-                << "screen=" << m_renderScreen.data()
-                << "screenName=" << (m_renderScreen ? m_renderScreen->name() : QString())
-                << "windowDpr="
-                << (m_renderWindow ? m_renderWindow->devicePixelRatio() : 0.0)
-                << "screenDpr="
-                << (m_renderScreen ? m_renderScreen->devicePixelRatio() : 0.0)
-                << "effectiveDpr=" << m_effectiveDpr;
-    }
 }
 
 void QmlLegacyLibraryItem::updateEffectiveDpr() {
@@ -1917,9 +1769,6 @@ void QmlLegacyLibraryItem::requestRenderWithReason(
         return;
     }
     m_isDirty = true;
-    if (qmlRenderDiagnosticsEnabled()) {
-        ++m_diagnosticsRenderRequests;
-    }
 
     m_pendingInvalidation.invalidate(reason, logicalRegion);
 
@@ -1963,55 +1812,19 @@ QRegion QmlLegacyLibraryItem::viewportRenderRegion() const {
     return region.intersected(QRegion(QRect(QPoint(0, 0), logicalSize)));
 }
 
-const char* QmlLegacyLibraryItem::renderInvalidationReasonName(
-        RenderInvalidationReason reason) {
-    switch (reason) {
-    case RenderInvalidationReason::FullSurface:
-        return "full";
-    case RenderInvalidationReason::Viewport:
-        return "viewport";
-    case RenderInvalidationReason::SmallRegion:
-        return "small-region";
-    case RenderInvalidationReason::Unknown:
-        return "unknown";
-    }
-    return "unknown";
-}
-
 void QmlLegacyLibraryItem::updatePolish() {
     if (!m_isDirty) {
         return;
     }
     m_isDirty = false;
-    const quint64 coalescedRequests = m_diagnosticsRenderRequests;
-    m_diagnosticsRenderRequests = 0;
     renderOffscreen();
     if (m_isDirty) {
         polish();
-    }
-    QElapsedTimer updateTimer;
-    if (qmlRenderDiagnosticsEnabled()) {
-        updateTimer.start();
     }
     if (m_lastRenderInvalidation.fullSurface) {
         update();
     } else if (!m_lastRenderInvalidation.dirtyRegion.isEmpty()) {
         update(m_lastRenderInvalidation.dirtyRegion.boundingRect());
-    }
-    if (qmlRenderDiagnosticsEnabled()) {
-        qCDebug(qmlRenderDiagnosticsCategory())
-                << "QQuickPaintedItem update"
-                << "item=" << this
-                << "invalidationReason="
-                << renderInvalidationReasonName(
-                           m_lastRenderInvalidation.invalidationReason)
-                << "fullSurface=" << m_lastRenderInvalidation.fullSurface
-                << "dirtyRegion="
-                << m_lastRenderInvalidation.dirtyRegion.boundingRect()
-                << "dirtyRectCount="
-                << m_lastRenderInvalidation.dirtyRegion.rectCount()
-                << "coalescedRenderRequests=" << coalescedRequests
-                << "updateScheduleMicros=" << updateTimer.nsecsElapsed() / 1000;
     }
 }
 
@@ -2028,24 +1841,8 @@ bool QmlLegacyLibraryItem::eventFilter(QObject* pWatched, QEvent* pEvent) {
             requestRenderWithReason(RenderInvalidationReason::FullSurface);
             [[fallthrough]];
         case QEvent::Resize:
-        case QEvent::Move: {
-            if (qmlRenderDiagnosticsEnabled()) {
-                qCDebug(qmlRenderDiagnosticsCategory())
-                        << "QmlLegacyLibraryItem window event"
-                        << "item=" << this
-                        << "type=" << pEvent->type()
-                        << "window=" << m_renderWindow.data()
-                        << "screen=" << m_renderScreen.data()
-                        << "screenName="
-                        << (m_renderScreen ? m_renderScreen->name() : QString())
-                        << "windowDpr=" << m_renderWindow->devicePixelRatio()
-                        << "screenDpr="
-                        << (m_renderScreen ? m_renderScreen->devicePixelRatio() : 0.0)
-                        << "effectiveDpr=" << m_effectiveDpr
-                        << "geometry=" << m_renderWindow->geometry();
-            }
+        case QEvent::Move:
             break;
-        }
         default:
             break;
         }
