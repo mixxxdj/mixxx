@@ -95,7 +95,7 @@ Controls.Panel {
         anchors.leftMargin: LateNightTheme.deckOuterMargin
         anchors.topMargin: LateNightTheme.deckOuterMargin
         anchors.rightMargin: LateNightTheme.deckOuterMargin
-        anchors.bottomMargin: LateNightTheme.deckOuterMargin + 1
+        anchors.bottomMargin: LateNightTheme.deckOuterMargin
         spacing: 2
 
         // Central main deck column
