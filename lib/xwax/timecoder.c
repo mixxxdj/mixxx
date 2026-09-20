@@ -38,6 +38,16 @@
 
 #define ZERO_RC 0.001 /* time constant for zero/rumble filter */
 
+/*
+ * The phase difference is 2πf/fs, so it depends on the timecode and the
+ * sample rate. The gate is therefore given relative to the phase difference
+ * of the timecode at reference speed, i.e. as a pitch.
+ */
+
+/* #define DPHI_GATE 1.3 /1* max distance of the phase difference from the average (pitch) *1/ */
+/* #define DPHI_TAU_MS 2.0 /1* time constant of that average *1/ */
+/* #define DPHI_HOLD_MS 220 /1* how long to reject before giving up *1/ */
+
 #define REF_PEAKS_AVG 48 /* in wave cycles */
 
 /* The number of correct bits which come in before the timecode is
@@ -69,6 +79,12 @@ static struct timecode_def timecodes[] = {
         .length = 712000,
         .safe = 625000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "serato_2b",
@@ -80,6 +96,12 @@ static struct timecode_def timecodes[] = {
         .length = 922000,
         .safe = 908000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "serato_cd",
@@ -91,6 +113,12 @@ static struct timecode_def timecodes[] = {
         .length = 950000,
         .safe = 890000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "traktor_a",
@@ -103,6 +131,12 @@ static struct timecode_def timecodes[] = {
         .length = 1500000,
         .safe = 605000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "traktor_b",
@@ -115,6 +149,12 @@ static struct timecode_def timecodes[] = {
         .length = 2110000,
         .safe = 907000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "traktor_mk2_a",
@@ -133,6 +173,12 @@ static struct timecode_def timecodes[] = {
         .length = 1845000,
         .safe = 1795000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.0,
+            .hold = 250,
+        },
     },
     {
         .name = "traktor_mk2_b",
@@ -151,6 +197,12 @@ static struct timecode_def timecodes[] = {
         .length = 2590000,
         .safe = 2540000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.0,
+            .hold = 250,
+        },
     },
     {
         .name = "traktor_mk2_cd",
@@ -169,6 +221,12 @@ static struct timecode_def timecodes[] = {
         .length = 4500000,
         .safe = 4450000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.0,
+            .hold = 250,
+        },
     },
     {
         .name = "mixvibes_v2",
@@ -181,6 +239,12 @@ static struct timecode_def timecodes[] = {
         .length = 950000,
         .safe = 655000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "mixvibes_7inch",
@@ -193,6 +257,12 @@ static struct timecode_def timecodes[] = {
         .length = 312000,
         .safe = 238000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "pioneer_a",
@@ -205,6 +275,12 @@ static struct timecode_def timecodes[] = {
         .length = 635000,
         .safe = 614000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "pioneer_b",
@@ -217,6 +293,12 @@ static struct timecode_def timecodes[] = {
         .length = 918500,
         .safe = 913000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "algoriddim_a",
@@ -228,6 +310,12 @@ static struct timecode_def timecodes[] = {
         .length = 600000,
         .safe = 590000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
     {
         .name = "algoriddim_b",
@@ -239,6 +327,12 @@ static struct timecode_def timecodes[] = {
         .length = 900000,
         .safe = 890000,
         .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 250,
+        },
     },
 };
 
@@ -490,6 +584,14 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def, double speed
     tc->freq = 0.0;
     tc->pitch = 0.0;
 
+    /* Variables for the phase gate filter that mitigates backspin issues */
+
+    ewma_init(&tc->dphi_filter, 1.0 - exp(-tc->dt / (tc->def->phase_reject.tau * 1e-3)));
+    tc->dphi_ref = 0.0;
+    tc->dphi_gate = tc->def->phase_reject.gate * 2.0 * M_PI * timecoder_get_resolution(tc) * tc->dt;
+    tc->dphi_hold_samples = tc->def->phase_reject.hold * sample_rate / 1000;
+    tc->dphi_rejected = tc->dphi_hold_samples;
+
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch_filter, tc->dt);
     } else {
@@ -715,6 +817,34 @@ static inline double phase_difference(const int cos0, const int sin0, const int 
 }
 
 /*
+ * Discard a phase difference that does not check out
+ *
+ * Computes a short moving average of the phase samples and compares the
+ * measured dphi with it. If the difference is too large, it replaces
+ * the dphi value with the one from the moving average.
+ */
+
+static double reject_phase_jumps(struct timecoder *tc, double dphi)
+{
+    if (tc->pitch < -tc->def->phase_reject.trigger
+        && fabs(dphi - tc->dphi_ref) > tc->dphi_gate)
+    {
+        /* Reject phase measurements until the dphi_hold_samples is exceeded */
+
+        if (tc->dphi_rejected < tc->dphi_hold_samples) {
+            tc->dphi_rejected++;
+            dphi = tc->dphi_ref;
+        }
+    } else {
+        tc->dphi_rejected = 0;
+    }
+
+    tc->dphi_ref = ewmaf(&tc->dphi_filter, dphi);
+
+    return dphi;
+}
+
+/*
  * Various processing of the carrier wave needed for pitch detection.
  *
  * Pushes samples into a delayline, computes the derivative, filters it and
@@ -792,6 +922,8 @@ static void process_sample(struct timecoder *tc, signed int primary, signed int 
                                     *(int *)rb_at(tc->primary.delayline_deriv, 1),
                                     *(int *)rb_at(tc->secondary.delayline_deriv, 1));
 
+        tc->dphi = reject_phase_jumps(tc, tc->dphi);
+
         double ddphi = 0.0; /* Derivative of the phase difference */
 
         if (tc->use_legacy_pitch_filter) {
@@ -807,6 +939,10 @@ static void process_sample(struct timecoder *tc, signed int primary, signed int 
     } else {
         tc->freq = 0.0;
         tc->pitch = 0.0;
+
+        /* The next phase difference is a fresh start, not to be discarded */
+
+        tc->dphi_rejected = tc->dphi_hold_samples;
     }
 
     bool forwards = tc->forwards;
