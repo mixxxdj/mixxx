@@ -5,6 +5,7 @@
 #include <QComboBox>
 #include <QContextMenuEvent>
 #include <QCoreApplication>
+#include <QCursor>
 #include <QDebug>
 #include <QDir>
 #include <QDomDocument>
@@ -1040,12 +1041,17 @@ bool QmlLegacyLibraryItem::sendHoverToWidget(QHoverEvent* pEvent) {
     sendSyntheticMouseMoveToWidget(pTarget, rootPos, pEvent->globalPosition(), pEvent->modifiers());
 #endif
 
-    scheduleToolTip(pTarget, rootPos);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
+    scheduleToolTip(pTarget, rootPos, pEvent->globalPosition().toPoint());
+#else
+    scheduleToolTip(pTarget, rootPos, QCursor::pos());
+#endif
     syncCursorFromWidget(pTarget, rootPos);
     return mappedEvent.isAccepted();
 }
 
-void QmlLegacyLibraryItem::scheduleToolTip(QWidget* pTarget, const QPoint& rootPos) {
+void QmlLegacyLibraryItem::scheduleToolTip(
+        QWidget* pTarget, const QPoint& rootPos, const QPoint& globalPos) {
     if (!pTarget || m_pressedButtons != Qt::NoButton) {
         cancelToolTip();
         return;
@@ -1059,6 +1065,7 @@ void QmlLegacyLibraryItem::scheduleToolTip(QWidget* pTarget, const QPoint& rootP
 
     m_pToolTipTarget = pTarget;
     m_toolTipRootPos = rootPos;
+    m_toolTipGlobalPos = globalPos;
     if (!m_toolTipText.isEmpty()) {
         m_toolTipText.clear();
         QToolTip::hideText();
@@ -1109,7 +1116,7 @@ void QmlLegacyLibraryItem::showPendingToolTip() {
 
         m_toolTipText = toolTipText;
         QToolTip::showText(
-                m_pRootWidget->mapToGlobal(m_toolTipRootPos) + QPoint(12, 18),
+                m_toolTipGlobalPos,
                 toolTipText,
                 m_pRootWidget.get());
         return;
@@ -1706,6 +1713,20 @@ void QmlLegacyLibraryItem::repolishEmbeddedWidgets() {
         pWidget->ensurePolished();
         pWidget->update();
     }
+
+    refreshPreviewDeckVuMeterPalette();
+}
+
+void QmlLegacyLibraryItem::refreshPreviewDeckVuMeterPalette() {
+    if (!m_pPreviewVuMeter) {
+        return;
+    }
+
+    // #VuMeterBox uses this background in both LateNight color schemes.
+    QPalette palette = m_pPreviewVuMeter->palette();
+    palette.setColor(QPalette::Window, QColor(0x04, 0x04, 0x04));
+    m_pPreviewVuMeter->setPalette(palette);
+    m_pPreviewVuMeter->setAutoFillBackground(true);
 }
 
 void QmlLegacyLibraryItem::enableEmbeddedWidgetInputTracking() {

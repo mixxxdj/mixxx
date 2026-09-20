@@ -110,7 +110,8 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
             Qt::MouseButtons buttons = Qt::NoButton);
     bool sendWheelToWidget(QWheelEvent* pEvent);
     bool sendHoverToWidget(QHoverEvent* pEvent);
-    void scheduleToolTip(QWidget* pTarget, const QPoint& rootPos);
+    void scheduleToolTip(
+            QWidget* pTarget, const QPoint& rootPos, const QPoint& globalPos);
     void cancelToolTip();
     void showPendingToolTip();
     QString toolTipTextForTarget(QWidget* pTarget, const QPoint& rootPos) const;
@@ -123,6 +124,7 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     void syncCursorFromWidget(QWidget* pTarget, const QPoint& rootPos);
     void repaintEmbeddedViews();
     void repolishEmbeddedWidgets();
+    void refreshPreviewDeckVuMeterPalette();
     void applyLegacyScrollbarStyles();
     void applyLegacyScrollbarStyle(QScrollBar* pScrollBar);
     void applyLegacyTableViewBridgeOptions();
@@ -235,6 +237,7 @@ class QmlLegacyLibraryItem : public QQuickPaintedItem {
     QTimer m_toolTipTimer;
     QPointer<QWidget> m_pToolTipTarget;
     QPoint m_toolTipRootPos;
+    QPoint m_toolTipGlobalPos;
     QString m_toolTipText;
 
     std::unique_ptr<ControlProxy> m_pPreviewDeckPlay;
