@@ -126,8 +126,8 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
 #ifdef __ENGINEPRIME__
-    parented_ptr<QAction> m_pExportAllCratesAction;
-    parented_ptr<QAction> m_pExportCrateAction;
+    parented_ptr<QAction> m_pExportAllCratesToEngineDJAction;
+    parented_ptr<QAction> m_pExportCrateToEngineDJAction;
 #endif
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
