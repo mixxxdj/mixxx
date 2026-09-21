@@ -4,6 +4,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
+#include "track/cueinfo.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
@@ -25,6 +26,8 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
             TrackId trackId,
+            const QList<mixxx::CueInfo>& cueInfos,
+            double trackDurationMillis,
             const QObject* pRequester,
             QSize desiredSize);
 
@@ -64,8 +67,15 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
             TrackId trackId,
+            const QList<mixxx::CueInfo>& cueInfos,
+            double trackDurationMillis,
             const QObject* pRequester,
             QSize desiredSize);
+
+    static void drawHotcueMarkers(
+            QImage* pImage,
+            const QList<mixxx::CueInfo>& cueInfos,
+            double trackDurationMillis);
 
   private:
     UserSettingsPointer m_pConfig;
