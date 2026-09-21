@@ -305,6 +305,10 @@ class Track : public QObject {
     void setMainCuePosition(mixxx::audio::FramePos position);
     /// Shift all cues by a constant offset
     void shiftCuePositionsMillis(mixxx::audio::FrameDiff_t milliseconds);
+    /// Shift position of specific hotcue by millis
+    void shiftHotcuePositionMillis(int hotcue, double milliseconds);
+    /// Shift position of specific hotcue by +-1 beat
+    void shiftHotcuePositionBeats(int hotcue, int direction);
     /// Set hoctues' indices sorted by their frame position.
     /// If compress is true, indices are consecutive and start at 0.
     /// Set false to sort only, ie. keep empty hotcues before and in between.
