@@ -147,6 +147,8 @@ void WaveformMarkSet::update() {
             }
         }
     }
+    
+    const auto locker = lockMutex(&m_mutex);
 
     m_marksToRender.clear();
     m_marksToRender.reserve(static_cast<QList<WaveformMarkPointer>::size_type>(map.size()));
@@ -168,6 +170,11 @@ void WaveformMarkSet::update() {
         }
         pMark->setLevel(levels[pMark->m_align]++);
     }
+}
+
+void WaveformMarkSet::updateSafe() {
+    const auto locker = lockMutex(&m_mutex);
+    m_marksToRenderSafe = m_marksToRender;
 }
 
 WaveformMarkPointer WaveformMarkSet::findHoveredMark(
