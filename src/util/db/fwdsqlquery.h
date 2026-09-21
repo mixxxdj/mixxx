@@ -72,6 +72,31 @@ class FwdSqlQuery final : protected QSqlQuery {
         bindValue(placeholder, value.toVariant());
     }
 
+    // Overloaded functions for all QVariant types to resolve overload conflicts
+    void bindValue(const QString& placeholder, const int value) {
+        bindValue(placeholder, QVariant(value));
+    }
+
+    void bindValue(const QString& placeholder, const unsigned int value) {
+        bindValue(placeholder, QVariant(value));
+    }
+
+    void bindValue(const QString& placeholder, const long long int value) {
+        bindValue(placeholder, QVariant(value));
+    }
+
+    void bindValue(const QString& placeholder, const unsigned long long int value) {
+        bindValue(placeholder, QVariant(value));
+    }
+
+    void bindValue(const QString& placeholder, const float value) {
+        bindValue(placeholder, QVariant(value));
+    }
+
+    void bindValue(const QString& placeholder, const double value) {
+        bindValue(placeholder, QVariant(value));
+    }
+
     QString executedQuery() const {
         return QSqlQuery::executedQuery();
     }
