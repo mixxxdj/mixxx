@@ -6,7 +6,7 @@ import "../Controls" as LateNightControls
 import "../LateNightTheme"
 import "../Mixer" as LateNightMixer
 
-Item {
+LateNightControls.Panel {
     id: root
 
     readonly property real collapsedChainWidth: collapsedSlotWidth * 3 + flowWidth * 2
@@ -21,15 +21,9 @@ Item {
     readonly property color unitColor: unitNumber < 3 ? LateNightTheme.effectsUnitColor12 : LateNightTheme.effectsUnitColor34
     required property int unitNumber
 
+    color: LateNightTheme.effectsPanelColor
     implicitHeight: expanded ? 154 : 38
-
-    Rectangle {
-        anchors.fill: parent
-        border.color: LateNightTheme.deckPanelBorderDark
-        border.width: 1
-        color: LateNightTheme.effectsPanelColor
-        radius: 1
-    }
+    radius: LateNightTheme.isClassic ? 2 : 1
     Item {
         id: slots
 

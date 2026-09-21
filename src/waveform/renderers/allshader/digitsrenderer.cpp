@@ -76,21 +76,15 @@ void allshader::DigitsRenderNode::updateTexture(rendergraph::Context* pContext,
         float fontPointSize,
         float maxHeight,
         float devicePixelRatio) {
-    if (fontPointSize == m_fontPointSize && maxHeight == m_maxHeight) {
+    if (fontPointSize == m_fontPointSize && maxHeight == m_maxHeight &&
+            devicePixelRatio == m_devicePixelRatio) {
         return;
     }
     if (maxHeight != m_maxHeight) {
         m_maxHeight = maxHeight;
-        m_adjustedFontPointSize = 0.f;
     }
-    if (m_fontPointSize != fontPointSize) {
-        m_fontPointSize = fontPointSize;
-        if (m_adjustedFontPointSize != 0.f && fontPointSize > m_adjustedFontPointSize) {
-            fontPointSize = m_adjustedFontPointSize;
-        } else {
-            m_adjustedFontPointSize = 0.f;
-        }
-    }
+    m_fontPointSize = fontPointSize;
+    m_devicePixelRatio = devicePixelRatio;
 
     float space;
 
@@ -120,13 +114,12 @@ void allshader::DigitsRenderNode::updateTexture(rendergraph::Context* pContext,
             const auto rect = metrics.tightBoundingRect(text);
             maxTextHeight = std::max(maxTextHeight, static_cast<float>(rect.height()));
         }
-        if (m_adjustedFontPointSize == 0.f && !retry && maxTextHeight > maxHeightWithoutSpace) {
+        if (!retry && maxTextHeight > maxHeightWithoutSpace) {
             // We need to adjust the font size to fit in the maxHeight.
             // Only do this once.
             fontPointSize *= static_cast<float>(maxHeightWithoutSpace / maxTextHeight);
             // Avoid becoming unreadable
             fontPointSize = std::max(10.f, fontPointSize);
-            m_adjustedFontPointSize = fontPointSize;
             retry = true;
         } else {
             retry = false;
