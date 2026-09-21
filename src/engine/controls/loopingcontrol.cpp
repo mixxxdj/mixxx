@@ -1099,7 +1099,9 @@ void LoopingControl::slotReloopAndStop(double pressed) {
 }
 
 void LoopingControl::slotLoopStartPos(double positionSamples) {
-    // This slot is called before trackLoaded() for a new Track
+    // This slot is triggered by `loop_start_position` CO changes, and is
+    // also called directly by trackLoaded() to restore the new track's
+    // saved loop.
 
     LoopInfo loopInfo = m_loopInfo.getValue();
 
@@ -1134,7 +1136,9 @@ void LoopingControl::slotLoopStartPos(double positionSamples) {
 }
 
 void LoopingControl::slotLoopEndPos(double positionSamples) {
-    // This slot is called before trackLoaded() for a new Track
+    // This slot is triggered by `loop_end_position` CO changes, and is
+    // also called directly by trackLoaded() to restore the new track's
+    // saved loop.
     const auto position = mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(positionSamples);
 
     LoopInfo loopInfo = m_loopInfo.getValue();
@@ -1240,6 +1244,50 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
+
+        // Restore the loop from the new track's loop cue, before
+        // trackBeatsUpdated() below so it can adopt the beatloop size from
+        // the restored loop.
+        //
+        // Restore from the first loop cue with minimum hotcue number.
+        // For the volatile "most recent loop" the hotcue number will be -1.
+        // If no such loop exists, restore a saved loop cue.
+        CuePointer pFirstLoopCue;
+        const QList<CuePointer> trackCues = pNewTrack->getCuePoints();
+        for (const auto& pCue : trackCues) {
+            if (pCue->getType() != mixxx::CueType::Loop) {
+                continue;
+            }
+            if (pFirstLoopCue && pFirstLoopCue->getHotCue() <= pCue->getHotCue()) {
+                continue;
+            }
+            pFirstLoopCue = pCue;
+        }
+
+        bool loopValid = false;
+        if (pFirstLoopCue) {
+            const auto loop = pFirstLoopCue->getStartAndEndPosition();
+            // TODO: For all loop cues, both end and start positions should
+            // be valid and the end position should be greater than the
+            // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
+            // check this. To make this possible, we need to ensure that
+            // all invalid cues are discarded when saving cues to the
+            // database first.
+            loopValid = loop.startPosition.isValid() &&
+                    loop.endPosition.isValid() &&
+                    loop.startPosition <= loop.endPosition;
+            if (loopValid) {
+                slotLoopStartPos(loop.startPosition.toEngineSamplePos());
+                slotLoopEndPos(loop.endPosition.toEngineSamplePos());
+            }
+        }
+        if (!loopValid) {
+            // Clear loop leftovers from the previously loaded track.
+            // The order matters: clear the loop end first, otherwise
+            // slotLoopStartPos() would not clear it.
+            slotLoopEndPos(kNoTrigger);
+            slotLoopStartPos(kNoTrigger);
+        }
     }
     trackBeatsUpdated(pBeats);
 }
