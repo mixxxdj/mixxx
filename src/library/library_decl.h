@@ -42,4 +42,5 @@ struct LibraryScanResultSummary {
     int numRediscoveredTracks;
     int tracksTotal;
     bool noDirectoriesConfigured;
+    QString lastTrackLocation;
 };
