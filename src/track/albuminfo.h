@@ -13,6 +13,7 @@ namespace mixxx {
 class AlbumInfo final {
     // Properties in alphabetical order
     MIXXX_DECL_PROPERTY(QString, artist, Artist)
+    MIXXX_DECL_PROPERTY(QString, catalogueNumber, CatalogueNumber)
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, copyright, Copyright)
     MIXXX_DECL_PROPERTY(QString, license, License)

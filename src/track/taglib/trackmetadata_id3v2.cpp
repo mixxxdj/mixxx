@@ -1029,6 +1029,13 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refAlbumInfo().setRecordLabel(
                 firstNonEmptyFrameToQString(recordLabelFrames));
     }
+    QString catalogueNumber =
+            readFirstUserTextIdentificationFrame(
+                    tag,
+                    QStringLiteral("CATALOGNUMBER"));
+    if (!catalogueNumber.isEmpty() || resetMissingTagMetadata) {
+        pTrackMetadata->refAlbumInfo().setCatalogueNumber(catalogueNumber);
+    }
     const TagLib::ID3v2::FrameList remixerFrames(tag.frameListMap()["TPE4"]);
     if (!remixerFrames.isEmpty() || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(
@@ -1317,6 +1324,11 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             pTag,
             "TPUB",
             trackMetadata.getAlbumInfo().getRecordLabel());
+    writeUserTextIdentificationFrame(
+            pTag,
+            "CATALOGNUMBER",
+            trackMetadata.getAlbumInfo().getCatalogueNumber(),
+            false);
     writeTextIdentificationFrame(
             pTag,
             "TPE4",
