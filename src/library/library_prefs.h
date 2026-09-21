@@ -66,6 +66,10 @@ const int kSidebarHoverExpandDelayDefault = 500; // ms
 
 extern const ConfigKey kSidebarHoverExpandDelayConfigKey;
 
+const int kSidebarHoverCollapseDelayDefault = 750; // ms
+
+extern const ConfigKey kSidebarHoverCollapseDelayConfigKey;
+
 } // namespace prefs
 
 } // namespace library
