@@ -171,13 +171,19 @@ Controls.Panel {
                     Layout.fillHeight: true
                 }
 
-                KeyControlsPlaceholder {
-                    Layout.preferredWidth: 111
-                    Layout.maximumWidth: 111
+                Item {
+                    Layout.minimumHeight: 20
                     Layout.preferredHeight: 20
                     Layout.maximumHeight: 20
-                    group: root.group
+                    Layout.minimumWidth: 76
+                    Layout.preferredWidth: 76
+                    Layout.maximumWidth: 111
                     visible: root.showKeyControls
+
+                    KeyControlsPlaceholder {
+                        anchors.centerIn: parent
+                        group: root.group
+                    }
                 }
             }
 
