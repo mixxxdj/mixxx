@@ -68,8 +68,6 @@ case "$HOST_ARCH" in
     *)
         echo "ERROR: Unsupported architecture detected: $HOST_ARCH"
         echo "The AppImage buildenv is currently only available for x86_64 and aarch64."
-        echo "Please refer to the following guide:"
-        echo "https://github.com/mixxxdj/mixxx/wiki/Compiling-dependencies-for-Linux"
         exit 1
         ;;
 esac
