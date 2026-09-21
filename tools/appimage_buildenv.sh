@@ -43,12 +43,13 @@ case "$HOST_ARCH" in
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=x64-linux-release}"
             : "${BUILDENV_BRANCH:=2.7-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-8177263d}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-9506d686}"
+            : "${BUILDENV_SHA256:=1d9d9781bd5198f8d72228ba1cdb76fe140dd515a5ca3d3b1bf4560900556364}"
         else
             : "${VCPKG_TARGET_TRIPLET:=x64-linux}"
             : "${BUILDENV_BRANCH:=2.7}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-969b62ea}"
-            : "${BUILDENV_SHA256:=ca7144f2bd3c3154e64c55b066acd1027f8cd9f150dc6b4df266beca3b50cf23}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-332464ba}"
+            : "${BUILDENV_SHA256:=2760a1ba5e5f04a0a3e13330bcd298e1e84773169c105266aee4308599b01fa6}"
         fi
         ;;
     aarch64)
