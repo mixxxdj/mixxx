@@ -250,6 +250,11 @@ class GlobalTrackCache : public QObject {
             mixxx::FileAccess fileAccess,
             TrackId trackId);
 
+    void allocateNewTrack(
+            GlobalTrackCacheResolver* pCacheResolver,
+            mixxx::FileAccess fileAccess,
+            TrackRef trackRef);
+
     void resolveTemporary(
             GlobalTrackCacheResolver* /*in/out*/ pCacheResolver,
             mixxx::FileAccess fileAccess);

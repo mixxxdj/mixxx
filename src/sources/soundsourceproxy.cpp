@@ -436,10 +436,29 @@ SoundSourceProxy::SoundSourceProxy(
     initSoundSourceWithProvider(std::move(pProvider));
 }
 
+namespace {
+
+QList<mixxx::SoundSourceProviderRegistration> providerRegistrationsForTrack(
+        const TrackPointer& pTrack,
+        const QUrl& url) {
+    if (!pTrack) {
+        return {};
+    }
+    // Tracks already in the library know their file type. Trust that
+    // instead of sniffing file contents (MatchContent opens the file).
+    const QString fileType = pTrack->getType();
+    if (!fileType.isEmpty() && SoundSourceProxy::isFileTypeSupported(fileType)) {
+        return SoundSourceProxy::allProviderRegistrationsForFileType(fileType);
+    }
+    return SoundSourceProxy::allProviderRegistrationsForUrl(url);
+}
+
+} // namespace
+
 SoundSourceProxy::SoundSourceProxy(TrackPointer pTrack)
         : m_pTrack(std::move(pTrack)),
           m_url(m_pTrack ? m_pTrack->getFileInfo().toQUrl() : QUrl()),
-          m_providerRegistrations(allProviderRegistrationsForUrl(m_url)) {
+          m_providerRegistrations(providerRegistrationsForTrack(m_pTrack, m_url)) {
     findProviderAndInitSoundSource();
 }
 
@@ -641,6 +660,12 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
 
     if (getUrl().isEmpty()) {
         // Silently skip tracks without a corresponding file
+        return UpdateTrackFromSourceResult::NotUpdated;
+    }
+    // Once = import file tags only if Mixxx has never done so. Do not stat or
+    // parse the file on every library load just to merge "extra" tag fields.
+    if (mode == UpdateTrackFromSourceMode::Once &&
+            m_pTrack->hasImportedMetadataFromSource()) {
         return UpdateTrackFromSourceResult::NotUpdated;
     }
     if (!m_pSoundSource) {

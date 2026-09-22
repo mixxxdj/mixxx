@@ -122,6 +122,12 @@ class TrackRecord final {
     };
     SourceSyncStatus checkSourceSyncStatus(
             const FileInfo& fileInfo) const;
+
+    /// True if Mixxx has imported file tags at least once.
+    /// Does not access the file system.
+    bool hasImportedMetadataFromSource() const {
+        return m_headerParsed || getSourceSynchronizedAt().isValid();
+    }
     bool replaceMetadataFromSource(
             TrackMetadata&& importedMetadata,
             const QDateTime& sourceSynchronizedAt);

@@ -12,6 +12,16 @@
 // value object. Only the id can be set once.
 class TrackRef final {
   public:
+    /// Identify a library track by its stored location and database id
+    /// without resolving the canonical path. Does not access the file system.
+    static TrackRef fromLocationAndId(
+            QString location,
+            TrackId id) {
+        DEBUG_ASSERT(!location.isEmpty());
+        DEBUG_ASSERT(id.isValid());
+        return TrackRef(std::move(location), QString(), std::move(id));
+    }
+
     /// Converts a file path and an optional TrackId into a TrackRef.
     ///
     /// This involves and intermediate creation of mixxx::FileInfo
