@@ -130,4 +130,3 @@ Dialog {
         target: Mixxx.Library
     }
 }
-
