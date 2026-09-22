@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 #include <QReadLocker>
+// Comment added to make CI work
 
 QMutex s_configMutex;
 QReadWriteLock g_oscTrackTableLock;
