@@ -11,6 +11,8 @@ Dialog {
     property string informativeText: ""
     property string text: ""
 
+    Accessible.name: root.title
+    Accessible.role: Accessible.Dialog
     anchors.centerIn: parent
     closePolicy: Popup.CloseOnEscape
     dim: true
