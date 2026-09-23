@@ -2890,6 +2890,7 @@ if(BUILD_TESTING)
     src/test/borrowabletest.cpp
     src/test/bpmtest.cpp
     src/test/bpmcontrol_test.cpp
+    src/test/bpmdelegate_test.cpp
     src/test/broadcastprofile_test.cpp
     src/test/broadcastsettings_test.cpp
     src/test/cache_test.cpp
