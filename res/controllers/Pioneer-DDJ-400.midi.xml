@@ -889,26 +889,10 @@
                 </options>
             </control>
 
-            <control>
-                <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
-                <group>[Master]</group>
-                <key>headMix</key>
-                <status>0xB6</status>
-                <midino>0x2C</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
-                <group>[Master]</group>
-                <key>headMix</key>
-                <status>0xB6</status>
-                <midino>0x0C</midino>
-                <options>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
+            <!-- HEADPHONES MIXING knob is handled by DDJ-400 hardware, not Mixxx.
+                 The DDJ-400 blends channels 1-2 (Master) and 3-4 (Headphones) in hardware.
+                 Mixxx should always send pure PFL to channels 3-4, so we don't map this knob.
+            -->
 
             <control>
                 <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
