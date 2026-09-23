@@ -28,7 +28,7 @@ Auxiliary::Auxiliary(PlayerManager* pParent,
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);
     m_pAuxMainMixEnabled = make_parented<ControlProxy>(group, "main_mix", this);
-    m_pAuxMainMixEnabled->connectValueChanged(this, &Auxiliary::slotAuxMainMixEnabled);
+    m_pAuxMainMixEnabled->connectValueChanged(this, &Auxiliary::slotAuxMainMixEnabled)
 }
 
 Auxiliary::~Auxiliary() {
