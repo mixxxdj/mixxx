@@ -134,7 +134,17 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
     } else if (parentItem == getRootItem()) {
         return createIndex(0, 0, getRootItem());
     } else {
-        return createIndex(parentItem->parentRow(), 0, parentItem);
+        // Defensive: parentRow() can be kInvalidRow (-1) if the tree is
+        // malformed (e.g. an item ended up under two parents). Emitting
+        // createIndex(-1, 0, parentItem) hands consumers an index that
+        // QModelIndex::isValid() rejects while still carrying a non-null
+        // internal pointer; QAbstractItemModel::match() and rowCount() then
+        // treat it as the root, fall back to the model's row count and can
+        // re-enter this item's subtree forever. Emit a valid index that still
+        // points at the parent item so tree walking stays bounded.
+        const int parentRow = parentItem->parentRow();
+        return createIndex(
+                parentRow != TreeItem::kInvalidRow ? parentRow : 0, 0, parentItem);
     }
 }
 
