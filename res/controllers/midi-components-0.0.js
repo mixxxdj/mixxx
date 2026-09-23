@@ -497,16 +497,17 @@
             }
         },
         connect: function() {
+            Component.prototype.connect(this);
             if (this.firstValueReceived && !this.relative && this.softTakeover) {
                 engine.softTakeover(this.group, this.inKey, true);
             }
         },
         disconnect: function() {
+            Component.prototype.disconnect(this);
             if (!this.relative) {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
             }
         },
-        trigger: function() {},
     });
 
     /**
