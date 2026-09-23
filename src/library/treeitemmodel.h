@@ -44,9 +44,23 @@ class TreeItemModel : public QAbstractItemModel {
     // If the index is invalid, the root item is returned.
     TreeItem* getItem(const QModelIndex &index) const;
 
+    // Returns the first TreeItem whose payload (kDataRole) equals data,
+    // searching the whole tree depth-first. Returns nullptr if not found.
+    TreeItem* findItemByData(const QVariant& data) const;
+
+    // Returns the QModelIndex of the given TreeItem, or an invalid
+    // QModelIndex if the item is not part of the tree (e.g. the root item).
+    // Items nested under a child node (e.g. playlists grouped under a year
+    // node in the History feature) yield an index whose parent() resolves
+    // back to that child node.
+    QModelIndex indexFromItem(TreeItem* pTreeItem) const;
+
     void triggerRepaint();
     void triggerRepaint(const QModelIndex& index);
 
   private:
+    // Depth-first search helper for findItemByData().
+    TreeItem* findItemByDataRecursive(TreeItem* pTreeItem, const QVariant& data) const;
+
     std::unique_ptr<TreeItem> m_pRootItem;
 };

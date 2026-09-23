@@ -209,6 +209,45 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
     return getRootItem();
 }
 
+TreeItem* TreeItemModel::findItemByData(const QVariant& data) const {
+    return findItemByDataRecursive(getRootItem(), data);
+}
+
+TreeItem* TreeItemModel::findItemByDataRecursive(
+        TreeItem* pTreeItem, const QVariant& data) const {
+    if (pTreeItem == nullptr) {
+        return nullptr;
+    }
+    // The root item has no payload (empty QVariant); do not let an
+    // empty lookup accidentally match it.
+    if (!pTreeItem->isRoot() && pTreeItem->getData() == data) {
+        return pTreeItem;
+    }
+    for (TreeItem* pChild : pTreeItem->children()) {
+        TreeItem* pFound = findItemByDataRecursive(pChild, data);
+        if (pFound != nullptr) {
+            return pFound;
+        }
+    }
+    return nullptr;
+}
+
+QModelIndex TreeItemModel::indexFromItem(TreeItem* pTreeItem) const {
+    if (pTreeItem == nullptr || pTreeItem->isRoot()) {
+        return QModelIndex();
+    }
+    // Walk up the tree to reconstruct the model index. A plain
+    // createIndex(row, 0, pTreeItem) is not sufficient: QModelIndexes for
+    // deeper levels (e.g. playlists grouped under a year node in the History
+    // feature) must be created relative to their parent index.
+    TreeItem* pParent = pTreeItem->parent();
+    QModelIndex parentIndex;
+    if (pParent != nullptr && !pParent->isRoot()) {
+        parentIndex = indexFromItem(pParent);
+    }
+    return index(pTreeItem->parentRow(), 0, parentIndex);
+}
+
 void TreeItemModel::triggerRepaint(const QModelIndex& index) {
     emit dataChanged(index, index);
 }

@@ -849,17 +849,17 @@ void BasePlaylistFeature::clearChildModel() {
 }
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
-    QVariant variantId = QVariant(playlistId);
-    QModelIndexList results = m_pSidebarModel->match(
-            m_pSidebarModel->getRootIndex(),
-            TreeItemModel::kDataRole,
-            variantId,
-            1,
-            Qt::MatchWrap | Qt::MatchExactly | Qt::MatchRecursive);
-    if (!results.isEmpty()) {
-        return results.front();
+    // Look up the playlist item ourselves instead of relying on
+    // QAbstractItemModel::match() with Qt::MatchRecursive: a single playlist id
+    // lookup does not need a recursive query over the whole sidebar tree, and
+    // once the History feature groups playlists under year nodes (≥6 history
+    // playlists) the sidebar is a multi-level tree. A direct, bounded walk is
+    // simpler and does not depend on match()'s parent()/rowCount() traversal.
+    TreeItem* pItem = m_pSidebarModel->findItemByData(QVariant(playlistId));
+    if (pItem == nullptr) {
+        return QModelIndex();
     }
-    return QModelIndex();
+    return m_pSidebarModel->indexFromItem(pItem);
 }
 
 bool BasePlaylistFeature::isChildIndexSelectedInSidebar(const QModelIndex& index) {
