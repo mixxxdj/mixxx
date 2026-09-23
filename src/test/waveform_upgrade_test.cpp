@@ -172,3 +172,12 @@ TEST_F(UpgradeTest, useCorrectWaveformType) {
         ASSERT_EQ(options, testCase.expectedOptions);
     }
 }
+
+TEST_F(UpgradeTest, keepAllShaderRGB3Band) {
+    auto [type, backend, options] = upgradeToAllShaders(WaveformWidgetType::RGB3Band,
+            static_cast<int>(WaveformWidgetBackend::AllShader),
+            static_cast<int>(WaveformRendererSignalBase::Option::None));
+    ASSERT_EQ(type, WaveformWidgetType::RGB3Band);
+    ASSERT_EQ(backend, WaveformWidgetBackend::AllShader);
+    ASSERT_EQ(options, WaveformRendererSignalBase::Option::None);
+}

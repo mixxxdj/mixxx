@@ -42,6 +42,18 @@ class WaveformSignalColors {
     inline const QColor& getRgbHighFilteredColor() const {
         return m_rgbHighFilteredColor;
     }
+    inline const QColor& getRgb3BandLowColor() const {
+        return m_rgb3BandLowColor;
+    }
+    inline const QColor& getRgb3BandMidColor() const {
+        return m_rgb3BandMidColor;
+    }
+    inline const QColor& getRgb3BandHighColor() const {
+        return m_rgb3BandHighColor;
+    }
+    inline const QColor& getRgb3BandLowMidColor() const {
+        return m_rgb3BandLowMidColor;
+    }
     inline const QColor& getAxesColor() const {
         return m_axesColor;
     }
@@ -81,6 +93,10 @@ class WaveformSignalColors {
     QColor m_rgbLowFilteredColor;
     QColor m_rgbMidFilteredColor;
     QColor m_rgbHighFilteredColor;
+    QColor m_rgb3BandLowColor;
+    QColor m_rgb3BandMidColor;
+    QColor m_rgb3BandHighColor;
+    QColor m_rgb3BandLowMidColor;
     QColor m_axesColor;
     QColor m_playPosColor;
     QColor m_playedOverlayColor;
