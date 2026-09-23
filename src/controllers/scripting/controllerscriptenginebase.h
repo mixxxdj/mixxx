@@ -60,6 +60,13 @@ class ControllerScriptEngineBase : public QObject {
     static void registerTrackCollectionManager(
             std::shared_ptr<TrackCollectionManager> pTrackCollectionManager);
 
+    /// Load an arbitrary file path into the deck/sampler identified by
+    /// `group` (e.g. "[Channel1]", "[Sampler2]"). Added by mixxx-mcp so
+    /// controller scripts can drive Mixxx without a pre-loaded library
+    /// selection. Returns false if the player manager is not yet
+    /// initialised or the file doesn't exist.
+    static bool loadTrackToPlayer(const QString& group, const QString& path);
+
   signals:
     void beforeShutdown();
 
