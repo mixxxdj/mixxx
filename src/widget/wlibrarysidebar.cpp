@@ -287,6 +287,14 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* pEvent) {
 
     focusSelectedIndex();
 
+    // Alt + P: toggle Prep playlist for selected item (only PlaylistFeature
+    // created a connection)
+    if (pEvent->modifiers().testFlag(Qt::AltModifier) &&
+            pEvent->key() == Qt::Key_P) {
+        emit togglePrepPlaylist();
+        return;
+    }
+
     switch (pEvent->key()) {
     case Qt::Key_Return:
         toggleSelectedItem();
