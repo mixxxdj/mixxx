@@ -375,7 +375,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
-        return new ColorDelegate(pTableView);
+        return new ColorDelegate(pTableView, index);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         auto* pCoverArtDelegate =
                 new CoverArtDelegate(pTableView);
