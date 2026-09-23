@@ -129,15 +129,14 @@ void QmlSpinnyPosition::resetPositions() {
 }
 
 void QmlSpinnyPosition::updatePositions() {
-    if (m_visualPlayPosition.isNull() || !m_visualPlayPosition->isValid()) {
+    if (m_visualPlayPosition.isNull()) {
         resetPositions();
         return;
     }
 
     double playPosition = 0.0;
     double slipPosition = 0.0;
-    m_visualPlayPosition->getPlaySlipAtNextVSync(this, &playPosition, &slipPosition);
-    if (!std::isfinite(playPosition) || !std::isfinite(slipPosition)) {
+    if (!m_visualPlayPosition->getPlaySlipAtNextVSync(this, &playPosition, &slipPosition)) {
         resetPositions();
         return;
     }
