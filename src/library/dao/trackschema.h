@@ -80,6 +80,33 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
+// Fingerprint and CMRT Tables
+const QString FINGERPRINT_METADATA_TABLE = QStringLiteral("fingerprint_metadata");
+const QString CMRT_GROUPS_TABLE = QStringLiteral("cmrt_groups");
+
+// Columns for fingerprint_metadata
+const QString FINGERPRINT_TABLE_TRACK_ID = QStringLiteral("track_id");
+const QString FINGERPRINT_TABLE_HASH = QStringLiteral("fingerprint_hash");
+const QString FINGERPRINT_TABLE_SHA256 = QStringLiteral("chroma_sha256");
+const QString FINGERPRINT_TABLE_DURATION = QStringLiteral("fingerprint_duration");
+const QString FINGERPRINT_TABLE_VERSION = QStringLiteral("fingerprint_version");
+const QString FINGERPRINT_TABLE_GROUP_ID = QStringLiteral("cmrt_group_id");
+const QString FINGERPRINT_TABLE_OFFSET = QStringLiteral("cmrt_offset_seconds");
+const QString FINGERPRINT_TABLE_CANONICAL = QStringLiteral("is_canonical");
+const QString FINGERPRINT_TABLE_VALID = QStringLiteral("fingerprint_valid");
+const QString FINGERPRINT_TABLE_NEEDS_REGEN = QStringLiteral("fingerprint_needs_regen");
+const QString FINGERPRINT_TABLE_COMPUTED_AT = QStringLiteral("computed_at");
+
+// Columns for cmrt_groups
+const QString CMRT_GROUPS_TABLE_ID = QStringLiteral("group_id");
+const QString CMRT_GROUPS_TABLE_HASH = QStringLiteral("fingerprint_hash");
+const QString CMRT_GROUPS_TABLE_SHA256 = QStringLiteral("chroma_sha256");
+const QString CMRT_GROUPS_TABLE_CANONICAL_TRACK_ID = QStringLiteral("canonical_track_id");
+const QString CMRT_GROUPS_TABLE_TRACK_COUNT = QStringLiteral("track_count");
+const QString CMRT_GROUPS_TABLE_CREATED_AT = QStringLiteral("created_at");
+const QString CMRT_GROUPS_TABLE_LAST_UPDATED = QStringLiteral("last_updated");
+// MusicBrainz CMRT fields deferred to later PR
+
 namespace mixxx {
 namespace trackschema {
 // TableForColumn returns the name of the table that contains the named column.
