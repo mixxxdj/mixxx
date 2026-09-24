@@ -1,11 +1,25 @@
 #include "waveformoverviewrenderer.h"
 
 #include <QPainter>
+#include <algorithm>
+#include <cmath>
 
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+
+namespace {
+
+// Height per band relative to the waveform data, fitted so that the overview
+// matches the average of the RGB 3-band scrolling waveform.
+constexpr float kRgb3BandGain[3] = {1.15f, 1.86f, 0.50f};
+
+float meanSquare(unsigned char left, unsigned char right) {
+    return (static_cast<float>(left) * left + static_cast<float>(right) * right) / 2.0f;
+}
+
+} // namespace
 
 namespace waveformOverviewRenderer {
 
@@ -26,6 +40,13 @@ QImage render(ConstWaveformPointer pWaveform,
 
     if (type == mixxx::OverviewType::HSV) {
         drawWaveformPartHSV(&painter,
+                pWaveform,
+                nullptr,
+                dataSize,
+                signalColors,
+                mono);
+    } else if (type == mixxx::OverviewType::RGB3Band) {
+        drawWaveformPartRGB3Band(&painter,
                 pWaveform,
                 nullptr,
                 dataSize,
@@ -235,6 +256,66 @@ void drawWaveformPartLMH(
             pPainter->setPen(highColor);
             pPainter->drawLine(QPoint(x, -pWaveform->getHigh(i)),
                     QPoint(x, pWaveform->getHigh(i + 1)));
+        }
+    }
+
+    if (start) {
+        *start = end;
+    }
+}
+
+RGB3BandHeights rgb3BandHeights(const Waveform& waveform, int index) {
+    // Stereo-combined like the RGB 3-band scrolling waveform, where mid and
+    // high together are drawn as the high band.
+    const float low = meanSquare(waveform.getLow(index), waveform.getLow(index + 1));
+    const float mid = meanSquare(waveform.getMid(index), waveform.getMid(index + 1));
+    const float high = meanSquare(waveform.getHigh(index), waveform.getHigh(index + 1));
+    RGB3BandHeights heights;
+    heights.low = std::min(255.0f, kRgb3BandGain[0] * std::sqrt(low));
+    heights.mid = std::min(255.0f, kRgb3BandGain[1] * std::sqrt(mid));
+    heights.lowMid = std::min(heights.low, heights.mid);
+    heights.high = std::min(255.0f, kRgb3BandGain[2] * std::sqrt(mid + high));
+    return heights;
+}
+
+void drawWaveformPartRGB3Band(
+        QPainter* pPainter,
+        ConstWaveformPointer pWaveform,
+        int* start,
+        int end,
+        const WaveformSignalColors& signalColors,
+        bool mono) {
+    ScopedTimer t(QStringLiteral("waveformOverviewRenderer::drawNextPixmapPartRGB3Band"));
+    const QColor colors[4] = {signalColors.getRgb3BandLowColor(),
+            signalColors.getRgb3BandMidColor(),
+            signalColors.getRgb3BandLowMidColor(),
+            signalColors.getRgb3BandHighColor()};
+    int startVal = 0;
+    if (start) {
+        startVal = *start;
+    }
+
+    if (mono) {
+        // Mono means we're going to paint from bottom to top with l+r.
+        const qreal dy = pPainter->deviceTransform().dy();
+        pPainter->resetTransform();
+        // shift y0 to bottom
+        pPainter->translate(0, 2 * dy);
+        // flip y-axis
+        pPainter->scale(1, -1);
+    }
+
+    for (int i = startVal; i < end; i += 2) {
+        const qreal x = i / 2;
+        const RGB3BandHeights heights = rgb3BandHeights(*pWaveform, i);
+        const float layers[4] = {heights.low, heights.mid, heights.lowMid, heights.high};
+        for (int layer = 0; layer < 4; ++layer) {
+            pPainter->setPen(colors[layer]);
+            if (mono) {
+                pPainter->drawLine(QPointF(x, 0), QPointF(x, 2 * layers[layer]));
+            } else {
+                pPainter->drawLine(QPointF(x, -layers[layer]), QPointF(x, layers[layer]));
+            }
         }
     }
 

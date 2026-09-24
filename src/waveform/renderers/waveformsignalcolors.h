@@ -5,6 +5,12 @@
 
 #include "skin/legacy/skincontext.h"
 
+// Default RGB 3-band colors, similar to Rekordbox's 3-band waveform
+constexpr QRgb kDefaultRgb3BandLowColor = qRgb(0, 84, 225);
+constexpr QRgb kDefaultRgb3BandMidColor = qRgb(255, 166, 0);
+constexpr QRgb kDefaultRgb3BandLowMidColor = qRgb(180, 104, 10);
+constexpr QRgb kDefaultRgb3BandHighColor = qRgb(245, 235, 215);
+
 class WaveformSignalColors {
   public:
     WaveformSignalColors();

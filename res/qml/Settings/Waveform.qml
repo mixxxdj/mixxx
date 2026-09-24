@@ -35,7 +35,7 @@ Category {
     readonly property list<int> waveformTypes: [Mixxx.WaveformDisplay.Type.Simple, Mixxx.WaveformDisplay.Type.Filtered, Mixxx.WaveformDisplay.Type.HSV, Mixxx.WaveformDisplay.Type.RGB, Mixxx.WaveformDisplay.Type.Stacked, Mixxx.WaveformDisplay.Type.RGB3Band]
 
     function load() {
-        overviewTypeInput.currentIndex = Math.max(0, Math.min(2, Mixxx.Config.waveformOverviewType));
+        overviewTypeInput.currentIndex = Math.max(0, Math.min(3, Mixxx.Config.waveformOverviewType));
         overviewStereoInput.selected = Mixxx.Config.waveformOverviewStereo ? "on" : "off";
         overviewMinuteMarkersInput.selected = Mixxx.Config.waveformOverviewMinuteMarkers ? "on" : "off";
         overviewScalingInput.selected = Mixxx.Config.waveformOverviewNormalized ? "normalize" : "global gain";
@@ -178,7 +178,7 @@ Category {
                     id: overviewTypeInput
 
                     Layout.preferredWidth: 180
-                    model: ["Filtered", "HSV", "RGB"]
+                    model: ["Filtered", "HSV", "RGB", "RGB 3-band"]
 
                     onCurrentIndexChanged: root.markDirty()
                 }

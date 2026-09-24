@@ -51,6 +51,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
         RGB = 1,
         Filtered = 2,
         HSV = 3,
+        RGB3Band = 4,
     };
     Q_ENUM(Renderer)
 
@@ -115,6 +116,10 @@ class QmlWaveformOverview : public QQuickPaintedItem {
             ConstWaveformPointer pWaveform,
             int completion) const;
     void drawHsv(QPainter* pPainter,
+            Channels channels,
+            ConstWaveformPointer pWaveform,
+            int completion) const;
+    void drawRgb3Band(QPainter* pPainter,
             Channels channels,
             ConstWaveformPointer pWaveform,
             int completion) const;
