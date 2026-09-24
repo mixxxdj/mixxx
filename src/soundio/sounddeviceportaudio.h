@@ -26,6 +26,7 @@ class SoundDevicePortAudio : public SoundDevice {
 
     SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) override;
     bool isOpen() const override;
+    bool isUsable() const override;
     SoundDeviceStatus close() override;
     void readProcess(SINT framesPerBuffer) override;
     void writeProcess(SINT framesPerBuffer) override;
