@@ -672,7 +672,6 @@ BpmFilterNode::BpmFilterNode(
         m_bpmHalfUpper = ceil((1 + s_relativeRange) * bpm / 2);    // 53
         m_bpmDoubleLower = floor((1 - s_relativeRange) * bpm * 2); // 188
         m_bpmDoubleUpper = ceil((1 + s_relativeRange) * bpm * 2);  // 212
-        qWarning() << toSql();
         break;
     }
     case MatchMode::HalveDouble: {
