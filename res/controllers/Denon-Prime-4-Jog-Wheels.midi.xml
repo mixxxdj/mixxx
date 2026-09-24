@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4.0+">
+    <info>
+        <name>Denon Prime 4 - Jog Wheel Displays</name>
+        <author>Levi "Whanake" Williams</author>
+        <description>This mapping is designed to show visual feedback on the Denon Prime 4's jog wheel screens when used with Mixxx.</description>
+        <wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-Prime-4</wiki>
+        <forum>https://mixxx.discourse.group/t/denon-prime-4-mapping/22404</forum>
+    </info>
+    <controller id="denonprime4jogs">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Denon-Prime-4-jog-wheel-scripts.js" functionprefix="Prime4Jog"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
