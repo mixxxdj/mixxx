@@ -14,7 +14,7 @@ on:
     secrets:
       DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY:
         required: false
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
         required: false
 
 jobs:
@@ -96,13 +96,13 @@ jobs:
           echo "VERSION=${version}" >> $GITHUB_ENV
 
       - name: "[Ubuntu] Import PPA GPG key"
-        run: gpg --import <(echo "${RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY}")
+        run: gpg --import <(echo "${ORG_GPG_PRIVATE_KEY}")
         env:
-          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
       - name: "Import bundle to repo"
         env:
-          GPG_KEY_ID: rryan@mixxx.org
+          GPG_KEY_ID: daschuer@mixxx.org
           COMMIT_SUMMARY: ${{ steps.prepare.outputs.commit_summary }}
           BRANCH: ${{ steps.prepare.outputs.branch }}
         shell: bash
@@ -178,7 +178,7 @@ jobs:
         env:
           SSH_HOST: downloads-hostgator.mixxx.org
           SSH_USER: mixxx
-          GPG_KEY_ID: rryan@mixxx.org
+          GPG_KEY_ID: daschuer@mixxx.org
         shell: bash
         run: |
           ostree --repo=repo summary -u --gpg-sign=$GPG_KEY_ID
