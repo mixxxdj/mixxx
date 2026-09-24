@@ -296,7 +296,8 @@ jobs:
         uses: ammaraskar/msvc-problem-matcher@0.3.0
 
       - name: "Build"
-        run: cmake --build . --config RelWithDebInfo
+        # Ninja (macOS/Windows) uses all cores by default, make (Linux) only one
+        run: cmake --build . --config RelWithDebInfo ${{ runner.os == 'Linux' && '--parallel "$(nproc)"' || '' }}
         working-directory: build
         env:
           CC: ${{ matrix.cc }}
