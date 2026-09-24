@@ -99,6 +99,33 @@ TEST_F(QmlWaveformOverviewTest, RendersAvailableSummaryWithoutAnalyzerProgress) 
     EXPECT_TRUE(imagesDiffer(mono, normalized));
 }
 
+TEST_F(QmlWaveformOverviewTest, RendersRgb3Band) {
+    TrackPointer pTrack = Track::newTemporary();
+    WaveformPointer pWaveform(new Waveform(44100, 44100, 1000, 8, 0));
+    ASSERT_GE(pWaveform->getDataSize(), 2);
+    setWaveformSample(pWaveform.get(), 0);
+    setWaveformSample(pWaveform.get(), 1);
+    pWaveform->setCompletion(2);
+    pTrack->setWaveformSummary(pWaveform);
+
+    QmlTrackProxy trackProxy(pTrack);
+    QmlWaveformOverview overview;
+    overview.setWidth(100);
+    overview.setHeight(24);
+    overview.setTrack(&trackProxy);
+    const QImage rgb = paintOverview(&overview);
+
+    overview.setRenderer(QmlWaveformOverview::Renderer::RGB3Band);
+    const QImage stereo = paintOverview(&overview);
+    ASSERT_TRUE(hasPaintedPixels(stereo));
+    EXPECT_TRUE(imagesDiffer(rgb, stereo));
+
+    overview.setStereo(false);
+    const QImage mono = paintOverview(&overview);
+    ASSERT_TRUE(hasPaintedPixels(mono));
+    EXPECT_TRUE(imagesDiffer(stereo, mono));
+}
+
 TEST_F(QmlWaveformOverviewTest, MonoRgbColorUsesBothChannels) {
     TrackPointer pTrack = Track::newTemporary();
     WaveformPointer pWaveform(new Waveform(44100, 44100, 1000, 8, 0));

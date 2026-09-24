@@ -72,20 +72,20 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     // RGB 3-band colors, Rekordbox-like by default
     m_rgb3BandLowColor = QColor(context.selectString(node, "SignalRGB3BandLowColor"));
     if (!m_rgb3BandLowColor.isValid()) {
-        m_rgb3BandLowColor = QColor(0, 84, 225);
+        m_rgb3BandLowColor = QColor(kDefaultRgb3BandLowColor);
     }
     m_rgb3BandLowColor = WSkinColor::getCorrectColor(m_rgb3BandLowColor).toRgb();
 
     m_rgb3BandMidColor = QColor(context.selectString(node, "SignalRGB3BandMidColor"));
     const bool rgb3BandMidColorValid = m_rgb3BandMidColor.isValid();
     if (!rgb3BandMidColorValid) {
-        m_rgb3BandMidColor = QColor(255, 166, 0);
+        m_rgb3BandMidColor = QColor(kDefaultRgb3BandMidColor);
     }
     m_rgb3BandMidColor = WSkinColor::getCorrectColor(m_rgb3BandMidColor).toRgb();
 
     m_rgb3BandHighColor = QColor(context.selectString(node, "SignalRGB3BandHighColor"));
     if (!m_rgb3BandHighColor.isValid()) {
-        m_rgb3BandHighColor = QColor(245, 235, 215);
+        m_rgb3BandHighColor = QColor(kDefaultRgb3BandHighColor);
     }
     m_rgb3BandHighColor = WSkinColor::getCorrectColor(m_rgb3BandHighColor).toRgb();
 
@@ -94,7 +94,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     if (!m_rgb3BandLowMidColor.isValid()) {
         m_rgb3BandLowMidColor = rgb3BandMidColorValid
                 ? m_rgb3BandMidColor.darker(140)
-                : QColor(180, 104, 10);
+                : QColor(kDefaultRgb3BandLowMidColor);
     }
     m_rgb3BandLowMidColor = WSkinColor::getCorrectColor(m_rgb3BandLowMidColor).toRgb();
 

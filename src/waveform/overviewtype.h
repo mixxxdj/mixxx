@@ -10,6 +10,7 @@ enum class OverviewType {
     Filtered,
     HSV,
     RGB,
+    RGB3Band,
 };
 Q_ENUM_NS(OverviewType);
 
