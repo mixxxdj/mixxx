@@ -208,9 +208,14 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
-    // Effective visual frame of the first pixel
-    const double firstPixelVisualFrame =
-            qRound(firstVisualFrame / visualIncrementPerPixel) * visualIncrementPerPixel;
+    // Pixels are sampled on a grid anchored to the track, so their values do
+    // not change while scrolling. Drawing them shifted by the sub-pixel
+    // remainder keeps the waveform in sync with the beat grid instead of
+    // jumping by up to half a pixel.
+    const double firstPixel = qRound(firstVisualFrame / visualIncrementPerPixel);
+    const double firstPixelVisualFrame = firstPixel * visualIncrementPerPixel;
+    const float xOffset = static_cast<float>(
+            firstPixel - firstVisualFrame / visualIncrementPerPixel);
     const double visualSampleRate =
             pTrack->getSampleRate().toDouble() / waveform->getAudioVisualRatio();
     const float bandScale[3] = {allGain * halfBreadth * bandGain[0],
@@ -258,8 +263,8 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     for (int layer = 0; layer < kLayerCount; ++layer) {
         const std::vector<float>& height = m_heights[layer];
         for (int pos = 0; pos < segmentCount; ++pos) {
-            const float x1 = static_cast<float>(pos) * invDevicePixelRatio;
-            const float x2 = static_cast<float>(pos + 1) * invDevicePixelRatio;
+            const float x1 = (static_cast<float>(pos) + xOffset) * invDevicePixelRatio;
+            const float x2 = (static_cast<float>(pos + 1) + xOffset) * invDevicePixelRatio;
             const float top1 = halfBreadth - height[pos];
             const float top2 = halfBreadth - height[pos + 1];
             const float bottom1 = halfBreadth + height[pos];
