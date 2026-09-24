@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: "Download AppImage artifact"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           # The AppImage is uploaded uncompressed, so the artifact name is the
           # file name (which contains the git describe); match it by pattern.

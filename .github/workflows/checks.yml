@@ -124,7 +124,7 @@ jobs:
             ..
         working-directory: build
       - name: Set up problem matcher
-        uses: ammaraskar/gcc-problem-matcher@0.3.0
+        uses: ammaraskar/gcc-problem-matcher@cb2e3f949c41b7818628f35f8484a9b0acf90cf9 # 0.3.0 + Node 24
       - name: Build
         # Do not abort on errors and build/check the whole project
         run: cmake --build . -j $(nproc) -- --keep-going
