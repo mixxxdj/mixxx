@@ -12,6 +12,13 @@ class Crate : public DbNamedEntity<CrateId> {
     }
     ~Crate() override = default;
 
+    CrateId getParentId() const {
+        return m_parentId;
+    }
+    void setParentId(CrateId parentId) {
+        m_parentId = parentId;
+    }
+
     bool isLocked() const {
         return m_locked;
     }
@@ -27,6 +34,7 @@ class Crate : public DbNamedEntity<CrateId> {
     }
 
   private:
+    CrateId m_parentId;
     bool m_locked;
     bool m_autoDjSource;
 };

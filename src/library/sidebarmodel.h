@@ -18,6 +18,7 @@ class SidebarModel : public QAbstractItemModel {
     enum Roles {
         IconNameRole = Qt::UserRole + 1,
         DataRole,
+        UrlRole,
     };
     Q_ENUM(Roles);
 
@@ -38,6 +39,21 @@ class SidebarModel : public QAbstractItemModel {
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole) const override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    QModelIndex resolveDropIndex(int row, int column, const QModelIndex& index) const;
+    bool canDropMimeData(const QMimeData* data,
+            Qt::DropAction action,
+            int row,
+            int column,
+            const QModelIndex& index) const override;
+    bool dropMimeData(const QMimeData* data,
+            Qt::DropAction action,
+            int row,
+            int column,
+            const QModelIndex& index) override;
+    void setSourceOfCurrentDragDropEvent(QObject* source);
     bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
     bool dragMoveAccept(const QModelIndex& index, const QList<QUrl>& urls) const;
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
@@ -91,6 +107,7 @@ class SidebarModel : public QAbstractItemModel {
     QList<LibraryFeature*> m_sFeatures;
 
   private:
+    QList<QUrl> collectUrls(const QModelIndexList& indexes) const;
     QModelIndex translateSourceIndex(const QModelIndex& parent);
     QModelIndex translateIndex(const QModelIndex& index, const QAbstractItemModel* model);
     void featureRenamed(LibraryFeature*);
@@ -98,6 +115,8 @@ class SidebarModel : public QAbstractItemModel {
 
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
+    QStringList m_mimeTypes;
+    QObject* m_sourceOfCurrentDragDropEvent;
 
     void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();

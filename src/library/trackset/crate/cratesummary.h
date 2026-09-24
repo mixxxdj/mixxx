@@ -33,7 +33,44 @@ class CrateSummary : public Crate {
         return mixxx::Duration::formatTime(getTrackDuration(), mixxx::Duration::Precision::SECONDS);
     }
 
+    // The full path of this crate, formatted as
+    // "Root crate name / Parent crate name / Crate name".
+    QString getFullPath() const {
+        return m_fullPath;
+    }
+    void setFullPath(const QString& fullPath) {
+        m_fullPath = fullPath;
+    }
+
+    // The full path of this crate's parent folder,
+    // formatted as "Root crate name / Grandparent crate name / Parent crate name".
+    QString getFolderPath() const {
+        return m_folderPath;
+    }
+    void setFolderPath(const QString& folderPath) {
+        m_folderPath = folderPath;
+    }
+
+    // The list of ancestors of this crate
+    const QList<CrateId>& getAncestorIds() const {
+        return m_ancestorIds;
+    }
+    void setAncestorIds(const QList<CrateId>& ancestorIds) {
+        m_ancestorIds = ancestorIds;
+    }
+    bool isDescendantOf(CrateId otherId) const {
+        // Note: An "invalid"/NULL folderA id is not actually invalid
+        //       for this function, but instead represents the root folder.
+        //
+        //       The root folder is explicitly contained in the list of
+        //       ancestorIds, so no additional explicit handling is required.
+        return m_ancestorIds.contains(otherId);
+    }
+
   private:
     uint m_trackCount;
     double m_trackDuration;
+    QString m_fullPath;
+    QString m_folderPath;
+    QList<CrateId> m_ancestorIds;
 };

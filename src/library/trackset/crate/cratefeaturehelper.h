@@ -17,11 +17,12 @@ class CrateFeatureHelper : public QObject {
             UserSettingsPointer pConfig);
     ~CrateFeatureHelper() override = default;
 
-    CrateId createEmptyCrate();
+    CrateId createEmptyCrate(CrateId parentId);
     CrateId duplicateCrate(const Crate& oldCrate);
 
   private:
     QString proposeNameForNewCrate(
+            CrateId parentId,
             const QString& initialName = QString()) const;
 
     TrackCollection* m_pTrackCollection;
