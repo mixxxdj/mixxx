@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QList>
 #include <QObject>
 #include <QQmlEngine>
 #include <QVideoSink>
@@ -68,6 +69,8 @@ class QmlControllerScreenElement : public QObject {
     using Clock = std::chrono::steady_clock;
     Clock::time_point m_lastFrameTimestamp;
 };
+
+using QmlControllerScreenElementList = QList<QmlControllerScreenElement*>;
 
 class QmlControllerSettingElement : public QObject {
     Q_OBJECT
@@ -225,6 +228,8 @@ class QmlControllerMappingProxy : public QObject {
     std::optional<bool> m_hasScreens;
     MappingInfo m_mappingDefinition;
 };
+
+using QmlControllerMappingProxyList = QList<QmlControllerMappingProxy*>;
 
 class QmlControllerDeviceProxy : public QObject {
     Q_OBJECT
