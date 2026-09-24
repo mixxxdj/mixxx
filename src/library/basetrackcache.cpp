@@ -63,6 +63,10 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
+QString BaseTrackCache::columnTitle(ColumnCache::Column column) const {
+    return m_columnCache.columnTitle(column);
+}
+
 void BaseTrackCache::slotTracksAddedOrChanged(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAddedOrChanged" << trackIds.size();

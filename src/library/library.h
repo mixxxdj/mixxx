@@ -6,6 +6,7 @@
 #include <QPointer>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "library/columncache.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
@@ -98,6 +99,9 @@ class Library: public QObject {
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMetadataSelectedClick(bool enable);
+
+    /// returns the localized column name used in the GUI
+    QString columnTitle(ColumnCache::Column column) const;
 
     /// Switches to the internal track collection view
     /// and focuses the search box.
