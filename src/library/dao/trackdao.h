@@ -170,6 +170,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const QString& filePath,
             bool unremove);
     void addTracksFinish(bool rollback = false);
+    void addTracksCommitAndRestart();
 
     bool updateTrack(const Track& track) const;
 
