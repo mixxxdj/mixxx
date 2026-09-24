@@ -15,6 +15,7 @@ Skin.ControlFader {
     bar.color: valueLineColor
     bar.enabled: true
     bar.margin: 8
+    bar.snapToDevicePixels: true
     bar.width: 2
     implicitHeight: backgroundImage.implicitHeight + (backgroundMargin * 2)
     implicitWidth: backgroundImage.implicitWidth + (backgroundMargin * 2)
@@ -33,7 +34,11 @@ Skin.ControlFader {
         fillMode: Image.PreserveAspectFit
         height: root.handleHeight > 0 ? root.handleHeight : implicitHeight
         width: root.handleWidth > 0 ? root.handleWidth : implicitWidth
-        x: root.horizontal ? Math.round(root.visualPosition * (root.width - width)) : Math.round((root.width - width) / 2)
-        y: root.vertical ? Math.round(root.visualPosition * (root.height - height)) : Math.round((root.height - height) / 2)
+        x: root.horizontal
+                ? Math.round(root.visualPosition * (root.width - width) * root.devicePixelRatio) / root.devicePixelRatio
+                : Math.round((root.width - width) / 2 * root.devicePixelRatio) / root.devicePixelRatio
+        y: root.vertical
+                ? Math.round(root.visualPosition * (root.height - height) * root.devicePixelRatio) / root.devicePixelRatio
+                : Math.round((root.height - height) / 2 * root.devicePixelRatio) / root.devicePixelRatio
     }
 }

@@ -1,19 +1,17 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+import QtQuick.Window 2.12
 
 Item {
     id: root
 
     required property string group
     required property int hotcueNumber
-
-    function updatePosition() {
-        const totalSamples = trackSamplesControl.value;
-        marker.x = (totalSamples > 0) ? root.width * (positionControl.value / totalSamples) : 0;
-    }
-
-    onWidthChanged: this.updatePosition()
+    readonly property real devicePixelRatio: Screen.devicePixelRatio > 0 ? Screen.devicePixelRatio : 1
+    readonly property real markerX: trackSamplesControl.value > 0
+            ? Math.round(root.width * (positionControl.value / trackSamplesControl.value) * root.devicePixelRatio) / root.devicePixelRatio
+            : 0
 
     Shape {
         id: shape
@@ -33,7 +31,7 @@ Item {
             PathLine {
                 id: marker
 
-                x: 0
+                x: root.markerX
                 y: root.height
             }
         }
@@ -58,7 +56,6 @@ Item {
 
         group: root.group
         key: "hotcue_" + root.hotcueNumber + "_position"
-        onValueChanged: root.updatePosition()
     }
 
     Mixxx.ControlProxy {

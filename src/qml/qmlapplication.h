@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QApplication>
+#include <QMetaObject>
 #include <QQmlApplicationEngine>
 #include <QString>
 #include <QTimer>
@@ -13,8 +14,8 @@
 class ControlProxy;
 class ControlPushButton;
 class GuiTick;
-class VisualsManager;
 class QQuickWindow;
+class VisualsManager;
 #if defined(Q_OS_ANDROID)
 class APerformanceHintSession;
 #endif
@@ -45,6 +46,7 @@ class QmlApplication : public QObject {
   private:
     void registerImageProvider();
     void setupSpinnyCoverControls();
+    void setupOverviewTypeControl();
     void updateSpinnyCoverControls();
 
     std::shared_ptr<CoreServices> m_pCoreServices;
@@ -61,6 +63,7 @@ class QmlApplication : public QObject {
     std::unique_ptr<ControlPushButton> m_pWaveformOverviewType;
 
     QString m_mainFilePath;
+    std::unique_ptr<ControlPushButton> m_pOverviewTypeControl;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
     bool m_ownsWaveformWidgetFactory{false};

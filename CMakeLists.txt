@@ -2948,6 +2948,7 @@ if(BUILD_TESTING)
     src/test/controllers/controller_columnid_regression_test.cpp
     src/test/controllerscriptenginelegacy_test.cpp
     src/test/controlobjecttest.cpp
+    src/test/qmldprutilstest.cpp
     src/test/controlobjectaliastest.cpp
     src/test/controlobjectscripttest.cpp
     src/test/controlpotmetertest.cpp
@@ -3086,6 +3087,7 @@ if(BUILD_TESTING)
       PRIVATE
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
+        src/test/qmlautoreloadtest.cpp
         src/test/qml/qmlstartupsmoketest.cpp
         src/test/qmlcontrolproxytest.cpp
         src/test/qmldurationformattertest.cpp
