@@ -413,7 +413,11 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
         TrackPointer pTrack = getCachedTrack(trackId);
         if (pTrack) {
             QVariant result = getTrackValueForColumn(pTrack, column);
-            if (result.isValid()) {
+            // Return a valid QVariant.
+            // Note: for the Color column 'invalid' means no color, so return that
+            // as well in order to immediately clear the row color.
+            if (result.isValid() ||
+                    column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
                 return result;
             }
         }
