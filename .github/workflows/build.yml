@@ -350,6 +350,11 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # The x64 and ARM64 runners share the cache keys, but their workspaces
+          # are on different drives (D: vs C:), so a cache saved by ARM64
+          # restores the module to the wrong drive on x64 and signing fails.
+          # https://github.com/Azure/artifact-signing-action/issues/146
+          cache-dependencies: false
 
       - name: "Package"
         if: matrix.cpack_generator != null
@@ -437,6 +442,8 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # See "Sign executables"
+          cache-dependencies: false
 
       - name: "Prepare for deployment"
         # Copy the desired directory structure to the deploy/ directory. This
