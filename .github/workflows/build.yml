@@ -218,10 +218,6 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
-            # The AppImage build is fully static and produces far more ccache
-            # data than the default 2G; give it the actions/cache per-entry
-            # maximum so repeated runs can reuse the compiled objects.
-            compiler_cache_max_size: 10G
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/appimage_release_buildenv.sh
             artifacts_name: AppImage Linux x86_64
@@ -413,11 +409,11 @@ jobs:
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # Default to 2G; larger builds (e.g. the static AppImage build) can
-        # override via compiler_cache_max_size in the matrix.
+        # The limit applies to the compressed size. Uncompressed, the Ubuntu
+        # build with debug info exceeds 2G and evicts its own objects.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
+          ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -491,8 +487,6 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          # GitHub Actions automatically zstd compresses caches
-          CCACHE_NOCOMPRESS: true
 
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
