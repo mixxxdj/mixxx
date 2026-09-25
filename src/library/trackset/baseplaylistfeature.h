@@ -10,7 +10,9 @@
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 
+class ControlObject;
 class WLibrary;
+class WLibraryPreparationWindow;
 class KeyboardEventFilter;
 class PlaylistTableModel;
 class TreeItem;
@@ -34,6 +36,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
+            KeyboardEventFilter* keyboard) override;
+    void bindLibraryPreparationWindowWidget(
+            WLibraryPreparationWindow* libraryPreparationWindowWidget,
             KeyboardEventFilter* keyboard) override;
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
     void selectPlaylistInSidebar(int playlistId, bool select = true);
@@ -80,6 +85,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
     void slotAnalyzePlaylist();
+    void slotShowInPreparationWindow();
 
   protected:
     struct IdAndLabel {
@@ -107,6 +113,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
     QPointer<WLibrary> m_pLibraryWidget;
+    QPointer<WLibraryPreparationWindow> m_pLibraryPreparationWindowWidget;
 
     parented_ptr<QAction> m_pCreatePlaylistAction;
     parented_ptr<QAction> m_pDeletePlaylistAction;
@@ -121,6 +128,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pDuplicatePlaylistAction;
     parented_ptr<QAction> m_pAnalyzePlaylistAction;
+    parented_ptr<QAction> m_pShowTrackModelInPreparationWindowAction;
 #ifdef __ENGINEPRIME__
     parented_ptr<QAction> m_pExportAllPlaylistsToEngineAction;
     parented_ptr<QAction> m_pExportPlaylistToEngineAction;

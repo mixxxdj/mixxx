@@ -108,6 +108,7 @@ class WTrackMenu : public QMenu {
     }
 
     void updateMenus();
+
     // WARNING: This function hides non-virtual QMenu::popup().
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
