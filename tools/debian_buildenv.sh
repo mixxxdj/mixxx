@@ -83,6 +83,7 @@ case "$1" in
         fi
 
         sudo apt-get install -y --no-install-recommends -- \
+		    p7zip-full \
             ccache \
             cmake \
             clazy \

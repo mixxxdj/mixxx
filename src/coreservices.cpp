@@ -31,6 +31,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
+#include "preferences/backup/backupsettings.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
 #ifdef __MODPLUG__
@@ -370,6 +371,10 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
+
+    BackUpSettings* backUp = new BackUpSettings(m_pSettingsManager->settings());
+    backUp->createSettingsBackUp();
+
     // Only record stats in developer mode or when --stats is specified.
     if (m_cmdlineArgs.getStats()) {
         StatsManager::createInstance();
