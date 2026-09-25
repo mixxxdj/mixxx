@@ -15,6 +15,7 @@
 #include "waveform/renderers/allshader/waveformrendererhsv.h"
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
 #include "waveform/renderers/allshader/waveformrendererrgb.h"
+#include "waveform/renderers/allshader/waveformrendererrgb3band.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/renderers/allshader/waveformrenderersimple.h"
 // #include "waveform/renderers/allshader/waveformrenderertextured.h"
@@ -194,6 +195,20 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererFiltered::create(
     return QmlWaveformRendererFactory::Renderer{
             dynamic_cast<::WaveformRendererAbstract*>(pRenderer.get()),
             std::move(pRenderer)};
+}
+
+QmlWaveformRendererFactory::Renderer QmlWaveformRendererRGB3Band::create(
+        WaveformWidgetRenderer* waveformWidget,
+        mixxx::qml::WaveformRendererSignalBaseOptions options) const {
+    auto pRenderer = std::make_unique<allshader::WaveformRendererRGB3Band>(
+            waveformWidget, options);
+    setup(pRenderer.get());
+    pRenderer->setLowMidColor(m_lowMidColor);
+    connect(this,
+            &QmlWaveformRendererRGB3Band::lowMidColorChanged,
+            pRenderer.get(),
+            &allshader::WaveformRendererRGB3Band::setLowMidColor);
+    return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }
 
 QmlWaveformRendererFactory::Renderer QmlWaveformRendererHSV::create(

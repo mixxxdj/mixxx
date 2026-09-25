@@ -8,6 +8,8 @@
 #include "qmltrackproxy.h"
 #include "track/track.h"
 #include "util/math.h"
+#include "waveform/renderers/waveformoverviewrenderer.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformwidgetfactory.h"
 
 namespace {
@@ -253,6 +255,9 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         case Renderer::HSV:
             drawHsv(pPainter, m_channels, pWaveform, currentCompletion);
             break;
+        case Renderer::RGB3Band:
+            drawRgb3Band(pPainter, m_channels, pWaveform, currentCompletion);
+            break;
         default:
             drawRgb(pPainter, m_channels, pWaveform, currentCompletion);
         }
@@ -398,6 +403,31 @@ void QmlWaveformOverview::drawHsv(QPainter* pPainter,
         if (channels.testFlag(ChannelFlag::RightChannel)) {
             pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, rightAll));
         }
+    }
+}
+
+void QmlWaveformOverview::drawRgb3Band(QPainter* pPainter,
+        Channels channels,
+        ConstWaveformPointer pWaveform,
+        int completion) const {
+    // Uses the default RGB 3-band colors instead of the generic band colors
+    static const QColor kColors[4] = {QColor(kDefaultRgb3BandLowColor),
+            QColor(kDefaultRgb3BandMidColor),
+            QColor(kDefaultRgb3BandLowMidColor),
+            QColor(kDefaultRgb3BandHighColor)};
+    const double offsetX = completion / 2.0;
+    const auto heights = waveformOverviewRenderer::rgb3BandHeights(*pWaveform, completion);
+    const float layers[4] = {heights.low, heights.mid, heights.lowMid, heights.high};
+    for (int layer = 0; layer < 4; ++layer) {
+        pPainter->setPen(kColors[layer]);
+        if (!m_stereo) {
+            pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, 2 * layers[layer]));
+            continue;
+        }
+        const double top = channels.testFlag(ChannelFlag::LeftChannel) ? -layers[layer] : 0.0;
+        const double bottom =
+                channels.testFlag(ChannelFlag::RightChannel) ? layers[layer] : 0.0;
+        pPainter->drawLine(QPointF(offsetX, top), QPointF(offsetX, bottom));
     }
 }
 
