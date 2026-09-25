@@ -2227,6 +2227,7 @@ if(BUILD_TESTING)
     src/test/trackmetadataexport_test.cpp
     src/test/tracknumberstest.cpp
     src/test/trackreftest.cpp
+    src/test/treeitemmodeltest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
     src/test/wbatterytest.cpp
