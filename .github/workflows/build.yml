@@ -218,10 +218,6 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
-            # The AppImage build is fully static and produces far more ccache
-            # data than the default 2G; give it the actions/cache per-entry
-            # maximum so repeated runs can reuse the compiled objects.
-            compiler_cache_max_size: 10G
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/appimage_release_buildenv.sh
             artifacts_name: AppImage Linux x86_64
@@ -370,15 +366,16 @@ jobs:
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-      - name: "[AppImage] Cache buildenv"
+      - name: "[AppImage] Restore buildenv cache"
         # The buildenv is downloaded and extracted during the configure step
         # (several GB).  Cache the extracted tree so re-runs of the AppImage
         # job do not re-download it every time.  Keyed by BUILDENV_NAME, so a
         # new buildenv (new hash suffix) naturally invalidates the entry.
         # This step must come after "Set up build environment", which exports
         # BUILDENV_NAME; the restore happens before "Configure" below.
+        id: buildenv_cache
         if: startsWith(matrix.buildenv_script, 'tools/appimage_')
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ${{ env.BUILDENV_BASEPATH }}/${{ env.BUILDENV_NAME }}
           key: buildenv-${{ env.BUILDENV_NAME }}
@@ -392,9 +389,14 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
-      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+      - name: "[Ubuntu/macOS] Restore ccache cache"
+        # Caches are only saved by push builds (see "Save ccache cache").
+        # Pull requests can read caches of their base branch, but caches they
+        # save are only visible to themselves and evict the base branch caches
+        # from the 10 GB repository quota.
+        id: ccache_cache
         if: runner.os != 'windows'
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
           # Key by source state (not run number) so runs that only change the
@@ -403,14 +405,15 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ env.BUILDENV_NAME || 'system' }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.base_ref }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # Default to 2G; larger builds (e.g. the static AppImage build) can
-        # override via compiler_cache_max_size in the matrix.
+        # The limit applies to the compressed size. Uncompressed, the Ubuntu
+        # build with debug info exceeds 2G and evicts its own objects.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
+          ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -463,6 +466,13 @@ jobs:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
 
+      - name: "[AppImage] Save buildenv cache"
+        if: steps.buildenv_cache.outcome == 'success' && steps.buildenv_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ env.BUILDENV_BASEPATH }}/${{ env.BUILDENV_NAME }}
+          key: ${{ steps.buildenv_cache.outputs.cache-primary-key }}
+
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
         uses: ammaraskar/gcc-problem-matcher@0.3.0
@@ -477,14 +487,19 @@ jobs:
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          # GitHub Actions automatically zstd compresses caches
-          CCACHE_NOCOMPRESS: true
 
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
         run: |
           ${{ matrix.compiler_cache }} --show-stats
           ${{ matrix.compiler_cache }} --cleanup
+
+      - name: "[Ubuntu/macOS] Save ccache cache"
+        if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ matrix.compiler_cache_path }}
+          key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
 
       - name: "Test"
         if: matrix.crosscompile != true
@@ -814,6 +829,10 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           build-bundle: false
           upload-artifact: false
+          # The Flatpak caches (~1.4 GB per arch) are only saved on main to stay
+          # within the 10 GB quota. Other branches and pull requests can still
+          # restore the main cache.
+          save-cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: "Create Flatpak bundle"
         run: |
