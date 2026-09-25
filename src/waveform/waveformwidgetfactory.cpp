@@ -147,6 +147,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
           m_frameCnt(0),
+          m_qmlFrameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
     m_pStemSplitTracksControl = std::make_unique<ControlObject>(
@@ -905,24 +906,21 @@ void WaveformWidgetFactory::renderSelf() {
 }
 
 bool WaveformWidgetFactory::reportQmlFrame() {
-    // Legacy rendering already accounts for frames in renderSelf(). QML has
-    // no VSyncThread, so its QQuickWindow::afterFrameEnd callback reports
-    // frames here instead.
-    if (m_vsyncThread) {
-        return false;
+    if (!m_qmlFrameTime.running()) {
+        m_qmlFrameTime.start();
     }
 
-    m_frameCnt += 1.0f;
-    const mixxx::Duration timeCnt = m_time.elapsed();
+    m_qmlFrameCnt += 1.0f;
+    const mixxx::Duration timeCnt = m_qmlFrameTime.elapsed();
     if (timeCnt > mixxx::Duration::fromSeconds(1)) {
-        m_time.start();
-        m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis();
-        m_actualFrameRate = m_frameCnt;
+        m_qmlFrameTime.start();
+        m_qmlFrameCnt = m_qmlFrameCnt * 1000 / timeCnt.toIntegerMillis();
+        m_actualFrameRate = m_qmlFrameCnt;
         // Qt Quick does not expose the dropped-frame count through
         // afterFrameEnd. Use a negative value to distinguish unavailable data
         // from a measured count of zero in consumers of waveformMeasured.
-        emit waveformMeasured(m_frameCnt, -1);
-        m_frameCnt = 0.0;
+        emit waveformMeasured(m_qmlFrameCnt, -1);
+        m_qmlFrameCnt = 0.0;
         return true;
     }
     return false;
