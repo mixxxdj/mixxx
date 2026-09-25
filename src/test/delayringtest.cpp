@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <atomic>
-
 #include <QtConcurrentRun>
 #include <QtDebug>
+#include <atomic>
 
 #include "mixxxtest.h"
 #include "util/delayring.h"
