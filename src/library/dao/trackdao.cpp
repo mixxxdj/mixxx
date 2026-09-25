@@ -1948,6 +1948,8 @@ bool TrackDAO::detectMovedTracks(
                 << "Looking for substitute of missing track location"
                 << oldTrackLocation;
 
+        emit mixxx::thisAsNonConst(this)->progressLookingForSubstituteTracks(oldTrackLocation);
+
         newTrackQuery.bindValue(":filename", filename);
         newTrackQuery.bindValue(":duration", duration);
         if (!newTrackQuery.exec()) {
@@ -2409,7 +2411,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 m_database,
                 QStringLiteral(
                         "UPDATE library SET "
-                        "timesplayed=0,"
+                        "timesplayed=0 "
                         "WHERE id NOT IN("
                         "SELECT PlaylistTracks.track_id "
                         "FROM PlaylistTracks "

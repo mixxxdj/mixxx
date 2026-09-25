@@ -310,10 +310,10 @@ EngineBuffer::~EngineBuffer() {
     df.close();
 #endif
 
-    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
-
     delete m_pReadAheadManager;
     delete m_pReader;
+
+    qDeleteAll(m_engineControls.rbegin(), m_engineControls.rend());
 
     delete m_playButton;
     delete m_playStartButton;
@@ -872,11 +872,18 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
 #ifdef __RUBBERBAND__
     case KeylockEngine::RubberBandFaster:
         m_pScaleRB->useEngineFiner(false);
+        m_pScaleRB->useOptionWindowShort(false);
         m_pScaleKeylock = m_pScaleRB;
         break;
     case KeylockEngine::RubberBandFiner:
         m_pScaleRB->useEngineFiner(
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
+        m_pScaleRB->useOptionWindowShort(false);
+        m_pScaleKeylock = m_pScaleRB;
+        break;
+    case KeylockEngine::RubberBandR3ShortWindow:
+        m_pScaleRB->useEngineFiner(true);
+        m_pScaleRB->useOptionWindowShort(true);
         m_pScaleKeylock = m_pScaleRB;
         break;
 #endif
@@ -1306,15 +1313,20 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
         DEBUG_ASSERT(bufferFrameCount * m_channelCount == bufferSize);
         const mixxx::audio::FrameDiff_t slipDelta =
                 static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
-        // Simulate looping if a regular loop is active
-        if (m_pLoopingControl->isLoopingEnabled() &&
-                m_pLoopingControl->loopWasEnabledBeforeSlipEnable() &&
+        // Simulate looping if a regular loop is active or repeat is enabled
+        bool looping = m_pLoopingControl->isLoopingEnabled();
+        if ((looping || m_pRepeat->toBool()) &&
+                m_pLoopingControl->loopOrRepeatWasEnabledBeforeSlipEnable() &&
                 !m_pLoopingControl->isLoopRollActive()) {
             const mixxx::audio::FramePos newPos = m_slipPos + slipDelta;
-            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
+            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoopOrRepeat(
                     newPos,
                     m_dSlipRate < 0);
-            m_slipModeState = SlipModeState::Armed;
+            if (looping) {
+                m_slipModeState = SlipModeState::Armed;
+            } else { // repeat
+                m_slipModeState = SlipModeState::Running;
+            }
         } else {
             m_slipPos += slipDelta;
             m_slipModeState = SlipModeState::Running;
@@ -1534,8 +1546,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
     m_visualPlayPos->set(
             fFractionalPlaypos,
             speed * m_baserate_old,
-            static_cast<int>(bufferSize) /
-                    m_trackEndPositionOld.toEngineSamplePos(),
+            bufferSize / m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
             m_slipModeState,
@@ -1621,14 +1632,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {
     // Is updated during postProcess(), after all decks already have been processed
-    if (!m_visualPlayPos->isValid()) {
-        return mixxx::audio::kStartFramePos;
-    }
     return getTrackEndPosition() * m_visualPlayPos->getEnginePlayPos();
-}
-
-double EngineBuffer::getVisualPlayPos() const {
-    return m_visualPlayPos->getEnginePlayPos();
 }
 
 mixxx::audio::FramePos EngineBuffer::getTrackEndPosition() const {

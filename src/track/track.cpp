@@ -303,6 +303,7 @@ bool Track::replaceRecord(
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
     const auto newRating = newRecord.getRating();
+    const bool newBpmLocked = newRecord.getBpmLocked();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -313,6 +314,7 @@ bool Track::replaceRecord(
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
     const auto oldRating = m_record.getRating();
+    const bool oldBpmLocked = m_record.getBpmLocked();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -338,6 +340,9 @@ bool Track::replaceRecord(
 
     if (bpmUpdatedFlag) {
         emit beatsUpdated();
+    }
+    if (oldBpmLocked != newBpmLocked) {
+        emit bpmLockChanged(newBpmLocked);
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -1165,7 +1170,6 @@ void Track::removeCuesOfType(mixxx::CueType type) {
     QMutableListIterator<CuePointer> it(m_cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
             disconnect(pCue.get(), nullptr, this, nullptr);
             it.remove();
@@ -1180,6 +1184,25 @@ void Track::removeCuesOfType(mixxx::CueType type) {
         if (type == mixxx::CueType::Loop) {
             emit loopRemove();
         }
+        markDirtyAndUnlock(&locked);
+        emit cuesUpdated();
+    }
+}
+
+void Track::removeTempLoopCue() {
+    auto locked = lockMutex(&m_qMutex);
+    bool dirty = false;
+    QMutableListIterator<CuePointer> it(m_cuePoints);
+    while (it.hasNext()) {
+        CuePointer pCue = it.next();
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            disconnect(pCue.get(), nullptr, this, nullptr);
+            it.remove();
+            dirty = true;
+            break;
+        }
+    }
+    if (dirty) {
         markDirtyAndUnlock(&locked);
         emit cuesUpdated();
     }

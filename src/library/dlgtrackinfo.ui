@@ -47,11 +47,10 @@
       <attribute name="title">
        <string>Summary</string>
       </attribute>
-      <layout class="QVBoxLayout" name="summary_layout">
+      <layout class="QVBoxLayout" name="summary_layout" stretch="1,0,0">
        <item>
-        <widget class="QGroupBox" name="groupBox">
+        <widget class="QGroupBox" name="metadata_groupBox">
          <layout class="QGridLayout" name="tags_layout" columnstretch="0,10,0,2">
-
           <item row="0" column="0">
            <widget class="QLabel" name="lblTitle">
             <property name="sizePolicy">
@@ -102,8 +101,14 @@
              <property name="spacing">
               <number>0</number>
              </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
              <property name="sizeConstraint">
               <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignVCenter</set>
              </property>
             </layout>
            </widget>
@@ -505,7 +510,7 @@
           <item row="9" column="1" colspan="3">
            <widget class="QPushButton" name="btnColorPicker">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -528,7 +533,7 @@
           </item>
 
           <item row="11" column="0" colspan="4">
-           <layout class="QHBoxLayout" name="meatdata_buttons_layout">
+           <layout class="QHBoxLayout" name="metadata_buttons_layout">
             <item>
              <widget class="QPushButton" name="btnImportMetadataFromMusicBrainz">
               <property name="text">
@@ -698,6 +703,9 @@
             <property name="text">
              <string/>
             </property>
+            <property name="textInteractionFlags">
+             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            </property>
            </widget>
           </item>
 
@@ -800,22 +808,6 @@
 
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>2</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>

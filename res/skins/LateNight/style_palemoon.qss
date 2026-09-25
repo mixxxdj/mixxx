@@ -1686,7 +1686,6 @@ WPushButton#CueDeck[displayValue="0"],
 WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
 #EQKillButtonBox WPushButton[displayValue="0"],
-WPushButton#StemMuteButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
 #MicAuxUnit WPushButton[displayValue="0"],
@@ -1712,6 +1711,7 @@ WBpmEditor QDoubleSpinBox {
   }
   /* make Fx parameter buttons brighter so they stand out in 'fx focus' mode
     (parameters row of focused effect is marked = dark bg, colored border) */
+  WPushButton#StemMuteButton[displayValue="0"],
   WPushButton#FxParameterButton[displayValue="0"] {
     background-color: #2a2a2c;
   }
@@ -1973,8 +1973,6 @@ WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettingsMini WPushButton[displayValue="0"],
 WPushButton#FxExpand[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
-WPushButton#CrossfaderButton[displayValue="0"],
-WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
 #RecDot,
@@ -2540,13 +2538,12 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skins:LateNight/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
   }
 
-#StemMuteButton[displayValue="0"] {
-  image: url(skins:LateNight/palemoon/buttons/btn__stem_mute.svg) no-repeat center center;
-}
-
 #QuickEffectButton[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__star.svg) no-repeat center center;
-}
+  }
+  #QuickEffectButton[displayValue="1"] {
+    image: url(skins:LateNight/palemoon/buttons/btn__star_active.svg) no-repeat center center;
+  }
 
 /* EQ Kill button icons H / M / L */
 #EQKillButton_High[displayValue="0"] {
@@ -3271,7 +3268,8 @@ WSearchLineEdit {
   selection-color: #000;
   selection-background-color: #ccc;
   }
-  WSearchLineEdit:focus {
+  WSearchLineEdit:focus,
+  WSearchLineEdit[qmlBridgeFocused="true"] {
     padding: 1px;
     border: 2px solid #257b82;
     border-radius: 0px;

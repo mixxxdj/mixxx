@@ -68,6 +68,7 @@ execute_process(
     tar -czf "mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}.orig.tar.gz"
     ${CPACK_PACKAGE_FILE_NAME}
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}
+  COMMAND_ERROR_IS_FATAL ANY
 )
 
 # Save Git info from original working tree to allow building without git
@@ -95,12 +96,14 @@ execute_process(
   OUTPUT_FILE NEWS.html
   WORKING_DIRECTORY
     ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian
+  COMMAND_ERROR_IS_FATAL ANY
 )
 
 execute_process(
   COMMAND ${CPACK_DEBIAN_DOCBOOK_TO_MAN} debian/mixxx.sgml
   OUTPUT_FILE mixxx.1
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+  COMMAND_ERROR_IS_FATAL ANY
 )
 
 file(
@@ -164,14 +167,8 @@ foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
     execute_process(
       COMMAND ${CPACK_DEBIAN_DEBUILD} -S -sa -d ${CPACK_DEBIAN_DEBUILD_NOSIGN}
       WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
-      RESULT_VARIABLE CPACK_DEBIAN_DEBUILD_RET
+      COMMAND_ERROR_IS_FATAL ANY
     )
-    if(NOT CPACK_DEBIAN_DEBUILD_RET EQUAL "0")
-      message(
-        FATAL_ERROR
-        "${CPACK_DEBIAN_DEBUILD} returned exit code ${CPACK_DEBIAN_DEBUILD_RET}"
-      )
-    endif()
   endif()
   if(BUILD_MACHINE_RELEASE STREQUAL release AND DEB_BUILD)
     execute_process(
@@ -185,6 +182,7 @@ foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
         ${CPACK_DEBIAN_DPUT} ${DEB_UPLOAD_PPA}
         "mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}~${release}_source.changes"
       WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}
+      COMMAND_ERROR_IS_FATAL ANY
     )
   endif()
 endforeach()

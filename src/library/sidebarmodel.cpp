@@ -282,6 +282,19 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
             return m_sFeatures[index.row()]->icon();
         case SidebarModel::IconNameRole:
             return m_sFeatures[index.row()]->iconName();
+        case Qt::FontRole: {
+            auto* pFeature = m_sFeatures[index.row()];
+            TreeItem* pTreeItem = nullptr;
+            auto* pChildModel = pFeature->sidebarModel();
+            if (pChildModel) {
+                pTreeItem = pChildModel->getRootItem();
+            }
+            QFont font;
+            if (pTreeItem) {
+                font.setBold(pTreeItem->isBold());
+            }
+            return font;
+        }
         default:
             return QVariant();
         }
@@ -509,6 +522,16 @@ QModelIndex SidebarModel::translateIndex(
     QModelIndex translatedIndex;
 
     if (index.isValid()) {
+        if (!index.parent().isValid()) {
+            // This is the top-level root item of the child model.
+            // Find the feature it belongs to
+            for (int i = 0; i < m_sFeatures.size(); ++i) {
+                if (m_sFeatures[i]->sidebarModel() == pModel) {
+                    return createIndex(i, index.column(), this);
+                }
+            }
+        }
+
         TreeItem* pItem = static_cast<TreeItem*>(index.internalPointer());
         translatedIndex = createIndex(index.row(), index.column(), pItem);
     } else {

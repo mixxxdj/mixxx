@@ -54,11 +54,13 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
-            std::shared_ptr<Library> pLibrary
+
+            std::shared_ptr<Library> pLibrary,
 #ifdef HTTP_REMOTE
-            ,std::shared_ptr<mixxx::RemoteControl> pRemoteControl = nullptr
-#endif
-    );
+            std::shared_ptr<mixxx::RemoteControl> pRemoteControl = nullptr,
+#endif  
+            bool includeWaveformPreferences = true);
+
     virtual ~DlgPreferences();
 
     void addPageWidget(const PreferencesPage& page,
@@ -73,6 +75,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void showSoundHardwarePage(
             std::optional<mixxx::preferences::SoundHardwareTab> tab =
                     std::nullopt);
+    void showSoundHardwareInputPage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();

@@ -139,7 +139,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void initActions();
     void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
-    void markTreeItem(TreeItem* pTreeItem);
+    bool markTreeItem(TreeItem* pTreeItem);
     QString fetchPlaylistLabel(int playlistId);
 
 

@@ -157,7 +157,7 @@ jobs:
       - name: "Upload Coverage Report to coveralls.io"
         if: matrix.name == 'coverage'
         continue-on-error: true
-        uses: coverallsapp/github-action@v2.3.7
+        uses: coverallsapp/github-action@v2.3.8
         with:
           flag-name: ubuntu-24.04
           path-to-lcov: build/lcov.info

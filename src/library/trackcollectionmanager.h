@@ -3,9 +3,13 @@
 #include <QDir>
 #include <QList>
 #include <QSet>
+#include <atomic>
 #include <memory>
+#include <mutex>
+#include <optional>
 
 #include "library/dao/directorydao.h"
+#include "library/library_decl.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
@@ -16,7 +20,6 @@ class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
 class RelocatedTrack;
-struct LibraryScanResultSummary;
 
 // Manages Mixxx's internal database of tracks as well as external track collections.
 //
@@ -26,8 +29,8 @@ struct LibraryScanResultSummary;
 //
 // Both crates and playlists are currently only supported by the internal
 // collection, which needs to be modified directly.
-class TrackCollectionManager: public QObject,
-    public virtual /*implements*/ GlobalTrackCacheSaver {
+class TrackCollectionManager : public QObject,
+                               public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
 
   public:
@@ -98,6 +101,15 @@ class TrackCollectionManager: public QObject,
     // Same as startLibraryScan() but don't emit the scan summary.
     void startLibraryAutoScan();
 
+    LibraryScanner* scanner() const {
+        return m_pScanner.get();
+    }
+
+    bool isLibraryScanActive() const {
+        return m_libraryScanActive.load();
+    }
+    std::optional<LibraryScanResultSummary> takePendingLibraryScanSummary();
+
   signals:
     void libraryScanStarted();
     void libraryScanFinished();
@@ -135,4 +147,7 @@ class TrackCollectionManager: public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+    std::atomic_bool m_libraryScanActive{false};
+    std::mutex m_libraryScanSummaryMutex;
+    std::optional<LibraryScanResultSummary> m_pendingLibraryScanSummary;
 };

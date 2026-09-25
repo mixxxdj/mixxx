@@ -118,8 +118,8 @@ Item {
             id: barPath
 
             fillColor: "transparent"
-            startX: barShape.width * (root.horizontal ? (1 - root.bar.start) : 0.5)
-            startY: barShape.height * (root.vertical ? (1 - root.bar.start) : 0.5)
+            startX: root.horizontal ? barShape.width * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.width * 0.5)
+            startY: root.vertical ? barShape.height * (1 - root.bar.start) : (root.bar.axis >= 0 ? root.bar.axis - root.bar.margin : barShape.height * 0.5)
             strokeColor: root.bar.color
             strokeWidth: root.bar.width
 
@@ -179,6 +179,7 @@ Item {
     }
 
     component BarSettings: QtObject {
+        property real axis: -1
         property color color: "transparent"
         property bool enabled: false
         property real margin: 0

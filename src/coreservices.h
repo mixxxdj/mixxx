@@ -100,14 +100,18 @@ class CoreServices : public QObject {
     std::shared_ptr<ScreensaverManager> getScreensaverManager() const {
         return m_pScreensaverManager;
     }
-
+    
 #ifdef HTTP_REMOTE
     std::shared_ptr<mixxx::RemoteControl> getRemoteControl() const {
         return m_RemoteControl;
     }
 #endif
 
-    std::shared_ptr<QDialog> makeDlgPreferences() const;
+    // Creates the native preferences dialog. QML can temporarily suppress
+    // the legacy Waveforms page while its dedicated settings page is being
+    // implemented.
+    std::shared_ptr<QDialog> makeDlgPreferences(
+            bool includeWaveformPreferences = true) const;
 
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);

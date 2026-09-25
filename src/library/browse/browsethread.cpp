@@ -173,6 +173,9 @@ void BrowseThread::populateModel() {
                     nullptr,
                     resetMissingTagMetadata);
 
+            // Note: ProxyTrackModel uses Qt::UserRole for sorting which supports
+            // int, double, QString, QDateTime etc. so make sure that the data
+            // stored in Qt::UserRole will result in reasonable sorting.
             item = new QStandardItem(fileAccess.info().fileName());
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
@@ -301,7 +304,7 @@ void BrowseThread::populateModel() {
             item = new QStandardItem(
                     mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
             item->setToolTip(item->text());
-            item->setData(item->text(), Qt::UserRole);
+            item->setData(replayGain.getRatio(), Qt::UserRole);
             row_data.insert(COLUMN_REPLAYGAIN, item);
         }
 

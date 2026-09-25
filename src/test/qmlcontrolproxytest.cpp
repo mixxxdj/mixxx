@@ -55,4 +55,14 @@ TEST_F(QmlControlProxyTest, TriggerEmitsValueChanged1Then0) {
     EXPECT_DOUBLE_EQ(m_proxy->getValue(), 0.0);
 }
 
+TEST_F(QmlControlProxyTest, ToggleSwitchesBetweenZeroAndOne) {
+    m_proxy->toggle();
+    processEvents();
+    EXPECT_DOUBLE_EQ(m_proxy->getValue(), 1.0);
+
+    m_proxy->toggle();
+    processEvents();
+    EXPECT_DOUBLE_EQ(m_proxy->getValue(), 0.0);
+}
+
 } // namespace

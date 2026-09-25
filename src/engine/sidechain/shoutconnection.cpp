@@ -389,9 +389,16 @@ void ShoutConnection::updateFromPreferences() {
     }
 
 #ifdef MIXXX_USE_SHOUT_API_246
-    if (shout_set_content_format(
-                m_pShout, format, 0 /* SHOUT_USAGE_UNKNOWN */, nullptr) !=
-            SHOUTERR_SUCCESS) {
+    // Note: shout_set_format() in libshout-idjc < 2.4.6 Ogg uses mime type
+    // "application/ogg" Using here usage = SHOUT_USAGE_UNKNOWN keep that
+    // unchanged
+    // TODO: verify if we can us usage = SHOUT_USAGE_AUDIO for all, using for
+    // mime type "audio/ogg" for Ogg.
+    if (shout_set_content_format(m_pShout,
+                format,
+                format == SHOUT_FORMAT_OGG ? SHOUT_USAGE_UNKNOWN
+                                           : SHOUT_USAGE_AUDIO,
+                nullptr) != SHOUTERR_SUCCESS) {
 #else
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
 #endif

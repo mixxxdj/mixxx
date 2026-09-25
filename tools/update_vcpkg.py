@@ -73,18 +73,31 @@ PLATFORMS = [
         "release_triplet": "arm64-osx-rel",
         "file": "tools/macos_buildenv.sh",
     },
-    #  {
-    #      "host_os": "Linux",
-    #      "triplet": "arm64-android",
-    #      "release_triplet": "arm64-android-release",
-    #      "file": "tools/android_buildenv.sh",
-    #  },
-    #  {
-    #      "host_os": "Linux",
-    #      "triplet": "x64-linux",
-    #      "release_triplet": "x64-linux-release",
-    #      "file": "tools/linux_buildenv.sh",
-    #  },
+    {
+        "host_os": "Linux",
+        "triplet": "arm64-android",
+        "release_triplet": "arm64-android-rel",
+        "file": "tools/android_buildenv.sh",
+    },
+    {
+        # The AppImage buildenv defaults use the `${VAR:=value}` form, so they
+        # need a dedicated pattern instead of the `VAR="value"` default.
+        "host_os": "Linux",
+        "triplet": "x64-linux",
+        "release_triplet": "x64-linux-rel",
+        "file": "tools/appimage_buildenv.sh",
+        "pattern": (
+            r"BUILDENV_BRANCH:=[^}}]+"
+            r"\}}\"(\s+: \"\$\{{BUILDENV_NAME:=)mixxx-deps-"
+            r"[0-9]+\.[0-9]+(-{triplet}-)([a-z0-9]+)"
+            r"\}}\"(\s+: \"\$\{{BUILDENV_SHA256:=)[a-f0-9]+\}}\""
+        ),
+        "replace": (
+            r'BUILDENV_BRANCH:={channel}}}"'
+            r'\g<1>mixxx-deps-{channel_num}\g<2>{version}}}"'
+            r'\g<4>{shasum}}}"'
+        ),
+    },
 ]
 
 

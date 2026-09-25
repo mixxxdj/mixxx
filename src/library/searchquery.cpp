@@ -3,6 +3,7 @@
 #include <QLocale>
 #include <QRegularExpression>
 
+#include "library/basetracktablemodel.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
@@ -332,6 +333,12 @@ void NumericFilterNode::init(QString argument) {
     if (match.hasMatch()) {
         m_operator = match.captured(1);
         argument = match.captured(2);
+    } else if (argument.endsWith('+')) {
+        m_operator = QStringLiteral(">=");
+        argument.chop(1);
+    } else if (argument.endsWith('-')) {
+        m_operator = QStringLiteral("<=");
+        argument.chop(1);
     }
 
     bool parsed = false;
@@ -575,7 +582,8 @@ BpmFilterNode::BpmFilterNode(
     }
 
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
-    if (opMatch.hasMatch()) {
+    bool operatorMatch = opMatch.hasMatch();
+    if (operatorMatch) {
         if (fuzzy) {
             // fuzzy can't be combined with operators
             // m_matchMode is already Invalid.
@@ -583,6 +591,14 @@ BpmFilterNode::BpmFilterNode(
         }
         m_operator = opMatch.captured(1);
         argument = opMatch.captured(2);
+    } else if (argument.endsWith('+')) {
+        m_operator = QStringLiteral(">=");
+        argument.chop(1);
+        operatorMatch = true;
+    } else if (argument.endsWith('-')) {
+        m_operator = QStringLiteral("<=");
+        argument.chop(1);
+        operatorMatch = true;
     }
 
     // Replace the locale's decimal separator with .
@@ -600,7 +616,7 @@ BpmFilterNode::BpmFilterNode(
         if (fuzzy) {
             // fuzzy search +- n%
             m_matchMode = MatchMode::Fuzzy;
-        } else if (!opMatch.hasMatch() && !negate) {
+        } else if (!operatorMatch && !negate) {
             // Simple 'bpm:NNN' search.
             // Also searches for half/double matches (rounded up/down)
             // Center value is turned into range in order to ...
@@ -864,10 +880,17 @@ QString YearFilterNode::toSql() const {
 }
 
 // TODO Convert to DateFilterNode and allow searching for "last_played"
-DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
+DateAddedFilterNode::DateAddedFilterNode(QString& argument)
         : m_operatorQuery(false),
           m_equalsQuery(false),
           m_operator("=") {
+    if (argument.endsWith('+')) {
+        argument.chop(1);
+        argument.prepend(QStringLiteral(">="));
+    } else if (argument.endsWith('-')) {
+        argument.chop(1);
+        argument.prepend(QStringLiteral("<="));
+    }
     QDateTime date;
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
     if (opMatch.hasMatch()) {
@@ -910,24 +933,52 @@ DateAddedFilterNode::DateAddedFilterNode(const QString& argument)
 
 QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
     // Try ISO format first (YYYY-MM-DD)
+    // This is used by the "New" filter of the Analyze feature
+    qWarning() << "--> parse date" << dateStr;
     QDate date = QDate::fromString(dateStr, Qt::ISODate);
+
     if (!date.isValid()) {
+        // Try user date format set in library preferences
+        const QString dateFormat = BaseTrackTableModel::dateFormat();
+        qWarning() << "--> invalid, try Lib format" << dateFormat;
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
+        date = QDate::fromString(dateStr, dateFormat);
+        // The Mixxx project was started in 2001 :)
+        if (date.isValid() && date.year() < 2000) {
+            qWarning() << "--> -> year" << date.year() << "< 2000, add 100";
+            date = date.addYears(100);
+            qWarning() << "--> -> year < 2000, add 100" << date;
+        }
+#else
+        date = QDate::fromString(dateStr, dateFormat, 2000);
+#endif
+    }
+
+    if (!date.isValid()) {
+        qWarning() << "--> invalid, try locale format"
+                   << QLocale().dateFormat(QLocale::ShortFormat);
+        // Maybe custom user format is too esoteric, or user picked
+        // their locale's format.
         // Fall back to locale-specific short format
 #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
+        // If the year component has only two digits Qt assumes the base year is 1900.
         date = QLocale().toDate(dateStr, QLocale::ShortFormat);
+        // The Mixxx project was started in 2001 :)
+        if (date.isValid() && date.year() < 2000) {
+            qWarning() << "--> -> year" << date.year() << "< 2000, add 100";
+            date = date.addYears(100);
+        }
 #else
-        date = QLocale().toDate(dateStr, QLocale::ShortFormat, 20);
+        // With Qt 6.7+ we need to specify the base year.
+        date = QLocale().toDate(dateStr, QLocale::ShortFormat, 2001);
 #endif
     }
     if (!date.isValid()) {
+        qWarning() << "--> invalid, return";
         return {};
     }
+    qWarning() << "--> valid date:" << date;
 
-    if (date.year() < 2000) {
-        date = date.addYears(100);
-    }
-
-    // Return local date/time, don't convert to UTC, yet
     return QDateTime(date, QTime(0, 0)).toUTC();
 }
 

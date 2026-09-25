@@ -609,6 +609,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             &CueControl::trackAnalyzed,
             Qt::DirectConnection);
 
+    // Note: this has to be a direct connection so we can synchronously update
+    // cue position COs. WOverview and WaveformRenderMarkBase for example are
+    // also listening to cuesUpdated() (queued connections) and need the new
+    // positions when they iterate over the cues to update the marks and ranges.
     connect(m_pLoadedTrack.get(),
             &Track::cuesUpdated,
             this,
@@ -1284,12 +1288,15 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             if (type != mixxx::CueType::Invalid && position.isValid()) {
                 updateCurrentlyPreviewingIndex(index);
                 m_bypassCueSetByPlay = true;
+                // Seek before activating the saved loop, else quantize might
+                // cause an undesired seek, potentially to/past loop end
+                // which would throw us out of the loop.
+                seekAbs(position);
                 if (type == mixxx::CueType::Loop) {
                     setCurrentSavedLoopControlAndActivate(pControl);
                 } else if (pControl->getStatus() == HotcueControl::Status::Set) {
                     pControl->setStatus(HotcueControl::Status::Active);
                 }
-                seekAbs(position);
                 m_pPlay->set(1.0);
             }
         }
