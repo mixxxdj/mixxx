@@ -200,6 +200,18 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
 
+    // Avoids undefined behavior in the float to int conversions below, e.g.
+    // a division by zero on waveform initialization
+    if (pixelLength <= 0 || !(visualIncrementPerPixel > 0.0) ||
+            !std::isfinite(visualIncrementPerPixel)) {
+        return false;
+    }
+
+    const double visualSampleRate = waveform->getVisualSampleRate();
+    if (!(visualSampleRate > 0.0)) {
+        return false;
+    }
+
     // Per-band gain from the EQ knobs.
     float allGain(1.0);
     float bandGain[3] = {1.0, 1.0, 1.0};
@@ -216,8 +228,6 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     const double firstPixelVisualFrame = firstPixel * visualIncrementPerPixel;
     const float xOffset = static_cast<float>(
             firstPixel - firstVisualFrame / visualIncrementPerPixel);
-    const double visualSampleRate =
-            pTrack->getSampleRate().toDouble() / waveform->getAudioVisualRatio();
     const float bandScale[3] = {allGain * halfBreadth * bandGain[0],
             allGain * halfBreadth * bandGain[1],
             allGain * halfBreadth * bandGain[2]};
