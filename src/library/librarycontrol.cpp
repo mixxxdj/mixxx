@@ -1042,14 +1042,33 @@ FocusWidget LibraryControl::getFocusedWidget() {
         return FocusWidget::None;
     }
 
+    // if (m_pSearchbox && m_pSearchbox->hasFocus()) {
+    //     return FocusWidget::Searchbar;
+    // } else if (m_pSidebarWidget && m_pSidebarWidget->hasFocus()) {
+    //     return FocusWidget::Sidebar;
+    // } else if (m_pLibraryWidget && m_pLibraryWidget->getActiveView()->hasFocus()) {
+    //     return FocusWidget::TracksTable;
+    // } else if (m_pLibraryPreparationWindowWidget &&
+    //         m_pLibraryPreparationWindowWidget->getActiveView()->hasFocus()) {
+    //     return FocusWidget::TracksTable;
+    // } else {
+    //     // Unknown widget, for example Clear button in WSearcLineEdit,
+    //     // some drop-down view, WBeatSpinBox or QLineEdit in WtrackTableView
+    //     return FocusWidget::Unknown;
+    // }
+
+    auto* pLibraryView = m_pLibraryWidget ? m_pLibraryWidget->getActiveView() : nullptr;
+    auto* pPrepView = m_pLibraryPreparationWindowWidget
+            ? m_pLibraryPreparationWindowWidget->getActiveView()
+            : nullptr;
+
     if (m_pSearchbox && m_pSearchbox->hasFocus()) {
         return FocusWidget::Searchbar;
     } else if (m_pSidebarWidget && m_pSidebarWidget->hasFocus()) {
         return FocusWidget::Sidebar;
-    } else if (m_pLibraryWidget && m_pLibraryWidget->getActiveView()->hasFocus()) {
+    } else if (pLibraryView && pLibraryView->hasFocus()) {
         return FocusWidget::TracksTable;
-    } else if (m_pLibraryPreparationWindowWidget &&
-            m_pLibraryPreparationWindowWidget->getActiveView()->hasFocus()) {
+    } else if (pPrepView && pPrepView->hasFocus()) {
         return FocusWidget::TracksTable;
     } else {
         // Unknown widget, for example Clear button in WSearcLineEdit,

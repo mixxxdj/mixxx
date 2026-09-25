@@ -65,8 +65,9 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
-    m_pCOTGuiTick = new ControlProxy(
-            QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
+    m_pCOTGuiTick = new ControlProxy(QStringLiteral("[App]"),
+            QStringLiteral("gui_tick_50ms_period_s"),
+            this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
@@ -223,7 +224,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
             // Proceed with loading the track model
             qDebug() << windowName << "[loadTrackModel]";
         }
-
         VERIFY_OR_DEBUG_ASSERT(pNewModel) {
             return;
         }
@@ -237,7 +237,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
         // If the model has not changed there's no need to exchange the headers
         // which would cause a small GUI freeze
         TrackModel* pCurrModel = getTrackModel();
-        if (getTrackModel() == pNewTrackModel) {
+        if (pCurrModel == pNewTrackModel) {
             // Re-sort the table even if the track model is the same. This triggers
             // a select() if the table is dirty.
             doSortByColumn(horizontalHeader()->sortIndicatorSection(),
@@ -362,9 +362,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
                 if (sortColumn == TrackModel::SortColumnId::Invalid) {
                     // If the TrackModel has an invalid or internal column as its default
                     // sort, find the first valid sort column and sort by that.
-                    const int columnCount =
-                            pNewModel->columnCount(); // just to avoid an endless
-                                                      // while loop
+                    // avoid endless while loop
+                    const int columnCount = pNewModel->columnCount();
                     for (int sortColumnIndex = 0; sortColumnIndex < columnCount;
                             sortColumnIndex++) {
                         sortColumn = pNewTrackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
@@ -389,13 +388,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
         // this.)
         setDragEnabled(true);
 
-        // if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
-        //     setDragDropMode(QAbstractItemView::DragDrop);
-        //     setDropIndicatorShown(true);
-        //     // viewport()->setAcceptDrops(true);
-        // } else {
-        //     setDragDropMode(QAbstractItemView::DragOnly);
-        // }
+        // if (pNewTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        //    setDragDropMode(QAbstractItemView::DragDrop);
+        //    setDropIndicatorShown(true);
+        //    //viewport()->setAcceptDrops(true);
+        //} else {
+        //    setDragDropMode(QAbstractItemView::DragOnly);
+        //}
 
         // Possible giant fuckup alert - It looks like Qt has something like these
         // caps built-in, see http://doc.trolltech.com/4.5/qt.html#ItemFlag-enum and
@@ -428,6 +427,7 @@ void WTrackTableView::loadTrackModelInPreparationWindow(
                     "qobject_cast<WLibraryPreparationWindow*>(parent())"
                  << qobject_cast<WLibraryPreparationWindow*>(parent());
     }
+
     if (qobject_cast<WLibraryPreparationWindow*>(parent())) {
         // Execute for WLibraryPreparationWindow
         if (sDebug) {
@@ -576,9 +576,8 @@ void WTrackTableView::loadTrackModelInPreparationWindow(
                 if (sortColumn == TrackModel::SortColumnId::Invalid) {
                     // If the TrackModel has an invalid or internal column as its default
                     // sort, find the first valid sort column and sort by that.
-                    const int columnCount =
-                            pNewModel->columnCount(); // just to avoid an endless
-                                                      // while loop
+                    // avoid endless while loop
+                    const int columnCount = pNewModel->columnCount();
                     for (int sortColumnIndex = 0; sortColumnIndex < columnCount;
                             sortColumnIndex++) {
                         sortColumn = pNewTrackModel->sortColumnIdFromColumnIndex(sortColumnIndex);
@@ -714,6 +713,21 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     return pTrackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
+void WTrackTableView::toggleBpmLock(bool locked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QModelIndexList indices = getSelectedRows();
+    for (const auto& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setBpmLocked(locked);
+        }
+    }
+}
+
 void WTrackTableView::assignPreviousTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
@@ -751,6 +765,27 @@ void WTrackTableView::assignNextTrackColor() {
         ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
         mixxx::RgbColor::optional_t color = pTrack->getColor();
         pTrack->setColor(colorPalette.nextColor(color));
+    }
+}
+
+void WTrackTableView::trackRatingChangeRequestRelative(int change) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    const QModelIndexList indices = getSelectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex index = indices.at(0);
+    TrackPointer pTrack = pTrackModel->getTrack(index);
+    if (pTrack) {
+        int newRating = pTrack->getRating() + change;
+        if (mixxx::TrackRecord::isValidRating(newRating) &&
+                newRating != pTrack->getRating()) {
+            pTrack->setRating(newRating);
+        }
     }
 }
 
@@ -868,6 +903,7 @@ void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) 
         return;
     }
     m_pTrackMenu->loadTrackModelIndices(indices);
+    m_pTrackMenu->updateMenus();
     m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
@@ -932,6 +968,39 @@ void WTrackTableView::mousePressEvent(QMouseEvent* pEvent) {
     WLibraryTableView::mousePressEvent(pEvent);
 }
 
+// void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
+//     // Only use this for drag and drop if the LeftButton is pressed we need to
+//     // check for this because mousetracking is activated and this function is
+//     // called every time the mouse is moved -- kain88 May 2012
+//     if (pEvent->buttons() != Qt::LeftButton) {
+//         // Needed for mouse-tracking to fire entered() events. If we call this
+//         // outside of this if statement then we get 'ghost' drags. See issue
+//         // #6507
+//         WLibraryTableView::mouseMoveEvent(pEvent);
+//         return;
+//     }
+//
+//     TrackModel* pTrackModel = getTrackModel();
+//     if (!pTrackModel) {
+//         return;
+//     }
+//     //qDebug() << "MouseMoveEvent";
+//
+//     if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+//         // Iterate over selected rows and append each item's location url to a list.
+//         QList<QString> locations;
+//         const QModelIndexList indices = getSelectedRows();
+//
+//         for (const QModelIndex& index : indices) {
+//             if (!index.isValid()) {
+//                 continue;
+//             }
+//             locations.append(pTrackModel->getTrackLocation(index));
+//         }
+//         DragAndDropHelper::dragTrackLocations(locations, this, "library");
+//     }
+// }
+
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // Only use this for drag and drop if the LeftButton is pressed we need to
     // check for this because mousetracking is activated and this function is
@@ -948,7 +1017,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     if (!pTrackModel) {
         return;
     }
-    //qDebug() << "MouseMoveEvent";
+    // qDebug() << "MouseMoveEvent";
 
     if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         // Iterate over selected rows and append each item's location url to a list.
@@ -1018,14 +1087,34 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     }
 }
 
+//// Drag enter event, happens when a dragged item hovers over the track table view
+// void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
+//     auto* pTrackModel = getTrackModel();
+//     if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
+//         event->ignore();
+//         return;
+//     }
+//     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+//     if (event->source() == this) {
+//         if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+//             event->acceptProposedAction();
+//         }
+//     } else if (DragAndDropHelper::dragEnterAccept(*event->mimeData(),
+//                        "library",
+//                        true,
+//                        true)) {
+//         event->acceptProposedAction();
+//     }
+// }
+
 // Drag enter event, happens when a dragged item hovers over the track table view
-void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
+void WTrackTableView::dragEnterEvent(QDragEnterEvent* event) {
     auto* pTrackModel = getTrackModel();
     if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
         return;
     }
-    //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
+    // qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->source() == this) {
         if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             event->acceptProposedAction();
@@ -1052,7 +1141,7 @@ void WTrackTableView::dragLeaveEvent(QDragLeaveEvent* /*event*/) {
 // Drag move event, happens when a dragged item hovers over the track table view...
 // It changes the drop handle to a "+" when the drag content is acceptable.
 // Without it, the following drop is ignored.
-void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
+void WTrackTableView::dragMoveEvent(QDragMoveEvent* event) {
     auto* pTrackModel = getTrackModel();
     if (!pTrackModel || pTrackModel->isLocked() || !event->mimeData()->hasUrls()) {
         event->ignore();
@@ -1063,9 +1152,14 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 
     int newDropRow = -1;
 
-    //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+    // qDebug() << "dragMoveEvent" << event->mimeData()->formats();
+
+    //////////////////////
+    //////////////////////
+    // EVE
+    // 	Reorder -> ReceiveDrops
     if (event->source() == this) {
-        if (pTrackModel->hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
             event->acceptProposedAction();
         } else {
             event->ignore();
@@ -1096,7 +1190,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
-void WTrackTableView::dropEvent(QDropEvent * event) {
+void WTrackTableView::dropEvent(QDropEvent* event) {
     TrackModel* pTrackModel = getTrackModel();
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
@@ -1118,7 +1212,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // up to the top, which is confusing when you're dragging and dropping. :)
     int vScrollBarPos = verticalScrollBar()->value();
 
-
     // Calculate the model index where the track or tracks are destined to go.
     // (the "drop" position in a drag-and-drop)
     // The user usually drops on the seam between two rows.
@@ -1133,7 +1226,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
-    //qDebug() << "destIndex.row() is" << destIndex.row();
+    // qDebug() << "destIndex.row() is" << destIndex.row();
 
     // Drag and drop within this widget (track reordering)
     if (event->source() == this &&
@@ -1172,8 +1265,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         } else if ((destIndex.row() == -1) && (model()->rowCount() > 0)) {
             // If the track was dropped beyond the end of a playlist, then
             // we need to fudge the destination a bit...
-            //qDebug() << "Beyond end of playlist";
-            //qDebug() << "rowcount is:" << model()->rowCount();
+            // qDebug() << "Beyond end of playlist";
+            // qDebug() << "rowcount is:" << model()->rowCount();
             selectionStartRow = model()->rowCount();
         }
 
@@ -1831,7 +1924,7 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     const QModelIndexList rows = getSelectedRows();
     QList<TrackId> trackIds;
     trackIds.reserve(rows.size());
-    for (const QModelIndex& row: rows) {
+    for (const QModelIndex& row : rows) {
         const TrackId trackId = pTrackModel->getTrackId(row);
         if (trackId.isValid()) {
             trackIds.append(trackId);
@@ -1869,14 +1962,14 @@ bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return false;
     }
-    //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
+    // qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
         return false;
     }
     const QVector<int> trackRows = pTrackModel->getTrackRows(trackId);
-    //qDebug() << "   track found?" << !trackRows.empty();
+    // qDebug() << "   track found?" << !trackRows.empty();
     return !trackRows.empty();
 }
 
@@ -1991,7 +2084,7 @@ void WTrackTableView::moveSelection(int delta) {
 
     while (delta != 0) {
         QItemSelectionModel* currentSelection = selectionModel();
-        if (currentSelection->selectedRows().length() > 0) {
+        if (!currentSelection->selectedRows().isEmpty()) {
             if (delta > 0) {
                 // i is positive, so we want to move the highlight down
                 int row = currentSelection->selectedRows().last().row();
